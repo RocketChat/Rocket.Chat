@@ -39,7 +39,7 @@ export const IncomingCall = (): ReactElement => {
 				}}
 				callerState='OFFER_RECEIVED'
 				callActions={callActions}
-				title='Phone Call'
+				title='Sales Department'
 				subtitle='Calling'
 				muted={muted}
 				paused={paused}
@@ -50,7 +50,7 @@ export const IncomingCall = (): ReactElement => {
 				callsInQueue='2 Calls In Queue'
 				openWrapUpCallModal={() => null}
 				dispatchEvent={() => null}
-				openedRoomInfo={{ v: { token: '' }, rid: '', queue: '' }}
+				openedRoomInfo={{ v: { token: '' }, rid: '' }}
 			/>
 		</Box>
 	);
@@ -76,7 +76,7 @@ export const InCall = (): ReactElement => {
 				}}
 				callerState='IN_CALL'
 				callActions={callActions}
-				title='Phone Call'
+				title='Sales Department'
 				subtitle={getSubtitle()}
 				muted={muted}
 				paused={paused}
@@ -87,7 +87,7 @@ export const InCall = (): ReactElement => {
 				callsInQueue='2 Calls In Queue'
 				openWrapUpCallModal={() => null}
 				dispatchEvent={() => null}
-				openedRoomInfo={{ v: { token: '' }, rid: '', queue: 'Sales Department' }}
+				openedRoomInfo={{ v: { token: '' }, rid: '' }}
 			/>
 		</Box>
 	);

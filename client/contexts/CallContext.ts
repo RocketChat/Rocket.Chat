@@ -22,8 +22,9 @@ type CallContextReady = {
 	ready: true;
 	voipClient: VoIPUser;
 	actions: CallActionsType;
+	queueName: string;
 	queueCounter: number;
-	openedRoomInfo: { v: { token?: string }; rid: string; queue: string };
+	openedRoomInfo: { v: { token?: string }; rid: string };
 	openWrapUpModal: () => void;
 	openRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
 	closeRoom: (data: { comment?: string; tags?: string[] }) => void;
@@ -131,6 +132,16 @@ export const useCallClient = (): VoIPUser => {
 		throw new Error('useClient only if Calls are enabled and ready');
 	}
 	return context.voipClient;
+};
+
+export const useQueueName = (): CallContextReady['queueName'] => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useQueueInfo only if Calls are enabled and ready');
+	}
+
+	return context.queueName;
 };
 
 export const useQueueCounter = (): CallContextReady['queueCounter'] => {

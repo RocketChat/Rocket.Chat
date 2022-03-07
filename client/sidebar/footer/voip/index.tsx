@@ -6,6 +6,7 @@ import {
 	useCallOpenRoom,
 	useOpenedRoomInfo,
 	useQueueCounter,
+	useQueueName,
 	useWrapUpModal,
 } from '../../../contexts/CallContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
@@ -20,6 +21,7 @@ export const VoipFooter = (): ReactElement | null => {
 
 	const openRoom = useCallOpenRoom();
 	const queueCounter = useQueueCounter();
+	const queueName = useQueueName();
 	const openWrapUpCallModal = useWrapUpModal();
 	const openedRoomInfo = useOpenedRoomInfo();
 
@@ -72,7 +74,7 @@ export const VoipFooter = (): ReactElement | null => {
 			caller={callerInfo.caller}
 			callerState={callerInfo.state}
 			callActions={callActions}
-			title={t('Phone_call')}
+			title={queueName || t('Phone_call')}
 			subtitle={getSubtitle()}
 			muted={muted}
 			paused={paused}

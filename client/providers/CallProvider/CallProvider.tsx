@@ -44,6 +44,7 @@ export const CallProvider: FC = ({ children }) => {
 
 	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
 
+	const [queueName, setQueueName] = useState('');
 	const [queueCounter, setQueueCounter] = useState('');
 
 	const setModal = useSetModal();
@@ -87,6 +88,7 @@ export const CallProvider: FC = ({ children }) => {
 			const queueAggregator = result.voipClient.getAggregator();
 			if (queueAggregator) {
 				queueAggregator.memberAdded(queue);
+				setQueueName(queue.queuename);
 				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
 			}
 		},
@@ -129,6 +131,7 @@ export const CallProvider: FC = ({ children }) => {
 			const queueAggregator = result.voipClient.getAggregator();
 			if (queueAggregator) {
 				queueAggregator.queueJoined(joiningDetails);
+				setQueueName(joiningDetails.queuename);
 				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
 			}
 		},
@@ -214,7 +217,7 @@ export const CallProvider: FC = ({ children }) => {
 	const voipEndpoint = useEndpoint('GET', 'voip/room');
 	const voipCloseRoomEndpoint = useEndpoint('POST', 'voip/room.close');
 
-	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string; queue: string }>();
+	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (!voipEnabled) {
@@ -251,6 +254,7 @@ export const CallProvider: FC = ({ children }) => {
 			registrationInfo,
 			voipClient,
 			queueCounter,
+			queueName,
 			actions: {
 				mute: (): Promise<void> => voipClient.muteCall(true), // voipClient.mute(),
 				unmute: (): Promise<void> => voipClient.muteCall(false), // voipClient.unmute()
@@ -272,7 +276,7 @@ export const CallProvider: FC = ({ children }) => {
 					});
 					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
 					voipRoom.room && roomCoordinator.openRouteLink(voipRoom.room.t, { rid: voipRoom.room._id, name: voipRoom.room.name });
-					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id, queue: voipRoom.room.queue });
+					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
 					const queueAggregator = result.voipClient.getAggregator();
 					if (queueAggregator) {
 						queueAggregator.callStarted();
@@ -291,7 +295,19 @@ export const CallProvider: FC = ({ children }) => {
 			},
 			openWrapUpModal,
 		};
-	}, [queueCounter, voipEnabled, homeRoute, openWrapUpModal, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
+	}, [
+		voipEnabled,
+		result,
+		roomInfo,
+		queueCounter,
+		queueName,
+		openWrapUpModal,
+		user,
+		visitorEndpoint,
+		voipEndpoint,
+		voipCloseRoomEndpoint,
+		homeRoute,
+	]);
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
