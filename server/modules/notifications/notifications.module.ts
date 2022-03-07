@@ -311,6 +311,17 @@ export class NotificationsModule {
 
 			return this.userId != null && this.userId === userId;
 		});
+		this.streamUser.allowEmit(async function (eventName, ...args) {
+			const [, e] = eventName.split('/');
+			if (e === 'otr') {
+				const [type, data] = args;
+				if (type === 'acknowledge' && data?.roomId) {
+					otrStats(data.roomId);
+				}
+			}
+
+			return true;
+		});
 
 		this.streamImporters.allowRead('all');
 		this.streamImporters.allowEmit('all');
@@ -341,17 +352,6 @@ export class NotificationsModule {
 				return false;
 			}
 			return Authorization.hasAtLeastOnePermission(this.userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']);
-		});
-		this.streamUser.allowEmit(async function (eventName, ...args) {
-			const [, e] = eventName.split('/');
-			if (e === 'otr') {
-				const [type, data] = args;
-				if (type === 'acknowledge' && data?.roomId) {
-					otrStats(data.roomId);
-				}
-			}
-
-			return true;
 		});
 		this.streamLivechatRoom.allowRead(async function (roomId, extraData) {
 			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v'>>(roomId, {
