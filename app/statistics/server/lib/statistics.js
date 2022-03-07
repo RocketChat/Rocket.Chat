@@ -359,6 +359,8 @@ export const statistics = {
 		statistics.totalEngagementDashboard = settings.get('Engagement_Dashboard_Load_Count');
 		statistics.totalAuditApply = settings.get('Message_Auditing_Apply_Count');
 		statistics.totalAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
+		statistics.totalJoinJitsiButton = settings.get('Jits_Click_To_Join_Count');
+		statistics.totalSlashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
 
 		return statistics;
 	},
