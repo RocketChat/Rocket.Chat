@@ -2,6 +2,7 @@ import { EventEmitter } from 'eventemitter3';
 import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from 'meteor/rocketchat:streamer';
 
 import { SystemLogger } from '../../lib/logger/system';
+import { MeteorError } from '../../sdk/errors';
 
 class StreamerCentralClass extends EventEmitter {
 	public instances: Record<string, Streamer> = {};
@@ -174,13 +175,11 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 
 		if (eventName.length === 0) {
-			publication.stop();
-			throw new Error('invalid-event-name');
+			throw new MeteorError('invalid-event-name');
 		}
 
 		if ((await this.isReadAllowed(publication, eventName, args)) !== true) {
-			publication.stop();
-			throw new Error('not-allowed');
+			throw new MeteorError('not-allowed');
 		}
 
 		const subscription = {
