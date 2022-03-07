@@ -1,21 +1,14 @@
 /* eslint-disable complexity */
-import { css } from '@rocket.chat/css-in-js';
 import {
-	Box,
 	Message as MessageTemplate,
 	MessageBody,
 	MessageContainer,
 	MessageHeader,
 	MessageLeftContainer,
 	MessageName,
-	MessageRole,
-	MessageRoles,
 	MessageTimestamp,
 	MessageUsername,
-	MessageReactions,
 	MessageStatusPrivateIndicator,
-	MessageReactionAction,
-	Icon,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
@@ -28,33 +21,28 @@ import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
 import DiscussionMetric from '../../../../components/Message/Metrics/Discussion';
 import ThreadMetric from '../../../../components/Message/Metrics/Thread';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useSetting } from '../../../../contexts/SettingsContext';
 import { TranslationKey, useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useUserData } from '../../../../hooks/useUserData';
+import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
+import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
 import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
-import {
-	useMessageActions,
-	useMessageOembedIsEnabled,
-	useMessageOembedMaxWidth,
-	useMessageRunActionLink,
-} from '../../contexts/MessageContext';
+import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useIsEditingMessage } from '../contexts/MessageEditingContext';
 import {
 	useMessageListShowRoles,
 	useMessageListShowUsername,
 	useMessageListShowRealName,
-	useOpenEmojiPicker,
-	useReactionsFilter,
-	useReactToMessage,
-	useUserHasReacted,
+	useMessageListShowReadReceipt,
 } from '../contexts/MessageListContext';
 import { MessageIndicators } from './MessageIndicators';
-import { MessageReaction } from './MessageReaction';
+import ReactionsList from './MessageReactionsList';
+import ReadReceipt from './MessageReadReceipt';
+import RolesList from './MessageRolesList';
 import Toolbox from './Toolbox';
-import OEmbedList from './UrlPreview';
+import PreviewList from './UrlPreview';
 
 const style = { backgroundColor: 'var(--message-box-editing-color)' };
 
@@ -73,24 +61,25 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 
 	const runActionLink = useMessageRunActionLink();
 
-	const hasReacted = useUserHasReacted(message);
-	const reactToMessage = useReactToMessage(message);
-	const filterReactions = useReactionsFilter(message);
-
 	const oembedIsEnabled = useMessageOembedIsEnabled();
-	const oembedWidth = useMessageOembedMaxWidth();
 
-	const openEmojiPicker = useOpenEmojiPicker(message);
+	const shouldShowReadReceipt = useMessageListShowReadReceipt();
 
-	const isReadReceiptEnabled = useSetting('Message_Read_Receipt_Enabled');
-
-	const showRoles = useMessageListShowRoles();
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 
 	const isEditingMessage = useIsEditingMessage(message._id);
+
+	const isEncryptedMessage = isE2EEMessage(message);
+	const isEncryptedMessagePending = isEncryptedMessage && message.e2e === 'pending';
+	const isMessageReady = !isEncryptedMessage || !isEncryptedMessagePending;
+
+	const showRoles = useMessageListShowRoles();
+	const shouldShowRolesList = !showRoles || !user.roles || !Array.isArray(user.roles) || user.roles.length < 1;
+
+	const shouldShowReactionList = message.reactions && Object.keys(message.reactions).length;
 
 	const mineUid = useUserId();
 
@@ -108,7 +97,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 							data-username={user.username}
 							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 						>
-							{(showRealName && user.name) || user.username}
+							{getUserDisplayName(user.name, user.username, showRealName)}
 						</MessageName>
 						{showUsername && (
 							<MessageUsername
@@ -118,16 +107,9 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 								@{user.username}
 							</MessageUsername>
 						)}
-						<MessageRoles>
-							{showRoles && Array.isArray(user.roles) && user.roles.length > 0 && (
-								<>
-									{user.roles.map((role, index) => (
-										<MessageRole key={index}>{role}</MessageRole>
-									))}
-								</>
-							)}
-							{message.bot && <MessageRole>{t('Bot')}</MessageRole>}
-						</MessageRoles>
+
+						{shouldShowRolesList && <RolesList user={user} isBot={message.bot} />}
+
 						<MessageTimestamp data-time={message.ts.toISOString()}>{formatters.messageHeader(message.ts)}</MessageTimestamp>
 						{message.private && (
 							// The MessageStatusPrivateIndicator component should not have name prop, it should be fixed on fuselage
@@ -136,21 +118,18 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 						<MessageIndicators message={message} />
 					</MessageHeader>
 				)}
+
 				<MessageBody>
-					{message.e2e === 'pending'
-						? t('E2E_message_encrypted_placeholder')
-						: message.e2e !== 'done' &&
-						  !message.blocks &&
-						  message.md && <MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={message.md} />}
-					{!message.blocks && !message.md && message.msg}
-					{message.e2e === 'done' && message.msg}
+					{isEncryptedMessagePending && t('E2E_message_encrypted_placeholder')}
+
+					{isMessageReady && !message.blocks && message.md && (
+						<MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={message.md} />
+					)}
+
+					{isMessageReady && !message.blocks && !message.md && message.msg}
 				</MessageBody>
 				{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 				{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
-
-				{/* {{#unless hideActionLinks}}
-				{{> MessageActions mid=msg._id actions=actionLinks runAction=(actions.runAction msg)}}
-			{{/unless}} */}
 
 				{message.actionLinks?.length && (
 					<MessageActions
@@ -163,21 +142,8 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 						runAction={runActionLink(message)}
 					/>
 				)}
-				{message.reactions && Object.keys(message.reactions).length > 0 && (
-					<MessageReactions>
-						{Object.entries(message.reactions).map(([name, reactions]) => (
-							<MessageReaction
-								key={name}
-								counter={reactions.usernames.length}
-								hasReacted={hasReacted}
-								reactToMessage={reactToMessage}
-								name={name}
-								names={filterReactions(name)}
-							/>
-						))}
-						<MessageReactionAction onClick={openEmojiPicker} />
-					</MessageReactions>
-				)}
+
+				{shouldShowReactionList && <ReactionsList message={message} />}
 
 				{isThreadMainMessage(message) && (
 					<ThreadMetric
@@ -207,23 +173,9 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				{message.location && <MessageLocation location={message.location} />}
 				{broadcast && user.username && <BroadcastMetric replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />}
 
-				{oembedIsEnabled && message.urls && (
-					<Box width={oembedWidth}>
-						<OEmbedList urls={message.urls} />
-					</Box>
-				)}
+				{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
 
-				{isReadReceiptEnabled && (
-					<Box
-						position='absolute'
-						className={css`
-							top: 2px;
-							right: 0.5rem;
-						`}
-					>
-						<Icon name='check' size='x11' color='primary' />
-					</Box>
-				)}
+				{shouldShowReadReceipt && <ReadReceipt />}
 			</MessageContainer>
 			{!message.private && <Toolbox message={message} />}
 		</MessageTemplate>

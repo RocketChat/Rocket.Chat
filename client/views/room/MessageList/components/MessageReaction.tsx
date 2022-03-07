@@ -78,7 +78,7 @@ export const MessageReaction: FC<{
 						ref.current,
 					);
 			}}
-			onMouseLeave={() => {
+			onMouseLeave={(): void => {
 				closeTooltip();
 			}}
 			{...props}

@@ -8,6 +8,7 @@ const BlazeTemplate: FC<
 		name: string;
 	} & Record<string, unknown>
 > = ({ name, flexShrink, overflow, onClick, ...props }) => {
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const ref = useRef(null!);
 	useLayoutEffect(() => {
 		if (!ref.current || !Template[name]) {
@@ -15,7 +16,7 @@ const BlazeTemplate: FC<
 		}
 
 		const view = Blaze.renderWithData(Template[name], props, ref.current);
-		return () => {
+		return (): void => {
 			view && Blaze.remove(view);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps

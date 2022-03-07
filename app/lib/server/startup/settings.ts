@@ -3163,7 +3163,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 		});
 		this.section('Server_Configuration', function () {
 			this.add('VoIP_Server_Host', '', {
-				type: 'password',
+				type: 'string',
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',
@@ -3179,7 +3179,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 				},
 			});
 			this.add('VoIP_Server_Name', '', {
-				type: 'int',
+				type: 'string',
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',

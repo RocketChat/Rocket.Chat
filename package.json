@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "4.5.0-develop",
+	"version": "4.6.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -98,7 +98,7 @@
 		"@types/meteor": "1.4.81",
 		"@types/mkdirp": "^1.0.1",
 		"@types/mocha": "^8.2.3",
-		"@types/mock-require": "^2.0.0",
+		"@types/mock-require": "^2.0.1",
 		"@types/moment-timezone": "^0.5.30",
 		"@types/mongodb": "^3.6.10",
 		"@types/node": "^12.20.10",
@@ -177,7 +177,7 @@
 		"@nivo/heatmap": "0.73.0",
 		"@nivo/line": "0.62.0",
 		"@nivo/pie": "0.73.0",
-		"@rocket.chat/apps-engine": "^1.31.0-alpha.5979",
+		"@rocket.chat/apps-engine": "^1.31.0",
 		"@rocket.chat/css-in-js": "~0.31.4",
 		"@rocket.chat/emitter": "~0.31.4",
 		"@rocket.chat/fuselage": "~0.31.4",

@@ -4,6 +4,7 @@ import React, { FC } from 'react';
 import { IMessage, isEditedMessage } from '../../../../../definition/IMessage';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
+import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
 import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from '../contexts/MessageListContext';
 
 // edited() {
@@ -33,6 +34,7 @@ export const MessageIndicators: FC<{
 	const starred = useShowStarred({ message }); // TODO: useMessageStarred
 	const following = useShowFollowing({ message }); // TODO: useMessageFollowing
 
+	const isEncryptedMessage = isE2EEMessage(message);
 	const uid = useUserId();
 
 	const formatter = useMessageDateFormatter(); // TODO: useMessageDateFormatter
@@ -59,6 +61,8 @@ export const MessageIndicators: FC<{
 				/>
 			)}
 			{message.pinned && <MessageStatusIndicatorItem name='pin' data-title={t('Message_has_been_pinned')} />}
+
+			{isEncryptedMessage && <MessageStatusIndicatorItem name='key' />}
 
 			{starred && <MessageStatusIndicatorItem name='star-filled' data-title={t('Message_has_been_starred')} />}
 		</MessageStatusIndicator>
