@@ -14,6 +14,7 @@ export type MessageListContextValue = {
 	showRoles: boolean;
 	showRealName: boolean;
 	showUsername: boolean;
+	showReadReceipt: boolean;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -34,6 +35,7 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showRoles: false,
 	showRealName: false,
 	showUsername: false,
+	showReadReceipt: false,
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
@@ -47,6 +49,8 @@ export const useMessageDateFormatter: MessageListContextValue['useMessageDateFor
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
+export const useMessageListShowReadReceipt = (): MessageListContextValue['showReadReceipt'] =>
+	useContext(MessageListContext).showReadReceipt;
 
 export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
 	useContext(MessageListContext).useUserHasReacted(message);
