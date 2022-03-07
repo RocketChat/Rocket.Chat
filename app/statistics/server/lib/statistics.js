@@ -260,6 +260,23 @@ export const statistics = {
 		statistics.enterprise = getEnterpriseStatistics();
 		await Analytics.resetSeatRequestCount();
 
+		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
+		statistics.homeTitle = settings.get('Layout_Home_Title');
+		statistics.homeBody = settings.get('Layout_Home_Body').split('\n')[0];
+		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
+		statistics.customCSS = settings.get('theme-custom-css').split('\n').length;
+		statistics.customScript = _.reduce(
+			['Custom_Script_On_Logout', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In'],
+			function _custonScript(num, setting) {
+				const script = settings.get(setting);
+				if (script !== '//Add your script') {
+					return num + script.split('\n').length;
+				}
+				return num;
+			},
+			0,
+		);
+
 		return statistics;
 	},
 	async save() {
