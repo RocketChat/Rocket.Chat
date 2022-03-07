@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { OtrRoomState } from '../../../../../app/otr/client/OtrRoomState';
 import VerticalBar from '../../../../components/VerticalBar';
 import OTR from './OTR';
 
@@ -8,21 +9,55 @@ export default {
 	component: OTR,
 };
 
-export const Default = () => (
-	<VerticalBar>
-		<OTR onClickClose={alert} onClickStart={alert} onClickEnd={alert} onClickRefresh={alert} isOnline={true} />
-	</VerticalBar>
-);
-
 export const Establishing = () => (
 	<VerticalBar>
-		<OTR onClickClose={alert} onClickStart={alert} onClickEnd={alert} onClickRefresh={alert} isOnline={true} isEstablishing={true} />
+		<OTR
+			onClickClose={alert}
+			onClickStart={alert}
+			onClickEnd={alert}
+			onClickRefresh={alert}
+			isOnline={true}
+			otrState={OtrRoomState.ESTABLISHING}
+		/>
 	</VerticalBar>
 );
 
 export const Established = () => (
 	<VerticalBar>
-		<OTR onClickClose={alert} onClickStart={alert} onClickEnd={alert} onClickRefresh={alert} isOnline={true} isEstablished={true} />
+		<OTR
+			onClickClose={alert}
+			onClickStart={alert}
+			onClickEnd={alert}
+			onClickRefresh={alert}
+			isOnline={true}
+			otrState={OtrRoomState.ESTABLISHED}
+		/>
+	</VerticalBar>
+);
+
+export const Timeout = () => (
+	<VerticalBar>
+		<OTR
+			onClickClose={alert}
+			onClickStart={alert}
+			onClickEnd={alert}
+			onClickRefresh={alert}
+			isOnline={true}
+			otrState={OtrRoomState.TIMEOUT}
+		/>
+	</VerticalBar>
+);
+
+export const Declined = () => (
+	<VerticalBar>
+		<OTR
+			onClickClose={alert}
+			onClickStart={alert}
+			onClickEnd={alert}
+			onClickRefresh={alert}
+			isOnline={true}
+			otrState={OtrRoomState.DECLINED}
+		/>
 	</VerticalBar>
 );
 
