@@ -7,10 +7,11 @@ export const useReactiveVar = <T>(variable: ReactiveVar<T>): T => {
 	const [value, setValue] = useState(() => Tracker.nonreactive(() => variable.get()));
 
 	useEffect(() => {
-		const computation = Tracker.nonreactive(() => Tracker.autorun(() => {
+		const computation = Tracker.nonreactive(() =>
+			Tracker.autorun(() => {
 				const value = variable.get();
 				setValue(() => value);
-			})
+			}),
 		);
 
 		return (): void => {
