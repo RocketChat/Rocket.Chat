@@ -364,11 +364,11 @@ export const statistics = {
 		statistics.tabInvites = await Invites.find().count();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 
-		// statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.ADMIN_ADD }).count();
-		// statistics.usersCreatedSlackImport = await Users.find({ origin: USER_ORIGIN.SLACK_IMPORT }).count();
-		// statistics.usersCreatedSlackUser = await Users.find({ origin: USER_ORIGIN.SLACK_USER_IMPORT }).count();
-		// statistics.usersCreatedCSVImport = await Users.find({ origin: USER_ORIGIN.CSV_IMPORT }).count();
-		// statistics.usersCreatedHiptext = await Users.find({ origin: USER_ORIGIN.HIPTEXT_IMPORT }).count();
+		statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.ADMIN_ADD }).count();
+		statistics.usersCreatedSlackImport = await Users.find({ origin: USER_ORIGIN.SLACK_IMPORT }).count();
+		statistics.usersCreatedSlackUser = await Users.find({ origin: USER_ORIGIN.SLACK_USER_IMPORT }).count();
+		statistics.usersCreatedCSVImport = await Users.find({ origin: USER_ORIGIN.CSV_IMPORT }).count();
+		statistics.usersCreatedHiptext = await Users.find({ origin: USER_ORIGIN.HIPTEXT_IMPORT }).count();
 
 		return statistics;
 	},
