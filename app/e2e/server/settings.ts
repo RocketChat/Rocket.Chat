@@ -20,13 +20,4 @@ settingsRegistry.addGroup('E2E Encryption', function () {
 		public: true,
 		enableQuery: { _id: 'E2E_Enable', value: true },
 	});
-	this.add('OTR_Enable', true, {
-		type: 'boolean',
-		i18nLabel: 'Enabled',
-		public: true,
-	});
-	this.add('OTR_Count', 0, {
-		type: 'int',
-		hidden: true,
-	});
 });
