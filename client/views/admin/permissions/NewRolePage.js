@@ -33,7 +33,7 @@ const NewRolePage = () => {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
-
+	const shouldSave = Boolean(values.name);
 	return (
 		<>
 			<VerticalBar.ScrollableContent>
@@ -45,7 +45,7 @@ const NewRolePage = () => {
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch w='full'>
-					<Button primary onClick={handleSave}>
+					<Button primary onClick={handleSave} disabled={!shouldSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
