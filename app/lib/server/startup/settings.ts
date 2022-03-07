@@ -3138,3 +3138,106 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 	});
 });
+
+settingsRegistry.addGroup('Call_Center', function () {
+	this.with({ tab: 'Settings' }, function () {
+		this.add('VoIP_Enabled', false, {
+			type: 'boolean',
+			public: true,
+			alert: 'Experimental_Feature_Alert',
+			enableQuery: {
+				_id: 'Livechat_enabled',
+				value: true,
+			},
+		});
+		this.add('VoIP_JWT_Secret', '', {
+			type: 'password',
+			i18nDescription: 'VoIP_JWT_Secret_description',
+			enableQuery: {
+				_id: 'VoIP_Enabled',
+				value: true,
+			},
+		});
+		this.section('Server_Configuration', function () {
+			this.add('VoIP_Server_Host', '', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Server_Websocket_Port', 0, {
+				type: 'int',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Server_Name', '', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Server_Websocket_Path', '', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+		});
+
+		this.section('Management_Server', function () {
+			this.add('VoIP_Management_Server_Host', '', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('VoIP_Management_Server_Port', 0, {
+				type: 'int',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('VoIP_Management_Server_Name', '', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('VoIP_Management_Server_Username', '', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('VoIP_Management_Server_Password', '', {
+				type: 'password',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+		});
+	});
+});

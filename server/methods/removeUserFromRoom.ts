@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization/server';
+import { hasPermission, hasRole, getUsersInRole, removeUserFromRolesAsync } from '../../app/authorization/server';
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
@@ -68,7 +68,7 @@ Meteor.methods({
 		Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
 
 		if (['c', 'p'].includes(room.t) === true) {
-			removeUserFromRoles(removedUser._id, ['moderator', 'owner'], data.rid);
+			await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);
 		}
 
 		Messages.createUserRemovedWithRoomIdAndUser(data.rid, removedUser, {
