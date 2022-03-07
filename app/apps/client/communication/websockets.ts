@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Emitter } from '@rocket.chat/emitter';
+import { IStreamer } from 'meteor/rocketchat:streamer';
 
-import { slashCommands, APIClient } from '../../../utils';
+import { slashCommands } from '../../../utils/server';
+import { APIClient } from '../../../utils/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { loadButtons } from '../../../ui-message/client/ActionButtonSyncer';
 
@@ -19,6 +21,8 @@ export const AppEvents = Object.freeze({
 });
 
 export class AppWebsocketReceiver extends Emitter {
+	streamer: IStreamer;
+
 	constructor() {
 		super();
 
@@ -29,9 +33,9 @@ export class AppWebsocketReceiver extends Emitter {
 		});
 	}
 
-	listenStreamerEvents() {
+	listenStreamerEvents(): void {
 		Object.values(AppEvents).forEach((eventName) => {
-			this.streamer.on(eventName, this.emit.bind(this, eventName));
+			this.streamer.on(eventName, (this.emit as (...data: any[]) => void).bind(this, eventName));
 		});
 
 		this.streamer.on(AppEvents.COMMAND_ADDED, this.onCommandAddedOrUpdated);
@@ -41,23 +45,23 @@ export class AppWebsocketReceiver extends Emitter {
 		this.streamer.on(AppEvents.ACTIONS_CHANGED, this.onActionsChanged);
 	}
 
-	registerListener(event, listener) {
+	registerListener(event: string, listener: (...args: any[]) => void): void {
 		this.on(event, listener);
 	}
 
-	unregisterListener(event, listener) {
+	unregisterListener(event: string, listener: (...args: any[]) => void): void {
 		this.off(event, listener);
 	}
 
-	onCommandAddedOrUpdated = (command) => {
-		APIClient.v1.get('commands.get', { command }).then((result) => {
+	onCommandAddedOrUpdated = (command: string | number): void => {
+		APIClient.v1.get('commands.get', { command }).then((result: { command: typeof command }) => {
 			slashCommands.commands[command] = result.command;
 		});
 	};
 
-	onCommandRemovedOrDisabled = (command) => {
+	onCommandRemovedOrDisabled = (command: string | number): void => {
 		delete slashCommands.commands[command];
 	};
 
-	onActionsChanged = () => loadButtons();
+	onActionsChanged = (): Promise<void> => loadButtons();
 }

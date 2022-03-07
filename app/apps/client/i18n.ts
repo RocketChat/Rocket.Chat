@@ -3,8 +3,9 @@ import { TAPi18next } from 'meteor/rocketchat:tap-i18n';
 import { Apps } from './orchestrator';
 import { Utilities } from '../lib/misc/Utilities';
 import { AppEvents } from './communication';
+import { TranslationLanguage } from '../../../client/contexts/TranslationContext';
 
-export const loadAppI18nResources = (appId, languages) => {
+export const loadAppI18nResources = (appId: string, languages: TranslationLanguage[]): void => {
 	Object.entries(languages).forEach(([language, translations]) => {
 		try {
 			// Translations keys must be scoped under app id
@@ -20,14 +21,14 @@ export const loadAppI18nResources = (appId, languages) => {
 	});
 };
 
-const handleAppAdded = async (appId) => {
-	const languages = await Apps.getAppLanguages(appId);
+const handleAppAdded = async (appId: string): Promise<void> => {
+	const languages = (await Apps.getAppLanguages(appId)) as TranslationLanguage[];
 	loadAppI18nResources(appId, languages);
 };
 
-export const handleI18nResources = async () => {
+export const handleI18nResources = async (): Promise<void> => {
 	const apps = await Apps.getAppsLanguages();
-	apps.forEach(({ id, languages }) => {
+	apps.forEach(({ id, languages }: { id: string; languages: TranslationLanguage[] }) => {
 		loadAppI18nResources(id, languages);
 	});
 

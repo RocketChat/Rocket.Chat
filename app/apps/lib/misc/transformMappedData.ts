@@ -62,9 +62,9 @@ import cloneDeep from 'lodash.clonedeep';
  * @returns Object The data after transformations have been applied
  */
 
-export const transformMappedData = (data, map) => {
+export const transformMappedData = (data: any, map: { [s: string]: unknown } | ArrayLike<unknown>): {} => {
 	const originalData = cloneDeep(data);
-	const transformedData = {};
+	const transformedData: { [x: string]: unknown; _unmappedProperties_?: unknown } = {};
 
 	Object.entries(map).forEach(([to, from]) => {
 		if (typeof from === 'function') {

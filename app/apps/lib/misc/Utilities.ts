@@ -1,9 +1,20 @@
 export class Utilities {
-	static getI18nKeyForApp(key, appId) {
+	static getI18nKeyForApp(key: string, appId: string): string {
 		return key && `apps-${appId}-${key}`;
 	}
 
-	static curl({ method, params, auth, headers = {}, url, query, content }, opts = {}) {
+	static curl(
+		{
+			method,
+			params,
+			auth,
+			headers = {},
+			url,
+			query,
+			content,
+		}: { method: string; params: string[]; auth: string; headers: {}; url: string; query: string; content: unknown },
+		opts: Record<string, any> = {},
+	): string {
 		const newLine = '\\\n   ';
 
 		const cmd = ['curl'];
@@ -45,7 +56,7 @@ export class Utilities {
 		}
 
 		// headers
-		const headerKeys = [];
+		const headerKeys: string[] = [];
 		Object.entries(headers).forEach(([key, val]) => {
 			key = key.toLowerCase();
 			headerKeys.push(key);
