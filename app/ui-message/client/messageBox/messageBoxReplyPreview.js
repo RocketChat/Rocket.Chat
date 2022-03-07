@@ -4,7 +4,14 @@ import './messageBoxReplyPreview.html';
 Template.messageBoxReplyPreview.helpers({
 	attachments() {
 		const { replyMessageData } = this;
-		return [{ text: replyMessageData.msg, author_name: replyMessageData.u.username }];
+		let content;
+		if (replyMessageData.file)
+			if (replyMessageData.attachments[0]?.description)
+				content = `${replyMessageData.file.name} \n ${replyMessageData.attachments[0].description}`;
+			else content = replyMessageData.file.name;
+		else content = replyMessageData.msg;
+
+		return [{ text: content, author_name: replyMessageData.u.username }];
 	},
 });
 
