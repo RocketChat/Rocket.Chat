@@ -356,6 +356,10 @@ export const statistics = {
 		statistics.totalUserTOTP = Users.findActiveUsersTOTPEnable().count();
 		statistics.totalUserEmail2fa = Users.findActiveUsersEmail2faEnable().count();
 
+		statistics.totalEngagementDashboard = settings.get('Engagement_Dashboard_Load_Count');
+		statistics.totalAuditApply = settings.get('Message_Auditing_Apply_Count');
+		statistics.totalAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
+
 		return statistics;
 	},
 	async save() {
