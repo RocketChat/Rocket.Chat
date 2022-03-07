@@ -286,7 +286,7 @@
   "add-user-to-joined-room": "Añadir usuario a cualquier Channel al que te has unido",
   "add-user-to-joined-room_description": "Permiso para añadir un usuario a un canal al que te has unido",
   "added__roomName__to_team": "<strong>ha añadido</strong> #__roomName__ a un equipo",
-  "Added__username__to_team": "<strong>ha añadido</strong> #__roomName__ a este equipo",
+  "Added__username__to_team": "<strong>ha añadido</strong> @__user_added__ a este equipo",
   "Adding_OAuth_Services": "Añadir servicios OAuth",
   "Adding_permission": "Añadiendo permiso",
   "Adding_user": "Añadiendo usuario",
