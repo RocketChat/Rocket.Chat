@@ -956,6 +956,22 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
+		it("should update a bot's email", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: 'rocket.cat',
+					data: { email: 'nouser@rocket.cat' },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it("should verify user's email by userId", (done) => {
 			request
 				.post(api('users.update'))
