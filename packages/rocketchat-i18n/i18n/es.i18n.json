@@ -3499,7 +3499,7 @@
   "Random": "Aleatorio",
   "RD Station": "RD Station",
   "RDStation_Token": "Token de RD Station",
-  "Reached_seat_limit_banner_warning": "*No hay más puestos disponibles* \nEste espacio de trabajo ha alcanzado su límite de puestos, por lo que no pueden unirse más miembros. *[Request More Seats]",
+  "Reached_seat_limit_banner_warning": "*No hay más puestos disponibles* \nEste espacio de trabajo ha alcanzado su límite de puestos, por lo que no pueden unirse más miembros. *[Request More Seats](__url__)*",
   "React_when_read_only": "Permitir reacciones",
   "React_when_read_only_changed_successfully": "Permitir reacciones cuando solo lectura ha cambiado correctamente",
   "Reacted_with": "Ha reaccionado con",
