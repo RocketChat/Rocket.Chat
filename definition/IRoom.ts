@@ -1,8 +1,8 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
+import { RoomType } from './RoomType';
 
-export type RoomType = 'c' | 'd' | 'p' | 'l' | 'v';
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
@@ -229,3 +229,6 @@ export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichanne
 
 	return room.source?.type === OmnichannelSourceType.APP;
 };
+
+/** @deprecated */
+export { RoomType };

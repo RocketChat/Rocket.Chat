@@ -11,7 +11,7 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const useRoomIcon = (room: Partial<IRoom> & Partial<ISubscription>): ReactNode | { name: string; color?: string } | null => {
+export const useRoomIcon = (room: IRoom & Partial<ISubscription>): ReactNode | { name: string; color?: string } | null => {
 	if (room.prid) {
 		return { name: 'baloons' };
 	}

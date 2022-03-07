@@ -1,5 +1,7 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, ReactElement, useMemo } from 'react';
 
+import { IRoom } from '../../../../definition/IRoom';
+import { ISubscription } from '../../../../definition/ISubscription';
 import BurgerMenu from '../../../components/BurgerMenu';
 import TemplateHeader from '../../../components/Header';
 import { useLayout } from '../../../contexts/LayoutContext';
@@ -8,7 +10,11 @@ import OmnichannelRoomHeader from './Omnichannel/OmnichannelRoomHeader';
 import VoipRoomHeader from './Omnichannel/VoipRoomHeader';
 import RoomHeader from './RoomHeader';
 
-const Header = ({ room }) => {
+type HeaderProps = {
+	room: IRoom & Partial<ISubscription>;
+};
+
+const Header = ({ room }: HeaderProps): ReactElement | null => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 
 	const slots = useMemo(
