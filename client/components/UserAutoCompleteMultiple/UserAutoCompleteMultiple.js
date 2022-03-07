@@ -22,7 +22,7 @@ const UserAutoCompleteMultiple = ({ valueIsId = false, ...props }) => {
 
 	useEffect(() => {
 		const newLabelData = Object.fromEntries((data && data.items.map((user) => [user._id, user.username])) || []);
-		setLabelData({ ...labelData, ...newLabelData });
+		setLabelData((labelData) => ({ ...labelData, ...newLabelData }));
 	}, [data]);
 
 	const renderItem = ({ value, label, selected, ...props }) => {
