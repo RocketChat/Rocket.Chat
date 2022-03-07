@@ -29,8 +29,13 @@ import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
 import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
-import { useMessageActions, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowUsername, useMessageListShowRealName } from '../contexts/MessageListContext';
+import { useMessageActions, useMessageRunActionLink, useMessageOembedIsEnabled } from '../../contexts/MessageContext';
+import {
+	useMessageListShowUsername,
+	useMessageListShowRealName,
+	useMessageListShowRoles,
+	useMessageListShowReadReceipt,
+} from '../contexts/MessageListContext';
 import { MessageIndicators } from './MessageIndicators';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
@@ -53,14 +58,23 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 
 	const runActionLink = useMessageRunActionLink();
 
+	const oembedIsEnabled = useMessageOembedIsEnabled();
+
+	const shouldShowReadReceipt = useMessageListShowReadReceipt();
+
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 
 	const isEncryptedMessage = isE2EEMessage(message);
-	const encryptedMessageIsPending = isEncryptedMessage && message.e2e === 'pending';
-	const messageIsReady = !isEncryptedMessage || !encryptedMessageIsPending;
+	const isEncryptedMessagePending = isEncryptedMessage && message.e2e === 'pending';
+	const isMessageReady = !isEncryptedMessage || !isEncryptedMessagePending;
+
+	const showRoles = useMessageListShowRoles();
+	const shouldShowRolesList = !showRoles || !user.roles || !Array.isArray(user.roles) || user.roles.length < 1;
+
+	const shouldShowReactionList = message.reactions && Object.keys(message.reactions).length;
 
 	const mineUid = useUserId();
 
@@ -89,7 +103,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 							</MessageUsername>
 						)}
 
-						<RolesList user={user} isBot={message.bot} />
+						{shouldShowRolesList && <RolesList user={user} isBot={message.bot} />}
 
 						<MessageTimestamp data-time={message.ts.toISOString()}>{formatters.messageHeader(message.ts)}</MessageTimestamp>
 						{message.private && (
@@ -99,31 +113,18 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 						<MessageIndicators message={message} />
 					</MessageHeader>
 				)}
-				{/* <MessageBody>
-					{message.e2e === 'pending'
-						? t('E2E_message_encrypted_placeholder')
-						: message.e2e !== 'done' &&
-						  !message.blocks &&
-						  message.md && <MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={message.md} />}
-					{!message.blocks && !message.md && message.msg}
-					{message.e2e === 'done' && message.msg}
-				</MessageBody> */}
 
 				<MessageBody>
-					{encryptedMessageIsPending && t('E2E_message_encrypted_placeholder')}
+					{isEncryptedMessagePending && t('E2E_message_encrypted_placeholder')}
 
-					{messageIsReady && !message.blocks && message.md && (
+					{isMessageReady && !message.blocks && message.md && (
 						<MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={message.md} />
 					)}
 
-					{messageIsReady && !message.blocks && !message.md && message.msg}
+					{isMessageReady && !message.blocks && !message.md && message.msg}
 				</MessageBody>
 				{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 				{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
-
-				{/* {{#unless hideActionLinks}}
-				{{> MessageActions mid=msg._id actions=actionLinks runAction=(actions.runAction msg)}}
-			{{/unless}} */}
 
 				{message.actionLinks?.length && (
 					<MessageActions
@@ -137,7 +138,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 					/>
 				)}
 
-				<ReactionsList message={message} />
+				{shouldShowReactionList && <ReactionsList message={message} />}
 
 				{isThreadMainMessage(message) && (
 					<Thread
@@ -167,9 +168,9 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				{message.location && <MessageLocation location={message.location} />}
 				{broadcast && user.username && <Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />}
 
-				<PreviewList urls={message.urls} />
+				{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
 
-				<ReadReceipt />
+				{shouldShowReadReceipt && <ReadReceipt />}
 			</MessageContainer>
 			{!message.private && <Toolbox message={message} />}
 		</MessageTemplate>

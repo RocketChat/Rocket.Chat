@@ -24,6 +24,7 @@ export const MessageListProvider: FC<{
 	const { isMobile } = useLayout();
 
 	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
+	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
@@ -81,6 +82,7 @@ export const MessageListProvider: FC<{
 			showRoles,
 			showRealName,
 			showUsername,
+			showReadReceipt,
 
 			useReactToMessage: uid
 				? (message) =>
@@ -99,7 +101,18 @@ export const MessageListProvider: FC<{
 						}
 				: () => (): void => undefined,
 		}),
-		[uid, autoTranslateEnabled, hasSubscription, autoTranslateLanguage, showRoles, username, reactToMessage, showRealName, showUsername],
+		[
+			username,
+			uid,
+			autoTranslateEnabled,
+			hasSubscription,
+			autoTranslateLanguage,
+			showRoles,
+			showRealName,
+			showUsername,
+			showReadReceipt,
+			reactToMessage,
+		],
 	);
 
 	return <MessageListContext.Provider value={context} {...props} />;
