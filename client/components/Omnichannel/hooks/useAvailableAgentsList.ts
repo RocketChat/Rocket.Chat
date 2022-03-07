@@ -48,7 +48,7 @@ export const useAvailableAgentsList = (
 
 			return {
 				items,
-				itemCount: total + 1,
+				itemCount: total,
 			};
 		},
 		[getAgents, options.includeExtension, options.text],

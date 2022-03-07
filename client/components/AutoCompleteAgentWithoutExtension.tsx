@@ -17,9 +17,9 @@ type AutoCompleteAgentProps = {
 
 const AutoCompleteAgentWithoutExtension: FC<AutoCompleteAgentProps> = (props) => {
 	const { value, currentExtension, onChange = (): void => undefined, haveAll = false } = props;
-	const [agentsFilter, setAgentsFilter] = useState('');
+	const [agentsFilter, setAgentsFilter] = useState<string | number | undefined>('');
 
-	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
+	const debouncedAgentsFilter = useDebouncedValue(agentsFilter as string, 500);
 
 	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAvailableAgentsList(
 		useMemo(
@@ -54,15 +54,13 @@ const AutoCompleteAgentWithoutExtension: FC<AutoCompleteAgentProps> = (props) =>
 			value={value}
 			onChange={onChange}
 			flexShrink={0}
-			filter={agentsFilter}
-			// @ts-expect-error
-			setFilter={setAgentsFilter}
+			filter={agentsFilter as string | undefined}
+			setFilter={(value?: string | number): void => {
+				setAgentsFilter(value);
+			}}
 			options={sortedByName}
 			endReached={
-				// TODO: investigate why if i don't put the + 1 the loadMore is called infinitely with always 1 less than list total
-				agentsPhase === AsyncStatePhase.LOADING
-					? (): void => undefined
-					: (start): void => loadMoreAgents(start + 1, Math.min(50, agentsTotal))
+				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start, Math.min(50, agentsTotal))
 			}
 		/>
 	);
