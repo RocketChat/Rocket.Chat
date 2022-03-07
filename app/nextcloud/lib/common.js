@@ -37,7 +37,7 @@ const fillServerURL = _.debounce(
 
 Meteor.startup(function () {
 	if (Meteor.isServer) {
-		settings.get('Accounts_OAuth_Nextcloud_URL', () => fillServerURL());
+		settings.watch('Accounts_OAuth_Nextcloud_URL', () => fillServerURL());
 	} else {
 		Tracker.autorun(function () {
 			return fillServerURL();
