@@ -1,7 +1,7 @@
-import React, { ReactNode } from 'react';
+import { Icon } from '@rocket.chat/fuselage';
+import React, { ComponentProps, ReactElement } from 'react';
 
-import { IRoom, isDirectMessageRoom } from '../../definition/IRoom';
-import { ISubscription } from '../../definition/ISubscription';
+import { IRoom } from '../../definition/IRoom';
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const colors = {
@@ -11,7 +11,9 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const useRoomIcon = (room: IRoom & Partial<ISubscription>): ReactNode | { name: string; color?: string } | null => {
+export const useRoomIcon = (
+	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>,
+): ReactElement | ComponentProps<typeof Icon> | null => {
 	if (room.prid) {
 		return { name: 'baloons' };
 	}
@@ -20,13 +22,13 @@ export const useRoomIcon = (room: IRoom & Partial<ISubscription>): ReactNode | {
 		return { name: room.t === 'p' ? 'team-lock' : 'team' };
 	}
 
-	if (isDirectMessageRoom(room)) {
+	if (room.t === 'd') {
 		if (room.uids && room.uids.length > 2) {
 			return { name: 'balloon' };
 		}
 
 		if (room.uids && room.uids.length > 0) {
-			const uid = room.uids.find((uid) => uid !== room.u?._id) || room.u?._id;
+			const uid = room.uids.find((uid) => uid !== room?.u?._id) || room?.u?._id;
 
 			if (!uid) {
 				return null;

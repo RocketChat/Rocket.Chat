@@ -1,7 +1,6 @@
 import React, { memo, ReactElement, useMemo } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
-import { ISubscription } from '../../../../definition/ISubscription';
 import BurgerMenu from '../../../components/BurgerMenu';
 import TemplateHeader from '../../../components/Header';
 import { useLayout } from '../../../contexts/LayoutContext';
@@ -11,7 +10,7 @@ import VoipRoomHeader from './Omnichannel/VoipRoomHeader';
 import RoomHeader from './RoomHeader';
 
 type HeaderProps = {
-	room: IRoom & Partial<ISubscription>;
+	room: IRoom;
 };
 
 const Header = ({ room }: HeaderProps): ReactElement | null => {

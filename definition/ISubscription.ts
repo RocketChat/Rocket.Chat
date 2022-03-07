@@ -39,7 +39,7 @@ export interface ISubscription extends IRocketChatRecord {
 	E2EKey?: string;
 	unreadAlert?: 'default' | 'all' | 'mentions' | 'nothing';
 
-	fname?: unknown;
+	fname?: string;
 
 	code?: unknown;
 	archived?: unknown;
