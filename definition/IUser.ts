@@ -161,10 +161,10 @@ export type IUserDataEvent = {
 	  }
 );
 
-export enum USER_ORIGIN {
-	ADMIN_ADD = 'admin_add',
-	SLACK_IMPORT = 'slack_import',
-	SLACK_USER_IMPORT = 'slack_user_import',
-	CSV_IMPORT = 'csv_import',
-	HIPTEXT_IMPORT = 'hiptext_import',
-}
+// export enum USER_ORIGIN {
+// 	ADMIN_ADD = 'admin_add',
+//	SLACK_IMPORT = 'slack_import',
+//	SLACK_USER_IMPORT = 'slack_user_import',
+//	CSV_IMPORT = 'csv_import',
+//	HIPTEXT_IMPORT = 'hiptext_import',
+// }

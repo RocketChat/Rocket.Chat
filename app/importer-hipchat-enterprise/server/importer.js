@@ -5,7 +5,7 @@ import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 
 import { Base, ProgressStep } from '../../importer/server';
-import { USER_ORIGIN } from '../../../definition/IUser';
+// import { USER_ORIGIN } from '../../../definition/IUser';
 
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info, importRecord) {
@@ -43,7 +43,7 @@ export class HipChatEnterpriseImporter extends Base {
 				bio: u.User.title || undefined,
 				deleted: u.User.is_deleted,
 				type: 'user',
-				origin: USER_ORIGIN.HIPTEXT_IMPORT,
+				// origin: USER_ORIGIN.HIPTEXT_IMPORT,
 			};
 			count++;
 
