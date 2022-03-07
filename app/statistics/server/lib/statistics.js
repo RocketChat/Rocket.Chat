@@ -361,6 +361,8 @@ export const statistics = {
 		statistics.totalAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.totalJoinJitsiButton = settings.get('Jits_Click_To_Join_Count');
 		statistics.totalSlashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
+		statistics.totalOTRDm = Rooms.find({ createdOTR: true }).count();
+		statistics.totalOTR = settings.get('OTR_Count');
 
 		return statistics;
 	},

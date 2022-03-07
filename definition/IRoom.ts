@@ -78,6 +78,7 @@ export interface IRoom extends IRocketChatRecord {
 	archived?: boolean;
 	announcement?: string;
 	description?: string;
+	createdOTR?: boolean;
 }
 
 export interface ICreatedRoom extends IRoom {
