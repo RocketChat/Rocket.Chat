@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Tile } from '@rocket.chat/fuselage';
-import React, { forwardRef, ReactNode, useEffect } from 'react';
+import React, { forwardRef, ReactNode } from 'react';
 
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 
@@ -15,12 +15,9 @@ const dropdownStyle = css`
 export const ToolboxDropdownMobile = forwardRef<
 	HTMLElement,
 	{
-		onClose: () => void;
 		children: ReactNode;
 	}
->(function ToolboxDropdownMobile({ onClose, children }, ref) {
-	useEffect(() => onClose, [onClose]);
-
+>(function ToolboxDropdownMobile({ children }, ref) {
 	return (
 		<Tile
 			position='fixed'
