@@ -26,7 +26,7 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-// import { USER_ORIGIN } from '../../../../definition/IUser';
+import { USER_ORIGIN } from '../../../../definition/IUser';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
