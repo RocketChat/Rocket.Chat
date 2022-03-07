@@ -17,9 +17,9 @@ import { ISubscription } from '../../../../../definition/ISubscription';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
-import Broadcast from '../../../../components/Message/Metrics/Broadcast';
-import Discussion from '../../../../components/Message/Metrics/Discussion';
-import Thread from '../../../../components/Message/Metrics/Thread';
+import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
+import DiscussionMetric from '../../../../components/Message/Metrics/Discussion';
+import ThreadMetric from '../../../../components/Message/Metrics/Thread';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { TranslationKey, useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
@@ -29,11 +29,12 @@ import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
 import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
-import { useMessageActions, useMessageRunActionLink, useMessageOembedIsEnabled } from '../../contexts/MessageContext';
+import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
+import { useIsEditingMessage } from '../contexts/MessageEditingContext';
 import {
+	useMessageListShowRoles,
 	useMessageListShowUsername,
 	useMessageListShowRealName,
-	useMessageListShowRoles,
 	useMessageListShowReadReceipt,
 } from '../contexts/MessageListContext';
 import { MessageIndicators } from './MessageIndicators';
@@ -43,7 +44,9 @@ import RolesList from './MessageRolesList';
 import Toolbox from './Toolbox';
 import PreviewList from './UrlPreview';
 
-const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription }> = ({
+const style = { backgroundColor: 'var(--message-box-editing-color)' };
+
+const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
 	message,
 	sequential,
 	subscription,
@@ -67,6 +70,8 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 
+	const isEditingMessage = useIsEditingMessage(message._id);
+
 	const isEncryptedMessage = isE2EEMessage(message);
 	const isEncryptedMessagePending = isEncryptedMessage && message.e2e === 'pending';
 	const isMessageReady = !isEncryptedMessage || !isEncryptedMessagePending;
@@ -79,7 +84,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const mineUid = useUserId();
 
 	return (
-		<MessageTemplate {...props}>
+		<MessageTemplate {...props} style={isEditingMessage ? style : undefined}>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && <UserAvatar username={message.u.username} size={'x36'} />}
 				{sequential && <MessageIndicators message={message} />}
@@ -141,7 +146,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				{shouldShowReactionList && <ReactionsList message={message} />}
 
 				{isThreadMainMessage(message) && (
-					<Thread
+					<ThreadMetric
 						openThread={openThread(message._id)}
 						counter={message.tcount}
 						following={Boolean(mineUid && message?.replies.indexOf(mineUid) > -1)}
@@ -156,7 +161,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				)}
 
 				{isDiscussionMessage(message) && (
-					<Discussion
+					<DiscussionMetric
 						count={message.dcount}
 						drid={message.drid}
 						lm={message.dlm}
@@ -166,7 +171,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				)}
 
 				{message.location && <MessageLocation location={message.location} />}
-				{broadcast && user.username && <Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />}
+				{broadcast && user.username && <BroadcastMetric replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />}
 
 				{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
 
