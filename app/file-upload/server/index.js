@@ -1,6 +1,7 @@
 import '../lib/FileUploadBase';
 import { FileUpload } from './lib/FileUpload';
-import './lib/proxy';
+// Comment proxy to fix webdav issues
+// import './lib/proxy';
 import './lib/requests';
 import './config/_configUploadStorage';
 import './methods/sendFileMessage';
