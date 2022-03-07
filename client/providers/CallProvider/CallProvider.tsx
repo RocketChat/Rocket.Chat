@@ -214,7 +214,7 @@ export const CallProvider: FC = ({ children }) => {
 	const voipEndpoint = useEndpoint('GET', 'voip/room');
 	const voipCloseRoomEndpoint = useEndpoint('POST', 'voip/room.close');
 
-	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
+	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string; queue: string }>();
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (!voipEnabled) {
@@ -272,7 +272,7 @@ export const CallProvider: FC = ({ children }) => {
 					});
 					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
 					voipRoom.room && roomCoordinator.openRouteLink(voipRoom.room.t, { rid: voipRoom.room._id, name: voipRoom.room.name });
-					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
+					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id, queue: voipRoom.room.queue });
 					const queueAggregator = result.voipClient.getAggregator();
 					if (queueAggregator) {
 						queueAggregator.callStarted();

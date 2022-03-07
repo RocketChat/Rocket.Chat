@@ -25,10 +25,9 @@ const tooltips = {
 	endCall: 'End Call',
 };
 
-export const Default = (): ReactElement => {
+export const IncomingCall = (): ReactElement => {
 	const [muted, toggleMic] = useState(false);
 	const [paused, togglePause] = useState(false);
-	const [callsInQueue] = useState('2');
 
 	return (
 		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
@@ -40,7 +39,7 @@ export const Default = (): ReactElement => {
 				}}
 				callerState='OFFER_RECEIVED'
 				callActions={callActions}
-				title='Sales Department'
+				title='Phone Call'
 				subtitle='Calling'
 				muted={muted}
 				paused={paused}
@@ -48,10 +47,47 @@ export const Default = (): ReactElement => {
 				togglePause={togglePause}
 				tooltips={tooltips}
 				openRoom={() => ''}
-				callsInQueue={callsInQueue}
+				callsInQueue='2 Calls In Queue'
 				openWrapUpCallModal={() => null}
 				dispatchEvent={() => null}
-				openedRoomInfo={{ v: { token: '' }, rid: '' }}
+				openedRoomInfo={{ v: { token: '' }, rid: '', queue: '' }}
+			/>
+		</Box>
+	);
+};
+
+export const InCall = (): ReactElement => {
+	const [muted, toggleMic] = useState(false);
+	const [paused, togglePause] = useState(false);
+	const getSubtitle = () => {
+		if (paused) {
+			return 'On Hold';
+		}
+		return 'In Progress';
+	};
+
+	return (
+		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
+			<VoipFooter
+				caller={{
+					callerName: 'Tiago',
+					callerId: 'guest-1',
+					host: '',
+				}}
+				callerState='IN_CALL'
+				callActions={callActions}
+				title='Phone Call'
+				subtitle={getSubtitle()}
+				muted={muted}
+				paused={paused}
+				toggleMic={toggleMic}
+				togglePause={togglePause}
+				tooltips={tooltips}
+				openRoom={() => ''}
+				callsInQueue='2 Calls In Queue'
+				openWrapUpCallModal={() => null}
+				dispatchEvent={() => null}
+				openedRoomInfo={{ v: { token: '' }, rid: '', queue: 'Sales Department' }}
 			/>
 		</Box>
 	);

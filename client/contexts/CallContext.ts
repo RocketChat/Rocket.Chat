@@ -23,7 +23,7 @@ type CallContextReady = {
 	voipClient: VoIPUser;
 	actions: CallActionsType;
 	queueCounter: number;
-	openedRoomInfo: { v: { token?: string }; rid: string };
+	openedRoomInfo: { v: { token?: string }; rid: string; queue: string };
 	openWrapUpModal: () => void;
 	openRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
 	closeRoom: (data: { comment?: string; tags?: string[] }) => void;

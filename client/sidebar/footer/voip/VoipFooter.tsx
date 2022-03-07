@@ -28,7 +28,7 @@ type VoipFooterPropsType = {
 	openWrapUpCallModal: () => void;
 	openRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
-	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
+	openedRoomInfo: { v: { token?: string | undefined }; rid: string; queue: string };
 };
 
 export const VoipFooter = ({
@@ -52,9 +52,9 @@ export const VoipFooter = ({
 		<Box display='flex' justifyContent='center' fontScale='c1' color='white' mbe='14px'>
 			{callsInQueue}
 		</Box>
-		<Box display='flex' flexDirection='row' mi='16px' mbs='12px' mbe='8px' justifyContent='space-between' alignItems='center'>
+		<Box display='flex' flexDirection='row' h='24px' mi='16px' mbs='12px' mbe='8px' justifyContent='space-between' alignItems='center'>
 			<Box color='neutral-500' fontScale='c2' withTruncatedText>
-				{title}
+				{openedRoomInfo.queue || title}
 			</Box>
 			{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
 				<ButtonGroup medium>
