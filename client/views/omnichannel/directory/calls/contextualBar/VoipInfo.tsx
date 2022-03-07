@@ -1,6 +1,6 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, Chip } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import { IVoipRoom } from '../../../../../../definition/IRoom';
 import UserCard from '../../../../../components/UserCard';
@@ -22,12 +22,14 @@ type VoipInfoPropsType = {
 export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */ }: VoipInfoPropsType): ReactElement => {
 	const t = useTranslation();
 
-	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, callEndedAt, callWaitingTime } = room;
-	const duration = callDuration && moment.duration(callDuration / 1000, 'seconds').humanize();
-	const waiting = callWaitingTime && moment.duration(callWaitingTime / 1000, 'seconds').humanize();
-	const hold = callTotalHoldTime && moment.duration(callTotalHoldTime, 'seconds').humanize();
+	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, callEndedAt, callWaitingTime, tags, lastMessage } = room;
+	const duration = callDuration && moment.utc(callDuration).format('HH:mm:ss');
+	const waiting = callWaitingTime && moment.utc(callWaitingTime).format('HH:mm:ss');
+	const hold = callTotalHoldTime && moment.utc(callTotalHoldTime).format('HH:mm:ss');
 	const endedAt = callEndedAt && moment(callEndedAt).format('LLL');
 	const phoneNumber = Array.isArray(v?.phone) ? v?.phone[0]?.phoneNumber : v?.phone;
+	const shouldShowWrapup = useMemo(() => lastMessage?.t === 'voip-call-wrapup' && lastMessage?.msg, [lastMessage]);
+	const shouldShowTags = useMemo(() => tags && tags.length > 0, [tags]);
 
 	return (
 		<>
@@ -61,9 +63,22 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 					<InfoField label={t('Waiting_Time')} info={waiting || t('Not_Available')} />
 					<InfoField label={t('Talk_Time')} info={duration || t('Not_Available')} />
 					<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
+					<InfoPanel.Field>
+						<InfoPanel.Label>{t('Wrap_Up_Notes')}</InfoPanel.Label>
+						<InfoPanel.Text>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanel.Text>
+						{shouldShowTags && (
+							<InfoPanel.Text>
+								<Box display='flex' flexDirection='row' alignItems='center'>
+									{tags?.map((tag: string) => (
+										<Chip mie='x4' key={tag} value={tag}>
+											{tag}
+										</Chip>
+									))}
+								</Box>
+							</InfoPanel.Text>
+						)}
+					</InfoPanel.Field>
 				</InfoPanel>
-
-				{/* <InfoField label={t('Wrap_Up_Note')} info={guest.holdTime} /> */}
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				{/* TODO: Introduce this buttons [Not part of MVP] */}
