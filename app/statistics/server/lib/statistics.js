@@ -281,6 +281,60 @@ export const statistics = {
 		statistics.tabInvites = await Invites.find().count();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 
+		statistics.totalRoomsWithSnippet = _.reduce(
+			Rooms.find({}).fetch(),
+			function _roomsWithSnippet(num, room) {
+				const { _id } = room;
+				const snippetMessages = Messages.findSnippetedByRoom(_id).count();
+				if (snippetMessages > 0) {
+					return num + 1;
+				}
+				return num;
+			},
+			0,
+		);
+
+		statistics.totalRoomsWithStarred = _.reduce(
+			Rooms.find({}).fetch(),
+			function _roomsWithPinned(num, room) {
+				const { _id } = room;
+				const starredMessages = Messages.findStarredByRoom(_id).count();
+				if (starredMessages > 0) {
+					return num + 1;
+				}
+				return num;
+			},
+			0,
+		);
+
+		statistics.totalRoomsWithPinned = _.reduce(
+			Rooms.find({}).fetch(),
+			function _roomsWithPinned(num, room) {
+				const { _id } = room;
+				const pinnedMessages = Messages.findPinnedByRoom(_id).count();
+				if (pinnedMessages > 0) {
+					return num + 1;
+				}
+				return num;
+			},
+			0,
+		);
+
+		statistics.totalSnippet = Messages.findSnippet().count();
+		statistics.totalStarrred = Messages.findStarred().count();
+		statistics.totalPinned = Messages.findPinned().count();
+
+		statistics.totalE2ERooms = Rooms.findByE2E().count();
+		statistics.totalE2EMessages = _.reduce(
+			Rooms.findByE2E().fetch(),
+			function _e2eMessages(num, room) {
+				const { _id } = room;
+				const e2eMessages = Messages.findE2EByRoom(_id).count();
+				return num + e2eMessages;
+			},
+			0,
+		);
+
 		return statistics;
 	},
 	async save() {
