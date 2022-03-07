@@ -27,6 +27,7 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
+import { USER_ORIGIN } from '../../../../definition/IUser';
 
 API.v1.addRoute(
 	'users.create',
@@ -72,6 +73,7 @@ API.v1.addRoute(
 				});
 			}
 
+			Users.update({ _id: newUserId }, { $set: { origin: USER_ORIGIN.ADMIN_ADD } });
 			const { fields } = this.parseJsonQuery();
 
 			return API.v1.success({ user: Users.findOneById(newUserId, { fields }) });
