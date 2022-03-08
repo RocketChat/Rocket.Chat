@@ -1,5 +1,5 @@
 import { SelectFiltered, Option } from '@rocket.chat/fuselage';
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Avatar from './Avatar';
