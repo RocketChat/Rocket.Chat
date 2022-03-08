@@ -27,6 +27,7 @@ import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/lic
 import { Team, Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { USER_ORIGIN } from '../../../../definition/IUser';
+import { RocketChatAssets } from '../../../assets/server';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -283,7 +284,6 @@ export const statistics = {
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.homeTitle = settings.get('Layout_Home_Title');
 		statistics.homeBody = settings.get('Layout_Home_Body').split('\n')[0];
-		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.customCSS = settings.get('theme-custom-css').split('\n').length;
 		statistics.customScript = _.reduce(
 			['Custom_Script_On_Logout', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In'],
@@ -295,6 +295,18 @@ export const statistics = {
 				return num;
 			},
 			0,
+		);
+
+		statistics.assetsUpload = _.reduce(
+			Object.keys(RocketChatAssets.assets),
+			function _custonScript(upload, asset) {
+				const assetSettings = settings.get(`Assets_${asset}`);
+				if (Object.keys(assetSettings).includes('url')) {
+					return true;
+				}
+				return upload;
+			},
+			false,
 		);
 
 		statistics.tabInvites = await Invites.find().count();
