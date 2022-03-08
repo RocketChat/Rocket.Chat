@@ -26,6 +26,7 @@ const handleInternalException = (err: unknown, msg: string): MeteorError => {
 	}
 
 	// default errors are logged to the console and redacted from the client
+	// TODO switch to using the logger (ideally broker.logger)
 	logger.error({ msg, err });
 
 	return new MeteorError(500, 'Internal server error');

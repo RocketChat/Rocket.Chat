@@ -7,6 +7,7 @@ import AssetsGroupPage from './groups/AssetsGroupPage';
 import LDAPGroupPage from './groups/LDAPGroupPage';
 import OAuthGroupPage from './groups/OAuthGroupPage';
 import TabbedGroupPage from './groups/TabbedGroupPage';
+import VoipGroupPage from './groups/VoipGroupPage';
 
 type GroupSelectorProps = {
 	groupId: GroupId;
@@ -29,6 +30,10 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
 
 	if (groupId === 'LDAP') {
 		return <LDAPGroupPage {...group} />;
+	}
+
+	if (groupId === 'Call_Center') {
+		return <VoipGroupPage {...group} />;
 	}
 
 	return <TabbedGroupPage {...group} />;

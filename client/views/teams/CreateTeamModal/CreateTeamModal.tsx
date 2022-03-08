@@ -303,7 +303,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 								({t('optional')})
 							</Box>
 						</Field.Label>
-						<UserAutoCompleteMultiple value={members} onChange={onChangeMembers} />
+						<UserAutoCompleteMultiple value={members} onChange={onChangeMembers} valueIsId={true} />
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

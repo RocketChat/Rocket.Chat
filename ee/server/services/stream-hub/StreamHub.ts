@@ -16,6 +16,7 @@ import { LivechatDepartmentAgentsRaw } from '../../../../app/models/server/raw/L
 import { IntegrationsRaw } from '../../../../app/models/server/raw/Integrations';
 import { PermissionsRaw } from '../../../../app/models/server/raw/Permissions';
 import { EmailInboxRaw } from '../../../../app/models/server/raw/EmailInbox';
+import { PbxEventsRaw } from '../../../../app/models/server/raw/PbxEvents';
 import { api } from '../../../../server/sdk/api';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
@@ -45,6 +46,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const IntegrationHistory = new IntegrationHistoryRaw(db.collection('rocketchat_integration_history'), Trash);
 		const Integrations = new IntegrationsRaw(db.collection('rocketchat_integrations'), Trash);
 		const EmailInbox = new EmailInboxRaw(db.collection('rocketchat_email_inbox'), Trash);
+		const PbxEvent = new PbxEventsRaw(db.collection('pbx_events'), Trash);
 
 		const models = {
 			Messages,
@@ -62,6 +64,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			IntegrationHistory,
 			Integrations,
 			EmailInbox,
+			PbxEvent,
 		};
 
 		initWatchers(models, api.broadcast.bind(api), (model, fn) => {
