@@ -5,11 +5,11 @@ class Global {
 	}
 
 	get modal() {
-		return browser.element('.rc-modal');
+		return browser.element('.rcx-modal');
 	}
 
 	get modalConfirm() {
-		return browser.element('.rc-modal .js-confirm');
+		return browser.element('.rcx-modal .rcx-button--primary-danger');
 	}
 
 	get modalCancel() {
@@ -56,4 +56,4 @@ class Global {
 	}
 }
 
-module.exports = new Global();
+export default new Global();
