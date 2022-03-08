@@ -3,11 +3,13 @@ name: 'Code scanning - action'
 on:
   push:
     paths-ignore:
+      - 'test/**'
       - '**/*.spec.js'
       - '**/*.test.js'
       - '**/*.tests.js'
   pull_request:
     paths-ignore:
+      - 'test/**'
       - '**/*.spec.js'
       - '**/*.test.js'
       - '**/*.tests.js'
