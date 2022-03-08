@@ -10,6 +10,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
@@ -236,7 +237,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 
 	message = callbacks.run('beforeSaveMessage', message, room);
 	try {
-		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
+		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true' && !isE2EEMessage(message)) {
 			message.md = parser(message.msg);
 		}
 	} catch (e) {

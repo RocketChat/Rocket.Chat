@@ -14,6 +14,7 @@ import React, { FC, memo } from 'react';
 
 import { IMessage, isDiscussionMessage, isThreadMainMessage } from '../../../../../definition/IMessage';
 import { ISubscription } from '../../../../../definition/ISubscription';
+import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
@@ -25,7 +26,6 @@ import { TranslationKey, useTranslation } from '../../../../contexts/Translation
 import { useUserId } from '../../../../contexts/UserContext';
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
 import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
@@ -37,6 +37,7 @@ import {
 	useMessageListShowRealName,
 	useMessageListShowReadReceipt,
 } from '../contexts/MessageListContext';
+import EncryptedMessageRender from './EncryptedMessageRender';
 import { MessageIndicators } from './MessageIndicators';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
@@ -73,8 +74,6 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const isEditingMessage = useIsEditingMessage(message._id);
 
 	const isEncryptedMessage = isE2EEMessage(message);
-	const isEncryptedMessagePending = isEncryptedMessage && message.e2e === 'pending';
-	const isMessageReady = !isEncryptedMessage || !isEncryptedMessagePending;
 
 	const showRoles = useMessageListShowRoles();
 	const shouldShowRolesList = !showRoles || !user.roles || !Array.isArray(user.roles) || user.roles.length < 1;
@@ -120,13 +119,13 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				)}
 
 				<MessageBody>
-					{isEncryptedMessagePending && t('E2E_message_encrypted_placeholder')}
-
-					{isMessageReady && !message.blocks && message.md && (
+					{!isEncryptedMessage && !message.blocks && message.md && (
 						<MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={message.md} />
 					)}
 
-					{isMessageReady && !message.blocks && !message.md && message.msg}
+					{!isEncryptedMessage && !message.blocks && !message.md && message.msg}
+
+					{isEncryptedMessage && <EncryptedMessageRender message={message} />}
 				</MessageBody>
 				{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 				{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
