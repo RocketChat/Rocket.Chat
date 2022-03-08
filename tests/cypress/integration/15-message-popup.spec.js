@@ -68,7 +68,7 @@ describe('[Message Popup]', () => {
 
 		cy.logout();
 
-		cy.window().then(async () => {
+		cy.window().then({ timeout: 10000 }, async () => {
 			for (const user of users) {
 				await createTestUser(user); // eslint-disable-line no-await-in-loop
 			}

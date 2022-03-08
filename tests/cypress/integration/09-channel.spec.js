@@ -342,7 +342,7 @@ describe('[Channel]', () => {
 				});
 
 				it('it should not show the channel on the list', () => {
-					sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`).should('not.be.visible');
+					sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`).should('not.exist');
 				});
 
 				it('it should search and enter the channel with the spotlight', () => {

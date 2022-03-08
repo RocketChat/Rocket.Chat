@@ -29,19 +29,19 @@ describe('[Login]', () => {
 		});
 
 		it('it should not show name field', () => {
-			loginPage.nameField.should('not.be.visible');
+			loginPage.nameField.should('not.exist');
 		});
 
 		it('it should not show email field', () => {
-			loginPage.emailField.should('not.be.visible');
+			loginPage.emailField.should('not.exist');
 		});
 
 		it('it should not show confirm password field', () => {
-			loginPage.confirmPasswordField.should('not.be.visible');
+			loginPage.confirmPasswordField.should('not.exist');
 		});
 
 		it('it should not show back to login button', () => {
-			loginPage.backToLoginButton.should('not.be.visible');
+			loginPage.backToLoginButton.should('not.exist');
 		});
 	});
 
@@ -72,13 +72,13 @@ describe('[Setup Wizard]', () => {
 		setupWizard.login();
 	});
 
-	describe('[Render - Step 1]', () => {
-		it('it should show organization type', () => {
-			setupWizard.organizationType.should('be.visible');
-		});
-
+	describe('[Render - Step 2]', () => {
 		it('it should show organization name', () => {
 			setupWizard.organizationName.should('be.visible');
+		});
+
+		it('it should show organization type', () => {
+			setupWizard.organizationType.should('be.visible');
 		});
 
 		it('it should show industry', () => {
@@ -93,26 +93,17 @@ describe('[Setup Wizard]', () => {
 			setupWizard.country.should('be.visible');
 		});
 
-		it('it should show website', () => {
-			setupWizard.website.scrollIntoView().should('be.visible');
-		});
-
-		after(() => {
-			setupWizard.goNext();
-		});
-	});
-
-	describe('[Render - Step 2]', () => {
-		it('it should show site name', () => {
-			setupWizard.siteName.should('be.visible');
-		});
-
-		it('it should show language', () => {
-			setupWizard.language.should('be.visible');
-		});
-
-		it('it should server type', () => {
-			setupWizard.serverType.should('be.visible');
+		it('it should fill the form', () => {
+			setupWizard.organizationName.type('Org Name');
+			setupWizard.size.click().wait(100);
+			cy.get('.rcx-options .rcx-option:first-child').click();
+			cy.get('.rcx-options').should('not.exist');
+			setupWizard.industry.click().wait(100);
+			cy.get('.rcx-options .rcx-option:first-child').click();
+			cy.get('.rcx-options').should('not.exist');
+			setupWizard.country.click().wait(100);
+			cy.get('.rcx-options .rcx-option:first-child').click();
+			cy.get('.rcx-options').should('not.exist');
 		});
 
 		after(() => {
@@ -121,39 +112,43 @@ describe('[Setup Wizard]', () => {
 	});
 
 	describe('[Render - Step 3]', () => {
-		it('it should have option for registered server', () => {
+		it('it should have email field to register the server', () => {
 			setupWizard.registeredServer.should('be.visible');
+		});
+
+		it('it should start with "Register" button disabled', () => {
+			setupWizard.registerButton.should('be.disabled');
+		});
+
+		it('it should show an error on invalid email', () => {
+			setupWizard.registeredServer.type('a');
+			setupWizard.registeredServer.clear();
+			cy.get('.rcx-field__error:contains("This field is required")').should('be.visible');
+		});
+
+		it('it should enable "Register" button when email is valid and terms checked', () => {
+			setupWizard.registeredServer.type('email@email.com');
+			setupWizard.agreementField.click();
+			setupWizard.registerButton.should('be.enabled');
 		});
 
 		it('it should have option for standalone server', () => {
 			setupWizard.standaloneServer.should('be.visible');
 		});
 
-		it('it should check option for registered server by default', () => {
-			setupWizard.registeredServer.should('be.checked');
-		});
-
-		it('it should check if agree to privacy policy is false', () => {
-			setupWizard.serviceTermsAndPrivacyPolicy.should('not.be.checked');
-		});
-
-		it('it should click agree to privacy policy and check if true', () => {
-			setupWizard.serviceTermsAndPrivacyPolicyLabel.scrollIntoView().click();
-			setupWizard.serviceTermsAndPrivacyPolicy.should('be.checked');
-		});
-
-		after(() => {
-			setupWizard.goNext();
+		it('it should continue when clicking on "Continue as standalone"', () => {
+			setupWizard.standaloneServer.click();
 		});
 	});
 
 	describe('[Render - Final Step]', () => {
-		it('it should render "Go to your workspace button', () => {
+		it('it should confirm the standalone option', () => {
 			setupWizard.goToWorkspace.should('be.visible');
+			setupWizard.standaloneConfirmText.should('be.visible');
 		});
 
-		after(() => {
-			setupWizard.goToHome();
+		it('it should confirm standalone', () => {
+			setupWizard.goToWorkspace.click();
 		});
 	});
 
