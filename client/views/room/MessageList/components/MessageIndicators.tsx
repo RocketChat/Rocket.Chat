@@ -2,9 +2,9 @@ import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat
 import React, { FC } from 'react';
 
 import { IMessage, isEditedMessage } from '../../../../../definition/IMessage';
+import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
-import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
 import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from '../contexts/MessageListContext';
 
 // edited() {
