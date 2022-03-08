@@ -9,12 +9,13 @@ import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
+import { useEndpoint, useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import DeleteTeamModal from '../../teams/contextualBar/info/Delete/DeleteTeamModal';
 
 const getInitialValues = (room) => ({
 	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomCoordinator.getRoomName(room.t, { type: room.t, ...room }),
@@ -120,26 +121,56 @@ function EditRoom({ room, onChange, onDelete }) {
 	});
 
 	const eraseRoom = useMethod('eraseRoom');
+	const deleteTeam = useEndpoint('POST', 'teams.delete');
 
 	const handleDelete = useMutableCallback(() => {
-		const onCancel = () => setModal(undefined);
-		const onConfirm = async () => {
-			try {
-				setDeleting(true);
-				setModal(undefined);
-				await eraseRoom(room._id);
-				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
-				roomsRoute.push({});
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-				setDeleting(false);
-			} finally {
-				onDelete();
-			}
-		};
+		if (room.teamMain) {
+			setModal(
+				<DeleteTeamModal
+					onConfirm={async (deletedRooms) => {
+						const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : [];
+
+						try {
+							setDeleting(true);
+							setModal(null);
+							await deleteTeam({ teamId: room.teamId, ...(roomsToRemove.length && { roomsToRemove }) });
+							dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
+							roomsRoute.push({});
+						} catch (error) {
+							dispatchToastMessage({ type: 'error', message: error });
+							setDeleting(false);
+						} finally {
+							onDelete();
+						}
+					}}
+					onCancel={() => setModal(null)}
+					teamId={room.teamId}
+				/>,
+			);
+
+			return;
+		}
 
 		setModal(
-			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={onCancel} confirmText={t('Yes_delete_it')}>
+			<GenericModal
+				variant='danger'
+				onConfirm={async () => {
+					try {
+						setDeleting(true);
+						setModal(null);
+						await eraseRoom(room._id);
+						dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+						roomsRoute.push({});
+					} catch (error) {
+						dispatchToastMessage({ type: 'error', message: error });
+						setDeleting(false);
+					} finally {
+						onDelete();
+					}
+				}}
+				onCancel={() => setModal(null)}
+				confirmText={t('Yes_delete_it')}
+			>
 				{t('Delete_Room_Warning')}
 			</GenericModal>,
 		);
