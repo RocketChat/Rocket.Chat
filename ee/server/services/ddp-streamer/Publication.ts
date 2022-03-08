@@ -24,7 +24,7 @@ export class Publication extends EventEmitter implements IPublication {
 			userId: client.userId,
 		};
 
-		this.connection = {};
+		this.connection = client.connection;
 	}
 
 	ready(): void {
