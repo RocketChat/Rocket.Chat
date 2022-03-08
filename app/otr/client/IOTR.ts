@@ -35,7 +35,7 @@ export interface IOTRRoom {
 	importPublicKey(publicKey: any): Promise<void>;
 	encryptText(data: Uint8Array): Promise<string>;
 	encrypt(message: IMessage): Promise<string>;
-	decrypt(message: string): Promise<string | EJSON>;
+	decrypt(message: string): Promise<EJSONableProperty>;
 	onUserStream(type: string, data: IOnUserStreamData): Promise<void>;
 }
 

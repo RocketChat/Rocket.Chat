@@ -214,8 +214,8 @@ export class OTRRoom implements IOTRRoom {
 			const output = new Uint8Array(iv.length + cipherText.length);
 			output.set(iv, 0);
 			output.set(cipherText, iv.length);
-			// @ts-ignore
-			return EJSON.stringify(output); // EJSON.stringify(output);
+
+			return EJSON.stringify(output);
 		} catch (e) {
 			// dispatchToastMessage({ type: 'error', message: e });
 			throw new Meteor.Error('encryption-error', 'Encryption error.');
@@ -246,13 +246,10 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
-	async decrypt(message: string): Promise<string | EJSON> {
+	async decrypt(message: string): Promise<EJSONableProperty> {
 		try {
-			let cipherText = EJSON.parse(message);
-			console.log({ cipherText }, typeof cipherText);
-			// @ts-ignore
+			let cipherText = EJSON.parse(message) as Uint8Array;
 			const iv = cipherText.slice(0, 12);
-			// @ts-ignore
 			cipherText = cipherText.slice(12);
 			const data = await OTR.crypto.decrypt(
 				{
