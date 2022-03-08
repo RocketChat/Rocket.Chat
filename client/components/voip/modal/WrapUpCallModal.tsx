@@ -44,14 +44,14 @@ export const WrapUpCallModal = (): ReactElement => {
 	return (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
-				<Modal.Title>{t('Wrap_Up_the_Call')}</Modal.Title>
+				<Modal.Title>{t('Wrap_up_the_call')}</Modal.Title>
 				<Modal.Close onClick={closeModal} />
 			</Modal.Header>
 			<Modal.Content>
 				<Field mbe='24px'>
 					<Field.Label>{t('Notes')}</Field.Label>
 					<Field.Row>
-						<TextAreaInput {...register('comment')} />
+						<TextAreaInput placeholder={t('Do_you_have_any_notes_for_this_conversation')} {...register('comment')} />
 					</Field.Row>
 					<Field.Hint>{t('These_notes_will_be_available_in_the_call_summary')}</Field.Hint>
 				</Field>
