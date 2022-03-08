@@ -42,7 +42,7 @@ export type EventSignatures = {
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Partial<IRoom>): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
-	'stream'([streamer, eventName, payload]: [string, string, string]): void;
+	'stream'([streamer, eventName, payload]: [string, string, any[]]): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
 	'user.deleted'(user: Partial<IUser>): void;
