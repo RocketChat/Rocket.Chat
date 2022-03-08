@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
-import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
@@ -30,8 +29,6 @@ export class OTRRoom implements IOTRRoom {
 
 	establishing: ReactiveVar<boolean>;
 
-	private _userOnlineComputation: Tracker.Computation | null;
-
 	private _keyPair: any;
 
 	private _exportedPublicKey: any;
@@ -49,8 +46,6 @@ export class OTRRoom implements IOTRRoom {
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 		this.isFirstOTR = true;
-
-		this._userOnlineComputation = null;
 
 		this._keyPair = null;
 		this._exportedPublicKey = null;
@@ -115,22 +110,6 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	async generateKeyPair(): Promise<void> {
-		if (this._userOnlineComputation) {
-			this._userOnlineComputation.stop();
-		}
-
-		this._userOnlineComputation = Tracker.autorun(() => {
-			const $room = $(`#chat-window-${this._roomId}`);
-			const $title = $('.rc-header__title', $room);
-			if (this.established.get()) {
-				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
-					$title.prepend("<i class='otr-icon icon-key'></i>");
-				}
-			} else if ($title.length) {
-				$('.otr-icon', $title).remove();
-			}
-		});
-
 		try {
 			// Generate an ephemeral key pair.
 			this._keyPair = await OTR.crypto.generateKey(
