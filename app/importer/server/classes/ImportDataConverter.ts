@@ -265,6 +265,10 @@ export class ImportDataConverter {
 		if (userData.importIds.length) {
 			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username || userData.username);
 		}
+
+		if (userData.origin) {
+			Users.update({ _id }, { $set: { origin: userData.origin } });
+		}
 	}
 
 	insertUser(userData: IImportUser): IUser {
