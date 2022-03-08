@@ -349,7 +349,6 @@ jobs:
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
           TRANSPORTER: nats://localhost:4222
-          TEST_URL: http://localhost:4000
           SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
@@ -364,7 +363,8 @@ jobs:
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
           TRANSPORTER: nats://localhost:4222
-          TEST_URL: http://localhost:4000
+          CYPRESS_BASE_URL: http://localhost:4000
+          OVERWRITE_SETTING_Site_Url: http://localhost:4000
           SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
