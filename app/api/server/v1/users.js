@@ -27,7 +27,6 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
-import { USER_ORIGIN } from '../../../../definition/IUser';
 
 API.v1.addRoute(
 	'users.create',
@@ -50,13 +49,13 @@ API.v1.addRoute(
 				sendWelcomeEmail: Match.Maybe(Boolean),
 				verified: Match.Maybe(Boolean),
 				customFields: Match.Maybe(Object),
+				origin: Match.Maybe(String),
 			});
 
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
 			}
-
 			if (this.bodyParams.customFields) {
 				validateCustomFields(this.bodyParams.customFields);
 			}
@@ -73,7 +72,10 @@ API.v1.addRoute(
 				});
 			}
 
-			Users.update({ _id: newUserId }, { $set: { origin: USER_ORIGIN.ADMIN_ADD } });
+			if (this.bodyParams.origin) {
+				Users.update({ _id: newUserId }, { $set: { origin: this.bodyParams.origin } });
+			}
+
 			const { fields } = this.parseJsonQuery();
 
 			return API.v1.success({ user: Users.findOneById(newUserId, { fields }) });

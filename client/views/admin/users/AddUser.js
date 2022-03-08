@@ -2,6 +2,7 @@ import { Field, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
 
+import { USER_ORIGIN } from '../../../../definition/IUser';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -78,6 +79,7 @@ export function AddUser({ roles, onReload, ...props }) {
 		[router],
 	);
 
+	values.origin = USER_ORIGIN.ADMIN_ADD;
 	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
 
 	const handleSave = useMutableCallback(async () => {
