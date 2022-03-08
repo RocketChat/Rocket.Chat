@@ -20,9 +20,9 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [selectedTab, setSelectedTab] = useState({
-		shouldSelectDetails: true,
-		shouldSelectLogs: false,
-		shouldSelectSettings: false,
+		isSelectedDetails: true,
+		isSelectedLogs: false,
+		isSelectedSettings: false,
 	});
 
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
@@ -71,46 +71,28 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 	const selectTab: MouseEventHandler<HTMLElement> = useCallback(
 		(e) => {
-			if (isClickedTabDetails(e)) {
-				setSelectedTab({
-					shouldSelectDetails: true,
-					shouldSelectLogs: false,
-					shouldSelectSettings: false,
-				});
-			}
-
-			if (isClickedTabLogs(e)) {
-				setSelectedTab({
-					shouldSelectDetails: false,
-					shouldSelectLogs: true,
-					shouldSelectSettings: false,
-				});
-			}
-
-			if (isClickedTabSettings(e)) {
-				setSelectedTab({
-					shouldSelectDetails: false,
-					shouldSelectLogs: false,
-					shouldSelectSettings: true,
-				});
-			}
+			setSelectedTab({
+				isSelectedDetails: isClickedTabDetails(e),
+				isSelectedLogs: isClickedTabLogs(e),
+				isSelectedSettings: isClickedTabSettings(e),
+			});
 		},
 		[isClickedTabDetails, isClickedTabLogs, isClickedTabSettings],
 	);
 
-	const { shouldSelectDetails, shouldSelectLogs, shouldSelectSettings } = selectedTab;
+	const { isSelectedDetails, isSelectedLogs, isSelectedSettings } = selectedTab;
 
 	const shouldRunEventFunction = (flag: boolean, callback: MouseEventHandler<HTMLElement>): MouseEventHandler<HTMLElement> | undefined => {
 		if (flag) return callback;
 	};
 
-	const isSettingsTabSelected = Boolean(shouldSelectSettings && Object.values(settings).length);
-	const isSettingsTabEnabled = Boolean(Object.values(settings).length);
+	const isSettingsTabSelected = Boolean(settings && Object.values(settings).length && isSelectedSettings);
+	const isSettingsTabEnabled = Boolean(settings && Object.values(settings).length);
 
-	const isDetailsTabSelected = shouldSelectDetails;
-	const areApisVisible = Boolean(shouldSelectDetails && !!showApis);
+	const isDetailsTabSelected = isSelectedDetails;
+	const areApisVisible = Boolean(isSelectedDetails && !!showApis);
 
-	const isLogsTabSelected = shouldSelectLogs;
+	const isLogsTabSelected = isSelectedLogs;
 
 	return (
 		<Page flexDirection='column'>
@@ -134,15 +116,15 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 							<AppDetailsPageHeader app={data} />
 
 							<Tabs mis='-x24' mb='x36'>
-								<Tabs.Item onClick={selectTab} selected={shouldSelectDetails}>
+								<Tabs.Item onClick={selectTab} selected={isSelectedDetails}>
 									{t('Details')}
 								</Tabs.Item>
-								<Tabs.Item onClick={selectTab} selected={shouldSelectLogs}>
+								<Tabs.Item onClick={selectTab} selected={isSelectedLogs}>
 									{t('Logs')}
 								</Tabs.Item>
 								<Tabs.Item
 									onClick={shouldRunEventFunction(isSettingsTabEnabled, selectTab)}
-									selected={shouldSelectSettings}
+									selected={isSelectedSettings}
 									disabled={!isSettingsTabEnabled}
 								>
 									{t('Settings')}
