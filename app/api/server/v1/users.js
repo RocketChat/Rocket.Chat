@@ -49,6 +49,7 @@ API.v1.addRoute(
 				sendWelcomeEmail: Match.Maybe(Boolean),
 				verified: Match.Maybe(Boolean),
 				customFields: Match.Maybe(Object),
+				origin: Match.Maybe(String),
 			});
 
 			// New change made by pull request #5152
@@ -70,6 +71,10 @@ API.v1.addRoute(
 				Meteor.runAsUser(this.userId, () => {
 					Meteor.call('setUserActiveStatus', newUserId, this.bodyParams.active);
 				});
+			}
+
+			if (this.bodyParams.origin) {
+				Users.update({ _id: newUserId }, { $set: { origin: this.bodyParams.origin } });
 			}
 
 			const { fields } = this.parseJsonQuery();
