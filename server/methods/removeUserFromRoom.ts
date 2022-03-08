@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization/server';
+import { hasPermission, hasRole, getUsersInRole, removeUserFromRolesAsync } from '../../app/authorization/server';
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
-import { roomTypes, RoomMemberActions } from '../../app/utils/server';
+import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { Team } from '../sdk';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 Meteor.methods({
 	async removeUserFromRoom(data) {
@@ -33,7 +34,7 @@ Meteor.methods({
 
 		const room = Rooms.findOneById(data.rid);
 
-		if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER)) {
+		if (!room || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.REMOVE_USER)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeUserFromRoom',
 			});
@@ -67,7 +68,7 @@ Meteor.methods({
 		Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
 
 		if (['c', 'p'].includes(room.t) === true) {
-			removeUserFromRoles(removedUser._id, ['moderator', 'owner'], data.rid);
+			await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);
 		}
 
 		Messages.createUserRemovedWithRoomIdAndUser(data.rid, removedUser, {

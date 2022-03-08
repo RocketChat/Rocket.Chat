@@ -1,4 +1,5 @@
 import { Button, ButtonGroup, Icon, Table } from '@rocket.chat/fuselage';
+import type { MomentInput } from 'moment';
 import React, { useCallback, FC } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -6,7 +7,7 @@ import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 type AccountTokensRowProps = {
 	bypassTwoFactor: unknown;
-	createdAt: unknown;
+	createdAt: MomentInput;
 	isMedium: boolean;
 	lastTokenPart: string;
 	name: string;

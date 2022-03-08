@@ -5,8 +5,8 @@ import { hasAllPermission, hasPermission, canAccessRoom, roomAccessAttributes } 
 import { Subscriptions, Rooms } from '../../app/models/server';
 import { Users } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
-import { searchableRoomTypes } from '../../app/utils/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
+import { roomCoordinator } from './rooms/roomCoordinator';
 
 export class Spotlight {
 	fetchRooms(userId, rooms) {
@@ -48,7 +48,7 @@ export class Spotlight {
 			return [];
 		}
 
-		const searchableRoomTypeIds = searchableRoomTypes();
+		const searchableRoomTypeIds = roomCoordinator.searchableRoomTypes();
 
 		const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
 			fields: { rid: 1 },

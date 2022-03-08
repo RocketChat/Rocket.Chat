@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import type WebSocket from 'ws';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
 
@@ -25,6 +26,7 @@ const handleInternalException = (err: unknown, msg: string): MeteorError => {
 	}
 
 	// default errors are logged to the console and redacted from the client
+	// TODO switch to using the logger (ideally broker.logger)
 	logger.error({ msg, err });
 
 	return new MeteorError(500, 'Internal server error');
@@ -42,7 +44,12 @@ export class Server extends EventEmitter {
 
 	serialize = ejson.stringify;
 
-	parse = (packet: string): IPacket => {
+	parse = (data: WebSocket.Data, isBinary: boolean): IPacket => {
+		if (isBinary) {
+			throw new MeteorError(500, 'Binary data not supported');
+		}
+		const packet = data.toString();
+
 		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
 		return ejson.parse(payload);
 	};
