@@ -16,9 +16,6 @@ const TeamAutocomplete = (props) => {
 		useMemo(() => ({ name: filter }), [filter]),
 	);
 
-	useEffect(() => {
-		console.log(filter);
-	}, [filter]);
 	const options = useMemo(() => (data && data.teams.map(({ name, teamId }) => [teamId, name])) || [], [data]);
 
 	const renderItem = ({ value, label, ...props }) => {
