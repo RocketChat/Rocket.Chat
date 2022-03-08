@@ -8,7 +8,7 @@ import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
 
 import { OTR } from './rocketchat.otr';
-import { Notifications } from '../../notifications';
+import { Notifications } from '../../notifications/client';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { Presence } from '../../../client/lib/presence';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
@@ -16,36 +16,60 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { otrSystemMessages } from '../lib/constants';
+import { IOTRRoom, IOnUserStreamData, userPresenceUsername } from './IOTR';
+import { IMessage } from '../../../definition/IMessage';
 
-export class OTRRoom {
-	constructor(userId, roomId) {
-		this.userId = userId;
-		this.roomId = roomId;
-		this.peerId = getUidDirectMessage(roomId);
+export class OTRRoom implements IOTRRoom {
+	private _userId: string;
+
+	private _roomId: string;
+
+	peerId: string;
+
+	established: ReactiveVar<boolean>;
+
+	establishing: ReactiveVar<boolean>;
+
+	private _userOnlineComputation: Tracker.Computation | null;
+
+	private _keyPair: any;
+
+	private _exportedPublicKey: any;
+
+	private _sessionKey: any;
+
+	declined: ReactiveVar<boolean>;
+
+	isFirstOTR: boolean;
+
+	constructor(userId: string, roomId: string) {
+		this._userId = userId;
+		this._roomId = roomId;
+		this.peerId = getUidDirectMessage(roomId) as string;
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 		this.isFirstOTR = true;
 
-		this.userOnlineComputation = null;
+		this._userOnlineComputation = null;
 
-		this.keyPair = null;
-		this.exportedPublicKey = null;
-		this.sessionKey = null;
+		this._keyPair = null;
+		this._exportedPublicKey = null;
+		this._sessionKey = null;
 	}
 
-	async handshake(refresh) {
+	async handshake(refresh?: boolean): Promise<void> {
 		this.establishing.set(true);
-		this.firstPeer = true;
 		try {
 			await this.generateKeyPair();
-			Notifications.notifyUser(this.peerId, 'otr', 'handshake', {
-				roomId: this.roomId,
-				userId: this.userId,
-				publicKey: EJSON.stringify(this.exportedPublicKey),
-				refresh,
-			});
+			this.peerId &&
+				Notifications.notifyUser(this.peerId, 'otr', 'handshake', {
+					roomId: this._roomId,
+					userId: this._userId,
+					publicKey: EJSON.stringify(this._exportedPublicKey),
+					refresh,
+				});
 			if (refresh) {
-				Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+				Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
 				this.isFirstOTR = false;
 			}
 		} catch (e) {
@@ -53,47 +77,50 @@ export class OTRRoom {
 		}
 	}
 
-	acknowledge() {
-		Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
-			roomId: this.roomId,
-			userId: this.userId,
-			publicKey: EJSON.stringify(this.exportedPublicKey),
-		});
+	acknowledge(): void {
+		this.peerId &&
+			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
+				roomId: this._roomId,
+				userId: this._userId,
+				publicKey: EJSON.stringify(this._exportedPublicKey),
+			});
 	}
 
-	deny() {
+	deny(): void {
 		this.reset();
-		Notifications.notifyUser(this.peerId, 'otr', 'deny', {
-			roomId: this.roomId,
-			userId: this.userId,
-		});
+		this.peerId &&
+			Notifications.notifyUser(this.peerId, 'otr', 'deny', {
+				roomId: this._roomId,
+				userId: this._userId,
+			});
 	}
 
-	end() {
+	end(): void {
 		this.isFirstOTR = true;
 		this.reset();
-		Notifications.notifyUser(this.peerId, 'otr', 'end', {
-			roomId: this.roomId,
-			userId: this.userId,
-		});
+		this.peerId &&
+			Notifications.notifyUser(this.peerId, 'otr', 'end', {
+				roomId: this._roomId,
+				userId: this._userId,
+			});
 	}
 
-	reset() {
+	reset(): void {
 		this.establishing.set(false);
 		this.established.set(false);
-		this.keyPair = null;
-		this.exportedPublicKey = null;
-		this.sessionKey = null;
-		Meteor.call('deleteOldOTRMessages', this.roomId);
+		this._keyPair = null;
+		this._exportedPublicKey = null;
+		this._sessionKey = null;
+		Meteor.call('deleteOldOTRMessages', this._roomId);
 	}
 
-	async generateKeyPair() {
-		if (this.userOnlineComputation) {
-			this.userOnlineComputation.stop();
+	async generateKeyPair(): Promise<void> {
+		if (this._userOnlineComputation) {
+			this._userOnlineComputation.stop();
 		}
 
-		this.userOnlineComputation = Tracker.autorun(() => {
-			const $room = $(`#chat-window-${this.roomId}`);
+		this._userOnlineComputation = Tracker.autorun(() => {
+			const $room = $(`#chat-window-${this._roomId}`);
 			const $title = $('.rc-header__title', $room);
 			if (this.established.get()) {
 				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
@@ -106,7 +133,7 @@ export class OTRRoom {
 
 		try {
 			// Generate an ephemeral key pair.
-			this.keyPair = await OTR.crypto.generateKey(
+			this._keyPair = await OTR.crypto.generateKey(
 				{
 					name: 'ECDH',
 					namedCurve: 'P-256',
@@ -115,16 +142,16 @@ export class OTRRoom {
 				['deriveKey', 'deriveBits'],
 			);
 
-			this.exportedPublicKey = await OTR.crypto.exportKey('jwk', this.keyPair.publicKey);
+			this._exportedPublicKey = await OTR.crypto.exportKey('jwk', this._keyPair.publicKey);
 
 			// Once we have generated new keys, it's safe to delete old messages
-			Meteor.call('deleteOldOTRMessages', this.roomId);
+			Meteor.call('deleteOldOTRMessages', this._roomId);
 		} catch (e) {
 			throw e;
 		}
 	}
 
-	async importPublicKey(publicKey) {
+	async importPublicKey(publicKey: any): Promise<void> {
 		try {
 			const peerPublicKey = await OTR.crypto.importKey(
 				'jwk',
@@ -142,7 +169,7 @@ export class OTRRoom {
 					namedCurve: 'P-256',
 					public: peerPublicKey,
 				},
-				this.keyPair.privateKey,
+				this._keyPair.privateKey,
 				256,
 			);
 			const hashedBits = await OTR.crypto.digest(
@@ -154,7 +181,7 @@ export class OTRRoom {
 			// We truncate the hash to 128 bits.
 			const sessionKeyData = new Uint8Array(hashedBits).slice(0, 16);
 			// Session key available.
-			this.sessionKey = await OTR.crypto.importKey(
+			this._sessionKey = await OTR.crypto.importKey(
 				'raw',
 				sessionKeyData,
 				{
@@ -168,9 +195,9 @@ export class OTRRoom {
 		}
 	}
 
-	async encryptText(data) {
+	async encryptText(data: Uint8Array): Promise<string> {
 		if (!_.isObject(data)) {
-			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
+			data = new TextEncoder().encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 		const iv = crypto.getRandomValues(new Uint8Array(12));
 		try {
@@ -179,7 +206,7 @@ export class OTRRoom {
 					name: 'AES-GCM',
 					iv,
 				},
-				this.sessionKey,
+				this._sessionKey,
 				data,
 			);
 
@@ -187,14 +214,15 @@ export class OTRRoom {
 			const output = new Uint8Array(iv.length + cipherText.length);
 			output.set(iv, 0);
 			output.set(cipherText, iv.length);
-			return EJSON.stringify(output);
+			// @ts-ignore
+			return EJSON.stringify(output); // EJSON.stringify(output);
 		} catch (e) {
 			// dispatchToastMessage({ type: 'error', message: e });
 			throw new Meteor.Error('encryption-error', 'Encryption error.');
 		}
 	}
 
-	async encrypt(message) {
+	async encrypt(message: IMessage): Promise<string> {
 		let ts;
 		if (isNaN(TimeSync.serverOffset())) {
 			ts = new Date();
@@ -202,11 +230,11 @@ export class OTRRoom {
 			ts = new Date(Date.now() + TimeSync.serverOffset());
 		}
 		try {
-			const data = new TextEncoder('UTF-8').encode(
+			const data = new TextEncoder().encode(
 				EJSON.stringify({
 					_id: message._id,
 					text: message.msg,
-					userId: this.userId,
+					userId: this._userId,
 					ack: Random.id((Random.fraction() + 1) * 20),
 					ts,
 				}),
@@ -218,34 +246,36 @@ export class OTRRoom {
 		}
 	}
 
-	async decrypt(message) {
-		let cipherText = EJSON.parse(message);
-		const iv = cipherText.slice(0, 12);
-		cipherText = cipherText.slice(12);
-
+	async decrypt(message: string): Promise<string | EJSON> {
 		try {
+			let cipherText = EJSON.parse(message);
+			console.log({ cipherText }, typeof cipherText);
+			// @ts-ignore
+			const iv = cipherText.slice(0, 12);
+			// @ts-ignore
+			cipherText = cipherText.slice(12);
 			const data = await OTR.crypto.decrypt(
 				{
 					name: 'AES-GCM',
 					iv,
 				},
-				this.sessionKey,
+				this._sessionKey,
 				cipherText,
 			);
 
 			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
 		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: e });
+			dispatchToastMessage({ type: 'error', message: String(e) });
 			return message;
 		}
 	}
 
-	async onUserStream(type, data) {
+	async onUserStream(type: string, data: IOnUserStreamData): Promise<void> {
 		switch (type) {
 			case 'handshake':
-				let timeout = null;
+				let timeout = 0;
 
-				const establishConnection = async () => {
+				const establishConnection = async (): Promise<void> => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
 
@@ -258,7 +288,7 @@ export class OTRRoom {
 							this.acknowledge();
 
 							if (data.refresh) {
-								Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY);
+								Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY);
 							}
 						});
 					} catch (e) {
@@ -267,14 +297,19 @@ export class OTRRoom {
 					}
 				};
 
-				const closeOrCancelModal = () => {
+				const closeOrCancelModal = (): void => {
 					Meteor.clearTimeout(timeout);
 					this.deny();
 					imperativeModal.close();
 				};
 
 				try {
-					const { username } = await Presence.get(data.userId);
+					const obj = await Presence.get(data.userId);
+					if (!obj) {
+						throw new Meteor.Error('user-not-defined', 'User not defined.');
+					}
+					const username = await userPresenceUsername(obj.username);
+
 					if (data.refresh && this.established.get()) {
 						this.reset();
 						await establishConnection();
@@ -292,9 +327,9 @@ export class OTRRoom {
 								}),
 								confirmText: TAPi18n.__('Yes'),
 								cancelText: TAPi18n.__('No'),
-								onClose: () => closeOrCancelModal(),
-								onCancel: () => closeOrCancelModal(),
-								onConfirm: async () => {
+								onClose: (): void => closeOrCancelModal(),
+								onCancel: (): void => closeOrCancelModal(),
+								onConfirm: async (): Promise<void> => {
 									await establishConnection();
 									imperativeModal.close();
 								},
@@ -316,7 +351,7 @@ export class OTRRoom {
 					this.established.set(true);
 
 					if (this.isFirstOTR) {
-						Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
+						Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
 					}
 					this.isFirstOTR = false;
 				} catch (e) {
@@ -326,7 +361,11 @@ export class OTRRoom {
 
 			case 'deny':
 				try {
-					const { username } = await Presence.get(this.peerId);
+					const obj = await Presence.get(this.peerId);
+					if (!obj) {
+						throw new Meteor.Error('user-not-defined', 'User not defined.');
+					}
+					const username = await userPresenceUsername(obj.username);
 					if (this.establishing.get()) {
 						this.reset();
 						imperativeModal.open({
@@ -347,7 +386,11 @@ export class OTRRoom {
 
 			case 'end':
 				try {
-					const { username } = await Presence.get(this.peerId);
+					const obj = await Presence.get(this.peerId);
+					if (!obj) {
+						throw new Meteor.Error('user-not-defined', 'User not defined.');
+					}
+					const username = await userPresenceUsername(obj.username);
 
 					if (this.established.get()) {
 						this.reset();

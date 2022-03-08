@@ -7,7 +7,7 @@ import { Notifications } from '../../notifications';
 import { t } from '../../utils';
 import { onClientMessageReceived } from '../../../client/lib/onClientMessageReceived';
 import { onClientBeforeSendMessage } from '../../../client/lib/onClientBeforeSendMessage';
-import { OTRRoom } from './rocketchat.otr.room';
+import { OTRRoom } from './OTRRoom';
 
 class OTRClass {
 	constructor() {
