@@ -3,63 +3,51 @@ import { adminEmail, adminPassword } from '../../data/user';
 
 class SetupWizard extends Page {
 	get nextStep() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="active-step"] [data-qa="next-step"]');
+		return browser.element('button:contains("Next"):visible');
 	}
 
 	get goToWorkspace() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="go-to-workspace"]');
+		return browser.element('button:contains("Confirm")');
 	}
 
 	get organizationType() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Organization_Type"]');
+		return browser.element('[name="organizationType"]');
 	}
 
 	get organizationName() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Organization_Name"]');
+		return browser.element('[name="organizationName"]');
 	}
 
 	get industry() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Industry"]');
+		return browser.element('[name="organizationIndustry"]');
 	}
 
 	get size() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Size"]');
+		return browser.element('[name="organizationSize"]');
 	}
 
 	get country() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Country"]');
-	}
-
-	get website() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Website"]');
-	}
-
-	get siteName() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Site_Name"]');
-	}
-
-	get language() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Language"]');
-	}
-
-	get serverType() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Server_Type"]');
+		return browser.element('[name="country"]');
 	}
 
 	get registeredServer() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="register-server"]');
+		return browser.element('input[name=email]');
+	}
+
+	get registerButton() {
+		return browser.element('button:contains("Register")');
+	}
+
+	get agreementField() {
+		return browser.element('input[name=agreement]').closest('.rcx-check-box');
 	}
 
 	get standaloneServer() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="register-server-standalone"]');
+		return browser.element('button:contains("Continue as standalone")');
 	}
 
-	get serviceTermsAndPrivacyPolicyLabel() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="agree-terms-and-privacy"]').parent();
-	}
-
-	get serviceTermsAndPrivacyPolicy() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="agree-terms-and-privacy"]');
+	get standaloneConfirmText() {
+		return browser.element('.rcx-box:contains("Standalone Server Confirmation")');
 	}
 
 	login() {
@@ -75,4 +63,4 @@ class SetupWizard extends Page {
 	}
 }
 
-module.exports = new SetupWizard();
+export default new SetupWizard();

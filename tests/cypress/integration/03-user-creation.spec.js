@@ -12,6 +12,8 @@ describe('[User Creation]', function () {
 
 		loginPage.registerNewUser({ username, email, password });
 
+		loginPage.usernameField.should('be.visible');
+
 		loginPage.submitButton.click();
 	});
 });
