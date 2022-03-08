@@ -27,7 +27,7 @@ const UserStatusMenu = ({ onChange, optionWidth = undefined, initialStatus = 'of
 		];
 
 		if (allowInvisibleStatus) {
-			statuses.push(['offline', renderOption('offline', t('offline'))]);
+			statuses.push(['offline', renderOption('offline', t('Offline'))]);
 		}
 
 		return statuses;
