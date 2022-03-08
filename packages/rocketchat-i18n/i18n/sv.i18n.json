@@ -2383,7 +2383,7 @@
   "since_creation": "sedan %s",
   "Site_Name": "Sidnamn",
   "Site_Url": "webbadress",
-  "Site_Url_Description": "Example: https://chat.domain.com/",
+  "Site_Url_Description": "Example: https://chat.domain.com",
   "Size": "Storlek",
   "Skip": "Hoppa över",
   "Slack_Users": "Slacks användare CSV",
