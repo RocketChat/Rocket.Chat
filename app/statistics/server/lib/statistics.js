@@ -224,6 +224,37 @@ export const statistics = {
 			}),
 		);
 
+		// Number of departments
+		statistics.departments = await LivechatDepartment.col.count();
+
+		// Number of business units
+		// statistics.businessUnits = await LivechatUnitRaw.col.count();
+
+		// Number of Priorities
+		statistics.priorities = await LivechatPriorityRaw.col.count();
+
+		// Type of routing algorithm used on omnichannel
+		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
+
+		// Number of livechat tags
+		statistics.livechatTags = await LivechatTagRaw.col.count();
+
+		// Number of canned responses
+		statistics.cannedResponses = await CannedResponseRaw.col.count();
+
+		// is on-hold active
+		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
+
+		// Number of Email Inboxes
+		statistics.emailInboxes = await EmailInbox.col.count();
+
+		statistics.BusinessHours = {
+			// Number of Business Hours
+			total: await LivechatBusinessHours.col.count(),
+			// Business Hours strategy
+			strategy: settings.get('Livechat_enable_business_hours'),
+		};
+
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
 			Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(),

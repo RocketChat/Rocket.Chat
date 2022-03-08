@@ -1,5 +1,5 @@
-import { BaseRaw } from './BaseRaw';
-import { LivechatUnit } from '../../../../ee/app/models/server';
+import { BaseRaw } from '../../../../../app/models/server/raw/BaseRaw';
+import LivechatUnit from '../models/LivechatUnit';
 
 export class LivechatUnitRaw extends BaseRaw<typeof LivechatUnit> {}
 

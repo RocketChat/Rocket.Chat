@@ -10,7 +10,6 @@ import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatRooms from './models/LivechatRooms';
-import LivechatUnitRaw from './raw/LivechatUnit';
 import LivechatVisitors from './models/LivechatVisitors';
 import LivechatAgentActivity from './models/LivechatAgentActivity';
 import LivechatInquiry from './models/LivechatInquiry';
@@ -36,7 +35,6 @@ export {
 	LivechatDepartment,
 	LivechatDepartmentAgents,
 	LivechatRooms,
-	LivechatUnitRaw,
 	LivechatVisitors,
 	LivechatAgentActivity,
 	LivechatExternalMessage,
