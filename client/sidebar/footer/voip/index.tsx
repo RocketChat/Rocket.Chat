@@ -69,6 +69,18 @@ export const VoipFooter = (): ReactElement | null => {
 		return null;
 	}
 
+	const getCallsInQueueText = (queueCounter: number): string => {
+		if (queueCounter === 0) {
+			return t('Calls_in_queue_empty');
+		}
+
+		if (queueCounter === 1) {
+			return t('Calls_in_queue', { calls: queueCounter });
+		}
+
+		return t('Calls_in_queue_plural', { calls: queueCounter });
+	};
+
 	return (
 		<VoipFooterComponent
 			caller={callerInfo.caller}
@@ -82,7 +94,7 @@ export const VoipFooter = (): ReactElement | null => {
 			togglePause={togglePause}
 			tooltips={tooltips}
 			openRoom={openRoom}
-			callsInQueue={t('Calls_in_queue', { calls: queueCounter })}
+			callsInQueue={getCallsInQueueText(queueCounter)}
 			openWrapUpCallModal={openWrapUpCallModal}
 			dispatchEvent={dispatchEvent}
 			openedRoomInfo={openedRoomInfo}
