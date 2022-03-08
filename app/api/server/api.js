@@ -3,7 +3,9 @@ import { Random } from 'meteor/random';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
-import { Restivus } from 'meteor/rocketchat:restivus-new';
+// import { Restivus } from 'meteor/rocketchat:restivus-new';
+// eslint-disable-next-line import/no-unresolved
+import { Restivus } from 'definition/restivus-new/restivus';
 import _ from 'underscore';
 import { RateLimiter } from 'meteor/rate-limit';
 
