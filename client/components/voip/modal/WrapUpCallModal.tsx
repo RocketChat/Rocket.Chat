@@ -51,7 +51,7 @@ export const WrapUpCallModal = (): ReactElement => {
 				<Field mbe='24px'>
 					<Field.Label>{t('Notes')}</Field.Label>
 					<Field.Row>
-						<TextAreaInput {...register('comment')} />
+						<TextAreaInput placeholder={t('Do_you_have_any_notes')} {...register('comment')} />
 					</Field.Row>
 					<Field.Hint>{t('These_notes_will_be_available_in_the_call_summary')}</Field.Hint>
 				</Field>
