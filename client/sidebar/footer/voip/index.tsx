@@ -1,7 +1,8 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
 	useCallActions,
+	useCallCreateRoom,
 	useCallerInfo,
 	useCallOpenRoom,
 	useOpenedRoomInfo,
@@ -19,6 +20,7 @@ export const VoipFooter = (): ReactElement | null => {
 	const callActions = useCallActions();
 	const dispatchEvent = useEndpoint('POST', 'voip/events');
 
+	const createRoom = useCallCreateRoom();
 	const openRoom = useCallOpenRoom();
 	const queueCounter = useQueueCounter();
 	const queueName = useQueueName();
@@ -65,11 +67,7 @@ export const VoipFooter = (): ReactElement | null => {
 		endCall: t('End_Call'),
 	};
 
-	if (!('caller' in callerInfo)) {
-		return null;
-	}
-
-	const getCallsInQueueText = (queueCounter: number): string => {
+	const getCallsInQueueText = useMemo((): string => {
 		if (queueCounter === 0) {
 			return t('Calls_in_queue_empty');
 		}
@@ -79,7 +77,11 @@ export const VoipFooter = (): ReactElement | null => {
 		}
 
 		return t('Calls_in_queue_plural', { calls: queueCounter });
-	};
+	}, [queueCounter, t]);
+
+	if (!('caller' in callerInfo)) {
+		return null;
+	}
 
 	return (
 		<VoipFooterComponent
@@ -93,11 +95,13 @@ export const VoipFooter = (): ReactElement | null => {
 			toggleMic={toggleMic}
 			togglePause={togglePause}
 			tooltips={tooltips}
+			createRoom={createRoom}
 			openRoom={openRoom}
-			callsInQueue={getCallsInQueueText(queueCounter)}
+			callsInQueue={getCallsInQueueText}
 			openWrapUpCallModal={openWrapUpCallModal}
 			dispatchEvent={dispatchEvent}
 			openedRoomInfo={openedRoomInfo}
+			anonymousText={t('Anonymous')}
 		/>
 	);
 };

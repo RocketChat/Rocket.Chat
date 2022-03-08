@@ -26,7 +26,8 @@ type CallContextReady = {
 	queueCounter: number;
 	openedRoomInfo: { v: { token?: string }; rid: string };
 	openWrapUpModal: () => void;
-	openRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
+	openRoom: (rid: IVoipRoom['_id']) => void;
+	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
 	closeRoom: (data: { comment?: string; tags?: string[] }) => void;
 };
 type CallContextError = {
@@ -103,6 +104,16 @@ export const useCallerInfo = (): VoIpCallerInfo => {
 		[voipClient],
 	);
 	return useSubscription(subscription);
+};
+
+export const useCallCreateRoom = (): CallContextReady['createRoom'] => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useCallerInfo only if Calls are enabled and ready');
+	}
+
+	return context.createRoom;
 };
 
 export const useCallOpenRoom = (): CallContextReady['openRoom'] => {

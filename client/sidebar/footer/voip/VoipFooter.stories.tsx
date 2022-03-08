@@ -46,11 +46,13 @@ export const IncomingCall = (): ReactElement => {
 				toggleMic={toggleMic}
 				togglePause={togglePause}
 				tooltips={tooltips}
+				createRoom={() => ''}
 				openRoom={() => ''}
 				callsInQueue='2 Calls In Queue'
 				openWrapUpCallModal={() => null}
 				dispatchEvent={() => null}
 				openedRoomInfo={{ v: { token: '' }, rid: '' }}
+				anonymousText={'Anonymous'}
 			/>
 		</Box>
 	);
@@ -83,11 +85,13 @@ export const InCall = (): ReactElement => {
 				toggleMic={toggleMic}
 				togglePause={togglePause}
 				tooltips={tooltips}
+				createRoom={() => ''}
 				openRoom={() => ''}
 				callsInQueue='2 Calls In Queue'
 				openWrapUpCallModal={() => null}
 				dispatchEvent={() => null}
 				openedRoomInfo={{ v: { token: '' }, rid: '' }}
+				anonymousText={'Anonymous'}
 			/>
 		</Box>
 	);
