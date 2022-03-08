@@ -35,6 +35,8 @@ declare module 'meteor/meteor' {
 		interface IMeteorConnection {
 			_send(message: IDDPMessage): void;
 
+			_methodInvokers: Record<string, any>;
+
 			// eslint-disable-next-line @typescript-eslint/camelcase
 			_livedata_data(message: IDDPUpdatedMessage): void;
 

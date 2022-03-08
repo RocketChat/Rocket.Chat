@@ -272,6 +272,13 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		}
 	}
 
+	async started(): Promise<void> {
+		// when service starts make sure to notify the current client versions
+		autoUpdateRecords.forEach((record) => {
+			api.broadcast('meteor.autoUpdateClientVersionChanged', { record });
+		});
+	}
+
 	async getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]> {
 		return [...autoUpdateRecords.values()];
 	}

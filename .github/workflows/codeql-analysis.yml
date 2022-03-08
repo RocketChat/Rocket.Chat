@@ -6,6 +6,11 @@ on:
   schedule:
     - cron: '0 13 * * *'
 
+paths-ignore:
+  - '**/*.spec.js'
+  - '**/*.test.js'
+  - '**/*.tests.js'
+
 jobs:
   CodeQL-Build:
 

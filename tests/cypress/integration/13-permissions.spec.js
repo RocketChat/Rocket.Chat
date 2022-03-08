@@ -133,7 +133,7 @@ describe.skip('[Permissions]', () => {
 		});
 
 		it('it should not show the plus icon on toolbar ', () => {
-			sideNav.newChannelIcon.should('not.be.visible');
+			sideNav.newChannelIcon.should('not.exist');
 		});
 
 		it('it should go to general', () => {
