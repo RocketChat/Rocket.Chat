@@ -41,6 +41,8 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { Users as UsersRaw } from '../../../models/server/raw';
+import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
+import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
 
 const logger = new Logger('Livechat');
 
@@ -878,7 +880,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addAgent' });
 		}
 
-		if (addUserRoles(user._id, 'livechat-agent')) {
+		if (addUserRoles(user._id, ['livechat-agent'])) {
 			Users.setOperator(user._id, true);
 			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
 			return user;
@@ -898,7 +900,7 @@ export const Livechat = {
 			});
 		}
 
-		if (addUserRoles(user._id, 'livechat-manager')) {
+		if (addUserRoles(user._id, ['livechat-manager'])) {
 			return user;
 		}
 
