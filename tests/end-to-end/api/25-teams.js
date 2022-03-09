@@ -1570,8 +1570,7 @@ describe('[Teams]', () => {
 							params: [{ emailNotificationMode: 'nothing' }],
 						}),
 					})
-					.expect(200)
-					.done();
+					.expect(200);
 			});
 
 			it('should add user with prefs to team', async (done) => {
