@@ -5,7 +5,7 @@ import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 
 // skipping this since the main content its not moved anymore, instead there is a overlay of the side nav over the main content
-describe.only('[Resolution]', () => {
+describe('[Resolution]', () => {
 	describe('[Mobile Render]', () => {
 		before(() => {
 			checkIfUserIsValid(username, email, password);
