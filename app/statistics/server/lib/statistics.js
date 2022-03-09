@@ -102,6 +102,24 @@ export const statistics = {
 		// Teams statistics
 		statistics.teams = await Team.getStatistics();
 
+		statistics.totalTeams = statistics.teams.totalTeams;
+
+		statistics.totalChannelInTeams = _.reduce(
+			statistics.teams.teamStats,
+			function (num, team) {
+				return num + team.totalRooms;
+			},
+			0,
+		);
+
+		statistics.totalAutoJoinChannelInTeams = _.reduce(
+			statistics.teams.teamStats,
+			function (num, team) {
+				return num + team.totalDefaultRooms;
+			},
+			0,
+		);
+
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
 
@@ -334,6 +352,9 @@ export const statistics = {
 			},
 			0,
 		);
+
+		statistics.totalUserTOTP = Users.findActiveUsersTOTPEnable().count();
+		statistics.totalUserEmail2fa = Users.findActiveUsersEmail2faEnable().count();
 
 		return statistics;
 	},

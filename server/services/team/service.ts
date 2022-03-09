@@ -374,9 +374,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				throw new Error('error-no-owner-channel');
 			}
 
-			if (room.t === 'c') {
-				Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, user);
-			}
+			Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, user);
 
 			room.teamId = teamId;
 		}
@@ -422,9 +420,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		delete room.teamDefault;
 		this.RoomsModel.unsetTeamById(room._id);
 
-		if (room.t === 'c') {
-			Messages.createUserRemoveRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
-		}
+		Messages.createUserRemoveRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
 
 		return {
 			...room,
@@ -956,9 +952,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				teamMain: { $exists: false },
 			}).toArray();
 			const roomIds = teamRooms.map((r) => r._id);
-			const [totalMessagesInTeam, defaultRooms, totalMembers] = await Promise.all([
+			const [totalMessagesInTeam, totalMembers] = await Promise.all([
 				this.MessagesModel.find({ rid: { $in: roomIds } }).count(),
-				this.RoomsModel.findDefaultRoomsForTeam(team._id).count(),
 				this.TeamMembersModel.findByTeamId(team._id).count(),
 			]);
 
@@ -969,7 +964,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				totalMessages: totalMessagesInTeam,
 				totalPublicRooms: teamRooms.filter((r) => r.t === 'c').length,
 				totalPrivateRooms: teamRooms.filter((r) => r.t !== 'c').length,
-				totalDefaultRooms: defaultRooms,
+				totalDefaultRooms: teamRooms.filter((r) => r.default === true).length,
 				totalMembers,
 			};
 
