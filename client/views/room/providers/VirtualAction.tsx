@@ -18,7 +18,7 @@ const getGroup = (room: IRoom): string => {
 		return 'team';
 	}
 
-	if (group === groupsDict.d && room.uids.length > 2) {
+	if (group === groupsDict.d && room.uids?.length > 2) {
 		return 'direct_multiple';
 	}
 

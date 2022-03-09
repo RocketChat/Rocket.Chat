@@ -131,12 +131,11 @@ export const createRoom = function (type, name, owner, members = [], readOnly, {
 
 	addUserRoles(owner._id, ['owner'], room._id);
 
-	if (room.teamId) {
-		const team = Promise.await(Team.getOneById(room.teamId));
-		Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, owner);
-	}
-
 	if (type === 'c') {
+		if (room.teamId) {
+			const team = Promise.await(Team.getOneById(room.teamId));
+			Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, owner);
+		}
 		Meteor.defer(() => {
 			callbacks.run('afterCreateChannel', owner, room);
 		});

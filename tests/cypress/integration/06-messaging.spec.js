@@ -1,5 +1,6 @@
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
+import flexTab from '../pageobjects/flex-tab.page';
 import Global from '../pageobjects/global';
 import { username, email, password } from '../../data/user.js';
 import { publicChannelName, privateChannelName } from '../../data/channel.js';
@@ -39,7 +40,7 @@ function messagingTest(currentTest) {
 
 		if (currentTest === 'general') {
 			it('it should not show the Admin tag', () => {
-				mainContent.lastMessageUserTag.should('not.be.visible');
+				mainContent.lastMessageUserTag.should('not.exist');
 			});
 		}
 	});
@@ -149,8 +150,8 @@ function createDMUserAndPost(testChannel, done) {
 
 function leaveTestDM() {
 	// Leave the existing DM
-	const dmElement = sideNav.getChannelFromList(testDMUsername).scrollIntoView();
-	dmElement.closest('.sidebar-item').find('.sidebar-item__menu').invoke('show').click();
+	const dmElement = sideNav.getChannelFromList(testDMUsername).scrollIntoView().rightclick().wait(200);
+	dmElement.closest('.rcx-sidebar-item--clickable').find('.rcx-sidebar-item__menu-wrapper > button').click();
 	sideNav.popOverHideOption.click();
 
 	Global.modal.should('be.visible');
@@ -172,46 +173,46 @@ function messageActionsTest(currentTest, testChannel) {
 			});
 
 			it('it should show the message action menu', () => {
-				mainContent.messageActionMenu.should('be.visible');
+				mainContent.messageActionMenu.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the edit action', () => {
-				mainContent.messageEdit.should('be.visible');
+				mainContent.messageEdit.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the delete action', () => {
-				mainContent.messageDelete.should('be.visible');
+				mainContent.messageDelete.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the permalink action', () => {
-				mainContent.messagePermalink.should('be.visible');
+				mainContent.messagePermalink.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the copy action', () => {
-				mainContent.messageCopy.should('be.visible');
+				mainContent.messageCopy.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the quote the action', () => {
-				mainContent.messageQuote.should('be.visible');
+				mainContent.messageQuote.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the star action', () => {
-				mainContent.messageStar.should('be.visible');
+				mainContent.messageStar.scrollIntoView().should('be.visible');
 			});
 
 			if (currentTest === 'general') {
 				it('it should not show the pin action', () => {
-					mainContent.messagePin.should('not.be.visible');
+					mainContent.messagePin.should('not.exist');
 				});
 			}
 
 			it('it should not show the mark as unread action', () => {
-				mainContent.messageUnread.should('not.be.visible');
+				mainContent.messageUnread.should('not.exist');
 			});
 
 			if (currentTest === 'direct') {
 				it('it should not show the Reply to DM action', () => {
-					mainContent.messageReplyInDM.should('not.be.visible');
+					mainContent.messageReplyInDM.should('not.exist');
 				});
 			} else if (currentTest !== 'private') {
 				context('when the channel last message was posted by someone else', () => {
@@ -225,7 +226,7 @@ function messageActionsTest(currentTest, testChannel) {
 						toggleOpenMessageActionMenu();
 
 						// We don't have the test DM user in a DM channel or have the `create-d` permission
-						mainContent.messageReplyInDM.should('not.be.visible');
+						mainContent.messageReplyInDM.should('not.exist');
 					});
 
 					context('when the user has permission to create DMs', () => {
@@ -278,7 +279,7 @@ function messageActionsTest(currentTest, testChannel) {
 
 				it('it should reply the message', () => {
 					mainContent.selectAction('reply');
-					mainContent.sendBtn.click();
+					flexTab.sendBtn.click();
 				});
 
 				it('it should check if the message was replied', () => {
@@ -286,6 +287,7 @@ function messageActionsTest(currentTest, testChannel) {
 						const text = $el.data('id');
 						mainContent.lastMessageQuote.should('has.attr', 'data-tmid', text);
 					});
+					flexTab.threadTab.click();
 				});
 			});
 
@@ -310,7 +312,7 @@ function messageActionsTest(currentTest, testChannel) {
 				it('it should delete the message', () => {
 					mainContent.selectAction('delete');
 					Global.modalConfirm.click();
-					Global.modalOverlay.should('not.be.visible');
+					Global.modalOverlay.should('not.exist');
 				});
 
 				it('it should not show the deleted message', () => {

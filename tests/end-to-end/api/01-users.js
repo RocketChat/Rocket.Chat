@@ -888,24 +888,26 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.update]', () => {
-		before((done) => {
-			updateSetting('Accounts_AllowUserProfileChange', true)
-				.then(() => updateSetting('Accounts_AllowUsernameChange', true))
-				.then(() => updateSetting('Accounts_AllowRealNameChange', true))
-				.then(() => updateSetting('Accounts_AllowUserStatusMessageChange', true))
-				.then(() => updateSetting('Accounts_AllowEmailChange', true))
-				.then(() => updateSetting('Accounts_AllowPasswordChange', true))
-				.then(done);
-		});
-		after((done) => {
-			updateSetting('Accounts_AllowUserProfileChange', true)
-				.then(() => updateSetting('Accounts_AllowUsernameChange', true))
-				.then(() => updateSetting('Accounts_AllowRealNameChange', true))
-				.then(() => updateSetting('Accounts_AllowUserStatusMessageChange', true))
-				.then(() => updateSetting('Accounts_AllowEmailChange', true))
-				.then(() => updateSetting('Accounts_AllowPasswordChange', true))
-				.then(done);
-		});
+		before(async () =>
+			Promise.all([
+				updateSetting('Accounts_AllowUserProfileChange', true),
+				updateSetting('Accounts_AllowUsernameChange', true),
+				updateSetting('Accounts_AllowRealNameChange', true),
+				updateSetting('Accounts_AllowUserStatusMessageChange', true),
+				updateSetting('Accounts_AllowEmailChange', true),
+				updateSetting('Accounts_AllowPasswordChange', true),
+			]),
+		);
+		after(async () =>
+			Promise.all([
+				updateSetting('Accounts_AllowUserProfileChange', true),
+				updateSetting('Accounts_AllowUsernameChange', true),
+				updateSetting('Accounts_AllowRealNameChange', true),
+				updateSetting('Accounts_AllowUserStatusMessageChange', true),
+				updateSetting('Accounts_AllowEmailChange', true),
+				updateSetting('Accounts_AllowPasswordChange', true),
+			]),
+		);
 
 		it("should update a user's info by userId", (done) => {
 			request
