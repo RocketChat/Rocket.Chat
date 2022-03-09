@@ -66,12 +66,12 @@ describe.only('[Resolution]', () => {
 
 				it('it should close the sidenav when press the preferences link', () => {
 					sideNav.preferences.click();
-					sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'false');
+					sideNav.sideNavBar.should('not.have.attr', 'data-qa-opened');
 				});
 
 				it('it should close the sidenav when press the profile link', () => {
 					sideNav.profile.click();
-					sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'false');
+					sideNav.sideNavBar.should('not.have.attr', 'data-qa-opened');
 				});
 
 				it('it should close the preferences nav', () => {
