@@ -23,7 +23,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.4",
-		"@rocket.chat/message-parser": "~0.31.4",
+		"@rocket.chat/message-parser": "~0.31.6",
 		"@rocket.chat/string-helpers": "~0.31.4",
 		"@rocket.chat/ui-kit": "~0.31.4",
 		"ajv": "^8.7.1",
