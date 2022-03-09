@@ -3,13 +3,13 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import { ObjectId } from 'mongodb';
 
-import { ImportData as ImportDataRaw } from '../../../models/server/raw';
+import { ImportData as ImportDataRaw } from '../raw';
 import { IImportUser } from '../../../../definition/IImportUser';
 import { IImportMessage, IImportMessageReaction } from '../../../../definition/IImportMessage';
 import { IImportChannel } from '../../../../definition/IImportChannel';
-import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
+import { IConversionCallbacks } from '../../../importer/server/definitions/IConversionCallbacks';
 import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../../../../definition/IImportRecord';
-import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
+import { Users, Rooms, Subscriptions, ImportData } from '..';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser, IUserEmail } from '../../../../definition/IUser';
