@@ -49,8 +49,9 @@ export const SideNav = new (class extends Emitter<{
 		typeof callback === 'function' && callback();
 	}
 
-	closeFlex(callback: () => void): void {
-		if (!roomCoordinator.isRouteNameKnown(FlowRouter.current().route.name)) {
+	closeFlex(callback: () => void = (): void => undefined): void {
+		const routeName = FlowRouter.current().route?.name;
+		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
 			const subscription = Subscriptions.findOne({ rid: RoomManager.lastRid });
 			if (subscription) {
 				roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
