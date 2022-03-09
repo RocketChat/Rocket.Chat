@@ -1,4 +1,4 @@
-import { Modal, Box, Field, FieldGroup, TextInput, TextAreaInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect } from 'react';
 
@@ -90,7 +90,7 @@ const FileUploadModal = ({
 						<Field>
 							<Field.Label>{t('Upload_file_description')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
+								<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
 							</Field.Row>
 						</Field>
 					</FieldGroup>
