@@ -13,7 +13,7 @@ const hasToastrShowed = (error: {}): error is { toastrShowed: true } =>
 const hasError = (error: {}): error is { error: string } => 'error' in error && typeof (error as { error: unknown }).error === 'string';
 
 const hasMessage = (error: {}): error is { message: string } =>
-	'error' in error && typeof (error as { message: unknown }).message === 'string';
+	'message' in error && typeof (error as { message: unknown }).message === 'string';
 
 const hasErrorTitle = (details: Record<string, string>): details is Record<string, string> & { errorTitle: string } =>
 	'errorTitle' in details && typeof (details as Record<string, string> & { errorTitle: unknown }) === 'string';
