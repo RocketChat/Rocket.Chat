@@ -18,6 +18,7 @@ import {
 	Sessions,
 	Integrations,
 	Uploads,
+	Invites,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
@@ -276,6 +277,9 @@ export const statistics = {
 			},
 			0,
 		);
+
+		statistics.tabInvites = await Invites.find().count();
+		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 
 		return statistics;
 	},
