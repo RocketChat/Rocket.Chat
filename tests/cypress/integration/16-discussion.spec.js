@@ -33,7 +33,7 @@ describe('[Discussion]', function () {
 		it('it should show a dialog for starting a discussion', () => {
 			mainContent.openMessageActionMenu();
 			discussion.startDiscussionContextItem.click();
-			cy.get('.js-save-discussion').should('be.enabled');
+			discussion.saveDiscussionButton.should('be.enabled');
 			discussion.saveDiscussionButton.click();
 		});
 

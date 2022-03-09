@@ -9,4 +9,4 @@ class Page {
 		cy.visit(`${testUrl}/${path}`);
 	}
 }
-module.exports = Page;
+export default Page;

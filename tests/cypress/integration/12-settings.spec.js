@@ -28,6 +28,8 @@ const login = {
 	password: adminPassword,
 };
 
+const settingUserPrefix = `setting${Date.now()}`;
+
 describe('[Api Settings Change]', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password).then(() => {
@@ -71,7 +73,7 @@ describe('[Api Settings Change]', () => {
 			// the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message Edit Block');
 			mainContent.openMessageActionMenu();
-			mainContent.messageEdit.should('not.be.visible');
+			mainContent.messageEdit.should('not.exist');
 		});
 
 		it('it should change the message editing via api', (done) => {
@@ -106,7 +108,7 @@ describe('[Api Settings Change]', () => {
 			// the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message delete Block');
 			mainContent.openMessageActionMenu();
-			mainContent.messageDelete.should('not.be.visible');
+			mainContent.messageDelete.should('not.exist');
 		});
 
 		it('it should change the message deleting via api', (done) => {
@@ -139,7 +141,7 @@ describe('[Api Settings Change]', () => {
 
 		it.skip('it should not show the audo file button', () => {
 			// the page needs a refresh to show the changes in the client
-			mainContent.recordBtn.should('not.be.visible');
+			mainContent.recordBtn.should('not.exist');
 		});
 
 		it('it should change the message audio files via api', (done) => {
@@ -248,14 +250,14 @@ describe('[Api Settings Change]', () => {
 
 		it.skip('it should not show the pinned tab button', () => {
 			// the page needs a refresh to show the changes in the client
-			flexTab.pinnedTab.should('not.be.visible');
+			flexTab.pinnedTab.should('not.exist');
 		});
 
 		it.skip('it should not show the pin message action', () => {
 			// the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message pin Block');
 			mainContent.openMessageActionMenu();
-			mainContent.pinMessage.should('not.be.visible');
+			mainContent.pinMessage.should('not.exist');
 		});
 
 		it('it should change the message pin via api', (done) => {
@@ -288,14 +290,14 @@ describe('[Api Settings Change]', () => {
 
 		it.skip('it should not show the starred tab button', () => {
 			// the page needs a refresh to show the changes in the client
-			flexTab.starredTab.should('not.be.visible');
+			flexTab.starredTab.should('not.exist');
 		});
 
 		it.skip('it should not show the star message action', () => {
 			// the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message pin Block');
 			mainContent.openMessageActionMenu();
-			mainContent.starMessage.should('not.be.visible');
+			mainContent.starMessage.should('not.exist');
 		});
 
 		it('it should change the message star via api', (done) => {
@@ -327,7 +329,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should not show file upload icon', () => {
-			mainContent.fileAttachment.should('not.be.visible');
+			mainContent.fileAttachment.should('not.exist');
 		});
 
 		it('it should change the file upload via api', (done) => {
@@ -369,7 +371,7 @@ describe('[Api Settings Change]', () => {
 			});
 
 			it('it should not show profile link', () => {
-				sideNav.profile.should('not.be.visible');
+				sideNav.profile.should('not.exist');
 			});
 
 			it('it should change the allow user profile change via api', (done) => {
@@ -401,7 +403,7 @@ describe('[Api Settings Change]', () => {
 			});
 
 			it('it should not show avatar link', () => {
-				sideNav.avatar.should('not.be.visible');
+				sideNav.avatar.should('not.exist');
 			});
 
 			it('it should change the allow user avatar change via api', (done) => {
@@ -442,8 +444,8 @@ describe('[Api Settings Change]', () => {
 
 		it('register the user', () => {
 			loginPage.registerButton.click();
-			loginPage.nameField.type(`setting${username}`);
-			loginPage.emailField.type(`setting${email}`);
+			loginPage.nameField.type(`${settingUserPrefix}${username}`);
+			loginPage.emailField.type(`${settingUserPrefix}${email}`);
 			loginPage.passwordField.type(password);
 			loginPage.confirmPasswordField.type(password);
 			loginPage.reasonField.type(reason);
@@ -456,38 +458,35 @@ describe('[Api Settings Change]', () => {
 
 		it('login as admin and go to users', () => {
 			checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
-			sideNav.sidebarMenu.click();
+			sideNav.sidebarUserMenu.click();
 			sideNav.admin.click();
-			cy.get('.rcx-box').contains('Info').should('be.visible');
 			admin.usersLink.click();
-			cy.get('.rcx-box').contains('Info').should('not.exist');
-			cy.get('.rc-header__block').contains('Users').should('be.visible');
+			cy.get('h2:contains("Users")').should('be.visible');
 		});
 
 		it('search the user', () => {
 			admin.usersFilter.click();
-			admin.usersFilter.type(`setting${username}`);
+			admin.usersFilter.type(`${settingUserPrefix}${username}`);
+			cy.wait(1000);
 		});
 
 		it('opens the user', () => {
-			const userEl = admin.getUserFromList(`setting${username}`);
-			userEl.click();
+			admin.getUserFromList(`${settingUserPrefix}${username}`).click().wait(100);
 			flexTab.usersView.should('be.visible');
 		});
 
 		it('it should show the activate user btn', () => {
-			flexTab.moreActions.click();
+			flexTab.moreActions.click().wait(200);
 			flexTab.usersActivate.should('be.visible');
 		});
 
 		it('it should activate the user', () => {
-			flexTab.usersActivate.click();
+			flexTab.usersActivate.click().wait(200);
 		});
 
 		it('it should show the deactivate btn', () => {
-			flexTab.moreActions.click();
+			flexTab.moreActions.click().wait(200);
 			flexTab.usersDeactivate.should('be.visible');
-			mainContent.popoverWrapper.click();
 		});
 
 		it('it should change the Manually Approve New Users via api', (done) => {

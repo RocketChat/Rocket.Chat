@@ -40,7 +40,7 @@ describe('[Main Elements Render]', function () {
 				sideNav.spotlightSearchPopUp.should('be.visible');
 				mainContent.messageInput.click();
 				mainContent.lastMessage.click();
-				sideNav.spotlightSearchPopUp.should('not.be.visible');
+				sideNav.spotlightSearchPopUp.should('not.exist');
 			});
 
 			it('it should add text to the spotlight and show the channel list', () => {
@@ -51,7 +51,7 @@ describe('[Main Elements Render]', function () {
 			it.skip('it should remove the text on the spotlight and the list when lost focus', () => {
 				sideNav.spotlightSearchPopUp.should('be.visible');
 				mainContent.messageInput.click();
-				sideNav.spotlightSearchPopUp.should('not.be.visible');
+				sideNav.spotlightSearchPopUp.should('not.exist');
 				sideNav.spotlightSearch.should('have.text', '');
 			});
 		});
@@ -64,7 +64,7 @@ describe('[Main Elements Render]', function () {
 			});
 
 			after(() => {
-				mainContent.popoverWrapper.click();
+				sideNav.sidebarUserMenu.click();
 			});
 
 			it('it should show online button', () => {
@@ -83,7 +83,7 @@ describe('[Main Elements Render]', function () {
 				sideNav.statusOffline.should('be.visible');
 			});
 
-			it('it should show settings button', () => {
+			it('it should show my account button', () => {
 				sideNav.account.should('be.visible');
 			});
 
@@ -100,7 +100,7 @@ describe('[Main Elements Render]', function () {
 			});
 
 			it('it should show the title of the channel', () => {
-				mainContent.channelTitle.should('be.visible');
+				mainContent.channelTitle.contains('general').should('be.visible');
 			});
 
 			it('it should show the empty favorite star', () => {
@@ -111,12 +111,16 @@ describe('[Main Elements Render]', function () {
 				mainContent.emptyFavoriteStar.click();
 			});
 
-			it('it should not show the empty favorite star', () => {
+			it('it should show the filled favorite star', () => {
 				mainContent.favoriteStar.should('be.visible');
 			});
 
-			it.skip('it should click the star', () => {
+			it('it should click the star', () => {
 				mainContent.favoriteStar.click();
+			});
+
+			it('it should show the empty favorite star', () => {
+				mainContent.emptyFavoriteStar.should('be.visible');
 			});
 
 			it('it should show the message input bar', () => {
@@ -146,7 +150,7 @@ describe('[Main Elements Render]', function () {
 			});
 
 			it('it should not show the Admin tag', () => {
-				mainContent.lastMessageUserTag.should('not.be.visible');
+				mainContent.lastMessageUserTag.should('not.exist');
 			});
 		});
 	});
@@ -174,7 +178,7 @@ describe('[Main Elements Render]', function () {
 					flexTab.channelSettings.should('be.visible');
 				});
 
-				it('it should show the room name', () => {
+				it.skip('it should show the room name', () => {
 					flexTab.channelSettingName.should('have.attr', 'title', 'general');
 				});
 			});
@@ -197,7 +201,7 @@ describe('[Main Elements Render]', function () {
 				});
 			});
 
-			describe.skip('Members Tab:', () => {
+			describe('Members Tab:', () => {
 				before(() => {
 					flexTab.operateFlexTab('members', true);
 				});
@@ -213,10 +217,6 @@ describe('[Main Elements Render]', function () {
 				it('it should show the members content', () => {
 					flexTab.membersTabContent.should('be.visible');
 				});
-
-				it('it should show the show all link', () => {
-					flexTab.showAll.should('be.visible');
-				});
 			});
 
 			describe('Notifications Tab:', () => {
@@ -229,7 +229,7 @@ describe('[Main Elements Render]', function () {
 				});
 
 				it('it should not show the notifications button', () => {
-					flexTab.notificationsTab.should('not.be.visible');
+					flexTab.notificationsTab.should('not.exist');
 				});
 
 				it('it should show the notifications Tab content', () => {
