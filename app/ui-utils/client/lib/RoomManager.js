@@ -9,7 +9,6 @@ import _ from 'underscore';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
-import { menu } from './menu';
 import { callbacks } from '../../../../lib/callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';

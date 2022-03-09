@@ -1,6 +1,5 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { isRtl } from '../../../utils';
