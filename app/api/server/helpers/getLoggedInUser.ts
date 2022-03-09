@@ -1,9 +1,9 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { API } from '../api';
 
-API.helperMethods.set('getLoggedInUser', function _getLoggedInUser() {
+(API as any).helperMethods.set('getLoggedInUser', function _getLoggedInUser(this: any) {
 	let user;
 
 	if (this.request.headers['x-auth-token'] && this.request.headers['x-user-id']) {

@@ -114,6 +114,15 @@ type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}>
 };
 
 declare class APIClass<TBasePath extends string = '/'> {
+	fieldSeparator(fieldSeparator: unknown): void;
+
+	limitedUserFieldsToExclude(fields: { [x: string]: unknown }, limitedUserFieldsToExclude: unknown): { [x: string]: unknown };
+
+	limitedUserFieldsToExcludeIfIsPrivilegedUser(
+		fields: { [x: string]: unknown },
+		limitedUserFieldsToExcludeIfIsPrivilegedUser: unknown,
+	): { [x: string]: unknown };
+
 	processTwoFactor({
 		userId,
 		request,
