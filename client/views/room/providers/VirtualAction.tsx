@@ -6,6 +6,7 @@ import { ToolboxAction } from '../lib/Toolbox/index';
 
 const groupsDict = {
 	l: 'live',
+	v: 'voip',
 	d: 'direct',
 	p: 'group',
 	c: 'channel',
@@ -17,7 +18,7 @@ const getGroup = (room: IRoom): string => {
 		return 'team';
 	}
 
-	if (group === groupsDict.d && room.uids.length > 2) {
+	if (group === groupsDict.d && room.uids?.length > 2) {
 		return 'direct_multiple';
 	}
 

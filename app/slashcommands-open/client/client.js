@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { slashCommands, roomTypes } from '../../utils';
+import { slashCommands } from '../../utils';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { ChatSubscription, Subscriptions } from '../../models';
 
 function Open(command, params /* , item*/) {
@@ -32,7 +33,7 @@ function Open(command, params /* , item*/) {
 	const subscription = ChatSubscription.findOne(query);
 
 	if (subscription) {
-		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+		roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	}
 
 	if (type && type.indexOf('d') === -1) {
@@ -43,7 +44,7 @@ function Open(command, params /* , item*/) {
 			return;
 		}
 		const subscription = Subscriptions.findOne(query);
-		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+		roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	});
 }
 

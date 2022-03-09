@@ -19,7 +19,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
-import { roomTypes, RoomSettingsEnum } from '../../../../../../app/utils/client';
+import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
 import VerticalBar from '../../../../../components/VerticalBar';
@@ -31,6 +31,7 @@ import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../../hooks/useForm';
+import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
 const typeMap = {
 	c: 'Channels',
@@ -49,7 +50,7 @@ const useInitialValues = (room, settings) => {
 
 	return useMemo(
 		() => ({
-			roomName: t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(t, { type: t, ...room }),
+			roomName: t === 'd' ? room.usernames.join(' x ') : roomCoordinator.getRoomName(t, { type: t, ...room }),
 			roomType: t,
 			readOnly: !!ro,
 			reactWhenReadOnly: false,
@@ -185,7 +186,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewReactWhenReadOnly,
 		canViewEncrypted,
 	] = useMemo(() => {
-		const isAllowed = roomTypes.getConfig(room.t)?.allowRoomSettingChange || (() => {});
+		const isAllowed = roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange || (() => {});
 		return [
 			isAllowed(room, RoomSettingsEnum.NAME),
 			isAllowed(room, RoomSettingsEnum.TOPIC),

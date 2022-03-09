@@ -1,7 +1,8 @@
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions, Rooms } from '../../../models/server/raw';
-import { roomTypes, RoomMemberActions } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 const subscriptionOptions = {
 	projection: {
@@ -19,7 +20,7 @@ export const validateRoomMessagePermissionsAsync = async (room, { uid, username,
 		throw new Error('error-not-allowed');
 	}
 
-	if (roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK)) {
+	if (roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK)) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, subscriptionOptions);
 		if (subscription && (subscription.blocked || subscription.blocker)) {
 			throw new Error('room_is_blocked');

@@ -1,16 +1,17 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
+import { useRole } from '../../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { useUserId } from '../../../contexts/UserContext';
 
 export const useStepRouting = (): [number, Dispatch<SetStateAction<number>>] => {
 	const param = useRouteParameter('step');
-	const userId = useUserId();
 	const setupWizardRoute = useRoute('setup-wizard');
+	const hasAdminRole = useRole('admin');
+	const initialStep = hasAdminRole ? 2 : 1;
 
 	const [currentStep, setCurrentStep] = useState<number>(() => {
 		if (!param) {
-			return 1;
+			return initialStep;
 		}
 
 		const step = parseInt(param, 10);
@@ -18,18 +19,16 @@ export const useStepRouting = (): [number, Dispatch<SetStateAction<number>>] => 
 			return step;
 		}
 
-		return 1;
+		return initialStep;
 	});
 
 	useEffect(() => {
-		// if (!userId) {
-		// 	setCurrentStep(1);
-		// } else if (currentStep === 1) {
-		// 	setCurrentStep(2);
-		// }
+		if (hasAdminRole && currentStep === 1) {
+			setCurrentStep(2);
+		}
 
 		setupWizardRoute.replace({ step: String(currentStep) });
-	}, [setupWizardRoute, userId, currentStep]);
+	}, [setupWizardRoute, currentStep, hasAdminRole]);
 
 	return [currentStep, setCurrentStep];
 };

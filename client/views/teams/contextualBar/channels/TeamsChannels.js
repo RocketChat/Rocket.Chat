@@ -1,11 +1,11 @@
 import { useMutableCallback, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { roomTypes } from '../../../../../app/utils/client';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import CreateChannelWithData from '../../../../sidebar/header/CreateChannelWithData';
 import RoomInfo from '../../../room/contextualBar/Info';
 import { useTabBarClose } from '../../../room/providers/ToolboxProvider';
@@ -50,7 +50,7 @@ const TeamsChannels = ({ teamId, rid }) => {
 	const addExisting = useReactModal(AddExistingModal, { teamId, reload });
 	const createNew = useReactModal(CreateChannelWithData, { teamId, reload });
 
-	const goToRoom = useCallback((room) => roomTypes.openRouteLink(room.t, room), []);
+	const goToRoom = useCallback((room) => roomCoordinator.openRouteLink(room.t, room), []);
 	const handleBack = useCallback(() => setState({}), [setState]);
 	const viewRoom = useMutableCallback((room) => {
 		goToRoom(room);

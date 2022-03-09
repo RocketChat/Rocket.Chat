@@ -45,6 +45,10 @@ server.publish(loginServiceConfigurationPublication, async function () {
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
 
+events.on('meteor.autoUpdateClientVersionChanged', (record: any): void => {
+	autoUpdateRecords.set(record._id, record);
+});
+
 MeteorService.getLastAutoUpdateClientVersions().then((records = []) => {
 	records.forEach((record) => autoUpdateRecords.set(record._id, record));
 });
@@ -54,7 +58,6 @@ server.publish(autoUpdateCollection, function () {
 	autoUpdateRecords.forEach((record) => this.added(autoUpdateCollection, record._id, record));
 
 	const fn = (record: any): void => {
-		autoUpdateRecords.set(record._id, record);
 		this.changed(autoUpdateCollection, record._id, record);
 	};
 
