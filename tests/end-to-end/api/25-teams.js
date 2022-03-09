@@ -1607,7 +1607,7 @@ describe('[Teams]', () => {
 			it('should return the user subscription with the right notification preferences', async (done) => {
 				await request
 					.get(api('subscriptions.getOne'))
-					.set(credentials)
+					.set(userCredentials)
 					.query({
 						roomId: testTeam3._id,
 					})
