@@ -170,8 +170,9 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				)}
 
 				{message.location && <MessageLocation location={message.location} />}
-				{broadcast && user.username && <BroadcastMetric replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />}
-
+				{broadcast && user.username && (
+					<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
+				)}
 				{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
 
 				{shouldShowReadReceipt && <ReadReceipt />}

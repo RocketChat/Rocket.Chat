@@ -30,7 +30,7 @@ export type MessageContextValue = {
 		openDiscussion: (drid: string) => () => void;
 		openThread: (tmid: string, jump?: string) => () => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;
-		replyBroadcast: () => void;
+		replyBroadcast: (message: IMessage) => void;
 	};
 	formatters: {
 		// newDay: (date: Date) => string;

@@ -1,3 +1,4 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
@@ -7,17 +8,14 @@ import { useLayout } from '../../../contexts/LayoutContext';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useFormatTime } from '../../../hooks/useFormatTime';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
 
-const replyBroadcast = (): void => {
-	console.log('replyBroadcast');
-};
-
 export const MessageProvider = memo(function MessageProvider({
-	broadcast,
 	rid,
+	broadcast,
 	children,
 }: {
 	rid: string;
@@ -97,7 +95,16 @@ export const MessageProvider = memo(function MessageProvider({
 					},
 				openDiscussion,
 				openThread,
-				replyBroadcast,
+				replyBroadcast: (message: IMessage): void => {
+					roomCoordinator.openRouteLink(
+						'd',
+						{ name: message.u.username },
+						{
+							...FlowRouter.current().queryParams,
+							reply: message._id,
+						},
+					);
+				},
 			},
 			formatters: {
 				messageHeader,
