@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import { Message as MessageTemplate, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
+import { Message as MessageTemplate, MessageLeftContainer, MessageContainer, MessageBody } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo } from 'react';
 
@@ -36,7 +36,11 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 
 				{!isMessageIgnored && <MessageContent id={message._id} message={message} subscription={subscription} sequential={sequential} />}
 
-				{isMessageIgnored && <MessageContentIgnored onShowMessageIgnored={toggleMessageIgnored} />}
+				{isMessageIgnored && (
+					<MessageBody>
+						<MessageContentIgnored onShowMessageIgnored={toggleMessageIgnored} />
+					</MessageBody>
+				)}
 			</MessageContainer>
 			{!message.private && <Toolbox message={message} />}
 		</MessageTemplate>
