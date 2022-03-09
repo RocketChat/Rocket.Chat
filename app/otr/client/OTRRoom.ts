@@ -15,7 +15,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { otrSystemMessages } from '../lib/constants';
-import { IOTRRoom, IOnUserStreamData, userPresenceUsername } from './IOTR';
+import { IOTRRoom, IOnUserStreamData, userPresenceUsername } from '../../../definition/IOTR';
 import { IMessage } from '../../../definition/IMessage';
 
 export class OTRRoom implements IOTRRoom {

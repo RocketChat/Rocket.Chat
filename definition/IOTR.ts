@@ -1,7 +1,5 @@
-import { UserPresence } from '../../../client/lib/presence';
-// import { ReactiveVar } from 'meteor/reactive-var';
-// import { Tracker } from 'meteor/tracker';
-import { IMessage } from '../../../definition/IMessage';
+import { UserPresence } from '../client/lib/presence';
+import { IMessage } from './IMessage';
 
 export interface IOnUserStreamData {
 	roomId: string;
@@ -11,21 +9,6 @@ export interface IOnUserStreamData {
 }
 
 export interface IOTRRoom {
-	// (userId: string, roomId: string): void;
-
-	// _userId: string;
-	// roomId: string;
-	// peerId?: string;
-	// established: ReactiveVar<boolean>;
-	// establishing: ReactiveVar<boolean>;
-	// declined: ReactiveVar<boolean>;
-
-	// userOnlineComputation: Tracker.Computation | null;
-
-	// keyPair: any;
-	// exportedPublicKey: any;
-	// sessionKey: any;
-
 	handshake(refresh?: boolean): Promise<void>;
 	acknowledge(): void;
 	deny(): void;
