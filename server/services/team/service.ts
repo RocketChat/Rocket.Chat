@@ -658,6 +658,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					username: user.username,
 					name: user.name,
 					status: user.status,
+					settings: user.settings,
 				},
 				roles: record.roles,
 				createdBy: {

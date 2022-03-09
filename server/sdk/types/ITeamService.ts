@@ -26,6 +26,7 @@ export interface IUserInfo {
 	username?: string | null;
 	name: string;
 	status: string;
+	settings?: Record<string, any>;
 }
 
 export interface ITeamMemberInfo {
