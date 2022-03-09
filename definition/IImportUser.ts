@@ -13,6 +13,7 @@ export interface IImportUser {
 	roles?: Array<string>;
 	type: 'user' | 'bot';
 	bio?: string;
+	origin?: string;
 
 	services?: Record<string, Record<string, any>>;
 	customFields?: Record<string, any>;
