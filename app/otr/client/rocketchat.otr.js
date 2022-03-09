@@ -1,12 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 
 import { Subscriptions } from '../../models';
-import { Notifications } from '../../notifications';
-import { t } from '../../utils';
-import { onClientMessageReceived } from '../../../client/lib/onClientMessageReceived';
-import { onClientBeforeSendMessage } from '../../../client/lib/onClientBeforeSendMessage';
 import { OTRRoom } from './OTRRoom';
 
 class OTRClass {
