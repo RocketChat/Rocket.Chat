@@ -3,6 +3,7 @@ import React, { ReactElement, useEffect } from 'react';
 import NotAuthorizedPage from '../../../../../client/components/NotAuthorizedPage';
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useCurrentRoute, useRoute } from '../../../../../client/contexts/RouterContext';
+import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 import EngagementDashboardPage from './EngagementDashboardPage';
 
 const isValidTab = (tab: string | undefined): tab is 'users' | 'messages' | 'channels' =>
@@ -24,6 +25,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		}
 	}, [routeName, engagementDashboardRoute, tab]);
 
+	const statsEvent = useEndpointAction('POST', 'statistics.telemetry', [{ eventName: 'engagementDashboard', timestamp: 123 }]);
 	if (!isValidTab(tab)) {
 		return null;
 	}
@@ -32,6 +34,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		return <NotAuthorizedPage />;
 	}
 
+	statsEvent();
 	return <EngagementDashboardPage tab={tab} onSelectTab={(tab): void => engagementDashboardRoute.push({ tab })} />;
 };
 

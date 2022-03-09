@@ -1,5 +1,6 @@
 import { API } from '../api';
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
+import { engagemendDashboardCount } from '../../../../ee/app/settings/server/engagementDashboard';
 
 API.v1.addRoute(
 	'statistics',
@@ -41,6 +42,24 @@ API.v1.addRoute(
 					}),
 				),
 			);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'statistics.telemetry',
+	{ authRequired: false },
+	{
+		post() {
+			const events = this.requestParams();
+			events.forEach((event) => {
+				switch (event.eventName) {
+					case 'engagementDashboard':
+						engagemendDashboardCount();
+				}
+			});
+
+			return API.v1.success();
 		},
 	},
 );
