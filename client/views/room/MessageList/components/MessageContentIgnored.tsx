@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import { Box, Icon, MessageBody } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -7,14 +7,18 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 const MessageContentIgnored: FC<{ onShowMessageIgnored: () => void }> = ({ onShowMessageIgnored }) => {
 	const t = useTranslation();
 
+	const showMessageIgnored = (event: React.SyntheticEvent): void => {
+		event.stopPropagation();
+
+		onShowMessageIgnored();
+	};
+
 	return (
-		<MessageBody>
-			<Box display='flex' alignItems='center' fontSize='x12' color='hint'>
-				<p role='button' onClick={(): void => onShowMessageIgnored()} style={{ cursor: 'pointer' }}>
-					<Icon name='chevron-left' /> {t('Message_Ignored')}
-				</p>
-			</Box>
-		</MessageBody>
+		<Box display='flex' alignItems='center' fontSize='x12' color='hint'>
+			<p role='button' onClick={showMessageIgnored} style={{ cursor: 'pointer' }}>
+				<Icon name='chevron-left' /> {t('Message_Ignored')}
+			</p>
+		</Box>
 	);
 };
 
