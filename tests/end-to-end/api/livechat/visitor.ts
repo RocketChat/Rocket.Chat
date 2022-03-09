@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
-import { createVisitor, createLivechatRoom, createAgent } from '../../../data/livechat/rooms.js';
+import { createVisitor, createAgent } from '../../../data/livechat/rooms.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - visitor', function () {
@@ -143,23 +143,147 @@ describe('LIVECHAT - visitor', function () {
 				})
 				.end(done);
 		});
+
+		it('should return a visitor when the query params is all valid', (done) => {
+			request
+				.get(
+					api(
+						`livechat/visitor?token=123&name=John&email=test@gmail.com&department=test&phone=123456789&customFields={"key": "123", "value": "test", "overwrite": "false"}`,
+					),
+				)
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.rooms).to.be.an('object');
+					expect(res.body).to.have.property('visitor');
+				})
+				.end(done);
+		});
 	});
 
-	it('should return an array of rooms when the query params is all valid', (done) => {
-		request
-			.get(
-				api(
-					`livechat/visitor?token=123&name=John&email=test@gmail.com&department=test&phone=123456789&customFields={"key": "123", "value": "test", "overwrite": "false"}`,
-				),
-			)
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body.rooms).to.be.an('object');
-				expect(res.body).to.have.property('visitor');
-			})
-			.end(done);
+	describe('livechat/visitor/:token', () => {
+		// get
+		it("should return a 'invalid token' error when visitor with given token does not exist ", (done) => {
+			updatePermission('view-livechat-manager', ['admin']).then(() => {
+				request
+					.get(api('livechat/visitor/:token=invalid'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('invalid-token');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when the "token" query parameter is not valid', (done) => {
+			updatePermission('view-livechat-manager', ['admin']).then(() => {
+				request
+					.get(api('livechat/visitor/:token=invalid'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
+
+		it('should return a visitor when the query params is all valid', (done) => {
+			request
+				.get(api(`livechat/visitor/:token=123`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.rooms).to.be.an('object');
+					expect(res.body).to.have.property('visitor');
+				})
+				.end(done);
+		});
+
+		// delete
+		it("should return a 'invalid token' error when visitor with given token does not exist ", (done) => {
+			updatePermission('view-livechat-manager', ['admin']).then(() => {
+				request
+					.delete(api('livechat/visitor/:token=invalid'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('invalid-token');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when the "token" query parameter is not valid', (done) => {
+			updatePermission('view-livechat-manager', ['admin']).then(() => {
+				request
+					.delete(api('livechat/visitor/:token=invalid'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
+
+		it("should return a 'visitor-has-open-rooms' error when there are open rooms", (done) => {
+			updatePermission('view-livechat-manager', ['admin']).then(() => {
+				request
+					.delete(api('livechat/visitor/:token=123'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('visitor-has-open-rooms');
+					})
+					.end(done);
+			});
+		});
+
+		it("should return a 'error-removing-visitor' error when removeGuest's result is false", (done) => {
+			updatePermission('view-livechat-manager', ['admin']).then(() => {
+				request
+					.delete(api('livechat/visitor/:token=123'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('visitor-has-open-rooms');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return a visitor when the query params is all valid', (done) => {
+			request
+				.delete(api(`livechat/visitor/:token=123`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.rooms).to.be.an('object');
+					expect(res.body).to.have.property('visitor');
+					expect(res.body).to.have.property('visitor').that.includes('_id');
+					expect(res.body).to.have.property('visitor').that.includes('ts');
+				})
+				.end(done);
+		});
 	});
+
+	describe('livechat/visitor/:token/room', () => {});
 });
