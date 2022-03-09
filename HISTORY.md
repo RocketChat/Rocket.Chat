@@ -1,4 +1,78 @@
 
+# 4.5.1
+`2022-03-09  ·  13 🐛  ·  1 🔍  ·  11 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `&#x27;3.6&#x27;, &#x27;4.0&#x27;, &#x27;4.2&#x27;, &#x27;4.4&#x27;, &#x27;5.0&#x27;`
+- Apps-Engine: `1.31.0`
+
+### 🐛 Bug fixes
+
+
+- Apple login script being loaded even when Apple Login is disabled. ([#24760](https://github.com/RocketChat/Rocket.Chat/pull/24760))
+
+- Components for user search ([#24677](https://github.com/RocketChat/Rocket.Chat/pull/24677))
+
+- Duplicated 'name' log key ([#24590](https://github.com/RocketChat/Rocket.Chat/pull/24590))
+
+- Missing username on messages imported from Slack ([#24674](https://github.com/RocketChat/Rocket.Chat/pull/24674))
+
+  - Fix missing sender's username on messages imported from Slack.
+
+- no id of room closer in livechat-close message ([#24683](https://github.com/RocketChat/Rocket.Chat/pull/24683))
+
+- Reload roomslist after successful deletion of a room from admin panel. ([#23795](https://github.com/RocketChat/Rocket.Chat/pull/23795) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari))
+
+  Removed the logic for calling the `rooms.adminRooms` endPoint from the `RoomsTable` Component and moved it to its parent component `RoomsPage`.
+  This allows to call the endPoint `rooms.adminRooms` from `EditRoomContextBar` Component which is also has `RoomPage` Component as its parent.
+
+  Also added a succes toast message after the successful deletion of room.
+
+- Room's message count not being incremented on import ([#24696](https://github.com/RocketChat/Rocket.Chat/pull/24696))
+
+  - Fix rooms' message counter not being incremented on message import.
+
+- Show only available agents on extension association modal ([#24680](https://github.com/RocketChat/Rocket.Chat/pull/24680))
+
+- System messages are sent when adding or removing a group from a team ([#24743](https://github.com/RocketChat/Rocket.Chat/pull/24743))
+
+  - Do not send system messages when adding or removing a new or existing _group_ from a team.
+
+- Typo and placeholder on wrap up call modal ([#24737](https://github.com/RocketChat/Rocket.Chat/pull/24737))
+
+- Typo in wrap-up term ([#24661](https://github.com/RocketChat/Rocket.Chat/pull/24661))
+
+- VoIP Enable/Disable setting on CallContext/CallProvider Notifications ([#24607](https://github.com/RocketChat/Rocket.Chat/pull/24607))
+
+- Voip Stream Reinitialization Error ([#24657](https://github.com/RocketChat/Rocket.Chat/pull/24657))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Update Livechat ([#24754](https://github.com/RocketChat/Rocket.Chat/pull/24754))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Aman-Maheshwari](https://github.com/Aman-Maheshwari)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@amolghode1981](https://github.com/amolghode1981)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 4.5.0
 `2022-02-28  ·  3 🎉  ·  15 🚀  ·  19 🐛  ·  72 🔍  ·  30 👩‍💻👨‍💻`
 
