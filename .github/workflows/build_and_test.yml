@@ -364,6 +364,7 @@ jobs:
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
           TRANSPORTER: nats://localhost:4222
           CYPRESS_BASE_URL: http://localhost:4000
+          CYPRESS_TEST_API_URL: http://localhost:4000
           OVERWRITE_SETTING_Site_Url: http://localhost:4000
           SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
