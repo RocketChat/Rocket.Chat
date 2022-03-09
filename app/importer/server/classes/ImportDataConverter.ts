@@ -262,6 +262,10 @@ export class ImportDataConverter {
 			Meteor.runAsUser(_id, () => saveUserIdentity({ _id, name: userData.name, username: userData.username }));
 		}
 
+		if (userData.origin) {
+			Users.update({ _id }, { $set: { origin: userData.origin } });
+		}
+
 		if (userData.importIds.length) {
 			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username || userData.username);
 		}
