@@ -56,6 +56,7 @@ API.v1.addRoute(
 				switch (event.eventName) {
 					case 'engagementDashboard':
 						engagemendDashboardCount();
+						break;
 				}
 			});
 

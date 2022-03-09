@@ -260,6 +260,8 @@ export const statistics = {
 		statistics.enterprise = getEnterpriseStatistics();
 		await Analytics.resetSeatRequestCount();
 
+		statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
+
 		return statistics;
 	},
 	async save() {
