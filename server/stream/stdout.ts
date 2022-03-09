@@ -3,26 +3,36 @@ import { Log } from 'meteor/logging';
 
 import notifications from '../../app/notifications/server/lib/Notifications';
 import { getQueuedLogs, logEntries } from '../lib/logger/logQueue';
+import { ILog, ITransformLog } from '../../definition/ILog';
 
 const processString = function (string: string, date: Date): string {
-	let obj;
 	try {
-		if (string[0] === '{') {
-			obj = EJSON.parse(string);
-		} else {
-			obj = {
+		const obj = EJSON.parse(string);
+		if (!obj || typeof obj !== 'object') {
+			throw new TypeError('Invalid JSON');
+		}
+
+		if ('toJSONValue' in obj) {
+			return Log.format(obj.toJSONValue(), { color: true });
+		}
+
+		if (!Array.isArray(obj) && !(obj instanceof Date) && !(obj instanceof Uint8Array)) {
+			return Log.format(obj, { color: true });
+		}
+		return Log.format(
+			{
 				message: string,
 				time: date,
 				level: 'info',
-			};
-		}
-		return Log.format(obj, { color: true });
-	} catch (error) {
+			},
+			{ color: true },
+		);
+	} catch (e) {
 		return string;
 	}
 };
 
-const transformLog = function (item: any): { id: string; string: string; ts: Date } {
+const transformLog = function (item: ITransformLog): ILog {
 	return {
 		id: item.id,
 		string: processString(item.data, item.ts),
@@ -36,6 +46,6 @@ logEntries.on('log', (item) => {
 	notifications.streamStdout.emitWithoutBroadcast('stdout', transformLog(item));
 });
 
-export function getLogs(): { id: string; string: string; ts: Date }[] {
+export function getLogs(): ILog[] {
 	return getQueuedLogs().map(transformLog);
 }
