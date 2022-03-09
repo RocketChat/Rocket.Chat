@@ -54,7 +54,7 @@ describe.only('[Resolution]', () => {
 			it('it should close the sidenav when open general channel', () => {
 				sideNav.openChannel('general');
 				cy.wait(500);
-				sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'false');
+				sideNav.sideNavBar.should('not.have.attr', 'data-qa-opened');
 			});
 
 			// Skipped because it's not closing sidebar after opening an item
