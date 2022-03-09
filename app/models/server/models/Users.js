@@ -1687,6 +1687,16 @@ Find users to send a message by email if:
 		return this.find(query, options).count();
 	}
 
+	countUsersByService(serviceName, options) {
+		const query = {
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			[`services.${serviceName}`]: { $exists: true },
+		};
+
+		return this.find(query, options).count();
+	}
+
 	getActiveLocalUserCount() {
 		return this.findActive().count() - this.findActiveRemote().count();
 	}
@@ -1720,6 +1730,22 @@ Find users to send a message by email if:
 			},
 		};
 
+		return this.find(query, options);
+	}
+
+	findActiveUsersTOTPEnable(options) {
+		const query = {
+			'active': true,
+			'services.totp.enabled': true,
+		};
+		return this.find(query, options);
+	}
+
+	findActiveUsersEmail2faEnable(options) {
+		const query = {
+			'active': true,
+			'services.email2fa.enabled': true,
+		};
 		return this.find(query, options);
 	}
 
