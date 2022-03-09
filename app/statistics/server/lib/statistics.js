@@ -276,7 +276,7 @@ export const statistics = {
 			},
 			0,
 		);
-		
+
 		return statistics;
 	},
 	async save() {
