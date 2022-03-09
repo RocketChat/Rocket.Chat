@@ -4,12 +4,7 @@ import type { DDPSubscription, Connection, TransformMessage } from 'meteor/rocke
 import { server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { isEmpty } from './lib/utils';
-import { Streamer, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
-import { api } from '../../../../server/sdk/api';
-
-StreamerCentral.on('broadcast', (name, eventName, args) => {
-	api.broadcast('stream', [name, eventName, args]);
-});
+import { Streamer } from '../../../../server/modules/streamer/streamer.module';
 
 export class Stream extends Streamer {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
@@ -58,7 +53,7 @@ export class Stream extends Streamer {
 
 		for await (const { subscription } of subscriptions) {
 			if (this.retransmitToSelf === false && origin && origin === subscription.connection) {
-				return;
+				continue;
 			}
 
 			if (await this.isEmitAllowed(subscription, eventName, ...args)) {
