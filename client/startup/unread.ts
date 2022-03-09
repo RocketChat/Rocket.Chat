@@ -61,8 +61,6 @@ Meteor.startup(() => {
 			0,
 		);
 
-		menu.updateUnreadBars();
-
 		if (unreadCount > 0) {
 			if (unreadCount > 999) {
 				Session.set('unread', '999+');

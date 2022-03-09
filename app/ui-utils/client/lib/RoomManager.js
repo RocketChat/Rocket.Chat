@@ -117,7 +117,6 @@ export const RoomManager = new (function () {
 											name,
 										};
 										if (isNew) {
-											menu.updateUnreadBars();
 											callbacks.run('streamNewMessage', msg);
 										}
 									}

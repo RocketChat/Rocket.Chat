@@ -5,7 +5,7 @@ import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 
 // skipping this since the main content its not moved anymore, instead there is a overlay of the side nav over the main content
-describe('[Resolution]', () => {
+describe.only('[Resolution]', () => {
 	describe('[Mobile Render]', () => {
 		before(() => {
 			checkIfUserIsValid(username, email, password);
@@ -13,51 +13,48 @@ describe('[Resolution]', () => {
 
 		beforeEach(() => {
 			Global.setWindowSize(650, 800);
-			cy.wait(500);
+			cy.wait(50);
 		});
 
 		after(() => {
 			Global.setWindowSize(1600, 1600);
-			cy.wait(500);
+			// cy.wait(500);
 			sideNav.spotlightSearchIcon.should('be.visible');
 		});
 
 		it('it should close the sidenav', () => {
 			mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
-			sideNav.sideNavBar.should('be.visible').getLocation().its('x').should('not.be.equal', 0);
+			sideNav.sideNavBar.should('not.have.attr', 'data-qa-opened', 'false');
 		});
 
 		describe('moving elements:', () => {
 			beforeEach(() => {
-				cy.wait(150);
 				sideNav.sideNavBar
-					.getLocation()
-					.its('x')
-					.then((x) => {
-						if (x !== 0) {
-							cy.wait(150);
+					.parent()
+					.find('.sidebar')
+					.then((el) => {
+						if (!el[0].hasAttribute('data-qa-opened')) {
 							sideNav.burgerBtn.click({ force: true });
-							cy.wait(500);
 						}
 					});
 			});
 
-			it('it should open de sidenav', () => {
+			it('it should open the sidenav', () => {
 				mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
-				sideNav.sideNavBar.should('be.visible').getLocation().its('x').should('be.equal', 0);
+				sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'true');
 			});
 
 			it('it should not close sidebar on pressing the sidebar item menu', () => {
 				sideNav.firstSidebarItemMenu.click();
 				mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
-				sideNav.sideNavBar.should('be.visible').getLocation().its('x').should('be.equal', 0);
+				sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'true');
 				sideNav.firstSidebarItemMenu.click();
 			});
 
 			it('it should close the sidenav when open general channel', () => {
 				sideNav.openChannel('general');
 				cy.wait(500);
-				sideNav.sideNavBar.getLocation().its('x').should('not.be.equal', 0);
+				sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'false');
 			});
 
 			// Skipped because it's not closing sidebar after opening an item
@@ -69,12 +66,12 @@ describe('[Resolution]', () => {
 
 				it('it should close the sidenav when press the preferences link', () => {
 					sideNav.preferences.click();
-					sideNav.sideNavBar.getLocation().its('x').should('not.be.equal', 0);
+					sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'false');
 				});
 
 				it('it should close the sidenav when press the profile link', () => {
 					sideNav.profile.click();
-					sideNav.sideNavBar.getLocation().its('x').should('not.be.equal', 0);
+					sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'false');
 				});
 
 				it('it should close the preferences nav', () => {
