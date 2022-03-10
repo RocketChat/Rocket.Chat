@@ -1,7 +1,5 @@
 import { API } from '../api';
-import { getStatistics, getLastStatistics } from '../../../statistics/server';
-import { engagemendDashboardCount } from '../../../../ee/app/settings/server/engagementDashboard';
-import { messageAuditingApplyCount } from '../../../../ee/app/settings/server/messageAuditing';
+import { getStatistics, getLastStatistics, updateCounter, slashCommandsStats } from '../../../statistics/server';
 
 API.v1.addRoute(
 	'statistics',
@@ -56,10 +54,16 @@ API.v1.addRoute(
 			events.forEach((event) => {
 				switch (event.eventName) {
 					case 'engagementDashboard':
-						engagemendDashboardCount();
+						updateCounter('Engagement_Dashboard_Load_Count');
 						break;
 					case 'messageAuditingApply':
-						messageAuditingApplyCount();
+						updateCounter('Message_Auditing_Apply_Count');
+						break;
+					case 'jitsiCallButton':
+						updateCounter('Jits_Click_To_Join_Count');
+						break;
+					case 'slashCommands':
+						slashCommandsStats(event.command);
 						break;
 				}
 			});

@@ -17,3 +17,7 @@ export interface ITelemetryEvent {
 export interface IOTREnded extends ITelemetryEvent {
 	roomId: string;
 }
+
+export interface ISlashCommand extends ITelemetryEvent {
+	command: string;
+}
