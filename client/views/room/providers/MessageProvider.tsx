@@ -7,24 +7,21 @@ import { useLayout } from '../../../contexts/LayoutContext';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useFormatTime } from '../../../hooks/useFormatTime';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
 
-const replyBroadcast = (): void => {
-	console.log('replyBroadcast');
-};
-
 export const MessageProvider = memo(function MessageProvider({
-	broadcast,
 	rid,
+	broadcast,
 	children,
 }: {
 	rid: string;
 	broadcast?: boolean;
 	children: ReactNode;
 }) {
-	const [routeName, params] = useCurrentRoute();
+	const [routeName, params, queryStringParams] = useCurrentRoute();
 	const { isEmbedded, isMobile } = useLayout();
 	const oembedEnabled = Boolean(useSetting('API_Embed'));
 	if (!routeName) {
@@ -97,13 +94,22 @@ export const MessageProvider = memo(function MessageProvider({
 					},
 				openDiscussion,
 				openThread,
-				replyBroadcast,
+				replyBroadcast: (message: IMessage): void => {
+					roomCoordinator.openRouteLink(
+						'd',
+						{ name: message.u.username },
+						{
+							...queryStringParams,
+							reply: message._id,
+						},
+					);
+				},
 			},
 			formatters: {
 				messageHeader,
 			},
 		};
-	}, [isEmbedded, oembedEnabled, isMobile, broadcast, messageHeader, router, params, rid, routeName]);
+	}, [isEmbedded, oembedEnabled, isMobile, broadcast, messageHeader, router, params, rid, routeName, queryStringParams]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });
