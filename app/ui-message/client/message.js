@@ -250,6 +250,13 @@ Template.message.helpers({
 			return 'system';
 		}
 	},
+	isOwnMessageAndNotSystem() {
+		const { msg, u = {} } = this;
+		if (msg.u && msg.u._id === u._id && !MessageTypes.isSystemMessage(msg)) {
+			return 'true';
+		}
+		return 'false';
+	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
 		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== u._id && !MessageTypes.isSystemMessage(msg)) {
