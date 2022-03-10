@@ -374,7 +374,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				throw new Error('error-no-owner-channel');
 			}
 
-			Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, user);
+			if (room.t === 'c') {
+				Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, user);
+			}
 
 			room.teamId = teamId;
 		}
@@ -420,7 +422,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		delete room.teamDefault;
 		this.RoomsModel.unsetTeamById(room._id);
 
-		Messages.createUserRemoveRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
+		if (room.t === 'c') {
+			Messages.createUserRemoveRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
+		}
 
 		return {
 			...room,
