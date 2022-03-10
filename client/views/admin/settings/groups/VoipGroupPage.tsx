@@ -2,8 +2,10 @@ import { Tabs, Box, Accordion } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
 import type { ISetting } from '../../../../../definition/ISetting';
+import NoResults from '../../../../components/GenericTable/NoResults';
 import Page from '../../../../components/Page';
 import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
+import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
@@ -11,6 +13,7 @@ import VoipExtensionsPage from './voip/VoipExtensionsPage';
 
 function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	const t = useTranslation();
+	const voipEnabled = useSetting('VoIP_Enabled');
 
 	const tabs = ['Settings', 'Extensions'];
 
@@ -32,10 +35,20 @@ function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 		</Tabs>
 	);
 
+	const ExtensionsPageComponent = useMemo(
+		() =>
+			voipEnabled ? (
+				VoipExtensionsPage
+			) : (
+				<NoResults icon='warning' title={t('Voip_is_disabled')} description={t('Voip_is_disabled_description')}></NoResults>
+			),
+		[t, voipEnabled],
+	);
+
 	return (
 		<GroupPage _id={_id} {...group} tabs={tabsComponent} isCustom={true}>
 			{tab === 'Extensions' ? (
-				<VoipExtensionsPage />
+				ExtensionsPageComponent
 			) : (
 				<Page.ScrollableContentWithShadow>
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>

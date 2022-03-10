@@ -1,5 +1,6 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, ReactElement, useMemo } from 'react';
 
+import { IRoom } from '../../../../definition/IRoom';
 import BurgerMenu from '../../../components/BurgerMenu';
 import TemplateHeader from '../../../components/Header';
 import { useLayout } from '../../../contexts/LayoutContext';
@@ -8,7 +9,11 @@ import OmnichannelRoomHeader from './Omnichannel/OmnichannelRoomHeader';
 import VoipRoomHeader from './Omnichannel/VoipRoomHeader';
 import RoomHeader from './RoomHeader';
 
-const Header = ({ room }) => {
+type HeaderProps = {
+	room: IRoom;
+};
+
+const Header = ({ room }: HeaderProps): ReactElement | null => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 
 	const slots = useMemo(
@@ -26,7 +31,7 @@ const Header = ({ room }) => {
 		return null;
 	}
 
-	if (room.t === 'd' && room.uids.length < 3) {
+	if (room.t === 'd' && (room.uids?.length ?? 0) < 3) {
 		return <DirectRoomHeader slots={slots} room={room} />;
 	}
 
