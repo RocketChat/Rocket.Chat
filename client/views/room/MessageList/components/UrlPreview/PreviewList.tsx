@@ -119,11 +119,11 @@ const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
 
 	return (
 		<Box width={oembedWidth}>
-			{metaAndHeaders.map(({ type, data }) => {
+			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
-					return <OEmbedResolver meta={data} />;
+					return <OEmbedResolver meta={data} key={index} />;
 				}
-				return <UrlPreview {...data} />;
+				return <UrlPreview {...data} key={index} />;
 			})}
 		</Box>
 	);
