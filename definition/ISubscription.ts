@@ -57,6 +57,8 @@ export interface ISubscription extends IRocketChatRecord {
 	ignored?: unknown;
 
 	department?: unknown;
+
+	broadcast?: boolean;
 }
 
 export interface IOmnichannelSubscription extends ISubscription {
