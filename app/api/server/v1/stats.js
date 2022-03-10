@@ -1,5 +1,5 @@
 import { API } from '../api';
-import { getStatistics, getLastStatistics, updateCounter, slashCommandsStats } from '../../../statistics/server';
+import { getStatistics, getLastStatistics, updateCounter, slashCommandsStats, otrStats } from '../../../statistics/server';
 
 API.v1.addRoute(
 	'statistics',
@@ -64,6 +64,9 @@ API.v1.addRoute(
 						break;
 					case 'slashCommands':
 						slashCommandsStats(event.command);
+						break;
+					case 'otrEnded':
+						otrStats(event.roomId);
 						break;
 				}
 			});
