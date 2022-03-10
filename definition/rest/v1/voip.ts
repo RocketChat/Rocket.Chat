@@ -37,6 +37,9 @@ export type VoipEndpoints = {
 		POST: (params: { userId: string; extension: string } | { username: string; extension: string }) => void;
 		DELETE: (params: { username: string }) => void;
 	};
+	'omnichannel/agents/available': {
+		GET: (params: PaginatedRequest<{ text?: string; includeExtension?: string }>) => PaginatedResult<{ agents: ILivechatAgent[] }>;
+	};
 	'voip/events': {
 		POST: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	};

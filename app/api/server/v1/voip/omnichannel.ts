@@ -72,6 +72,9 @@ API.v1.addRoute(
 			let user: IUser | null = null;
 
 			if (!isUserAndExtensionParams(this.bodyParams)) {
+				if (!this.bodyParams.username) {
+					return API.v1.notFound();
+				}
 				user = await Users.findOneByAgentUsername(this.bodyParams.username, {
 					projection: {
 						_id: 1,
@@ -79,6 +82,9 @@ API.v1.addRoute(
 					},
 				});
 			} else {
+				if (!this.bodyParams.userId) {
+					return API.v1.notFound();
+				}
 				user = await Users.findOneAgentById(this.bodyParams.userId, {
 					projection: {
 						_id: 1,
@@ -167,33 +173,22 @@ API.v1.addRoute(
 					if (!extensions) {
 						return API.v1.failure('Error in allocated extensions');
 					}
-					return API.v1.success({ extensions });
+					return API.v1.success({ extensions: extensions.map((e) => e.extension) });
 				}
 				case 'available': {
 					let user: IUser | null = null;
 					if (!isUserIdndTypeParams(this.queryParams)) {
 						user = await Users.findOneByAgentUsername(this.queryParams.username, {
-							projection: { _id: 1 },
+							projection: { _id: 1, extension: 1 },
 						});
 					} else {
 						user = await Users.findOneAgentById(this.queryParams.userId, {
-							projection: { _id: 1 },
+							projection: { _id: 1, extension: 1 },
 						});
 					}
 
-					if (!user) {
-						return API.v1.notFound('User not found');
-					}
-
-					const extension = await Users.getVoipExtensionByUserId(user._id, {
-						projection: {
-							_id: 1,
-							username: 1,
-							extension: 1,
-						},
-					});
 					const freeExt = await LivechatVoip.getFreeExtensions();
-					const extensions = extension ? [extension.extension, ...freeExt] : freeExt;
+					const extensions = user?.extension ? [user.extension, ...freeExt] : freeExt;
 					return API.v1.success({ extensions });
 				}
 				default:
@@ -217,6 +212,27 @@ API.v1.addRoute(
 				offset,
 				count,
 				total: extensions.length,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/agents/available',
+	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
+	{
+		async get() {
+			const { offset, count } = this.getPaginationItems();
+			const { sort } = this.parseJsonQuery();
+			const { text, includeExtension = '' } = this.queryParams;
+
+			const { agents, total } = await LivechatVoip.getAvailableAgents(includeExtension, text, count, offset, sort);
+
+			return API.v1.success({
+				agents,
+				offset,
+				count,
+				total,
 			});
 		},
 	},
