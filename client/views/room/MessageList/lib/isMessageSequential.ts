@@ -1,15 +1,14 @@
-import { differenceInMinutes } from 'date-fns';
+import { differenceInSeconds } from 'date-fns';
 
+import { MessageTypes } from '../../../../../app/ui-utils/client';
 import { IMessage } from '../../../../../definition/IMessage';
 
-// TODO: use settings config to define time range instead of hardcoded value
-
-export const isMessageSequential = (current: IMessage, previous: IMessage | undefined): boolean => {
+export const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {
 		return false;
 	}
 
-	if (current.t || previous.t) {
+	if (MessageTypes.isSystemMessage(current) || MessageTypes.isSystemMessage(previous)) {
 		return false;
 	}
 
@@ -29,5 +28,5 @@ export const isMessageSequential = (current: IMessage, previous: IMessage | unde
 		return false;
 	}
 
-	return differenceInMinutes(current.ts, previous.ts) < 5;
+	return differenceInSeconds(current.ts, previous.ts) < groupingRange;
 };

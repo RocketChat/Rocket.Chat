@@ -4,6 +4,7 @@ import React, { FC, Fragment, memo } from 'react';
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { isThreadMessage, IThreadMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
+import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserSubscription } from '../../../contexts/UserContext';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -24,6 +25,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	const messages = useMessages({ rid });
 	const subscription = useUserSubscription(rid);
 	const isBroadcast = Boolean(subscription?.broadcast);
+	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const format = useFormatDate();
 
 	return (
@@ -33,8 +35,9 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 					{messages.map((message, index, arr) => {
 						const previous = arr[index - 1];
 
+						const isSequential = isMessageSequential(message, previous, messageGroupingPeriod);
+
 						const isNewDay = isMessageNewDay(message, previous);
-						const isSequential = isMessageSequential(message, previous);
 						const isFirstUnread = isMessageFirstUnread(subscription, message, previous);
 						const isUserOwnMessage = isOwnUserMessage(message, subscription);
 						const shouldShowDivider = isNewDay || isFirstUnread;
@@ -42,7 +45,6 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 						const shouldShowAsSequential = isSequential && !isNewDay;
 
 						const isSystemMessage = MessageTypes.isSystemMessage(message);
-						const shouldShowThreadMessage = isThreadMessage(message) && !isSystemMessage;
 						const shouldShowMessage = !isThreadMessage(message) && !isSystemMessage;
 
 						return (
@@ -68,7 +70,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 									/>
 								)}
 
-								{shouldShowThreadMessage && (
+								{isThreadMessage(message) && (
 									<ThreadMessagePreview
 										data-system-message={Boolean(message.t)}
 										data-mid={message._id}
