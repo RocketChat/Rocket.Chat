@@ -38,7 +38,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
 
 	useEffect(() => {
-		if (!user || !user?._id || !voipEnabled) {
+		if (!user || !user?._id || !user?.extension || !voipEnabled) {
 			setResult({});
 			return;
 		}
