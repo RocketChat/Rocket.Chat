@@ -158,11 +158,16 @@ async function startMicroservices() {
 	]);
 }
 
-function startChimp() {
+function startTests(options = []) {
+	const testOption = options.find((i) => i.startsWith('--test='));
+	const testParam = testOption ? testOption.replace('--test=', '') : 'test';
+
+	console.log(`Running test "npm run ${testParam}"`);
+
 	startProcess({
-		name: 'Chimp',
+		name: 'Tests',
 		command: 'npm',
-		params: ['test'],
+		params: ['run', testParam],
 		options: {
 			env: {
 				...process.env,
@@ -173,13 +178,13 @@ function startChimp() {
 }
 
 (async () => {
-	const [, , options = ''] = process.argv;
+	const [, , ...options] = process.argv;
 
 	await startRocketChat();
 
-	if (options === '--enterprise') {
+	if (options.includes('--enterprise')) {
 		await startMicroservices();
 	}
 
-	startChimp();
+	startTests(options);
 })();

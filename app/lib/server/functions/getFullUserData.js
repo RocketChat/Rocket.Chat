@@ -17,6 +17,7 @@ const defaultFields = {
 	reason: 1,
 	statusText: 1,
 	avatarETag: 1,
+	extension: 1,
 };
 
 const fullFields = {
@@ -30,7 +31,6 @@ const fullFields = {
 	requirePasswordChange: 1,
 	requirePasswordChangeReason: 1,
 	roles: 1,
-	extension: 1,
 };
 
 let publicCustomFields = {};
