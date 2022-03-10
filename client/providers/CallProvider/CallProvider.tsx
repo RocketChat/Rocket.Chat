@@ -249,6 +249,13 @@ export const CallProvider: FC = ({ children }) => {
 			};
 		}
 
+		if (!user?.extension) {
+			return {
+				enabled: false,
+				ready: false,
+			};
+		}
+
 		if (isUseVoipClientResultError(result)) {
 			return {
 				enabled: true,
