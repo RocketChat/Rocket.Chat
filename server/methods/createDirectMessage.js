@@ -40,7 +40,7 @@ export function createDirectMessage(idsOrUsernames, userId, excludeSelf = false)
 
 			// If the username does have an `@`, but does not exist locally, we create it first
 			if (!to && idOrUsername.indexOf('@') === 0) {
-				to = Promise.await(addUser(idsOrUsername));
+				to = Promise.await(addUser(idOrUsername));
 			}
 
 			if (!to) {
