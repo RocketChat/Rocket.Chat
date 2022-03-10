@@ -5,7 +5,6 @@ import { IRoom } from '../../../definition/IRoom';
 import { ISetting } from '../../../definition/ISetting';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IUser } from '../../../definition/IUser';
-import { AutoUpdateRecord } from '../types/IMeteor';
 import { IEmoji } from '../../../definition/IEmoji';
 import { IUserStatus } from '../../../definition/IUserStatus';
 import { IUserSession } from '../../../definition/IUserSession';
@@ -17,6 +16,7 @@ import { IIntegration } from '../../../definition/IIntegration';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { ISocketConnection } from '../../../definition/ISocketConnection';
 import { IPbxEvent } from '../../../definition/IPbxEvent';
+import { AutoUpdateRecord } from '../types/IMeteor';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -36,7 +36,7 @@ export type EventSignatures = {
 	'license.module'(data: { module: string; valid: boolean }): void;
 	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: IInquiry }): void;
 	'message'(data: { action: string; message: IMessage }): void;
-	'meteor.autoUpdateClientVersionChanged'(data: { record: AutoUpdateRecord }): void;
+	'meteor.clientVersionUpdated'(data: AutoUpdateRecord): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'permission.changed'(data: { clientAction: ClientAction; data: any }): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;

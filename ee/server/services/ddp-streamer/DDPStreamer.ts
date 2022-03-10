@@ -6,9 +6,11 @@ import WebSocket from 'ws';
 import { ListenersModule } from '../../../../server/modules/listeners/listeners.module';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
+import { MeteorService } from '../../../../server/sdk';
 import { Client } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
+import { Autoupdate } from './lib/Autoupdate';
 import notifications from './streams';
 
 const { PORT: port = 4000 } = process.env;
@@ -81,8 +83,17 @@ export class DDPStreamer extends ServiceClass {
 			events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
 		});
 
-		this.onEvent('meteor.autoUpdateClientVersionChanged', ({ record }): void => {
-			events.emit('meteor.autoUpdateClientVersionChanged', record);
+		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
+			Autoupdate.updateVersion(versions);
+		});
+	}
+
+	async started(): Promise<void> {
+		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
+		const versions = await MeteorService.getAutoUpdateClientVersions();
+
+		Object.keys(versions).forEach((key) => {
+			Autoupdate.updateVersion(versions[key]);
 		});
 	}
 
