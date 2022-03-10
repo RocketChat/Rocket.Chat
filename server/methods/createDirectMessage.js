@@ -7,8 +7,8 @@ import { Users, Rooms } from '../../app/models/server';
 import { createRoom, RateLimiter } from '../../app/lib/server';
 import { addUser } from '../../app/federation/server/functions/addUser';
 
-export function createDirectMessage(usernames, userId, excludeSelf = false) {
-	check(usernames, [String]);
+export function createDirectMessage(idsOrUsernames, userId, excludeSelf = false) {
+	check(idsOrUsernames, [String]);
 	check(userId, String);
 	check(excludeSelf, Match.Optional(Boolean));
 
@@ -25,20 +25,22 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 		});
 	}
 
-	if (settings.get('Message_AllowDirectMessagesToYourself') === false && usernames.length === 1 && me.username === usernames[0]) {
+	const isUserMe = (idOrUsername) => [me.username, me._id].includes(idOrUsername);
+
+	if (settings.get('Message_AllowDirectMessagesToYourself') === false && idsOrUsernames.length === 1 && isUserMe(idsOrUsernames[0])) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
-	const users = usernames
-		.filter((username) => username !== me.username)
-		.map((username) => {
-			let to = Users.findOneByUsernameIgnoringCase(username);
+	const users = idsOrUsernames
+		.filter((idOrUsername) => !isUserMe(idOrUsername))
+		.map((idOrUsername) => {
+			let to = Users.findOneByIdOrUsernameIgnoringCase(idOrUsername);
 
 			// If the username does have an `@`, but does not exist locally, we create it first
-			if (!to && username.indexOf('@') !== -1) {
-				to = Promise.await(addUser(username));
+			if (!to && idOrUsername.indexOf('@') === 0) {
+				to = Promise.await(addUser(idsOrUsername));
 			}
 
 			if (!to) {
@@ -52,7 +54,7 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 	const roomUsers = excludeSelf ? users : [me, ...users];
 
 	// allow self-DMs
-	if (roomUsers.length === 1 && roomUsers[0]._id !== me._id) {
+	if (roomUsers.length === 1 && !isUserMe(roomUsers[0]._id)) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
