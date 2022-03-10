@@ -11,7 +11,7 @@ import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { IUser, IUserEmail } from '../../../../definition/IUser';
-import { IRoom } from '../../../../definition/IRoom';
+import { IDirectMessageRoom } from '../../../../definition/IRoom';
 
 function reactivateDirectConversations(userId: string): void {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
@@ -19,11 +19,11 @@ function reactivateDirectConversations(userId: string): void {
 	const directConversations = Rooms.getDirectConversationsByUserId(userId, {
 		projection: { _id: 1, uids: 1 },
 	}).fetch();
-	const userIds = directConversations.reduce((acc: string[], r: IRoom) => acc.push(...r.uids) && acc, []);
+	const userIds = directConversations.reduce((acc: string[], r: IDirectMessageRoom) => acc.push(...r.uids) && acc, []);
 	const uniqueUserIds = [...new Set(userIds)];
 	const activeUsers = Users.findActiveByUserIds(uniqueUserIds, { projection: { _id: 1 } }).fetch();
 	const activeUserIds = activeUsers.map((u: IUser) => u._id);
-	const roomsToReactivate = directConversations.reduce((acc: string[], room: IRoom) => {
+	const roomsToReactivate = directConversations.reduce((acc: string[], room: IDirectMessageRoom) => {
 		const otherUserId = room.uids.find((u: string) => u !== userId);
 		if (activeUserIds.includes(otherUserId)) {
 			acc.push(room._id);
@@ -62,7 +62,7 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 
 		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
 			const rooms = getUserSingleOwnedRooms(chatSubscribedRooms as []);
-			throw new Meteor.Error('user-last-owner', '', rooms);
+			throw new Meteor.Error('user-last-owner', '', String(rooms));
 		}
 
 		closeOmnichannelConversations(user, livechatSubscribedRooms);

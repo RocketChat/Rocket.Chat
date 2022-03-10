@@ -1,6 +1,7 @@
-import { IRoom } from '../../../../definition/IRoom';
+import { IDirectMessageRoom } from '../../../../definition/IRoom';
 import { IUser } from '../../../../definition/IUser';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
+import { ISubscription } from '../../../../definition/ISubscription';
 
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(',');
@@ -15,7 +16,7 @@ function getUsersWhoAreInTheSameGroupDMsAs(user: IUser): unknown {
 	const userIds = new Set();
 	const users = new Map();
 
-	rooms.forEach((room: IRoom) => room.uids.forEach((uid) => uid !== user._id && userIds.add(uid)));
+	rooms.forEach((room: IDirectMessageRoom) => room.uids.forEach((uid) => uid !== user._id && userIds.add(uid)));
 
 	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } }).forEach((user: IUser) => users.set(user._id, user));
 
@@ -45,12 +46,12 @@ export const updateGroupDMsName = (userThatChangedName: IUser): void => {
 	const getMembers = (uids: string[]) => uids.map((uid) => users.get(uid)).filter(Boolean);
 
 	// loop rooms to update the subcriptions from them all
-	rooms.forEach((room: IRoom) => {
+	rooms.forEach((room: IDirectMessageRoom) => {
 		const members = getMembers(room.uids);
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 
 		const subs = Subscriptions.findByRoomId(room._id, { fields: { '_id': 1, 'u._id': 1 } });
-		subs.forEach((sub: IRoom) => {
+		subs.forEach((sub: ISubscription) => {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
 			Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
 		});
