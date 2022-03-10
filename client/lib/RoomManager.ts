@@ -149,10 +149,12 @@ export const useHandleRoom = <T extends IRoom>(rid: IRoom['_id']): AsyncState<T>
 	const room = uid ? subscription || _room : _room;
 
 	useEffect(() => {
-		if (room) {
-			update();
-			resolve(room);
+		if (!room) {
+			return;
 		}
+
+		update();
+		resolve(room);
 	}, [resolve, update, room]);
 
 	return state;
