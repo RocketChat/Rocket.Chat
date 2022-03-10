@@ -35,15 +35,16 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const user = useUser();
 	const iceServers = useWebRtcServers();
 
+	const [userId, setUserId] = useSafely(useState<string | null>(null));
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
 
 	useEffect(() => {
-		if (!user || !user?._id || !voipEnabled) {
+		if (!userId || !voipEnabled) {
 			setResult({});
 			return;
 		}
 
-		registrationInfo({ id: user._id }).then(
+		registrationInfo({ id: userId }).then(
 			(data) => {
 				let parsedData: IRegistrationInfo;
 				if (isSignedResponse(data)) {
@@ -82,7 +83,14 @@ export const useVoipClient = (): UseVoipClientResult => {
 			// client?.disconnect();
 			// TODO how to close the client? before creating a new one?
 		};
-	}, [user, iceServers, registrationInfo, setResult, membership, voipEnabled]);
+	}, [userId, iceServers, registrationInfo, setResult, membership, voipEnabled]);
 
+	useEffect(() => {
+		if (!user || !user?._id) {
+			setResult({});
+			return;
+		}
+		setUserId(user._id);
+	}, [setResult, setUserId, user]);
 	return result;
 };
