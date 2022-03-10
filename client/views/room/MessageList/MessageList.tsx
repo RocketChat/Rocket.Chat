@@ -2,7 +2,7 @@ import { MessageDivider } from '@rocket.chat/fuselage';
 import React, { FC, Fragment, memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import { isThreadMessage } from '../../../../definition/IMessage';
+import { isThreadMessage, IThreadMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserSubscription } from '../../../contexts/UserContext';
@@ -75,7 +75,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 										data-unread={isFirstUnread}
 										data-sequential={isSequential}
 										sequential={shouldShowAsSequential}
-										message={message}
+										message={message as IThreadMessage}
 									/>
 								)}
 
