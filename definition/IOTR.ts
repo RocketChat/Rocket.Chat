@@ -1,7 +1,8 @@
 import { ReactiveVar } from 'meteor/reactive-var';
+
+import type { OTRRoom } from '../app/otr/client/OTRRoom';
 import { UserPresence } from '../client/lib/presence';
 import { IMessage } from './IMessage';
-import type { OTRRoom } from '/app/otr/client/OTRRoom';
 
 export interface IOnUserStreamData {
 	roomId: string;
@@ -48,7 +49,5 @@ export interface IOTR {
 export type publicKeyObject = ReturnType<<T extends U, U extends JsonWebKey>() => T>;
 
 export interface IOTRAlgorithm extends EcKeyAlgorithm, EcdhKeyDeriveParams {}
-
-export interface IOTRClass {}
 
 export const userPresenceUsername = async (username: UserPresence['username']): Promise<string> => username as string;

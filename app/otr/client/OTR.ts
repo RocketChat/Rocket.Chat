@@ -1,7 +1,7 @@
-import { IOTR } from '../../../definition/IOTR';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+import { IOTR } from '../../../definition/IOTR';
 import { Subscriptions } from '../../models/client';
 import { OTRRoom } from './OTRRoom';
 
@@ -11,6 +11,7 @@ class OTR implements IOTR {
 	instancesByRoomId: { [rid: string]: OTRRoom };
 
 	crypto: SubtleCrypto;
+
 	constructor() {
 		this.enabled = new ReactiveVar(false);
 		this.instancesByRoomId = {};

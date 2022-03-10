@@ -1,4 +1,3 @@
-import { IOnUserStreamData, IOTRDecrypt } from '../../definition/IOTR';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -6,6 +5,7 @@ import { Notifications } from '../../app/notifications/client';
 import OTR from '../../app/otr/client/OTR';
 import { t } from '../../app/utils/client';
 import { IMessage } from '../../definition/IMessage';
+import { IOnUserStreamData, IOTRDecrypt } from '../../definition/IOTR';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 

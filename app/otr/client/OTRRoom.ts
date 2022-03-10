@@ -1,23 +1,22 @@
-import { IOTRAlgorithm, IOTRDecrypt, publicKeyObject } from '../../../definition/IOTR';
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
+import { Random } from 'meteor/random';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import OTR from './OTR';
-import { Notifications } from '../../notifications/client';
-import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
-import { Presence } from '../../../client/lib/presence';
-import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { otrSystemMessages } from '../lib/constants';
-import { IOTRRoom, IOnUserStreamData, userPresenceUsername } from '../../../definition/IOTR';
+import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
+import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { IMessage } from '../../../definition/IMessage';
+import { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom, userPresenceUsername } from '../../../definition/IOTR';
+import { Notifications } from '../../notifications/client';
+import { otrSystemMessages } from '../lib/constants';
+import OTR from './OTR';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
@@ -132,7 +131,7 @@ export class OTRRoom implements IOTRRoom {
 
 	async importPublicKey(publicKey: string): Promise<void> {
 		try {
-			const publicKeyObject: publicKeyObject = EJSON.parse(publicKey);
+			const publicKeyObject: JsonWebKey = EJSON.parse<JsonWebKey>(publicKey);
 			const peerPublicKey = await OTR.crypto.importKey(
 				'jwk',
 				publicKeyObject,
