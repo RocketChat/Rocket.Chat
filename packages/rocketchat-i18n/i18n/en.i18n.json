@@ -4744,6 +4744,8 @@
   "Voip_call_wrapup": "Call wrapup notes added: __comment__",
   "VoIP_JWT_Secret": "VoIP JWT Secret",
   "VoIP_JWT_Secret_description": "This allows you to set a secret key for sharing extension details from server to client as JWT instead of plain text. If you don't setup this, extension registration details will be sent as plain text",
+  "Voip_is_disabled": "VoIP is disabled",
+  "Voip_is_disabled_description": "To view the list of extensions it is necessary to activate VoIP, do so in the Settings tab.",
   "Chat_opened_by_visitor": "Chat opened by the visitor",
   "Wait_activation_warning": "Before you can login, your account must be manually activated by an administrator.",
   "Waiting_queue": "Waiting queue",
