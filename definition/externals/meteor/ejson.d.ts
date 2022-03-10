@@ -10,6 +10,6 @@ declare module 'meteor/ejson' {
 			},
 		): string;
 
-		function parse(str: string): EJSONableProperty;
+		function parse<T>(str: string): EJSONableProperty & T;
 	}
 }

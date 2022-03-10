@@ -1,3 +1,4 @@
+import { IOTRAlgorithm, IOTRDecrypt, publicKeyObject } from '../../../definition/IOTR';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
@@ -23,17 +24,17 @@ export class OTRRoom implements IOTRRoom {
 
 	private _roomId: string;
 
-	peerId: string;
-
-	established: ReactiveVar<boolean>;
-
-	establishing: ReactiveVar<boolean>;
-
 	private _keyPair: any;
 
 	private _exportedPublicKey: any;
 
 	private _sessionKey: any;
+
+	peerId: string;
+
+	established: ReactiveVar<boolean>;
+
+	establishing: ReactiveVar<boolean>;
 
 	declined: ReactiveVar<boolean>;
 
@@ -42,14 +43,13 @@ export class OTRRoom implements IOTRRoom {
 	constructor(userId: string, roomId: string) {
 		this._userId = userId;
 		this._roomId = roomId;
+		this._keyPair = null;
+		this._exportedPublicKey = null;
+		this._sessionKey = null;
 		this.peerId = getUidDirectMessage(roomId) as string;
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 		this.isFirstOTR = true;
-
-		this._keyPair = null;
-		this._exportedPublicKey = null;
-		this._sessionKey = null;
 	}
 
 	async handshake(refresh?: boolean): Promise<void> {
@@ -130,11 +130,12 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
-	async importPublicKey(publicKey: any): Promise<void> {
+	async importPublicKey(publicKey: string): Promise<void> {
 		try {
+			const publicKeyObject: publicKeyObject = EJSON.parse(publicKey);
 			const peerPublicKey = await OTR.crypto.importKey(
 				'jwk',
-				EJSON.parse(publicKey),
+				publicKeyObject,
 				{
 					name: 'ECDH',
 					namedCurve: 'P-256',
@@ -142,15 +143,12 @@ export class OTRRoom implements IOTRRoom {
 				false,
 				[],
 			);
-			const bits = await OTR.crypto.deriveBits(
-				{
-					name: 'ECDH',
-					namedCurve: 'P-256',
-					public: peerPublicKey,
-				},
-				this._keyPair.privateKey,
-				256,
-			);
+			const ecdhObj: IOTRAlgorithm = {
+				name: 'ECDH',
+				namedCurve: 'P-256',
+				public: peerPublicKey,
+			};
+			const bits = await OTR.crypto.deriveBits(ecdhObj, this._keyPair.privateKey, 256);
 			const hashedBits = await OTR.crypto.digest(
 				{
 					name: 'SHA-256',
@@ -174,8 +172,8 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
-	async encryptText(data: Uint8Array): Promise<string> {
-		if (!_.isObject(data)) {
+	async encryptText(data: string | Uint8Array): Promise<string> {
+		if (typeof data === 'string' || !_.isObject(data)) {
 			data = new TextEncoder().encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 		const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -225,7 +223,7 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
-	async decrypt(message: string): Promise<EJSONableProperty> {
+	async decrypt(message: string): Promise<IOTRDecrypt | string> {
 		try {
 			let cipherText = EJSON.parse(message) as Uint8Array;
 			const iv = cipherText.slice(0, 12);
@@ -239,7 +237,11 @@ export class OTRRoom implements IOTRRoom {
 				cipherText,
 			);
 
-			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
+			const msgDecoded: IOTRDecrypt = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
+			if (msgDecoded && typeof msgDecoded === 'object' && !!(msgDecoded as IOTRDecrypt)) {
+				return msgDecoded;
+			}
+			return message;
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: String(e) });
 			return message;
