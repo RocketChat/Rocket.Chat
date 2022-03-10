@@ -9,7 +9,7 @@ import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { baseURI } from '../../../client/lib/baseURI';
 
 export class RealAppsEngineUIHost extends AppsEngineUIHost {
-	_baseURL: string;
+	private _baseURL: string;
 
 	constructor() {
 		super();
@@ -28,21 +28,28 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	async getClientRoomInfo(): Promise<{
-		id: any;
-		slugifiedName: any;
-		members: any;
+		id: string;
+		slugifiedName: string;
+		members: {
+			id: string;
+			username: string;
+			avatarUrl: string;
+		}[];
 	}> {
 		const { name: slugifiedName, _id: id } = Rooms.findOne(Session.get('openedRoom'));
 
-		let cachedMembers = [];
 		try {
-			const { members } = await APIClient.get('v1/groups.members', { roomId: id });
+			const { members } = (await APIClient.get('v1/groups.members', { roomId: id })) as { members: { _id: string; username: string }[] };
 
-			cachedMembers = members.map(({ _id, username }: { _id: string; username: string }) => ({
-				id: _id,
-				username,
-				avatarUrl: this.getUserAvatarUrl(username),
-			}));
+			return {
+				id,
+				slugifiedName,
+				members: members.map(({ _id, username }) => ({
+					id: _id,
+					username,
+					avatarUrl: this.getUserAvatarUrl(username),
+				})),
+			};
 		} catch (error) {
 			console.warn(error);
 		}
@@ -50,15 +57,14 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		return {
 			id,
 			slugifiedName,
-			members: cachedMembers,
+			members: [],
 		};
 	}
 
 	async getClientUserInfo(): Promise<IExternalComponentUserInfo> {
 		const user = Meteor.user();
 		if (!user || !user.username) {
-			// throw error?
-			return {} as IExternalComponentUserInfo;
+			throw new Error('User not found');
 		}
 
 		const { username } = user;

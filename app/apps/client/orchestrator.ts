@@ -12,15 +12,16 @@ import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
-const createDeferredValue = (): unknown => {
-	let resolve;
-	let reject;
-	const promise = new Promise((_resolve, _reject) => {
+const createDeferredValue = <T>(): [Promise<T>, (value: T | PromiseLike<T>) => void, (reason?: any) => void] => {
+	let resolve: (value: T | PromiseLike<T>) => void = () => undefined;
+	let reject: (reason?: any) => void = () => undefined;
+
+	const promise = new Promise<T>((_resolve, _reject) => {
 		resolve = _resolve;
 		reject = _reject;
 	});
 
-	return [promise, resolve, reject];
+	return [promise, resolve as any, reject as any];
 };
 
 class AppClientOrchestrator {
@@ -28,9 +29,9 @@ class AppClientOrchestrator {
 
 	_manager: AppClientManager;
 
-	isLoaded: boolean;
+	isLoaded = false;
 
-	deferredIsEnabled: boolean;
+	deferredIsEnabled;
 
 	setEnabled;
 
@@ -40,7 +41,7 @@ class AppClientOrchestrator {
 		this._appClientUIHost = new RealAppsEngineUIHost();
 		this._manager = new AppClientManager(this._appClientUIHost);
 		this.isLoaded = false;
-		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
+		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue<boolean>();
 	}
 
 	load = async (isEnabled: boolean): Promise<void> => {
@@ -53,7 +54,7 @@ class AppClientOrchestrator {
 
 		// Since the deferred value (a promise) is immutable after resolved,
 		// it need to be recreated to resolve a new value
-		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
+		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue<boolean>();
 
 		await handleI18nResources();
 		this.setEnabled(isEnabled);
@@ -73,7 +74,7 @@ class AppClientOrchestrator {
 		}
 	};
 
-	isEnabled = (): boolean => this.deferredIsEnabled;
+	isEnabled = (): Promise<boolean> => this.deferredIsEnabled;
 
 	getApps = async (): Promise<unknown> => {
 		const { apps } = await APIClient.get('apps');

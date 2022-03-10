@@ -1,6 +1,6 @@
 export class Utilities {
-	static getI18nKeyForApp(key: string, appId: string): string {
-		return key && `apps-${appId}-${key}`;
+	static getI18nKeyForApp<K extends string, A extends string>(key: K, appId: A): `apps-${A}-${K}` {
+		return `apps-${appId}-${key}`;
 	}
 
 	static curl(

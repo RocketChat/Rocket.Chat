@@ -332,7 +332,7 @@ settings.watch('Apps_Logs_TTL', (value) => {
 Meteor.startup(function _appServerOrchestrator() {
 	Apps.initialize();
 
-	if (Apps.isEnabled()) {
+	if (Promise.await(Apps.isEnabled())) {
 		Apps.load();
 	}
 });

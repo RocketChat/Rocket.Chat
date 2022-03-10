@@ -10,9 +10,9 @@ export const loadAppI18nResources = (appId: string, languages: TranslationLangua
 		try {
 			// Translations keys must be scoped under app id
 			const scopedTranslations = Object.entries(translations).reduce((translations, [key, value]) => {
-				translations[Utilities.getI18nKeyForApp(key, appId)] = value;
+				translations[Utilities.getI18nKeyForApp(key, appId) as string] = value;
 				return translations;
-			}, {});
+			}, {} as Record<string, string>);
 
 			TAPi18next.addResourceBundle(language, 'project', scopedTranslations);
 		} catch (error) {
