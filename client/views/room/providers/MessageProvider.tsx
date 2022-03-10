@@ -6,6 +6,7 @@ import { IMessage } from '../../../../definition/IMessage';
 import { useLayout } from '../../../contexts/LayoutContext';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
@@ -30,7 +31,8 @@ export const MessageProvider = memo(function MessageProvider({
 
 	const router = useRoute(routeName);
 
-	const messageHeader = useFormatTime();
+	const time = useFormatTime();
+	const dateAndTime = useFormatDateAndTime();
 	const context = useMemo(() => {
 		const openThread =
 			(tmid: string, jump?: string): (() => void) =>
@@ -106,10 +108,11 @@ export const MessageProvider = memo(function MessageProvider({
 				},
 			},
 			formatters: {
-				messageHeader,
+				time,
+				dateAndTime,
 			},
 		};
-	}, [isEmbedded, oembedEnabled, isMobile, broadcast, messageHeader, router, params, rid, routeName, queryStringParams]);
+	}, [isEmbedded, oembedEnabled, isMobile, broadcast, time, dateAndTime, router, params, rid, routeName, queryStringParams]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });
