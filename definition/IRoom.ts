@@ -24,7 +24,9 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	encrypted?: boolean;
-	topic?: any;
+	topic?: string;
+
+	reactWhenReadOnly?: boolean;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids?: Array<string>;
