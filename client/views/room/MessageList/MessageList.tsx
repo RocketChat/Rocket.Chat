@@ -25,7 +25,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	const messages = useMessages({ rid });
 	const subscription = useUserSubscription(rid);
 	const isBroadcast = Boolean(subscription?.broadcast);
-	const messageGroupingPeriod = useSetting('Message_GroupingPeriod') as number;
+	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const format = useFormatDate();
 
 	return (
