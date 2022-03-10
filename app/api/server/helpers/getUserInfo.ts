@@ -1,5 +1,3 @@
-import { IUserCreationOptions } from '@rocket.chat/apps-engine/definition/users';
-
 import { IUser, IUserEmail } from '../../../../definition/IUser';
 import { settings } from '../../../settings/server';
 import { getUserPreference, getURL } from '../../../utils/server';
