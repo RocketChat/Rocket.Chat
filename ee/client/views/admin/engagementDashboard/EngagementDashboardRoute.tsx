@@ -25,7 +25,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		}
 	}, [routeName, engagementDashboardRoute, tab]);
 
-	const statsEvent = useEndpointAction('POST', 'statistics.telemetry', [{ eventName: 'engagementDashboard', timestamp: 123 }]);
+	const statsEvent = useEndpointAction('POST', 'statistics.telemetry', [{ eventName: 'engagementDashboard', timestamp: Date.now() }]);
 	if (!isValidTab(tab)) {
 		return null;
 	}

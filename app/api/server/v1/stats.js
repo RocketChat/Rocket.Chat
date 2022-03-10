@@ -1,6 +1,7 @@
 import { API } from '../api';
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
 import { engagemendDashboardCount } from '../../../../ee/app/settings/server/engagementDashboard';
+import { messageAuditingApplyCount } from '../../../../ee/app/settings/server/messageAuditing';
 
 API.v1.addRoute(
 	'statistics',
@@ -56,6 +57,9 @@ API.v1.addRoute(
 				switch (event.eventName) {
 					case 'engagementDashboard':
 						engagemendDashboardCount();
+						break;
+					case 'messageAuditingApply':
+						messageAuditingApplyCount();
 						break;
 				}
 			});

@@ -42,7 +42,7 @@ const AuditPage = () => {
 		handleUsers(value);
 	});
 
-	const apply = useMutableCallback(() => {
+	const apply = useMutableCallback((eventStats) => {
 		if (!rid && type === '') {
 			return setErrors({
 				rid: t('The_field_is_required', t('Channel_name')),
@@ -72,7 +72,7 @@ const AuditPage = () => {
 		}
 
 		setErrors({});
-
+		eventStats();
 		setData.current({
 			msg,
 			type,
