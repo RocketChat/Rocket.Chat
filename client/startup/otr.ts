@@ -13,10 +13,11 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (Meteor.userId()) {
 			Notifications.onUser('otr', (type: string, data: IOnUserStreamData) => {
-				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
+				const instanceByRoomId = OTR.getInstanceByRoomId(data.roomId);
+				if (!data.roomId || !data.userId || data.userId === Meteor.userId() || !instanceByRoomId) {
 					return;
 				}
-				OTR.getInstanceByRoomId(data.roomId)?.onUserStream(type, data);
+				instanceByRoomId.onUserStream(type, data);
 			});
 		}
 	});
@@ -60,8 +61,8 @@ Meteor.startup(() => {
 				if (typeof otrAck === 'string') {
 					return { ...message, msg: otrAck };
 				}
-				const { text: otrAckText } = otrAck;
-				if (ack === otrAckText) message.t = 'otr-ack';
+
+				if (ack === otrAck.text) message.t = 'otr-ack';
 			} else if (userId !== Meteor.userId()) {
 				const encryptedAck = await otrRoom.encryptText(ack);
 
