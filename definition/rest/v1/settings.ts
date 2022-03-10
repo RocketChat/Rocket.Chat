@@ -18,9 +18,9 @@ export type OauthCustomConfiguration = {
 	authorizePath: string;
 	scope: string;
 	loginStyle: 'popup' | 'redirect';
-	tokenSentVia: string;
-	identityTokenSentVia: string;
-	keyField: string;
+	tokenSentVia: 'header' | 'payload';
+	identityTokenSentVia: 'default' | 'header' | 'payload';
+	keyField: 'username' | 'email';
 	usernameField: string;
 	emailField: string;
 	nameField: string;
