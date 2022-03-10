@@ -5,7 +5,6 @@ import type { IRoom } from '../../IRoom';
 
 const ajv = new Ajv();
 
-// First POST param
 type ChatFollowMessage = {
 	mid: IMessage['_id'];
 };
@@ -23,7 +22,6 @@ const chatFollowMessageSchema: JSONSchemaType<ChatFollowMessage> = {
 
 export const isChatFollowMessage = ajv.compile(chatFollowMessageSchema);
 
-// Second POST param
 type ChatUnfollowMessage = {
 	mid: IMessage['_id'];
 };
@@ -41,7 +39,6 @@ const chatUnfollowMessageSchema: JSONSchemaType<ChatUnfollowMessage> = {
 
 export const isChatUnfollowMessage = ajv.compile(chatUnfollowMessageSchema);
 
-// ENDPOINTS
 export type ChatEndpoints = {
 	'chat.getMessage': {
 		GET: (params: { msgId: IMessage['_id'] }) => {

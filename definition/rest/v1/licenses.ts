@@ -21,7 +21,6 @@ const licensesAddPropsSchema: JSONSchemaType<licensesAddProps> = {
 
 export const isLicensesAdd = ajv.compile(licensesAddPropsSchema);
 
-// ENDPOINTS:
 export type LicensesEndpoints = {
 	'licenses.get': {
 		GET: () => { licenses: Array<ILicense> };

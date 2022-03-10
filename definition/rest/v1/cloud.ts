@@ -4,7 +4,6 @@ import { CloudRegistrationIntentData, CloudConfirmationPollData } from '../../IC
 
 const ajv = new Ajv();
 
-// First POST param
 type CloudManualRegisterProps = {
 	cloudBlob: string;
 };
@@ -22,7 +21,6 @@ const cloudManualRegisterPropsSchema: JSONSchemaType<CloudManualRegisterProps> =
 
 export const isCloudManualRegister = ajv.compile(cloudManualRegisterPropsSchema);
 
-// Second POST param
 type CloudCreateRegistrationIntentProps = {
 	resend: boolean;
 	email: string;
@@ -44,7 +42,6 @@ const cloudCreateRegistrationIntentPropsSchema: JSONSchemaType<CloudCreateRegist
 
 export const isCloudCreateRegistrationIntent = ajv.compile(cloudCreateRegistrationIntentPropsSchema);
 
-// ENDPOINTS
 export type CloudEndpoints = {
 	'cloud.manualRegister': {
 		POST: (params: CloudManualRegisterProps) => void;

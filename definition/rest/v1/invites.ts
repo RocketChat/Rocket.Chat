@@ -5,7 +5,6 @@ import type { IRoom } from '../../IRoom';
 
 const ajv = new Ajv();
 
-// First POST param:
 type v1UseInviteTokenProps = {
 	token: string;
 };
@@ -23,7 +22,6 @@ const v1UseInviteTokenPropsSchema: JSONSchemaType<v1UseInviteTokenProps> = {
 
 export const isV1UseInviteToken = ajv.compile(v1UseInviteTokenPropsSchema);
 
-// Second POST param:
 type v1ValidateInviteTokenProps = {
 	token: string;
 };
@@ -41,7 +39,6 @@ const v1ValidateInviteTokenPropsSchema: JSONSchemaType<v1ValidateInviteTokenProp
 
 export const isV1ValidateInviteToken = ajv.compile(v1ValidateInviteTokenPropsSchema);
 
-// ENDPOINTS:
 export type InvitesEndpoints = {
 	'listInvites': {
 		GET: () => Array<IInvite>;
