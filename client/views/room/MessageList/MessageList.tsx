@@ -10,7 +10,7 @@ import { useFormatDate } from '../../../hooks/useFormatDate';
 import { MessageProvider } from '../providers/MessageProvider';
 import Message from './components/Message';
 import MessageSystem from './components/MessageSystem';
-import { ThreadMessage } from './components/ThreadMessage';
+import { ThreadMessagePreview } from './components/ThreadMessagePreview';
 import { useMessages } from './hooks/useMessages';
 import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
@@ -69,7 +69,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 								)}
 
 								{shouldShowThreadMessage && (
-									<ThreadMessage
+									<ThreadMessagePreview
 										data-system-message={Boolean(message.t)}
 										data-mid={message._id}
 										data-unread={isFirstUnread}
