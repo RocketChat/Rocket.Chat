@@ -1,6 +1,6 @@
 import { API } from '../api';
 
-(API as any).helperMethods.set('isUserFromParams', function _isUserFromParams(this: any) {
+API.helperMethods.set('isUserFromParams', function _isUserFromParams(this: any) {
 	const params = this.requestParams();
 
 	return (

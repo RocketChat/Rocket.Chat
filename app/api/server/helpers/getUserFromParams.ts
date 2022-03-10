@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Users } from '../../../models/server';
 import { API } from '../api';
 
-(API as any).helperMethods.set('getUserFromParams', function _getUserFromParams(this: any) {
+API.helperMethods.set('getUserFromParams', function _getUserFromParams(this: any) {
 	const doesntExist = { _doesntExist: true };
 	let user;
 	const params = this.requestParams();
@@ -26,7 +26,7 @@ import { API } from '../api';
 	return user;
 });
 
-(API as any).helperMethods.set('getUserListFromParams', function _getUserListFromParams(this: any) {
+API.helperMethods.set('getUserListFromParams', function _getUserListFromParams(this: any) {
 	let users;
 	const params = this.requestParams();
 	// if params.userId is provided, include it as well

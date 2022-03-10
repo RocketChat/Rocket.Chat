@@ -4,12 +4,12 @@
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 
-(API as any).helperMethods.set('getPaginationItems', function _getPaginationItems(this: any) {
-	const hardUpperLimitTest = settings.get('API_Upper_Count_Limit');
-	const defaultCountTest = settings.get('API_Default_Count');
+API.helperMethods.set('getPaginationItems', function _getPaginationItems(this: any) {
+	const hardUpperLimitTest = settings.get<number>('API_Upper_Count_Limit');
+	const defaultCountTest = settings.get<number>('API_Default_Count');
 
-	const hardUpperLimit = hardUpperLimitTest && hardUpperLimitTest <= 0 ? 100 : settings.get('API_Upper_Count_Limit');
-	const defaultCount = defaultCountTest && defaultCountTest <= 0 ? 50 : settings.get('API_Default_Count');
+	const hardUpperLimit = hardUpperLimitTest && hardUpperLimitTest <= 0 ? 100 : settings.get<number>('API_Upper_Count_Limit');
+	const defaultCount = defaultCountTest && defaultCountTest <= 0 ? 50 : settings.get<number>('API_Default_Count');
 	const offset = this.queryParams.offset ? parseInt(this.queryParams.offset) : 0;
 	let count = defaultCount;
 
@@ -20,7 +20,7 @@ import { API } from '../api';
 		count = defaultCount;
 	}
 
-	if (count && hardUpperLimit && count > hardUpperLimit) {
+	if (count > hardUpperLimit) {
 		count = hardUpperLimit;
 	}
 

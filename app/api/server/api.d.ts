@@ -189,4 +189,5 @@ declare class APIClass<TBasePath extends string = '/'> {
 export declare const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
+	helperMethods: Map<string, (...args: any[]) => unknown>;
 };

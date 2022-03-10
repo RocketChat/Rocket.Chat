@@ -5,42 +5,39 @@ import { settings } from '../../../settings/server';
 import { getUserPreference, getURL } from '../../../utils/server';
 import { API } from '../api';
 
-(API as any).helperMethods.set('getUserInfo', function _getUserInfo(me: IUser) {
-	const isVerifiedEmail = (): false | IUserEmail | undefined => {
-		if (me?.emails && Array.isArray(me.emails)) {
-			return me.emails.find((email) => email.verified);
-		}
+const isVerifiedEmail = (me: IUser): false | IUserEmail | undefined => {
+	if (!me || !Array.isArray(me.emails)) {
 		return false;
-	};
-	const getUserPreferences = (): {} => {
-		const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
-		const allDefaultUserSettings = settings.getByRegexp(new RegExp(`^${defaultUserSettingPrefix}.*$`));
+	}
 
-		return allDefaultUserSettings.reduce((accumulator: { [key: string]: unknown }, [key]) => {
-			const settingWithoutPrefix = key.replace(defaultUserSettingPrefix, ' ').trim();
-			accumulator[settingWithoutPrefix] = getUserPreference(me, settingWithoutPrefix);
-			return accumulator;
-		}, {});
-	};
-	const verifiedEmail = isVerifiedEmail();
+	return me.emails.find((email) => email.verified);
+};
 
-	if (verifiedEmail && me.emails?.[0]) me.emails[0] = verifiedEmail;
-	else me.emails = undefined;
+const getUserPreferences = (me: IUser): Record<string, unknown> => {
+	const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
+	const allDefaultUserSettings = settings.getByRegexp(new RegExp(`^${defaultUserSettingPrefix}.*$`));
 
-	// me.emails[0] = verifiedEmail ? verifiedEmail.address : undefined;
-
-	// me.options.avatarUrl
-	(me as IUserCreationOptions).avatarUrl = getURL(`/avatar/${me.username}`, { cdn: false, full: true });
+	return allDefaultUserSettings.reduce((accumulator: { [key: string]: unknown }, [key]) => {
+		const settingWithoutPrefix = key.replace(defaultUserSettingPrefix, ' ').trim();
+		accumulator[settingWithoutPrefix] = getUserPreference(me, settingWithoutPrefix);
+		return accumulator;
+	}, {});
+};
+API.helperMethods.set('getUserInfo', function _getUserInfo(me: IUser) {
+	const verifiedEmail = isVerifiedEmail(me);
 
 	const userPreferences = (me.settings && me.settings.preferences) || {};
 
-	me.settings = {
-		profile: {},
-		preferences: {
-			...getUserPreferences(),
-			...userPreferences,
+	return {
+		...me,
+		email: verifiedEmail ? verifiedEmail.address : undefined,
+		settings: {
+			profile: {},
+			preferences: {
+				...getUserPreferences(me),
+				...userPreferences,
+			},
 		},
+		avatarUrl: getURL(`/avatar/${me.username}`, { cdn: false, full: true }),
 	};
-
-	return me;
 });

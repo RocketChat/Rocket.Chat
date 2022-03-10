@@ -1,7 +1,7 @@
 import { Users } from '../../../models/server';
 import { API } from '../api';
 
-(API as any).helperMethods.set(
+API.helperMethods.set(
 	'insertUserObject',
 	function _addUserToObject({ object, userId }: { object: { [key: string]: unknown }; userId: string }) {
 		// Maybe `object: { [key: string]: Meteor.User }`?

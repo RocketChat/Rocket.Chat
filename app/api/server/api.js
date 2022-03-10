@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
-import { Restivus } from 'meteor/rocketchat:restivus-new';
+import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
 import { RateLimiter } from 'meteor/rate-limit';
 
@@ -453,10 +453,8 @@ export class APIClass extends Restivus {
 					return result;
 				};
 
-				if (this.hasHelperMethods()) {
-					for (const [name, helperMethod] of this.getHelperMethods()) {
-						endpoints[method][name] = helperMethod;
-					}
+				for (const [name, helperMethod] of this.getHelperMethods()) {
+					endpoints[method][name] = helperMethod;
 				}
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings

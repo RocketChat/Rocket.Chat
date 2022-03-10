@@ -3,15 +3,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { Users } from '../../../models/server';
 import { API } from '../api';
 
-(API as any).helperMethods.set('getLoggedInUser', function _getLoggedInUser(this: any) {
-	let user;
-
+API.helperMethods.set('getLoggedInUser', function _getLoggedInUser(this: any) {
 	if (this.request.headers['x-auth-token'] && this.request.headers['x-user-id']) {
-		user = Users.findOne({
+		return Users.findOne({
 			'_id': this.request.headers['x-user-id'],
 			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(this.request.headers['x-auth-token']),
 		});
 	}
-
-	return user;
 });
