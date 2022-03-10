@@ -49,6 +49,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 
 			{shouldShowRolesList && <RolesList user={user} isBot={message.bot} />}
 
+			{/* @ts-ignore title should be on fuselage component */}
 			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>
 			{message.private && (
 				// The MessageStatusPrivateIndicator component should not have name prop, it should be fixed on fuselage
