@@ -38,7 +38,7 @@ function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	const ExtensionsPageComponent = useMemo(
 		() =>
 			voipEnabled ? (
-				VoipExtensionsPage
+				<VoipExtensionsPage />
 			) : (
 				<NoResults icon='warning' title={t('Voip_is_disabled')} description={t('Voip_is_disabled_description')}></NoResults>
 			),
