@@ -11,7 +11,7 @@ export const attachMessage = function (
 	text: string;
 	authorName?: string;
 	authorIcon: string;
-	messageLink: string;
+	message_link: string;
 	attachments?: MessageAttachment[];
 	ts: Date;
 } {

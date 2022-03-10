@@ -6,8 +6,8 @@ import s from 'underscore.string';
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../authorization/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms, Subscriptions, Users } from '../../../models';
-import { getValidRoomName } from '../../../utils';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
 import { IUser } from '../../../../definition/IUser';
@@ -143,7 +143,7 @@ export const createRoom = function <T extends RoomType>(
 	if (type === 'c') {
 		if (room.teamId) {
 			const team = Promise.await(Team.getOneById(room.teamId));
-			Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, owner);
+			team && Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, owner);
 		}
 		callbacks.run('afterCreateChannel', owner, room);
 	} else if (type === 'p') {
