@@ -4,7 +4,6 @@ export interface IInstanceStatus {
 		port?: number;
 	};
 
-	// IInstance props
 	address: string;
 	currentStatus: {
 		connected: boolean;
@@ -25,6 +24,5 @@ export interface IInstanceStatus {
 		};
 	};
 
-	// connection props
 	broadcastAuth: boolean;
 }
