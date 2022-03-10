@@ -210,6 +210,7 @@ export class ChatMessages {
 		this.editing.element = element;
 		this.editing.id = message._id;
 		this.input.parentElement.classList.add('editing');
+		element.classList.add('editing');
 		setEditingMessage(message._id);
 
 		if (message.attachments && message.attachments[0].description) {
