@@ -13,7 +13,7 @@ export type VoIpCallerInfo =
 			userState: UserState;
 	  }
 	| {
-			state: 'IN_CALL' | 'OFFER_RECEIVED' | 'ON_HOLD';
+			state: 'IN_CALL' | 'ON_HOLD';
 			userState: UserState;
 			caller: ICallerInfo;
 	  }; // TODO: Check for additional properties and States (E.g. call on hold, muted, etc)
