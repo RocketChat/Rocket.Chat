@@ -1,6 +1,6 @@
 import { useMemo, lazy, useEffect } from 'react';
 
-import { OTR } from './rocketchat.otr';
+import OTR from './OTR';
 import { useSetting } from '../../../client/contexts/SettingsContext';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 

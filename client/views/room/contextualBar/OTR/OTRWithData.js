@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useCallback } from 'react';
 
-import { OTR as ORTInstance } from '../../../../../app/otr/client/rocketchat.otr';
+import ORTInstance from '../../../../../app/otr/client/OTR';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { usePresence } from '../../../../hooks/usePresence';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';

@@ -7,7 +7,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
 
-import { OTR } from './rocketchat.otr';
+import OTR from './OTR';
 import { Notifications } from '../../notifications/client';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { Presence } from '../../../client/lib/presence';

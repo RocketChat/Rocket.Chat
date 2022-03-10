@@ -1,6 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { UserPresence } from '../client/lib/presence';
 import { IMessage } from './IMessage';
+import type { OTRRoom } from '/app/otr/client/OTRRoom';
 
 export interface IOnUserStreamData {
 	roomId: string;
@@ -34,6 +35,14 @@ export interface IOTRRoom {
 	encrypt(message: IMessage): Promise<string>;
 	decrypt(message: string): Promise<IOTRDecrypt | string>;
 	onUserStream(type: string, data: IOnUserStreamData): Promise<void>;
+}
+
+export interface IOTR {
+	enabled: ReactiveVar<boolean>;
+	instancesByRoomId: { [rid: string]: OTRRoom };
+	crypto: SubtleCrypto;
+	isEnabled(): boolean;
+	getInstanceByRoomId(roomId: string): OTRRoom | undefined;
 }
 
 export type publicKeyObject = ReturnType<<T extends U, U extends JsonWebKey>() => T>;
