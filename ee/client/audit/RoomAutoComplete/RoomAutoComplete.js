@@ -1,4 +1,4 @@
-import { AutoComplete, Option } from '@rocket.chat/fuselage';
+import { Option, SelectFiltered } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
@@ -12,27 +12,25 @@ const RoomAutoComplete = (props) => {
 		'rooms.autocomplete.adminRooms',
 		useMemo(() => query(filter), [filter]),
 	);
-	const options = useMemo(
-		() =>
-			(data &&
-				data.items.map(({ name, _id, fname, avatarETag, t }) => ({
-					value: _id,
-					label: { name: fname || name, avatarETag, type: t },
-				}))) ||
-			[],
-		[data],
+	const options = useMemo(() => (data && data.items.map(({ name, _id }) => [_id, name])) || [], [data]);
+
+	const renderSelected = ({ value, label }) => (
+		<Option label={label.name} avatar={<Avatar value={value} room={{ _id: value, ...label }} />} />
+	);
+
+	const renderItem = ({ value, label, ...props }) => (
+		<Option key={value} {...props} label={label.name} avatar={<Avatar value={value} {...label} />} />
 	);
 
 	return (
-		<AutoComplete
+		<SelectFiltered
 			{...props}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value, label }) => <Option label={label.name} avatar={<Avatar value={value} room={{ _id: value, ...label }} />} />}
-			renderItem={({ value, label, ...props }) => (
-				<Option key={value} {...props} label={label.name} avatar={<Avatar value={value} {...label} />} />
-			)}
+			renderSelected={renderSelected}
+			renderItem={renderItem}
 			options={options}
+			addonIcon='magnifier'
 		/>
 	);
 };
