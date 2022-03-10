@@ -1,13 +1,19 @@
 import { action } from '@storybook/addon-actions';
 import React, { ContextType, FC } from 'react';
 
-import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '../../../client/contexts/ServerContext';
+import {
+	ServerContext,
+	ServerMethodName,
+	ServerMethodParameters,
+	ServerMethodReturn,
+	UploadResult,
+} from '../../../client/contexts/ServerContext';
 import { Serialized } from '../../../definition/Serialized';
 import { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '../../../definition/rest';
 
 const logAction = action('ServerProvider');
 
-const randomDelay = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
+const randomDelay = (): Promise<UploadResult> => new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
 
 const absoluteUrl = (path: string): string => new URL(path, '/').toString();
 
@@ -28,7 +34,7 @@ const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 		.then(randomDelay)
 		.then(() => undefined as any);
 
-const uploadToEndpoint = (endpoint: string, params: any, formData: any): Promise<void> =>
+const uploadToEndpoint = (endpoint: string, params: any, formData: any): Promise<UploadResult> =>
 	Promise.resolve(logAction('uploadToEndpoint', endpoint, params, formData)).then(randomDelay);
 
 const getStream = (streamName: string, options: {} = {}): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
