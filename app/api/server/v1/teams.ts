@@ -356,7 +356,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { records, total } = await Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, canUserDelete === 'true', {
+			const booleanCanUserDelete = canUserDelete === 'true';
+			const { records, total } = await Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, booleanCanUserDelete, {
 				offset,
 				count,
 			});
