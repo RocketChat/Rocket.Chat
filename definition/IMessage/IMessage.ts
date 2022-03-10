@@ -93,6 +93,7 @@ export interface IMessage extends IRocketChatRecord {
 	md?: ReturnType<typeof parser>;
 
 	_hidden?: boolean;
+	ignored?: boolean;
 	imported?: boolean;
 	replies?: IUser['_id'][];
 	location?: {
