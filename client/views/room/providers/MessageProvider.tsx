@@ -1,4 +1,3 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
@@ -22,7 +21,7 @@ export const MessageProvider = memo(function MessageProvider({
 	broadcast?: boolean;
 	children: ReactNode;
 }) {
-	const [routeName, params] = useCurrentRoute();
+	const [routeName, params, queryStringParams] = useCurrentRoute();
 	const { isEmbedded, isMobile } = useLayout();
 	const oembedEnabled = Boolean(useSetting('API_Embed'));
 	if (!routeName) {
@@ -100,7 +99,7 @@ export const MessageProvider = memo(function MessageProvider({
 						'd',
 						{ name: message.u.username },
 						{
-							...FlowRouter.current().queryParams,
+							...queryStringParams,
 							reply: message._id,
 						},
 					);
@@ -110,7 +109,7 @@ export const MessageProvider = memo(function MessageProvider({
 				messageHeader,
 			},
 		};
-	}, [isEmbedded, oembedEnabled, isMobile, broadcast, messageHeader, router, params, rid, routeName]);
+	}, [isEmbedded, oembedEnabled, isMobile, broadcast, messageHeader, router, params, rid, routeName, queryStringParams]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });
