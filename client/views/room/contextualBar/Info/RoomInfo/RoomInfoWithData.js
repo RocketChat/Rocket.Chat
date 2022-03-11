@@ -2,7 +2,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
-import { roomTypes, UiTextContext } from '../../../../../../app/utils/client';
+import { UiTextContext } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
@@ -13,6 +13,7 @@ import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesCo
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
@@ -57,7 +58,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRooms', t('Success'));
+	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRooms', t('Rooms_added_successfully'));
 	const convertRoomToTeam = useEndpointActionExperimental(
 		'POST',
 		type === 'c' ? 'channels.convertToTeam' : 'groups.convertToTeam',
@@ -101,7 +102,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			closeModal();
 		};
 
-		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(type)?.getUiText(UiTextContext.LEAVE_WARNING);
 
 		setModal(
 			<WarningModal
@@ -126,7 +127,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			closeModal();
 		};
 
-		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(type)?.getUiText(UiTextContext.HIDE_WARNING);
 
 		setModal(
 			<WarningModal

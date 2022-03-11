@@ -10,7 +10,7 @@ class Administration extends Page {
 	}
 
 	get settingsSearch() {
-		return browser.element('[name=settings-search]');
+		return browser.element('input[type=search]');
 	}
 
 	get layoutLink() {
@@ -53,44 +53,20 @@ class Administration extends Page {
 		return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)');
 	}
 
-	get infoRocketChatTableTitle() {
-		return browser.element('[data-qa="admin-info"] [data-qa="rocket-chat-title"]');
+	get infoDeployment() {
+		return browser.element('.rcx-css-kyq2rf .rcx-css-gfnglw:contains("Deployment")');
 	}
 
-	get infoRocketChatTable() {
-		return browser.element('[data-qa="admin-info"] [data-qa="rocket-chat-list"]');
+	get infoLicense() {
+		return browser.element('.rcx-css-kyq2rf .rcx-css-gfnglw:contains("License")');
 	}
 
-	get infoCommitTableTitle() {
-		return browser.element('[data-qa="admin-info"] [data-qa="commit-title"]');
+	get infoUsage() {
+		return browser.element('.rcx-css-kyq2rf .rcx-css-gfnglw:contains("Usage")');
 	}
 
-	get infoCommitTable() {
-		return browser.element('[data-qa="admin-info"] [data-qa="commit-list"]');
-	}
-
-	get infoRuntimeTableTitle() {
-		return browser.element('[data-qa="admin-info"] [data-qa="runtime-env-title"]');
-	}
-
-	get infoRuntimeTable() {
-		return browser.element('[data-qa="admin-info"] [data-qa="runtime-env-list"]');
-	}
-
-	get infoBuildTableTitle() {
-		return browser.element('[data-qa="admin-info"] [data-qa="build-env-title"]');
-	}
-
-	get infoBuildTable() {
-		return browser.element('[data-qa="admin-info"] [data-qa="build-env-list"]');
-	}
-
-	get infoUsageTableTitle() {
-		return browser.element('[data-qa="admin-info"] [data-qa="usage-list"]');
-	}
-
-	get infoUsageTable() {
-		return browser.element('[data-qa="admin-info"] [data-qa="usage-list"]');
+	get infoFederation() {
+		return browser.element('.rcx-css-kyq2rf .rcx-css-gfnglw:contains("Federation")');
 	}
 
 	get roomsSearchForm() {
@@ -122,23 +98,27 @@ class Administration extends Page {
 	}
 
 	get usersInternalAdmin() {
-		return browser.element('td .rc-table-wrapper').contains('rocketchat.internal.admin.test');
+		return browser.element('.rcx-table__cell:contains("@rocketchat.internal.admin.test")');
+	}
+
+	get usersInRole() {
+		return browser.element('button:contains("Users in role")');
 	}
 
 	get usersFilter() {
-		return browser.element('#users-filter');
+		return browser.element('input[placeholder="Search Users"]');
 	}
 
 	get rolesNewRolesButton() {
-		return browser.element('.rc-button.new-role');
+		return browser.element('button[aria-label="New"]');
 	}
 
 	get rolesPermissionGrid() {
-		return browser.element('.permission-grid');
+		return browser.element('[role=tab]:contains("Permission")');
 	}
 
 	get rolesAdmin() {
-		return browser.element('[title="Admin"]');
+		return browser.element('.rcx-table__cell--header:contains("Admin")');
 	}
 
 	get rolesModerator() {
@@ -154,15 +134,15 @@ class Administration extends Page {
 	}
 
 	get rolesNewRoleName() {
-		return browser.element('[name="name"]');
+		return browser.element('input[placeholder="Role"]');
 	}
 
 	get rolesNewRoleDesc() {
-		return browser.element('[name="description"]');
+		return browser.element('input[placeholder="Description"]');
 	}
 
 	get rolesNewRoleScope() {
-		return browser.element('[name="scope"]');
+		return browser.element('label:contains("Scope")');
 	}
 
 	get rolesAddBtn() {
@@ -557,6 +537,10 @@ class Administration extends Page {
 		return browser.element('[data-qa-reset-setting-id="displayAvatars"]');
 	}
 
+	get accountsDisplayAvatars() {
+		return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_displayAvatars"]');
+	}
+
 	get accountsMergeChannels() {
 		return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_mergeChannels"]');
 	}
@@ -650,8 +634,7 @@ class Administration extends Page {
 	}
 
 	getUserFromList(user) {
-		browser.element('.user-info').should('be.visible');
-		return browser.element('td').contains(user);
+		return browser.element(`.rcx-table__cell:first-child:contains(${user}) figure`).should('be.visible');
 	}
 
 	adminSaveChanges() {
@@ -663,4 +646,4 @@ class Administration extends Page {
 	}
 }
 
-module.exports = new Administration();
+export default new Administration();

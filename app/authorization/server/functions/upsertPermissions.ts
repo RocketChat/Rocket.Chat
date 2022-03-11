@@ -174,7 +174,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		},
 		{ _id: 'send-omnichannel-chat-transcript', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'mail-messages', roles: ['admin'] },
-		{ _id: 'toggle-room-e2e-encryption', roles: ['owner'] },
+		{ _id: 'toggle-room-e2e-encryption', roles: ['owner', 'admin'] },
 		{ _id: 'message-impersonate', roles: ['bot', 'app'] },
 		{ _id: 'create-team', roles: ['admin', 'user'] },
 		{ _id: 'delete-team', roles: ['admin', 'owner'] },
@@ -188,6 +188,18 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'view-all-team-channels', roles: ['admin', 'owner'] },
 		{ _id: 'view-all-teams', roles: ['admin'] },
 		{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
+
+		// VOIP Permissions
+		// allows to manage voip calls configuration
+		{ _id: 'manage-voip-call-settings', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-voip-contact-center-settings', roles: ['livechat-manager', 'admin'] },
+		// allows agent-extension association.
+		{ _id: 'manage-agent-extension-association', roles: ['admin'] },
+		{ _id: 'view-agent-extension-association', roles: ['livechat-manager', 'admin', 'livechat-agent'] },
+		// allows to receive a voip call
+		{ _id: 'inbound-voip-calls', roles: ['livechat-agent'] },
+
 		{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-apps', roles: ['admin'] },
 		{ _id: 'post-readonly', roles: ['admin', 'owner', 'moderator'] },
@@ -275,7 +287,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			try {
 				await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });
 			} catch (e) {
-				if (!e.message.includes('E11000')) {
+				if (!(e as Error).message.includes('E11000')) {
 					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
 					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
 					await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });

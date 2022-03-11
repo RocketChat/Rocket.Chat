@@ -65,14 +65,8 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 		handleAttached,
 	} = handlers;
 
-	const onChangeUsers = useMutableCallback((value, action) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return handleUsers([...users, value]);
-		}
-		handleUsers(users.filter((current) => current !== value));
+	const onChangeUsers = useMutableCallback((value) => {
+		handleUsers(value);
 	});
 
 	const handlePrune = useMutableCallback(async () => {
@@ -106,7 +100,7 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 			closeModal();
 			reset();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error.message });
 			closeModal();
 		}
 	});

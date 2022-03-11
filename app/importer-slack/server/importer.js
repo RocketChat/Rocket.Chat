@@ -287,7 +287,7 @@ export class SlackImporter extends Base {
 
 	parseMentions(newMessage) {
 		const mentionsParser = new MentionsParser({
-			pattern: () => settings.get('UTF8_User_Names_Validation'),
+			pattern: () => '[0-9a-zA-Z]+',
 			useRealName: () => settings.get('UI_Use_Real_Name'),
 			me: () => 'me',
 		});
@@ -534,6 +534,9 @@ export class SlackImporter extends Base {
 	}
 
 	_replaceSlackUserIds(members) {
+		if (!members?.length) {
+			return [];
+		}
 		return members.map((userId) => this._replaceSlackUserId(userId));
 	}
 

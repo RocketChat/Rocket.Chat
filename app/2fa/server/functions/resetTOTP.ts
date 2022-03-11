@@ -15,7 +15,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 	}
 
 	const language = user.language || settings.get('Language') || 'en';
-	const addresses = user.emails?.filter(({ verified }: { verified: boolean }) => verified).map((e) => e.address);
+	const addresses = user.emails?.filter(({ verified }) => Boolean(verified)).map((e) => e.address);
 	if (!addresses?.length) {
 		return;
 	}

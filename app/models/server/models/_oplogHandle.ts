@@ -5,6 +5,7 @@ import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { urlParser } from './_oplogUrlParser';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
 class CustomOplogHandle {
 	dbName: string;
@@ -206,7 +207,7 @@ class CustomOplogHandle {
 
 let oplogHandle: CustomOplogHandle;
 
-if (!process.env.DISABLE_DB_WATCH) {
+if (!isRunningMs()) {
 	const disableOplog = !!(global.Package as any)['disable-oplog'];
 
 	if (disableOplog) {
@@ -219,10 +220,6 @@ if (!process.env.DISABLE_DB_WATCH) {
 }
 
 export const getOplogHandle = async (): Promise<OplogHandle | CustomOplogHandle | undefined> => {
-	if (process.env.DISABLE_DB_WATCH) {
-		return;
-	}
-
 	if (oplogHandle) {
 		return oplogHandle;
 	}

@@ -33,7 +33,7 @@ export function compareUserPasswordHistory(user: IUser, pass: IPassword): boolea
 			algorithm: 'sha-256' as const,
 		};
 
-		const passCheck = Accounts._checkPassword(user, historyPassword);
+		const passCheck = Accounts._checkPassword(user as Meteor.User, historyPassword);
 
 		if (!passCheck.error) {
 			user.services.password.bcrypt = currentPassword;

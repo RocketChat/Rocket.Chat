@@ -1,11 +1,13 @@
 import { useLayoutEffect, memo } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
+import { RoomType } from '../../../../definition/RoomType';
 import { Store } from '../lib/Toolbox/generator';
 import { ToolboxAction } from '../lib/Toolbox/index';
 
-const groupsDict = {
+const groupsDict: Record<RoomType, string> = {
 	l: 'live',
+	v: 'voip',
 	d: 'direct',
 	p: 'group',
 	c: 'channel',
@@ -17,7 +19,7 @@ const getGroup = (room: IRoom): string => {
 		return 'team';
 	}
 
-	if (group === groupsDict.d && room.uids.length > 2) {
+	if (group === groupsDict.d && (room.uids?.length ?? 0) > 2) {
 		return 'direct_multiple';
 	}
 

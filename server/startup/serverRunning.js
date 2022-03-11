@@ -10,6 +10,7 @@ import { Info, getMongoInfo } from '../../app/utils/server';
 import { Users } from '../../app/models/server';
 import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 import { showErrorBox, showWarningBox, showSuccessBox } from '../lib/logger/showBox';
+import { isRunningMs } from '../lib/isRunningMs';
 
 const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -47,7 +48,7 @@ Meteor.startup(function () {
 
 		msg = msg.join('\n');
 
-		if (!process.env.DISABLE_DB_WATCH && !oplogEnabled) {
+		if (!isRunningMs() && !oplogEnabled) {
 			msg += [
 				'',
 				'',
