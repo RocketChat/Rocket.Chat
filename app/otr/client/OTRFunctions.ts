@@ -16,8 +16,8 @@ export const encryptAES = async ({
 	iv: Uint8Array;
 	_sessionKey: CryptoKey;
 	data: Uint8Array;
-}): Promise<Uint8Array> => {
-	return await OTR.crypto.encrypt(
+}): Promise<Uint8Array> =>
+	await OTR.crypto.encrypt(
 		{
 			name: 'AES-GCM',
 			iv,
@@ -25,20 +25,17 @@ export const encryptAES = async ({
 		_sessionKey,
 		data,
 	);
-};
-export const digest = async (bits: ArrayBuffer): Promise<ArrayBuffer> => {
-	return await OTR.crypto.digest(
+export const digest = async (bits: ArrayBuffer): Promise<ArrayBuffer> =>
+	await OTR.crypto.digest(
 		{
 			name: 'SHA-256',
 		},
 		bits,
 	);
-};
-export const deriveBits = async ({ ecdhObj, _keyPair }: { ecdhObj: IOTRAlgorithm; _keyPair: CryptoKeyPair }): Promise<ArrayBuffer> => {
-	return await OTR.crypto.deriveBits(ecdhObj, _keyPair.privateKey, 256);
-};
-export const importKey = async (publicKeyObject: JsonWebKey): Promise<CryptoKey> => {
-	return await OTR.crypto.importKey(
+export const deriveBits = async ({ ecdhObj, _keyPair }: { ecdhObj: IOTRAlgorithm; _keyPair: CryptoKeyPair }): Promise<ArrayBuffer> =>
+	await OTR.crypto.deriveBits(ecdhObj, _keyPair.privateKey, 256);
+export const importKey = async (publicKeyObject: JsonWebKey): Promise<CryptoKey> =>
+	await OTR.crypto.importKey(
 		'jwk',
 		publicKeyObject,
 		{
@@ -48,9 +45,8 @@ export const importKey = async (publicKeyObject: JsonWebKey): Promise<CryptoKey>
 		false,
 		[],
 	);
-};
-export const importKeyRaw = async (sessionKeyData: Uint8Array): Promise<CryptoKey> => {
-	return await OTR.crypto.importKey(
+export const importKeyRaw = async (sessionKeyData: Uint8Array): Promise<CryptoKey> =>
+	await OTR.crypto.importKey(
 		'raw',
 		sessionKeyData,
 		{
@@ -59,12 +55,9 @@ export const importKeyRaw = async (sessionKeyData: Uint8Array): Promise<CryptoKe
 		false,
 		['encrypt', 'decrypt'],
 	);
-};
-export const exportKey = async (_keyPair: CryptoKey): Promise<JsonWebKey> => {
-	return await OTR.crypto.exportKey('jwk', _keyPair);
-};
-export const generateKeyPair = async () => {
-	return await OTR.crypto.generateKey(
+export const exportKey = async (_keyPair: CryptoKey): Promise<JsonWebKey> => await OTR.crypto.exportKey('jwk', _keyPair);
+export const generateKeyPair = async (): Promise<CryptoKeyPair> =>
+	await OTR.crypto.generateKey(
 		{
 			name: 'ECDH',
 			namedCurve: 'P-256',
@@ -72,7 +65,6 @@ export const generateKeyPair = async () => {
 		false,
 		['deriveKey', 'deriveBits'],
 	);
-};
 export const decryptAES = async (cipherText: Uint8Array, _sessionKey: CryptoKey): Promise<ArrayBuffer> => {
 	const iv = cipherText.slice(0, 12);
 	cipherText = cipherText.slice(12);
