@@ -134,8 +134,7 @@ export class OTRRoom implements IOTRRoom {
 
 	async importPublicKey(publicKey: string): Promise<void> {
 		try {
-			const _keyPair = this._keyPair;
-			if (!_keyPair) throw new Error('No key pair');
+			if (!this._keyPair) throw new Error('No key pair');
 			const publicKeyObject: JsonWebKey = EJSON.parse(publicKey);
 			const peerPublicKey = await importKey(publicKeyObject);
 			const ecdhObj: IOTRAlgorithm = {
@@ -143,7 +142,7 @@ export class OTRRoom implements IOTRRoom {
 				namedCurve: 'P-256',
 				public: peerPublicKey,
 			};
-			const bits = await deriveBits({ ecdhObj, _keyPair });
+			const bits = await deriveBits({ ecdhObj, _keyPair: this._keyPair });
 			const hashedBits = await digest(bits);
 			// We truncate the hash to 128 bits.
 			const sessionKeyData = new Uint8Array(hashedBits).slice(0, 16);
@@ -161,9 +160,8 @@ export class OTRRoom implements IOTRRoom {
 		try {
 			if (!this._sessionKey) throw new Error('Session Key not available');
 
-			const _sessionKey = this._sessionKey;
 			const iv = crypto.getRandomValues(new Uint8Array(12));
-			const encryptedData = await encryptAES({ iv, _sessionKey, data });
+			const encryptedData = await encryptAES({ iv, _sessionKey: this._sessionKey, data });
 
 			const output = joinEncryptedData({ encryptedData, iv });
 
