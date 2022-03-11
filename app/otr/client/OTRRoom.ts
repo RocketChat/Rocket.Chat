@@ -131,7 +131,7 @@ export class OTRRoom implements IOTRRoom {
 
 	async importPublicKey(publicKey: string): Promise<void> {
 		try {
-			const publicKeyObject: JsonWebKey = EJSON.parse<JsonWebKey>(publicKey);
+			const publicKeyObject: JsonWebKey = EJSON.parse(publicKey);
 			const peerPublicKey = await OTR.crypto.importKey(
 				'jwk',
 				publicKeyObject,
@@ -224,7 +224,7 @@ export class OTRRoom implements IOTRRoom {
 
 	async decrypt(message: string): Promise<IOTRDecrypt | string> {
 		try {
-			let cipherText = EJSON.parse(message) as Uint8Array;
+			let cipherText: Uint8Array = EJSON.parse(message);
 			const iv = cipherText.slice(0, 12);
 			cipherText = cipherText.slice(12);
 			const data = await OTR.crypto.decrypt(
