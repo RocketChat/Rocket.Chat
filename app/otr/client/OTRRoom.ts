@@ -237,7 +237,7 @@ export class OTRRoom implements IOTRRoom {
 			);
 
 			const msgDecoded: IOTRDecrypt = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
-			if (msgDecoded && typeof msgDecoded === 'object' && !!(msgDecoded as IOTRDecrypt)) {
+			if (msgDecoded && typeof msgDecoded === 'object') {
 				return msgDecoded;
 			}
 			return message;
