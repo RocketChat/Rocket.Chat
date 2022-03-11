@@ -28,9 +28,26 @@ const permissionUpdatePropsSchema: JSONSchemaType<PermissionsUpdateProps> = {
 
 export const isBodyParamsValidPermissionUpdate = ajv.compile(permissionUpdatePropsSchema);
 
+type PermissionsListAll = {
+	updatedSince?: string;
+};
+
+const PermissionsListAllSchema: JSONSchemaType<PermissionsListAll> = {
+	type: 'object',
+	properties: {
+		updatedSince: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isPermissionsListAll = ajv.compile(PermissionsListAllSchema);
+
 export type PermissionsEndpoints = {
 	'permissions.listAll': {
-		GET: (params: { updatedSince?: string }) => {
+		GET: (params: PermissionsListAll) => {
 			update: IPermission[];
 			remove: IPermission[];
 		};

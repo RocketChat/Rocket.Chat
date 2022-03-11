@@ -22,14 +22,48 @@ const users2faSendEmailCodePropsSchema: JSONSchemaType<users2faSendEmailCodeProp
 
 export const isUsers2faSendEmailCode = ajv.compile(users2faSendEmailCodePropsSchema);
 
+type UsersAutocomplete = {
+	selector: string;
+};
+
+const UsersAutocompleteSchema: JSONSchemaType<UsersAutocomplete> = {
+	type: 'object',
+	properties: {
+		selector: {
+			type: 'string',
+		},
+	},
+	required: ['selector'],
+	additionalProperties: false,
+};
+
+export const isUsersAutocomplete = ajv.compile(UsersAutocompleteSchema);
+
+type UsersListTeams = {
+	userId: IUser['_id'];
+};
+
+const UsersListTeamsSchema: JSONSchemaType<UsersListTeams> = {
+	type: 'object',
+	properties: {
+		userId: {
+			type: 'string',
+		},
+	},
+	required: ['userId'],
+	additionalProperties: false,
+};
+
+export const isUsersListTeams = ajv.compile(UsersListTeamsSchema);
+
 export type UsersEndpoints = {
 	'users.2fa.sendEmailCode': {
 		POST: (params: users2faSendEmailCodeProps) => void;
 	};
 	'users.autocomplete': {
-		GET: (params: { selector: string }) => { items: IUser[] };
+		GET: (params: UsersAutocomplete) => { items: IUser[] };
 	};
 	'users.listTeams': {
-		GET: (params: { userId: IUser['_id'] }) => { teams: Array<ITeam> };
+		GET: (params: UsersListTeams) => { teams: Array<ITeam> };
 	};
 };

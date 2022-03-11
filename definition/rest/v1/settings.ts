@@ -1,5 +1,26 @@
+import Ajv, { JSONSchemaType } from 'ajv';
+
 import { ISetting, ISettingColor } from '../../ISetting';
 import { PaginatedResult } from '../helpers/PaginatedResult';
+
+const ajv = new Ajv();
+
+type SettingsAddCustomOAuth = {
+	name: string;
+};
+
+const SettingsAddCustomOAuthSchema: JSONSchemaType<SettingsAddCustomOAuth> = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+	},
+	required: ['name'],
+	additionalProperties: false,
+};
+
+export const isSettingsAddCustomOAuth = ajv.compile(SettingsAddCustomOAuthSchema);
 
 type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsActions | SettingsUpdatePropsColor;
 
@@ -77,7 +98,7 @@ export type SettingsEndpoints = {
 	};
 
 	'settings.addCustomOAuth': {
-		POST: (params: { name: string }) => void;
+		POST: (params: SettingsAddCustomOAuth) => void;
 	};
 
 	'settings': {

@@ -51,14 +51,80 @@ const roomsCreateDiscussionPropsSchema: JSONSchemaType<roomsCreateDiscussionProp
 
 export const isRoomsCreateDiscussion = ajv.compile(roomsCreateDiscussionPropsSchema);
 
+type RoomsAutocompleteChannelAndPrivate = {
+	selector: string;
+};
+
+const RoomsAutocompleteChannelAndPrivateSchema: JSONSchemaType<RoomsAutocompleteChannelAndPrivate> = {
+	type: 'object',
+	properties: {
+		selector: {
+			type: 'string',
+		},
+	},
+	required: ['selector'],
+	additionalProperties: false,
+};
+
+export const isRoomsAutocompleteChannelAndPrivate = ajv.compile(RoomsAutocompleteChannelAndPrivateSchema);
+
+type RoomsAutocompleteChannelAndPrivateWithPagination = {
+	selector: string;
+	offset?: number;
+	count?: number;
+	sort?: string;
+};
+
+const RoomsAutocompleteChannelAndPrivateWithPaginationSchema: JSONSchemaType<RoomsAutocompleteChannelAndPrivateWithPagination> = {
+	type: 'object',
+	properties: {
+		selector: {
+			type: 'string',
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['selector'],
+	additionalProperties: false,
+};
+
+export const isRoomsAutocompleteChannelAndPrivateWithPagination = ajv.compile(RoomsAutocompleteChannelAndPrivateWithPaginationSchema);
+
+type RoomsAutocompleteAvailableForTeams = {
+	name: string;
+};
+
+const RoomsAutocompleteAvailableForTeamsSchema: JSONSchemaType<RoomsAutocompleteAvailableForTeams> = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+	},
+	required: ['name'],
+	additionalProperties: false,
+};
+
+export const isRoomsAutocompleteAvailableForTeams = ajv.compile(RoomsAutocompleteAvailableForTeamsSchema);
+
 export type RoomsEndpoints = {
 	'rooms.autocomplete.channelAndPrivate': {
-		GET: (params: { selector: string }) => {
+		GET: (params: RoomsAutocompleteChannelAndPrivate) => {
 			items: IRoom[];
 		};
 	};
 	'rooms.autocomplete.channelAndPrivate.withPagination': {
-		GET: (params: { selector: string; offset?: number; count?: number; sort?: string }) => {
+		GET: (params: RoomsAutocompleteChannelAndPrivateWithPagination) => {
 			items: IRoom[];
 			count: number;
 			offset: number;
@@ -66,7 +132,7 @@ export type RoomsEndpoints = {
 		};
 	};
 	'rooms.autocomplete.availableForTeams': {
-		GET: (params: { name: string }) => {
+		GET: (params: RoomsAutocompleteAvailableForTeams) => {
 			items: IRoom[];
 		};
 	};

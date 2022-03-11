@@ -136,6 +136,35 @@ const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRolePr
 
 export const isRoleRemoveUserFromRoleProps = ajv.compile(roleRemoveUserFromRolePropsSchema);
 
+type rolesGetUsersInRole = {
+	roomId: string;
+	role: string;
+	offset: number;
+	count: number;
+};
+
+const rolesGetUsersInRoleSchema: JSONSchemaType<rolesGetUsersInRole> = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		role: {
+			type: 'string',
+		},
+		offset: {
+			type: 'number',
+		},
+		count: {
+			type: 'number',
+		},
+	},
+	required: ['roomId', 'role', 'offset', 'count'],
+	additionalProperties: false,
+};
+
+export const isrolesGetUsersInRole = ajv.compile(rolesGetUsersInRoleSchema);
+
 type RoleSyncProps = {
 	updatedSince?: string;
 };
@@ -167,7 +196,7 @@ export type RolesEndpoints = {
 	};
 
 	'roles.getUsersInRole': {
-		GET: (params: { roomId: string; role: string; offset: number; count: number }) => {
+		GET: (params: rolesGetUsersInRole) => {
 			users: IUser[];
 			total: number;
 		};
