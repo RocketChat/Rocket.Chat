@@ -28,6 +28,13 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 	}, [voipClient]);
 	// TODO: move registration flow to context provider
 	const handleVoipCallStatusChange = useMutableCallback((): void => {
+		const { state } = voipClient.callerInfo;
+
+		if (['IN_CALL', 'ON_HOLD'].includes(state)) {
+			// Any of the 2 states means the user is already talking
+			// So if the caller info is any of those, we will prevent status change
+			return;
+		}
 		// TODO: backend set voip call status
 		// voipClient.setVoipCallStatus(!registered);
 		if (agentEnabled) {

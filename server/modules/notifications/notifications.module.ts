@@ -258,9 +258,9 @@ export class NotificationsModule {
 			// DEPRECATED
 			// Keep compatibility between old and new events
 			if (e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing'))) {
-				streamRoom.emit(`${rid}/typing`, username, _activity.includes('user-typing'));
+				streamRoom._emit(`${rid}/typing`, [username, _activity.includes('user-typing')], this.connection, true);
 			} else if (e === 'typing') {
-				streamRoom.emit(`${rid}/user-activity`, username, _activity ? ['user-typing'] : [], extraData);
+				streamRoom._emit(`${rid}/user-activity`, [username, _activity ? ['user-typing'] : [], extraData], this.connection, true);
 			}
 
 			return true;

@@ -30,4 +30,11 @@ export interface IOmnichannelVoipService {
 	): Promise<void>;
 	getExtensionListWithAgentData(): Promise<IVoipExtensionWithAgentInfo[]>;
 	findVoipRooms(filter: FindVoipRoomsParams): Promise<PaginatedResult<{ rooms: IVoipRoom[] }>>;
+	getAvailableAgents(
+		includeExtension?: string,
+		text?: string,
+		count?: number,
+		offset?: number,
+		sort?: Record<string, unknown>,
+	): Promise<{ agents: ILivechatAgent[]; total: number }>;
 }
