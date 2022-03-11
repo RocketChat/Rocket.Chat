@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
 import Header from '../../../components/Header';
@@ -11,7 +11,10 @@ type ParentRoomWithEndpointDataProps = {
 };
 
 const ParentRoomWithEndpointData = ({ rid }: ParentRoomWithEndpointDataProps): ReactElement | null => {
-	const { phase, value } = useEndpointData('rooms.info', { roomId: rid });
+	const { phase, value } = useEndpointData(
+		'rooms.info',
+		useMemo(() => ({ roomId: rid }), [rid]),
+	);
 
 	if (AsyncStatePhase.LOADING === phase) {
 		return <Header.Tag.Skeleton />;
