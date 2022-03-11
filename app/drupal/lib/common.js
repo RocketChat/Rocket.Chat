@@ -27,7 +27,7 @@ const Drupal = new CustomOAuth('drupal', config);
 
 if (Meteor.isServer) {
 	Meteor.startup(function () {
-		settings.get('API_Drupal_URL', function (key, value) {
+		settings.watch('API_Drupal_URL', function (value) {
 			config.serverURL = value;
 			Drupal.configure(config);
 		});

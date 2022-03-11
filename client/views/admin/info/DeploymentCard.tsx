@@ -2,7 +2,7 @@ import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, ReactElement } from 'react';
 
-import { IInstance } from '../../../../definition/IInstance';
+import { IInstanceStatus } from '../../../../definition/IInstanceStatus';
 import { IServerInfo } from '../../../../definition/IServerInfo';
 import { IStats } from '../../../../definition/IStats';
 import Card from '../../../components/Card';
@@ -13,7 +13,7 @@ import InstancesModal from './InstancesModal';
 
 type DeploymentCardProps = {
 	info: IServerInfo;
-	instances: Array<IInstance>;
+	instances: Array<IInstanceStatus>;
 	statistics: IStats;
 };
 
