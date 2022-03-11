@@ -50,6 +50,11 @@ export class AppMessageBridge extends MessageBridge {
 		updateMessage(msg, editor);
 	}
 
+	protected async delete(messageId: string, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is deleting a message.`);
+		Messages.removeById(messageId);
+	}
+
 	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is notifying a user.`);
 

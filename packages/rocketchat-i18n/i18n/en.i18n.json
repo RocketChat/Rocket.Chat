@@ -515,6 +515,7 @@
   "Apps_Permissions_server-setting_write": "Modify settings in this server",
   "Apps_Permissions_room_read": "Access room information",
   "Apps_Permissions_room_write": "Create and modify rooms",
+  "Apps_Permissions_message_delete": "Delete messages",
   "Apps_Permissions_message_read": "Access messages",
   "Apps_Permissions_message_write": "Send and modify messages",
   "Apps_Permissions_livechat-status_read": "Access Livechat status information",
