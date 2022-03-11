@@ -2,19 +2,15 @@ import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../lib/asyncState';
 import UserAvatar from '../avatar/UserAvatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const UserAutoCompleteMultiple = ({ valueIsId = false, ...props }) => {
-	const t = useTranslation();
+const UserAutoCompleteMultiple = (props) => {
 	const [filter, setFilter] = useState('');
-	const [labelData, setLabelData] = useState({});
 	const debouncedFilter = useDebouncedValue(filter, 1000);
-	const { value: data, phase } = useEndpointData(
+	const { value: data } = useEndpointData(
 		'users.autocomplete',
 		useMemo(() => query(debouncedFilter), [debouncedFilter]),
 	);
