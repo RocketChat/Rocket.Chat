@@ -19,12 +19,12 @@ const UserAutoCompleteMultiple = ({ valueIsId = false, ...props }) => {
 		useMemo(() => query(debouncedFilter), [debouncedFilter]),
 	);
 	const options = useMemo(
-		() => (data && data.items.map((user) => [valueIsId ? user._id : user.username, user.name])) || [],
+		() => data?.items.map((user) => [valueIsId ? user._id : user.username, user.name || user.username]) || [],
 		[data, valueIsId],
 	);
 
 	useEffect(() => {
-		const newLabelData = Object.fromEntries((data && data.items.map((user) => [user._id, user.username])) || []);
+		const newLabelData = Object.fromEntries(data?.items.map((user) => [user._id, user.username]) || []);
 		setLabelData((labelData) => ({ ...labelData, ...newLabelData }));
 	}, [data]);
 
