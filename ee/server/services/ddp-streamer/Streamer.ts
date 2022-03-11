@@ -58,7 +58,7 @@ export class Stream extends Streamer {
 
 		for await (const { subscription } of subscriptions) {
 			if (this.retransmitToSelf === false && origin && origin === subscription.connection) {
-				return;
+				continue;
 			}
 
 			if (await this.isEmitAllowed(subscription, eventName, ...args)) {
