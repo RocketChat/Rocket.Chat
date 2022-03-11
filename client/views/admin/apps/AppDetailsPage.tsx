@@ -7,8 +7,8 @@ import Page from '../../../components/Page';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import APIsDisplay from './APIsDisplay';
+import AppDetailsHeader from './AppDetailsHeader';
 import AppDetailsPageContent from './AppDetailsPageContent';
-import AppDetailsPageHeader from './AppDetailsPageHeader';
 import LoadingDetails from './LoadingDetails';
 import SettingsDisplay from './SettingsDisplay';
 import { handleAPIError } from './helpers';
@@ -39,6 +39,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const { settings, apis } = { settings: {}, apis: [], ...data };
 
 	const showApis = apis.length;
+	const { installed } = data || {};
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
@@ -82,17 +83,14 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 	const { isSelectedDetails, isSelectedLogs, isSelectedSettings } = selectedTab;
 
-	const shouldRunEventFunction = (flag: boolean, callback: MouseEventHandler<HTMLElement>): MouseEventHandler<HTMLElement> | undefined => {
-		if (flag) return callback;
-	};
-
 	const isSettingsTabSelected = Boolean(settings && Object.values(settings).length && isSelectedSettings);
-	const isSettingsTabEnabled = Boolean(settings && Object.values(settings).length);
+	const isSettingsTabEnabled = Boolean(settings && Object.values(settings).length && installed);
 
 	const isDetailsTabSelected = isSelectedDetails;
 	const areApisVisible = Boolean(isSelectedDetails && !!showApis);
 
 	const isLogsTabSelected = isSelectedLogs;
+	const isLogsTabEnabled = Boolean(installed);
 
 	return (
 		<Page flexDirection='column'>
@@ -113,22 +111,22 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 					{!data && <LoadingDetails />}
 					{data && (
 						<>
-							<AppDetailsPageHeader app={data} />
+							<AppDetailsHeader app={data} />
 
 							<Tabs mis='-x24' mb='x36'>
 								<Tabs.Item onClick={selectTab} selected={isSelectedDetails}>
 									{t('Details')}
 								</Tabs.Item>
-								<Tabs.Item onClick={selectTab} selected={isSelectedLogs}>
-									{t('Logs')}
-								</Tabs.Item>
-								<Tabs.Item
-									onClick={shouldRunEventFunction(isSettingsTabEnabled, selectTab)}
-									selected={isSelectedSettings}
-									disabled={!isSettingsTabEnabled}
-								>
-									{t('Settings')}
-								</Tabs.Item>
+								{isLogsTabEnabled && (
+									<Tabs.Item onClick={selectTab} selected={isSelectedLogs}>
+										{t('Logs')}
+									</Tabs.Item>
+								)}
+								{isSettingsTabEnabled && (
+									<Tabs.Item onClick={selectTab} selected={isSelectedSettings} disabled={!isSettingsTabEnabled}>
+										{t('Settings')}
+									</Tabs.Item>
+								)}
 							</Tabs>
 
 							{isDetailsTabSelected && <AppDetailsPageContent app={data} />}
