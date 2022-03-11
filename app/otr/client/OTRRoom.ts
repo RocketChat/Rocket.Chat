@@ -16,18 +16,28 @@ import { IMessage } from '../../../definition/IMessage';
 import { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom, userPresenceUsername } from '../../../definition/IOTR';
 import { Notifications } from '../../notifications/client';
 import { otrSystemMessages } from '../lib/constants';
-import OTR from './OTR';
+import {
+	generateKeyPair,
+	exportKey,
+	importKey,
+	deriveBits,
+	digest,
+	importKeyRaw,
+	encryptAES,
+	joinEncryptedData,
+	decryptAES,
+} from './OTRFunctions';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
 
 	private _roomId: string;
 
-	private _keyPair: any;
+	private _keyPair: CryptoKeyPair | null;
 
-	private _exportedPublicKey: any;
+	private _exportedPublicKey: JsonWebKey | null;
 
-	private _sessionKey: any;
+	private _sessionKey: CryptoKey | null;
 
 	peerId: string;
 
@@ -111,16 +121,9 @@ export class OTRRoom implements IOTRRoom {
 	async generateKeyPair(): Promise<void> {
 		try {
 			// Generate an ephemeral key pair.
-			this._keyPair = await OTR.crypto.generateKey(
-				{
-					name: 'ECDH',
-					namedCurve: 'P-256',
-				},
-				false,
-				['deriveKey', 'deriveBits'],
-			);
+			this._keyPair = await generateKeyPair();
 
-			this._exportedPublicKey = await OTR.crypto.exportKey('jwk', this._keyPair.publicKey);
+			this._exportedPublicKey = await exportKey(this._keyPair.publicKey);
 
 			// Once we have generated new keys, it's safe to delete old messages
 			Meteor.call('deleteOldOTRMessages', this._roomId);
@@ -131,41 +134,21 @@ export class OTRRoom implements IOTRRoom {
 
 	async importPublicKey(publicKey: string): Promise<void> {
 		try {
+			const _keyPair = this._keyPair;
+			if (!_keyPair) throw new Error('No key pair');
 			const publicKeyObject: JsonWebKey = EJSON.parse(publicKey);
-			const peerPublicKey = await OTR.crypto.importKey(
-				'jwk',
-				publicKeyObject,
-				{
-					name: 'ECDH',
-					namedCurve: 'P-256',
-				},
-				false,
-				[],
-			);
+			const peerPublicKey = await importKey(publicKeyObject);
 			const ecdhObj: IOTRAlgorithm = {
 				name: 'ECDH',
 				namedCurve: 'P-256',
 				public: peerPublicKey,
 			};
-			const bits = await OTR.crypto.deriveBits(ecdhObj, this._keyPair.privateKey, 256);
-			const hashedBits = await OTR.crypto.digest(
-				{
-					name: 'SHA-256',
-				},
-				bits,
-			);
+			const bits = await deriveBits({ ecdhObj, _keyPair });
+			const hashedBits = await digest(bits);
 			// We truncate the hash to 128 bits.
 			const sessionKeyData = new Uint8Array(hashedBits).slice(0, 16);
 			// Session key available.
-			this._sessionKey = await OTR.crypto.importKey(
-				'raw',
-				sessionKeyData,
-				{
-					name: 'AES-GCM',
-				},
-				false,
-				['encrypt', 'decrypt'],
-			);
+			this._sessionKey = await importKeyRaw(sessionKeyData);
 		} catch (e) {
 			throw e;
 		}
@@ -175,21 +158,14 @@ export class OTRRoom implements IOTRRoom {
 		if (typeof data === 'string' || !_.isObject(data)) {
 			data = new TextEncoder().encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
-		const iv = crypto.getRandomValues(new Uint8Array(12));
 		try {
-			let cipherText = await OTR.crypto.encrypt(
-				{
-					name: 'AES-GCM',
-					iv,
-				},
-				this._sessionKey,
-				data,
-			);
+			if (!this._sessionKey) throw new Error('Session Key not available');
 
-			cipherText = new Uint8Array(cipherText);
-			const output = new Uint8Array(iv.length + cipherText.length);
-			output.set(iv, 0);
-			output.set(cipherText, iv.length);
+			const _sessionKey = this._sessionKey;
+			const iv = crypto.getRandomValues(new Uint8Array(12));
+			const encryptedData = await encryptAES({ iv, _sessionKey, data });
+
+			const output = joinEncryptedData({ encryptedData, iv });
 
 			return EJSON.stringify(output);
 		} catch (e) {
@@ -224,18 +200,10 @@ export class OTRRoom implements IOTRRoom {
 
 	async decrypt(message: string): Promise<IOTRDecrypt | string> {
 		try {
-			let cipherText: Uint8Array = EJSON.parse(message);
-			const iv = cipherText.slice(0, 12);
-			cipherText = cipherText.slice(12);
-			const data = await OTR.crypto.decrypt(
-				{
-					name: 'AES-GCM',
-					iv,
-				},
-				this._sessionKey,
-				cipherText,
-			);
+			if (!this._sessionKey) throw new Error('Session Key not available.');
 
+			const cipherText: Uint8Array = EJSON.parse(message);
+			const data = await decryptAES(cipherText, this._sessionKey);
 			const msgDecoded: IOTRDecrypt = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
 			if (msgDecoded && typeof msgDecoded === 'object') {
 				return msgDecoded;
