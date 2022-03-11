@@ -4,7 +4,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { createVisitor, createLivechatRoom, createAgent } from '../../../data/livechat/rooms.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - room', function () {
+describe('livechat/rooms', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
