@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import { data } from 'jquery';
 import React, { FC } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
@@ -13,10 +12,10 @@ type AppDetailsPageHeaderProps = {
 	app: App;
 };
 
-const AppDetailsPageHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
+const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 	const t = useTranslation();
 
-	const { iconFileData = '', name, author, version, price, purchaseType, pricingPlans, iconFileContent, installed } = app || {};
+	const { iconFileData = '', name, author, version, price, purchaseType, pricingPlans, iconFileContent, installed } = app;
 
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
@@ -31,7 +30,7 @@ const AppDetailsPageHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 				</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8'>
-						<AppStatus app={data} marginInline='x8' />
+						<AppStatus app={app} marginInline='x8' />
 						{!installed && (
 							<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
 						)}
@@ -43,4 +42,4 @@ const AppDetailsPageHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 	);
 };
 
-export default AppDetailsPageHeader;
+export default AppDetailsHeader;
