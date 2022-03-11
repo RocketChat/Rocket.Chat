@@ -33,7 +33,7 @@ export class OAuthEEManager {
 							}
 						}
 						if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
-							addUserToRoom(room._id, user);
+							addUserToRoom(room._id, user.username);
 						}
 					}
 				}

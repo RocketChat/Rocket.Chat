@@ -17,5 +17,5 @@ export default function handleLeftChannel(args) {
 	}
 
 	this.log(`${user.username} left room ${room.name}`);
-	removeUserFromRoom(room._id, user);
+	Promise.await(removeUserFromRoom(room._id, user));
 }

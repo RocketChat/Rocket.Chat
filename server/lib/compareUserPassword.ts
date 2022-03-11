@@ -22,7 +22,7 @@ export function compareUserPassword(user: IUser, pass: IPassword): boolean {
 		algorithm: 'sha-256' as const,
 	};
 
-	const passCheck = Accounts._checkPassword(user, password);
+	const passCheck = Accounts._checkPassword(user as Meteor.User, password);
 
 	if (passCheck.error) {
 		return false;

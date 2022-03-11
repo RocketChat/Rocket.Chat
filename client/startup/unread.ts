@@ -5,7 +5,6 @@ import { Tracker } from 'meteor/tracker';
 import { Favico } from '../../app/favico/client';
 import { ChatSubscription, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { menu } from '../../app/ui-utils/client';
 import { getUserPreference } from '../../app/utils/client';
 import { ISubscription } from '../../definition/ISubscription';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
@@ -60,8 +59,6 @@ Meteor.startup(() => {
 				}),
 			0,
 		);
-
-		menu.updateUnreadBars();
 
 		if (unreadCount > 0) {
 			if (unreadCount > 999) {

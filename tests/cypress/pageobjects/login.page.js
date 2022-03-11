@@ -2,75 +2,81 @@ import Page from './Page';
 
 class LoginPage extends Page {
 	get registerButton() {
-		return browser.element('button.register');
+		return cy.get('button.register');
 	}
 
 	get forgotPasswordButton() {
-		return browser.element('.forgot-password');
+		return cy.get('.forgot-password');
 	}
 
 	get backToLoginButton() {
-		return browser.element('.back-to-login');
+		return cy.get('.back-to-login');
 	}
 
 	get submitButton() {
-		return browser.element('.login');
+		return cy.get('.login');
 	}
 
 	get emailOrUsernameField() {
-		return browser.element('[name=emailOrUsername]');
+		return cy.get('[name=emailOrUsername]');
 	}
 
 	get nameField() {
-		return browser.element('[name=name]');
+		return cy.get('[name=name]');
+	}
+
+	get usernameField() {
+		return cy.get('[name=username]');
 	}
 
 	get emailField() {
-		return browser.element('[name=email]');
+		return cy.get('[name=email]');
 	}
 
 	get passwordField() {
-		return browser.element('[name=pass]');
+		return cy.get('[name=pass]');
 	}
 
 	get confirmPasswordField() {
-		return browser.element('[name=confirm-pass]');
+		return cy.get('[name=confirm-pass]');
 	}
 
 	get reasonField() {
-		return browser.element('[name=reason]');
+		return cy.get('[name=reason]');
 	}
 
 	get inputUsername() {
-		return browser.element('form#login-card input#username');
+		return cy.get('form#login-card input#username');
 	}
 
 	get emailOrUsernameInvalidText() {
-		return browser.element('[name=emailOrUsername]~.input-error');
+		return cy.get('[name=emailOrUsername]~.input-error');
 	}
 
 	get nameInvalidText() {
-		return browser.element('[name=name]~.input-error');
+		return cy.get('[name=name]~.input-error');
 	}
 
 	get emailInvalidText() {
-		return browser.element('[name=email]~.input-error');
+		return cy.get('[name=email]~.input-error');
 	}
 
 	get passwordInvalidText() {
-		return browser.element('[name=pass]~.input-error');
+		return cy.get('[name=pass]~.input-error');
 	}
 
 	get confirmPasswordInvalidText() {
-		return browser.element('[name=confirm-pass]~.input-error');
+		return cy.get('[name=confirm-pass]~.input-error');
 	}
 
 	get registrationSucceededCard() {
-		return browser.element('#login-card h2');
+		return cy.get('#login-card h2');
 	}
 
 	open() {
+		localStorage.clear();
 		super.open('');
+		cy.wait(500);
 	}
 
 	gotToRegister() {
@@ -115,4 +121,4 @@ class LoginPage extends Page {
 	}
 }
 
-module.exports = new LoginPage();
+export default new LoginPage();
