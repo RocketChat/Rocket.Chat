@@ -30,7 +30,14 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization/server';
+import {
+	addUserRoles,
+	hasPermission,
+	hasRole,
+	removeUserFromRoles,
+	canAccessRoom,
+	roomAccessAttributes,
+} from '../../../authorization/server';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -270,7 +277,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ id, token, name, email, department, phone, username, connectionData } = {}) {
+	registerGuest({ id, token, name, email, department, phone, username, connectionData, status = 'online' } = {}) {
 		check(token, String);
 		check(id, Match.Maybe(String));
 
@@ -280,6 +287,7 @@ export const Livechat = {
 		const updateUser = {
 			$set: {
 				token,
+				status,
 				...(phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {}),
 				...(name ? { name } : {}),
 			},
@@ -310,6 +318,11 @@ export const Livechat = {
 		if (user) {
 			Livechat.logger.debug('Found matching user by token');
 			userId = user._id;
+		} else if (phone?.number && (existingUser = LivechatVisitors.findOneVisitorByPhone(phone.number))) {
+			Livechat.logger.debug('Found matching user by phone number');
+			userId = existingUser._id;
+			// Don't change token when matching by phone number, use current visitor token
+			updateUser.$set.token = existingUser.token;
 		} else if (email && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
 			Livechat.logger.debug('Found matching user by email');
 			userId = existingUser._id;
@@ -321,6 +334,7 @@ export const Livechat = {
 
 			const userData = {
 				username,
+				status,
 				ts: new Date(),
 				...(id && { _id: id }),
 			};
@@ -1376,7 +1390,8 @@ export const Livechat = {
 			throw new Error('error-not-authorized');
 		}
 
-		const room = Promise.await(LivechatRooms.findOneById(roomId, { _id: 1, t: 1 }));
+		const room = Promise.await(LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 }));
+
 		if (!room) {
 			throw new Meteor.Error('invalid-room');
 		}

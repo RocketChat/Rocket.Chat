@@ -52,6 +52,7 @@ import { UsersSessionsRaw } from './UsersSessions';
 import { UserDataFilesRaw } from './UserDataFiles';
 import { UploadsRaw } from './Uploads';
 import { WebdavAccountsRaw } from './WebdavAccounts';
+import { VoipRoomsRaw } from './VoipRooms';
 import ImportDataModel from '../models/ImportData';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
@@ -68,6 +69,8 @@ import RoomsModel from '../models/Rooms';
 import SettingsModel from '../models/Settings';
 import SubscriptionsModel from '../models/Subscriptions';
 import UsersModel from '../models/Users';
+import { PbxEventsRaw } from './PbxEvents';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
 const trashCollection = trash.rawCollection();
 
@@ -143,6 +146,8 @@ export const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions')
 export const UserDataFiles = new UserDataFilesRaw(db.collection(`${prefix}user_data_files`), trashCollection);
 export const Uploads = new UploadsRaw(db.collection(`${prefix}uploads`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${prefix}webdav_accounts`), trashCollection);
+export const VoipRoom = new VoipRoomsRaw(db.collection(`${prefix}room`), trashCollection);
+export const PbxEvent = new PbxEventsRaw(db.collection('pbx_events'), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
@@ -154,7 +159,7 @@ const map = {
 	[Rooms.col.collectionName]: RoomsModel,
 };
 
-if (!process.env.DISABLE_DB_WATCH) {
+if (!isRunningMs()) {
 	const models = {
 		Messages,
 		Users,
@@ -171,6 +176,7 @@ if (!process.env.DISABLE_DB_WATCH) {
 		IntegrationHistory,
 		Integrations,
 		EmailInbox,
+		PbxEvent,
 	};
 
 	initWatchers(models, api.broadcastLocal.bind(api), (model, fn) => {

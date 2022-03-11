@@ -5,10 +5,10 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../../mailer';
 import { settings } from '../../../../settings/server';
-import { roomTypes } from '../../../../utils';
 import { metrics } from '../../../../metrics';
 import { callbacks } from '../../../../../lib/callbacks';
 import { getURL } from '../../../../utils/server';
+import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 
 let advice = '';
 let goToMessage = '';
@@ -24,12 +24,12 @@ Meteor.startup(() => {
 function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
-	const roomName = escapeHTML(`#${roomTypes.getRoomName(room.t, room)}`);
+	const roomName = escapeHTML(`#${roomCoordinator.getRoomName(room.t, room)}`);
 	const userName = escapeHTML(settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
 
-	const roomType = roomTypes.getConfig(room.t);
+	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
-	const header = TAPi18n.__(!roomType.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
+	const header = TAPi18n.__(!roomDirectives.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
 		username: userName,
 		channel: roomName,
 		lng,
@@ -57,7 +57,7 @@ function getEmailContent({ message, user, room }) {
 	}
 
 	if (message.file) {
-		const fileHeader = TAPi18n.__(!roomType.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
+		const fileHeader = TAPi18n.__(!roomDirectives.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
 			username: userName,
 			channel: roomName,
 			lng,
@@ -99,7 +99,9 @@ function getEmailContent({ message, user, room }) {
 }
 
 const getButtonUrl = (room, subscription, message) => {
-	const path = `${s.ltrim(roomTypes.getRelativePath(room.t, subscription), '/')}?msg=${message._id}`;
+	const basePath = roomCoordinator.getRouteLink(room.t, subscription).replace(Meteor.absoluteUrl(), '');
+
+	const path = `${s.ltrim(basePath, '/')}?msg=${message._id}`;
 	return getURL(path, {
 		full: true,
 		cloud: settings.get('Offline_Message_Use_DeepLink'),
@@ -119,7 +121,7 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
-	if (!roomTypes.getConfig(room.t).isGroupChat(room)) {
+	if (!roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)) {
 		subjectKey = 'Offline_DM_Email';
 	} else if (hasMentionToUser) {
 		subjectKey = 'Offline_Mention_Email';
@@ -127,7 +129,7 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 
 	const emailSubject = Mailer.replace(settings.get(subjectKey), {
 		user: username,
-		room: roomTypes.getRoomName(room.t, room),
+		room: roomCoordinator.getRoomName(room.t, room),
 	});
 	const content = getEmailContent({
 		message,

@@ -1,8 +1,9 @@
 import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { FC, memo, Ref, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { IUser } from '../../../../definition/IUser';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -11,7 +12,6 @@ import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionE
 import { useForm } from '../../../hooks/useForm';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import TeamNameInput from './TeamNameInput';
-import UsersInput from './UsersInput';
 
 type CreateTeamModalState = {
 	name: any;
@@ -82,10 +82,6 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 		async (name: string) => {
 			setNameError(undefined);
 
-			if (!hasUnsavedChanges) {
-				return;
-			}
-
 			if (!name || name.length === 0) {
 				setNameError(t('Field_required'));
 				return;
@@ -136,16 +132,10 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 	);
 
 	const onChangeMembers = useCallback(
-		(value, action) => {
-			if (!action) {
-				if (members.includes(value)) {
-					return;
-				}
-				return handleMembers([...members, value]);
-			}
-			handleMembers(members.filter((current) => current !== value));
+		(value) => {
+			handleMembers(value);
 		},
-		[handleMembers, members],
+		[handleMembers],
 	);
 
 	const canSave = hasUnsavedChanges && !nameError;
@@ -230,7 +220,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 
 	const t = useTranslation();
 
-	const focusRef = useAutoFocus() as Ref<HTMLElement>;
+	const focusRef = useAutoFocus<HTMLInputElement>();
 
 	return (
 		<Modal>
@@ -313,7 +303,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 								({t('optional')})
 							</Box>
 						</Field.Label>
-						<UsersInput value={members} onChange={onChangeMembers} />
+						<UserAutoCompleteMultiple value={members} onChange={onChangeMembers} valueIsId={true} />
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

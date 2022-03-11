@@ -7,9 +7,9 @@ import { useMethod } from '../../../../contexts/ServerContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
-const Favorite = ({ room: { _id, f: favorited = false } }) => {
+const Favorite = ({ room: { _id, f: favorited = false, t: type } }) => {
 	const t = useTranslation();
-	const isFavoritesEnabled = useSetting('Favorite_Rooms');
+	const isFavoritesEnabled = useSetting('Favorite_Rooms') && ['c', 'p', 'd', 't'].includes(type);
 	const toggleFavorite = useMethod('toggleFavorite');
 	const handleFavoriteClick = useMutableCallback(() => {
 		if (!isFavoritesEnabled) {

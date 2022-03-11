@@ -2,12 +2,12 @@ import { Box, CheckBox, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
-import { roomTypes } from '../../../../../app/utils/client';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import ConfirmationModal from './ConfirmationModal';
 
 const useReactModal = (Component, props) => {
@@ -54,7 +54,7 @@ const RoomActions = ({ room, reload }) => {
 		content: (
 			<Box is='span' size='14px'>
 				{t('Team_Remove_from_team_modal_content', {
-					teamName: roomTypes.getRoomName(room.t, room),
+					teamName: roomCoordinator.getRoomName(room.t, room),
 				})}
 			</Box>
 		),

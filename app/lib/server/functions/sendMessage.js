@@ -141,7 +141,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-const validateMessage = (message, room, user) => {
+export const validateMessage = (message, room, user) => {
 	check(
 		message,
 		objectMaybeIncluding({
@@ -171,13 +171,7 @@ const validateMessage = (message, room, user) => {
 	}
 };
 
-export const sendMessage = function (user, message, room, upsert = false) {
-	if (!user || !message || !room._id) {
-		return false;
-	}
-
-	validateMessage(message, room, user);
-
+export const prepareMessageObject = function (message, rid, user) {
 	if (!message.ts) {
 		message.ts = new Date();
 	}
@@ -192,7 +186,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		username,
 		name,
 	};
-	message.rid = room._id;
+	message.rid = rid;
 
 	if (!Match.test(message.msg, String)) {
 		message.msg = '';
@@ -201,6 +195,15 @@ export const sendMessage = function (user, message, room, upsert = false) {
 	if (message.ts == null) {
 		message.ts = new Date();
 	}
+};
+
+export const sendMessage = function (user, message, room, upsert = false) {
+	if (!user || !message || !room._id) {
+		return false;
+	}
+
+	validateMessage(message, room, user);
+	prepareMessageObject(message, room._id, user);
 
 	if (settings.get('Message_Read_Receipt_Enabled')) {
 		message.unread = true;
