@@ -33,6 +33,7 @@ const roomsCreateDiscussionPropsSchema: JSONSchemaType<roomsCreateDiscussionProp
 			type: 'array',
 			items: {
 				type: 'string',
+				nullable: true,
 			},
 			nullable: true,
 		},

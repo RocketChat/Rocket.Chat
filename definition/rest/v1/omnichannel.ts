@@ -1,3 +1,5 @@
+import Ajv, { JSONSchemaType } from 'ajv';
+
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatDepartmentAgents } from '../../ILivechatDepartmentAgents';
@@ -12,6 +14,203 @@ import { PaginatedResult } from '../helpers/PaginatedResult';
 
 type booleanString = 'true' | 'false';
 
+const ajv = new Ajv();
+
+type LivechatVisitorsInfo = {
+	visitorId: string;
+};
+
+const LivechatVisitorsInfoSchema: JSONSchemaType<LivechatVisitorsInfo> = {
+	type: 'object',
+	properties: {
+		visitorId: {
+			type: 'string',
+		},
+	},
+	required: ['visitorId'],
+	additionalProperties: false,
+};
+
+export const isLivechatVisitorsInfo = ajv.compile(LivechatVisitorsInfoSchema);
+
+type LivechatRoomOnHold = {
+	roomId: IRoom['_id'];
+};
+
+const LivechatRoomOnHoldSchema: JSONSchemaType<LivechatRoomOnHold> = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isLivechatRoomOnHold = ajv.compile(LivechatRoomOnHoldSchema);
+
+type LivechatDepartmentId = {
+	onlyMyDepartments?: booleanString;
+	includeAgents?: booleanString;
+};
+
+const LivechatDepartmentIdSchema: JSONSchemaType<LivechatDepartmentId> = {
+	type: 'object',
+	properties: {
+		onlyMyDepartments: {
+			type: 'string',
+			nullable: true,
+		},
+		includeAgents: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isLivechatDepartmentId = ajv.compile(LivechatDepartmentIdSchema);
+
+type LivechatDepartmentAutocomplete = {
+	selector: string;
+	onlyMyDepartments: booleanString;
+};
+
+const LivechatDepartmentAutocompleteSchema: JSONSchemaType<LivechatDepartmentAutocomplete> = {
+	type: 'object',
+	properties: {
+		selector: {
+			type: 'string',
+		},
+		onlyMyDepartments: {
+			type: 'string',
+		},
+	},
+	required: ['selector', 'onlyMyDepartments'],
+	additionalProperties: false,
+};
+
+export const isLivechatDepartmentAutocomplete = ajv.compile(LivechatDepartmentAutocompleteSchema);
+
+type livechatDepartmentDepartmentIdAgents = {
+	sort: string;
+};
+
+const livechatDepartmentDepartmentIdAgentsSchema: JSONSchemaType<livechatDepartmentDepartmentIdAgents> = {
+	type: 'object',
+	properties: {
+		sort: {
+			type: 'string',
+		},
+	},
+	required: ['sort'],
+	additionalProperties: false,
+};
+
+export const islivechatDepartmentDepartmentIdAgents = ajv.compile(livechatDepartmentDepartmentIdAgentsSchema);
+
+type LivechatVisitorTokenGet = {
+	token: string;
+};
+
+const LivechatVisitorTokenGetSchema: JSONSchemaType<LivechatVisitorTokenGet> = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isLivechatVisitorTokenGet = ajv.compile(LivechatVisitorTokenGetSchema);
+
+type LivechatVisitorTokenDelete = {
+	token: string;
+};
+
+const LivechatVisitorTokenDeleteSchema: JSONSchemaType<LivechatVisitorTokenDelete> = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isLivechatVisitorTokenDelete = ajv.compile(LivechatVisitorTokenDeleteSchema);
+
+type LivechatVisitorTokenRoom = {
+	token: string;
+};
+
+const LivechatVisitorTokenRoomSchema: JSONSchemaType<LivechatVisitorTokenRoom> = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isLivechatVisitorTokenRoom = ajv.compile(LivechatVisitorTokenRoomSchema);
+
+type LivechatVisitorCallStatus = {
+	token: string;
+	callStatus: string;
+	rid: string;
+	callId: string;
+};
+
+const LivechatVisitorCallStatusSchema: JSONSchemaType<LivechatVisitorCallStatus> = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		callStatus: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+		},
+		callId: {
+			type: 'string',
+		},
+	},
+	required: ['token', 'callStatus', 'rid', 'callId'],
+	additionalProperties: false,
+};
+
+export const isLivechatVisitorCallStatus = ajv.compile(LivechatVisitorCallStatusSchema);
+
+type LivechatVisitorStatus = {
+	token: string;
+	status: string;
+};
+
+const LivechatVisitorStatusSchema: JSONSchemaType<LivechatVisitorStatus> = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		status: {
+			type: 'string',
+		},
+	},
+	required: ['token', 'status'],
+	additionalProperties: false,
+};
+
+export const isLivechatVisitorStatus = ajv.compile(LivechatVisitorStatusSchema);
+
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
 		GET: () => {
@@ -19,7 +218,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/visitors.info': {
-		GET: (params: { visitorId: string }) => {
+		GET: (params: LivechatVisitorsInfo) => {
 			visitor: {
 				visitorEmails: Array<{
 					address: string;
@@ -28,7 +227,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/room.onHold': {
-		POST: (params: { roomId: IRoom['_id'] }) => void;
+		POST: (params: LivechatRoomOnHold) => void;
 	};
 	'livechat/monitors.list': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
@@ -57,7 +256,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/department/:_id': {
-		GET: (params: { onlyMyDepartments?: booleanString; includeAgents?: booleanString }) => {
+		GET: (params: LivechatDepartmentId) => {
 			department: ILivechatDepartment | null;
 			agents?: any[];
 		};
@@ -68,12 +267,12 @@ export type OmnichannelEndpoints = {
 		DELETE: () => void;
 	};
 	'livechat/department.autocomplete': {
-		GET: (params: { selector: string; onlyMyDepartments: booleanString }) => {
+		GET: (params: LivechatDepartmentAutocomplete) => {
 			items: ILivechatDepartment[];
 		};
 	};
 	'livechat/department/:departmentId/agents': {
-		GET: (params: { sort: string }) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
+		GET: (params: livechatDepartmentDepartmentIdAgents) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
 		POST: (params: { upsert: string[]; remove: string[] }) => void;
 	};
 	'livechat/departments.available-by-unit/:id': {
@@ -153,23 +352,23 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/visitor/:token': {
-		GET: (params: { token: string }) => { visitor: ILivechatVisitor };
-		DELETE: (params: { token: string }) => { visitor: { _id: string; ts: string } };
+		GET: (params: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor };
+		DELETE: (params: LivechatVisitorTokenDelete) => { visitor: { _id: string; ts: string } };
 	};
 
 	'livechat/visitor/:token/room': {
-		GET: (params: { token: string }) => { rooms: IOmnichannelRoom[] };
+		GET: (params: LivechatVisitorTokenRoom) => { rooms: IOmnichannelRoom[] };
 	};
 
 	'livechat/visitor.callStatus': {
-		POST: (params: { token: string; callStatus: string; rid: string; callId: string }) => {
+		POST: (params: LivechatVisitorCallStatus) => {
 			token: string;
 			callStatus: string;
 		};
 	};
 
 	'livechat/visitor.status': {
-		POST: (params: { token: string; status: string }) => { token: string; status: string };
+		POST: (params: LivechatVisitorStatus) => { token: string; status: string };
 	};
 
 	'livechat/queue': {
