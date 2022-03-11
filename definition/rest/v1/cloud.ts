@@ -42,6 +42,28 @@ const cloudCreateRegistrationIntentPropsSchema: JSONSchemaType<CloudCreateRegist
 
 export const isCloudCreateRegistrationIntent = ajv.compile(cloudCreateRegistrationIntentPropsSchema);
 
+type CloudConfirmationPoll = {
+	deviceCode: string;
+	resend?: 'true' | 'false'; // Cannot use booleans on GET methods!
+};
+
+const CloudConfirmationPollSchema: JSONSchemaType<CloudConfirmationPoll> = {
+	type: 'object',
+	properties: {
+		deviceCode: {
+			type: 'string',
+		},
+		resend: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['deviceCode'],
+	additionalProperties: false,
+};
+
+export const isCloudConfirmationPoll = ajv.compile(CloudConfirmationPollSchema);
+
 export type CloudEndpoints = {
 	'cloud.manualRegister': {
 		POST: (params: CloudManualRegisterProps) => void;
@@ -50,6 +72,6 @@ export type CloudEndpoints = {
 		POST: (params: CloudCreateRegistrationIntentProps) => { intentData: CloudRegistrationIntentData };
 	};
 	'cloud.confirmationPoll': {
-		GET: (params: { deviceCode: string; resend?: boolean }) => { pollData: CloudConfirmationPollData };
+		GET: (params: CloudConfirmationPoll) => { pollData: CloudConfirmationPollData };
 	};
 };

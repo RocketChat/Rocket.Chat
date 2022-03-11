@@ -23,6 +23,23 @@ const emojiCustomDeletePropsSchema: JSONSchemaType<emojiCustomDeleteProps> = {
 
 export const isEmojiCustomDelete = ajv.compile(emojiCustomDeletePropsSchema);
 
+type emojiCustomList = {
+	query: string;
+};
+
+const emojiCustomListSchema: JSONSchemaType<emojiCustomList> = {
+	type: 'object',
+	properties: {
+		query: {
+			type: 'string',
+		},
+	},
+	required: ['query'],
+	additionalProperties: false,
+};
+
+export const isemojiCustomList = ajv.compile(emojiCustomListSchema);
+
 export type EmojiCustomEndpoints = {
 	'emoji-custom.all': {
 		GET: (params: PaginatedRequest<{ query: string }, 'name'>) => {
@@ -30,7 +47,7 @@ export type EmojiCustomEndpoints = {
 		} & PaginatedResult;
 	};
 	'emoji-custom.list': {
-		GET: (params: { query: string }) => {
+		GET: (params: emojiCustomList) => {
 			emojis?: {
 				update: ICustomEmojiDescriptor[];
 			};
