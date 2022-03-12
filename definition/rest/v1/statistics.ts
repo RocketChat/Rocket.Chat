@@ -12,7 +12,7 @@ const StatisticsPropsSchema: JSONSchemaType<StatisticsProps> = {
 	type: 'object',
 	properties: {
 		refresh: {
-			type: 'string',
+			enum: ['true', 'false'],
 			nullable: true,
 		},
 	},
