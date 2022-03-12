@@ -1,8 +1,8 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
+import { RoomType } from './RoomType';
 
-export type RoomType = 'c' | 'd' | 'p' | 'l' | 'v';
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
@@ -18,7 +18,7 @@ export interface IRoom extends IRocketChatRecord {
 	_id: RoomID;
 	t: RoomType;
 	name?: string;
-	fname: string;
+	fname?: string;
 	msgs: number;
 	default?: true;
 	broadcast?: true;
@@ -27,7 +27,7 @@ export interface IRoom extends IRocketChatRecord {
 	topic?: any;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
-	uids: Array<string>;
+	uids?: Array<string>;
 
 	lastMessage?: IMessage;
 	lm?: Date;
@@ -229,3 +229,6 @@ export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichanne
 
 	return room.source?.type === OmnichannelSourceType.APP;
 };
+
+/** @deprecated */
+export { RoomType };
