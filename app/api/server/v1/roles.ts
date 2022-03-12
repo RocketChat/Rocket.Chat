@@ -7,6 +7,7 @@ import { getUsersInRole, hasRole } from '../../../authorization/server';
 import { settings } from '../../../settings/server/index';
 import { api } from '../../../../server/sdk/api';
 import { Roles } from '../../../models/server/raw';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import {
 	isRoleAddUserToRoleProps,
@@ -64,7 +65,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
 			}
 
-			if (!(await hasPermissionAsync(Meteor.userId(), 'access-permissions'))) {
+			const userId = Meteor.userId();
+
+			if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 			}
 
@@ -104,21 +107,27 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', isRoleAddUserToRoleProps.errors?.map((error) => error.message).join('\n'));
 			}
 
-			// Precisa mudar todos os endpoints pra aceitarem roleId também. Se receber o parâmetro como roleName, dar um deprecation warning
 			const user = this.getUserFromParams();
-			const { roleName, roomId } = this.bodyParams;
+			const { roleId, roleName, roomId } = this.bodyParams;
 
-			if (hasRole(user._id, roleId, roomId)) {
-				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
+			if (!roleId) {
+				if (!roleName) {
+					return API.v1.failure('error-invalid-role-properties');
+				}
+
+				apiDeprecationLogger.warn(`Assigning roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
 			}
 
-			const role = await Roles.findOneByIdOrName(roleName);
-
+			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
 			if (!role) {
 				return API.v1.failure('error-role-not-found', 'Role not found');
 			}
 
-			await Meteor.call('authorization:addUserToRole', roleName, user.username, roomId);
+			if (hasRole(user._id, role._id, roomId)) {
+				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
+			}
+
+			await Meteor.call('authorization:addUserToRole', role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
@@ -246,10 +255,18 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
 			}
 
-			const { roleName, username, scope } = bodyParams;
+			const { roleId, roleName, username, scope } = bodyParams;
 
 			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
 				throw new Meteor.Error('error-not-allowed', 'Accessing permissions is not allowed');
+			}
+
+			if (!roleId) {
+				if (!roleName) {
+					return API.v1.failure('error-invalid-role-properties');
+				}
+
+				apiDeprecationLogger.warn(`Unassigning roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
 			}
 
 			const user = Users.findOneByUsername(username);
@@ -258,13 +275,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user', 'There is no user with this username');
 			}
 
-			const role = await Roles.findOneByIdOrName(roleName);
+			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
 
 			if (!role) {
 				throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
 			}
 
-			if (!(await hasAnyRoleAsync(user._id, [role.name], scope))) {
+			if (!(await hasAnyRoleAsync(user._id, [role._id], scope))) {
 				throw new Meteor.Error('error-user-not-in-role', 'User is not in this role');
 			}
 
@@ -275,7 +292,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await Roles.removeUserRoles(user._id, [role.name], scope);
+			await Roles.removeUserRoles(user._id, [role._id], scope);
 
 			if (settings.get('UI_DisplayRoles')) {
 				api.broadcast('user.roleUpdate', {

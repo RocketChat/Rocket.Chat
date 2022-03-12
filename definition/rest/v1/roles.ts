@@ -81,7 +81,9 @@ export const isRoleDeleteProps = ajv.compile(roleDeletePropsSchema);
 
 type RoleAddUserToRoleProps = {
 	username: string;
-	roleName: string;
+	// #ToDo: Make it non-optional on the next major release
+	roleId?: string;
+	roleName?: string;
 	roomId?: string;
 };
 
@@ -91,16 +93,20 @@ const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
 		username: {
 			type: 'string',
 		},
-		// Check what's the new signature
+		roleId: {
+			type: 'string',
+			nullable: true,
+		},
 		roleName: {
 			type: 'string',
+			nullable: true,
 		},
 		roomId: {
 			type: 'string',
 			nullable: true,
 		},
 	},
-	required: ['username', 'roleName'],
+	required: ['username'],
 	additionalProperties: false,
 };
 
@@ -108,7 +114,9 @@ export const isRoleAddUserToRoleProps = ajv.compile(roleAddUserToRolePropsSchema
 
 type RoleRemoveUserFromRoleProps = {
 	username: string;
-	roleName: string;
+	// #ToDo: Make it non-optional on the next major release
+	roleId?: string;
+	roleName?: string;
 	roomId?: string;
 	scope?: string;
 };
@@ -119,8 +127,13 @@ const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRolePr
 		username: {
 			type: 'string',
 		},
+		roleId: {
+			type: 'string',
+			nullable: true,
+		},
 		roleName: {
 			type: 'string',
+			nullable: true,
 		},
 		roomId: {
 			type: 'string',
@@ -131,7 +144,7 @@ const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRolePr
 			nullable: true,
 		},
 	},
-	required: ['username', 'roleName'],
+	required: ['username'],
 	additionalProperties: false,
 };
 
