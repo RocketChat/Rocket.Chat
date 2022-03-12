@@ -71320,6 +71320,24 @@
       ],
       "pull_requests": [
         {
+          "pr": "24782",
+          "title": "Release 4.5.1",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "renatobecker",
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "matheusbsilva137",
+            "amolghode1981",
+            "juliajforesti",
+            "tiagoevanp",
+            "KevLehman",
+            "MartinSchoeler",
+            "Aman-Maheshwari",
+            "cuonghuunguyen"
+          ]
+        },
+        {
           "pr": "24760",
           "title": "[FIX] Apple login script being loaded even when Apple Login is disabled.",
           "userLogin": "pierre-lehnen-rc",
@@ -71454,6 +71472,103 @@
           "milestone": "4.5.1",
           "contributors": [
             "renatobecker"
+          ]
+        }
+      ]
+    },
+    "4.5.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "'3.6'",
+        "'4.0'",
+        "'4.2'",
+        "'4.4'",
+        "'5.0'"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24812",
+          "title": "[FIX] Revert AutoComplete",
+          "userLogin": "juliajforesti",
+          "milestone": "4.5.2",
+          "contributors": [
+            "juliajforesti",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "24809",
+          "title": "Regression: Fix ParentRoomWithEndpointData in loop",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.5.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24732",
+          "title": "[FIX] `PaginatedSelectFiltered` not handling changes",
+          "userLogin": "tassoevan",
+          "milestone": "4.5.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24805",
+          "title": "[FIX] Critical: Incorrect visitor getting assigned to a chat from apps",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24804",
+          "title": "[FIX] \"livechat/webrtc.call\" endpoint not working",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24792",
+          "title": "[FIX] VoipExtensionsPage component call",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24705",
+          "title": "[FIX] Broken multiple OAuth integrations",
+          "userLogin": "debdutdeb",
+          "milestone": "4.5.2",
+          "contributors": [
+            "debdutdeb"
+          ]
+        },
+        {
+          "pr": "24623",
+          "title": "[FIX] Opening a new DM from user card",
+          "userLogin": "tassoevan",
+          "description": "A race condition on `useRoomIcon` -- delayed merge of rooms and subscriptions -- was causing a UI crash whenever someone tried to open a DM from the user card component.",
+          "milestone": "4.5.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24750",
+          "title": "[IMPROVE] Voip Extensions disabled state",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.2",
+          "contributors": [
+            "MartinSchoeler"
           ]
         }
       ]

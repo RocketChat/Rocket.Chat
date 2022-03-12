@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
+import { IRoom } from '../../../../definition/IRoom';
 import Header from '../../../components/Header';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
-const ParentRoom = ({ room }) => {
-	const href = roomCoordinator.getRouteLink(room.t, room);
+type ParentRoomProps = {
+	room: Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'prid' | 'u'>;
+};
+
+const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
+	const href = roomCoordinator.getRouteLink(room.t, room) || undefined;
 	const icon = useRoomIcon(room);
 
 	return (
