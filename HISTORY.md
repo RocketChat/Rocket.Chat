@@ -1,6 +1,58 @@
 
+# 4.5.2
+`2022-03-12  ·  1 🚀  ·  7 🐛  ·  1 🔍  ·  8 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.31.0`
+
+### 🚀 Improvements
+
+
+- Voip Extensions disabled state ([#24750](https://github.com/RocketChat/Rocket.Chat/pull/24750))
+
+### 🐛 Bug fixes
+
+
+- "livechat/webrtc.call" endpoint not working ([#24804](https://github.com/RocketChat/Rocket.Chat/pull/24804))
+
+- `PaginatedSelectFiltered` not handling changes ([#24732](https://github.com/RocketChat/Rocket.Chat/pull/24732))
+
+- Broken multiple OAuth integrations ([#24705](https://github.com/RocketChat/Rocket.Chat/pull/24705))
+
+- Critical: Incorrect visitor getting assigned to a chat from apps ([#24805](https://github.com/RocketChat/Rocket.Chat/pull/24805))
+
+- Opening a new DM from user card ([#24623](https://github.com/RocketChat/Rocket.Chat/pull/24623))
+
+  A race condition on `useRoomIcon` -- delayed merge of rooms and subscriptions -- was causing a UI crash whenever someone tried to open a DM from the user card component.
+
+- Revert AutoComplete ([#24812](https://github.com/RocketChat/Rocket.Chat/pull/24812))
+
+- VoipExtensionsPage component call ([#24792](https://github.com/RocketChat/Rocket.Chat/pull/24792))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix ParentRoomWithEndpointData in loop ([#24809](https://github.com/RocketChat/Rocket.Chat/pull/24809))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@ggazzo](https://github.com/ggazzo)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 4.5.1
-`2022-03-09  ·  13 🐛  ·  1 🔍  ·  11 👩‍💻👨‍💻`
+`2022-03-09  ·  13 🐛  ·  2 🔍  ·  12 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `14.18.3`
@@ -54,11 +106,14 @@
 
 - Chore: Update Livechat ([#24754](https://github.com/RocketChat/Rocket.Chat/pull/24754))
 
+- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Aman-Maheshwari](https://github.com/Aman-Maheshwari)
+- [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
