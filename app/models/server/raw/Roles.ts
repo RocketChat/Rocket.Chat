@@ -62,19 +62,13 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return true;
 	}
 
-	async isUserInRoles(userId: IUser['_id'], roles: IRole['name'][], scope?: IRoom['_id']): Promise<boolean> {
+	async isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
 		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 			throw new Error('Roles.isUserInRoles method received a role scope instead of a scope value.');
 		}
 
-		if (!Array.isArray(roles)) {
-			// TODO: remove this check
-			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.isUserInRoles: roles should be an array');
-		}
-
-		for await (const roleName of roles) {
-			const role = await this.findOne<Pick<IRole, '_id' | 'scope'>>({ name: roleName }, { projection: { scope: 1 } });
+		for await (const roleId of roles) {
+			const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 
 			if (!role) {
 				continue;
@@ -82,13 +76,13 @@ export class RolesRaw extends BaseRaw<IRole> {
 
 			switch (role.scope) {
 				case 'Subscriptions':
-					if (await this.models.Subscriptions.isUserInRole(userId, roleName, scope)) {
+					if (await this.models.Subscriptions.isUserInRole(userId, roleId, scope)) {
 						return true;
 					}
 					break;
 				case 'Users':
 				default:
-					if (await this.models.Users.isUserInRole(userId, roleName)) {
+					if (await this.models.Users.isUserInRole(userId, roleId)) {
 						return true;
 					}
 			}
@@ -96,18 +90,13 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return false;
 	}
 
-	async removeUserRoles(userId: IUser['_id'], roles: IRole['name'][], scope?: IRoom['_id']): Promise<boolean> {
+	async removeUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
 		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 			throw new Error('Roles.removeUserRoles method received a role scope instead of a scope value.');
 		}
 
-		if (!Array.isArray(roles)) {
-			// TODO: remove this check
-			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.removeUserRoles: roles should be an array');
-		}
-		for await (const roleName of roles) {
-			const role = await this.findOne<Pick<IRole, '_id' | 'scope'>>({ name: roleName }, { projection: { scope: 1 } });
+		for await (const roleId of roles) {
+			const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 
 			if (!role) {
 				continue;
@@ -115,11 +104,11 @@ export class RolesRaw extends BaseRaw<IRole> {
 
 			switch (role.scope) {
 				case 'Subscriptions':
-					scope && (await this.models.Subscriptions.removeRolesByUserId(userId, [roleName], scope));
+					scope && (await this.models.Subscriptions.removeRolesByUserId(userId, [roleId], scope));
 					break;
 				case 'Users':
 				default:
-					await this.models.Users.removeRolesByUserId(userId, [roleName]);
+					await this.models.Users.removeRolesByUserId(userId, [roleId]);
 			}
 		}
 		return true;

@@ -43,7 +43,7 @@ export function getMostImportantRole(roles: IRole['_id'][] = []): 'no-role' | Pr
 
 	const newRoles: PriorityRoleName[] = [];
 	for (const role of roles) {
-		if ((order as readonly sring[]).includes(role)) {
+		if ((order as readonly string[]).includes(role)) {
 			newRoles.push(role as PriorityRoleName);
 		} else if (!newRoles.includes('custom-role')) {
 			newRoles.push('custom-role');
