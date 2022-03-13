@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
+import { ISMS } from '../types/ISMS';
 
-export const SMS = {
+export const SMS: ISMS = {
 	enabled: false,
 	department: null,
 	services: {},

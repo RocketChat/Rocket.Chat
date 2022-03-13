@@ -1,8 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
+import { settings as clientSettings } from './client/index';
+import { settings as serverSettings } from './server/index';
+import { ICachedSettings } from './server/CachedSettings';
+
+export let settings: ICachedSettings;
+
 if (Meteor.isClient) {
-	module.exports = require('./client/index.ts');
+	settings = clientSettings;
 }
 if (Meteor.isServer) {
-	module.exports = require('./server/index.ts');
+	settings = serverSettings;
 }

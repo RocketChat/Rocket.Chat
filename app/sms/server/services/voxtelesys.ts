@@ -9,6 +9,7 @@ import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestr
 import { mime } from '../../../utils/lib/mimeTypes';
 import { api } from '../../../../server/sdk/api';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { SettingValue } from '../../../../definition/ISetting';
 
 const MAX_FILE_SIZE = 5242880;
 
@@ -18,6 +19,14 @@ const notifyAgent = (userId, rid, msg) =>
 	});
 
 class Voxtelesys {
+	authToken: SettingValue;
+
+	URL: SettingValue;
+
+	fileUploadEnabled: SettingValue;
+
+	mediaTypeWhiteList: SettingValue;
+
 	constructor() {
 		this.authToken = settings.get('SMS_Voxtelesys_authToken');
 		this.URL = settings.get('SMS_Voxtelesys_URL');

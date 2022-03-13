@@ -8,6 +8,7 @@ import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { api } from '../../../../server/sdk/api';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { SettingValue } from '../../../../definition/ISetting';
 
 const MAX_FILE_SIZE = 5242880;
 
@@ -17,6 +18,14 @@ const notifyAgent = (userId, rid, msg) =>
 	});
 
 class Twilio {
+	accountSid: SettingValue;
+
+	authToken: SettingValue;
+
+	fileUploadEnabled: SettingValue;
+
+	mediaTypeWhiteList: SettingValue;
+
 	constructor() {
 		this.accountSid = settings.get('SMS_Twilio_Account_SID');
 		this.authToken = settings.get('SMS_Twilio_authToken');
