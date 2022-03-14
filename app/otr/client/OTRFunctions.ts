@@ -2,7 +2,7 @@ import { IOTRAlgorithm } from '../../../definition/IOTR';
 
 const { subtle } = crypto || window.crypto;
 
-export const joinEncryptedData = ({ encryptedData, iv }: { encryptedData: Uint8Array; iv: Uint8Array }): Uint8Array => {
+export const joinEncryptedData = ({ encryptedData, iv }: { encryptedData: ArrayBuffer; iv: Uint8Array }): Uint8Array => {
 	const cipherText = new Uint8Array(encryptedData);
 	const output = new Uint8Array(iv.length + cipherText.length);
 	output.set(iv, 0);
@@ -17,7 +17,7 @@ export const encryptAES = async ({
 	iv: Uint8Array;
 	_sessionKey: CryptoKey;
 	data: Uint8Array;
-}): Promise<Uint8Array> =>
+}): Promise<ArrayBuffer> =>
 	subtle.encrypt(
 		{
 			name: 'AES-GCM',
