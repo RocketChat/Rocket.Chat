@@ -509,11 +509,11 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_enableMessageParserEarlyAdoption', false, {
+		this.add('Accounts_Default_User_Preferences_enableLegacyMessages', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Enable_message_parser_early_adoption',
-			alert: 'Enable_message_parser_early_adoption_alert',
+			i18nLabel: 'Enable_legacy_messages',
+			alert: 'Enable_legacy_messages_alert',
 		});
 	});
 

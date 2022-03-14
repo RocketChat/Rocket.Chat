@@ -57,13 +57,6 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.helpers({
-	enableMessageParserEarlyAdoption() {
-		const {
-			settings: { enableMessageParserEarlyAdoption },
-			msg,
-		} = this;
-		return enableMessageParserEarlyAdoption && msg.md;
-	},
 	unread() {
 		const { msg, subscription } = this;
 		return subscription?.tunread?.includes(msg._id);
