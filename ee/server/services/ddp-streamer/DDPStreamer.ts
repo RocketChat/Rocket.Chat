@@ -3,10 +3,11 @@ import url from 'url';
 
 import WebSocket from 'ws';
 
+import { INotificationDesktop } from '../../../../definition/INotification';
 import { ListenersModule } from '../../../../server/modules/listeners/listeners.module';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
-import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { MeteorService } from '../../../../server/sdk';
+import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { Client } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
@@ -85,6 +86,10 @@ export class DDPStreamer extends ServiceClass {
 
 		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
 			Autoupdate.updateVersion(versions);
+		});
+
+		this.onEvent('notify.desktop', (uid: string, notification: INotificationDesktop): void => {
+			notifications.notifyUser(uid, 'notification', notification);
 		});
 	}
 

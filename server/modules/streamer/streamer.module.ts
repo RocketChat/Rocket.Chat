@@ -255,6 +255,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 	_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean {
 		if (broadcast === true) {
 			StreamerCentral.emit('broadcast', this.name, eventName, args);
+			return true; // TODO not sure about this. this is preventing duplicated data being sent by ddp-streamer
 		}
 
 		const subscriptions = this.subscriptionsByEventName.get(eventName);
