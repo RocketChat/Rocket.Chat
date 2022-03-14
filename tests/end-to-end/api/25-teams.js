@@ -1554,10 +1554,26 @@ describe('[Teams]', () => {
 		describe('should update team room to default and invite users with the right notification preferences', () => {
 			let userWithPrefs;
 			let userCredentials;
+			let createdRoom;
 
 			before(async () => {
 				userWithPrefs = await createUser();
 				userCredentials = await login(userWithPrefs.username, password);
+
+				createdRoom = await request
+					.post(api('channels.create'))
+					.set(credentials)
+					.send({
+						name: `${Date.now()}-testTeam3`,
+					});
+
+				await request
+					.post(api('teams.addRooms'))
+					.set(credentials)
+					.send({
+						rooms: [createdRoom.body.channel._id],
+						teamId: testTeam3._id,
+					});
 			});
 
 			it('should update user prefs', async () => {
@@ -1589,17 +1605,11 @@ describe('[Teams]', () => {
 					.end(done);
 			});
 
-			it('should update team to auto-join', async () => {
-				const response = await request
-					.post(api('teams.update'))
-					.set(credentials)
-					.send({
-						teamId: testTeam3._id,
-						data: {
-							isDefault: true,
-						},
-					});
-
+			it('should update team channel to auto-join', async () => {
+				const response = await request.post(api('teams.updateRoom')).set(credentials).send({
+					roomId: createdRoom.body.channel._id,
+					isDefault: true,
+				});
 				expect(response.body).to.have.property('success', true);
 			});
 
@@ -1608,7 +1618,7 @@ describe('[Teams]', () => {
 					.get(api('subscriptions.getOne'))
 					.set(userCredentials)
 					.query({
-						roomId: testTeam3._id,
+						roomId: createdRoom.body.channel._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
