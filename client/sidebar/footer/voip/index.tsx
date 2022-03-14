@@ -52,7 +52,7 @@ export const VoipFooter = (): ReactElement | null => {
 			case 'IN_CALL':
 				return t('In_progress');
 			case 'OFFER_RECEIVED':
-				return t('Calling');
+				return t('Ringing');
 			case 'ON_HOLD':
 				return t('On_Hold');
 		}
