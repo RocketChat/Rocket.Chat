@@ -920,7 +920,7 @@ export const Livechat = {
 
 		const { _id } = user;
 
-		if (removeUserFromRoles(_id, 'livechat-agent')) {
+		if (removeUserFromRoles(_id, ['livechat-agent'])) {
 			Users.setOperator(_id, false);
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
@@ -942,7 +942,7 @@ export const Livechat = {
 			});
 		}
 
-		return removeUserFromRoles(user._id, 'livechat-manager');
+		return removeUserFromRoles(user._id, ['livechat-manager']);
 	},
 
 	removeGuest(_id) {

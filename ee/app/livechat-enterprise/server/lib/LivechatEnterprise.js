@@ -52,7 +52,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (removeUserFromRoles(user._id, 'livechat-monitor')) {
+		if (removeUserFromRoles(user._id, ['livechat-monitor'])) {
 			return true;
 		}
 
