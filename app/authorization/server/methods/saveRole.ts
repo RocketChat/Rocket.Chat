@@ -12,8 +12,9 @@ import { isRoleCreateProps } from '../../../../definition/rest/v1/roles';
 Meteor.methods({
 	async 'authorization:saveRole'(roleData: Record<string, unknown>) {
 		methodDeprecationLogger.warn('authorization:saveRole will be deprecated in future versions of Rocket.Chat');
+		const userId = Meteor.userId();
 
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
+		if (!userId || !hasPermission(userId, 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:saveRole',
 				action: 'Accessing_permissions',

@@ -655,10 +655,9 @@ export class Users extends Base {
 
 	/**
 	 * @param {IRole['_id'][]} roles the list of role ids
-	 * @param {undefined} scope
 	 * @param {any} options
 	 */
-	findActiveUsersInRoles(roles, scope, options) {
+	findActiveUsersInRoles(roles, options = undefined) {
 		roles = [].concat(roles);
 
 		const query = {

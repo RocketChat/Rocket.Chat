@@ -7,7 +7,9 @@ import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarning
 
 Meteor.methods({
 	async 'authorization:deleteRole'(roleId) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
+		const userId = Meteor.userId();
+
+		if (!userId || !hasPermission(userId, 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:deleteRole',
 				action: 'Accessing_permissions',

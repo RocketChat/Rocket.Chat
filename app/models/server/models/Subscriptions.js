@@ -467,7 +467,7 @@ export class Subscriptions extends Base {
 	 * @param {IRole['_id'][]} roles the list of roles
 	 * @param {any} options
 	 */
-	findByRoomIdAndRoles(roomId, roles, options) {
+	findByRoomIdAndRoles(roomId, roles, options = undefined) {
 		roles = [].concat(roles);
 		const query = {
 			rid: roomId,
