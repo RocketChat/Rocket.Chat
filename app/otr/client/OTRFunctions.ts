@@ -1,5 +1,6 @@
 import { IOTRAlgorithm } from '../../../definition/IOTR';
-import OTR from './OTR';
+
+const { subtle } = crypto || window.crypto;
 
 export const joinEncryptedData = ({ encryptedData, iv }: { encryptedData: Uint8Array; iv: Uint8Array }): Uint8Array => {
 	const cipherText = new Uint8Array(encryptedData);
@@ -17,7 +18,7 @@ export const encryptAES = async ({
 	_sessionKey: CryptoKey;
 	data: Uint8Array;
 }): Promise<Uint8Array> =>
-	await OTR.crypto.encrypt(
+	subtle.encrypt(
 		{
 			name: 'AES-GCM',
 			iv,
@@ -26,16 +27,16 @@ export const encryptAES = async ({
 		data,
 	);
 export const digest = async (bits: ArrayBuffer): Promise<ArrayBuffer> =>
-	await OTR.crypto.digest(
+	subtle.digest(
 		{
 			name: 'SHA-256',
 		},
 		bits,
 	);
 export const deriveBits = async ({ ecdhObj, _keyPair }: { ecdhObj: IOTRAlgorithm; _keyPair: CryptoKeyPair }): Promise<ArrayBuffer> =>
-	await OTR.crypto.deriveBits(ecdhObj, _keyPair.privateKey, 256);
+	subtle.deriveBits(ecdhObj, _keyPair.privateKey, 256);
 export const importKey = async (publicKeyObject: JsonWebKey): Promise<CryptoKey> =>
-	await OTR.crypto.importKey(
+	subtle.importKey(
 		'jwk',
 		publicKeyObject,
 		{
@@ -46,7 +47,7 @@ export const importKey = async (publicKeyObject: JsonWebKey): Promise<CryptoKey>
 		[],
 	);
 export const importKeyRaw = async (sessionKeyData: Uint8Array): Promise<CryptoKey> =>
-	await OTR.crypto.importKey(
+	subtle.importKey(
 		'raw',
 		sessionKeyData,
 		{
@@ -55,9 +56,9 @@ export const importKeyRaw = async (sessionKeyData: Uint8Array): Promise<CryptoKe
 		false,
 		['encrypt', 'decrypt'],
 	);
-export const exportKey = async (_keyPair: CryptoKey): Promise<JsonWebKey> => await OTR.crypto.exportKey('jwk', _keyPair);
+export const exportKey = async (_keyPair: CryptoKey): Promise<JsonWebKey> => subtle.exportKey('jwk', _keyPair);
 export const generateKeyPair = async (): Promise<CryptoKeyPair> =>
-	await OTR.crypto.generateKey(
+	subtle.generateKey(
 		{
 			name: 'ECDH',
 			namedCurve: 'P-256',
@@ -68,7 +69,7 @@ export const generateKeyPair = async (): Promise<CryptoKeyPair> =>
 export const decryptAES = async (cipherText: Uint8Array, _sessionKey: CryptoKey): Promise<ArrayBuffer> => {
 	const iv = cipherText.slice(0, 12);
 	cipherText = cipherText.slice(12);
-	const data = await OTR.crypto.decrypt(
+	const data = await subtle.decrypt(
 		{
 			name: 'AES-GCM',
 			iv,

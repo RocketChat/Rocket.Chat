@@ -10,8 +10,6 @@ class OTR implements IOTR {
 
 	instancesByRoomId: { [rid: string]: OTRRoom };
 
-	crypto: SubtleCrypto;
-
 	constructor() {
 		this.enabled = new ReactiveVar(false);
 		this.instancesByRoomId = {};

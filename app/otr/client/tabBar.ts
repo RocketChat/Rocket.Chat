@@ -13,7 +13,6 @@ addAction('otr', () => {
 
 	useEffect(() => {
 		if (shouldAddAction) {
-			OTR.crypto = window.crypto.subtle;
 			OTR.enabled.set(true);
 		} else {
 			OTR.enabled.set(false);

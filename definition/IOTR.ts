@@ -41,7 +41,6 @@ export interface IOTRRoom {
 export interface IOTR {
 	enabled: ReactiveVar<boolean>;
 	instancesByRoomId: { [rid: string]: OTRRoom };
-	crypto: SubtleCrypto;
 	isEnabled(): boolean;
 	getInstanceByRoomId(roomId: string): OTRRoom | undefined;
 }
