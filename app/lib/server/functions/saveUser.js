@@ -207,7 +207,7 @@ export function validateUserEditing(userId, userData) {
 	}
 
 	if (
-		user.emails[0] &&
+		user.emails?.[0] &&
 		isEditingField(user.emails[0].address, userData.email) &&
 		!settings.get('Accounts_AllowEmailChange') &&
 		(!canEditOtherUserInfo || editingMyself)

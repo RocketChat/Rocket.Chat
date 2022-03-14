@@ -10,6 +10,9 @@ import { findGuest, getRoom, settings } from '../lib/livechat';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 import { hasPermission, canSendMessage } from '../../../../authorization';
 import { Livechat } from '../../lib/Livechat';
+import { Logger } from '../../../../logger';
+
+const logger = new Logger('LivechatVideoCallApi');
 
 API.v1.addRoute('livechat/video.call/:token', {
 	get() {
@@ -62,6 +65,7 @@ API.v1.addRoute('livechat/video.call/:token', {
 
 			return API.v1.success(this.deprecationWarning({ videoCall }));
 		} catch (e) {
+			logger.error(e);
 			return API.v1.failure(e);
 		}
 	},
@@ -124,6 +128,7 @@ API.v1.addRoute(
 				};
 				return API.v1.success({ videoCall });
 			} catch (e) {
+				logger.error(e);
 				return API.v1.failure(e);
 			}
 		},
@@ -170,6 +175,7 @@ API.v1.addRoute(
 
 				return API.v1.success({ status });
 			} catch (e) {
+				logger.error(e);
 				return API.v1.failure(e);
 			}
 		},

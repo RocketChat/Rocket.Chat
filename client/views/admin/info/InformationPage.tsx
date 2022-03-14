@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/f
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
-import type { IInstance } from '../../../../definition/IInstance';
+import type { IInstanceStatus } from '../../../../definition/IInstanceStatus';
 import type { IServerInfo } from '../../../../definition/IServerInfo';
 import type { IStats } from '../../../../definition/IStats';
 import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
@@ -18,7 +18,7 @@ type InformationPageProps = {
 	canViewStatistics: boolean;
 	info: IServerInfo;
 	statistics: IStats;
-	instances: Array<IInstance>;
+	instances: Array<IInstanceStatus>;
 	onClickRefreshButton: () => void;
 	onClickDownloadInfo: () => void;
 };

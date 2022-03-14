@@ -985,4 +985,22 @@ export class UsersRaw extends BaseRaw {
 		};
 		return this.update(query, update);
 	}
+
+	getAvailableAgentsIncludingExt(includeExt, text, options) {
+		const query = {
+			roles: { $in: ['livechat-agent', 'livechat-manager', 'livechat-monitor'] },
+			$and: [
+				{ $or: [...(includeExt ? [{ extension: includeExt }] : []), { extension: { $exists: false } }] },
+				...(text && text.trim()
+					? [
+							{
+								$or: [{ username: escapeRegExp(text) }, { name: escapeRegExp(text) }],
+							},
+					  ]
+					: []),
+			],
+		};
+
+		return this.find(query, options);
+	}
 }

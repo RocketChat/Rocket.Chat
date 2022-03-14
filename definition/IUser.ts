@@ -81,7 +81,7 @@ export interface IUserServices {
 
 export interface IUserEmail {
 	address: string;
-	verified: boolean;
+	verified?: boolean;
 }
 
 export interface IUserSettings {
@@ -136,6 +136,7 @@ export interface IUser extends IRocketChatRecord {
 	defaultRoom?: string;
 	ldap?: boolean;
 	extension?: string;
+	inviteToken?: string;
 }
 
 export interface IRegisterUser extends IUser {
