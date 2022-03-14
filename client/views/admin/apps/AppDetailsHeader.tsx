@@ -1,4 +1,5 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
+import { formatDistanceStrict } from 'date-fns';
 import React, { FC } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
@@ -27,6 +28,7 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 		installed,
 		modifiedAt,
 		bundledIn,
+		description,
 	} = app;
 	console.log(app);
 	return (
@@ -37,25 +39,26 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 					<Box fontScale='h1' mie='x8'>
 						{name}
 					</Box>
-					{Boolean(bundledIn.length) && (
-						<Box
-							display='flex'
-							flexDirection='row'
-							alignItems='center'
-							justifyContent='center'
-							backgroundColor='disabled'
-							pi='x4'
-							height='x20'
-							borderRadius='x2'
-						>
-							<Icon name='bag' size='x20' />
-							<Box fontWeight='700' fontSize='x12' color='info'>
-								{bundledIn[0].bundleName} Bundle
+					{Boolean(bundledIn.length) &&
+						bundledIn.map((bundle) => (
+							<Box
+								display='flex'
+								flexDirection='row'
+								alignItems='center'
+								justifyContent='center'
+								backgroundColor='disabled'
+								pi='x4'
+								height='x20'
+								borderRadius='x2'
+							>
+								<Icon name='bag' size='x20' />
+								<Box fontWeight='700' fontSize='x12' color='info'>
+									{bundle.bundleName} Bundle
+								</Box>
 							</Box>
-						</Box>
-					)}
+						))}
 				</Box>
-				<Box mbe='x16'>Unique value proposition for this particular app</Box>
+				<Box mbe='x16'>{description}</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
 					<Box display='flex' flexDirection='row' alignItems='center'>
 						<AppStatus app={app} mie='x8' />
@@ -69,7 +72,8 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 					<Box fontScale='p2m' mie='x16'>
 						{t('By_author', { author: author?.name })}
 					</Box>
-					| <Box mi='x16'>{t('Version_version', { version })}</Box> | <Box mis='x16'>{modifiedAt}</Box>
+					| <Box mi='x16'>{t('Version_version', { version })}</Box> |{' '}
+					<Box mis='x16'>Last updated {formatDistanceStrict(new Date(modifiedAt), new Date(), { addSuffix: false })} ago</Box>
 				</Box>
 			</Box>
 		</Box>
