@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
 import { createVisitor, createLivechatRoom, createAgent } from '../../../data/livechat/rooms.js';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateSetting } from '../../../data/permissions.helper';
 
 describe('livechat/room.close', function () {
 	this.retries(0);
@@ -46,18 +46,16 @@ describe('livechat/room.close', function () {
 		});
 
 		it('should return an "room-closed" error when the room is already closed', (done) => {
-			updatePermission('view-livechat-manager', []).then(() => {
-				request
-					.get(api('livechat/room.close'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('room-closed');
-					})
-					.end(done);
-			});
+			request
+				.get(api('livechat/room.close'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('room-closed');
+				})
+				.end(done);
 		});
 
 		it('should return an error when the "rid" query parameter is not valid', (done) => {
