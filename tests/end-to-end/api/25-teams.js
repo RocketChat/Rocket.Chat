@@ -1573,8 +1573,8 @@ describe('[Teams]', () => {
 					.expect(200);
 			});
 
-			it('should add user with prefs to team', async (done) => {
-				await request
+			it('should add user with prefs to team', (done) => {
+				request
 					.post(api('teams.addMembers'))
 					.set(credentials)
 					.send({
@@ -1603,8 +1603,8 @@ describe('[Teams]', () => {
 				expect(response.body).to.have.property('success', true);
 			});
 
-			it('should return the user subscription with the right notification preferences', async (done) => {
-				await request
+			it('should return the user subscription with the right notification preferences', (done) => {
+				request
 					.get(api('subscriptions.getOne'))
 					.set(userCredentials)
 					.query({
