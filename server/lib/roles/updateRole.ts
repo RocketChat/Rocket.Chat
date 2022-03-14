@@ -1,6 +1,6 @@
 import type { IRole } from '../../../definition/IRole';
 import { Roles } from '../../../app/models/server/raw';
-import { DetailedError } from '../../../lib/utils/DetailedError';
+import { MeteorError } from '../../sdk/errors';
 import { isValidRoleScope } from '../../../lib/roles/isValidRoleScope';
 import { api } from '../../sdk/api';
 
@@ -16,17 +16,17 @@ export const updateRoleAsync = async (
 	const role = await Roles.findOneById(roleId);
 
 	if (!role) {
-		throw new DetailedError('error-invalid-roleId', 'This role does not exist');
+		throw new MeteorError('error-invalid-roleId', 'This role does not exist');
 	}
 
 	if (role.protected && ((roleData.name && roleData.name !== role.name) || (roleData.scope && roleData.scope !== role.scope))) {
-		throw new DetailedError('error-role-protected', 'Role is protected');
+		throw new MeteorError('error-role-protected', 'Role is protected');
 	}
 
 	if (roleData.name) {
 		const otherRole = await Roles.findOneByName(roleData.name, { projection: { _id: 1 } });
 		if (otherRole && otherRole._id !== role._id) {
-			throw new DetailedError('error-duplicate-role-names-not-allowed', 'Role name already exists');
+			throw new MeteorError('error-duplicate-role-names-not-allowed', 'Role name already exists');
 		}
 	} else {
 		roleData.name = role.name;
@@ -34,7 +34,7 @@ export const updateRoleAsync = async (
 
 	if (roleData.scope) {
 		if (!isValidRoleScope(roleData.scope)) {
-			throw new DetailedError('error-invalid-scope', 'Invalid scope');
+			throw new MeteorError('error-invalid-scope', 'Invalid scope');
 		}
 	} else {
 		roleData.scope = role.scope;
@@ -51,7 +51,7 @@ export const updateRoleAsync = async (
 
 	const newRole = await Roles.findOneById(roleId);
 	if (!newRole) {
-		throw new DetailedError('error-role-not-found', 'Role not found');
+		throw new MeteorError('error-role-not-found', 'Role not found');
 	}
 
 	return newRole;

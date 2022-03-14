@@ -1,6 +1,6 @@
 import type { IRole } from '../../../definition/IRole';
 import { Roles } from '../../../app/models/server/raw';
-import { DetailedError } from '../../../lib/utils/DetailedError';
+import { MeteorError } from '../../sdk/errors';
 import { isValidRoleScope } from '../../../lib/roles/isValidRoleScope';
 import { api } from '../../sdk/api';
 
@@ -12,11 +12,11 @@ export const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: Ins
 	const { name, scope, description, mandatory2fa } = roleData;
 
 	if (await Roles.findOneByName(name)) {
-		throw new DetailedError('error-duplicate-role-names-not-allowed', 'Role name already exists');
+		throw new MeteorError('error-duplicate-role-names-not-allowed', 'Role name already exists');
 	}
 
 	if (!isValidRoleScope(scope)) {
-		throw new DetailedError('error-invalid-scope', 'Invalid scope');
+		throw new MeteorError('error-invalid-scope', 'Invalid scope');
 	}
 
 	const result = await Roles.createWithRandomId(name, scope, description, false, mandatory2fa);
@@ -32,7 +32,7 @@ export const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: Ins
 
 	const newRole = await Roles.findOneById(roleId);
 	if (!newRole) {
-		throw new DetailedError('error-role-not-found', 'Role not found');
+		throw new MeteorError('error-role-not-found', 'Role not found');
 	}
 
 	return newRole;
