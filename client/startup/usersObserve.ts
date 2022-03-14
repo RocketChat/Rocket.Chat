@@ -5,7 +5,8 @@ import { RoomManager } from '../../app/ui-utils/client';
 import { IUser } from '../../definition/IUser';
 
 Meteor.startup(() => {
-	Meteor.users
+	// TODO: find correct typing for meteor collection
+	(Meteor.users as any)
 		.find(
 			{},
 			{
@@ -31,7 +32,7 @@ Meteor.startup(() => {
 				}
 				RoomManager.updateUserStatus(user, user.status, user.utcOffset);
 			},
-			removed(user) {
+			removed(user: IUser) {
 				Session.set(`user_${user.username}_status`, null);
 				Session.set(`user_${user.username}_status_text`, null);
 				RoomManager.updateUserStatus(user, 'offline', null);

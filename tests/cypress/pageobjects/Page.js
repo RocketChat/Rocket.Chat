@@ -4,7 +4,7 @@ class Page {
 	}
 
 	open(path) {
-		cy.visit(`http://localhost:3000/${path}`);
+		cy.visit(`/${path}`);
 	}
 }
-module.exports = Page;
+export default Page;

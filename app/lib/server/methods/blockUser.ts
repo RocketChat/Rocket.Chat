@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { roomTypes, RoomMemberActions } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { Rooms, Subscriptions } from '../../../models/server';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 Meteor.methods({
 	blockUser({ rid, blocked }) {
@@ -15,7 +16,7 @@ Meteor.methods({
 
 		const room = Rooms.findOne({ _id: rid });
 
-		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK)) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 		}
 

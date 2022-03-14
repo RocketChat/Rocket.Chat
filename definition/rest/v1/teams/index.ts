@@ -132,12 +132,12 @@ export type TeamsEndpoints = {
 				| {
 						teamId: ITeam['_id'];
 						userId: IUser['_id'];
-						canUserDelete?: boolean;
+						canUserDelete?: string;
 				  }
 				| {
 						teamName: ITeam['name'];
 						userId: IUser['_id'];
-						canUserDelete?: boolean;
+						canUserDelete?: string;
 				  },
 		) => PaginatedResult & { rooms: IRoom[] };
 	};

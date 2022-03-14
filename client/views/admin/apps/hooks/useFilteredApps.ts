@@ -3,8 +3,12 @@ import { useMemo, ContextType } from 'react';
 import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import type { AppsContext } from '../AppsContext';
-import { filterAppByCategories } from '../helpers/filterAppByCategories';
-import { filterAppByText } from '../helpers/filterAppByText';
+import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
+import { filterAppsByFree } from '../helpers/filterAppsByFree';
+import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
+import { filterAppsByText } from '../helpers/filterAppsByText';
+import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlphabeticalOrInverseOrder';
+import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
 import { App } from '../types';
 
 type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
@@ -12,17 +16,19 @@ type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextTy
 export const useFilteredApps = ({
 	appsData,
 	text,
-	sortDirection,
 	current,
-	categories = [],
 	itemsPerPage,
+	categories = [],
+	purchaseType,
+	sortingMethod,
 }: {
 	appsData: appsDataType;
 	text: string;
-	sortDirection: 'asc' | 'desc';
 	current: number;
 	itemsPerPage: number;
 	categories?: string[];
+	purchaseType?: string;
+	sortingMethod?: string;
 }): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
@@ -34,23 +40,41 @@ export const useFilteredApps = ({
 		let filtered: App[] = apps;
 		let shouldShowSearchText = true;
 
+		const sortingMethods: Record<string, () => App[]> = {
+			az: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(firstApp.name, secondApp.name)),
+			za: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(secondApp.name, firstApp.name)),
+			mru: () =>
+				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(firstApp.modifiedAt, secondApp.modifiedAt)),
+			lru: () =>
+				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
+		};
+
+		if (sortingMethod) {
+			filtered = sortingMethods[sortingMethod]();
+		}
+
+		if (purchaseType && purchaseType !== 'all') {
+			filtered =
+				purchaseType === 'paid' ? filtered.filter((app) => filterAppsByPaid(app)) : filtered.filter((app) => filterAppsByFree(app));
+
+			if (!filtered.length) {
+				shouldShowSearchText = false;
+			}
+		}
+
 		if (Boolean(categories.length) && Boolean(text)) {
-			filtered = apps.filter((app) => filterAppByCategories(app, categories)).filter(({ name }) => filterAppByText(name, text));
+			filtered = apps.filter((app) => filterAppsByCategories(app, categories)).filter(({ name }) => filterAppsByText(name, text));
 			shouldShowSearchText = true;
 		}
 
 		if (Boolean(categories.length) && !text) {
-			filtered = apps.filter((app) => filterAppByCategories(app, categories));
+			filtered = apps.filter((app) => filterAppsByCategories(app, categories));
 			shouldShowSearchText = false;
 		}
 
 		if (!categories.length && Boolean(text)) {
-			filtered = apps.filter(({ name }) => filterAppByText(name, text));
+			filtered = apps.filter(({ name }) => filterAppsByText(name, text));
 			shouldShowSearchText = true;
-		}
-
-		if (sortDirection === 'desc') {
-			filtered.reverse();
 		}
 
 		const total = filtered.length;
@@ -59,7 +83,7 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
-	}, [categories, current, appsData, itemsPerPage, sortDirection, text]);
+	}, [appsData.value, sortingMethod, purchaseType, categories, text, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {

@@ -23,7 +23,7 @@ export interface ITeamMemberParams {
 
 export interface IUserInfo {
 	_id: string;
-	username?: string | null;
+	username?: string;
 	name: string;
 	status: string;
 }
@@ -86,6 +86,7 @@ export interface ITeamService {
 		options?: IPaginationOptions,
 		queryOptions?: FilterQuery<IUser>,
 	): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
+	addMember(inviter: Pick<IUser, '_id' | 'username'>, userId: string, teamId: string): Promise<boolean>;
 	addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, members: ITeamMemberParams): Promise<void>;
 	removeMember(teamId: string, userId: string): Promise<void>;
@@ -94,7 +95,7 @@ export interface ITeamService {
 	getInfoById(teamId: string): Promise<Partial<ITeam> | null>;
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
-	unsetTeamIdOfRooms(teamId: string): void;
+	unsetTeamIdOfRooms(uid: string, teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getOneById<P>(teamId: string, options?: FindOneOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;

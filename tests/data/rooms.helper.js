@@ -1,8 +1,19 @@
 import { api, credentials, request } from './api-data';
 
-export const createRoom = ({ name, type, username, members = [], credentials: customCredentials }) => {
+export const createRoom = ({ name, type, username, token, agentId, members = [], credentials: customCredentials }) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom" test helper');
+	}
+	if (type === 'v') {
+		/* Special handling for voip type of rooms.
+		 * The endpoints below do not have a way to create
+		 * a voip room. Hence creation of a voip room
+		 * is handled separately here.
+		 */
+		return request
+			.get(api(`voip/room?token=${token}&agentId=${agentId}`))
+			.set(customCredentials || credentials)
+			.send();
 	}
 	if (type === 'd' && !username) {
 		throw new Error('To be able to create DM Room, you must provide the username');

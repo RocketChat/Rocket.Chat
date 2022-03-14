@@ -7,8 +7,8 @@ import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/
 import { Messages, Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
-import { roomTypes } from '../../../utils/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);
@@ -111,7 +111,7 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
-	const type = roomTypes.getConfig(p_room.t).getDiscussionType();
+	const type = roomCoordinator.getRoomDirectives(p_room.t)?.getDiscussionType();
 	const description = p_room.encrypted ? '' : message.msg;
 	const topic = p_room.name;
 

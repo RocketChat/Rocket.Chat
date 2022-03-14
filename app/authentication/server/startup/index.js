@@ -8,7 +8,7 @@ import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users, Settings } from '../../../models/server';
+import { Settings, Users } from '../../../models/server';
 import { Roles, Users as UsersRaw } from '../../../models/server/raw';
 import { addUserRoles } from '../../../authorization/server';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
@@ -213,8 +213,6 @@ Accounts.onCreateUser(function (options, user = {}) {
 });
 
 Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc, options, user) {
-	const noRoles = !user?.hasOwnProperty('globalRoles');
-
 	const globalRoles = [];
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
@@ -278,26 +276,18 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 		}
 	}
 
-	if (noRoles || roles.length === 0) {
-		const hasAdmin = Users.findOne(
-			{
-				roles: 'admin',
-				type: 'user',
-			},
-			{
-				fields: {
-					_id: 1,
-				},
-			},
-		);
-
-		if (hasAdmin) {
-			roles.push('user');
-		} else {
-			roles.push('admin');
-			if (settings.get('Show_Setup_Wizard') === 'pending') {
-				Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
-			}
+	/**
+	 * if settings shows setup wizard to be pending
+	 * and no admin's been found,
+	 * and existing role list doesn't include admin
+	 * create this user admin.
+	 * count this as the completion of setup wizard step 1.
+	 */
+	const hasAdmin = Users.findOneByRolesAndType('admin', 'user', { fields: { _id: 1 } });
+	if (!roles.includes('admin') && !hasAdmin) {
+		roles.push('admin');
+		if (settings.get('Show_Setup_Wizard') === 'pending') {
+			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 		}
 	}
 
