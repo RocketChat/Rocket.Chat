@@ -19,6 +19,7 @@ import {
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { updateRole } from '../../../../server/lib/roles/updateRole';
 import { insertRole } from '../../../../server/lib/roles/insertRole';
+import type { IRole } from '../../../../definition/IRole';
 
 API.v1.addRoute(
 	'roles.list',
@@ -160,7 +161,19 @@ API.v1.addRoute(
 			if (roomId && !(await hasPermissionAsync(this.userId, 'view-other-user-channels'))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
-			const users = await getUsersInRole(role, roomId, {
+
+			const options = { projection: { _id: 1 } };
+			let roleData = await Roles.findOneById<Pick<IRole, '_id'>>(role, options);
+			if (!roleData) {
+				roleData = await Roles.findOneByName<Pick<IRole, '_id'>>(role, options);
+				if (!roleData) {
+					throw new Meteor.Error('error-invalid-roleId');
+				}
+
+				apiDeprecationLogger.warn(`Querying roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
+			}
+
+			const users = await getUsersInRole(roleData._id, roomId, {
 				limit: count as number,
 				sort: { username: 1 },
 				skip: offset as number,
