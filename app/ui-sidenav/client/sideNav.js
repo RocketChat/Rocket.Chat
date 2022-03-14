@@ -11,6 +11,10 @@ import { Users } from '../../models';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Template.sideNav.helpers({
+	dataQa() {
+		return Template.instance().menuState.get() === 'opened';
+	},
+
 	flexTemplate() {
 		return SideNav.getFlex().template;
 	},
@@ -47,14 +51,6 @@ Template.sideNav.helpers({
 Template.sideNav.events({
 	'click .close-flex'() {
 		return SideNav.closeFlex();
-	},
-
-	'click .arrow'() {
-		return SideNav.toggleCurrent();
-	},
-
-	'scroll .rooms-list'() {
-		return menu.updateUnreadBars();
 	},
 
 	'dropped .sidebar'(e) {
@@ -103,13 +99,20 @@ const redirectToDefaultChannelIfNeeded = () => {
 Template.sideNav.onRendered(function () {
 	SideNav.init();
 	menu.init();
-	redirectToDefaultChannelIfNeeded();
 
-	return Meteor.defer(() => menu.updateUnreadBars());
+	this.stopMenuListener = menu.on('change', () => {
+		this.menuState.set(menu.isOpen() ? 'opened' : 'closed');
+	});
+	redirectToDefaultChannelIfNeeded();
 });
 
+Template.sideNav.onDestroyed(function () {
+	this.stopMenuListener();
+});
 Template.sideNav.onCreated(function () {
 	this.groupedByType = new ReactiveVar(false);
+
+	this.menuState = new ReactiveVar(menu.isOpen() ? 'opened' : 'closed');
 
 	this.autorun(() => {
 		const user = Users.findOne(Meteor.userId(), {

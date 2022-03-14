@@ -30,6 +30,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 	const phoneNumber = Array.isArray(v?.phone) ? v?.phone[0]?.phoneNumber : v?.phone;
 	const shouldShowWrapup = useMemo(() => lastMessage?.t === 'voip-call-wrapup' && lastMessage?.msg, [lastMessage]);
 	const shouldShowTags = useMemo(() => tags && tags.length > 0, [tags]);
+	const _name = name || fname;
 
 	return (
 		<>
@@ -48,12 +49,12 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 						</Box>
 					</InfoPanel.Field>
 					{servedBy && <AgentField isSmall agent={servedBy} />}
-					{v && (name || fname) && (
+					{v && _name && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Contact')}</InfoPanel.Label>
 							<Box display='flex'>
-								<UserAvatar size='x28' username={name || fname} />
-								<UserCard.Username mis='x8' title={name || fname} name={name || fname} status={<UserStatus status={v?.status} />} />
+								<UserAvatar size='x28' username={_name} />
+								<UserCard.Username mis='x8' title={_name} name={_name} status={<UserStatus status={v?.status} />} />
 							</Box>
 						</InfoPanel.Field>
 					)}

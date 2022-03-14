@@ -5,7 +5,7 @@ import { MongoInternals } from 'meteor/mongo';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
+import { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
 import { Users } from '../../../app/models/server/raw/index';
 import { Livechat } from '../../../app/livechat/server';
@@ -22,24 +22,6 @@ import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 import { use } from '../../../app/settings/server/Middleware';
-
-const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
-
-Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
-	added(_collection: string, id: string, version: AutoUpdateRecord) {
-		autoUpdateRecords.set(id, version);
-	},
-	changed(_collection: string, id: string, version: AutoUpdateRecord) {
-		autoUpdateRecords.set(id, version);
-		api.broadcast('meteor.autoUpdateClientVersionChanged', { record: version });
-	},
-	onStop() {
-		//
-	},
-	ready() {
-		//
-	},
-});
 
 type Callbacks = {
 	added(id: string, record: object): void;
@@ -132,6 +114,8 @@ settings.set = use(settings.set, (context, next) => {
 	const [record] = context;
 	updateValue(record._id, record);
 });
+
+const clientVersionsStore = new Map<string, AutoUpdateRecord>();
 
 export class MeteorService extends ServiceClassInternal implements IMeteor {
 	protected name = 'meteor';
@@ -272,8 +256,31 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		}
 	}
 
-	async getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]> {
-		return [...autoUpdateRecords.values()];
+	async started(): Promise<void> {
+		// Even after server startup, client versions might not be updated yet, the only way
+		// to make sure we can send the most up to date versions is using the publication below.
+		// Since it receives each document one at a time, we have to store them to be able to send
+		// them all when needed (i.e.: on ddp-streamer startup).
+		Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
+			added(_collection: string, _id: string, version: AutoUpdateRecord) {
+				clientVersionsStore.set(_id, version);
+				api.broadcast('meteor.clientVersionUpdated', version);
+			},
+			changed(_collection: string, _id: string, version: AutoUpdateRecord) {
+				clientVersionsStore.set(_id, version);
+				api.broadcast('meteor.clientVersionUpdated', version);
+			},
+			onStop() {
+				//
+			},
+			ready() {
+				//
+			},
+		});
+	}
+
+	async getAutoUpdateClientVersions(): Promise<Record<string, AutoUpdateRecord>> {
+		return Object.fromEntries(clientVersionsStore);
 	}
 
 	async getLoginServiceConfiguration(): Promise<any[]> {

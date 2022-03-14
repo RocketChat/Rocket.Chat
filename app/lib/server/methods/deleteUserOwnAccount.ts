@@ -24,10 +24,10 @@ Meteor.methods({
 			});
 		}
 
-		const userId = Meteor.userId();
-		const user = Users.findOneById(userId);
+		const uid = Meteor.userId();
+		const user = Users.findOneById(uid);
 
-		if (!user) {
+		if (!user || !uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'deleteUserOwnAccount',
 			});
@@ -49,7 +49,7 @@ Meteor.methods({
 			});
 		}
 
-		await deleteUser(userId, confirmRelinquish);
+		await deleteUser(uid, confirmRelinquish);
 
 		return true;
 	},
