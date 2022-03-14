@@ -188,7 +188,6 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		// E esse name: id aí?
 		const role = clientAction === 'removed' ? { _id: id, name: id } : data || (await Roles.findOneById(id));
 
 		if (!role) {
