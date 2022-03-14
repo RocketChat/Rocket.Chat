@@ -4,7 +4,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { createVisitor, createLivechatRoom, createAgent } from '../../../data/livechat/rooms.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('livechat/rooms', function () {
+describe('livechat/room.close', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -20,33 +20,29 @@ describe('livechat/rooms', function () {
 
 	describe('livechat/room.close', () => {
 		it('should return an "invalid-token" error when the visitor is not found due to an invalid token', (done) => {
-			updatePermission('view-livechat-manager', []).then(() => {
-				request
-					.get(api('livechat/room.close'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('invalid-token');
-					})
-					.end(done);
-			});
+			request
+				.get(api('livechat/room.close'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('invalid-token');
+				})
+				.end(done);
 		});
 
 		it('should return an "invalid-room" error when the room is not found due to invalid token and/or rid', (done) => {
-			updatePermission('view-livechat-manager', []).then(() => {
-				request
-					.get(api('livechat/room.close'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('invalid-room');
-					})
-					.end(done);
-			});
+			request
+				.get(api('livechat/room.close'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('invalid-room');
+				})
+				.end(done);
 		});
 
 		it('should return an "room-closed" error when the room is already closed', (done) => {
