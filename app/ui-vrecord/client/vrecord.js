@@ -15,7 +15,7 @@ Template.vrecDialog.helpers({
 	},
 
 	okDisabled() {
-		if (VideoRecorder.cameraStarted.get() && VideoRecorder.recordingAvailable.get()) {
+		if (VideoRecorder.cameraStarted.get() && VideoRecorder.recordingAvailable.get() && !VideoRecorder.recording.get()) {
 			return '';
 		}
 		return 'disabled';

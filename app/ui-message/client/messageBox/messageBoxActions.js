@@ -23,7 +23,7 @@ messageBox.actions.add('Create_new', 'Video_message', {
 		settings.get('Message_VideoRecorderEnabled') &&
 		(!settings.get('FileUpload_MediaTypeBlackList') || !settings.get('FileUpload_MediaTypeBlackList').match(/video\/webm|video\/\*/i)) &&
 		(!settings.get('FileUpload_MediaTypeWhiteList') || settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
-	action: ({ rid, tmid, messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox, { rid, tmid })),
+	action: ({ rid, tmid, messageBox }) => (!VRecDialog.opened ? VRecDialog.open(messageBox, { rid, tmid }) : null),
 });
 
 messageBox.actions.add('Add_files_from', 'Computer', {
