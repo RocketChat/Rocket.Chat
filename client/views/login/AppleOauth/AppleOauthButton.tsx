@@ -73,6 +73,10 @@ export const AppleOauthButton: FC = () => {
 	}, [scriptLoadedHandler]);
 
 	useLayoutEffect(() => {
+		if (!enabled) {
+			return;
+		}
+
 		const script = document.createElement('script');
 		script.src = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js';
 		script.async = true;
@@ -81,7 +85,7 @@ export const AppleOauthButton: FC = () => {
 		return (): void => {
 			document.body.removeChild(script);
 		};
-	}, []);
+	}, [enabled]);
 
 	if (!enabled) {
 		return null;

@@ -65,8 +65,14 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		}
 	});
 
-	const onChangeUsers = useMutableCallback((value: CreateDiscussionFormValues['usernames']) => {
-		handleUsernames(value);
+	const onChangeUsers = useMutableCallback((value, action) => {
+		if (!action) {
+			if (usernames.includes(value)) {
+				return;
+			}
+			return handleUsernames([...usernames, value]);
+		}
+		handleUsernames(usernames.filter((current) => current !== value));
 	});
 
 	return (
