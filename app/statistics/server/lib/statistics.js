@@ -169,9 +169,6 @@ export const statistics = {
 			}),
 		);
 
-		// Number of departments
-		statistics.departments = await LivechatDepartment.col.count();
-
 		// Type of routing algorithm used on omnichannel
 		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
 
