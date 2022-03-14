@@ -1,9 +1,10 @@
 /* eslint no-multi-spaces: 0 */
 import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
-import { Permissions, Roles, Settings } from '../../../models/server/raw';
+import { Permissions, Settings } from '../../../models/server/raw';
 import { IPermission } from '../../../../definition/IPermission';
 import { ISetting } from '../../../../definition/ISetting';
+import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 export const upsertPermissions = async (): Promise<void> => {
 	// Note:
@@ -244,7 +245,7 @@ export const upsertPermissions = async (): Promise<void> => {
 	] as const;
 
 	for await (const role of defaultRoles) {
-		await Roles.createOrUpdate(role.name, role.scope, role.description, true, false);
+		await createOrUpdateProtectedRoleAsync(role.name, role);
 	}
 
 	const getPreviousPermissions = async function (settingId?: string): Promise<Record<string, IPermission>> {
