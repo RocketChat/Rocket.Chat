@@ -28,13 +28,6 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import {
-	CannedResponseRaw,
-	LivechatPriorityRaw,
-	LivechatTagRaw,
-	LivechatUnitMonitorsRaw,
-	LivechatUnitRaw,
-} from '../../../../ee/app/models/server';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -151,56 +144,8 @@ export const statistics = {
 			}),
 		);
 
-		// Number of business units
-		statsPms.push(
-			LivechatUnitRaw.col.count().then((count) => {
-				statistics.businessUnits = count;
-				return true;
-			}),
-		);
-
-		// Number of Priorities
-		statsPms.push(
-			LivechatPriorityRaw.col.count().then((count) => {
-				statistics.priorities = count;
-				return true;
-			}),
-		);
-
 		// Type of routing algorithm used on omnichannel
 		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
-
-		// Number of livechat tags
-		statsPms.push(
-			LivechatTagRaw.col.count().then((count) => {
-				statistics.tags = count;
-				return true;
-			}),
-		);
-
-		// Number of canned responses
-		statsPms.push(
-			CannedResponseRaw.col.count().then((count) => {
-				statistics.cannedResponses = count;
-				return true;
-			}),
-		);
-
-		statsPms.push(
-			UsersRaw.findUsersInRoles('livechat-manager')
-				.count()
-				.then((count) => {
-					statistics.totalLivechatManagers = count;
-					return true;
-				}),
-		);
-
-		statsPms.push(
-			LivechatUnitMonitorsRaw.col.count().then((count) => {
-				statistics.totalLivechatMonitors = count;
-				return true;
-			}),
-		);
 
 		// is on-hold active
 		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
@@ -227,20 +172,8 @@ export const statistics = {
 		// Number of departments
 		statistics.departments = await LivechatDepartment.col.count();
 
-		// Number of business units
-		// statistics.businessUnits = await LivechatUnitRaw.col.count();
-
-		// Number of Priorities
-		statistics.priorities = await LivechatPriorityRaw.col.count();
-
 		// Type of routing algorithm used on omnichannel
 		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
-
-		// Number of livechat tags
-		statistics.livechatTags = await LivechatTagRaw.col.count();
-
-		// Number of canned responses
-		statistics.cannedResponses = await CannedResponseRaw.col.count();
 
 		// is on-hold active
 		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
@@ -456,7 +389,11 @@ export const statistics = {
 			}),
 		);
 
-		statistics.enterprise = getEnterpriseStatistics();
+		statsPms.push(
+			getEnterpriseStatistics().then((result) => {
+				statistics.enterprise = result;
+			}),
+		);
 
 		statsPms.push(Analytics.resetSeatRequestCount());
 
