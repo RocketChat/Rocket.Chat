@@ -40,7 +40,7 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 		Messages.cloneAndSaveAsHistoryById(message._id, user);
 	}
 
-	(message as IMessageEdited).editedAt = new Date().toString();
+	(message as IMessageEdited).editedAt = new Date();
 	(message as IMessageEdited).editedBy = {
 		_id: user._id,
 		username: user.username,

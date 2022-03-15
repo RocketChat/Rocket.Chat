@@ -2,8 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 
-// @ts-expect-error
-import { hasPermission } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization/server';
 import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models/server/raw/index';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';

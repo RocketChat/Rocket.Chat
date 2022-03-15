@@ -99,7 +99,7 @@ export interface IMessage extends IRocketChatRecord {
 	file?: FileProp;
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
-	editedAt?: string;
+	editedAt?: Date;
 	token?: string;
 }
 
@@ -154,7 +154,7 @@ export const isMessageDiscussion = (message: IMessage): message is IMessageDiscu
 };
 
 export type IMessageEdited = IMessage & {
-	editedAt: string;
+	editedAt: Date;
 	editedBy: Pick<IUser, '_id' | 'username'>;
 };
 
