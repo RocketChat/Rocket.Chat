@@ -107,7 +107,6 @@ export class QueueAggregator {
 
 	callRinging(queueInfo: { queuename: string; callerid: { id: string; name: string } }): void {
 		if (!this.currentQueueMembershipStatus[queueInfo.queuename]) {
-			// something is wrong. Queue is not found in the membership details.
 			return;
 		}
 
