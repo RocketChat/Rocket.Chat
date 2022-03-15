@@ -5,6 +5,7 @@ import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization';
 import { Users, LivechatDepartment, LivechatInquiry } from '../../../../models';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
+import { LivechatInquiryStatus } from '../../../../../definition/IInquiry';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
