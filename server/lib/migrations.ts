@@ -293,4 +293,4 @@ export const onFreshInstall =
 		? (): void => {
 				/* noop */
 		  }
-		: (fn: () => unknown): unknown => fn();
+		: (fn: () => unknown): unknown => Promise.await(fn());
