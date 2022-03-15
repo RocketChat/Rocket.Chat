@@ -154,7 +154,7 @@ export const isMessageDiscussion = (message: IMessage): message is IMessageDiscu
 };
 
 export type IMessageEdited = IMessage & {
-	editedAt: Date;
+	editedAt: string;
 	editedBy: Pick<IUser, '_id' | 'username'>;
 };
 

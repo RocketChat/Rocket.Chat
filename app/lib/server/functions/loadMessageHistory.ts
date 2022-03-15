@@ -14,10 +14,10 @@ export const loadMessageHistory = function loadMessageHistory({
 }: {
 	userId: string;
 	rid: string;
-	end: string;
 	limit: number;
-	ls: string;
-	showThreadMessages: boolean;
+	end?: Date;
+	ls?: Date;
+	showThreadMessages?: boolean;
 }) {
 	const room = Rooms.findOneById(rid, { fields: { sysMes: 1 } });
 
