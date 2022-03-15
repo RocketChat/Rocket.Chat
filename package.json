@@ -93,7 +93,7 @@
 		"@types/ldapjs": "^2.2.1",
 		"@types/less": "^3.0.2",
 		"@types/lodash.get": "^4.4.6",
-		"@types/mailparser": "^3.0.2",
+		"@types/mailparser": "^3.4.0",
 		"@types/marked": "^1.2.2",
 		"@types/meteor": "1.4.81",
 		"@types/mkdirp": "^1.0.1",
