@@ -134,7 +134,7 @@ export function normalizeHttpHeaderData(headers = {}): { httpHeaders: { [k: stri
 }
 
 // TODO: an actual type should be put here
-export async function settings({ businessUnit = '' }): Promise<Record<string, any>> {
+export async function settings({ businessUnit = '' } = {}): Promise<Record<string, any>> {
 	const initSettings = Livechat.getInitSettings() as unknown as Record<string, string | boolean>;
 	const triggers = await findTriggers();
 	const departments = findDepartments(businessUnit);

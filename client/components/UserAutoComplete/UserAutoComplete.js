@@ -1,4 +1,4 @@
-import { SelectFiltered, Option, Box, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Option, Box, Chip, Avatar } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
@@ -17,29 +17,29 @@ const UserAutoComplete = (props) => {
 		useMemo(() => query(debouncedFilter, conditions), [filter]),
 	);
 
-	const options = useMemo(() => (data && data.items.map((user) => [user.username, user.name])) || [], [data]);
-
-	const renderSelected = ({ value, label }) =>
-		value ? (
-			<Chip height='x20' value={value} onClick={() => props.onChange()} mie='x4'>
-				<UserAvatar size='x20' username={value} />
-				<Box verticalAlign='middle' is='span' margin='none' mi='x4'>
-					{label}
-				</Box>
-			</Chip>
-		) : null;
-
-	const renderItem = ({ value, ...props }) => <Option key={value} {...props} avatar={<UserAvatar size='x20' username={value} />} />;
+	const options = useMemo(() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [], [data]);
 
 	return (
-		<SelectFiltered
+		<AutoComplete
 			{...props}
-			options={options}
 			filter={filter}
 			setFilter={setFilter}
-			addonIcon='magnifier'
-			renderItem={renderItem}
-			renderSelected={renderSelected}
+			renderSelected={({ value, label }) => {
+				if (!value) {
+					return '';
+				}
+
+				return (
+					<Chip height='x20' value={value} onClick={() => props.onChange()} mie='x4'>
+						<UserAvatar size='x20' username={value} />
+						<Box verticalAlign='middle' is='span' margin='none' mi='x4'>
+							{label}
+						</Box>
+					</Chip>
+				);
+			}}
+			renderItem={({ value, ...props }) => <Option key={value} {...props} avatar={<Avatar value={value} />} />}
+			options={options}
 		/>
 	);
 };

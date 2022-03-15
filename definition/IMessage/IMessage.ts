@@ -145,6 +145,22 @@ export type IVoipMessage = IMessage & {
 		callWaitingTime?: string;
 	};
 };
+export interface IMessageDiscussion extends IMessage {
+	drid: RoomID;
+}
+
+export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {
+	return 'drid' in message;
+};
+
+export type IMessageEdited = IMessage & {
+	editedAt: Date;
+	editedBy: Pick<IUser, '_id' | 'username'>;
+};
+
+export const isMessageEdited = (message: IMessage): message is IMessageEdited => {
+	return 'editedAt' in message && 'editedBy' in message;
+};
 
 export type IMessageInbox = IMessage & {
 	// email inbox fields
