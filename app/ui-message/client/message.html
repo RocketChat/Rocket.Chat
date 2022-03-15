@@ -103,11 +103,7 @@
 							{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}
 						</div>
 					{{else}}
-						{{# if enableMessageParserEarlyAdoption }}
-							{{> MessageBody tokens=msg.md mentions=msg.mentions }}
-						{{else}}
-							{{{body}}}
-						{{/if}}
+						{{{body}}}
 					{{/if}}
 					{{#if msg.location}}
 						{{> messageLocation location=msg.location}}
