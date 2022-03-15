@@ -1,4 +1,5 @@
 import os from 'os';
+import { log } from 'console';
 
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
@@ -394,7 +395,7 @@ export const statistics = {
 
 		statsPms.push(Analytics.resetSeatRequestCount());
 
-		await Promise.all(statsPms);
+		await Promise.all(statsPms).catch(log);
 		return statistics;
 	},
 	async save() {

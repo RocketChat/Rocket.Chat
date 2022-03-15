@@ -15,7 +15,7 @@ type ENTERPRISE_STATISTICS = {
 };
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
-	const statsPms = [];
+	const statsPms: Array<Promise<any>> = [];
 
 	// const seatRequests = Promise.await();
 	const statistics: ENTERPRISE_STATISTICS = {} as any;
