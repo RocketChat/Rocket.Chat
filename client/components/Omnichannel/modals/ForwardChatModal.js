@@ -32,7 +32,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(() => ({ filter: debouncedDepartmentsFilter }), [debouncedDepartmentsFilter]),
+		useMemo(() => ({ filter: debouncedDepartmentsFilter, enabled: true }), [debouncedDepartmentsFilter]),
 	);
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
