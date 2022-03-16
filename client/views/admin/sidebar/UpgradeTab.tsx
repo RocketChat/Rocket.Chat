@@ -35,7 +35,7 @@ const UpgradeTab = ({ type }: { type: UpgradeTabVariants }): ReactElement => {
 
 	return (
 		<Sidebar.GenericItem href={String(path)} customColors={customColors} textColor='alternative'>
-			<Icon name='arrow-jump' size='x20' mi='x4' />
+			<Icon name='arrow-stack-up' size='x20' mi='x4' />
 			<Box withTruncatedText fontScale='p2' mi='x4' color='alternative'>
 				{t(label)} {displayEmoji && <Emoji emojiHandle=':zap:' />}
 			</Box>
