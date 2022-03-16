@@ -6,7 +6,6 @@ import AppAvatar from '../../../components/avatar/AppAvatar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
-import PriceDisplay from './PriceDisplay';
 import { App } from './types';
 
 type AppDetailsPageHeaderProps = {
@@ -16,20 +15,7 @@ type AppDetailsPageHeaderProps = {
 const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 	const t = useTranslation();
 
-	const {
-		iconFileData = '',
-		name,
-		author,
-		version,
-		price,
-		purchaseType,
-		pricingPlans,
-		iconFileContent,
-		installed,
-		modifiedAt,
-		bundledIn,
-		description,
-	} = app;
+	const { iconFileData = '', name, author, version, iconFileContent, installed, modifiedAt, bundledIn, description } = app;
 	console.log(app);
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
@@ -61,10 +47,7 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 				<Box mbe='x16'>{description}</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<AppStatus app={app} mie='x8' />
-						{!installed && (
-							<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
-						)}
+						<AppStatus app={app} installed={installed} isAppDetailsPage={true} mie='x8' />
 					</Box>
 					{installed && <AppMenu app={app} />}
 				</Box>

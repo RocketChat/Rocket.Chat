@@ -117,6 +117,7 @@ export const appButtonProps = ({
 	const canSubscribe = purchaseType === 'subscription' && !subscriptionInfo.status;
 	if (canSubscribe) {
 		const cannotTry = pricingPlans.every((currentPricingPlan) => currentPricingPlan.trialDays === 0);
+		const isTierBased = pricingPlans.every((currentPricingPlan) => currentPricingPlan.tiers && currentPricingPlan.tiers.length > 0);
 
 		if (cannotTry || isEnterpriseOnly) {
 			return {
@@ -125,9 +126,16 @@ export const appButtonProps = ({
 			};
 		}
 
+		if (isTierBased) {
+			return {
+				action: 'purchase',
+				label: 'See Pricing',
+			};
+		}
+
 		return {
 			action: 'purchase',
-			label: 'Trial',
+			label: 'Try now',
 		};
 	}
 
@@ -163,7 +171,7 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }) => {
 	if (!isEnabled) {
 		return {
 			type: 'warning',
-			icon: 'warning',
+			icon: 'ban',
 			label: 'Disabled',
 		};
 	}
@@ -177,20 +185,21 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }) => {
 	}
 
 	return {
-		icon: 'checkmark-circled',
+		icon: 'check',
 		label: 'Enabled',
 	};
 };
 
 export const formatPrice = (price) => `\$${Number.parseFloat(price).toFixed(2)}`;
 
-export const formatPricingPlan = ({ strategy, price, tiers = [] }) => {
+export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }) => {
 	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',
-		Array.isArray(tiers) && tiers.length > 0 && 'startingAt',
+		Array.isArray(tiers) && tiers.length > 0 && '+*',
 		strategy,
+		trialDays && 'trialDays',
 		perUnit && 'perUser',
 	]
 		.filter(Boolean)
@@ -198,5 +207,6 @@ export const formatPricingPlan = ({ strategy, price, tiers = [] }) => {
 
 	return t(pricingPlanTranslationString, {
 		price: formatPrice(price),
+		trialDays,
 	});
 };

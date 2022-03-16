@@ -34,9 +34,7 @@ function PriceDisplay({ purchaseType, pricingPlans, price, showType = true, ...p
 					{t(type)}
 				</Box>
 			)}
-			<Box color='hint' withTruncatedText>
-				{!showType && type === 'Free' ? t(type) : formattedPrice}
-			</Box>
+			<Box withTruncatedText>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
 		</Box>
 	);
 }
