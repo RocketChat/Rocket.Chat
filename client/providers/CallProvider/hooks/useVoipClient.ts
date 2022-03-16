@@ -6,7 +6,7 @@ import { IRegistrationInfo } from '../../../../definition/voip/IRegistrationInfo
 import { WorkflowTypes } from '../../../../definition/voip/WorkflowTypes';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
-import { useUserId } from '../../../contexts/UserContext';
+import { useUser } from '../../../contexts/UserContext';
 import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
@@ -32,17 +32,16 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
 	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
-	const userId = useUserId();
+	const user = useUser();
 	const iceServers = useWebRtcServers();
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
-
 	useEffect(() => {
-		if (!userId || !voipEnabled) {
+		if (!user || !user?._id || !user?.extension || !voipEnabled) {
 			setResult({});
 			return;
 		}
 
-		registrationInfo({ id: userId }).then(
+		registrationInfo({ id: user._id }).then(
 			(data) => {
 				let parsedData: IRegistrationInfo;
 				if (isSignedResponse(data)) {
@@ -81,6 +80,6 @@ export const useVoipClient = (): UseVoipClientResult => {
 			// client?.disconnect();
 			// TODO how to close the client? before creating a new one?
 		};
-	}, [userId, iceServers, registrationInfo, setResult, membership, voipEnabled]);
+	}, [user, iceServers, registrationInfo, setResult, membership, voipEnabled]);
 	return result;
 };

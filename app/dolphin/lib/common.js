@@ -30,7 +30,7 @@ function DolphinOnCreateUser(options, user) {
 
 if (Meteor.isServer) {
 	Meteor.startup(() =>
-		settings.get('Accounts_OAuth_Dolphin_URL', (key, value) => {
+		settings.watch('Accounts_OAuth_Dolphin_URL', (value) => {
 			config.serverURL = value;
 			return Dolphin.configure(config);
 		}),
