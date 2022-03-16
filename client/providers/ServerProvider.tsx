@@ -4,7 +4,7 @@ import React, { FC } from 'react';
 import { Info as info, APIClient } from '../../app/utils/client';
 import { Serialized } from '../../definition/Serialized';
 import { Method, PathFor, MatchPathPattern, OperationParams, OperationResult } from '../../definition/rest';
-import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '../contexts/ServerContext';
+import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '../contexts/ServerContext';
 
 const absoluteUrl = (path: string): string => Meteor.absoluteUrl(path);
 
@@ -46,7 +46,7 @@ const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	}
 };
 
-const uploadToEndpoint = (endpoint: string, params: any, formData: any): Promise<void> => {
+const uploadToEndpoint = (endpoint: string, params: any, formData: any): Promise<UploadResult> => {
 	if (endpoint[0] === '/') {
 		return APIClient.upload(endpoint.slice(1), params, formData).promise;
 	}

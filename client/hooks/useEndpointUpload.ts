@@ -1,29 +1,34 @@
 import { useCallback } from 'react';
 
-import { useUpload } from '../contexts/ServerContext';
+import { UploadResult, useUpload } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
-export const useEndpointUpload = (endpoint, params = {}, successMessage) => {
+export const useEndpointUpload = (
+	endpoint: string,
+	params = {},
+	successMessage: string,
+): ((...args: any[]) => Promise<{ success: boolean }>) => {
 	const sendData = useUpload(endpoint);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useCallback(
 		async (...args) => {
 			try {
-				let data = sendData(params, ...args);
+				const data = sendData(params, [...args]);
+
 				const promise = data instanceof Promise ? data : data.promise;
 
-				data = await promise;
+				const result = await (promise as unknown as Promise<UploadResult>);
 
-				if (!data.success) {
-					throw new Error(data.status);
+				if (!result.success) {
+					throw new Error(String(result.status));
 				}
 
 				successMessage && dispatchToastMessage({ type: 'success', message: successMessage });
 
-				return data;
+				return result as any;
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 				return { success: false };
 			}
 		},

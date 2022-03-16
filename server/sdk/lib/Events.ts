@@ -22,7 +22,7 @@ type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 export type EventSignatures = {
 	'shutdown': (params: Record<string, string[]>) => void;
-	'$services.changed': (info: unknown) => void;
+	'$services.changed': (info: { localService: boolean }) => void;
 	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;
 	'accounts.logout': (info: { userId: string; connection: ISocketConnection }) => void;
 	'authorization.guestPermissions': (permissions: string[]) => void;

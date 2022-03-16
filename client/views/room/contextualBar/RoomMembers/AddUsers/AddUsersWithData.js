@@ -19,8 +19,14 @@ const AddUsersWithData = ({ rid, onClickBack, reload }) => {
 	const { users } = values;
 	const { handleUsers } = handlers;
 
-	const onChangeUsers = useMutableCallback((value) => {
-		handleUsers(value);
+	const onChangeUsers = useMutableCallback((value, action) => {
+		if (!action) {
+			if (users.includes(value)) {
+				return;
+			}
+			return handleUsers([...users, value]);
+		}
+		handleUsers(users.filter((current) => current !== value));
 	});
 
 	const handleSave = useMutableCallback(async () => {

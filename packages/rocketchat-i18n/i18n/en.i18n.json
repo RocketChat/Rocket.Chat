@@ -617,6 +617,7 @@
   "Avatar": "Avatar",
   "Avatar_changed_successfully": "Avatar changed successfully",
   "Avatar_URL": "Avatar URL",
+  "Avatar_format_invalid": "Invalid Format. Only image type is allowed",
   "Avatar_url_invalid_or_error": "The url provided is invalid or not accessible. Please try again, but with a different url.",
   "Avg_chat_duration": "Average of Chat Duration",
   "Avg_first_response_time": "Average of First Response Time",
