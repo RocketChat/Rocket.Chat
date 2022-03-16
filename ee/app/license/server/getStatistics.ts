@@ -14,7 +14,7 @@ type ENTERPRISE_STATISTICS = {
 	businessUnits: number;
 };
 
-export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
+export function getStatistics(): ENTERPRISE_STATISTICS {
 	const statsPms: Array<Promise<any>> = [];
 
 	// const seatRequests = Promise.await();
