@@ -5,15 +5,17 @@ export type StatisticsEndpoints = {
 		GET: (params: { refresh?: boolean }) => IStats;
 	};
 	'statistics.telemetry': {
-		POST: (params: TelemetryEvent[] | OTREnded[] | SlashCommand[]) => any;
+		POST: (params: TelemetryPayload[]) => any;
 	};
 };
 
-export type TelemetryEvent = {
+export type TelemetryBase = {
 	eventName: string;
 	timestamp: number;
 };
 
-export type OTREnded = TelemetryEvent & { roomId: string };
+type OTREnded = TelemetryBase & { rid: string };
 
-export type SlashCommand = TelemetryEvent & { command: string };
+type SlashCommand = TelemetryBase & { command: string };
+
+export type TelemetryPayload = TelemetryBase | OTREnded | SlashCommand;

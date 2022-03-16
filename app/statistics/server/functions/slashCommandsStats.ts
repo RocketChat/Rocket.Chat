@@ -1,7 +1,12 @@
+import telemetryEvent from '../lib/telemetryEvents';
 import { updateCounter } from './updateStatsCounter';
 
-export function slashCommandsStats(command: string): void {
-	if (command === 'jitsi') {
-		updateCounter('Jitsi_Start_SlashCommands_Count');
+type slashCommandsDataType = { command: string };
+
+export function slashCommandsStats(data: slashCommandsDataType): void {
+	if (data.command === 'jitsi') {
+		updateCounter({ settingsId: 'Jitsi_Start_SlashCommands_Count' });
 	}
 }
+
+telemetryEvent.register('slashCommandsStats', slashCommandsStats);

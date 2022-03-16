@@ -1,5 +1,6 @@
 import { API } from '../api';
-import { getStatistics, getLastStatistics, updateCounter, slashCommandsStats, otrStats } from '../../../statistics/server';
+import { getStatistics, getLastStatistics } from '../../../statistics/server';
+import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
 
 API.v1.addRoute(
 	'statistics',
@@ -51,24 +52,9 @@ API.v1.addRoute(
 	{
 		post() {
 			const events = this.requestParams();
-			events.forEach((event) => {
-				switch (event.eventName) {
-					case 'engagementDashboard':
-						updateCounter('Engagement_Dashboard_Load_Count');
-						break;
-					case 'messageAuditingApply':
-						updateCounter('Message_Auditing_Apply_Count');
-						break;
-					case 'jitsiCallButton':
-						updateCounter('Jits_Click_To_Join_Count');
-						break;
-					case 'slashCommands':
-						slashCommandsStats(event.command);
-						break;
-					case 'otrEnded':
-						otrStats(event.roomId);
-						break;
-				}
+			events.params.forEach((event) => {
+				const { eventName, ...params } = event;
+				telemetryEvent.call(eventName, params);
 			});
 
 			return API.v1.success();

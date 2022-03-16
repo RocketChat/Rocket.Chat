@@ -1,8 +1,13 @@
 import { settings } from '../../../settings/server';
 import { Settings } from '../../../models/server';
+import telemetryEvent from '../lib/telemetryEvents';
 
-export function updateCounter(settingsId: string): void {
-	const countValue: number = settings.get(settingsId);
+type updateCounterDataType = { settingsId: string };
 
-	Settings.updateValueById(settingsId, countValue + 1);
+export function updateCounter(data: updateCounterDataType): void {
+	const countValue: number = settings.get(data.settingsId);
+
+	Settings.updateValueById(data.settingsId, countValue + 1);
 }
+
+telemetryEvent.register('updateCounter', updateCounter);
