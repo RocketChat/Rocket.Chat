@@ -43,7 +43,7 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 				$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
 			},
 			{ ...(department && { department }) },
-			// Add _always_ the "public queue" to returned list of inquiries (task: 26uu9ep)
+			// Add _always_ the "public queue" to returned list of inquiries, even if agent already has departments
 			{ department: { $exists: false } },
 		],
 	};
