@@ -1,6 +1,7 @@
 import { Markdown } from '../../../markdown/server';
+import { IMessage } from '../../../../definition/IMessage';
 
-export const parseUrlsInMessage = (message) => {
+export const parseUrlsInMessage = (message: IMessage): IMessage => {
 	if (message.parseUrls === false) {
 		return message;
 	}

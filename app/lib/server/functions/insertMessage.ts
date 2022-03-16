@@ -1,8 +1,16 @@
 import { Messages, Rooms } from '../../../models/server';
 import { validateMessage, prepareMessageObject } from './sendMessage';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { IMessage } from '../../../../definition/IMessage';
+import { IUser } from '../../../../definition/IUser';
 
-export const insertMessage = function (user, message, rid, upsert = false) {
+/* deprecated */
+export const insertMessage = function (
+	user: Pick<IUser, '_id' | 'username' | 'name'>,
+	message: IMessage,
+	rid: string,
+	upsert = false,
+): IMessage | false {
 	if (!user || !message || !rid) {
 		return false;
 	}
@@ -12,24 +20,23 @@ export const insertMessage = function (user, message, rid, upsert = false) {
 	parseUrlsInMessage(message);
 
 	if (message._id && upsert) {
-		const { _id } = message;
-		delete message._id;
+		const { _id, ...msg } = message;
 		const existingMessage = Messages.findOneById(_id);
 		Messages.upsert(
 			{
 				_id,
-				'u._id': message.u._id,
+				'u._id': msg.u._id,
 			},
-			message,
+			msg,
 		);
 		if (!existingMessage) {
 			Rooms.incMsgCountById(rid, 1);
 		}
-		message._id = _id;
-	} else {
-		message._id = Messages.insert(message);
-		Rooms.incMsgCountById(rid, 1);
+		return { ...message, _id };
 	}
+
+	message._id = Messages.insert(message);
+	Rooms.incMsgCountById(rid, 1);
 
 	return message;
 };

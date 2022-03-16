@@ -80,6 +80,8 @@ export interface IRoom extends IRocketChatRecord {
 	archived?: boolean;
 	announcement?: string;
 	description?: string;
+	/* @deprecated */
+	customFields?: unknown;
 }
 
 export interface ICreatedRoom extends IRoom {

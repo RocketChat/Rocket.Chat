@@ -69,6 +69,8 @@ type ChainedCallbackSignatures = {
 		guest: ILivechatVisitor;
 		transferData: { [k: string]: string | any };
 	};
+
+	'beforeSaveMessage': (message: IMessage) => IMessage;
 	'livechat.afterForwardChatToAgent': (params: { rid: IRoom['_id']; servedBy: unknown; oldServedBy: unknown }) => {
 		rid: IRoom['_id'];
 		servedBy: unknown;
@@ -123,7 +125,6 @@ type Hook =
 	| 'beforeLeaveRoom'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
-	| 'beforeSaveMessage'
 	| 'beforeSendMessageNotifications'
 	| 'beforeValidateLogin'
 	| 'cachedCollection-loadFromServer-rooms'

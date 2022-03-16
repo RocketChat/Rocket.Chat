@@ -1,5 +1,5 @@
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
-import React, { useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import { TranslationContext } from '../contexts/TranslationContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
@@ -7,10 +7,10 @@ import { useReactiveValue } from '../hooks/useReactiveValue';
 const createTranslateFunction = (language) => {
 	const translate = (key, ...replaces) => {
 		if (typeof replaces[0] === 'object') {
-			const [options, lang_tag = language] = replaces;
+			const [options, lng = language] = replaces;
 			return TAPi18next.t(key, {
 				ns: 'project',
-				lng: lang_tag,
+				lng,
 				...options,
 			});
 		}
@@ -50,7 +50,7 @@ const getLanguage = () => TAPi18n.getLanguage();
 
 const loadLanguage = (language) => TAPi18n._loadLanguage(language);
 
-function TranslationProvider({ children }) {
+const TranslationProvider: FC = function TranslationProvider({ children }) {
 	const languages = useReactiveValue(getLanguages);
 	const language = useReactiveValue(getLanguage);
 
@@ -67,6 +67,6 @@ function TranslationProvider({ children }) {
 	);
 
 	return <TranslationContext.Provider children={children} value={value} />;
-}
+};
 
 export default TranslationProvider;

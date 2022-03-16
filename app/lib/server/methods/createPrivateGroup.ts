@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { createRoom } from '../functions';
 
 Meteor.methods({
@@ -9,13 +9,15 @@ Meteor.methods({
 		check(name, String);
 		check(members, Match.Optional([String]));
 
-		if (!Meteor.userId()) {
+		const user = Meteor.user();
+
+		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createPrivateGroup',
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'create-p')) {
+		if (!hasPermission(user._id, 'create-p')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 
@@ -35,7 +37,7 @@ Meteor.methods({
 			}),
 		);
 
-		return createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, {
+		return createRoom('p', name, user.username, members, readOnly, {
 			customFields,
 			...extraData,
 		});

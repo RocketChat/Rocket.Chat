@@ -1,24 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import _ from 'underscore';
-import moment from 'moment';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { api } from '../../../../server/sdk/api';
+import { isMessageEdited } from '../../../../definition/IMessage';
 
 callbacks.add(
 	'beforeSaveMessage',
 	function (message) {
 		// If the message was edited, or is older than 60 seconds (imported)
 		// the notifications will be skipped, so we can also skip this validation
-		if (message.editedAt || (message.ts && Math.abs(moment(message.ts).diff()) > 60000)) {
+		if (isMessageEdited(message) || (message.ts && Date.now() - new Date(message.ts).getTime() > 60000)) {
 			return message;
 		}
 
 		// Test if the message mentions include @here.
-		if (message.mentions != null && _.pluck(message.mentions, '_id').some((item) => item === 'here')) {
+		if (message.mentions?.some(({ _id }) => _id === 'here')) {
 			// Check if the user has permissions to use @here in both global and room scopes.
 			if (!hasPermission(message.u._id, 'mention-here') && !hasPermission(message.u._id, 'mention-here', message.rid)) {
 				// Get the language of the user for the error notification.
