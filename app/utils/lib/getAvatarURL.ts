@@ -7,6 +7,4 @@ export const getAvatarURL = ({ username, roomId, cache }: { username?: string; r
 	if (roomId) {
 		return getURL(`/avatar/room/${encodeURIComponent(roomId)}${cache ? `?etag=${cache}` : ''}`);
 	}
-
-	return '';
 };

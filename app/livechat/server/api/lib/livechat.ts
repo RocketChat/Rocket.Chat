@@ -75,7 +75,7 @@ export function findRoom(token: string, rid: string): IOmnichannelRoom {
 	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
-export function findOpenRoom(token: string, departmentId: string): IOmnichannelRoom | null {
+export function findOpenRoom(token: string, departmentId?: string): IOmnichannelRoom | null {
 	const options = {
 		fields: {
 			departmentId: 1,

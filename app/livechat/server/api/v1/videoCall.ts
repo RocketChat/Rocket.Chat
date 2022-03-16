@@ -39,8 +39,7 @@ API.v1.addRoute('livechat/video.call/:token', {
 		};
 		const { room } = await getRoom({ guest, rid, roomInfo });
 
-		const businessUnit = '';
-		const config = await settings({ businessUnit });
+		const config = await settings();
 		if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.jitsi) {
 			throw new Meteor.Error('invalid-livechat-config');
 		}
@@ -95,8 +94,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('webRTC calling not enabled');
 			}
 
-			const businessUnit = '';
-			const config = await settings({ businessUnit });
+			const config = await settings();
 			if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
 				throw new Meteor.Error('invalid-livechat-config');
 			}
@@ -116,13 +114,13 @@ API.v1.addRoute(
 					},
 				);
 			}
-
-			const videoCall = {
-				rid: room._id,
-				provider: 'webrtc',
-				callStatus,
-			};
-			return API.v1.success({ videoCall });
+			return API.v1.success({
+				videoCall: {
+					rid: room._id,
+					provider: 'webrtc',
+					callStatus,
+				},
+			});
 		},
 	},
 );

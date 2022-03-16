@@ -15,7 +15,7 @@ API.v1.addRoute(
 					_id: Match.Maybe(String),
 					token: String,
 					name: String,
-					username: String,
+					username: Match.Maybe(String),
 					email: Match.Maybe(String),
 					phone: Match.Maybe(String),
 					customFields: Match.Maybe(Object),
