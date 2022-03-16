@@ -99,9 +99,14 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		const queueInfo: { name: string; members: string[] }[] = [];
 		for await (const queue of queues) {
 			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
-				queue,
+				queueName: queue,
 			})) as IVoipConnectorResult;
-
+			const details = queueDetails.result as IQueueDetails;
+			if (!details.members || !details.members.length) {
+				// Go to the next queue if queue does not have any
+				// memmbers.
+				continue;
+			}
 			queueInfo.push({
 				name: queue,
 				members: (queueDetails.result as IQueueDetails).members.map((member) => member.name.replace('PJSIP/', '')),
