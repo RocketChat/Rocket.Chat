@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import '../../lib/tests/server.mocks.js';
+import '../../../tests/unit/app/lib/server.mocks';
 import { AuthorizeRequest } from '../server/lib/generators/AuthorizeRequest';
 import { LogoutRequest } from '../server/lib/generators/LogoutRequest';
 import { LogoutResponse } from '../server/lib/generators/LogoutResponse';
