@@ -23,5 +23,14 @@ Object.assign(
 module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
 	exit: true,
-	spec: ['app/**/*.spec.ts', 'app/**/*.tests.js', 'app/**/*.tests.ts', 'server/**/*.tests.ts', 'ee/**/*.tests.ts'],
+	spec: [
+		'app/**/*.spec.ts',
+		'app/**/*.tests.js',
+		'app/**/*.tests.ts',
+		'server/**/*.tests.ts',
+		'ee/**/*.tests.ts',
+		'tests/unit/**/*.spec.ts',
+		'tests/unit/**/*.tests.js',
+		'tests/unit/**/*.tests.ts',
+	],
 };
