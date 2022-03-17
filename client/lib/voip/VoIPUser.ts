@@ -656,4 +656,8 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	getRegistrarState(): string | undefined {
 		return this.registerer?.state.toString().toLocaleLowerCase();
 	}
+
+	clear(): void {
+		this.userAgent?.stop();
+	}
 }
