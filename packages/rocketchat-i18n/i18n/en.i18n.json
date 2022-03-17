@@ -740,6 +740,7 @@
   "Cannot_invite_users_to_direct_rooms": "Cannot invite users to direct rooms",
   "Cannot_open_conversation_with_yourself": "Cannot Direct Message with yourself",
   "Cannot_share_your_location": "Cannot share your location...",
+  "Cannot_disable_while_on_call": "Can't change status during calls ",
   "CAS_autoclose": "Autoclose Login Popup",
   "CAS_base_url": "SSO Base URL",
   "CAS_base_url_Description": "The base URL of your external SSO service e.g: https://sso.example.undef/sso/",
