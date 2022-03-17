@@ -29,7 +29,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 
-	const handleStyle = () => {
+	const handleStyle = (): { backgroundColor: string } | undefined => {
 		if (isSelecting && isSelected) {
 			return style; // TO DO: change selecting style
 		}

@@ -1,3 +1,4 @@
+import { OffCallbackHandler } from '@rocket.chat/emitter';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -15,8 +16,8 @@ export const useIsSelectedMessage = (mid: string): boolean => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const subscription = useMemo(
 		() => ({
-			getCurrentValue: () => selectedMessageStore.isSelected(mid),
-			subscribe: (callback) => selectedMessageStore.on(mid, callback),
+			getCurrentValue: (): boolean => selectedMessageStore.isSelected(mid),
+			subscribe: (callback: () => void): OffCallbackHandler => selectedMessageStore.on(mid, callback),
 		}),
 		[mid, selectedMessageStore],
 	);
@@ -33,7 +34,7 @@ export const useIsSelecting = (): boolean => {
 	return isSelecting;
 };
 
-export const useToggleSelect = (mid: string) => {
+export const useToggleSelect = (mid: string): (() => void) => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	return useCallback(() => {
 		selectedMessageStore.toggle(mid);
