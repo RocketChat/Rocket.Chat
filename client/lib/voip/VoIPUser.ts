@@ -64,7 +64,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 	private mode: WorkflowTypes;
 
-	private queueInfo?: QueueAggregator;
+	private queueInfo: QueueAggregator;
 
 	get callState(): CallStates {
 		return this._callState;
@@ -649,7 +649,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		this.queueInfo?.setMembership(subscription);
 	}
 
-	getAggregator(): QueueAggregator | undefined {
+	getAggregator(): QueueAggregator {
 		return this.queueInfo;
 	}
 
