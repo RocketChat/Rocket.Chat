@@ -17,10 +17,11 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		if (!registered) {
 			return t('Enable');
 		}
-		if (registered && !onCall) {
+		if (!onCall) {
 			// Color for this state still not defined
 			return t('Disable');
 		}
+
 		return t('Cannot_disable_while_on_call');
 	};
 
