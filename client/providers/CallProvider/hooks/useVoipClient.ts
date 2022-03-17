@@ -17,20 +17,6 @@ type UseVoipClientResult = {
 	error?: Error | unknown;
 };
 
-type UseVoipClientResultResolved = {
-	voipClient: VoIPUser;
-	registrationInfo: IRegistrationInfo;
-};
-
-type UseVoipClientResultError = { error: Error };
-type UseVoipClientResultLoading = Record<string, never>;
-
-export const isUseVoipClientResultError = (result: UseVoipClientResult): result is UseVoipClientResultError =>
-	!!(result as UseVoipClientResultError).error;
-
-export const isUseVoipClientResultLoading = (result: UseVoipClientResult): result is UseVoipClientResultLoading =>
-	!result || !Object.keys(result).length;
-
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
 export const useVoipClient = (): UseVoipClientResult => {
@@ -65,13 +51,12 @@ export const useVoipClient = (): UseVoipClientResult => {
 					callServerConfig: { websocketPath },
 				} = parsedData;
 
-				// let client: VoIPUser;
 				(async (): Promise<void> => {
 					try {
 						const subscription = await membership({ extension });
 						client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, 'video');
 						// Today we are hardcoding workflow mode.
-						// In futue, this should be read from configuration
+						// In future, this should be ready from configuration
 						client.setWorkflowMode(WorkflowTypes.CONTACT_CENTER_USER);
 						client.setMembershipSubscription(subscription);
 						setResult({ voipClient: client, registrationInfo: parsedData });
@@ -85,8 +70,6 @@ export const useVoipClient = (): UseVoipClientResult => {
 			},
 		);
 		return (): void => {
-			// client?.disconnect();
-			// TODO how to close the client? before creating a new one?
 			if (client) {
 				client.clear();
 			}
@@ -102,10 +85,12 @@ export const useVoipClient = (): UseVoipClientResult => {
 			setExtension(user.extension);
 		} else {
 			setExtension(null);
-			if (!isUseVoipClientResultError(result) && !isUseVoipClientResultLoading(result)) {
-				const { voipClient } = result as UseVoipClientResultResolved;
-				voipClient.clear();
+
+			if (!result.voipClient) {
+				return;
 			}
+
+			result.voipClient.clear();
 		}
 	}, [result, setExtension, setResult, user]);
 	return result;
