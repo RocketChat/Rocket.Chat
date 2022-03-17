@@ -7,9 +7,9 @@ type otrDataType = { rid: string };
 export function otrStats(data: otrDataType): void {
 	updateCounter({ settingsId: 'OTR_Count' });
 
-	// TODO: only update if room is a dm
 	try {
-		Rooms.update({ _id: data.rid }, { $set: { createdOTR: true } });
+		// only update DM's
+		Rooms.update({ _id: data.rid, type: 'd' }, { $set: { createdOTR: true } });
 	} catch (e) {
 		throw new Error('error-invalid-rid');
 	}

@@ -10,7 +10,7 @@ class TelemetryEvent implements ITelemetryEvent {
 		this.events.set(name, fn);
 	}
 
-	call(eventName: TelemetryEvents, data: any): TelemetryEventResponse {
+	call(eventName: TelemetryEvents, data: Record<string, any>): TelemetryEventResponse {
 		const event = this.events.get(eventName);
 		if (!event) {
 			throw new Error('event not found');
