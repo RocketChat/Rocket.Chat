@@ -1,8 +1,8 @@
-import Global from '../pageobjects/global';
-import mainContent from '../pageobjects/main-content.page';
-import sideNav from '../pageobjects/side-nav.page';
-import { username, email, password } from '../../data/user.js';
-import { checkIfUserIsValid } from '../../data/checks';
+import Global from '../../pageobjects/global';
+import mainContent from '../../pageobjects/main-content.page';
+import sideNav from '../../pageobjects/side-nav.page';
+import { username, email, password } from '../../../data/user.js';
+import { checkIfUserIsValid } from '../../../data/checks';
 
 // skipping this since the main content its not moved anymore, instead there is a overlay of the side nav over the main content
 describe('[Resolution]', () => {

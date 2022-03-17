@@ -1,12 +1,12 @@
 /* eslint-disable func-names, prefer-arrow-callback, no-var, space-before-function-paren,
 quotes, prefer-template, no-undef, no-unused-vars*/
 
-import mainContent from '../pageobjects/main-content.page';
-import sideNav from '../pageobjects/side-nav.page';
-import { sendEscape } from '../pageobjects/keyboard';
-import { discussion } from '../pageobjects/discussion.page';
-import { username, email, password } from '../../data/user.js';
-import { checkIfUserIsValid } from '../../data/checks';
+import mainContent from '../../pageobjects/main-content.page';
+import sideNav from '../../pageobjects/side-nav.page';
+import { sendEscape } from '../../pageobjects/keyboard';
+import { discussion } from '../../pageobjects/discussion.page';
+import { username, email, password } from '../../../data/user.js';
+import { checkIfUserIsValid } from '../../../data/checks';
 
 const parentChannelName = 'unit-testing-' + Date.now();
 const discussionName = 'Lorem ipsum dolor sit amet';

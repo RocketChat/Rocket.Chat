@@ -1,9 +1,9 @@
 import { assert } from 'chai';
 
-import { adminUsername, adminEmail, adminPassword, username, email, password } from '../../data/user.js';
-import admin from '../pageobjects/administration.page';
-import { checkIfUserIsValid } from '../../data/checks';
-import sideNav from '../pageobjects/side-nav.page';
+import { adminUsername, adminEmail, adminPassword, username, email, password } from '../../../data/user.js';
+import admin from '../../pageobjects/administration.page';
+import { checkIfUserIsValid } from '../../../data/checks';
+import sideNav from '../../pageobjects/side-nav.page';
 
 function openAdminView() {
 	admin.open('admin/Layout');
