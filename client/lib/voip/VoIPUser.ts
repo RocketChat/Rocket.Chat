@@ -567,6 +567,9 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		if (this._callState !== 'ANSWER_SENT' && this._callState !== 'IN_CALL' && this._callState !== 'ON_HOLD') {
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
+
+		// When call ends, force state to be revisited
+		this.emit('stateChanged');
 		switch (this.session.state) {
 			case SessionState.Initial:
 				if (this.session instanceof Invitation) {
