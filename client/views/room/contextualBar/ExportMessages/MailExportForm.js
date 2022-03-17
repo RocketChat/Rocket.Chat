@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
@@ -10,6 +10,7 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { SelectedMessageContext } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useUserRoom } from '../../hooks/useUserRoom';
 
 const clickable = css`
@@ -17,14 +18,15 @@ const clickable = css`
 `;
 
 const MailExportForm = ({ onCancel, rid }) => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const t = useTranslation();
-
 	const room = useUserRoom(rid);
 	const roomName = room && room.t && roomCoordinator.getRoomName(room.t, room);
 
 	const [selectedMessages, setSelected] = useState([]);
-
 	const [errorMessage, setErrorMessage] = useState();
+
+	const messages = Array.from(selectedMessageStore.store) || selectedMessages;
 
 	const { values, handlers } = useForm({
 		dateFrom: '',
@@ -66,6 +68,11 @@ const MailExportForm = ({ onCancel, rid }) => {
 		};
 	}, [rid]);
 
+	useEffect(() => {
+		selectedMessageStore.setIsSelecting(true);
+		return () => selectedMessageStore.setIsSelecting(false);
+	}, [selectedMessageStore]);
+
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
@@ -89,7 +96,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			setErrorMessage(t('Mail_Message_Invalid_emails', additionalEmails));
 			return;
 		}
-		if (selectedMessages.length === 0) {
+		if (messages.length === 0) {
 			setErrorMessage(t('Mail_Message_No_messages_selected_select_all'));
 			return;
 		}
@@ -102,7 +109,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 				toUsers,
 				toEmails: additionalEmails.split(','),
 				subject,
-				messages: selectedMessages,
+				messages,
 			});
 
 			dispatchToastMessage({
@@ -120,14 +127,14 @@ const MailExportForm = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Callout onClick={reset} title={t('Messages selected')} type={selectedMessages.length > 0 ? 'success' : 'info'}>
-					<p>{`${selectedMessages.length} Messages selected`}</p>
-					{selectedMessages.length > 0 && (
+				<Callout onClick={reset} title={t('Messages selected')} type={messages.length > 0 ? 'success' : 'info'}>
+					<p>{`${messages.length} Messages selected`}</p>
+					{messages.length > 0 && (
 						<Box is='p' className={clickable}>
 							{t('Click here to clear the selection')}
 						</Box>
 					)}
-					{selectedMessages.length === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
+					{messages.length === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
 				</Callout>
 			</Field>
 			<Field>

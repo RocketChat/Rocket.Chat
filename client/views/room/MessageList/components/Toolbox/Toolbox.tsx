@@ -8,6 +8,7 @@ import { useSettings } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUser, useUserRoom, useUserSubscription } from '../../../../../contexts/UserContext';
 import { getTabBarContext } from '../../../lib/Toolbox/ToolboxContext';
+import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
 import { MessageActionMenu } from './MessageActionMenu';
 
 export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
@@ -31,29 +32,33 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 
 	const tabbar = getTabBarContext(message.rid);
 
+	const isSelecting = useIsSelecting();
+
 	return (
-		<MessageToolbox>
-			{messageActions.map((action) => (
-				<MessageToolboxItem
-					onClick={(e): void => {
-						action.action(e, { message, tabbar, room });
-					}}
-					key={action.id}
-					icon={action.icon}
-					title={t(action.label)}
-				/>
-			))}
-			{menuActions.length > 0 && (
-				<MessageActionMenu
-					options={menuActions.map((action) => ({
-						...action,
-						action: (e): void => {
+		!isSelecting && (
+			<MessageToolbox>
+				{messageActions.map((action) => (
+					<MessageToolboxItem
+						onClick={(e): void => {
 							action.action(e, { message, tabbar, room });
-						},
-					}))}
-				/>
-			)}
-		</MessageToolbox>
+						}}
+						key={action.id}
+						icon={action.icon}
+						title={t(action.label)}
+					/>
+				))}
+				{menuActions.length > 0 && (
+					<MessageActionMenu
+						options={menuActions.map((action) => ({
+							...action,
+							action: (e): void => {
+								action.action(e, { message, tabbar, room });
+							},
+						}))}
+					/>
+				)}
+			</MessageToolbox>
+		)
 	);
 };
 
