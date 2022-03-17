@@ -4,6 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
+import RawText from '../../../../components/RawText';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
@@ -154,7 +155,11 @@ const MailExportForm = ({ onCancel, rid }) => {
 				</Field.Row>
 			</Field>
 
-			{errorMessage && <Callout type={'danger'} title={errorMessage} />}
+			{errorMessage && (
+				<Callout type={'danger'}>
+					<RawText>{errorMessage}</RawText>
+				</Callout>
+			)}
 
 			<ButtonGroup stretch mb='x12'>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
