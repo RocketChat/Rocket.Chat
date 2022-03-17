@@ -13,20 +13,20 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 	const [onCall, setOnCall] = useState(false);
 	const callerInfo = useCallerInfo();
 
-	const getColor = (): string | undefined => {
+	const getTooltip = (): string => {
+		if (!registered) {
+			return t('Enable');
+		}
 		if (registered && !onCall) {
-			return 'success';
-		}
-		if (registered && onCall) {
 			// Color for this state still not defined
-			return 'success';
+			return t('Disable');
 		}
-		return undefined;
+		return t('Cannot_disable_while_on_call');
 	};
 
 	const voipCallIcon = {
-		title: !registered ? t('Enable') : t('Disable'),
-		color: getColor(),
+		title: getTooltip(),
+		color: registered ? 'success' : undefined,
 		icon: registered ? 'phone' : 'phone-disabled',
 	} as const;
 
