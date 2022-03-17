@@ -224,9 +224,12 @@ export const RoomHistoryManager = new (class extends Emitter {
 		}
 
 		waitAfterFlush(() => {
-			lastMessage &&
-				($(`#${lastMessage._id}`).addClass('highlight'),
-				document.getElementById(lastMessage._id).scrollIntoView({ block: 'end', inline: 'nearest' }));
+			if (!lastMessage) {
+				return;
+			}
+			const wrapper = $(`#${lastMessage._id}`);
+			wrapper.addClass('highlight');
+			wrapper[0].scrollIntoView({ block: 'end', inline: 'nearest' });
 		});
 
 		room.isLoading.set(false);
@@ -237,7 +240,6 @@ export const RoomHistoryManager = new (class extends Emitter {
 	}
 
 	async getMoreNext(rid, limit = defaultLimit) {
-		console.log('getmore');
 		const room = this.getRoom(rid);
 		if (room.hasMoreNext.curValue !== true) {
 			return;
