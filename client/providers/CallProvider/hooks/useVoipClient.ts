@@ -11,20 +11,11 @@ import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
 
-type UseVoipClientResult = UseVoipClientResultResolved | UseVoipClientResultError | UseVoipClientResultLoading;
-
-type UseVoipClientResultResolved = {
-	voipClient: VoIPUser;
-	registrationInfo: IRegistrationInfo;
+type UseVoipClientResult = {
+	voipClient?: VoIPUser;
+	registrationInfo?: IRegistrationInfo;
+	error?: Error | unknown;
 };
-type UseVoipClientResultError = { error: Error };
-type UseVoipClientResultLoading = Record<string, never>;
-
-export const isUseVoipClientResultError = (result: UseVoipClientResult): result is UseVoipClientResultError =>
-	!!(result as UseVoipClientResultError).error;
-
-export const isUseVoipClientResultLoading = (result: UseVoipClientResult): result is UseVoipClientResultLoading =>
-	!result || !Object.keys(result).length;
 
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
@@ -70,13 +61,13 @@ export const useVoipClient = (): UseVoipClientResult => {
 						client.setWorkflowMode(WorkflowTypes.CONTACT_CENTER_USER);
 						client.setMembershipSubscription(subscription);
 						setResult({ voipClient: client, registrationInfo: parsedData });
-					} catch (e) {
-						setResult({ error: e as Error });
+					} catch (error) {
+						setResult({ error });
 					}
 				})();
 			},
-			(error) => {
-				setResult({ error: error as Error });
+			(error: Error) => {
+				setResult({ error });
 			},
 		);
 		return (): void => {
