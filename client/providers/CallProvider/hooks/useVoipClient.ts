@@ -17,6 +17,20 @@ type UseVoipClientResult = {
 	error?: Error | unknown;
 };
 
+type UseVoipClientResultResolved = {
+	voipClient: VoIPUser;
+	registrationInfo: IRegistrationInfo;
+};
+
+type UseVoipClientResultError = { error: Error };
+type UseVoipClientResultLoading = Record<string, never>;
+
+export const isUseVoipClientResultError = (result: UseVoipClientResult): result is UseVoipClientResultError =>
+	!!(result as UseVoipClientResultError).error;
+
+export const isUseVoipClientResultLoading = (result: UseVoipClientResult): result is UseVoipClientResultLoading =>
+	!result || !Object.keys(result).length;
+
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
 export const useVoipClient = (): UseVoipClientResult => {
