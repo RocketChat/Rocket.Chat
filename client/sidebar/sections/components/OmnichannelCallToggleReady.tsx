@@ -2,20 +2,38 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useEffect, useState } from 'react';
 
-import { useCallClient } from '../../../contexts/CallContext';
+import { useCallClient, useCallerInfo } from '../../../contexts/CallContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 export const OmnichannelCallToggleReady = (): ReactElement => {
 	const [agentEnabled, setAgentEnabled] = useState(false); // TODO: get from AgentInfo
 	const t = useTranslation();
 	const [registered, setRegistered] = useState(false);
+	const voipClient = useCallClient();
+	const [onCall, setOnCall] = useState(false);
+	const callerInfo = useCallerInfo();
+
+	const getColor = (): string | undefined => {
+		if (registered && !onCall) {
+			return 'success';
+		}
+		if (registered && onCall) {
+			// Color for this state still not defined
+			return 'success';
+		}
+		return undefined;
+	};
 
 	const voipCallIcon = {
 		title: !registered ? t('Enable') : t('Disable'),
-		color: registered ? 'success' : undefined,
+		color: getColor(),
 		icon: registered ? 'phone' : 'phone-disabled',
 	} as const;
-	const voipClient = useCallClient();
+
+	useEffect(() => {
+		// Any of the 2 states means the user is already talking
+		setOnCall(['IN_CALL', 'ON_HOLD'].includes(callerInfo.state));
+	}, [callerInfo]);
 
 	useEffect(() => {
 		let agentEnabled = false;
@@ -26,13 +44,10 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		setAgentEnabled(agentEnabled);
 		setRegistered(agentEnabled);
 	}, [voipClient]);
+
 	// TODO: move registration flow to context provider
 	const handleVoipCallStatusChange = useMutableCallback((): void => {
-		const { state } = voipClient.callerInfo;
-
-		if (['IN_CALL', 'ON_HOLD'].includes(state)) {
-			// Any of the 2 states means the user is already talking
-			// So if the caller info is any of those, we will prevent status change
+		if (onCall) {
 			return;
 		}
 		// TODO: backend set voip call status
@@ -81,5 +96,5 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		};
 	}, [onRegistered, onRegistrationError, onUnregistered, onUnregistrationError, voipClient]);
 
-	return <Sidebar.TopBar.Action {...voipCallIcon} onClick={handleVoipCallStatusChange} />;
+	return <Sidebar.TopBar.Action {...voipCallIcon} onClick={handleVoipCallStatusChange} disabled={onCall} />;
 };
