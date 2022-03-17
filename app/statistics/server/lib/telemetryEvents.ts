@@ -1,22 +1,22 @@
-import { ITelemetryEvent, TelemetryEvents } from '../../../../server/sdk/types/ITelemetryEvent';
+import { TelemetryMap, ITelemetryEvent, TelemetryEvents } from '../../../../server/sdk/types/ITelemetryEvent';
 
 type TelemetryEventResponse = Promise<any> | void;
-type TelemetryEventFunction = (...args: any) => TelemetryEventResponse;
+type TelemetryEventFunction<T extends TelemetryEvents> = (data: TelemetryMap[T]) => TelemetryEventResponse;
 
 class TelemetryEvent implements ITelemetryEvent {
-	private events = new Map<string, TelemetryEventFunction | void>();
+	private events = new Map<string, (...args: any[]) => any>();
 
-	register(name: string, fn: TelemetryEventFunction | void): void {
+	register<T extends TelemetryEvents>(name: T, fn: TelemetryEventFunction<T>): void {
 		this.events.set(name, fn);
 	}
 
-	call(eventName: TelemetryEvents, data: Record<string, any>): TelemetryEventResponse {
-		const event = this.events.get(eventName);
-		if (!event) {
+	call<T extends TelemetryEvents>(eventName: T, data: TelemetryMap[T]): TelemetryEventResponse {
+		const fn = this.events.get(eventName) as TelemetryEventFunction<T>;
+		if (!fn) {
 			throw new Error('event not found');
 		}
 
-		return event(data);
+		return fn(data);
 	}
 }
 
