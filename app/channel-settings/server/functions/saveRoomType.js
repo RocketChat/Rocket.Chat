@@ -41,13 +41,13 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 	if (sendMessage) {
 		let message;
 		if (roomType === 'c') {
-			message = TAPi18n.__('Channel', {
+			message = TAPi18n.__('Public', {
 				lng: (user && user.language) || settings.get('Language') || 'en',
-			});
+			}).toLowerCase();
 		} else {
-			message = TAPi18n.__('Private_Group', {
+			message = TAPi18n.__('Private', {
 				lng: (user && user.language) || settings.get('Language') || 'en',
-			});
+			}).toLowerCase();
 		}
 		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_privacy', rid, message, user);
 	}
