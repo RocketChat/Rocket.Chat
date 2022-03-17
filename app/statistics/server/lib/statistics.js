@@ -388,9 +388,9 @@ export const statistics = {
 		);
 
 		statsPms.push(
-			new Promise((resolve) => {
-				statistics.enterprise = getEnterpriseStatistics();
-				resolve(true);
+			getEnterpriseStatistics().then((result) => {
+				statistics.enterprise = result;
+				return true;
 			}),
 		);
 

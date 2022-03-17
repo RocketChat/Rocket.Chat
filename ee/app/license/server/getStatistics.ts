@@ -14,10 +14,9 @@ type ENTERPRISE_STATISTICS = {
 	businessUnits: number;
 };
 
-export function getStatistics(): ENTERPRISE_STATISTICS {
+export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 	const statsPms: Array<Promise<any>> = [];
 
-	// const seatRequests = Promise.await();
 	const statistics: ENTERPRISE_STATISTICS = {} as any;
 
 	const modules = getModules();
@@ -62,6 +61,6 @@ export function getStatistics(): ENTERPRISE_STATISTICS {
 			return true;
 		}),
 	);
-	Promise.all(statsPms).catch(log);
-	return statistics as ENTERPRISE_STATISTICS;
+	await Promise.all(statsPms).catch(log);
+	return statistics;
 }
