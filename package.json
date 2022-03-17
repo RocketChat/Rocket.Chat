@@ -359,6 +359,7 @@
 	},
 	"nyc": {
 		"exclude": [
+		  "**/.mocharc.js",
 		  "**/*.spec.js",
 		  "**/*.spec.ts",
 		  "**/*.tests.js",
