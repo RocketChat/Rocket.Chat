@@ -61,7 +61,7 @@ export const MessageProvider = memo(function MessageProvider({
 				context: username,
 			});
 		};
-		const openDiscussion = (drid: string) => (): Promise<void> => goToRoomById(drid);
+		const openRoom = (id: string) => (): Promise<void> => goToRoomById(id);
 
 		const runActionLink = isEmbedded
 			? (msg: IMessage) => (actionLink: string) => (): void =>
@@ -92,7 +92,7 @@ export const MessageProvider = memo(function MessageProvider({
 							},
 						});
 					},
-				openDiscussion,
+				openRoom,
 				openThread,
 				replyBroadcast: (message: IMessage): void => {
 					roomCoordinator.openRouteLink(

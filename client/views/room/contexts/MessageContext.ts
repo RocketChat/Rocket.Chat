@@ -8,9 +8,7 @@ const openUserCard =
 		console.log('openUserCard');
 	};
 
-const openDiscussion = () => (): void => {
-	console.log('openDiscussion');
-};
+const openRoom = () => (): void => console.log('openRoom');
 const openThread = () => (): void => console.log('openThread');
 const replyBroadcast = (): void => {
 	console.log('replyBroadcast');
@@ -27,7 +25,7 @@ export type MessageContextValue = {
 	oembedEnabled: boolean;
 	actions: {
 		openUserCard: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
-		openDiscussion: (drid: string) => () => void;
+		openRoom: (id: string) => () => void;
 		openThread: (tmid: string, jump?: string) => () => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;
 		replyBroadcast: (message: IMessage) => void;
@@ -47,7 +45,7 @@ export const MessageContext = createContext<MessageContextValue>({
 	broadcast: false,
 	actions: {
 		openUserCard,
-		openDiscussion,
+		openRoom,
 		openThread,
 		runActionLink,
 		replyBroadcast,
