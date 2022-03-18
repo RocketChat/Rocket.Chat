@@ -2,6 +2,8 @@
 .mention-link {
 	padding: 0 2px 2px;
 
+	cursor: pointer;
+
 	transition: opacity 0.3s, background-color 0.3s, color 0.3s;
 
 	color: var(--mention-link-text-color);
@@ -11,8 +13,6 @@
 	background-color: var(--mention-link-background);
 
 	font-weight: 700;
-
-	cursor: pointer;
 
 	&:hover {
 		opacity: 0.6;
