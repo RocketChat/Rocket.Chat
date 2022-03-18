@@ -9,7 +9,7 @@ export function otrStats(data: otrDataType): void {
 
 	try {
 		// only update DM's
-		Rooms.update({ _id: data.rid, type: 'd' }, { $set: { createdOTR: true } });
+		Rooms.update({ _id: data.rid, t: 'd' }, { $set: { createdOTR: true } });
 	} catch (e) {
 		throw new Error('error-invalid-rid');
 	}
