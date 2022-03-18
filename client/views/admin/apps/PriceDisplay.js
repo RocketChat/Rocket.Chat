@@ -10,6 +10,7 @@ const formatPriceAndPurchaseType = (purchaseType, pricingPlans, price) => {
 		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
 			return { type, price: '-' };
 		}
+
 		return { type, price: formatPricingPlan(pricingPlans[0]) };
 	}
 

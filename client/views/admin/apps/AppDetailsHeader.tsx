@@ -18,7 +18,6 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 	const [isHovered, setIsHovered] = useState(false);
 
 	const { iconFileData = '', name, author, version, iconFileContent, installed, modifiedAt, bundledIn, description } = app;
-	console.log(app);
 
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
@@ -46,7 +45,9 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 								>
 									<Icon name='bag' size='x20' />
 									<Box fontWeight='700' fontSize='x12' color='info'>
-										{bundle.bundleName} Bundle
+										{t('bundle_chip_title', {
+											bundleName: bundle.bundleName,
+										})}
 									</Box>
 								</Box>
 								<PositionAnimated
@@ -55,7 +56,11 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 									margin={8}
 									visible={isHovered ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
 								>
-									<Tooltip>This app is included with Enterprise subscription</Tooltip>
+									<Tooltip>
+										{t('this_app_is_included_with_subscription', {
+											bundleName: bundle.bundleName,
+										})}
+									</Tooltip>
 								</PositionAnimated>
 							</>
 						))}
