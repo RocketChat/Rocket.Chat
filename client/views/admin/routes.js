@@ -5,11 +5,6 @@ import { createRouteGroup } from '../../lib/createRouteGroup';
 
 export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
 
-registerAdminRoute('/upgrade/:type?', {
-	name: 'upgrade',
-	lazyRouteComponent: () => import('./UpgradePage/UpgradePage'),
-});
-
 registerAdminRoute('/custom-sounds/:context?/:id?', {
 	name: 'custom-sounds',
 	lazyRouteComponent: () => import('./customSounds/AdminSoundsRoute'),
@@ -141,4 +136,9 @@ registerAdminRoute('/chatpal', {
 	action() {
 		appLayout.renderMainLayout({ center: 'ChatpalAdmin' });
 	},
+});
+
+registerAdminRoute('/upgrade/:type?', {
+	name: 'upgrade',
+	lazyRouteComponent: () => import('./upgrade/UpgradePage'),
 });

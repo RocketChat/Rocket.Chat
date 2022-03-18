@@ -7,8 +7,8 @@ import { ILicense } from '../../../../ee/app/license/definitions/ILicense';
 import Sidebar from '../../../components/Sidebar';
 import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 // import { AsyncStatePhase } from '../../../lib/asyncState';
-import { getUpgradeTabType } from '../UpgradePage/getUpgradeTabType';
 import { itemsSubscription } from '../sidebarItems';
+import { getUpgradeTabType } from '../upgrade/getUpgradeTabType';
 import UpgradeTab from './UpgradeTab';
 
 type AdminSidebarPagesProps = {

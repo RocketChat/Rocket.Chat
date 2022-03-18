@@ -6,7 +6,7 @@ import Emoji from '../../../components/Emoji';
 import Sidebar from '../../../components/Sidebar';
 import { useRoutePath } from '../../../contexts/RouterContext';
 import { useTranslation, TranslationKey } from '../../../contexts/TranslationContext';
-import type { UpgradeTabVariants } from '../UpgradePage/getUpgradeTabType';
+import type { UpgradeTabVariants } from '../upgrade/getUpgradeTabType';
 
 const getUpgradeTabLabel = (type: UpgradeTabVariants): TranslationKey => {
 	switch (type) {

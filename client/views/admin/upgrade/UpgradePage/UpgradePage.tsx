@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 
-import Page from '../../../components/Page';
-import { useRouteParameter } from '../../../contexts/RouterContext';
-import type { UpgradeTabVariants } from './getUpgradeTabType';
+import Page from '../../../../components/Page';
+import { useRouteParameter } from '../../../../contexts/RouterContext';
+import type { UpgradeTabVariants } from '../getUpgradeTabType';
 
 const iframeStyle = { width: '100%', height: '100%' };
 
