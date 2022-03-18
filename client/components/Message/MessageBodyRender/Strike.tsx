@@ -4,6 +4,7 @@ import React, { FC } from 'react';
 import Bold from './Bold';
 import Italic from './Italic';
 import Link from './Link';
+import PlainText from './PlainText';
 
 const Strike: FC<{ value: ASTStrike['value'] }> = ({ value = [] }) => (
 	<del>
@@ -12,7 +13,7 @@ const Strike: FC<{ value: ASTStrike['value'] }> = ({ value = [] }) => (
 				case 'LINK':
 					return <Link key={index} value={block.value} />;
 				case 'PLAIN_TEXT':
-					return block.value;
+					return <PlainText key={index} value={block.value} />;
 				case 'BOLD':
 					return <Bold key={index} value={block.value} />;
 				case 'ITALIC':

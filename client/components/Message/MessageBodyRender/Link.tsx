@@ -4,6 +4,7 @@ import React, { FC } from 'react';
 import { baseURI } from '../../../lib/baseURI';
 import Bold from './Bold';
 import Italic from './Italic';
+import PlainText from './PlainText';
 import Strike from './Strike';
 
 type LinkProps = {
@@ -18,7 +19,7 @@ const Link: FC<LinkProps> = ({ value }) => {
 			{((block: ASTLink['value']['label']): JSX.Element | string | null => {
 				switch (block.type) {
 					case 'PLAIN_TEXT':
-						return <>{block.value}</>;
+						return <PlainText value={block.value} />;
 					case 'STRIKE':
 						return <Strike value={block.value} />;
 					case 'ITALIC':

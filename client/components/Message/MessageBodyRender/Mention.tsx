@@ -2,13 +2,13 @@ import { UserMention as ASTUserMention } from '@rocket.chat/message-parser';
 import React, { FC, memo } from 'react';
 
 import { useUserId } from '../../../contexts/UserContext';
-import { useMessageBodyMentions, useMessageBodyMentionClick } from './contexts/MessageBodyContext';
+import { useMessageBodyUserMentions, useMessageBodyMentionClick } from './contexts/MessageBodyContext';
 
 const Mention: FC<{ value: ASTUserMention['value'] }> = ({ value: { value: mention } }) => {
 	const uid = useUserId();
-	const mentions = useMessageBodyMentions();
+	const mentions = useMessageBodyUserMentions();
 	const mentioned = mentions.find((mentioned) => mentioned.username === mention);
-	const onMentionClick = useMessageBodyMentionClick();
+	const onUserMentionClick = useMessageBodyMentionClick();
 	const classNames = ['mention-link'];
 	if (mention === 'all') {
 		classNames.push('mention-link--all');
@@ -25,7 +25,10 @@ const Mention: FC<{ value: ASTUserMention['value'] }> = ({ value: { value: menti
 	return (
 		<>
 			{mentioned && (
-				<span onClick={onMentionClick(mention)} className={classNames.join(' ')}>
+				<span
+					onClick={classNames.includes('mention-link--user') ? onUserMentionClick(mention) : undefined}
+					className={classNames.join(' ')}
+				>
 					{mentioned.name || mention}
 				</span>
 			)}

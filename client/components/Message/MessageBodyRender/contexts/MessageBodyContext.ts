@@ -1,30 +1,57 @@
 import { createContext, useContext, MouseEvent } from 'react';
 
+import { ChannelMention } from '../definitions/ChannelMention';
 import { UserMention } from '../definitions/UserMention';
 
 type MessageBodyContextType = {
+	highlights?: string[];
 	mentions?: UserMention[];
-	onMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
+	channels?: ChannelMention[];
+	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
+	onChannelMentionClick?: (id: string) => (e: MouseEvent<HTMLDivElement>) => void;
 };
 
 export const MessageBodyContext = createContext<MessageBodyContextType>({
+	highlights: [],
 	mentions: [],
+	channels: [],
 });
 
 export const useMessageBodyContext = (): MessageBodyContextType => useContext(MessageBodyContext);
 
-export const useMessageBodyMentions = (): UserMention[] => {
+export const useMessageBodyUserMentions = (): UserMention[] => {
 	const { mentions = [] } = useMessageBodyContext();
 	return mentions;
 };
 
+export const useMessageBodyHighlights = (): string[] => {
+	const { highlights = [] } = useMessageBodyContext();
+	return highlights;
+};
+
+export const useMessageBodyChannelMentions = (): ChannelMention[] => {
+	const { channels = [] } = useMessageBodyContext();
+	return channels;
+};
+
 export const useMessageBodyMentionClick = (): ((username: string) => (e: MouseEvent<HTMLDivElement>) => void) => {
-	const { onMentionClick } = useMessageBodyContext();
-	if (!onMentionClick) {
-		console.warn('onMentionClick is not defined');
+	const { onUserMentionClick } = useMessageBodyContext();
+	if (!onUserMentionClick) {
+		console.warn('onUserMentionClick is not defined');
 		return (username: string) => (): void => {
-			console.log(`onMentionClickDefault: ${username}`);
+			console.log(`onUserMentionClickDefault: ${username}`);
 		};
 	}
-	return onMentionClick;
+	return onUserMentionClick;
+};
+
+export const useMessageBodyChannelMentionClick = (): ((id: string) => (e: MouseEvent<HTMLDivElement>) => void) => {
+	const { onChannelMentionClick } = useMessageBodyContext();
+	if (!onChannelMentionClick) {
+		console.warn('onChannelMentionClick is not defined');
+		return (username: string) => (): void => {
+			console.log(`onChannelMentionClickDefault: ${username}`);
+		};
+	}
+	return onChannelMentionClick;
 };

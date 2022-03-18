@@ -28,6 +28,7 @@ export const MessageListProvider: FC<{
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
+	const highlights = useUserPreference<string[]>('highlights');
 
 	const autoTranslateLanguage = useAutotranslateLanguage(rid);
 
@@ -83,7 +84,7 @@ export const MessageListProvider: FC<{
 			showRealName,
 			showUsername,
 			showReadReceipt,
-
+			highlights: highlights || [],
 			useReactToMessage: uid
 				? (message) =>
 						(reaction): void =>
@@ -111,6 +112,7 @@ export const MessageListProvider: FC<{
 			showRealName,
 			showUsername,
 			showReadReceipt,
+			highlights,
 			reactToMessage,
 		],
 	);
