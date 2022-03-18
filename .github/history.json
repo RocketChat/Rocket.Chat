@@ -71572,6 +71572,85 @@
           ]
         }
       ]
+    },
+    "4.5.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "'3.6'",
+        "'4.0'",
+        "'4.2'",
+        "'4.4'",
+        "'5.0'"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24864",
+          "title": "[FIX] Disable voip button when call is in progress",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24863",
+          "title": "[FIX] Broken build caused by PRs modifying same file differently",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24838",
+          "title": "[FIX] [VOIP] SidebarFooter component ",
+          "userLogin": "tiagoevanp",
+          "description": "- Improve the CallProvider code;\r\n- Adjust the text case of the VoIP component on the FooterSidebar;\r\n- Fix the bad behavior with the changes in queue's name.",
+          "milestone": "4.5.3",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24837",
+          "title": "[IMPROVE] Standarize queue behavior for managers and agents when subscribing",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24789",
+          "title": "[FIX] VoIP button gets disabled whenever user status changes",
+          "userLogin": "amolghode1981",
+          "milestone": "4.5.3",
+          "contributors": [
+            "amolghode1981"
+          ]
+        },
+        {
+          "pr": "24799",
+          "title": "[FIX] Wrong param usage on queue summary call",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24829",
+          "title": "[FIX] Show only enabled departments on forward",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
     }
   }
 }

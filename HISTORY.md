@@ -1,11 +1,50 @@
 
+# 4.5.3
+`2022-03-18  ·  1 🚀  ·  6 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `&#x27;3.6&#x27;, &#x27;4.0&#x27;, &#x27;4.2&#x27;, &#x27;4.4&#x27;, &#x27;5.0&#x27;`
+- Apps-Engine: `1.31.0`
+
+### 🚀 Improvements
+
+
+- Standarize queue behavior for managers and agents when subscribing ([#24837](https://github.com/RocketChat/Rocket.Chat/pull/24837))
+
+### 🐛 Bug fixes
+
+
+- **VOIP:** SidebarFooter component  ([#24838](https://github.com/RocketChat/Rocket.Chat/pull/24838))
+
+  - Improve the CallProvider code;  
+  - Adjust the text case of the VoIP component on the FooterSidebar;  
+  - Fix the bad behavior with the changes in queue's name.
+
+- Broken build caused by PRs modifying same file differently ([#24863](https://github.com/RocketChat/Rocket.Chat/pull/24863))
+
+- Disable voip button when call is in progress ([#24864](https://github.com/RocketChat/Rocket.Chat/pull/24864))
+
+- Show only enabled departments on forward ([#24829](https://github.com/RocketChat/Rocket.Chat/pull/24829))
+
+- VoIP button gets disabled whenever user status changes ([#24789](https://github.com/RocketChat/Rocket.Chat/pull/24789))
+
+- Wrong param usage on queue summary call ([#24799](https://github.com/RocketChat/Rocket.Chat/pull/24799))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@amolghode1981](https://github.com/amolghode1981)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 4.5.2
 `2022-03-12  ·  1 🚀  ·  7 🐛  ·  1 🔍  ·  8 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `14.18.3`
 - NPM: `6.14.15`
-- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- MongoDB: `&#x27;3.6&#x27;, &#x27;4.0&#x27;, &#x27;4.2&#x27;, &#x27;4.4&#x27;, &#x27;5.0&#x27;`
 - Apps-Engine: `1.31.0`
 
 ### 🚀 Improvements
@@ -140,7 +179,7 @@
 ### 🎉 New features
 
 
-- E2E password generator ([#24114](https://github.com/RocketChat/Rocket.Chat/pull/24114))
+- E2E password generator ([#24114](https://github.com/RocketChat/Rocket.Chat/pull/24114) by [@eduardofcabrera](https://github.com/eduardofcabrera))
 
 - Marketplace sort filter ([#24567](https://github.com/RocketChat/Rocket.Chat/pull/24567))
 
@@ -170,7 +209,7 @@
 
 - **ENTERPRISE:** Improve how micro services are loaded ([#24388](https://github.com/RocketChat/Rocket.Chat/pull/24388))
 
-- Add return button in chats opened from the list of current chats ([#24458](https://github.com/RocketChat/Rocket.Chat/pull/24458))
+- Add return button in chats opened from the list of current chats ([#24458](https://github.com/RocketChat/Rocket.Chat/pull/24458) by [@LucasFASouza](https://github.com/LucasFASouza))
 
   The new return button for Omnichannel chats came out with release 3.15  but the feature was only available for chats that were opened from Omnichannel Contact Center.
   Now, the same UI/UX is supported for chats opened from Current Chats list.
@@ -181,7 +220,7 @@
 
   ![image](https://user-images.githubusercontent.com/32396925/153285591-fad8e4a0-d2ea-4a02-8b2a-15e383b3c876.png)
 
-- Add tooltips on action buttons of Canned Response message composer ([#24483](https://github.com/RocketChat/Rocket.Chat/pull/24483))
+- Add tooltips on action buttons of Canned Response message composer ([#24483](https://github.com/RocketChat/Rocket.Chat/pull/24483) by [@LucasFASouza](https://github.com/LucasFASouza))
 
   The tooltips were missing on the action buttons of CR message composer.
 
@@ -196,7 +235,7 @@
 
 - Added a new "All" tab which shows all integrations in Integrations ([#24109](https://github.com/RocketChat/Rocket.Chat/pull/24109) by [@aswinidev](https://github.com/aswinidev))
 
-- ChatBox Text to File Description ([#24451](https://github.com/RocketChat/Rocket.Chat/pull/24451))
+- ChatBox Text to File Description ([#24451](https://github.com/RocketChat/Rocket.Chat/pull/24451) by [@eduardofcabrera](https://github.com/eduardofcabrera))
 
   The text content from chatbox goes to the file description when drag and drop a file.
 
@@ -212,7 +251,7 @@
   ### after
   ![Screen Shot 2022-01-28 at 13 32 02](https://user-images.githubusercontent.com/27704687/151585101-75b98502-9aae-4198-bc3e-4956750e5d8b.png)
 
-- Convert tag edit with department data to tsx ([#24369](https://github.com/RocketChat/Rocket.Chat/pull/24369))
+- Convert tag edit with department data to tsx ([#24369](https://github.com/RocketChat/Rocket.Chat/pull/24369) by [@LucasFASouza](https://github.com/LucasFASouza))
 
 - Descriptive tooltip for Encrypted Key on Room Header ([#24121](https://github.com/RocketChat/Rocket.Chat/pull/24121))
 
@@ -347,7 +386,7 @@
 
   Improved type checking for decorator `twoFactorRequired`.
 
-- Chore: Add description to global OTR setting ([#24333](https://github.com/RocketChat/Rocket.Chat/pull/24333))
+- Chore: Add description to global OTR setting ([#24333](https://github.com/RocketChat/Rocket.Chat/pull/24333) by [@pedrogssouza](https://github.com/pedrogssouza))
 
 - Chore: Bump Fuselage packages ([#24573](https://github.com/RocketChat/Rocket.Chat/pull/24573))
 
@@ -359,23 +398,23 @@
 
   This pull request converts 26 more files from Javascript to Typescript, to check variable types and increase validation on the code.
 
-- Chore: Convert to typescript the me slashCommands files ([#24321](https://github.com/RocketChat/Rocket.Chat/pull/24321))
+- Chore: Convert to typescript the me slashCommands files ([#24321](https://github.com/RocketChat/Rocket.Chat/pull/24321) by [@eduardofcabrera](https://github.com/eduardofcabrera))
 
   Convert to typescript the me slashCommands files
 
-- Chore: Convert to typescript the mute and unmute slash commands files ([#24325](https://github.com/RocketChat/Rocket.Chat/pull/24325))
+- Chore: Convert to typescript the mute and unmute slash commands files ([#24325](https://github.com/RocketChat/Rocket.Chat/pull/24325) by [@eduardofcabrera](https://github.com/eduardofcabrera))
 
   Convert to typescript the mute and unmute slash commands files
 
-- Chore: Convert to typescript the slash commands create files ([#24306](https://github.com/RocketChat/Rocket.Chat/pull/24306))
+- Chore: Convert to typescript the slash commands create files ([#24306](https://github.com/RocketChat/Rocket.Chat/pull/24306) by [@eduardofcabrera](https://github.com/eduardofcabrera))
 
   Convert Slash Commands create files to typescript.
 
-- Chore: Convert to typescript the slash commands invite files ([#24311](https://github.com/RocketChat/Rocket.Chat/pull/24311))
+- Chore: Convert to typescript the slash commands invite files ([#24311](https://github.com/RocketChat/Rocket.Chat/pull/24311) by [@eduardofcabrera](https://github.com/eduardofcabrera))
 
   Convert to typescript the slash commands invite files
 
-- Chore: Convert to typescript the unarchive slash commands files ([#24331](https://github.com/RocketChat/Rocket.Chat/pull/24331))
+- Chore: Convert to typescript the unarchive slash commands files ([#24331](https://github.com/RocketChat/Rocket.Chat/pull/24331) by [@eduardofcabrera](https://github.com/eduardofcabrera))
 
   Convert to typescript the unarchive slash commands files
 
@@ -385,7 +424,7 @@
 
 - Chore: Improve PR title validation regex ([#24467](https://github.com/RocketChat/Rocket.Chat/pull/24467))
 
-- Chore: Js to ts slash commands archive ([#24304](https://github.com/RocketChat/Rocket.Chat/pull/24304))
+- Chore: Js to ts slash commands archive ([#24304](https://github.com/RocketChat/Rocket.Chat/pull/24304) by [@eduardofcabrera](https://github.com/eduardofcabrera))
 
   Convert Slash Commands archive files to typescript
 
@@ -496,20 +535,21 @@
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
+- [@LucasFASouza](https://github.com/LucasFASouza)
 - [@aswinidev](https://github.com/aswinidev)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@eduardofcabrera](https://github.com/eduardofcabrera)
+- [@pedrogssouza](https://github.com/pedrogssouza)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@KevLehman](https://github.com/KevLehman)
-- [@LucasFASouza](https://github.com/LucasFASouza)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
 - [@amolghode1981](https://github.com/amolghode1981)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
-- [@eduardofcabrera](https://github.com/eduardofcabrera)
 - [@felipe-rod123](https://github.com/felipe-rod123)
 - [@filipemarins](https://github.com/filipemarins)
 - [@gabriellsh](https://github.com/gabriellsh)
@@ -519,7 +559,6 @@
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@murtaza98](https://github.com/murtaza98)
 - [@ostjen](https://github.com/ostjen)
-- [@pedrogssouza](https://github.com/pedrogssouza)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rique223](https://github.com/rique223)
@@ -871,7 +910,7 @@
 
   It replaces some templates used by login and invitation flows with React components. It also drops `main` template, allowing `appLayout` to just handle components now.
 
-- Chore: Slash Commands Join to Typescript ([#24254](https://github.com/RocketChat/Rocket.Chat/pull/24254))
+- Chore: Slash Commands Join to Typescript ([#24254](https://github.com/RocketChat/Rocket.Chat/pull/24254) by [@eduardofcabrera](https://github.com/eduardofcabrera))
 
   Convert the slash commands .js files to .ts files.
 
@@ -952,6 +991,7 @@
 - [@arshxyz](https://github.com/arshxyz)
 - [@aswinidev](https://github.com/aswinidev)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@eduardofcabrera](https://github.com/eduardofcabrera)
 - [@grahhnt](https://github.com/grahhnt)
 - [@mbreslein-thd](https://github.com/mbreslein-thd)
 - [@nishant23122000](https://github.com/nishant23122000)
@@ -967,7 +1007,6 @@
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
-- [@eduardofcabrera](https://github.com/eduardofcabrera)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
