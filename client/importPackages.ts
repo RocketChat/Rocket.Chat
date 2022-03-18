@@ -1,6 +1,7 @@
 import '../app/cors/client';
 import '../app/2fa/client';
 import '../app/analytics/client';
+import '../app/apple/client';
 import '../app/authorization';
 import '../app/autotranslate/client';
 import '../app/cas/client';
