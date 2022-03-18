@@ -46,8 +46,10 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		return this.store.size;
 	}
 
-	clear(): void {
-		this.store = new Set<string>();
+	clear(mid: string): void {
+		this.store.delete(mid);
+		this.emit(mid, false);
+		this.emit('change');
 		this.isSelecting = false;
 	}
 })();

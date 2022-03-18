@@ -21,7 +21,6 @@ export const useIsSelectedMessage = (mid: string): boolean => {
 		}),
 		[mid, selectedMessageStore],
 	);
-
 	return useSubscription(subscription);
 };
 
@@ -45,9 +44,4 @@ export const useCountSelected = (): number => {
 	const [counter, setCounter] = useState(selectedMessageStore.count());
 	selectedMessageStore.on('change', () => setCounter(selectedMessageStore.count()));
 	return counter;
-};
-
-export const useClearStore = (): void => {
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
-	return selectedMessageStore.clear();
 };

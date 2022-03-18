@@ -27,7 +27,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 	const [selectedMessages, setSelected] = useState([]);
 	const [errorMessage, setErrorMessage] = useState();
 
-	const messages = Array.from(selectedMessageStore.store) || selectedMessages;
+	const messages = selectedMessageStore ? selectedMessageStore.getSelectedMessages() : selectedMessages;
 
 	const { values, handlers } = useForm({
 		dateFrom: '',
@@ -70,7 +70,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	useEffect(() => {
 		selectedMessageStore.setIsSelecting(true);
-		return () => selectedMessageStore.setIsSelecting(false);
+		return () => selectedMessageStore.getSelectedMessages().map((mid) => selectedMessageStore.clear(mid));
 	}, [selectedMessageStore]);
 
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
