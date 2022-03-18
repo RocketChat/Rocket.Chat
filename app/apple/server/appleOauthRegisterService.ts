@@ -41,7 +41,7 @@ settings.watchMultiple(
 
 		const now = new Date();
 		const exp = new Date();
-		exp.setMonth(now.getMonth() + 6); // from Apple docs expiration time must no be greater than 6 months
+		exp.setMonth(now.getMonth() + 5); // from Apple docs expiration time must no be greater than 6 months
 
 		const secret = KJUR.jws.JWS.sign(
 			null,
