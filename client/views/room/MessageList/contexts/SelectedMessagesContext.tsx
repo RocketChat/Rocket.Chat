@@ -1,5 +1,5 @@
 import { OffCallbackHandler } from '@rocket.chat/emitter';
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
@@ -26,10 +26,16 @@ export const useIsSelectedMessage = (mid: string): boolean => {
 
 export const useIsSelecting = (): boolean => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
-	const [isSelecting, setIsSelecting] = useState<boolean>(selectedMessageStore.getIsSelecting());
-	useEffect(() => selectedMessageStore.on('toggleSelect', setIsSelecting), [selectedMessageStore]);
 
-	return isSelecting;
+	return useSubscription(
+		useMemo(
+			() => ({
+				getCurrentValue: (): boolean => selectedMessageStore.getIsSelecting(),
+				subscribe: (callback: () => void): OffCallbackHandler => selectedMessageStore.on('toggleSelect', callback),
+			}),
+			[selectedMessageStore],
+		),
+	);
 };
 
 export const useToggleSelect = (mid: string): (() => void) => {
@@ -41,7 +47,14 @@ export const useToggleSelect = (mid: string): (() => void) => {
 
 export const useCountSelected = (): number => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
-	const [counter, setCounter] = useState(selectedMessageStore.count());
-	selectedMessageStore.on('change', () => setCounter(selectedMessageStore.count()));
-	return counter;
+
+	return useSubscription(
+		useMemo(
+			() => ({
+				getCurrentValue: (): number => selectedMessageStore.count(),
+				subscribe: (callback: () => void): OffCallbackHandler => selectedMessageStore.on('change', callback),
+			}),
+			[selectedMessageStore],
+		),
+	);
 };
