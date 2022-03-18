@@ -10,7 +10,7 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { SelectedMessageContext } from '../../MessageList/contexts/SelectedMessagesContext';
+import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useUserRoom } from '../../hooks/useUserRoom';
 
 const clickable = css`
@@ -19,6 +19,7 @@ const clickable = css`
 
 const MailExportForm = ({ onCancel, rid }) => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
+
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const roomName = room && room.t && roomCoordinator.getRoomName(room.t, room);
@@ -61,7 +62,6 @@ const MailExportForm = ({ onCancel, rid }) => {
 			}
 		};
 		$('.messages-box .message', $root).on('click', handler);
-
 		return () => {
 			$('.messages-box', $root).removeClass('selectable');
 			$('.messages-box .message', $root).off('click', handler).filter('.selected').removeClass('selected');
@@ -127,14 +127,14 @@ const MailExportForm = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Callout onClick={reset} title={t('Messages selected')} type={messages.length > 0 ? 'success' : 'info'}>
-					<p>{`${messages.length} Messages selected`}</p>
-					{messages.length > 0 && (
+				<Callout onClick={reset} title={t('Messages selected')} type={useCountSelected() > 0 ? 'success' : 'info'}>
+					<p>{`${useCountSelected()} Messages selected`}</p>
+					{useCountSelected() > 0 && (
 						<Box is='p' className={clickable}>
 							{t('Click here to clear the selection')}
 						</Box>
 					)}
-					{messages.length === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
+					{useCountSelected() === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
 				</Callout>
 			</Field>
 			<Field>

@@ -7,7 +7,7 @@ import { IMessage } from '../../../../../definition/IMessage';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useIsEditingMessage } from '../contexts/MessageEditingContext';
-import { useIsSelecting, useToggleSelect, useIsSelectedMessage } from '../contexts/SelectedMessagesContext';
+import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import MessageContent from './MessageContent';
 import MessageContentIgnored from './MessageContentIgnored';
 import MessageHeader from './MessageHeader';
@@ -28,6 +28,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
+	useCountSelected();
 
 	const handleStyle = (): { backgroundColor: string } | undefined => {
 		if (isSelecting && isSelected) {

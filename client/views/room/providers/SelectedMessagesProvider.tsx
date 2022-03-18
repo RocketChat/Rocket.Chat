@@ -45,19 +45,17 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 	count(): number {
 		return this.store.size;
 	}
+
+	clear(): void {
+		this.store = new Set<string>();
+		this.isSelecting = false;
+	}
 })();
 
 export const SelectedMessagesProvider: FC = ({ children }) => {
 	const value = useMemo(
 		() => ({
 			selectedMessageStore,
-			// store: selectedMessageStore.store,
-			// subscribe: selectedMessageStore.on.bind(selectedMessageStore),
-			// getIsSelecting: selectedMessageStore.getIsSelecting.bind(selectedMessageStore),
-			// toggleSelected: selectedMessageStore.toggle.bind(selectedMessageStore),
-			// isSelected: selectedMessageStore.isSelected.bind(selectedMessageStore),
-			// countSelected: selectedMessageStore.count.bind(selectedMessageStore),
-			// setIsSelecting: selectedMessageStore.setIsSelecting.bind(selectedMessageStore),
 		}),
 		[],
 	);

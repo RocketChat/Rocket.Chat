@@ -28,7 +28,6 @@ export const useIsSelectedMessage = (mid: string): boolean => {
 export const useIsSelecting = (): boolean => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const [isSelecting, setIsSelecting] = useState<boolean>(selectedMessageStore.getIsSelecting());
-
 	useEffect(() => selectedMessageStore.on('toggleSelect', setIsSelecting), [selectedMessageStore]);
 
 	return isSelecting;
@@ -39,4 +38,16 @@ export const useToggleSelect = (mid: string): (() => void) => {
 	return useCallback(() => {
 		selectedMessageStore.toggle(mid);
 	}, [mid, selectedMessageStore]);
+};
+
+export const useCountSelected = (): number => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	const [counter, setCounter] = useState(selectedMessageStore.count());
+	selectedMessageStore.on('change', () => setCounter(selectedMessageStore.count()));
+	return counter;
+};
+
+export const useClearStore = (): void => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	return selectedMessageStore.clear();
 };
