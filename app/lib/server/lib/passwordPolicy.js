@@ -3,16 +3,16 @@ import { settings } from '../../../settings/server';
 
 export const passwordPolicy = new PasswordPolicy();
 
-settings.watch<boolean>('Accounts_Password_Policy_Enabled', (value) => {
+settings.watch('Accounts_Password_Policy_Enabled', (value) => {
 	passwordPolicy.enabled = value;
 });
-settings.watch<number>('Accounts_Password_Policy_MinLength', (value) => {
+settings.watch('Accounts_Password_Policy_MinLength', (value) => {
 	passwordPolicy.minLength = value;
 });
-settings.watch<number>('Accounts_Password_Policy_MaxLength', (value) => {
+settings.watch('Accounts_Password_Policy_MaxLength', (value) => {
 	passwordPolicy.maxLength = value;
 });
-settings.watch<string>('Accounts_Password_Policy_ForbidRepeatingCharacters', (value) => {
+settings.watch('Accounts_Password_Policy_ForbidRepeatingCharacters', (value) => {
 	passwordPolicy.forbidRepeatingCharacters = value;
 });
 settings.watch('Accounts_Password_Policy_ForbidRepeatingCharactersCount', (value) => {
