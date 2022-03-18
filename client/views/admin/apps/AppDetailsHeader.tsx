@@ -1,6 +1,6 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { AnimatedVisibility, Box, Icon, PositionAnimated, Tooltip } from '@rocket.chat/fuselage';
 import { formatDistanceStrict } from 'date-fns';
-import React, { FC } from 'react';
+import React, { FC, RefObject, useRef, useState } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -14,9 +14,12 @@ type AppDetailsPageHeaderProps = {
 
 const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 	const t = useTranslation();
+	const bundleRef = useRef<Element>();
+	const [isHovered, setIsHovered] = useState(false);
 
 	const { iconFileData = '', name, author, version, iconFileContent, installed, modifiedAt, bundledIn, description } = app;
 	console.log(app);
+
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
 			<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
@@ -27,21 +30,34 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 					</Box>
 					{Boolean(bundledIn.length) &&
 						bundledIn.map((bundle) => (
-							<Box
-								display='flex'
-								flexDirection='row'
-								alignItems='center'
-								justifyContent='center'
-								backgroundColor='disabled'
-								pi='x4'
-								height='x20'
-								borderRadius='x2'
-							>
-								<Icon name='bag' size='x20' />
-								<Box fontWeight='700' fontSize='x12' color='info'>
-									{bundle.bundleName} Bundle
+							<>
+								<Box
+									display='flex'
+									flexDirection='row'
+									alignItems='center'
+									justifyContent='center'
+									backgroundColor='disabled'
+									pi='x4'
+									height='x20'
+									borderRadius='x2'
+									ref={bundleRef}
+									onMouseEnter={(): void => setIsHovered(true)}
+									onMouseLeave={(): void => setIsHovered(false)}
+								>
+									<Icon name='bag' size='x20' />
+									<Box fontWeight='700' fontSize='x12' color='info'>
+										{bundle.bundleName} Bundle
+									</Box>
 								</Box>
-							</Box>
+								<PositionAnimated
+									anchor={bundleRef as RefObject<Element>}
+									placement='top-middle'
+									margin={8}
+									visible={isHovered ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
+								>
+									<Tooltip>This app is included with Enterprise subscription</Tooltip>
+								</PositionAnimated>
+							</>
 						))}
 				</Box>
 				<Box mbe='x16'>{description}</Box>
