@@ -21,7 +21,7 @@ const AnnouncementModal: FC<AnnouncementModalParams> = ({ onClose, confirmLabel 
 			</Modal.Header>
 			<Modal.Content>
 				<Box>
-					<MarkdownText content={children} />
+					<MarkdownText content={children} style={{overflow:"hidden"}}/>
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>
