@@ -64,7 +64,7 @@ export async function syncUserRoles(
 	const rolesToAdd = filterRoleList(newRoleList, existingRoles, allowedRoles);
 	const rolesToRemove = filterRoleList(existingRoles, newRoleList, allowedRoles);
 
-	if (!rolesToAdd.length || !rolesToRemove.length) {
+	if (!rolesToAdd.length && !rolesToRemove.length) {
 		return;
 	}
 
@@ -73,11 +73,11 @@ export async function syncUserRoles(
 		throw new Error('error-license-user-limit-reached');
 	}
 
-	if (await addUserRolesAsync(uid, rolesToAdd, scope)) {
+	if (rolesToAdd.length && (await addUserRolesAsync(uid, rolesToAdd, scope))) {
 		broadcastRoleChange('added', rolesToAdd, user);
 	}
 
-	if (skipRemovingRoles) {
+	if (skipRemovingRoles || !rolesToRemove.length) {
 		return;
 	}
 
