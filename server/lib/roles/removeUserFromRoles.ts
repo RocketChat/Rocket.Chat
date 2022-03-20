@@ -2,6 +2,7 @@ import type { IRole, IUser } from '../../../definition/IUser';
 import type { IRoom } from '../../../definition/IRoom';
 import { Users, Roles } from '../../../app/models/server/raw';
 import { validateRoleList } from './validateRoleList';
+import { MeteorError } from '../../sdk/errors';
 
 export const removeUserFromRolesAsync = async (userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> => {
 	if (!userId || !roleIds) {
@@ -10,11 +11,11 @@ export const removeUserFromRolesAsync = async (userId: IUser['_id'], roleIds: IR
 
 	const user = await Users.findOneById(userId, { projection: { _id: 1 } });
 	if (!user) {
-		throw new Error('error-invalid-user');
+		throw new MeteorError('error-invalid-user', 'Invalid user');
 	}
 
 	if (!(await validateRoleList(roleIds))) {
-		throw new Error('error-invalid-role');
+		throw new MeteorError('error-invalid-role', 'Invalid role');
 	}
 
 	await Roles.removeUserRoles(userId, roleIds, scope);
