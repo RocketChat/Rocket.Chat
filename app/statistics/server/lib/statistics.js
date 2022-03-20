@@ -22,12 +22,13 @@ import {
 	LivechatDepartment,
 	EmailInbox,
 	LivechatBusinessHours,
+	Messages as MessagesRaw,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Team, Analytics } from '../../../../server/sdk';
+import { Team, Analytics, LivechatVoip } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
@@ -177,14 +178,71 @@ export const statistics = {
 		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
 
 		// Number of Email Inboxes
-		statistics.emailInboxes = await EmailInbox.col.count();
+		statsPms.push(
+			EmailInbox.col.count().then((count) => {
+				statistics.emailInboxes = count;
+			}),
+		);
 
-		statistics.BusinessHours = {
-			// Number of Business Hours
-			total: await LivechatBusinessHours.col.count(),
-			// Business Hours strategy
-			strategy: settings.get('Livechat_enable_business_hours'),
-		};
+		statsPms.push(
+			LivechatBusinessHours.col.count().then((count) => {
+				statistics.BusinessHours = {
+					// Number of Business Hours
+					total: count,
+					// Business Hours strategy
+					strategy: settings.get('Livechat_enable_business_hours'),
+				};
+			}),
+		);
+
+		// Last-Chatted Agent Preferred (enabled/disabled)
+		statistics.lastChattedAgentPreferred = settings.get('Livechat_last_chatted_agent_routing');
+
+		// Assign new conversations to the contact manager (enabled/disabled)
+		statistics.assignNewConversationsToContactManager = settings.get('Omnichannel_contact_manager_routing');
+
+		// How to handle Visitor Abandonment setting
+		statistics.visitorAbandonment = settings.get('Livechat_abandoned_rooms_action');
+
+		// Amount of chats placed on hold
+		statsPms.push(
+			MessagesRaw.col
+				.find({ t: 'omnichannel_placed_chat_on_hold' })
+				.count()
+				.then((count) => {
+					statistics.chatsOnHold = count;
+				}),
+		);
+
+		// VoIP Enabled
+		statistics.voipEnabled = settings.get('VoIP_Enabled');
+
+		// Amount of VoIP Calls
+		statsPms.push(
+			RoomsRaw.col
+				.find({ t: 'v' })
+				.count()
+				.then((count) => {
+					statistics.voipCalls = count;
+				}),
+		);
+
+		// Amount of VoIP Extensions connected
+		statsPms.push(
+			LivechatVoip.getExtensionAllocationDetails().then((details) => {
+				statistics.voipExtensions = details.length;
+			}),
+		);
+
+		// Amount of Calls placed on hold (1x per call)
+		statsPms.push(
+			MessagesRaw.col
+				.find({ t: 'voip-call-wrapup', msg: /.*hold.*/ })
+				.count()
+				.then((count) => {
+					statistics.voipCallsOnHold = count;
+				}),
+		);
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
