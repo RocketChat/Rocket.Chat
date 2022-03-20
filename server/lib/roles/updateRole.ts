@@ -49,12 +49,12 @@ export const updateRoleAsync = async (
 		});
 	}
 
-	const newRole = await Roles.findOneById(roleId);
-	if (!newRole) {
+	const updatedRole = await Roles.findOneById(roleId);
+	if (!updatedRole) {
 		throw new MeteorError('error-role-not-found', 'Role not found');
 	}
 
-	return newRole;
+	return updatedRole;
 };
 
 export const updateRole = (...args: Parameters<typeof updateRoleAsync>): IRole => Promise.await(updateRoleAsync(...args));
