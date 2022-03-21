@@ -406,7 +406,7 @@ export const statistics = {
 
 		await Promise.all(statsPms).catch(log);
 
-    return statistics;
+		return statistics;
 	},
 	async save() {
 		const rcStatistics = await statistics.get();
