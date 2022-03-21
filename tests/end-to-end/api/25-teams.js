@@ -1461,6 +1461,8 @@ describe('[Teams]', () => {
 	describe('/teams.update', () => {
 		let testTeam;
 		let testTeam2;
+		let testTeam3;
+
 		before('Create test team', (done) => {
 			const teamName = `test-team-name${Date.now()}`;
 			request
@@ -1487,6 +1489,21 @@ describe('[Teams]', () => {
 				})
 				.end((err, res) => {
 					testTeam2 = res.body.team;
+					done();
+				});
+		});
+
+		before('Create test team', (done) => {
+			const teamName3 = `test-team-name${Date.now()}`;
+			request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName3,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam3 = res.body.team;
 					done();
 				});
 		});
@@ -1532,6 +1549,86 @@ describe('[Teams]', () => {
 
 			const { teamInfo } = infoResponse.body;
 			expect(teamInfo).to.have.property('type', 1);
+		});
+
+		describe('should update team room to default and invite users with the right notification preferences', () => {
+			let userWithPrefs;
+			let userCredentials;
+			let createdRoom;
+
+			before(async () => {
+				userWithPrefs = await createUser();
+				userCredentials = await login(userWithPrefs.username, password);
+
+				createdRoom = await request
+					.post(api('channels.create'))
+					.set(credentials)
+					.send({
+						name: `${Date.now()}-testTeam3`,
+					});
+
+				await request
+					.post(api('teams.addRooms'))
+					.set(credentials)
+					.send({
+						rooms: [createdRoom.body.channel._id],
+						teamId: testTeam3._id,
+					});
+			});
+
+			it('should update user prefs', async () => {
+				await request
+					.post(methodCall('saveUserPreferences'))
+					.set(userCredentials)
+					.send({
+						message: JSON.stringify({
+							method: 'saveUserPreferences',
+							params: [{ emailNotificationMode: 'nothing' }],
+						}),
+					})
+					.expect(200);
+			});
+
+			it('should add user with prefs to team', (done) => {
+				request
+					.post(api('teams.addMembers'))
+					.set(credentials)
+					.send({
+						teamName: testTeam3.name,
+						members: [
+							{
+								userId: userWithPrefs._id,
+								roles: ['member'],
+							},
+						],
+					})
+					.end(done);
+			});
+
+			it('should update team channel to auto-join', async () => {
+				const response = await request.post(api('teams.updateRoom')).set(credentials).send({
+					roomId: createdRoom.body.channel._id,
+					isDefault: true,
+				});
+				expect(response.body).to.have.property('success', true);
+			});
+
+			it('should return the user subscription with the right notification preferences', (done) => {
+				request
+					.get(api('subscriptions.getOne'))
+					.set(userCredentials)
+					.query({
+						roomId: createdRoom.body.channel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription').and.to.be.an('object');
+						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
+					})
+					.end(done);
+			});
 		});
 
 		it('should update team name and type at once', async () => {

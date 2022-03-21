@@ -426,12 +426,12 @@ Template.message.helpers({
 		return roomCoordinator.getIcon(room);
 	},
 	customClass() {
-		const { customClass, msg } = this;
-		return customClass || msg.customClass;
+		const { customClass } = this;
+		return customClass;
 	},
 	fromSearch() {
-		const { customClass, msg } = this;
-		return [msg.customClass, customClass].includes('search');
+		const { customClass } = this;
+		return customClass === 'search';
 	},
 	actionContext() {
 		const { msg } = this;
