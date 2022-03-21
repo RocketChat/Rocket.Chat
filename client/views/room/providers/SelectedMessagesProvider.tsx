@@ -7,6 +7,7 @@ import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessages
 
 export const selectedMessageStore = new (class SelectMessageStore extends Emitter<{
 	change: undefined;
+	toggleIsSelecting: boolean;
 	[mid: string]: boolean;
 }> {
 	store = new Set<string>();
@@ -15,7 +16,7 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 
 	setIsSelecting(isSelecting: boolean): void {
 		this.isSelecting = isSelecting;
-		this.emit('toggleSelect', isSelecting);
+		this.emit('toggleIsSelecting', isSelecting);
 	}
 
 	getIsSelecting(): boolean {
@@ -46,11 +47,13 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		return this.store.size;
 	}
 
-	clear(mid: string): void {
-		this.store.delete(mid);
-		this.emit(mid, false);
-		this.emit('change');
+	clear(): void {
+		const selectedMessages = this.getSelectedMessages();
+		this.store.clear();
 		this.isSelecting = false;
+		selectedMessages.forEach((mid) => this.emit(mid, false));
+		this.emit('change');
+		this.emit('toggleIsSelecting', false);
 	}
 })();
 
