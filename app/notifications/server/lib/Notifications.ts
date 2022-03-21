@@ -12,15 +12,6 @@ import {
 } from '../../../models/server/raw';
 import './Presence';
 
-// TODO: Replace this in favor of the api.broadcast
-// StreamerCentral.on('broadcast', (name, eventName, args) => {
-// 	api.broadcast('stream', [
-// 		name,
-// 		eventName,
-// 		args,
-// 	]);
-// });
-
 export class Stream extends Streamer {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
 		Meteor.publish(name, function (eventName, options) {
