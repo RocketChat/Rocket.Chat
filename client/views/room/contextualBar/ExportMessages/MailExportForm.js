@@ -41,8 +41,9 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const { toUsers, additionalEmails, subject } = values;
 
-	const reset = useMutableCallback(() => {
+	const clearSelection = useMutableCallback(() => {
 		setSelected([]);
+		selectedMessageStore.clearStore();
 		$('.messages-box .message', $(`#chat-window-${rid}`)).removeClass('selected');
 	});
 
@@ -71,7 +72,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 	useEffect(() => {
 		selectedMessageStore.setIsSelecting(true);
 		return () => {
-			selectedMessageStore.clear();
+			selectedMessageStore.reset();
 		};
 	}, [selectedMessageStore]);
 
@@ -129,7 +130,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Callout onClick={reset} title={t('Messages selected')} type={useCountSelected() > 0 ? 'success' : 'info'}>
+				<Callout onClick={clearSelection} title={t('Messages selected')} type={useCountSelected() > 0 ? 'success' : 'info'}>
 					<p>{`${useCountSelected()} Messages selected`}</p>
 					{useCountSelected() > 0 && (
 						<Box is='p' className={clickable}>

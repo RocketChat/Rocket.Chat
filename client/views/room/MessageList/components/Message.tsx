@@ -43,7 +43,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 		<MessageTemplate {...props} style={handleStyle()} onClick={isSelecting ? toggleSelected : undefined}>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !isSelecting && <UserAvatar username={message.u.username} size={'x36'} />}
-				{isSelecting && <CheckBox checked={isSelected} onChange={isSelecting ? toggleSelected : undefined} />}
+				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				{sequential && <MessageIndicators message={message} />}
 			</MessageLeftContainer>
 

@@ -47,12 +47,16 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		return this.store.size;
 	}
 
-	clear(): void {
+	clearStore(): void {
 		const selectedMessages = this.getSelectedMessages();
 		this.store.clear();
-		this.isSelecting = false;
 		selectedMessages.forEach((mid) => this.emit(mid, false));
 		this.emit('change');
+	}
+
+	reset(): void {
+		this.clearStore();
+		this.isSelecting = false;
 		this.emit('toggleIsSelecting', false);
 	}
 })();
