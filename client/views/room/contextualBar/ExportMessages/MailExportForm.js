@@ -44,30 +44,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 	const clearSelection = useMutableCallback(() => {
 		setSelected([]);
 		selectedMessageStore.clearStore();
-		$('.messages-box .message', $(`#chat-window-${rid}`)).removeClass('selected');
 	});
-
-	useEffect(() => {
-		const $root = $(`#chat-window-${rid}`);
-		$('.messages-box', $root).addClass('selectable');
-
-		const handler = function () {
-			const { id } = this;
-
-			if (this.classList.contains('selected')) {
-				this.classList.remove('selected');
-				setSelected((selectedMessages) => selectedMessages.filter((message) => message !== id));
-			} else {
-				this.classList.add('selected');
-				setSelected((selectedMessages) => selectedMessages.concat(id));
-			}
-		};
-		$('.messages-box .message', $root).on('click', handler);
-		return () => {
-			$('.messages-box', $root).removeClass('selectable');
-			$('.messages-box .message', $root).off('click', handler).filter('.selected').removeClass('selected');
-		};
-	}, [rid]);
 
 	useEffect(() => {
 		selectedMessageStore.setIsSelecting(true);
