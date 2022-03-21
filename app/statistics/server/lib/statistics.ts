@@ -36,7 +36,7 @@ import { IRoom } from '../../../../definition/IRoom';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
-const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number; }> => {
+const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
 	const result = await UsersRaw.getUserLanguages();
 
 	const languages: { [key: string]: number } = {
