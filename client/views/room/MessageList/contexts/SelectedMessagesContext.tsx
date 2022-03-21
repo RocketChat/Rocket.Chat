@@ -31,7 +31,7 @@ export const useIsSelecting = (): boolean => {
 		useMemo(
 			() => ({
 				getCurrentValue: (): boolean => selectedMessageStore.getIsSelecting(),
-				subscribe: (callback: () => void): OffCallbackHandler => selectedMessageStore.on('toggleSelect', callback),
+				subscribe: (callback: () => void): OffCallbackHandler => selectedMessageStore.on('toggleIsSelecting', callback),
 			}),
 			[selectedMessageStore],
 		),

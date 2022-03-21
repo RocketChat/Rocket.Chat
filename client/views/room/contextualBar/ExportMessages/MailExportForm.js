@@ -70,7 +70,9 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	useEffect(() => {
 		selectedMessageStore.setIsSelecting(true);
-		return () => selectedMessageStore.getSelectedMessages().map((mid) => selectedMessageStore.clear(mid));
+		return () => {
+			selectedMessageStore.clear();
+		};
 	}, [selectedMessageStore]);
 
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
