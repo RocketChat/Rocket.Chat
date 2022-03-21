@@ -62,21 +62,6 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 		}),
 	);
 
-	// Total canned responses
-	statsPms.push(
-		CannedResponseRaw.col.count().then((count) => {
-			statistics.cannedResponses = count;
-			return true;
-		}),
-	);
-	// Total of tags used
-	statsPms.push(
-		LivechatTagRaw.col.count().then((count) => {
-			statistics.livechatTags = count;
-			return true;
-		}),
-	);
-
 	await Promise.all(statsPms).catch(log);
 	return statistics;
 }

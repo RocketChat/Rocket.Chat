@@ -177,24 +177,6 @@ export const statistics = {
 		// is on-hold active
 		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
 
-		// Number of Email Inboxes
-		statsPms.push(
-			EmailInbox.col.count().then((count) => {
-				statistics.emailInboxes = count;
-			}),
-		);
-
-		statsPms.push(
-			LivechatBusinessHours.col.count().then((count) => {
-				statistics.BusinessHours = {
-					// Number of Business Hours
-					total: count,
-					// Business Hours strategy
-					strategy: settings.get('Livechat_enable_business_hours'),
-				};
-			}),
-		);
-
 		// Last-Chatted Agent Preferred (enabled/disabled)
 		statistics.lastChattedAgentPreferred = settings.get('Livechat_last_chatted_agent_routing');
 
@@ -208,6 +190,7 @@ export const statistics = {
 		statsPms.push(
 			MessagesRaw.col
 				.find({ t: 'omnichannel_placed_chat_on_hold' })
+				.distinct('rid')
 				.count()
 				.then((count) => {
 					statistics.chatsOnHold = count;
@@ -229,18 +212,41 @@ export const statistics = {
 
 		// Amount of VoIP Extensions connected
 		statsPms.push(
-			LivechatVoip.getExtensionAllocationDetails().then((details) => {
-				statistics.voipExtensions = details.length;
-			}),
-		);
-
-		// Amount of Calls placed on hold (1x per call)
-		statsPms.push(
-			MessagesRaw.col
-				.find({ t: 'voip-call-wrapup', msg: /.*hold.*/ })
+			UsersRaw.col
+				.find({ extension: { $exists: true } })
 				.count()
 				.then((count) => {
-					statistics.voipCallsOnHold = count;
+					statistics.voipExtensions = count;
+				}),
+		);
+
+		// Amount of Calls that ended properly
+		statsPms.push(
+			MessagesRaw.col
+				.find({ t: 'voip-call-wrapup' })
+				.count()
+				.then((count) => {
+					statistics.voipSuccessfulCalls = count;
+				}),
+		);
+
+		// Amount of Calls that ended with an error
+		statsPms.push(
+			MessagesRaw.col
+				.find({ t: 'voip-call-ended-unexpectedly' })
+				.count()
+				.then((count) => {
+					statistics.voipErrorCalls = count;
+				}),
+		);
+		// Amount of Calls that were put on hold
+		statsPms.push(
+			MessagesRaw.col
+				.find({ t: 'voip-call-on-hold' })
+				.distinct('rid')
+				.count()
+				.then((count) => {
+					statistics.voipOnHoldCalls = count;
 				}),
 		);
 
