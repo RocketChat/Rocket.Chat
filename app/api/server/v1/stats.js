@@ -48,7 +48,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'statistics.telemetry',
-	{ authRequired: false },
+	{ authRequired: true },
 	{
 		post() {
 			const events = this.requestParams();
