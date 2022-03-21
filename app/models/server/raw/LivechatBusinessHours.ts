@@ -34,7 +34,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 				active: true,
 				workHours: {
 					$elemMatch: {
-						$or: [{ 'start.cron.dayOfWeek': day, 'finish.cron.dayOfWeek': day }],
+						$or: [{ 'start.cron.dayOfWeek': day }, { 'finish.cron.dayOfWeek': day }],
 						open: true,
 					},
 				},
