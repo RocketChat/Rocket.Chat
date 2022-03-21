@@ -6,7 +6,7 @@ type otrDataType = { rid: string };
 
 export function otrStats(data: otrDataType): void {
 	updateCounter({ settingsId: 'OTR_Count' });
-	console.log('otr here');
+
 	try {
 		// only update DM's
 		Rooms.update({ _id: data.rid, t: 'd' }, { $set: { createdOTR: true } });
