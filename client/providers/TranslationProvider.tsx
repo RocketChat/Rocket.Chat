@@ -1,11 +1,15 @@
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 import React, { FC, useMemo } from 'react';
 
-import { TranslationContext } from '../contexts/TranslationContext';
+import { TranslationContext, TranslationLanguage } from '../contexts/TranslationContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
-const createTranslateFunction = (language) => {
-	const translate = (key, ...replaces) => {
+const createTranslateFunction = (
+	language: string,
+): ((string, ...replaces: unknown[]) => string) & {
+	has: (key: string) => boolean;
+} => {
+	const translate = (key: string, ...replaces: unknown[]): string => {
 		if (typeof replaces[0] === 'object') {
 			const [options, lng = language] = replaces;
 			return TAPi18next.t(key, {
@@ -27,15 +31,16 @@ const createTranslateFunction = (language) => {
 		});
 	};
 
-	translate.has = (key, { lng = language, ...options } = {}) => !!key && TAPi18next.exists(key, { ns: 'project', lng, ...options });
+	translate.has = (key: string, { lng = language, ...options } = {}): boolean =>
+		!!key && TAPi18next.exists(key, { ns: 'project', lng, ...options });
 
 	return translate;
 };
 
-const getLanguages = () => {
-	const result = Object.entries(TAPi18n.getLanguages())
+const getLanguages = (): TranslationLanguage[] => {
+	const result = Object.entries(TAPi18n.getLanguages() as TranslationLanguage[])
 		.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
-		.sort((a, b) => a.key - b.key);
+		.sort((a, b) => a.key.localeCompare(b.key));
 
 	result.unshift({
 		name: 'Default',
@@ -46,9 +51,9 @@ const getLanguages = () => {
 	return result;
 };
 
-const getLanguage = () => TAPi18n.getLanguage();
+const getLanguage = (): string => TAPi18n.getLanguage();
 
-const loadLanguage = (language) => TAPi18n._loadLanguage(language);
+const loadLanguage = (language: string): Promise<void> => TAPi18n._loadLanguage(language);
 
 const TranslationProvider: FC = function TranslationProvider({ children }) {
 	const languages = useReactiveValue(getLanguages);

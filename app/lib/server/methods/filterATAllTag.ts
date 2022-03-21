@@ -1,7 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import _ from 'underscore';
-import moment from 'moment';
 
 import { hasPermission } from '../../../authorization/server';
 import { callbacks } from '../../../../lib/callbacks';
