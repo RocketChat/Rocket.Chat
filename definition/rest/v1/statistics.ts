@@ -5,7 +5,7 @@ export type StatisticsEndpoints = {
 		GET: (params: { refresh?: boolean }) => IStats;
 	};
 	'statistics.telemetry': {
-		POST: (params: TelemetryPayload[]) => any;
+		POST: (params: TelemetryPayload) => any;
 	};
 };
 
@@ -18,7 +18,7 @@ type OTREnded = TelemetryBase & { rid: string };
 
 type SlashCommand = TelemetryBase & { command: string };
 
-type StatsCounter = TelemetryBase & { settingsId: string };
+export type StatsCounter = TelemetryBase & { settingsId: string };
 
 type Params = TelemetryBase | OTREnded | SlashCommand | StatsCounter;
 
