@@ -68,11 +68,11 @@ export interface IStats {
 	uploadsTotal: number;
 	uploadsTotalSize: number;
 	migration: {
-		_id: 'control';
+		_id?: string;
 		locked: boolean;
 		version: number;
-		buildAt: string;
-		lockedAt: string;
+		buildAt?: string;
+		lockedAt?: string;
 	};
 	instanceCount: number;
 	oplogEnabled: boolean;
