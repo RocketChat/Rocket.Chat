@@ -28,7 +28,7 @@ export class QueueAggregator {
 	// Maintains the history of the queue that the agent has served
 	private sessionQueueCallServingHistory: IQueueServingRecord[];
 
-	private currentlyServing: IQueueServingRecord | undefined;
+	private currentlyServing: IQueueServingRecord;
 
 	private currentQueueMembershipStatus: Record<string, IQueueInfo>;
 
@@ -97,17 +97,24 @@ export class QueueAggregator {
 		return totalCallWaitingCount;
 	}
 
-	callRinging(queueInfo: { queuename: string; callerId: { id: string; name: string } }): void {
+	getCurrentQueueName(): string {
+		if (this.currentlyServing.queueInfo) {
+			return this.currentlyServing.queueInfo.queueName;
+		}
+
+		return '';
+	}
+
+	callRinging(queueInfo: { queuename: string; callerid: { id: string; name: string } }): void {
 		if (!this.currentQueueMembershipStatus[queueInfo.queuename]) {
-			// something is wrong. Queue is not found in the membership details.
 			return;
 		}
 
 		const queueServing: IQueueServingRecord = {
 			queueInfo: this.currentQueueMembershipStatus[queueInfo.queuename],
 			callerId: {
-				callerId: queueInfo.callerId.id,
-				callerName: queueInfo.callerId.name,
+				callerId: queueInfo.callerid.id,
+				callerName: queueInfo.callerid.name,
 			},
 			callStarted: undefined,
 			callEnded: undefined,
