@@ -13,7 +13,7 @@ describe('Raw Settings', () => {
 			return null;
 		});
 
-		rawModule = rewire('./raw');
+		rawModule = rewire('../../../../../app/settings/server/raw');
 		rawModule.__set__('setFromDB', spied);
 		rawModule.__set__('cache', cache);
 	});
