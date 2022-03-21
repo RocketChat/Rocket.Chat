@@ -3,7 +3,6 @@ import { log } from 'console';
 
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { MongoInternals } from 'meteor/mongo';
 
 import { Settings, Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models/server';
@@ -23,24 +22,28 @@ import {
 	EmailInbox,
 	LivechatBusinessHours,
 	Messages as MessagesRaw,
+	InstanceStatus,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Team, Analytics } from '../../../../server/sdk';
+import { Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
+import { ISession } from '../../../../definition/ISession';
+import { ISettingStatisticsObject, SettingValue } from '../../../../definition/ISetting';
+import { IRoom } from '../../../../definition/IRoom';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
-const getUserLanguages = async (totalUsers) => {
+const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number; }> => {
 	const result = await UsersRaw.getUserLanguages();
 
-	const languages = {
+	const languages: { [key: string]: number } = {
 		none: totalUsers,
 	};
 
-	result.forEach(({ _id, total }) => {
+	result.forEach(({ _id, total }: { _id: string; total: number }) => {
 		if (!_id) {
 			return;
 		}
@@ -53,11 +56,142 @@ const getUserLanguages = async (totalUsers) => {
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
+type STATISTICS = {
+	wizard: { [key: string]: string };
+	uniqueId: string;
+	installedAt: Date;
+	version?: string;
+	tag?: string;
+	branch?: string;
+	totalUsers: number;
+	activeUsers: number;
+	activeGuests: number;
+	nonActiveUsers: number;
+	appUsers: number;
+	onlineUsers: number;
+	awayUsers: number;
+	busyUsers: number;
+	totalConnectedUsers: number;
+	offlineUsers: number;
+	userLanguages: { [key: string]: number };
+	totalRooms: number;
+	totalChannels: number;
+	totalPrivateGroups: number;
+	totalDirect: number;
+	totalLivechat: number;
+	totalDiscussions: number;
+	totalThreads: number;
+	totalLivechatVisitors: number;
+	totalLivechatAgents: number;
+	livechatEnabled: boolean;
+	omnichannelSources: { [key: string]: number | string }[];
+	departments: number;
+	routingAlgorithm: string;
+	onHoldEnabled: boolean;
+	emailInboxes: number;
+	BusinessHours: { [key: string]: number | string };
+	lastChattedAgentPreferred: boolean;
+	assignNewConversationsToContactManager: boolean;
+	visitorAbandonment: string;
+	chatsOnHold: number;
+	voipEnabled: boolean;
+	voipCalls: number;
+	voipExtensions: number;
+	voipSuccessfulCalls: number;
+	voipErrorCalls: number;
+	voipOnHoldCalls: number;
+	totalChannelMessages: number;
+	totalPrivateGroupMessages: number;
+	totalDirectMessages: number;
+	totalLivechatMessages: number;
+	totalMessages: number;
+	federationOverviewData: {
+		numberOfEvents: any;
+		numberOfFederatedUsers: any;
+		numberOfServers: number;
+	};
+	federatedServers: number;
+	federatedUsers: number;
+	lastLogin: Date;
+	lastMessageSentAt: Date;
+	lastSeenSubscription: Date;
+	os: {
+		type: string;
+		platform: string;
+		arch: string;
+		release: string;
+		uptime: number;
+		loadavg: number[];
+		totalmem: number;
+		freemem: number;
+		cpus: os.CpuInfo[];
+	};
+	process: {
+		nodeVersion: string;
+		pid: number;
+		uptime: number;
+	};
+	deploy: {
+		method: string;
+		platform: string;
+	};
+	readReceiptsEnabled: boolean;
+	readReceiptsDetailed: boolean;
+	enterpriseReady: boolean;
+	uploadsTotal: number;
+	uploadsTotalSize: number;
+	migration: {
+		version: number;
+		locked: boolean;
+	};
+	instanceCount: number;
+	oplogEnabled: boolean;
+	mongoVersion: string;
+	mongoStorageEngine: string;
+	uniqueUsersOfYesterday: { year: number; month: number; day: number; data: ISession[] };
+	uniqueUsersOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
+	uniqueUsersOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
+	uniqueDevicesOfYesterday: { year: number; month: number; day: number; data: ISession[] };
+	uniqueDevicesOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
+	uniqueDevicesOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
+	uniqueOSOfYesterday: { year: number; month: number; day: number; data: ISession[] };
+	uniqueOSOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
+	uniqueOSOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
+	apps: {
+		engineVersion: any;
+		enabled: SettingValue;
+		totalInstalled: number | false;
+		totalActive: number | false;
+		totalFailed: number | false;
+	};
+	services: Record<string, unknown>;
+	settings: ISettingStatisticsObject;
+	integrations: {
+		totalIntegrations: number;
+		totalIncoming: number;
+		totalIncomingActive: number;
+		totalOutgoing: number;
+		totalOutgoingActive: number;
+		totalWithScriptEnabled: number;
+	};
+	pushQueue: number;
+	enterprise: {
+		modules: string[];
+		tags: string[];
+		seatRequests: number;
+		livechatTags: number;
+		cannedResponses: number;
+		priorities: number;
+		businessUnits: number;
+	};
+	createdAt: Date;
+};
+
 export const statistics = {
-	get: async () => {
+	get: async (): Promise<STATISTICS> => {
 		const readPreference = readSecondaryPreferred(db);
 
-		const statistics = {};
+		const statistics = {} as STATISTICS;
 		const statsPms = [];
 
 		// Setup Wizard
@@ -109,11 +243,11 @@ export const statistics = {
 		statistics.totalThreads = Messages.countThreads();
 
 		// Teams statistics
-		statsPms.push(
-			Team.getStatistics().then((teamStats) => {
-				statistics.teams = teamStats;
-			}),
-		);
+		// statsPms.push(
+		// 	Team.getStatistics().then((teamStats) => {
+		// 		statistics.teams = teamStats;
+		// 	}),
+		// );
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
@@ -147,7 +281,7 @@ export const statistics = {
 		);
 
 		// Type of routing algorithm used on omnichannel
-		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
+		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method') || '';
 
 		// is on-hold active
 		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
@@ -188,13 +322,9 @@ export const statistics = {
 
 		// Amount of chats placed on hold
 		statsPms.push(
-			MessagesRaw.col
-				.find({ t: 'omnichannel_placed_chat_on_hold' })
-				.distinct('rid')
-				.count()
-				.then((count) => {
-					statistics.chatsOnHold = count;
-				}),
+			MessagesRaw.col.distinct('rid', { t: 'omnichannel_placed_chat_on_hold' }).then((msgs) => {
+				statistics.chatsOnHold = msgs.length;
+			}),
 		);
 
 		// VoIP Enabled
@@ -241,40 +371,36 @@ export const statistics = {
 		);
 		// Amount of Calls that were put on hold
 		statsPms.push(
-			MessagesRaw.col
-				.find({ t: 'voip-call-on-hold' })
-				.distinct('rid')
-				.count()
-				.then((count) => {
-					statistics.voipOnHoldCalls = count;
-				}),
+			MessagesRaw.col.distinct('rid', { t: 'voip-call-on-hold' }).then((msgs) => {
+				statistics.voipOnHoldCalls = msgs.length;
+			}),
 		);
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
 			Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(),
-			function _countChannelMessages(num, room) {
+			function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalPrivateGroupMessages = _.reduce(
 			Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(),
-			function _countPrivateGroupMessages(num, room) {
+			function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalDirectMessages = _.reduce(
 			Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(),
-			function _countDirectMessages(num, room) {
+			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalLivechatMessages = _.reduce(
 			Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(),
-			function _countLivechatMessages(num, room) {
+			function _countLivechatMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
@@ -286,10 +412,12 @@ export const statistics = {
 			statistics.totalLivechatMessages;
 
 		// Federation statistics
-		const federationOverviewData = federationGetStatistics();
-
-		statistics.federatedServers = federationOverviewData.numberOfServers;
-		statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
+		statsPms.push(
+			federationGetStatistics().then((federationOverviewData) => {
+				statistics.federatedServers = federationOverviewData.numberOfServers;
+				statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
+			}),
+		);
 
 		statistics.lastLogin = Users.getLastLogin();
 		statistics.lastMessageSentAt = Messages.getLastTimestamp();
@@ -342,14 +470,19 @@ export const statistics = {
 				.toArray()
 				.then((agg) => {
 					const [result] = agg;
-					statistics.uploadsTotalSize = result ? result.total : 0;
+					statistics.uploadsTotalSize = result ? (result as any).total : 0;
 				}),
 		);
 
 		statistics.migration = getControl();
-		statistics.instanceCount = InstanceStatus.getCollection()
-			.find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } })
-			.count();
+		statsPms.push(
+			InstanceStatus.col
+				.find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } })
+				.count()
+				.then((count) => {
+					statistics.instanceCount = count;
+				}),
+		);
 
 		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 		statistics.oplogEnabled = oplogEnabled;
@@ -440,7 +573,7 @@ export const statistics = {
 						totalOutgoingActive: integrations.filter(
 							(integration) => integration.enabled === true && integration.type === 'webhook-outgoing',
 						).length,
-						totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
+						totalWithScriptEnabled: integrations.filter((integration) => (integration as any).scriptEnabled === true).length,
 					};
 				}),
 		);
@@ -463,10 +596,10 @@ export const statistics = {
 		await Promise.all(statsPms).catch(log);
 		return statistics;
 	},
-	async save() {
+	async save(): Promise<STATISTICS> {
 		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
-		await Statistics.insertOne(rcStatistics);
+		await Statistics.insertOne(rcStatistics as any);
 		return rcStatistics;
 	},
 };
