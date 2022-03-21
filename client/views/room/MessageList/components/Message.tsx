@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import { Message as MessageTemplate, MessageLeftContainer, MessageContainer, MessageBody } from '@rocket.chat/fuselage';
+import { Message as MessageTemplate, MessageLeftContainer, MessageContainer, MessageBody, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo } from 'react';
 
@@ -42,7 +42,8 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	return (
 		<MessageTemplate {...props} style={handleStyle()} onClick={isSelecting ? toggleSelected : undefined}>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && <UserAvatar username={message.u.username} size={'x36'} />}
+				{!sequential && message.u.username && !isSelecting && <UserAvatar username={message.u.username} size={'x36'} />}
+				{isSelecting && <CheckBox checked={isSelected} onChange={isSelecting ? toggleSelected : undefined} />}
 				{sequential && <MessageIndicators message={message} />}
 			</MessageLeftContainer>
 
@@ -50,7 +51,6 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				{!sequential && <MessageHeader message={message} />}
 
 				{!isMessageIgnored && <MessageContent id={message._id} message={message} subscription={subscription} sequential={sequential} />}
-
 				{isMessageIgnored && (
 					<MessageBody>
 						<MessageContentIgnored onShowMessageIgnored={toggleMessageIgnored} />
