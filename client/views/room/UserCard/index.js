@@ -6,7 +6,7 @@ import { Backdrop } from '../../../components/Backdrop';
 import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
-import { useRolesDescription } from '../../../contexts/AuthorizationContext';
+import { useRolesName } from '../../../contexts/AuthorizationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
@@ -17,7 +17,7 @@ import { useUserInfoActions } from '../hooks/useUserInfoActions';
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
 
-	const getRoles = useRolesDescription();
+	const getRoles = useRolesName();
 
 	const t = useTranslation();
 

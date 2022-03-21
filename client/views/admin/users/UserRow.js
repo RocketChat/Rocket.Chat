@@ -3,6 +3,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import React from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
+import { useRolesName } from '../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const style = {
@@ -13,6 +14,7 @@ const style = {
 
 const UserRow = ({ emails, _id, username, name, roles, status, avatarETag, onClick, mediaQuery, active }) => {
 	const t = useTranslation();
+	const getRoles = useRolesName();
 
 	const statusText = active ? t(capitalize(status)) : t('Disabled');
 	return (
@@ -44,7 +46,14 @@ const UserRow = ({ emails, _id, username, name, roles, status, avatarETag, onCli
 				</Table.Cell>
 			)}
 			<Table.Cell style={style}>{emails && emails.length && emails[0].address}</Table.Cell>
-			{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
+			{mediaQuery && (
+				<Table.Cell style={style}>
+					{roles &&
+						getRoles(roles)
+							.map((role) => role)
+							.join(', ')}
+				</Table.Cell>
+			)}
 			<Table.Cell fontScale='p2' color='hint' style={style}>
 				{statusText}
 			</Table.Cell>

@@ -58,7 +58,7 @@ export const useAllPermissions = (permissions: (string | Mongo.ObjectID)[], scop
 	return useSubscription(subscription);
 };
 
-export const useRolesDescription = (): ((ids: Array<string>) => [string]) => {
+export const useRolesName = (): ((ids: Array<string>) => [string]) => {
 	const { roleStore } = useContext(AuthorizationContext);
 
 	const subscription = useMemo(
@@ -76,7 +76,7 @@ export const useRolesDescription = (): ((ids: Array<string>) => [string]) => {
 
 	const roles = useSubscription<IRoles>(subscription);
 
-	return useCallback((values) => values.map((role: string) => (roles[role] && roles[role].description) || role), [roles]) as (
+	return useCallback((values) => values.map((role: string) => (roles[role] && roles[role].name) || role), [roles]) as (
 		ids: Array<string>,
 	) => [string];
 };
