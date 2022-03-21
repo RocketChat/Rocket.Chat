@@ -137,7 +137,6 @@ export const statistics = {
 		statsPms.push(
 			LivechatDepartment.col.count().then((count) => {
 				statistics.departments = count;
-				return true;
 			}),
 		);
 
@@ -151,7 +150,6 @@ export const statistics = {
 		statsPms.push(
 			EmailInbox.col.count().then((count) => {
 				statistics.emailInboxes = count;
-				return true;
 			}),
 		);
 
@@ -448,7 +446,6 @@ export const statistics = {
 		statsPms.push(
 			getEnterpriseStatistics().then((result) => {
 				statistics.enterprise = result;
-				return true;
 			}),
 		);
 
