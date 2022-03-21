@@ -358,13 +358,23 @@
 		"npm": "6.14.15"
 	},
 	"nyc": {
+		"include": [
+		  "app/**/*.js",
+		  "app/**/*.ts",
+		  "ee/**/*.js",
+		  "ee/**/*.ts",
+		  "server/**/*.js",
+		  "server/**/*.ts"
+		],
 		"exclude": [
+		  "node_modules",
 		  "**/.mocharc.js",
 		  "**/*.spec.js",
 		  "**/*.spec.ts",
 		  "**/*.tests.js",
 		  "**/*.tests.ts",
 		  "**/tests/*"
-		]
+		],
+		"all": true
 	}
 }
