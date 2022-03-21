@@ -6,6 +6,7 @@ import { Logger } from './logger/Logger';
 import { showErrorBox } from './logger/showBox';
 
 type IControl = {
+	_id?: string;
 	version: number;
 	locked: boolean;
 	buildAt?: string;

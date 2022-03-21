@@ -96,8 +96,8 @@ export interface IStats {
 	voipErrorCalls: number;
 	voipOnHoldCalls: number;
 	federationOverviewData: {
-		numberOfEvents: any;
-		numberOfFederatedUsers: any;
+		numberOfEvents: number;
+		numberOfFederatedUsers: number;
 		numberOfServers: number;
 	};
 	readReceiptsEnabled: boolean;
@@ -112,7 +112,7 @@ export interface IStats {
 	uniqueOSOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
 	uniqueOSOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
 	apps: {
-		engineVersion: any;
+		engineVersion: number;
 		enabled: SettingValue;
 		totalInstalled: number | false;
 		totalActive: number | false;
