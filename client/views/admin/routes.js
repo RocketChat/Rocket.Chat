@@ -137,12 +137,3 @@ registerAdminRoute('/chatpal', {
 		appLayout.renderMainLayout({ center: 'ChatpalAdmin' });
 	},
 });
-
-/* TO-DO: REMOVE TEST ROUTE
- ****
-	registerAdminRoute('/upgrade', {
-		name: 'upgrade-admin',
-		lazyRouteComponent: () => import('./upgrade/UpgradePageError'),
-	});
- ****
-*/
