@@ -30,9 +30,8 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import { ISession } from '../../../../definition/ISession';
-import { ISettingStatisticsObject, SettingValue } from '../../../../definition/ISetting';
 import { IRoom } from '../../../../definition/IRoom';
+import { IStats } from '../../../../definition/IStats';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -56,142 +55,11 @@ const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: nu
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-type STATISTICS = {
-	wizard: { [key: string]: string };
-	uniqueId: string;
-	installedAt: Date;
-	version?: string;
-	tag?: string;
-	branch?: string;
-	totalUsers: number;
-	activeUsers: number;
-	activeGuests: number;
-	nonActiveUsers: number;
-	appUsers: number;
-	onlineUsers: number;
-	awayUsers: number;
-	busyUsers: number;
-	totalConnectedUsers: number;
-	offlineUsers: number;
-	userLanguages: { [key: string]: number };
-	totalRooms: number;
-	totalChannels: number;
-	totalPrivateGroups: number;
-	totalDirect: number;
-	totalLivechat: number;
-	totalDiscussions: number;
-	totalThreads: number;
-	totalLivechatVisitors: number;
-	totalLivechatAgents: number;
-	livechatEnabled: boolean;
-	omnichannelSources: { [key: string]: number | string }[];
-	departments: number;
-	routingAlgorithm: string;
-	onHoldEnabled: boolean;
-	emailInboxes: number;
-	BusinessHours: { [key: string]: number | string };
-	lastChattedAgentPreferred: boolean;
-	assignNewConversationsToContactManager: boolean;
-	visitorAbandonment: string;
-	chatsOnHold: number;
-	voipEnabled: boolean;
-	voipCalls: number;
-	voipExtensions: number;
-	voipSuccessfulCalls: number;
-	voipErrorCalls: number;
-	voipOnHoldCalls: number;
-	totalChannelMessages: number;
-	totalPrivateGroupMessages: number;
-	totalDirectMessages: number;
-	totalLivechatMessages: number;
-	totalMessages: number;
-	federationOverviewData: {
-		numberOfEvents: any;
-		numberOfFederatedUsers: any;
-		numberOfServers: number;
-	};
-	federatedServers: number;
-	federatedUsers: number;
-	lastLogin: Date;
-	lastMessageSentAt: Date;
-	lastSeenSubscription: Date;
-	os: {
-		type: string;
-		platform: string;
-		arch: string;
-		release: string;
-		uptime: number;
-		loadavg: number[];
-		totalmem: number;
-		freemem: number;
-		cpus: os.CpuInfo[];
-	};
-	process: {
-		nodeVersion: string;
-		pid: number;
-		uptime: number;
-	};
-	deploy: {
-		method: string;
-		platform: string;
-	};
-	readReceiptsEnabled: boolean;
-	readReceiptsDetailed: boolean;
-	enterpriseReady: boolean;
-	uploadsTotal: number;
-	uploadsTotalSize: number;
-	migration: {
-		version: number;
-		locked: boolean;
-	};
-	instanceCount: number;
-	oplogEnabled: boolean;
-	mongoVersion: string;
-	mongoStorageEngine: string;
-	uniqueUsersOfYesterday: { year: number; month: number; day: number; data: ISession[] };
-	uniqueUsersOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
-	uniqueUsersOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
-	uniqueDevicesOfYesterday: { year: number; month: number; day: number; data: ISession[] };
-	uniqueDevicesOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
-	uniqueDevicesOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
-	uniqueOSOfYesterday: { year: number; month: number; day: number; data: ISession[] };
-	uniqueOSOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
-	uniqueOSOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
-	apps: {
-		engineVersion: any;
-		enabled: SettingValue;
-		totalInstalled: number | false;
-		totalActive: number | false;
-		totalFailed: number | false;
-	};
-	services: Record<string, unknown>;
-	settings: ISettingStatisticsObject;
-	integrations: {
-		totalIntegrations: number;
-		totalIncoming: number;
-		totalIncomingActive: number;
-		totalOutgoing: number;
-		totalOutgoingActive: number;
-		totalWithScriptEnabled: number;
-	};
-	pushQueue: number;
-	enterprise: {
-		modules: string[];
-		tags: string[];
-		seatRequests: number;
-		livechatTags: number;
-		cannedResponses: number;
-		priorities: number;
-		businessUnits: number;
-	};
-	createdAt: Date;
-};
-
 export const statistics = {
-	get: async (): Promise<STATISTICS> => {
+	get: async (): Promise<IStats> => {
 		const readPreference = readSecondaryPreferred(db);
 
-		const statistics = {} as STATISTICS;
+		const statistics = {} as IStats;
 		const statsPms = [];
 
 		// Setup Wizard
@@ -241,13 +109,6 @@ export const statistics = {
 		statistics.totalLivechat = Rooms.findByType('l').count();
 		statistics.totalDiscussions = Rooms.countDiscussions();
 		statistics.totalThreads = Messages.countThreads();
-
-		// Teams statistics
-		// statsPms.push(
-		// 	Team.getStatistics().then((teamStats) => {
-		// 		statistics.teams = teamStats;
-		// 	}),
-		// );
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
@@ -573,7 +434,7 @@ export const statistics = {
 						totalOutgoingActive: integrations.filter(
 							(integration) => integration.enabled === true && integration.type === 'webhook-outgoing',
 						).length,
-						totalWithScriptEnabled: integrations.filter((integration) => (integration as any).scriptEnabled === true).length,
+						totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 					};
 				}),
 		);
@@ -596,10 +457,10 @@ export const statistics = {
 		await Promise.all(statsPms).catch(log);
 		return statistics;
 	},
-	async save(): Promise<STATISTICS> {
+	async save(): Promise<IStats> {
 		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
-		await Statistics.insertOne(rcStatistics as any);
+		await Statistics.insertOne(rcStatistics);
 		return rcStatistics;
 	},
 };

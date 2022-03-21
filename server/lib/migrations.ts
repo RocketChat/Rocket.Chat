@@ -8,6 +8,8 @@ import { showErrorBox } from './logger/showBox';
 type IControl = {
 	version: number;
 	locked: boolean;
+	buildAt?: string;
+	lockedAt?: string;
 };
 
 export type IMigration = {

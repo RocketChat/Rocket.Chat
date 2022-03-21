@@ -1,5 +1,7 @@
 import type { CpuInfo } from 'os';
 
+import { ISession } from './ISession';
+import { ISettingStatisticsObject, SettingValue } from './ISetting';
 import type { ITeamStats } from './ITeam';
 
 export interface IStats {
@@ -77,4 +79,63 @@ export interface IStats {
 	mongoVersion: string;
 	mongoStorageEngine: string;
 	pushQueue: number;
+	omnichannelSources: { [key: string]: number | string }[];
+	departments: number;
+	routingAlgorithm: string;
+	onHoldEnabled: boolean;
+	emailInboxes: number;
+	BusinessHours: { [key: string]: number | string };
+	lastChattedAgentPreferred: boolean;
+	assignNewConversationsToContactManager: boolean;
+	visitorAbandonment: string;
+	chatsOnHold: number;
+	voipEnabled: boolean;
+	voipCalls: number;
+	voipExtensions: number;
+	voipSuccessfulCalls: number;
+	voipErrorCalls: number;
+	voipOnHoldCalls: number;
+	federationOverviewData: {
+		numberOfEvents: any;
+		numberOfFederatedUsers: any;
+		numberOfServers: number;
+	};
+	readReceiptsEnabled: boolean;
+	readReceiptsDetailed: boolean;
+	uniqueUsersOfYesterday: { year: number; month: number; day: number; data: ISession[] };
+	uniqueUsersOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
+	uniqueUsersOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
+	uniqueDevicesOfYesterday: { year: number; month: number; day: number; data: ISession[] };
+	uniqueDevicesOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
+	uniqueDevicesOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
+	uniqueOSOfYesterday: { year: number; month: number; day: number; data: ISession[] };
+	uniqueOSOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
+	uniqueOSOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
+	apps: {
+		engineVersion: any;
+		enabled: SettingValue;
+		totalInstalled: number | false;
+		totalActive: number | false;
+		totalFailed: number | false;
+	};
+	services: Record<string, unknown>;
+	settings: ISettingStatisticsObject;
+	integrations: {
+		totalIntegrations: number;
+		totalIncoming: number;
+		totalIncomingActive: number;
+		totalOutgoing: number;
+		totalOutgoingActive: number;
+		totalWithScriptEnabled: number;
+	};
+	enterprise: {
+		modules: string[];
+		tags: string[];
+		seatRequests: number;
+		livechatTags: number;
+		cannedResponses: number;
+		priorities: number;
+		businessUnits: number;
+	};
+	createdAt: Date;
 }
