@@ -1,4 +1,5 @@
 import os from 'os';
+import { log } from 'console';
 
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
@@ -18,6 +19,9 @@ import {
 	Sessions,
 	Integrations,
 	Uploads,
+	LivechatDepartment,
+	EmailInbox,
+	LivechatBusinessHours,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
@@ -53,6 +57,7 @@ export const statistics = {
 		const readPreference = readSecondaryPreferred(db);
 
 		const statistics = {};
+		const statsPms = [];
 
 		// Setup Wizard
 		statistics.wizard = {};
@@ -87,7 +92,11 @@ export const statistics = {
 		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
-		statistics.userLanguages = await getUserLanguages(statistics.totalUsers);
+		statsPms.push(
+			getUserLanguages(statistics.totalUsers).then((total) => {
+				statistics.userLanguages = total;
+			}),
+		);
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();
@@ -99,7 +108,11 @@ export const statistics = {
 		statistics.totalThreads = Messages.countThreads();
 
 		// Teams statistics
-		statistics.teams = await Team.getStatistics();
+		statsPms.push(
+			Team.getStatistics().then((teamStats) => {
+				statistics.teams = teamStats;
+			}),
+		);
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
@@ -111,12 +124,67 @@ export const statistics = {
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 		// Count and types of omnichannel rooms
-		statistics.omnichannelSources = (await RoomsRaw.allRoomSourcesCount().toArray()).map(({ _id: { id, alias, type }, count }) => ({
-			id,
-			alias,
-			type,
-			count,
-		}));
+		statsPms.push(
+			RoomsRaw.allRoomSourcesCount()
+				.toArray()
+				.then((roomSources) => {
+					statistics.omnichannelSources = roomSources.map(({ _id: { id, alias, type }, count }) => ({
+						id,
+						alias,
+						type,
+						count,
+					}));
+				}),
+		);
+
+		// Number of departments
+		statsPms.push(
+			LivechatDepartment.col.count().then((count) => {
+				statistics.departments = count;
+				return true;
+			}),
+		);
+
+		// Type of routing algorithm used on omnichannel
+		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
+
+		// is on-hold active
+		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
+
+		// Number of Email Inboxes
+		statsPms.push(
+			EmailInbox.col.count().then((count) => {
+				statistics.emailInboxes = count;
+				return true;
+			}),
+		);
+
+		statsPms.push(
+			LivechatBusinessHours.col.count().then((count) => {
+				statistics.BusinessHours = {
+					// Number of Business Hours
+					total: count,
+					// Business Hours strategy
+					strategy: settings.get('Livechat_enable_business_hours') || '',
+				};
+			}),
+		);
+
+		// Type of routing algorithm used on omnichannel
+		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
+
+		// is on-hold active
+		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
+
+		// Number of Email Inboxes
+		statistics.emailInboxes = await EmailInbox.col.count();
+
+		statistics.BusinessHours = {
+			// Number of Business Hours
+			total: await LivechatBusinessHours.col.count(),
+			// Business Hours strategy
+			strategy: settings.get('Livechat_enable_business_hours'),
+		};
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
@@ -190,19 +258,29 @@ export const statistics = {
 		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users');
 
 		statistics.enterpriseReady = true;
-
-		statistics.uploadsTotal = await Uploads.find().count();
-		const [result] = await Uploads.col
-			.aggregate(
-				[
-					{
-						$group: { _id: 'total', total: { $sum: '$size' } },
-					},
-				],
-				{ readPreference },
-			)
-			.toArray();
-		statistics.uploadsTotalSize = result ? result.total : 0;
+		statsPms.push(
+			Uploads.find()
+				.count()
+				.then((count) => {
+					statistics.uploadsTotal = count;
+				}),
+		);
+		statsPms.push(
+			Uploads.col
+				.aggregate(
+					[
+						{
+							$group: { _id: 'total', total: { $sum: '$size' } },
+						},
+					],
+					{ readPreference },
+				)
+				.toArray()
+				.then((agg) => {
+					const [result] = agg;
+					statistics.uploadsTotalSize = result ? result.total : 0;
+				}),
+		);
 
 		statistics.migration = getControl();
 		statistics.instanceCount = InstanceStatus.getCollection()
@@ -214,52 +292,111 @@ export const statistics = {
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine;
 
-		statistics.uniqueUsersOfYesterday = await Sessions.getUniqueUsersOfYesterday();
-		statistics.uniqueUsersOfLastWeek = await Sessions.getUniqueUsersOfLastWeek();
-		statistics.uniqueUsersOfLastMonth = await Sessions.getUniqueUsersOfLastMonth();
-		statistics.uniqueDevicesOfYesterday = await Sessions.getUniqueDevicesOfYesterday();
-		statistics.uniqueDevicesOfLastWeek = await Sessions.getUniqueDevicesOfLastWeek();
-		statistics.uniqueDevicesOfLastMonth = await Sessions.getUniqueDevicesOfLastMonth();
-		statistics.uniqueOSOfYesterday = await Sessions.getUniqueOSOfYesterday();
-		statistics.uniqueOSOfLastWeek = await Sessions.getUniqueOSOfLastWeek();
-		statistics.uniqueOSOfLastMonth = await Sessions.getUniqueOSOfLastMonth();
+		statsPms.push(
+			Sessions.getUniqueUsersOfYesterday().then((result) => {
+				statistics.uniqueUsersOfYesterday = result;
+			}),
+		);
+		statsPms.push(
+			Sessions.getUniqueUsersOfLastWeek().then((result) => {
+				statistics.uniqueUsersOfLastWeek = result;
+			}),
+		);
+		statsPms.push(
+			Sessions.getUniqueUsersOfLastMonth().then((result) => {
+				statistics.uniqueUsersOfLastMonth = result;
+			}),
+		);
+		statsPms.push(
+			Sessions.getUniqueDevicesOfYesterday().then((result) => {
+				statistics.uniqueDevicesOfYesterday = result;
+			}),
+		);
+		statsPms.push(
+			Sessions.getUniqueDevicesOfLastWeek().then((result) => {
+				statistics.uniqueDevicesOfLastWeek = result;
+			}),
+		);
+		statsPms.push(
+			Sessions.getUniqueDevicesOfLastMonth().then((result) => {
+				statistics.uniqueDevicesOfLastMonth = result;
+			}),
+		);
+		statsPms.push(
+			Sessions.getUniqueOSOfYesterday().then((result) => {
+				statistics.uniqueOSOfYesterday = result;
+			}),
+		);
+		statsPms.push(
+			Sessions.getUniqueOSOfLastWeek().then((result) => {
+				statistics.uniqueOSOfLastWeek = result;
+			}),
+		);
+		statsPms.push(
+			Sessions.getUniqueOSOfLastMonth().then((result) => {
+				statistics.uniqueOSOfLastMonth = result;
+			}),
+		);
 
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 
 		// If getSettingsStatistics() returns an error, save as empty object.
-		const settingsStatisticsObject = (await getSettingsStatistics()) || {};
-		statistics.settings = settingsStatisticsObject;
+		statsPms.push(
+			getSettingsStatistics().then((res) => {
+				const settingsStatisticsObject = res || {};
+				statistics.settings = settingsStatisticsObject;
+			}),
+		);
 
-		const integrations = await Integrations.find(
-			{},
-			{
-				projection: {
-					_id: 0,
-					type: 1,
-					enabled: 1,
-					scriptEnabled: 1,
+		statsPms.push(
+			Integrations.find(
+				{},
+				{
+					projection: {
+						_id: 0,
+						type: 1,
+						enabled: 1,
+						scriptEnabled: 1,
+					},
+					readPreference,
 				},
-				readPreference,
-			},
-		).toArray();
+			)
+				.toArray()
+				.then((found) => {
+					const integrations = found;
 
-		statistics.integrations = {
-			totalIntegrations: integrations.length,
-			totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
-			totalIncomingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-incoming')
-				.length,
-			totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
-			totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing')
-				.length,
-			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
-		};
+					statistics.integrations = {
+						totalIntegrations: integrations.length,
+						totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
+						totalIncomingActive: integrations.filter(
+							(integration) => integration.enabled === true && integration.type === 'webhook-incoming',
+						).length,
+						totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
+						totalOutgoingActive: integrations.filter(
+							(integration) => integration.enabled === true && integration.type === 'webhook-outgoing',
+						).length,
+						totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
+					};
+				}),
+		);
 
-		statistics.pushQueue = await NotificationQueue.col.estimatedDocumentCount();
+		statsPms.push(
+			NotificationQueue.col.estimatedDocumentCount().then((count) => {
+				statistics.pushQueue = count;
+			}),
+		);
 
-		statistics.enterprise = getEnterpriseStatistics();
-		await Analytics.resetSeatRequestCount();
+		statsPms.push(
+			getEnterpriseStatistics().then((result) => {
+				statistics.enterprise = result;
+				return true;
+			}),
+		);
 
+		statsPms.push(Analytics.resetSeatRequestCount());
+
+		await Promise.all(statsPms).catch(log);
 		return statistics;
 	},
 	async save() {
