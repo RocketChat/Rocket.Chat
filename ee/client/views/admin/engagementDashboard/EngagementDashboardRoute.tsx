@@ -25,7 +25,10 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		}
 	}, [routeName, engagementDashboardRoute, tab]);
 
-	const statsEvent = useEndpointAction('POST', 'statistics.telemetry', [{ eventName: 'engagementDashboard', timestamp: Date.now() }]);
+	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count', timestamp: Date.now() }],
+	});
+
 	if (!isValidTab(tab)) {
 		return null;
 	}
@@ -34,7 +37,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		return <NotAuthorizedPage />;
 	}
 
-	statsEvent();
+	eventStats();
 	return <EngagementDashboardPage tab={tab} onSelectTab={(tab): void => engagementDashboardRoute.push({ tab })} />;
 };
 

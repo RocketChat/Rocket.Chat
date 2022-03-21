@@ -18,4 +18,8 @@ type OTREnded = TelemetryBase & { rid: string };
 
 type SlashCommand = TelemetryBase & { command: string };
 
-export type TelemetryPayload = TelemetryBase | OTREnded | SlashCommand;
+type StatsCounter = TelemetryBase & { settingsId: string };
+
+type Params = TelemetryBase | OTREnded | SlashCommand | StatsCounter;
+
+export type TelemetryPayload = { params: Params[] };

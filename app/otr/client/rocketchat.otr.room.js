@@ -68,7 +68,7 @@ OTR.Room = class {
 	}
 
 	end() {
-		APIClient.v1.post('statistics.telemetry', [{ eventName: 'otrEnded', timestamp: Date.now(), rid: this.roomId }]);
+		APIClient.v1.post('statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this.roomId }] });
 		this.isFirstOTR = true;
 		this.reset();
 		Notifications.notifyUser(this.peerId, 'otr', 'end', {

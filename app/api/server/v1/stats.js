@@ -52,6 +52,7 @@ API.v1.addRoute(
 	{
 		post() {
 			const events = this.requestParams();
+
 			events.params.forEach((event) => {
 				const { eventName, ...params } = event;
 				telemetryEvent.call(eventName, params);
