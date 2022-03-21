@@ -2,7 +2,11 @@
 import { expect } from 'chai';
 
 import { UserStatus } from '../../../../../../../definition/UserStatus';
-import { processConnectionStatus, processStatus, processPresenceAndStatus } from '../../../../../../../ee/server/services/presence/lib/processConnectionStatus';
+import {
+	processConnectionStatus,
+	processStatus,
+	processPresenceAndStatus,
+} from '../../../../../../../ee/server/services/presence/lib/processConnectionStatus';
 
 describe('Presence micro service', () => {
 	it('should return connection as online when there is a connection online', () => {
