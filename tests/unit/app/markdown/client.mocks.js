@@ -16,7 +16,7 @@ mock('meteor/blaze', {
 	Blaze: {},
 });
 
-mock('../../settings', {
+mock('../../../../app/settings', {
 	settings: {
 		get(setting) {
 			switch (setting) {
