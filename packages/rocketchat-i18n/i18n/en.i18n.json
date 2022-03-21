@@ -2877,6 +2877,7 @@
 	"Marketplace": "Marketplace",
 	"Marketplace_view_marketplace": "View Marketplace",
 	"Marketplace_error": "Cannot connect to internet or your workspace may be an offline install.",
+	"Marketplace_app_last_updated": "Last updated __lastUpdated__ ago",
 	"MAU_value": "MAU __value__",
 	"Max_length_is": "Max length is %s",
 	"Max_number_incoming_livechats_displayed": "Max number of items displayed in the queue",

@@ -19,6 +19,8 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 
 	const { iconFileData = '', name, author, version, iconFileContent, installed, modifiedAt, bundledIn, description } = app;
 
+	const lastUpdated = formatDistanceStrict(new Date(modifiedAt), new Date(), { addSuffix: false });
+
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
 			<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
@@ -77,7 +79,11 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 						{t('By_author', { author: author?.name })}
 					</Box>
 					| <Box mi='x16'>{t('Version_version', { version })}</Box> |{' '}
-					<Box mis='x16'>Last updated {formatDistanceStrict(new Date(modifiedAt), new Date(), { addSuffix: false })} ago</Box>
+					<Box mis='x16'>
+						{t('Marketplace_app_last_updated', {
+							lastUpdated,
+						})}
+					</Box>
 				</Box>
 			</Box>
 		</Box>
