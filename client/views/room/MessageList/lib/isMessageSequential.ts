@@ -1,6 +1,6 @@
 import { differenceInSeconds } from 'date-fns';
 
-import { MessageTypes } from '../../../../../app/ui-utils/client';
+import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 import { IMessage } from '../../../../../definition/IMessage';
 
 export const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {

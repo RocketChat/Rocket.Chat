@@ -26,7 +26,7 @@ class MessageTypesClass {
 	}
 
 	getType(message: IMessage): MessageType | undefined {
-		return message?.t && this.types.get(message.t);
+		return message.t && this.types.get(message.t);
 	}
 
 	isSystemMessage(message: IMessage): boolean {
