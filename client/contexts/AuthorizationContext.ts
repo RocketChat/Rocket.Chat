@@ -76,10 +76,9 @@ export const useRolesDescription = (): ((ids: Array<string>) => [string]) => {
 
 	const roles = useSubscription<IRoles>(subscription);
 
-	return useCallback(
-		(values) => values.map((role: string) => (roles[role] && (roles[role].description || roles[role].name)) || role),
-		[roles],
-	) as (ids: Array<string>) => [string];
+	return useCallback((values) => values.map((role) => roles[role]?.description || roles[role]?.name || role), [roles]) as (
+		ids: Array<string>,
+	) => [string];
 };
 
 export const useRole = (role: string | Mongo.ObjectID): boolean => {
