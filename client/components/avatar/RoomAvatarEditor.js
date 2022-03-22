@@ -4,19 +4,22 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
 import RoomAvatar from './RoomAvatar';
 
 const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...props }) => {
 	const t = useTranslation();
-
+	const dispatchToastMessage = useToastMessageDispatch();
 	const handleChangeAvatar = useMutableCallback((file) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onloadend = () => {
-			onChangeAvatar(reader.result);
-		};
+		if (file.type.startsWith('image/')) {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onloadend = () => {
+				onChangeAvatar(reader.result);
+			};
+		} else dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
 	});
 
 	const [clickUpload, reset] = useFileInput(handleChangeAvatar);
