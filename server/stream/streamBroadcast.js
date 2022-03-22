@@ -289,6 +289,7 @@ export function startStreamBroadcast() {
 			return StreamerCentral.removeListener('broadcast', onBroadcast);
 		}
 
+		// TODO move to a service and stop using StreamerCentral
 		StreamerCentral.on('broadcast', onBroadcast);
 	});
 }
