@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
@@ -549,15 +550,14 @@ API.v1.addRoute(
 			}
 
 			if (type === 'email') {
+				check(this.bodyParams, {
+					subject: String,
+					toUsers: [String],
+					toEmails: [String],
+					messages: [String],
+				});
+
 				const { toUsers, toEmails, subject, messages } = this.bodyParams;
-
-				if (!toUsers || !toUsers.length || !toEmails || !toEmails.length || !subject) {
-					throw new Meteor.Error('error-invalid-recipient');
-				}
-
-				if (!messages || !messages.length) {
-					throw new Meteor.Error('error-invalid-messages');
-				}
 
 				const result = sendViaEmail(
 					{

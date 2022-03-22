@@ -149,7 +149,7 @@ export const sendNoWrap = ({
 	text,
 	headers,
 }: {
-	to: string;
+	to: string | string[];
 	from: string;
 	replyTo?: string;
 	subject: string;
@@ -186,7 +186,7 @@ export const send = ({
 	data,
 	headers,
 }: {
-	to: string;
+	to: string | string[];
 	from: string;
 	replyTo?: string;
 	subject: string;

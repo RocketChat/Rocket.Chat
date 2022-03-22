@@ -28,7 +28,7 @@ type ExportEmail = {
 	toEmails: string[];
 	subject: string;
 	messages: string[];
-	language: string;
+	language?: string;
 };
 
 type ExportFile = {
@@ -109,7 +109,7 @@ export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
 		replyTo: email,
 		subject: data.subject,
 		html,
-	} as any);
+	});
 
 	return { missing };
 };
