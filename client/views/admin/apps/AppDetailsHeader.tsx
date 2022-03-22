@@ -1,11 +1,12 @@
-import { AnimatedVisibility, Box, Icon, PositionAnimated, Tooltip } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { formatDistanceStrict } from 'date-fns';
-import React, { FC, RefObject, useRef, useState } from 'react';
+import React, { FC } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
+import BundleChips from './BundleChips';
 import { App } from './types';
 
 type AppDetailsPageHeaderProps = {
@@ -14,8 +15,6 @@ type AppDetailsPageHeaderProps = {
 
 const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 	const t = useTranslation();
-	const bundleRef = useRef<Element>();
-	const [isHovered, setIsHovered] = useState(false);
 
 	const { iconFileData = '', name, author, version, iconFileContent, installed, modifiedAt, bundledIn, description } = app;
 
@@ -29,43 +28,7 @@ const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 					<Box fontScale='h1' mie='x8'>
 						{name}
 					</Box>
-					{Boolean(bundledIn.length) &&
-						bundledIn.map((bundle) => (
-							<>
-								<Box
-									display='flex'
-									flexDirection='row'
-									alignItems='center'
-									justifyContent='center'
-									backgroundColor='disabled'
-									pi='x4'
-									height='x20'
-									borderRadius='x2'
-									ref={bundleRef}
-									onMouseEnter={(): void => setIsHovered(true)}
-									onMouseLeave={(): void => setIsHovered(false)}
-								>
-									<Icon name='bag' size='x20' />
-									<Box fontWeight='700' fontSize='x12' color='info'>
-										{t('bundle_chip_title', {
-											bundleName: bundle.bundleName,
-										})}
-									</Box>
-								</Box>
-								<PositionAnimated
-									anchor={bundleRef as RefObject<Element>}
-									placement='top-middle'
-									margin={8}
-									visible={isHovered ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
-								>
-									<Tooltip>
-										{t('this_app_is_included_with_subscription', {
-											bundleName: bundle.bundleName,
-										})}
-									</Tooltip>
-								</PositionAnimated>
-							</>
-						))}
+					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
 				</Box>
 				<Box mbe='x16'>{description}</Box>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
