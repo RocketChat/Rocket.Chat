@@ -9,7 +9,9 @@ Meteor.methods({
 	unarchiveRoom(rid) {
 		check(rid, String);
 
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unarchiveRoom' });
 		}
 
@@ -19,7 +21,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'unarchiveRoom' });
 		}
 
-		if (!hasPermission(Meteor.userId(), 'unarchive-room', room._id)) {
+		if (!hasPermission(userId, 'unarchive-room', room._id)) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'unarchiveRoom' });
 		}
 

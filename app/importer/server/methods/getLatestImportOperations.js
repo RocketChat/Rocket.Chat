@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Imports } from '../../../models/server';
-import { hasRole } from '../../../authorization/server';
+import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
 	getLatestImportOperations() {
@@ -13,7 +13,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasRole(userId, 'admin')) {
+		if (!hasPermission(userId, 'view-import-operations')) {
 			throw new Meteor.Error('not_authorized', 'User not authorized', {
 				method: 'getLatestImportOperations',
 			});

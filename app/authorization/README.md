@@ -11,7 +11,8 @@ if hasPermission(userId, 'edit-message') ...
 	# at runtime by removing the permission for user's role instead of modifying the action code.
 
 # role based check
-if hasRole(userId, ['admin','site-moderator','moderator'])
+if hasRole(userId, 'admin')
+if hasAnyRole(userId, ['admin','site-moderator','moderator'])
 	# action is statically associated with the role
 	# action code has to be modified to add/remove role authorization
 
@@ -20,11 +21,11 @@ if hasRole(userId, ['admin','site-moderator','moderator'])
 Usage:
 ```
 # assign user to admin role.  Permissions scoped globally
-RocketChat.authz.addUserRoles(userId, 'admin')
+RocketChat.authz.addUserRoles(userId, ['admin'])
 
 # assign user to moderator role.  Permissions scoped to the specified room
 # user can moderate (e.g. edit channel name, delete private group message) for only one room specified by the roomId
-RocketChat.authz.addUserRoles(userId, 'moderator', roomId )
+RocketChat.authz.addUserRoles(userId, ['moderator'], roomId )
 
 # check if user can modify message for any room
 RocketChat.authz.hasPermission(userId, 'edit-message')

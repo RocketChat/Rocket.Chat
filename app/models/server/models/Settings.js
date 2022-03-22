@@ -41,12 +41,6 @@ export class Settings extends Base {
 		return this.find(query);
 	}
 
-	findByRole(role, options) {
-		const query = { role };
-
-		return this.find(query, options);
-	}
-
 	findPublic(options) {
 		const query = { public: true };
 

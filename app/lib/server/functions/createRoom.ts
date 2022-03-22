@@ -4,7 +4,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { Apps } from '../../../apps/server';
-import { addUserRoles } from '../../../authorization/server';
+import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
