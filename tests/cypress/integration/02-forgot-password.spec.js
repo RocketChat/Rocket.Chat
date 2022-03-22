@@ -1,4 +1,4 @@
-import loginPage from '../../pageobjects/login.page';
+import loginPage from '../pageobjects/login.page';
 
 describe('[Forgot Password]', () => {
 	before(() => {

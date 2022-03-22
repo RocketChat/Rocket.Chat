@@ -1,5 +1,5 @@
-import loginPage from '../../pageobjects/login.page';
-import setupWizard from '../../pageobjects/setup-wizard.page';
+import loginPage from '../pageobjects/login.page';
+import setupWizard from '../pageobjects/setup-wizard.page';
 
 describe('[Login]', () => {
 	before(() => {
@@ -66,7 +66,7 @@ describe('[Login]', () => {
 	});
 });
 
-describe.skip('[Setup Wizard]', () => {
+describe('[Setup Wizard]', () => {
 	before(() => {
 		loginPage.open();
 		setupWizard.login();

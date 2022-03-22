@@ -1,8 +1,8 @@
-import { adminEmail, adminPassword } from '../../../data/user.js';
-import { api, request, getCredentials, credentials } from '../../../data/api-data.js';
-import loginPage from '../../pageobjects/login.page';
-import sideNav from '../../pageobjects/side-nav.page';
-import mainContent from '../../pageobjects/main-content.page';
+import { adminEmail, adminPassword } from '../../data/user.js';
+import { api, request, getCredentials, credentials } from '../../data/api-data.js';
+import loginPage from '../pageobjects/login.page';
+import sideNav from '../pageobjects/side-nav.page';
+import mainContent from '../pageobjects/main-content.page';
 
 const users = new Array(10)
 	.fill(null)
