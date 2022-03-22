@@ -138,4 +138,11 @@ export interface IStats {
 		businessUnits: number;
 	};
 	createdAt: Date | string;
+	totalOTR: number;
+	totalOTRRooms: number;
+	slashCommandsJitsi: number;
+	messageAuditApply: number;
+	messageAuditLoad: number;
+	dashboardCount: number;
+	joinJitsiButton: number;
 }
