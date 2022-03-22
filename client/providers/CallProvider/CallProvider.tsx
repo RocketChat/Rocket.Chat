@@ -16,7 +16,8 @@ import { useEndpoint, useStream } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
+import { QueueAggregator } from '../../lib/voip/QueueAggregator';
+import { useVoipClient } from './hooks/useVoipClient';
 
 const startRingback = (user: IUser): void => {
 	const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
@@ -44,8 +45,8 @@ export const CallProvider: FC = ({ children }) => {
 
 	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
 
-	const [queueName, setQueueName] = useState('');
 	const [queueCounter, setQueueCounter] = useState(0);
+	const [queueName, setQueueName] = useState('');
 
 	const setModal = useSetModal();
 
@@ -53,17 +54,35 @@ export const CallProvider: FC = ({ children }) => {
 		setModal(<WrapUpCallModal />);
 	}, [setModal]);
 
+	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
+
 	useEffect(() => {
-		if (!voipEnabled || !user) {
+		if (!result?.voipClient) {
 			return;
 		}
 
-		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+		setQueueAggregator(result.voipClient.getAggregator());
+	}, [result]);
+
+	useEffect(() => {
+		if (!voipEnabled || !user || !queueAggregator) {
 			return;
 		}
 
-		const queueAggregator = result.voipClient.getAggregator();
-		if (!queueAggregator) {
+		const handleAgentCalled = async (queue: {
+			queuename: string;
+			callerId: { id: string; name: string };
+			queuedcalls: string;
+		}): Promise<void> => {
+			queueAggregator.callRinging({ queuename: queue.queuename, callerid: queue.callerId });
+			setQueueName(queueAggregator.getCurrentQueueName());
+		};
+
+		return subscribeToNotifyUser(`${user._id}/agentcalled`, handleAgentCalled);
+	}, [subscribeToNotifyUser, user, voipEnabled, queueAggregator]);
+
+	useEffect(() => {
+		if (!voipEnabled || !user || !queueAggregator) {
 			return;
 		}
 
@@ -73,69 +92,42 @@ export const CallProvider: FC = ({ children }) => {
 			queuedcalls: string;
 		}): Promise<void> => {
 			queueAggregator.queueJoined(joiningDetails);
-			setQueueName(joiningDetails.queuename);
 			setQueueCounter(queueAggregator.getCallWaitingCount());
 		};
 
 		return subscribeToNotifyUser(`${user._id}/callerjoined`, handleQueueJoined);
-	}, [result, subscribeToNotifyUser, user, voipEnabled]);
+	}, [subscribeToNotifyUser, user, voipEnabled, queueAggregator]);
 
 	useEffect(() => {
-		if (!voipEnabled || !user) {
-			return;
-		}
-
-		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-			return;
-		}
-
-		const queueAggregator = result.voipClient.getAggregator();
-		if (!queueAggregator) {
+		if (!voipEnabled || !user || !queueAggregator) {
 			return;
 		}
 
 		const handleAgentConnected = (queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
 			queueAggregator.callPickedup(queue);
+			setQueueName(queueAggregator.getCurrentQueueName());
 			setQueueCounter(queueAggregator.getCallWaitingCount());
 		};
 
 		return subscribeToNotifyUser(`${user._id}/agentconnected`, handleAgentConnected);
-	}, [result, subscribeToNotifyUser, user, voipEnabled]);
+	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (!voipEnabled || !user) {
-			return;
-		}
-
-		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-			return;
-		}
-
-		const queueAggregator = result.voipClient.getAggregator();
-		if (!queueAggregator) {
+		if (!voipEnabled || !user || !queueAggregator) {
 			return;
 		}
 
 		const handleMemberAdded = (queue: { queuename: string; queuedcalls: string }): void => {
 			queueAggregator.memberAdded(queue);
-			setQueueName(queue.queuename);
+			setQueueName(queueAggregator.getCurrentQueueName());
 			setQueueCounter(queueAggregator.getCallWaitingCount());
 		};
 
 		return subscribeToNotifyUser(`${user._id}/queuememberadded`, handleMemberAdded);
-	}, [result, subscribeToNotifyUser, user, voipEnabled]);
+	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (!voipEnabled || !user) {
-			return;
-		}
-
-		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-			return;
-		}
-
-		const queueAggregator = result.voipClient.getAggregator();
-		if (!queueAggregator) {
+		if (!voipEnabled || !user || !queueAggregator) {
 			return;
 		}
 
@@ -145,48 +137,37 @@ export const CallProvider: FC = ({ children }) => {
 		};
 
 		return subscribeToNotifyUser(`${user._id}/queuememberremoved`, handleMemberRemoved);
-	}, [result, subscribeToNotifyUser, user, voipEnabled]);
+	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (!voipEnabled || !user) {
-			return;
-		}
-
-		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-			return;
-		}
-
-		const queueAggregator = result.voipClient.getAggregator();
-		if (!queueAggregator) {
+		if (!voipEnabled || !user || !queueAggregator) {
 			return;
 		}
 
 		const handleCallAbandon = (queue: { queuename: string; queuedcallafterabandon: string }): void => {
 			queueAggregator.queueAbandoned(queue);
+			setQueueName(queueAggregator.getCurrentQueueName());
 			setQueueCounter(queueAggregator.getCallWaitingCount());
 		};
 
 		return subscribeToNotifyUser(`${user._id}/callabandoned`, handleCallAbandon);
-	}, [result, subscribeToNotifyUser, user, voipEnabled]);
+	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (!voipEnabled || !user) {
+		if (!voipEnabled || !user || !queueAggregator) {
 			return;
 		}
 
 		const handleCallHangup = (_event: { roomId: string }): void => {
+			setQueueName(queueAggregator.getCurrentQueueName());
 			openWrapUpModal();
 		};
 
 		return subscribeToNotifyUser(`${user._id}/call.callerhangup`, handleCallHangup);
-	}, [openWrapUpModal, result, subscribeToNotifyUser, user, voipEnabled]);
+	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (isUseVoipClientResultError(result)) {
-			return;
-		}
-
-		if (isUseVoipClientResultLoading(result)) {
+		if (!result.voipClient) {
 			return;
 		}
 
@@ -229,7 +210,7 @@ export const CallProvider: FC = ({ children }) => {
 		 *
 		 */
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
-	});
+	}, [result.voipClient]);
 
 	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', 'voip/room');
@@ -256,7 +237,7 @@ export const CallProvider: FC = ({ children }) => {
 			};
 		}
 
-		if (isUseVoipClientResultError(result)) {
+		if (result.error) {
 			return {
 				enabled: true,
 				ready: false,
@@ -264,7 +245,7 @@ export const CallProvider: FC = ({ children }) => {
 			};
 		}
 
-		if (isUseVoipClientResultLoading(result)) {
+		if (!result.voipClient) {
 			return {
 				enabled: true,
 				ready: false,
@@ -281,8 +262,8 @@ export const CallProvider: FC = ({ children }) => {
 			enabled: true,
 			ready: true,
 			openedRoomInfo: roomInfo,
-			registrationInfo,
 			voipClient,
+			registrationInfo,
 			queueCounter,
 			queueName,
 			actions: {
@@ -308,7 +289,7 @@ export const CallProvider: FC = ({ children }) => {
 					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
 					openRoom(voipRoom.room._id);
 					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
-					const queueAggregator = result.voipClient.getAggregator();
+					const queueAggregator = voipClient.getAggregator();
 					if (queueAggregator) {
 						queueAggregator.callStarted();
 					}
@@ -319,7 +300,7 @@ export const CallProvider: FC = ({ children }) => {
 			closeRoom: async ({ comment, tags }: { comment: string; tags: string[] }): Promise<void> => {
 				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment: comment || '', tags }));
 				homeRoute.push({});
-				const queueAggregator = result.voipClient.getAggregator();
+				const queueAggregator = voipClient.getAggregator();
 				if (queueAggregator) {
 					queueAggregator.callEnded();
 				}
@@ -328,12 +309,12 @@ export const CallProvider: FC = ({ children }) => {
 		};
 	}, [
 		voipEnabled,
+		user,
 		result,
 		roomInfo,
 		queueCounter,
 		queueName,
 		openWrapUpModal,
-		user,
 		visitorEndpoint,
 		voipEndpoint,
 		voipCloseRoomEndpoint,

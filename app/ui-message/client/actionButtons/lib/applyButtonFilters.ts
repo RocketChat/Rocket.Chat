@@ -4,7 +4,7 @@
 import { Meteor } from 'meteor/meteor';
 import { IUIActionButton, RoomTypeFilter } from '@rocket.chat/apps-engine/definition/ui';
 
-import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../authorization/client';
+import { hasAtLeastOnePermission, hasPermission, hasRole, hasAnyRole } from '../../../../authorization/client';
 import {
 	IRoom,
 	isDirectMessageRoom,
@@ -19,10 +19,12 @@ import {
 export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean => {
 	const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};
 
+	const userId = Meteor.userId();
+
 	const hasAllPermissionsResult = hasAllPermissions ? hasPermission(hasAllPermissions) : true;
 	const hasOnePermissionResult = hasOnePermission ? hasAtLeastOnePermission(hasOnePermission) : true;
-	const hasAllRolesResult = hasAllRoles ? hasAllRoles.every((role) => hasRole(Meteor.userId(), role, room?._id)) : true;
-	const hasOneRoleResult = hasOneRole ? hasRole(Meteor.userId(), hasOneRole, room?._id) : true;
+	const hasAllRolesResult = hasAllRoles ? !!userId && hasAllRoles.every((role) => hasRole(userId, role, room?._id)) : true;
+	const hasOneRoleResult = hasOneRole ? !!userId && hasAnyRole(userId, hasOneRole, room?._id) : true;
 
 	return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;
 };

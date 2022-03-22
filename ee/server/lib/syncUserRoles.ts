@@ -1,14 +1,16 @@
 import type { IUser } from '../../../definition/IUser';
 import type { IRole } from '../../../definition/IRole';
+import type { AtLeast } from '../../../definition/utils';
 import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
-import { addUserRolesAsync, removeUserFromRolesAsync } from '../../../app/authorization/server';
+import { addUserRolesAsync } from '../../../server/lib/roles/addUserRoles';
+import { removeUserFromRolesAsync } from '../../../server/lib/roles/removeUserFromRoles';
 import { Users } from '../../../app/models/server/raw';
 import { canAddNewUser } from '../../app/license/server/license';
 
 type setUserRolesOptions = {
 	// If specified, the function will not add nor remove any role that is not on this list.
-	allowedRoles?: Array<IRole['name']>;
+	allowedRoles?: Array<IRole['_id']>;
 	// If set to true, roles will only be added, not removed
 	skipRemovingRoles?: boolean;
 	// the scope value (eg: room id) to assign the roles to
@@ -16,30 +18,30 @@ type setUserRolesOptions = {
 };
 
 function filterRoleList(
-	roleList: Array<IRole['name']>,
-	rolesToFilterOut: Array<IRole['name']>,
-	rolesToFilterIn?: Array<IRole['name']>,
-): Array<IRole['name']> {
-	const filteredRoles = roleList.filter((roleName) => !rolesToFilterOut.includes(roleName));
+	roleList: Array<IRole['_id']>,
+	rolesToFilterOut: Array<IRole['_id']>,
+	rolesToFilterIn?: Array<IRole['_id']>,
+): Array<IRole['_id']> {
+	const filteredRoles = roleList.filter((roleId) => !rolesToFilterOut.includes(roleId));
 
 	if (!rolesToFilterIn) {
 		return filteredRoles;
 	}
 
-	return filteredRoles.filter((roleName) => rolesToFilterIn.includes(roleName));
+	return filteredRoles.filter((roleId) => rolesToFilterIn.includes(roleId));
 }
 
-function broadcastRoleChange(type: string, roleList: Array<IRole['name']>, user: IUser): void {
+function broadcastRoleChange(type: string, roleList: Array<IRole['_id']>, user: AtLeast<IUser, '_id' | 'username'>): void {
 	if (!settings.get('UI_DisplayRoles')) {
 		return;
 	}
 
 	const { _id, username } = user;
 
-	for (const roleName of roleList) {
+	for (const roleId of roleList) {
 		api.broadcast('user.roleUpdate', {
 			type,
-			_id: roleName,
+			_id: roleId,
 			u: {
 				_id,
 				username,
@@ -50,10 +52,10 @@ function broadcastRoleChange(type: string, roleList: Array<IRole['name']>, user:
 
 export async function syncUserRoles(
 	uid: IUser['_id'],
-	newRoleList: Array<IRole['name']>,
+	newRoleList: Array<IRole['_id']>,
 	{ allowedRoles, skipRemovingRoles, scope }: setUserRolesOptions,
 ): Promise<void> {
-	const user = await Users.findOneById(uid);
+	const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'roles'>>(uid, { projection: { username: 1, roles: 1 } });
 	if (!user) {
 		throw new Error('error-user-not-found');
 	}
@@ -62,7 +64,7 @@ export async function syncUserRoles(
 	const rolesToAdd = filterRoleList(newRoleList, existingRoles, allowedRoles);
 	const rolesToRemove = filterRoleList(existingRoles, newRoleList, allowedRoles);
 
-	if (!rolesToAdd.length || !rolesToRemove.length) {
+	if (!rolesToAdd.length && !rolesToRemove.length) {
 		return;
 	}
 
@@ -71,11 +73,11 @@ export async function syncUserRoles(
 		throw new Error('error-license-user-limit-reached');
 	}
 
-	if (await addUserRolesAsync(uid, rolesToAdd, scope)) {
+	if (rolesToAdd.length && (await addUserRolesAsync(uid, rolesToAdd, scope))) {
 		broadcastRoleChange('added', rolesToAdd, user);
 	}
 
-	if (skipRemovingRoles) {
+	if (skipRemovingRoles || !rolesToRemove.length) {
 		return;
 	}
 

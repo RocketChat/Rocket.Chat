@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { hasRole } from '../../app/authorization/server';
+import { hasPermission } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { appTokensCollection, Push } from '../../app/push/server';
 
@@ -17,7 +17,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasRole(user._id, 'admin')) {
+		if (!hasPermission(user._id, 'test-admin-options')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'push_test',
 			});

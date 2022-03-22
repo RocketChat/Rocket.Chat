@@ -66,6 +66,7 @@ export const _setStatusText = function (userId: any, statusText: string): unknow
 export const setStatusText = RateLimiter.limitFunction(_setStatusText, 5, 60000, {
 	0() {
 		// Administrators have permission to change others status, so don't limit those
-		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
+		const userId = Meteor.userId();
+		return !userId || !hasPermission(userId, 'edit-other-user-info');
 	},
 });

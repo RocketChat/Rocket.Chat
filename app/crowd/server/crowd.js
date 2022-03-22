@@ -7,7 +7,7 @@ import { Logger } from '../../logger/server';
 import { _setRealName } from '../../lib/server';
 import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
-import { hasRole } from '../../authorization/server';
+import { hasPermission } from '../../authorization/server';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 
@@ -344,7 +344,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasRole(user._id, 'admin')) {
+		if (!hasPermission(user._id, 'test-admin-options')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'crowd_test_connection',
 			});
@@ -375,7 +375,7 @@ Meteor.methods({
 			throw new Meteor.Error('crowd_disabled');
 		}
 
-		if (!hasRole(user._id, 'admin')) {
+		if (!hasPermission(user._id, 'sync-auth-services-users')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'crowd_sync_users',
 			});

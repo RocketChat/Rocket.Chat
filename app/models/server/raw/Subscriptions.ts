@@ -82,7 +82,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return cursor.count();
 	}
 
-	async isUserInRole(uid: IUser['_id'], roleName: IRole['name'], rid?: IRoom['_id']): Promise<T | null> {
+	async isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<T | null> {
 		if (rid == null) {
 			return null;
 		}
@@ -90,7 +90,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		const query = {
 			'u._id': uid,
 			rid,
-			'roles': roleName,
+			'roles': roleId,
 		};
 
 		return this.findOne(query, { projection: { roles: 1 } });
@@ -116,7 +116,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return this.update(query, update, options);
 	}
 
-	removeRolesByUserId(uid: IUser['_id'], roles: IRole['name'][], rid: IRoom['_id']): Promise<UpdateWriteOpResult> {
+	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid: IRoom['_id']): Promise<UpdateWriteOpResult> {
 		const query = {
 			'u._id': uid,
 			rid,
@@ -131,22 +131,22 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return this.updateOne(query, update);
 	}
 
-	findUsersInRoles(name: IRole['name'][], rid: string | undefined): Promise<Cursor<IUser>>;
+	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined): Promise<Cursor<IUser>>;
 
 	findUsersInRoles(
-		name: IRole['name'][],
+		roles: IRole['_id'][],
 		rid: string | undefined,
 		options: WithoutProjection<FindOneOptions<IUser>>,
 	): Promise<Cursor<IUser>>;
 
 	findUsersInRoles<P = IUser>(
-		name: IRole['name'][],
+		roles: IRole['_id'][],
 		rid: string | undefined,
 		options: FindOneOptions<P extends IUser ? IUser : P>,
 	): Promise<Cursor<P>>;
 
 	async findUsersInRoles<P = IUser>(
-		roles: IRole['name'][],
+		roles: IRole['_id'][],
 		rid: IRoom['_id'] | undefined,
 		options?: FindOneOptions<P extends IUser ? IUser : P>,
 	): Promise<Cursor<P>> {
@@ -164,7 +164,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 			: this.models.Users.find({ _id: { $in: users } } as FilterQuery<IUser>, options);
 	}
 
-	addRolesByUserId(uid: IUser['_id'], roles: IRole['name'][], rid?: IRoom['_id']): Promise<UpdateWriteOpResult> {
+	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateWriteOpResult> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] Subscriptions.addRolesByUserId: roles should be an array');
