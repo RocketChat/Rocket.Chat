@@ -50,14 +50,14 @@ jobs:
 
       - name: Cache cypress
         id: cache-cypress
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
       # - name: Cache node modules
       #   id: cache-nodemodules
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: |
       #       ./node_modules
@@ -65,13 +65,13 @@ jobs:
       #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
       - name: Cache meteor local
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.meteor/local
           key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
 
       - name: Cache meteor
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.meteor
           key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
@@ -206,14 +206,14 @@ jobs:
 
       - name: Cache cypress
         id: cache-cypress
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
       # - name: Cache node modules
       #   id: cache-nodemodules
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: |
       #       ./node_modules
@@ -316,14 +316,14 @@ jobs:
 
       - name: Cache cypress
         id: cache-cypress
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
       # - name: Cache node modules
       #   id: cache-nodemodules
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: |
       #       ./node_modules
@@ -428,7 +428,7 @@ jobs:
 
       # - name: Cache node modules
       #   id: cache-nodemodules
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: |
       #       ./node_modules
@@ -436,13 +436,13 @@ jobs:
       #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
       - name: Cache meteor local
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.meteor/local
           key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
 
       - name: Cache meteor
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.meteor
           key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
