@@ -3,7 +3,6 @@ import { log } from 'console';
 
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { MongoInternals } from 'meteor/mongo';
 
 import { Settings, Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models/server';
@@ -22,24 +21,28 @@ import {
 	LivechatDepartment,
 	EmailInbox,
 	LivechatBusinessHours,
+	Messages as MessagesRaw,
+	InstanceStatus,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Team, Analytics } from '../../../../server/sdk';
+import { Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
+import { IRoom } from '../../../../definition/IRoom';
+import { IStats } from '../../../../definition/IStats';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
-const getUserLanguages = async (totalUsers) => {
+const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
 	const result = await UsersRaw.getUserLanguages();
 
-	const languages = {
+	const languages: { [key: string]: number } = {
 		none: totalUsers,
 	};
 
-	result.forEach(({ _id, total }) => {
+	result.forEach(({ _id, total }: { _id: string; total: number }) => {
 		if (!_id) {
 			return;
 		}
@@ -53,10 +56,10 @@ const getUserLanguages = async (totalUsers) => {
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 export const statistics = {
-	get: async () => {
+	get: async (): Promise<IStats> => {
 		const readPreference = readSecondaryPreferred(db);
 
-		const statistics = {};
+		const statistics = {} as IStats;
 		const statsPms = [];
 
 		// Setup Wizard
@@ -107,13 +110,6 @@ export const statistics = {
 		statistics.totalDiscussions = Rooms.countDiscussions();
 		statistics.totalThreads = Messages.countThreads();
 
-		// Teams statistics
-		statsPms.push(
-			Team.getStatistics().then((teamStats) => {
-				statistics.teams = teamStats;
-			}),
-		);
-
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
 
@@ -141,12 +137,11 @@ export const statistics = {
 		statsPms.push(
 			LivechatDepartment.col.count().then((count) => {
 				statistics.departments = count;
-				return true;
 			}),
 		);
 
 		// Type of routing algorithm used on omnichannel
-		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
+		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method') || '';
 
 		// is on-hold active
 		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
@@ -155,7 +150,6 @@ export const statistics = {
 		statsPms.push(
 			EmailInbox.col.count().then((count) => {
 				statistics.emailInboxes = count;
-				return true;
 			}),
 		);
 
@@ -176,41 +170,96 @@ export const statistics = {
 		// is on-hold active
 		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
 
-		// Number of Email Inboxes
-		statistics.emailInboxes = await EmailInbox.col.count();
+		// Last-Chatted Agent Preferred (enabled/disabled)
+		statistics.lastChattedAgentPreferred = settings.get('Livechat_last_chatted_agent_routing');
 
-		statistics.BusinessHours = {
-			// Number of Business Hours
-			total: await LivechatBusinessHours.col.count(),
-			// Business Hours strategy
-			strategy: settings.get('Livechat_enable_business_hours'),
-		};
+		// Assign new conversations to the contact manager (enabled/disabled)
+		statistics.assignNewConversationsToContactManager = settings.get('Omnichannel_contact_manager_routing');
+
+		// How to handle Visitor Abandonment setting
+		statistics.visitorAbandonment = settings.get('Livechat_abandoned_rooms_action');
+
+		// Amount of chats placed on hold
+		statsPms.push(
+			MessagesRaw.col.distinct('rid', { t: 'omnichannel_placed_chat_on_hold' }).then((msgs) => {
+				statistics.chatsOnHold = msgs.length;
+			}),
+		);
+
+		// VoIP Enabled
+		statistics.voipEnabled = settings.get('VoIP_Enabled');
+
+		// Amount of VoIP Calls
+		statsPms.push(
+			RoomsRaw.col
+				.find({ t: 'v' })
+				.count()
+				.then((count) => {
+					statistics.voipCalls = count;
+				}),
+		);
+
+		// Amount of VoIP Extensions connected
+		statsPms.push(
+			UsersRaw.col
+				.find({ extension: { $exists: true } })
+				.count()
+				.then((count) => {
+					statistics.voipExtensions = count;
+				}),
+		);
+
+		// Amount of Calls that ended properly
+		statsPms.push(
+			MessagesRaw.col
+				.find({ t: 'voip-call-wrapup' })
+				.count()
+				.then((count) => {
+					statistics.voipSuccessfulCalls = count;
+				}),
+		);
+
+		// Amount of Calls that ended with an error
+		statsPms.push(
+			MessagesRaw.col
+				.find({ t: 'voip-call-ended-unexpectedly' })
+				.count()
+				.then((count) => {
+					statistics.voipErrorCalls = count;
+				}),
+		);
+		// Amount of Calls that were put on hold
+		statsPms.push(
+			MessagesRaw.col.distinct('rid', { t: 'voip-call-on-hold' }).then((msgs) => {
+				statistics.voipOnHoldCalls = msgs.length;
+			}),
+		);
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
 			Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(),
-			function _countChannelMessages(num, room) {
+			function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalPrivateGroupMessages = _.reduce(
 			Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(),
-			function _countPrivateGroupMessages(num, room) {
+			function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalDirectMessages = _.reduce(
 			Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(),
-			function _countDirectMessages(num, room) {
+			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalLivechatMessages = _.reduce(
 			Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(),
-			function _countLivechatMessages(num, room) {
+			function _countLivechatMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
@@ -222,10 +271,12 @@ export const statistics = {
 			statistics.totalLivechatMessages;
 
 		// Federation statistics
-		const federationOverviewData = federationGetStatistics();
-
-		statistics.federatedServers = federationOverviewData.numberOfServers;
-		statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
+		statsPms.push(
+			federationGetStatistics().then((federationOverviewData) => {
+				statistics.federatedServers = federationOverviewData.numberOfServers;
+				statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
+			}),
+		);
 
 		statistics.lastLogin = Users.getLastLogin();
 		statistics.lastMessageSentAt = Messages.getLastTimestamp();
@@ -278,14 +329,19 @@ export const statistics = {
 				.toArray()
 				.then((agg) => {
 					const [result] = agg;
-					statistics.uploadsTotalSize = result ? result.total : 0;
+					statistics.uploadsTotalSize = result ? (result as any).total : 0;
 				}),
 		);
 
 		statistics.migration = getControl();
-		statistics.instanceCount = InstanceStatus.getCollection()
-			.find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } })
-			.count();
+		statsPms.push(
+			InstanceStatus.col
+				.find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } })
+				.count()
+				.then((count) => {
+					statistics.instanceCount = count;
+				}),
+		);
 
 		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 		statistics.oplogEnabled = oplogEnabled;
@@ -390,7 +446,6 @@ export const statistics = {
 		statsPms.push(
 			getEnterpriseStatistics().then((result) => {
 				statistics.enterprise = result;
-				return true;
 			}),
 		);
 
@@ -399,7 +454,7 @@ export const statistics = {
 		await Promise.all(statsPms).catch(log);
 		return statistics;
 	},
-	async save() {
+	async save(): Promise<IStats> {
 		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
 		await Statistics.insertOne(rcStatistics);
