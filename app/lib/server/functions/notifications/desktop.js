@@ -1,8 +1,6 @@
-import { isRunningMs } from '../../../../../server/lib/isRunningMs';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { api } from '../../../../../server/sdk/api';
 import { metrics } from '../../../../metrics/server';
-import { Notifications } from '../../../../notifications/server';
 import { settings } from '../../../../settings/server';
 
 /**
@@ -38,12 +36,7 @@ export function notifyDesktopUser({ userId, user, message, room, duration, notif
 
 	metrics.notificationsSent.inc({ notification_type: 'desktop' });
 
-	if (isRunningMs()) {
-		api.broadcast('notify.desktop', userId, payload);
-		return;
-	}
-
-	Notifications.notifyUser(userId, 'notification', payload);
+	api.broadcast('notify.desktop', userId, payload);
 }
 
 export function shouldNotifyDesktop({

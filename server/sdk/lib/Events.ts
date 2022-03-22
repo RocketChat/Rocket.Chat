@@ -1,3 +1,5 @@
+import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { IEmoji } from '../../../definition/IEmoji';
 import { IInquiry } from '../../../definition/IInquiry';
@@ -18,6 +20,9 @@ import { IUser } from '../../../definition/IUser';
 import { IUserSession } from '../../../definition/IUserSession';
 import { IUserStatus } from '../../../definition/IUserStatus';
 import { AutoUpdateRecord } from '../types/IMeteor';
+import { IInvite } from '../../../definition/IInvite';
+import { IWebdavAccount } from '../../../definition/IWebdavAccount';
+import { ICustomSound } from '../../../definition/ICustomSound';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -39,7 +44,35 @@ export type EventSignatures = {
 	'message'(data: { action: string; message: IMessage }): void;
 	'meteor.clientVersionUpdated'(data: AutoUpdateRecord): void;
 	'notify.desktop'(uid: string, data: INotificationDesktop): void;
+	'notify.uiInteraction'(uid: string, data: IUIKitInteraction): void;
+	'notify.updateInvites'(uid: string, data: { invite: IInvite }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
+	'notify.webdav'(
+		uid: string,
+		data:
+			| {
+					type: 'changed';
+					account: Partial<IWebdavAccount>;
+			  }
+			| {
+					type: 'removed';
+					account: { _id: IWebdavAccount['_id'] };
+			  },
+	): void;
+	'notify.e2e.keyRequest'(rid: string, data: IRoom['e2eKeyId']): void;
+	'notify.deleteMessage'(rid: string, data: { _id: string }): void;
+	'notify.deleteMessageBulk'(
+		rid: string,
+		data: {
+			rid: string;
+			excludePinned: boolean;
+			ignoreDiscussion: boolean;
+			ts: Record<string, Date>;
+			users: string[];
+		},
+	): void;
+	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;
+	'notify.updateCustomSound'(data: { soundData: ICustomSound }): void;
 	'permission.changed'(data: { clientAction: ClientAction; data: any }): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Partial<IRoom>): void;
