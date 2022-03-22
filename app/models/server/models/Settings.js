@@ -151,6 +151,21 @@ export class Settings extends Base {
 		return this.update(query, update);
 	}
 
+	incrementValueById(_id) {
+		const query = {
+			blocked: { $ne: true },
+			_id,
+		};
+
+		const update = {
+			$inc: {
+				value: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	updateValueAndEditorById(_id, value, editor) {
 		const query = {
 			blocked: { $ne: true },
