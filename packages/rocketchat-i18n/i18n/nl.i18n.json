@@ -1370,7 +1370,7 @@
   "Days": "Dagen",
   "DB_Migration": "Database Migratie",
   "DB_Migration_Date": "Database Migratie Datum",
-  "DDP_Rate_Limit": "DDP Rate Limit",
+  "DDP_Rate_Limiter": "DDP Rate Limit",
   "DDP_Rate_Limit_Connection_By_Method_Enabled": "Limiet per verbinding per methode: ingeschakeld",
   "DDP_Rate_Limit_Connection_By_Method_Interval_Time": "Limiet per verbinding per methode: intervaltijd",
   "DDP_Rate_Limit_Connection_By_Method_Requests_Allowed": "Limiet per verbinding per methode: verzoeken toegestaan",
