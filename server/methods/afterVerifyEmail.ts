@@ -4,7 +4,6 @@ import { Users } from '../../app/models/server';
 import { Roles } from '../../app/models/server/raw';
 import { IUser, IRole } from '../../definition/IUser';
 
-// Shouldn't this respect role settings?
 const rolesToChangeTo: Map<IRole['_id'], [IRole['_id']]> = new Map([['anonymous', ['user']]]);
 
 Meteor.methods({

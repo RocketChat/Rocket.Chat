@@ -1,51 +1,62 @@
 import { Roles, Users, Subscriptions } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
-import type { IRole, IUser } from '../../../definition/IUser';
-import type { ISubscription } from '../../../definition/ISubscription';
+import type { IRole } from '../../../definition/IUser';
 
 addMigration({
 	version: 258,
 	async up() {
 		// Load all role ids and names
-		const roles = await Roles.find<Pick<IRole, '_id' | 'name'>>({}, { projection: { _id: 1, name: 1 } }).toArray();
-
+		const roles = await Roles.find<Pick<IRole, '_id' | 'name' | 'scope'>>({}, { projection: { _id: 1, name: 1, scope: 1 } }).toArray();
 		// Skip any role where the ID and name are the same
 		const filteredRoles = roles.filter(({ _id, name }) => _id !== name);
 
-		const roleNames = filteredRoles.map(({ name }) => name);
-		const roleMap = filteredRoles.reduce(
-			(prev: Record<IRole['name'], IRole['_id']>, { _id, name }) => ({
-				...prev,
-				[name]: _id,
+		// First, add the role id to all documents that have the name
+		await Promise.allSettled(
+			filteredRoles.map(({ _id, name, scope }) => {
+				const query = {
+					roles: name,
+				};
+
+				const update = {
+					$push: {
+						roles: _id,
+					},
+				};
+
+				const options = {
+					multi: true,
+				};
+
+				if (scope === 'Subscriptions') {
+					return Subscriptions.update(query, update, options);
+				}
+
+				return Users.update(query, update, options);
 			}),
-			{},
 		);
 
-		// Find all users that have a role name in their roles attribute
-		const users = await Users.find<Pick<IUser, '_id' | 'roles'>>(
-			{ roles: { $in: roleNames } },
-			{ projection: { _id: 1, roles: 1 } },
-		).toArray();
-
-		// Replace any known role names with the id
+		// Remove the role name from all documents
 		await Promise.allSettled(
-			users.map(({ _id, roles }) => {
-				const newRoles = roles.map((name) => roleMap[name] || name);
-				return Users.update({ _id }, { $set: { roles: newRoles } });
-			}),
-		);
+			filteredRoles.map(({ name, scope }) => {
+				const query = {
+					roles: name,
+				};
 
-		// Find all subscriptions that have a role name in their roles attribute
-		const subscriptions = await Subscriptions.find<Required<Pick<ISubscription, '_id' | 'roles'>>>(
-			{ roles: { $in: roleNames } },
-			{ projection: { _id: 1, roles: 1 } },
-		).toArray();
+				const update = {
+					$pull: {
+						roles: name,
+					},
+				};
 
-		// Replace any known role names with the id
-		await Promise.allSettled(
-			subscriptions.map(({ _id, roles }) => {
-				const newRoles = roles.map((name) => roleMap[name] || name);
-				return Subscriptions.update({ _id }, { $set: { roles: newRoles } });
+				const options = {
+					multi: true,
+				};
+
+				if (scope === 'Subscriptions') {
+					return Subscriptions.update(query, update, options);
+				}
+
+				return Users.update(query, update, options);
 			}),
 		);
 	},
