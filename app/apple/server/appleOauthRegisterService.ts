@@ -1,19 +1,11 @@
 import { KJUR } from 'jsrsasign';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings, settingsRegistry } from '../../settings/server';
+import { config } from '../lib/config';
+import { AppleCustomOAuth } from './AppleCustomOAuth';
 
-const config = {
-	serverURL: 'https://appleid.apple.com',
-	tokenPath: '/auth/token',
-	scope: 'name email',
-	mergeUsers: true,
-	accessTokenParam: 'access_token',
-	loginStyle: 'popup',
-};
-
-new CustomOAuth('apple', config);
+export const AppleOAuth = new AppleCustomOAuth('apple', config);
 
 settingsRegistry.addGroup('OAuth', function () {
 	this.section('Apple', function () {
@@ -47,15 +39,22 @@ settings.watchMultiple(
 			alg: 'ES256',
 		};
 
-		const tokenPayload = {
-			iss,
-			iat: Math.floor(Date.now() / 1000),
-			exp: Math.floor(Date.now() / 1000) + 300,
-			aud: 'https://appleid.apple.com',
-			sub: clientId,
-		};
+		const now = new Date();
+		const exp = new Date();
+		exp.setMonth(exp.getMonth() + 5); // from Apple docs expiration time must no be greater than 6 months
 
-		const secret = KJUR.jws.JWS.sign(null, HEADER, tokenPayload, serverSecret as string);
+		const secret = KJUR.jws.JWS.sign(
+			null,
+			HEADER,
+			{
+				iss,
+				iat: Math.floor(now.getTime() / 1000),
+				exp: Math.floor(exp.getTime() / 1000),
+				aud: 'https://appleid.apple.com',
+				sub: clientId,
+			},
+			serverSecret as string,
+		);
 
 		ServiceConfiguration.configurations.upsert(
 			{
@@ -63,12 +62,14 @@ settings.watchMultiple(
 			},
 			{
 				$set: {
-					// We'll hide this button on Web Client
-					showButton: false,
+					showButton: true,
 					secret,
 					enabled: settings.get('Accounts_OAuth_Apple'),
 					loginStyle: 'popup',
 					clientId,
+					buttonLabelText: 'Sign in with Apple',
+					buttonColor: '#000',
+					buttonLabelColor: '#FFF',
 				},
 			},
 		);

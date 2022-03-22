@@ -12,7 +12,7 @@ type Presence = 'online' | 'offline' | 'busy' | 'away' | 'loading';
  * @returns UserPresence
  * @public
  */
-export const usePresence = (uid: string): UserPresence | undefined => {
+export const usePresence = (uid: string | undefined): UserPresence | undefined => {
 	const subscription = useMemo(
 		() => ({
 			getCurrentValue: (): UserPresence | undefined => (uid ? Presence.store.get(uid) : undefined),

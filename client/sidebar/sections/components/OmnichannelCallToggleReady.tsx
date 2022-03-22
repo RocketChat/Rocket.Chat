@@ -2,20 +2,39 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useEffect, useState } from 'react';
 
-import { useCallClient } from '../../../contexts/CallContext';
+import { useCallClient, useCallerInfo } from '../../../contexts/CallContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 export const OmnichannelCallToggleReady = (): ReactElement => {
 	const [agentEnabled, setAgentEnabled] = useState(false); // TODO: get from AgentInfo
 	const t = useTranslation();
 	const [registered, setRegistered] = useState(false);
+	const voipClient = useCallClient();
+	const [onCall, setOnCall] = useState(false);
+	const callerInfo = useCallerInfo();
+
+	const getTooltip = (): string => {
+		if (!registered) {
+			return t('Enable');
+		}
+		if (!onCall) {
+			// Color for this state still not defined
+			return t('Disable');
+		}
+
+		return t('Cannot_disable_while_on_call');
+	};
 
 	const voipCallIcon = {
-		title: !registered ? t('Enable') : t('Disable'),
+		title: getTooltip(),
 		color: registered ? 'success' : undefined,
 		icon: registered ? 'phone' : 'phone-disabled',
 	} as const;
-	const voipClient = useCallClient();
+
+	useEffect(() => {
+		// Any of the 2 states means the user is already talking
+		setOnCall(['IN_CALL', 'ON_HOLD'].includes(callerInfo.state));
+	}, [callerInfo]);
 
 	useEffect(() => {
 		let agentEnabled = false;
@@ -26,8 +45,12 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		setAgentEnabled(agentEnabled);
 		setRegistered(agentEnabled);
 	}, [voipClient]);
+
 	// TODO: move registration flow to context provider
 	const handleVoipCallStatusChange = useMutableCallback((): void => {
+		if (onCall) {
+			return;
+		}
 		// TODO: backend set voip call status
 		// voipClient.setVoipCallStatus(!registered);
 		if (agentEnabled) {
@@ -74,5 +97,5 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		};
 	}, [onRegistered, onRegistrationError, onUnregistered, onUnregistrationError, voipClient]);
 
-	return <Sidebar.TopBar.Action {...voipCallIcon} onClick={handleVoipCallStatusChange} />;
+	return <Sidebar.TopBar.Action {...voipCallIcon} onClick={handleVoipCallStatusChange} disabled={onCall} />;
 };

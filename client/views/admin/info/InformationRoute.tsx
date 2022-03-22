@@ -41,7 +41,7 @@ const InformationRoute = (): ReactElement => {
 				setStatistics(statistics);
 				setInstances(instances);
 			} catch (error) {
-				setError(error);
+				setError(!!error);
 			} finally {
 				setLoading(false);
 			}
