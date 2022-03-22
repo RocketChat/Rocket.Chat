@@ -1,21 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Mailer } from '../lib/Mailer';
-import { hasRole } from '../../../authorization/server';
+import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {
 		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'Mailer.sendMail',
-			});
-		}
-		if (hasRole(userId, 'admin') !== true) {
+
+		if (!userId || !hasPermission(userId, 'send-mail')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'Mailer.sendMail',
 			});
 		}
+
 		return Mailer.sendMail(from, subject, body, dryrun, query);
 	},
 });
