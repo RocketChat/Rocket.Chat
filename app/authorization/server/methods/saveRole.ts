@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 
-import type { IRole } from '../../../../definition/IRole';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { Roles } from '../../../models/server/raw';
@@ -40,14 +39,10 @@ Meteor.methods({
 			broadcastUpdate: settings.get<boolean>('UI_DisplayRoles'),
 		};
 
-		let newRole: IRole | undefined = undefined;
-
 		if (existingRole) {
-			newRole = await updateRoleAsync(existingRole._id, role, options);
-		} else {
-			newRole = await insertRoleAsync(role);
+			return updateRoleAsync(existingRole._id, role, options);
 		}
 
-		return newRole;
+		return insertRoleAsync(role);
 	},
 });
