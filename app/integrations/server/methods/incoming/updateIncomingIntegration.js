@@ -121,7 +121,7 @@ Meteor.methods({
 			});
 		}
 
-		await Roles.addUserRoles(user._id, 'bot');
+		await Roles.addUserRoles(user._id, ['bot']);
 
 		await Integrations.updateOne(
 			{ _id: integrationId },

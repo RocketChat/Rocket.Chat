@@ -11,6 +11,10 @@ export class UsersRaw extends BaseRaw {
 		};
 	}
 
+	/**
+	 * @param {string} uid
+	 * @param {IRole['_id'][]} roles list of role ids
+	 */
 	addRolesByUserId(uid, roles) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
@@ -29,6 +33,11 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
+	/**
+	 * @param {IRole['_id'][]} roles list of role ids
+	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
+	 * @param {any} options
+	 */
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -54,6 +63,11 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	/**
+	 * @param {IRole['_id'][] | IRole['_id']} roles the list of role ids
+	 * @param {any} query
+	 * @param {any} options
+	 */
 	findUsersInRolesWithQuery(roles, query, options) {
 		roles = [].concat(roles);
 
@@ -190,10 +204,10 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	isUserInRole(userId, roleName) {
+	isUserInRole(userId, roleId) {
 		const query = {
 			_id: userId,
-			roles: roleName,
+			roles: roleId,
 		};
 
 		return this.findOne(query, { projection: { roles: 1 } });
@@ -866,6 +880,10 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	/**
+	 * @param {string} uid
+	 * @param {IRole['_id']} roles the list of role ids to remove
+	 */
 	removeRolesByUserId(uid, roles) {
 		const query = {
 			_id: uid,

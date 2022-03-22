@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { hasPermission } from '../../../authorization';
-import { Notifications } from '../../../notifications';
+import { hasPermission } from '../../../authorization/server';
+import { api } from '../../../../server/sdk/api';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/lib/getURL';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -99,7 +99,8 @@ export const findOrCreateInvite = async (userId, invite) => {
 	};
 
 	await Invites.insertOne(createInvite);
-	Notifications.notifyUser(userId, 'updateInvites', { invite: createInvite });
+
+	api.broadcast('notify.updateInvites', userId, { invite: createInvite });
 
 	createInvite.url = getInviteUrl(createInvite);
 	return createInvite;
