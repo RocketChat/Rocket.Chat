@@ -1,13 +1,13 @@
 import supertest from 'supertest';
 
-import loginPage from '../../pageobjects/login.page';
-import flexTab from '../../pageobjects/flex-tab.page';
-import mainContent from '../../pageobjects/main-content.page';
-import sideNav from '../../pageobjects/side-nav.page';
-import admin from '../../pageobjects/administration.page';
-import { checkIfUserIsValid } from '../../../data/checks';
-import { adminUsername, adminEmail, adminPassword, username, email, password, reason } from '../../../data/user.js';
-import { wait } from '../../../data/api-data';
+import loginPage from '../pageobjects/login.page';
+import flexTab from '../pageobjects/flex-tab.page';
+import mainContent from '../pageobjects/main-content.page';
+import sideNav from '../pageobjects/side-nav.page';
+import admin from '../pageobjects/administration.page';
+import { checkIfUserIsValid } from '../../data/checks';
+import { adminUsername, adminEmail, adminPassword, username, email, password, reason } from '../../data/user.js';
+import { wait } from '../../data/api-data';
 
 const apiUrl = (typeof Cypress !== 'undefined' && Cypress.env('TEST_API_URL')) || process.env.TEST_API_URL || 'http://localhost:3000';
 
