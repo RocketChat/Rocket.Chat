@@ -5,6 +5,11 @@ import type { Serialized } from '../../../definition/Serialized';
 import type { Method, PathFor, OperationParams, MatchPathPattern, OperationResult, PathPattern } from '../../../definition/rest';
 import { ServerMethodFunction, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethods } from './methods';
 
+export type UploadResult = {
+	success: boolean;
+	status: string;
+	[key: string]: unknown;
+};
 type ServerContextValue = {
 	info?: IServerInfo;
 	absoluteUrl: (path: string) => string;
@@ -17,7 +22,15 @@ type ServerContextValue = {
 		path: TPath,
 		params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
 	) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>;
-	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
+	uploadToEndpoint: (
+		endpoint: string,
+		params: any,
+		formData: any,
+	) =>
+		| Promise<UploadResult>
+		| {
+				promise: Promise<UploadResult>;
+		  };
 	getStream: (streamName: string, options?: {}) => <T>(eventName: string, callback: (data: T) => void) => () => void;
 };
 
@@ -27,7 +40,9 @@ export const ServerContext = createContext<ServerContextValue>({
 	callEndpoint: () => {
 		throw new Error('not implemented');
 	},
-	uploadToEndpoint: async () => undefined,
+	uploadToEndpoint: async () => {
+		throw new Error('not implemented');
+	},
 	getStream: () => () => (): void => undefined,
 });
 
@@ -66,10 +81,15 @@ export const useEndpoint = <TMethod extends Method, TPath extends PathFor<TMetho
 ): EndpointFunction<TMethod, MatchPathPattern<TPath>> => {
 	const { callEndpoint } = useContext(ServerContext);
 
-	return useCallback((params) => callEndpoint(method, path, params), [callEndpoint, path, method]);
+	return useCallback(
+		(params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>) => callEndpoint(method, path, params),
+		[callEndpoint, path, method],
+	);
 };
 
-export const useUpload = (endpoint: string): ((params: any, formData: any) => Promise<void>) => {
+export const useUpload = (
+	endpoint: string,
+): ((params: any, formData: any) => Promise<UploadResult> | { promise: Promise<UploadResult> }) => {
 	const { uploadToEndpoint } = useContext(ServerContext);
 	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [endpoint, uploadToEndpoint]);
 };

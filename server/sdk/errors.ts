@@ -13,7 +13,7 @@ export class MeteorError extends Error {
 			errorType: this.errorType,
 			error: this.error,
 			reason: this.reason,
-			message: `${this.reason} [${this.error}]`,
+			message: `${this.reason ? `${this.reason} ` : ''}[${this.error}]`,
 			...(this.details && { details: this.details }),
 		};
 	}

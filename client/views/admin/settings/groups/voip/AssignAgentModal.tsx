@@ -2,8 +2,9 @@ import { Button, ButtonGroup, Modal, Select, Field, FieldGroup } from '@rocket.c
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useState, useMemo } from 'react';
 
-import AutoCompleteAgent from '../../../../../components/AutoCompleteAgent';
+import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -11,21 +12,23 @@ import { useEndpointData } from '../../../../../hooks/useEndpointData';
 type AssignAgentModalParams = {
 	closeModal: () => void;
 	reload: () => void;
+	existingExtension?: string;
 };
 
-const AssignAgentModal: FC<AssignAgentModalParams> = ({ closeModal, reload }) => {
+const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, closeModal, reload }) => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const [agent, setAgent] = useState('');
-	const [extension, setExtension] = useState('');
+	const [extension, setExtension] = useState(existingExtension || '');
 	const query = useMemo(() => ({ type: 'available' as const, userId: agent }), [agent]);
 
 	const assignAgent = useEndpoint('POST', 'omnichannel/agent/extension');
 
 	const handleAssignment = useMutableCallback(async () => {
 		try {
-			await assignAgent({ userId: agent, extension });
+			await assignAgent({ username: agent, extension });
 		} catch (error) {
-			console.log(error);
+			dispatchToastMessage({ type: 'error', message: error.message });
 		}
 		reload();
 		closeModal();
@@ -44,7 +47,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ closeModal, reload }) =>
 					<Field>
 						<Field.Label>{t('Agent_Without_Extensions')}</Field.Label>
 						<Field.Row>
-							<AutoCompleteAgent empty onChange={setAgent} />
+							<AutoCompleteAgentWithoutExtension empty onChange={setAgent} currentExtension={extension} />
 						</Field.Row>
 					</Field>
 					<Field>

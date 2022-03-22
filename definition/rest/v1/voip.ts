@@ -2,7 +2,7 @@ import { IQueueSummary } from '../../ACDQueues';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { IVoipRoom } from '../../IRoom';
 import { IUser } from '../../IUser';
-import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
+import { IQueueMembershipDetails, IQueueMembershipSubscription, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IManagementServerConnectionStatus } from '../../IVoipServerConnectivityStatus';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
 import { VoipClientEvents } from '../../voip/VoipClientEvents';
@@ -11,13 +11,16 @@ import { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {
-		GET: (params: { id: string }) => IRegistrationInfo;
+		GET: (params: { id: string }) => IRegistrationInfo | { result: string };
 	};
 	'voip/queues.getSummary': {
 		GET: () => { summary: IQueueSummary[] };
 	};
 	'voip/queues.getQueuedCallsForThisExtension': {
 		GET: (params: { extension: string }) => IQueueMembershipDetails;
+	};
+	'voip/queues.getMembershipSubscription': {
+		GET: (params: { extension: string }) => IQueueMembershipSubscription;
 	};
 	'omnichannel/extensions': {
 		GET: (params: PaginatedRequest) => PaginatedResult & { extensions: IVoipExtensionWithAgentInfo[] };
@@ -33,6 +36,9 @@ export type VoipEndpoints = {
 		GET: (params: { username: string }) => { extension: Pick<IUser, '_id' | 'username' | 'extension'> };
 		POST: (params: { userId: string; extension: string } | { username: string; extension: string }) => void;
 		DELETE: (params: { username: string }) => void;
+	};
+	'omnichannel/agents/available': {
+		GET: (params: PaginatedRequest<{ text?: string; includeExtension?: string }>) => PaginatedResult<{ agents: ILivechatAgent[] }>;
 	};
 	'voip/events': {
 		POST: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;

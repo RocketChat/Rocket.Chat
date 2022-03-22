@@ -22,7 +22,7 @@ const GitHubEnterprise = new CustomOAuth('github_enterprise', config);
 
 if (Meteor.isServer) {
 	Meteor.startup(function () {
-		settings.get('API_GitHub_Enterprise_URL', function (key, value) {
+		settings.watch('API_GitHub_Enterprise_URL', function (value) {
 			config.serverURL = value;
 			GitHubEnterprise.configure(config);
 		});

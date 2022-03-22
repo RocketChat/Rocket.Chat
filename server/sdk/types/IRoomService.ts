@@ -1,6 +1,6 @@
 import { IRoom } from '../../../definition/IRoom';
 
-interface ISubscriptionExtraData {
+export interface ISubscriptionExtraData {
 	open: boolean;
 	ls: Date;
 	prid: string;

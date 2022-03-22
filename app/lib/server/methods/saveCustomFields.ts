@@ -5,7 +5,11 @@ import { saveCustomFields } from '../functions/saveCustomFields';
 
 Meteor.methods({
 	saveCustomFields(fields = {}) {
-		saveCustomFields(Meteor.userId(), fields);
+		const uid = Meteor.userId();
+		if (!uid) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveCustomFields' });
+		}
+		saveCustomFields(uid, fields);
 	},
 });
 

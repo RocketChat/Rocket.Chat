@@ -271,8 +271,8 @@ export class ListenersModule {
 		service.onEvent('banner.enabled', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
-		service.onEvent('queue.agentcalled', (userId, queuename): void => {
-			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename });
+		service.onEvent('queue.agentcalled', (userId, queuename, callerId): void => {
+			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename, callerId });
 		});
 		service.onEvent('queue.agentconnected', (userId, queuename: string, queuedcalls: string, waittimeinqueue: string): void => {
 			notifications.notifyUserInThisInstance(userId, 'agentconnected', { queuename, queuedcalls, waittimeinqueue });
@@ -288,6 +288,42 @@ export class ListenersModule {
 		});
 		service.onEvent('queue.callabandoned', (userId, queuename: string, queuedcallafterabandon: string): void => {
 			notifications.notifyUserInThisInstance(userId, 'callabandoned', { queuename, queuedcallafterabandon });
+		});
+
+		service.onEvent('notify.desktop', (uid, notification): void => {
+			notifications.notifyUserInThisInstance(uid, 'notification', notification);
+		});
+
+		service.onEvent('notify.uiInteraction', (uid, interaction): void => {
+			notifications.notifyUserInThisInstance(uid, 'uiInteraction', interaction);
+		});
+
+		service.onEvent('notify.updateInvites', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'updateInvites', data);
+		});
+
+		service.onEvent('notify.webdav', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'webdav', data);
+		});
+
+		service.onEvent('notify.e2e.keyRequest', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'e2e.keyRequest', data);
+		});
+
+		service.onEvent('notify.deleteMessage', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'deleteMessage', data);
+		});
+
+		service.onEvent('notify.deleteMessageBulk', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'deleteMessageBulk', data);
+		});
+
+		service.onEvent('notify.deleteCustomSound', (data): void => {
+			notifications.notifyAllInThisInstance('deleteCustomSound', data);
+		});
+
+		service.onEvent('notify.updateCustomSound', (data): void => {
+			notifications.notifyAllInThisInstance('updateCustomSound', data);
 		});
 	}
 }

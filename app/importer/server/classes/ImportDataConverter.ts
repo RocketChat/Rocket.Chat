@@ -259,11 +259,11 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			saveUserIdentity({ _id, name: userData.name, username: userData.username });
+			saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		if (userData.importIds.length) {
-			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
+			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username || userData.username);
 		}
 	}
 
@@ -308,7 +308,7 @@ export class ImportDataConverter {
 	}
 
 	public convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const users = Promise.await(this.getUsersToImport());
+		const users = Promise.await(this.getUsersToImport()) as IImportUserRecord[];
 		users.forEach(({ data, _id }) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
@@ -316,7 +316,7 @@ export class ImportDataConverter {
 					return;
 				}
 
-				data.emails = data.emails.filter((item) => item);
+				const emails = data.emails.filter(Boolean).map((email) => ({ address: email }));
 				data.importIds = data.importIds.filter((item) => item);
 
 				if (!data.emails.length && !data.username) {
@@ -332,7 +332,7 @@ export class ImportDataConverter {
 				if (!data.username) {
 					data.username = generateUsernameSuggestion({
 						name: data.name,
-						emails: data.emails,
+						emails,
 					});
 				}
 
@@ -349,10 +349,11 @@ export class ImportDataConverter {
 				}
 
 				// Deleted users are 'inactive' users in Rocket.Chat
+				// TODO: Check data._id if exists/required or not
 				if (data.deleted && existingUser?.active) {
-					setUserActiveStatus(data._id, false, true);
+					data._id && setUserActiveStatus(data._id, false, true);
 				} else if (data.deleted === false && existingUser?.active === false) {
-					setUserActiveStatus(data._id, true);
+					data._id && setUserActiveStatus(data._id, true);
 				}
 
 				if (afterImportFn) {
@@ -463,9 +464,12 @@ export class ImportDataConverter {
 			const data = this.findImportedUser(importId);
 
 			if (!data) {
-				throw new Error('importer-message-mentioned-user-not-found');
+				this._logger.warn(`Mentioned user not found: ${importId}`);
+				continue;
 			}
+
 			if (!data.username) {
+				this._logger.debug(importId);
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 
@@ -480,6 +484,31 @@ export class ImportDataConverter {
 		return result;
 	}
 
+	getMentionedChannelData(importId: string): IMentionedChannel | undefined {
+		// loading the name will also store the id on the cache if it's missing, so this won't run two queries
+		const name = this.findImportedRoomName(importId);
+		const _id = this.findImportedRoomId(importId);
+
+		if (name && _id) {
+			return {
+				name,
+				_id,
+			};
+		}
+
+		// If the importId was not found, check if we have a room with that name
+		const room = Rooms.findOneByNonValidatedName(importId, { fields: { name: 1 } });
+		if (room) {
+			this.addRoomToCache(importId, room._id);
+			this.addRoomNameToCache(importId, room.name);
+
+			return {
+				name: room.name,
+				_id: room._id,
+			};
+		}
+	}
+
 	convertMessageChannels(message: IImportMessage): Array<IMentionedChannel> | undefined {
 		const { channels } = message;
 		if (!channels) {
@@ -488,9 +517,7 @@ export class ImportDataConverter {
 
 		const result: Array<IMentionedChannel> = [];
 		for (const importId of channels) {
-			// loading the name will also store the id on the cache if it's missing, so this won't run two queries
-			const name = this.findImportedRoomName(importId);
-			const _id = this.findImportedRoomId(importId);
+			const { name, _id } = this.getMentionedChannelData(importId) || {};
 
 			if (!_id || !name) {
 				this._logger.warn(`Mentioned room not found: ${importId}`);
