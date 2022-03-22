@@ -1,6 +1,6 @@
 import type { CpuInfo } from 'os';
 
-import { ISession } from './ISession';
+import { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import { ISettingStatisticsObject, SettingValue } from './ISetting';
 import type { ITeamStats } from './ITeam';
 
@@ -102,15 +102,15 @@ export interface IStats {
 	};
 	readReceiptsEnabled: boolean;
 	readReceiptsDetailed: boolean;
-	uniqueUsersOfYesterday: { year: number; month: number; day: number; data: ISession[] };
-	uniqueUsersOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
-	uniqueUsersOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
-	uniqueDevicesOfYesterday: { year: number; month: number; day: number; data: ISession[] };
-	uniqueDevicesOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
-	uniqueDevicesOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
-	uniqueOSOfYesterday: { year: number; month: number; day: number; data: ISession[] };
-	uniqueOSOfLastWeek: { year: number; month: number; day: number; data: ISession[] };
-	uniqueOSOfLastMonth: { year: number; month: number; day: number; data: ISession[] };
+	uniqueUsersOfLastWeek: UserSessionAggregationResult;
+	uniqueUsersOfLastMonth: UserSessionAggregationResult;
+	uniqueUsersOfYesterday: UserSessionAggregationResult;
+	uniqueDevicesOfYesterday: DeviceSessionAggregationResult;
+	uniqueDevicesOfLastWeek: DeviceSessionAggregationResult;
+	uniqueDevicesOfLastMonth: DeviceSessionAggregationResult;
+	uniqueOSOfYesterday: OSSessionAggregationResult;
+	uniqueOSOfLastWeek: OSSessionAggregationResult;
+	uniqueOSOfLastMonth: OSSessionAggregationResult;
 	apps: {
 		engineVersion: number;
 		enabled: SettingValue;
@@ -137,5 +137,5 @@ export interface IStats {
 		priorities: number;
 		businessUnits: number;
 	};
-	createdAt: Date;
+	createdAt: Date | string;
 }
