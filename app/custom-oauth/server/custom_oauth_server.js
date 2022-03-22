@@ -191,7 +191,7 @@ export class CustomOAuth {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
 			const response = self.getAccessToken(query);
-			const identity = self.getIdentity(response.access_token);
+			const identity = self.getIdentity(response.access_token, query);
 
 			const serviceData = {
 				_OAuthCustom: true,

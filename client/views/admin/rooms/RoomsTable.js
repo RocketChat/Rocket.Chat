@@ -1,19 +1,16 @@
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState } from 'react';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useCallback } from 'react';
 
-import { roomTypes } from '../../../../app/utils/client';
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FilterByTypeAndText from './FilterByTypeAndText';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
-
-export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
 
 export const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -30,19 +27,7 @@ const getRoomType = (room) => {
 	return roomTypeI18nMap[room.t];
 };
 
-const useQuery = ({ text, types, itemsPerPage, current }, [column, direction]) =>
-	useMemo(
-		() => ({
-			filter: text || '',
-			types,
-			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[text, types, itemsPerPage, current, column, direction],
-	);
-
-const getRoomDisplayName = (room) => (room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, room));
+const getRoomDisplayName = (room) => (room.t === 'd' ? room.usernames.join(' x ') : roomCoordinator.getRoomName(room.t, room));
 
 const useDisplayData = (asyncState, sort) =>
 	useMemo(() => {
@@ -66,29 +51,14 @@ const useDisplayData = (asyncState, sort) =>
 		return value.rooms;
 	}, [asyncState, sort]);
 
-function RoomsTable() {
+function RoomsTable({ endpointData, params, onChangeParams, sort, onChangeSort }) {
 	const t = useTranslation();
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const [params, setParams] = useState({
-		text: '',
-		types: DEFAULT_TYPES,
-		current: 0,
-		itemsPerPage: 25,
-	});
-	const [sort, setSort] = useState(['name', 'asc']);
-
 	const routeName = 'admin-rooms';
 
-	const debouncedParams = useDebouncedValue(params, 500);
-	const debouncedSort = useDebouncedValue(sort, 500);
-
-	const query = useQuery(debouncedParams, debouncedSort);
-
-	const asyncState = useEndpointData('rooms.adminRooms', query);
-
-	const { value: data = {} } = asyncState;
+	const { value: data = {} } = endpointData;
 
 	const router = useRoute(routeName);
 
@@ -106,15 +76,15 @@ function RoomsTable() {
 			const [sortBy, sortDirection] = sort;
 
 			if (sortBy === id) {
-				setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
+				onChangeSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
 				return;
 			}
-			setSort([id, 'asc']);
+			onChangeSort([id, 'asc']);
 		},
-		[sort],
+		[sort, onChangeSort],
 	);
 
-	const displayData = useDisplayData(asyncState, sort);
+	const displayData = useDisplayData(endpointData, sort);
 
 	const header = useMemo(
 		() =>
@@ -178,7 +148,7 @@ function RoomsTable() {
 	const renderRow = useCallback(
 		(room) => {
 			const { _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, ...args } = room;
-			const icon = roomTypes.getIcon(room);
+			const icon = roomCoordinator.getIcon(room);
 			const roomName = getRoomDisplayName(room);
 
 			return (
@@ -218,7 +188,7 @@ function RoomsTable() {
 			renderRow={renderRow}
 			results={displayData}
 			total={data.total}
-			setParams={setParams}
+			setParams={onChangeParams}
 			params={params}
 			renderFilter={({ onChange, ...props }) => <FilterByTypeAndText setFilter={onChange} {...props} />}
 		/>

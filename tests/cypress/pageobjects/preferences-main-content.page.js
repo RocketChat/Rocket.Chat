@@ -6,19 +6,19 @@ class PreferencesMainContent extends Page {
 	}
 
 	get realNameTextInput() {
-		return browser.element('input[name="realname"]');
+		return browser.element('label:contains("Name")').closest('.rcx-field').find('input');
 	}
 
 	get userNameTextInput() {
-		return browser.element('input[name="username"]');
+		return browser.element('label:contains("Username")').closest('.rcx-field').find('input');
 	}
 
 	get emailTextInput() {
-		return browser.element('[name="email"]');
+		return browser.element('label:contains("Email")').closest('.rcx-field').find('input');
 	}
 
 	get passwordTextInput() {
-		return browser.element('[name="password"]');
+		return browser.element('label:contains("Password")').closest('.rcx-field').find('input');
 	}
 
 	get resendVerificationEmailBtn() {
@@ -34,7 +34,7 @@ class PreferencesMainContent extends Page {
 	}
 
 	get submitBtn() {
-		return browser.element('.rc-button[type="submit"]');
+		return browser.element('button:contains("Save changes")');
 	}
 
 	realNameTextInputEnabled() {
@@ -58,7 +58,7 @@ class PreferencesMainContent extends Page {
 	}
 
 	saveChanges() {
-		cy.get('.rc-button[type="submit"]').should('be.enabled');
+		this.submitBtn.should('be.enabled');
 		this.submitBtn.click();
 	}
 
@@ -68,4 +68,4 @@ class PreferencesMainContent extends Page {
 	}
 }
 
-module.exports = new PreferencesMainContent();
+export default new PreferencesMainContent();

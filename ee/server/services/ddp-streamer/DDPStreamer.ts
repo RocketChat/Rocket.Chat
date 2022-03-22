@@ -1,25 +1,21 @@
-import http, { RequestOptions, IncomingMessage, ServerResponse } from 'http';
+import http, { IncomingMessage, RequestOptions, ServerResponse } from 'http';
 import url from 'url';
 
 import WebSocket from 'ws';
-// import PromService from 'moleculer-prometheus';
 
-import { Client } from './Client';
-// import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
-import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
-import { events, server } from './configureServer';
-import notifications from './streams/index';
-import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { ListenersModule } from '../../../../server/modules/listeners/listeners.module';
+import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import { MeteorService } from '../../../../server/sdk';
+import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
+import { Client } from './Client';
+import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
+import { Autoupdate } from './lib/Autoupdate';
+import notifications from './streams';
 
-const {
-	PORT: port = 4000,
-	// 	PROMETHEUS_PORT = 9100,
-} = process.env;
+const { PORT: port = 4000 } = process.env;
 
 const proxy = function (req: IncomingMessage, res: ServerResponse): void {
-	// console.log(`request ${ req.url }`);
 	req.pause();
 	const options: RequestOptions = url.parse(req.url || '');
 	options.headers = req.headers;
@@ -61,27 +57,6 @@ const wss = new WebSocket.Server({ server: httpServer });
 
 wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
 
-// export default {
-// 	name: 'streamer',
-// 	events: {
-// 		...events,
-// 		stream({ stream, eventName, args }) {
-// 			return (
-// 				Streamer[STREAM_NAMES[stream]]
-//         && Streamer[stream].emit(eventName, ...args)
-// 			);
-// 		},
-// 		stream_internal: {
-// 			handler({ stream, eventName, args }) {
-// 				return (
-// 					Streamer[STREAM_NAMES[stream]]
-//           && Streamer[stream].internal.emit(eventName, ...args)
-// 				);
-// 			},
-// 		},
-// 	},
-// };
-
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
 
@@ -90,8 +65,9 @@ export class DDPStreamer extends ServiceClass {
 
 		new ListenersModule(this, notifications);
 
-		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
+		// TODO this is triggered by local events too, need to find a way to ignore if it's local
 		this.onEvent('stream', ([streamer, eventName, args]): void => {
+			// TODO rename StreamerCentral to StreamerStore or something to use it only as a store
 			const stream = StreamerCentral.instances[streamer];
 			return stream?.emitWithoutBroadcast(eventName, ...args);
 		});
@@ -107,8 +83,17 @@ export class DDPStreamer extends ServiceClass {
 			events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
 		});
 
-		this.onEvent('meteor.autoUpdateClientVersionChanged', ({ record }): void => {
-			events.emit('meteor.autoUpdateClientVersionChanged', record);
+		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
+			Autoupdate.updateVersion(versions);
+		});
+	}
+
+	async started(): Promise<void> {
+		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
+		const versions = await MeteorService.getAutoUpdateClientVersions();
+
+		Object.keys(versions).forEach((key) => {
+			Autoupdate.updateVersion(versions[key]);
 		});
 	}
 
@@ -157,5 +142,3 @@ export class DDPStreamer extends ServiceClass {
 		});
 	}
 }
-
-// broker.start();

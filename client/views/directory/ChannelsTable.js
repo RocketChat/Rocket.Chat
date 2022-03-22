@@ -2,7 +2,6 @@ import { Box, Table, Avatar, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import { roomTypes } from '../../../app/utils/client';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import MarkdownText from '../../components/MarkdownText';
@@ -10,6 +9,7 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomTags from './RoomTags';
 import { useQuery } from './hooks';
 
@@ -109,7 +109,7 @@ function ChannelsTable() {
 	const renderRow = useCallback(
 		(room) => {
 			const { _id, ts, t, name, fname, usersCount, lastMessage, topic, belongsTo } = room;
-			const avatarUrl = roomTypes.getConfig(t).getAvatarPath(room);
+			const avatarUrl = roomCoordinator.getRoomDirectives(t)?.getAvatarPath(room);
 
 			return (
 				<Table.Row key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
@@ -120,7 +120,7 @@ function ChannelsTable() {
 							</Box>
 							<Box grow={1} mi='x8' style={style}>
 								<Box display='flex' alignItems='center'>
-									<Icon name={roomTypes.getIcon(room)} color='hint' />{' '}
+									<Icon name={roomCoordinator.getIcon(room)} color='hint' />{' '}
 									<Box fontScale='p2m' mi='x4'>
 										{fname || name}
 									</Box>

@@ -525,18 +525,23 @@ API.v1.addRoute(
 			}
 
 			if (type === 'file') {
-				const { dateFrom, dateTo, format } = this.bodyParams;
+				let { dateFrom, dateTo } = this.bodyParams;
+				const { format } = this.bodyParams;
 
 				if (!['html', 'json'].includes(format)) {
 					throw new Meteor.Error('error-invalid-format');
 				}
 
+				dateFrom = new Date(dateFrom);
+				dateTo = new Date(dateTo);
+				dateTo.setDate(dateTo.getDate() + 1);
+
 				sendFile(
 					{
 						rid,
 						format,
-						...(dateFrom && { dateFrom: new Date(dateFrom) }),
-						...(dateTo && { dateTo: new Date(dateTo) }),
+						dateFrom,
+						dateTo,
 					},
 					user,
 				);

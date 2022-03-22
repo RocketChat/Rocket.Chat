@@ -49,6 +49,7 @@ export class CustomOAuth {
 		this.serverURL = options.serverURL;
 		this.authorizePath = options.authorizePath;
 		this.scope = options.scope;
+		this.responseType = options.responseType || 'code';
 
 		if (!isURL(this.authorizePath)) {
 			this.authorizePath = this.serverURL + this.authorizePath;
@@ -93,7 +94,7 @@ export class CustomOAuth {
 		const loginUrl =
 			`${this.authorizePath}${separator}client_id=${config.clientId}&redirect_uri=${encodeURIComponent(
 				OAuth._redirectUri(this.name, config),
-			)}&response_type=code` +
+			)}&response_type=${encodeURIComponent(this.responseType)}` +
 			`&state=${encodeURIComponent(OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl))}&scope=${encodeURIComponent(
 				this.scope,
 			)}`;
