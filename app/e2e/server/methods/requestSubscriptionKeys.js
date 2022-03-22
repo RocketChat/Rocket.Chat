@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions, Rooms } from '../../../models';
-import { Notifications } from '../../../notifications';
+import { Subscriptions, Rooms } from '../../../models/server';
+import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	'e2e.requestSubscriptionKeys'() {
@@ -27,7 +27,7 @@ Meteor.methods({
 
 		const rooms = Rooms.find(query);
 		rooms.forEach((room) => {
-			Notifications.notifyRoom('e2e.keyRequest', room._id, room.e2eKeyId);
+			api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
 		});
 
 		return true;

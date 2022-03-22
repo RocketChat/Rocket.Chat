@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings/server';
 import { WebdavAccounts } from '../../../models/server/raw';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
-import { Notifications } from '../../../notifications/server';
+import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	async addWebdavAccount(formData) {
@@ -57,7 +57,8 @@ Meteor.methods({
 
 			await client.stat('/');
 			await WebdavAccounts.insertOne(accountData);
-			Notifications.notifyUser(userId, 'webdav', {
+
+			api.broadcast('notify.webdav', userId, {
 				type: 'changed',
 				account: accountData,
 			});
@@ -115,7 +116,7 @@ Meteor.methods({
 					upsert: true,
 				},
 			);
-			Notifications.notifyUser(userId, 'webdav', {
+			api.broadcast('notify.webdav', userId, {
 				type: 'changed',
 				account: accountData,
 			});

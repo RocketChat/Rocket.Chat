@@ -1,7 +1,8 @@
-import { metrics } from '../../../../metrics';
-import { settings } from '../../../../settings';
-import { Notifications } from '../../../../notifications';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
+import { api } from '../../../../../server/sdk/api';
+import { metrics } from '../../../../metrics/server';
+import { settings } from '../../../../settings/server';
+
 /**
  * Send notification to user
  *
@@ -15,8 +16,7 @@ import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator
 export function notifyDesktopUser({ userId, user, message, room, duration, notificationMessage }) {
 	const { title, text } = roomCoordinator.getRoomDirectives(room.t)?.getNotificationDetails(room, user, notificationMessage, userId);
 
-	metrics.notificationsSent.inc({ notification_type: 'desktop' });
-	Notifications.notifyUser(userId, 'notification', {
+	const payload = {
 		title,
 		text,
 		duration,
@@ -32,7 +32,11 @@ export function notifyDesktopUser({ userId, user, message, room, duration, notif
 				t: message.t,
 			},
 		},
-	});
+	};
+
+	metrics.notificationsSent.inc({ notification_type: 'desktop' });
+
+	api.broadcast('notify.desktop', userId, payload);
 }
 
 export function shouldNotifyDesktop({
