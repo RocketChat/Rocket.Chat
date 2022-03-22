@@ -30,7 +30,7 @@ export async function getPushData({
 	receiver,
 	shouldOmitMessage = true,
 }) {
-	const username = (settings.get('Push_show_username_room') && settings.get('UI_Use_Real_Name') && senderName) || senderUsername;
+	const username = settings.get('Push_show_username_room') ? (settings.get('UI_Use_Real_Name') && senderName) || senderUsername : '';
 
 	const lng = receiver.language || settings.get('Language') || 'en';
 
