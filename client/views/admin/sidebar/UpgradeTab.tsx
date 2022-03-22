@@ -2,11 +2,11 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement, useMemo } from 'react';
 
+import type { UpgradeTabVariants } from '../../../../lib/getUpgradeTabType';
 import Emoji from '../../../components/Emoji';
 import Sidebar from '../../../components/Sidebar';
 import { useRoutePath } from '../../../contexts/RouterContext';
 import { useTranslation, TranslationKey } from '../../../contexts/TranslationContext';
-import type { UpgradeTabVariants } from '../upgrade/getUpgradeTabType';
 
 const getUpgradeTabLabel = (type: UpgradeTabVariants): TranslationKey => {
 	switch (type) {
