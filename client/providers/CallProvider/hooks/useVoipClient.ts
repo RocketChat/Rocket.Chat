@@ -1,4 +1,3 @@
-import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
@@ -19,19 +18,21 @@ type UseVoipClientResult = {
 
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
+const defaultResult = {};
+
 export const useVoipClient = (): UseVoipClientResult => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
 	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
 	const user = useUser();
 	const userId = useUserId();
-	const [extension, setExtension] = useSafely(useState<string | null>(null));
+	const [extension, setExtension] = useState<string | null>(null);
 
 	const iceServers = useWebRtcServers();
-	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
+	const [result, setResult] = useState<UseVoipClientResult>(defaultResult);
 	useEffect(() => {
 		if (!userId || !extension || !voipEnabled) {
-			setResult({});
+			setResult(defaultResult);
 			return;
 		}
 		let client: VoIPUser;
@@ -78,7 +79,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 
 	useEffect(() => {
 		if (!user) {
-			setResult({});
+			setResult(defaultResult);
 			return;
 		}
 		if (user.extension) {

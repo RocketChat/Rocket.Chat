@@ -98,11 +98,7 @@ export class QueueAggregator {
 	}
 
 	getCurrentQueueName(): string {
-		if (this.currentlyServing.queueInfo) {
-			return this.currentlyServing.queueInfo.queueName;
-		}
-
-		return '';
+		return this?.currentlyServing?.queueInfo?.queueName || '';
 	}
 
 	callRinging(queueInfo: { queuename: string; callerid: { id: string; name: string } }): void {
