@@ -17,6 +17,8 @@ type UseVoipClientResult = {
 	error?: Error | unknown;
 };
 
+const empty = {};
+
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
 export const useVoipClient = (): UseVoipClientResult => {
@@ -31,7 +33,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
 	useEffect(() => {
 		if (!userId || !extension || !voipEnabled) {
-			setResult({});
+			setResult(empty);
 			return;
 		}
 		let client: VoIPUser;
@@ -78,7 +80,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 
 	useEffect(() => {
 		if (!user) {
-			setResult({});
+			setResult(empty);
 			return;
 		}
 		if (user.extension) {
