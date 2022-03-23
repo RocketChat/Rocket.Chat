@@ -27,6 +27,7 @@ import {
 	joinEncryptedData,
 	decryptAES,
 } from './OTRFunctions';
+import { APIClient } from '../../utils/client';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
@@ -82,6 +83,8 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	acknowledge(): void {
+		APIClient.v1.post('statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
+
 		this.peerId &&
 			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
 				roomId: this._roomId,
