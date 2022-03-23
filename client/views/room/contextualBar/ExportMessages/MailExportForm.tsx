@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, FC, MouseEventHandler } from 'react';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
@@ -13,19 +13,29 @@ import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useUserRoom } from '../../hooks/useUserRoom';
 
+type MailExportFormValues = {
+	dateFrom: string;
+	dateTo: string;
+	toUsers: string[];
+	additionalEmails: string;
+	subject: string;
+};
+
+type MailExportFormProps = { onCancel: MouseEventHandler<HTMLOrSVGElement>; rid: string };
+
 const clickable = css`
 	cursor: pointer;
 `;
 
-const MailExportForm = ({ onCancel, rid }) => {
+const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
 	const t = useTranslation();
 	const room = useUserRoom(rid);
-	const roomName = room && room.t && roomCoordinator.getRoomName(room.t, room);
+	const roomName = room?.t && roomCoordinator.getRoomName(room.t, room);
 
 	const [selectedMessages, setSelected] = useState([]);
-	const [errorMessage, setErrorMessage] = useState();
+	const [errorMessage, setErrorMessage] = useState<string>();
 
 	const messages = selectedMessageStore ? selectedMessageStore.getSelectedMessages() : selectedMessages;
 
@@ -39,7 +49,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { toUsers, additionalEmails, subject } = values;
+	const { toUsers, additionalEmails, subject } = values as MailExportFormValues;
 
 	const clearSelection = useMutableCallback(() => {
 		setSelected([]);
@@ -48,7 +58,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	useEffect(() => {
 		selectedMessageStore.setIsSelecting(true);
-		return () => {
+		return (): void => {
 			selectedMessageStore.reset();
 		};
 	}, [selectedMessageStore]);
@@ -56,6 +66,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
+		console.log(value, action);
 		if (!action) {
 			if (toUsers.includes(value)) {
 				return;
@@ -67,7 +78,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (): Promise<void> => {
 		if (toUsers.length === 0 && additionalEmails === '') {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
@@ -80,7 +91,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			setErrorMessage(t('Mail_Message_No_messages_selected_select_all'));
 			return;
 		}
-		setErrorMessage(null);
+		setErrorMessage(undefined);
 
 		try {
 			await roomsExport({
@@ -99,7 +110,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 		} catch (error) {
 			dispatchToastMessage({
 				type: 'error',
-				message: error,
+				message: error as string | Error,
 			});
 		}
 	};
@@ -107,11 +118,11 @@ const MailExportForm = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Callout onClick={clearSelection} title={t('Messages selected')} type={useCountSelected() > 0 ? 'success' : 'info'}>
+				<Callout onClick={clearSelection} title={t('Messages_selected')} type={useCountSelected() > 0 ? 'success' : 'info'}>
 					<p>{`${useCountSelected()} Messages selected`}</p>
 					{useCountSelected() > 0 && (
 						<Box is='p' className={clickable}>
-							{t('Click here to clear the selection')}
+							{t('Click_here_to_clear_the_selection')}
 						</Box>
 					)}
 					{useCountSelected() === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
@@ -145,7 +156,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 			<ButtonGroup stretch mb='x12'>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary onClick={() => handleSubmit()}>
+				<Button primary onClick={(): Promise<void> => handleSubmit()}>
 					{t('Send')}
 				</Button>
 			</ButtonGroup>
