@@ -1,49 +1,29 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { memo, FC } from 'react';
+import React, { memo, FC, useCallback } from 'react';
 import { useQuery } from 'react-query';
 import { useSubscription } from 'use-subscription';
 
-import { ILicense } from '../../../../ee/app/license/definitions/ILicense';
+import { UpgradeTabVariants } from '../../../../lib/getUpgradeTabType';
 import Sidebar from '../../../components/Sidebar';
-import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
-// import { AsyncStatePhase } from '../../../lib/asyncState';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { itemsSubscription } from '../sidebarItems';
-import { getUpgradeTabType } from '../upgrade/getUpgradeTabType';
 import UpgradeTab from './UpgradeTab';
 
 type AdminSidebarPagesProps = {
 	currentPath: string;
 };
 
-const getIsTrial = (licenses: ILicense[]): boolean => !licenses.map(({ meta }) => meta?.trial).includes(false);
+const useUpgradeTabType = (): [data: UpgradeTabVariants | false, isLoading: boolean] => {
+	const getUpgradeTabType = useEndpoint('GET', 'cloud.getUpgradeTabType');
 
-const getHasGoldLicense = (licenses: ILicense[]): boolean => !licenses.map(({ tag }) => tag?.name === 'gold').includes(true);
-
-const fetchUpgradeTabType = async (getLicenses, getRegisterStatus): ReturnType<typeof getUpgradeTabType> => {
-	try {
-		const [{ licenses }, status] = await Promise.all([getLicenses(), getRegisterStatus()]);
-		console.log(status, licenses);
-
-		return getUpgradeTabType({
-			registered: status.workspaceRegistered,
-			hasValidLicense: licenses.length,
-			hadExpiredTrials: false,
-			isTrial: getIsTrial(licenses),
-			hasGoldLicense: getHasGoldLicense(licenses),
-		});
-	} catch (error) {
-		throw error;
-	}
-};
-
-const useUpgradeTabType = () => {
-	const getLicenses = useEndpoint('GET', 'licenses.get');
-	const getRegisterStatus = useMethod('cloud:checkRegisterStatus');
-
-	const { data, isLoading } = useQuery('registerStatus', async () => fetchUpgradeTabType(getLicenses, getRegisterStatus));
+	const { data, isLoading } = useQuery(
+		'upgradeTabType',
+		useCallback(async () => getUpgradeTabType(), [getUpgradeTabType]),
+	);
 
 	console.log(data);
-	return [data, isLoading];
+
+	return [data?.tabType || false, isLoading];
 };
 
 const AdminSidebarPages: FC<AdminSidebarPagesProps> = ({ currentPath }) => {

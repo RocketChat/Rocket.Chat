@@ -1,4 +1,5 @@
 import { check } from 'meteor/check';
+// import { HTTP } from 'meteor/http';
 
 import { API } from '../api';
 import { hasRole, hasPermission } from '../../../authorization/server';
@@ -6,6 +7,10 @@ import { saveRegistrationData } from '../../../cloud/server/functions/saveRegist
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
+// import { getWorkspaceAccessToken } from '../../../cloud/server/functions/getWorkspaceAccessToken';
+import { getLicenses } from '../../../../ee/app/license/server/license';
+import { getUpgradeTabType } from '../../../../lib/getUpgradeTabType';
+// import { settings } from '../../../settings/server';
 
 API.v1.addRoute(
 	'cloud.manualRegister',
@@ -61,7 +66,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'cloud.confirmationPoll',
+	'cloud.confirmationPol',
 	{ authRequired: true },
 	{
 		async get() {
@@ -87,6 +92,64 @@ API.v1.addRoute(
 			}
 
 			return API.v1.failure('Invalid query');
+		},
+	},
+);
+
+API.v1.addRoute(
+	'cloud.getUpgradeTabType',
+	{ authRequired: true },
+	{
+		async get() {
+			if (!hasRole(this.userId, 'admin')) {
+				return API.v1.unauthorized();
+			}
+
+			const { workspaceRegistered /* , workspaceId*/ } = retrieveRegistrationStatus();
+
+			const hadExpiredTrials = false;
+
+			// if (workspaceRegistered) {
+			// 	const accessToken = getWorkspaceAccessToken(true);
+
+			// 	console.log('\ntoken: ', accessToken);
+
+			// 	if (accessToken) {
+			// 		try {
+			// 			const cloudUrl = settings.get('Cloud_Url');
+
+			// 			const url = `${cloudUrl}/api/v2/my/workspaces/${workspaceId}`;
+			// 			console.log(url);
+
+			// 			const result = HTTP.get(url, {
+			// 				headers: { Authorization: `Bearer ${accessToken}` },
+			// 			});
+			// 			console.log(result);
+			// 			// 	hadExpiredTrials = result.trialId;
+			// 		} catch (e) {
+			// 			console.log(e.response);
+			// 		}
+			// 	}
+			// }
+
+			const licenses = getLicenses()
+				.filter(({ valid }) => valid)
+				.map(({ license }) => license);
+
+			// TODO update license type to include META
+			// Depends on implementation on cloud side.
+			const isTrial = !licenses.map(({ meta }) => meta?.trial).includes(false);
+			const hasGoldLicense = licenses.map(({ tag }) => tag?.name === 'gold').includes(true);
+
+			const upgradeTabType = getUpgradeTabType({
+				registered: workspaceRegistered,
+				hasValidLicense: licenses.length > 0,
+				hadExpiredTrials,
+				isTrial,
+				hasGoldLicense,
+			});
+
+			return API.v1.success({ tabType: upgradeTabType });
 		},
 	},
 );
