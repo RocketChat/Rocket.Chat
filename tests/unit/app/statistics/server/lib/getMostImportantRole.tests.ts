@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { getMostImportantRole } from '../../../../../../app/statistics/server/lib/getMostImportantRole';
+import { getMostImportantRole } from '../../../../../../lib/roles/getMostImportantRole';
 
 describe('getMostImportantRole', () => {
 	it('should return the same role if only one exists', () => {
