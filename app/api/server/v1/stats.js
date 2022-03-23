@@ -1,5 +1,6 @@
 import { API } from '../api';
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
+import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
 
 API.v1.addRoute(
 	'statistics',
@@ -41,6 +42,23 @@ API.v1.addRoute(
 					}),
 				),
 			);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'statistics.telemetry',
+	{ authRequired: true },
+	{
+		post() {
+			const events = this.requestParams();
+
+			events.params.forEach((event) => {
+				const { eventName, ...params } = event;
+				telemetryEvent.call(eventName, params);
+			});
+
+			return API.v1.success();
 		},
 	},
 );

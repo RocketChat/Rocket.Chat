@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { settings } from '../../../settings/server';
-import { getRoomRoles } from '../lib/getRoomRoles';
+import { getRoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 
 Meteor.methods({
 	getRoomRoles(rid) {
