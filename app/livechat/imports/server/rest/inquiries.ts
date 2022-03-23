@@ -3,19 +3,14 @@ import { Meteor } from 'meteor/meteor';
 import { ILivechatInquiryRecord, LivechatInquiryStatus } from '../../../../../definition/IInquiry';
 import { Users, LivechatInquiry } from '../../../../models/server/raw/index';
 import LivechatDepartment from '../../../../models/server/models/LivechatDepartment';
-import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
-import { LivechatInquiryStatus } from '../../../../../definition/IInquiry';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { department } = this.requestParams();
