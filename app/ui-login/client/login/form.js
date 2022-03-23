@@ -128,6 +128,9 @@ Template.loginForm.events({
 							return instance.state.set('wait-activation');
 						}
 						Session.set('forceLogin', false);
+						if (formData.secretURL) {
+							FlowRouter.go('home');
+						}
 					});
 				});
 			}
@@ -190,7 +193,7 @@ Template.loginForm.events({
 Template.loginForm.onCreated(function () {
 	const instance = this;
 	this.loading = new ReactiveVar(false);
-
+	console.log("CHECK")
 	if (Session.get('loginDefaultState')) {
 		this.state = new ReactiveVar(Session.get('loginDefaultState'));
 	} else {
