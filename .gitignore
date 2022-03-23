@@ -81,5 +81,6 @@ tests/end-to-end/temporary_staged_test
 /storybook-static
 /tests/cypress/screenshots
 /tests/cypress/videos
+/tests/e2e/test-failures
 coverage
 .nyc_output
