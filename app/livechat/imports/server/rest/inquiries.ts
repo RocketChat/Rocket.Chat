@@ -6,6 +6,7 @@ import LivechatDepartment from '../../../../models/server/models/LivechatDepartm
 import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
+import { LivechatInquiryStatus } from '../../../../../definition/IInquiry';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
@@ -70,6 +71,31 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.queued',
+	{ authRequired: true },
+	{
+		async get() {
+			const { offset, count } = this.getPaginationItems();
+			const { sort } = this.parseJsonQuery();
+			const { department } = this.requestParams();
+
+			return API.v1.success(
+				await findInquiries({
+					userId: this.userId,
+					filterDepartment: department,
+					status: LivechatInquiryStatus.QUEUED,
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
+			);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/inquiries.queuedForUser',
 	{ authRequired: true },
 	{
 		async get() {

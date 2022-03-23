@@ -65,24 +65,28 @@ server.publish(autoUpdateCollection, function () {
 
 server.methods({
 	async 'login'({ resume, user, password }: { resume: string; user: { username: string }; password: string }) {
-		const result = await Account.login({ resume, user, password });
-		if (!result) {
-			throw new MeteorError(403, "You've been logged out by the server. Please log in again");
+		try {
+			const result = await Account.login({ resume, user, password });
+			if (!result) {
+				throw new MeteorError(403, "You've been logged out by the server. Please log in again");
+			}
+
+			this.userId = result.uid;
+			this.userToken = result.hashedToken;
+
+			this.emit(DDP_EVENTS.LOGGED);
+
+			server.emit(DDP_EVENTS.LOGGED, this);
+
+			return {
+				id: result.uid,
+				token: result.token,
+				tokenExpires: result.tokenExpires,
+				type: result.type,
+			};
+		} catch (error) {
+			throw error;
 		}
-
-		this.userId = result.uid;
-		this.userToken = result.hashedToken;
-
-		this.emit(DDP_EVENTS.LOGGED);
-
-		server.emit(DDP_EVENTS.LOGGED, this);
-
-		return {
-			id: result.uid,
-			token: result.token,
-			tokenExpires: result.tokenExpires,
-			type: result.type,
-		};
 	},
 	async 'logout'() {
 		if (this.userToken && this.userId) {

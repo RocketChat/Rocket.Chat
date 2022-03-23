@@ -4,14 +4,20 @@ import { hasAllPermissionAsync } from '../../../../authorization/server/function
 import { Users } from '../../../../models/server/raw';
 import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
 
+/**
+ * @param {IRole['_id']} role the role id
+ * @param {string} text
+ * @param {any} pagination
+ */
 async function findUsers({
 	role,
 	text,
-	pagination,
+	userId: _, // TODO: check if this property is getting used and how the filters on it should behave
+	pagination: { offset, count, sort },
 }: {
-	userId: string;
 	role: string;
 	text?: string;
+	userId?: string;
 	pagination: { offset: number; count: number; sort: Record<string, unknown> };
 }): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
 	const query = {};
@@ -23,9 +29,9 @@ async function findUsers({
 	}
 
 	const cursor = await Users.findUsersInRolesWithQuery(role, query, {
-		sort: pagination.sort || { name: 1 },
-		skip: pagination.offset,
-		limit: pagination.count,
+		sort: sort || { name: 1 },
+		skip: offset,
+		limit: count,
 		projection: {
 			username: 1,
 			name: 1,
@@ -43,7 +49,7 @@ async function findUsers({
 	return {
 		users,
 		count: users.length,
-		offset: pagination.offset,
+		offset,
 		total,
 	};
 }

@@ -2,7 +2,7 @@ import { UiInteractionBridge as UiIntBridge } from '@rocket.chat/apps-engine/ser
 import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import { Notifications } from '../../../notifications/server';
+import { api } from '../../../../server/sdk/api';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class UiInteractionBridge extends UiIntBridge {
@@ -20,6 +20,6 @@ export class UiInteractionBridge extends UiIntBridge {
 			throw new Error('Invalid app provided');
 		}
 
-		Notifications.notifyUser(user.id, 'uiInteraction', interaction);
+		api.broadcast('notify.uiInteraction', user.id, interaction);
 	}
 }

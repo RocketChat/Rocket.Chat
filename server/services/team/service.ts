@@ -669,6 +669,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					username: user.username,
 					name: user.name,
 					status: user.status,
+					settings: user.settings,
 				},
 				roles: record.roles,
 				createdBy: {
@@ -973,9 +974,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				teamMain: { $exists: false },
 			}).toArray();
 			const roomIds = teamRooms.map((r) => r._id);
-			const [totalMessagesInTeam, defaultRooms, totalMembers] = await Promise.all([
+			const [totalMessagesInTeam, totalMembers] = await Promise.all([
 				this.MessagesModel.find({ rid: { $in: roomIds } }).count(),
-				this.RoomsModel.findDefaultRoomsForTeam(team._id).count(),
 				this.TeamMembersModel.findByTeamId(team._id).count(),
 			]);
 
@@ -986,7 +986,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				totalMessages: totalMessagesInTeam,
 				totalPublicRooms: teamRooms.filter((r) => r.t === 'c').length,
 				totalPrivateRooms: teamRooms.filter((r) => r.t !== 'c').length,
-				totalDefaultRooms: defaultRooms,
+				totalDefaultRooms: teamRooms.filter((r) => r.default === true).length,
 				totalMembers,
 			};
 

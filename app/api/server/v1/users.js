@@ -49,13 +49,13 @@ API.v1.addRoute(
 				sendWelcomeEmail: Match.Maybe(Boolean),
 				verified: Match.Maybe(Boolean),
 				customFields: Match.Maybe(Object),
+				origin: Match.Maybe(String),
 			});
 
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
 			}
-
 			if (this.bodyParams.customFields) {
 				validateCustomFields(this.bodyParams.customFields);
 			}
@@ -70,6 +70,10 @@ API.v1.addRoute(
 				Meteor.runAsUser(this.userId, () => {
 					Meteor.call('setUserActiveStatus', newUserId, this.bodyParams.active);
 				});
+			}
+
+			if (this.bodyParams.origin) {
+				Users.update({ _id: newUserId }, { $set: { origin: this.bodyParams.origin } });
 			}
 
 			const { fields } = this.parseJsonQuery();
