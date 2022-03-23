@@ -47,16 +47,16 @@ API.v1.addRoute('livechat/agent.next/:token', {
 		});
 
 		const { token } = this.urlParams;
-		const room = findOpenRoom(token, '');
+		const room = findOpenRoom(token);
 		if (room) {
 			return API.v1.success();
 		}
 
 		let { department } = this.queryParams;
 		if (!department) {
-			const requireDeparment = Livechat.getRequiredDepartment();
-			if (requireDeparment) {
-				department = requireDeparment._id;
+			const requiredDepartment = Livechat.getRequiredDepartment();
+			if (requiredDepartment) {
+				department = requiredDepartment._id;
 			}
 		}
 

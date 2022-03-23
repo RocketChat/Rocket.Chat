@@ -11,7 +11,7 @@ callbacks.add(
 			return message;
 		}
 
-		if (!(typeof room?.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
+		if (!room.v?.token) {
 			return message;
 		}
 		if (message.token) {

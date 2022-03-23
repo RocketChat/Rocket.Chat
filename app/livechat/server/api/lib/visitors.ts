@@ -170,7 +170,7 @@ export async function findVisitorsToAutocomplete({
 	selector,
 }: {
 	userId: string;
-	selector: { exceptions: any[]; conditions: any[]; term: string };
+	selector: { exceptions: any[]; conditions: {}; term: string };
 }): Promise<{ items: ILivechatVisitor[] }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		return { items: [] };

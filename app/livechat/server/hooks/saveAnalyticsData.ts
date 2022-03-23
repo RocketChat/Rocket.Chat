@@ -17,11 +17,6 @@ callbacks.add(
 			return message;
 		}
 
-		// check if room is livechat
-		if (room?.t !== 'l') {
-			return message;
-		}
-
 		if (message.file) {
 			message = Promise.await(normalizeMessageFileUpload(message));
 		}
