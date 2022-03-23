@@ -1,6 +1,7 @@
 import { Field, Select, FieldGroup, SelectOption } from '@rocket.chat/fuselage';
 import React, { useState, useMemo, FC } from 'react';
 
+import { IRoom } from '../../../../../definition/IRoom';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
@@ -8,7 +9,7 @@ import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
 
 type ExportMessagesProps = {
-	rid: string;
+	rid: IRoom['_id'];
 };
 const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 	const t = useTranslation();

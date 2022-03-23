@@ -3,6 +3,8 @@ import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup }
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect, useContext, FC, MouseEventHandler } from 'react';
 
+import { IRoom } from '../../../../../definition/IRoom';
+import { IUser } from '../../../../../definition/IUser';
 import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { useEndpoint } from '../../../../contexts/ServerContext';
@@ -16,12 +18,12 @@ import { useUserRoom } from '../../hooks/useUserRoom';
 type MailExportFormValues = {
 	dateFrom: string;
 	dateTo: string;
-	toUsers: string[];
+	toUsers: IUser['username'][];
 	additionalEmails: string;
 	subject: string;
 };
 
-type MailExportFormProps = { onCancel: MouseEventHandler<HTMLOrSVGElement>; rid: string };
+type MailExportFormProps = { onCancel: MouseEventHandler<HTMLOrSVGElement>; rid: IRoom['_id'] };
 
 const clickable = css`
 	cursor: pointer;
