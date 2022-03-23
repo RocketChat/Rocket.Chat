@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { CustomSounds } from '../../../models/server/raw';
-import { hasPermission } from '../../../authorization';
-import { Notifications } from '../../../notifications';
+import { hasPermission } from '../../../authorization/server';
+import { api } from '../../../../server/sdk/api';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({
@@ -23,7 +23,7 @@ Meteor.methods({
 
 		RocketChatFileCustomSoundsInstance.deleteFile(`${sound._id}.${sound.extension}`);
 		await CustomSounds.removeById(_id);
-		Notifications.notifyAll('deleteCustomSound', { soundData: sound });
+		api.broadcast('notify.deleteCustomSound', { soundData: sound });
 
 		return true;
 	},

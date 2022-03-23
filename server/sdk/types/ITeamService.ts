@@ -2,7 +2,7 @@ import { FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
 
 import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
+import { IUser, IRole } from '../../../definition/IUser';
 import { ICreateRoomParams } from './IRoomService';
 
 export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
@@ -18,7 +18,7 @@ export interface ITeamCreateParams {
 
 export interface ITeamMemberParams {
 	userId: string;
-	roles?: Array<string> | null;
+	roles?: Array<IRole['_id']> | null;
 }
 
 export interface IUserInfo {
@@ -26,11 +26,12 @@ export interface IUserInfo {
 	username?: string;
 	name: string;
 	status: string;
+	settings?: Record<string, any>;
 }
 
 export interface ITeamMemberInfo {
 	user: IUserInfo;
-	roles?: string[] | null;
+	roles?: IRole['_id'][] | null;
 	createdBy: Omit<IUserInfo, 'name' | 'status'>;
 	createdAt: Date;
 }
@@ -110,5 +111,5 @@ export interface ITeamService {
 	insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeAllMembersFromTeam(teamId: string): Promise<void>;
-	removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
+	removeRolesFromMember(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<boolean>;
 }
