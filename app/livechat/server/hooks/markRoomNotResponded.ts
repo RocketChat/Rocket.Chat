@@ -21,7 +21,7 @@ callbacks.add(
 		}
 
 		// check if room is yet awaiting for response
-		if (room.t === 'l' && room.isWaitingResponse) {
+		if (room.waitingResponse) {
 			return message;
 		}
 
