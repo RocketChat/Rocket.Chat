@@ -461,11 +461,30 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
+	findE2EByRoom(roomId, options) {
+		const query = {
+			_hidden: { $ne: true },
+			rid: roomId,
+			t: 'e2e',
+		};
+		return this.find(query, options);
+	}
+
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
 			'rid': roomId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findStarredByRoom(roomId, options) {
+		const query = {
+			_hidden: { $ne: true },
+			starred: { $ne: null },
+			rid: roomId,
 		};
 
 		return this.find(query, options);
@@ -487,6 +506,34 @@ export class Messages extends Base {
 			_hidden: { $ne: true },
 			snippeted: true,
 			rid: roomId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findStarred(options) {
+		const query = {
+			_hidden: { $ne: true },
+			starred: { $ne: null },
+		};
+
+		return this.find(query, options);
+	}
+
+	findPinned(options) {
+		const query = {
+			t: { $ne: 'rm' },
+			_hidden: { $ne: true },
+			pinned: true,
+		};
+
+		return this.find(query, options);
+	}
+
+	findSnippet(options) {
+		const query = {
+			_hidden: { $ne: true },
+			snippeted: true,
 		};
 
 		return this.find(query, options);
