@@ -1,9 +1,11 @@
-import React, { ReactElement, useEffect, useRef } from 'react';
+import { Throbber, Box } from '@rocket.chat/fuselage';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 
 import type { UpgradeTabVariants } from '../../../../../lib/getUpgradeTabType';
 import Page from '../../../../components/Page';
 import { useRouteParameter } from '../../../../contexts/RouterContext';
 import { useAbsoluteUrl } from '../../../../contexts/ServerContext';
+import UpgradePageError from '../UpgradePageError';
 
 const iframeStyle = { width: '100%', height: '100%' };
 
@@ -48,12 +50,11 @@ const getWindowMessagePath = (e: MessageEvent<string>): string | undefined => {
 
 const UpgradePage = (): ReactElement => {
 	const type = useRouteParameter('type') as UpgradeTabVariants;
-
-	const pageUrl = getUrl(type);
-
 	const getAbsoluteUrl = useAbsoluteUrl();
-
+	const [isLoading, setIsLoading] = useState(true);
+	const pageUrl = getUrl(type);
 	const ref = useRef<HTMLIFrameElement>(null);
+	const hasConnection = navigator.onLine;
 
 	useEffect(() => {
 		const navigate = (e: MessageEvent<string>): void => {
@@ -78,8 +79,14 @@ const UpgradePage = (): ReactElement => {
 	}, [getAbsoluteUrl]);
 
 	return (
-		<Page>
-			<iframe src={pageUrl} style={iframeStyle} ref={ref} />
+		<Page data-qa='admin-upgrade'>
+			{!hasConnection && <UpgradePageError />}
+			{hasConnection && isLoading && (
+				<Box pb='x24'>
+					<Throbber />
+				</Box>
+			)}
+			{hasConnection && <iframe src={pageUrl} style={iframeStyle} ref={ref} onLoad={(): void => setIsLoading(false)} />}
 		</Page>
 	);
 };
