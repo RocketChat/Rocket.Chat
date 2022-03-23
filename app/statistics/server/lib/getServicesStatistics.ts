@@ -7,6 +7,7 @@ function getCustomOAuthServices(): Record<
 		enabled: boolean;
 		mergeRoles: boolean;
 		users: number;
+		createdUsers: number;
 	}
 > {
 	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/im);
@@ -19,6 +20,7 @@ function getCustomOAuthServices(): Record<
 					enabled: Boolean(value),
 					mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${name}-merge_roles`),
 					users: Users.countActiveUsersByService(name),
+					createdUsers: Users.countUsersByService(name),
 				},
 			];
 		}),
@@ -29,6 +31,7 @@ export function getServicesStatistics(): Record<string, unknown> {
 	return {
 		ldap: {
 			users: Users.countActiveUsersByService('ldap'),
+			createdUsers: Users.countUsersByService('ldap'),
 			enabled: settings.get('LDAP_Enable'),
 			loginFallback: settings.get('LDAP_Login_Fallback'),
 			encryption: settings.get('LDAP_Encryption'),
@@ -54,6 +57,7 @@ export function getServicesStatistics(): Record<string, unknown> {
 		saml: {
 			enabled: settings.get('SAML_Custom_Default'),
 			users: Users.countActiveUsersByService('saml'),
+			createdUsers: Users.countUsersByService('saml'),
 			signatureValidationType: settings.get('SAML_Custom_Default_signature_validation_type'),
 			generateUsername: settings.get('SAML_Custom_Default_generate_username'),
 			updateSubscriptionsOnLogin: settings.get('SAML_Custom_Default_channels_update'),
@@ -62,6 +66,7 @@ export function getServicesStatistics(): Record<string, unknown> {
 		cas: {
 			enabled: settings.get('CAS_enabled'),
 			users: Users.countActiveUsersByService('cas'),
+			createdUsers: Users.countUsersByService('cas'),
 			allowUserCreation: settings.get('CAS_Creation_User_Enabled'),
 			alwaysSyncUserData: settings.get('CAS_Sync_User_Data_Enabled'),
 		},
@@ -69,58 +74,72 @@ export function getServicesStatistics(): Record<string, unknown> {
 			apple: {
 				enabled: settings.get('Accounts_OAuth_Apple'),
 				users: Users.countActiveUsersByService('apple'),
+				createdUsers: Users.countUsersByService('apple'),
 			},
 			dolphin: {
 				enabled: settings.get('Accounts_OAuth_Dolphin'),
 				users: Users.countActiveUsersByService('dolphin'),
+				createdUsers: Users.countUsersByService('dolphin'),
 			},
 			drupal: {
 				enabled: settings.get('Accounts_OAuth_Drupal'),
 				users: Users.countActiveUsersByService('drupal'),
+				createdUsers: Users.countUsersByService('drupal'),
 			},
 			facebook: {
 				enabled: settings.get('Accounts_OAuth_Facebook'),
 				users: Users.countActiveUsersByService('facebook'),
+				createdUsers: Users.countUsersByService('facebook'),
 			},
 			github: {
 				enabled: settings.get('Accounts_OAuth_Github'),
 				users: Users.countActiveUsersByService('github'),
+				createdUsers: Users.countUsersByService('github'),
 			},
 			githubEnterprise: {
 				enabled: settings.get('Accounts_OAuth_GitHub_Enterprise'),
 				users: Users.countActiveUsersByService('github_enterprise'),
+				createdUsers: Users.countUsersByService('github_enterprise'),
 			},
 			gitlab: {
 				enabled: settings.get('Accounts_OAuth_Gitlab'),
 				users: Users.countActiveUsersByService('gitlab'),
+				createdUsers: Users.countUsersByService('gitlab'),
 			},
 			google: {
 				enabled: settings.get('Accounts_OAuth_Google'),
 				users: Users.countActiveUsersByService('google'),
+				createdUsers: Users.countUsersByService('google'),
 			},
 			linkedin: {
 				enabled: settings.get('Accounts_OAuth_Linkedin'),
 				users: Users.countActiveUsersByService('linkedin'),
+				createdUsers: Users.countUsersByService('linkedin'),
 			},
 			meteor: {
 				enabled: settings.get('Accounts_OAuth_Meteor'),
 				users: Users.countActiveUsersByService('meteor'),
+				createdUsers: Users.countUsersByService('meteor'),
 			},
 			nextcloud: {
 				enabled: settings.get('Accounts_OAuth_Nextcloud'),
 				users: Users.countActiveUsersByService('nextcloud'),
+				createdUsers: Users.countUsersByService('nextcloud'),
 			},
 			tokenpass: {
 				enabled: settings.get('Accounts_OAuth_Tokenpass'),
 				users: Users.countActiveUsersByService('tokenpass'),
+				createdUsers: Users.countUsersByService('tokenpass'),
 			},
 			twitter: {
 				enabled: settings.get('Accounts_OAuth_Twitter'),
 				users: Users.countActiveUsersByService('twitter'),
+				createdUsers: Users.countUsersByService('twitter'),
 			},
 			wordpress: {
 				enabled: settings.get('Accounts_OAuth_Wordpress'),
 				users: Users.countActiveUsersByService('wordpress'),
+				createdUsers: Users.countUsersByService('wordpress'),
 			},
 			custom: getCustomOAuthServices(),
 		},
