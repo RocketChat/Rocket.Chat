@@ -66,7 +66,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'cloud.confirmationPol',
+	'cloud.confirmationPoll',
 	{ authRequired: true },
 	{
 		async get() {
