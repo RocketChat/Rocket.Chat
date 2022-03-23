@@ -13,9 +13,9 @@ import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import { useRoom } from '../contexts/RoomContext';
 import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
+import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import LazyComponent from './LazyComponent';
-import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 
 export const Room: FC<{}> = () => {
 	const room = useRoom();
