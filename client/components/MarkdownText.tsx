@@ -112,7 +112,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
 
 	return __html ? (
-		<Box dangerouslySetInnerHTML={{ __html }} withTruncatedText={withTruncatedText} withRichContent={withRichContent} {...props} />
+		<Box style={{whiteSpace:"pre-line"}} dangerouslySetInnerHTML={{ __html }} withTruncatedText={withTruncatedText} withRichContent={withRichContent} {...props} />
 	) : null;
 };
 
