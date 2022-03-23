@@ -5,11 +5,12 @@ import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessages
 
 // data-qa-select
 
-export const selectedMessageStore = new (class SelectMessageStore extends Emitter<{
-	change: undefined;
-	toggleIsSelecting: boolean;
-	[mid: string]: boolean;
-}> {
+export const selectedMessageStore = new (class SelectMessageStore extends Emitter<
+	{
+		change: undefined;
+		toggleIsSelecting: boolean;
+	} & { [mid: string]: boolean }
+> {
 	store = new Set<string>();
 
 	isSelecting = false;

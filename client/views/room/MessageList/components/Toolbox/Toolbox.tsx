@@ -34,31 +34,33 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 
 	const isSelecting = useIsSelecting();
 
+	if (isSelecting) {
+		return null;
+	}
+
 	return (
-		!isSelecting && (
-			<MessageToolbox>
-				{messageActions.map((action) => (
-					<MessageToolboxItem
-						onClick={(e): void => {
+		<MessageToolbox>
+			{messageActions.map((action) => (
+				<MessageToolboxItem
+					onClick={(e): void => {
+						action.action(e, { message, tabbar, room });
+					}}
+					key={action.id}
+					icon={action.icon}
+					title={t(action.label)}
+				/>
+			))}
+			{menuActions.length > 0 && (
+				<MessageActionMenu
+					options={menuActions.map((action) => ({
+						...action,
+						action: (e): void => {
 							action.action(e, { message, tabbar, room });
-						}}
-						key={action.id}
-						icon={action.icon}
-						title={t(action.label)}
-					/>
-				))}
-				{menuActions.length > 0 && (
-					<MessageActionMenu
-						options={menuActions.map((action) => ({
-							...action,
-							action: (e): void => {
-								action.action(e, { message, tabbar, room });
-							},
-						}))}
-					/>
-				)}
-			</MessageToolbox>
-		)
+						},
+					}))}
+				/>
+			)}
+		</MessageToolbox>
 	);
 };
 
