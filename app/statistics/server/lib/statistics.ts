@@ -23,6 +23,7 @@ import {
 	LivechatBusinessHours,
 	Messages as MessagesRaw,
 	InstanceStatus,
+	Invites,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
@@ -32,6 +33,7 @@ import { Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { IRoom } from '../../../../definition/IRoom';
 import { IStats } from '../../../../definition/IStats';
+import { USER_ORIGIN } from '../../../../definition/IUser';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -452,6 +454,109 @@ export const statistics = {
 		statsPms.push(Analytics.resetSeatRequestCount());
 
 		await Promise.all(statsPms).catch(log);
+
+		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
+		statistics.homeTitle = settings.get('Layout_Home_Title');
+
+		const layoutHomeBody = settings.get('Layout_Home_Body') as string;
+		if (layoutHomeBody) {
+			statistics.homeBody = layoutHomeBody.split('\n')[0];
+		}
+
+		const homeBody = settings.get('Layout_Home_Body') as string;
+		if (homeBody) {
+			statistics.homeBody = homeBody.split('\n')[0];
+		}
+
+		const logoChange = Object.keys(settings.get('Assets_logo'));
+		if (logoChange) {
+			statistics.logoChange = logoChange.includes('url');
+		}
+
+		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
+
+		const customCSS = settings.get('theme-custom-css') as string;
+		if (customCSS) {
+			statistics.customCSS = customCSS.split('\n').length;
+		}
+		statistics.customScript = _.reduce(
+			['Custom_Script_On_Logout', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In'],
+			function _custonScript(num, setting) {
+				const script = settings.get(setting) as string;
+				if (script !== '//Add your script') {
+					return num + script.split('\n').length;
+				}
+				return num;
+			},
+			0,
+		);
+
+		statistics.tabInvites = await Invites.find().count();
+		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
+
+		statistics.totalRoomsWithSnippet = _.reduce(
+			Rooms.find({}).fetch(),
+			function _roomsWithSnippet(num, room: any) {
+				const { _id } = room;
+				const snippetMessages = Messages.findSnippetedByRoom(_id).count();
+				if (snippetMessages > 0) {
+					return num + 1;
+				}
+				return num;
+			},
+			0,
+		);
+
+		statistics.totalRoomsWithStarred = _.reduce(
+			Rooms.find({}).fetch(),
+			function _roomsWithPinned(num, room: any) {
+				const { _id } = room;
+				const starredMessages = Messages.findStarredByRoom(_id).count();
+				if (starredMessages > 0) {
+					return num + 1;
+				}
+				return num;
+			},
+			0,
+		);
+
+		statistics.totalRoomsWithPinned = _.reduce(
+			Rooms.find({}).fetch(),
+			function _roomsWithPinned(num, room: any) {
+				const { _id } = room;
+				const pinnedMessages = Messages.findPinnedByRoom(_id).count();
+				if (pinnedMessages > 0) {
+					return num + 1;
+				}
+				return num;
+			},
+			0,
+		);
+
+		statistics.totalSnippet = Messages.findSnippet().count();
+		statistics.totalStarred = Messages.findStarred().count();
+		statistics.totalPinned = Messages.findPinned().count();
+
+		statistics.totalE2ERooms = Rooms.findByE2E().count();
+		statistics.totalE2EMessages = _.reduce(
+			Rooms.findByE2E().fetch(),
+			function _e2eMessages(num, room: any) {
+				const { _id } = room;
+				const e2eMessages = Messages.findE2EByRoom(_id).count();
+				return num + e2eMessages;
+			},
+			0,
+		);
+
+		statistics.totalUserTOTP = Users.findActiveUsersTOTPEnable().count();
+		statistics.totalUserEmail2fa = Users.findActiveUsersEmail2faEnable().count();
+
+		statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.ADMIN_ADD }).count();
+		statistics.usersCreatedSlackImport = await Users.find({ origin: USER_ORIGIN.SLACK_IMPORT }).count();
+		statistics.usersCreatedSlackUser = await Users.find({ origin: USER_ORIGIN.SLACK_USER_IMPORT }).count();
+		statistics.usersCreatedCSVImport = await Users.find({ origin: USER_ORIGIN.CSV_IMPORT }).count();
+		statistics.usersCreatedHiptext = await Users.find({ origin: USER_ORIGIN.HIPTEXT_IMPORT }).count();
+
 		return statistics;
 	},
 	async save(): Promise<IStats> {

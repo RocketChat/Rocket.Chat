@@ -138,4 +138,27 @@ export interface IStats {
 		businessUnits: number;
 	};
 	createdAt: Date | string;
+	showHomeButton: boolean;
+	homeTitle: string;
+	homeBody: string;
+	logoChange: boolean;
+	customCSS: number;
+	customScript: number;
+	tabInvites: number;
+	totalEmailInvitation: number;
+	totalRoomsWithSnippet: number;
+	totalRoomsWithStarred: number;
+	totalRoomsWithPinned: number;
+	totalSnippet: number;
+	totalStarred: number;
+	totalPinned: number;
+	totalE2ERooms: number;
+	totalE2EMessages: number;
+	totalUserTOTP: number;
+	totalUserEmail2fa: number;
+	usersCreatedADM: number;
+	usersCreatedSlackImport: number;
+	usersCreatedSlackUser: number;
+	usersCreatedCSVImport: number;
+	usersCreatedHiptext: number;
 }
