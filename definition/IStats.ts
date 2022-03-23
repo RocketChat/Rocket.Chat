@@ -161,4 +161,11 @@ export interface IStats {
 	usersCreatedSlackUser: number;
 	usersCreatedCSVImport: number;
 	usersCreatedHiptext: number;
+	totalOTR: number;
+	totalOTRRooms: number;
+	slashCommandsJitsi: number;
+	messageAuditApply: number;
+	messageAuditLoad: number;
+	dashboardCount: number;
+	joinJitsiButton: number;
 }

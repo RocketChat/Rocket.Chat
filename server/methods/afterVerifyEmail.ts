@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { Users } from '../../app/models/server';
 import { Roles } from '../../app/models/server/raw';
-import { IUser } from '../../definition/IUser';
+import { IUser, IRole } from '../../definition/IUser';
 
-const rolesToChangeTo: Map<string, [string]> = new Map([['anonymous', ['user']]]);
+const rolesToChangeTo: Map<IRole['_id'], [IRole['_id']]> = new Map([['anonymous', ['user']]]);
 
 Meteor.methods({
 	async afterVerifyEmail() {

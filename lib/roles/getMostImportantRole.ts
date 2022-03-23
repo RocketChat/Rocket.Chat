@@ -1,3 +1,17 @@
+import type { IRole } from '../../definition/IRole';
+
+type PriorityRoleName =
+	| 'custom-role'
+	| 'admin'
+	| 'livechat-manager'
+	| 'livechat-monitor'
+	| 'livechat-agent'
+	| 'user'
+	| 'app'
+	| 'bot'
+	| 'guest'
+	| 'anonymous';
+
 const order = [
 	'admin',
 	'livechat-manager',
@@ -9,11 +23,11 @@ const order = [
 	'bot',
 	'guest',
 	'anonymous',
-];
+] as const;
 
 const rolesToConsiderAsUser = ['auditor', 'auditor-log'];
 
-export function getMostImportantRole(roles = []) {
+export function getMostImportantRole(roles: IRole['_id'][] = []): 'no-role' | PriorityRoleName {
 	if (!roles.length) {
 		return 'no-role';
 	}
@@ -21,16 +35,16 @@ export function getMostImportantRole(roles = []) {
 	roles = roles.map((r) => (rolesToConsiderAsUser.includes(r) ? 'user' : r));
 
 	if (roles.length === 1) {
-		if (!order.includes(roles[0])) {
+		if (!(order as readonly string[]).includes(roles[0])) {
 			return 'custom-role';
 		}
-		return roles[0];
+		return roles[0] as PriorityRoleName;
 	}
 
-	const newRoles = [];
+	const newRoles: PriorityRoleName[] = [];
 	for (const role of roles) {
-		if (order.includes(role)) {
-			newRoles.push(role);
+		if ((order as readonly string[]).includes(role)) {
+			newRoles.push(role as PriorityRoleName);
 		} else if (!newRoles.includes('custom-role')) {
 			newRoles.push('custom-role');
 		}
@@ -41,4 +55,6 @@ export function getMostImportantRole(roles = []) {
 			return item;
 		}
 	}
+
+	return 'no-role';
 }

@@ -83,5 +83,9 @@ settingsRegistry.addGroup('Analytics', function addSettings() {
 			i18nLabel: 'Users',
 			i18nDescription: 'Analytics_features_users_Description',
 		});
+		this.add('Engagement_Dashboard_Load_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 	});
 });

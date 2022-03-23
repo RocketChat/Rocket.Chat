@@ -7,7 +7,7 @@ import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { Sessions, Users } from '../../../models/server/raw';
 import { aggregates } from '../../../models/server/raw/Sessions';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { getMostImportantRole } from './getMostImportantRole';
+import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
 import { ISession, ISessionDevice } from '../../../../definition/ISession';
 import { ISocketConnection } from '../../../../definition/ISocketConnection';

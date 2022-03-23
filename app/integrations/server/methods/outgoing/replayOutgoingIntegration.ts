@@ -8,19 +8,18 @@ Meteor.methods({
 	async replayOutgoingIntegration({ integrationId, historyId }) {
 		let integration;
 
-		if (hasPermission(this.userId, 'manage-outgoing-integrations') || hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')) {
+		if (!this.userId) {
+			throw new Meteor.Error('not_authorized', 'Unauthorized', {
+				method: 'replayOutgoingIntegration',
+			});
+		}
+
+		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
 			integration = await Integrations.findOneById(integrationId);
-		} else if (
-			hasPermission(this.userId, 'manage-own-outgoing-integrations') ||
-			hasPermission(this.userId, 'manage-own-outgoing-integrations', 'bot')
-		) {
+		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
 			integration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,
-			});
-		} else {
-			throw new Meteor.Error('not_authorized', 'Unauthorized', {
-				method: 'replayOutgoingIntegration',
 			});
 		}
 
