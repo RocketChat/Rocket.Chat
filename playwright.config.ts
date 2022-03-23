@@ -2,12 +2,12 @@ import { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
 	outputDir: 'tests/e2e/test-failures',
-	reporter: [['list']],
-	workers: 3,
+	reporter: [['line']],
+	timeout: 10000,
 	use: {
-		baseURL: process.env.BASE_URL || 'http://localhost:3000',
+		baseURL: process.env.BASE_URL || 'http://localhost:3000/',
 		headless: false,
-		viewport: { width: 1368, height: 768 },
+		viewport: { width: 1200, height: 720 },
 		ignoreHTTPSErrors: true,
 		video: 'retain-on-failure',
 		screenshot: 'only-on-failure',
