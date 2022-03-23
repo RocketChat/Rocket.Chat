@@ -109,7 +109,7 @@ Meteor.methods({
 		integration._createdAt = new Date();
 		integration._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 
-		await Roles.addUserRoles(user._id, 'bot');
+		await Roles.addUserRoles(user._id, ['bot']);
 
 		const result = await Integrations.insertOne(integration);
 

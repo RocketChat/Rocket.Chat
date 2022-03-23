@@ -47,7 +47,6 @@ import './methods/leaveRoom';
 import './methods/refreshOAuthService';
 import './methods/removeOAuthService';
 import './methods/restartServer';
-import './methods/robotMethods';
 import './methods/saveSetting';
 import './methods/saveSettings';
 import './methods/sendInvitationEmail';

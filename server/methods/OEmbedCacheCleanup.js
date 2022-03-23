@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 
 import { OEmbedCache } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
-import { hasAnyRoleAsync } from '../../app/authorization/server/functions/hasRole';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
 Meteor.methods({
 	async OEmbedCacheCleanup() {
-		if (Meteor.userId() && !(await hasAnyRoleAsync(Meteor.userId(), ['admin']))) {
+		if (!Meteor.userId() || !(await hasPermissionAsync(Meteor.userId(), 'clear-oembed-cache'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'OEmbedCacheCleanup',
 			});

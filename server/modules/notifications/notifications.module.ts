@@ -51,8 +51,6 @@ export class NotificationsModule {
 
 	public readonly streamRoomData: IStreamer;
 
-	public readonly streamLocal: IStreamer;
-
 	public readonly streamPresence: IStreamer;
 
 	constructor(private Streamer: IStreamerConstructor) {
@@ -95,8 +93,6 @@ export class NotificationsModule {
 		});
 
 		this.streamUser = new this.Streamer('notify-user');
-
-		this.streamLocal = new this.Streamer('local');
 	}
 
 	async configure({ Rooms, Subscriptions, Users, Settings }: IModelsParam): Promise<void> {
@@ -451,11 +447,6 @@ export class NotificationsModule {
 				});
 			}
 		});
-
-		this.streamLocal.serverOnly = true;
-		this.streamLocal.allowRead('none');
-		this.streamLocal.allowEmit('all');
-		this.streamLocal.allowWrite('none');
 
 		this.streamPresence.allowRead('logged');
 		this.streamPresence.allowWrite('none');

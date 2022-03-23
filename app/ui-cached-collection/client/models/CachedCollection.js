@@ -210,7 +210,9 @@ export class CachedCollection extends Emitter {
 			}
 		});
 
-		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
+		this.collection._collection._docs._map = new Map(
+			data.records.map((record) => [this.collection._collection._docs._idStringify(record._id), record]),
+		);
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
@@ -226,7 +228,6 @@ export class CachedCollection extends Emitter {
 		this.log(`${data.length} records loaded from server`);
 		data.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromServer-${this.name}`, record, 'changed');
-
 			this.collection.direct.upsert({ _id: record._id }, _.omit(record, '_id'));
 
 			this.onSyncData('changed', record);

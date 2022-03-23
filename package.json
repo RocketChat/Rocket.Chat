@@ -30,9 +30,9 @@
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"testci": "node .scripts/start.js",
 		"testui": "cypress run",
-	  	"testui-pass": "cypress run --spec ./tests/cypress/integration/01-pass/**/*.spec.js",
-	  	"testui-intermittent": "cypress run --spec ./tests/cypress/integration/02-intermittent/**/*.spec.js",
-	  	"testui-skip": "cypress run --spec ./tests/cypress/integration/03-skip/**/*.spec.js",
+		"testui-pass": "cypress run --spec ./tests/cypress/integration/01-pass/**/*.spec.js",
+		"testui-intermittent": "cypress run --spec ./tests/cypress/integration/02-intermittent/**/*.spec.js",
+		"testui-skip": "cypress run --spec ./tests/cypress/integration/03-skip/**/*.spec.js",
 		"testapi": "mocha --config ./.mocharc.api.js",
 		"testunit": "mocha --config ./.mocharc.js",
 		"testunit-client": "mocha --config ./.mocharc.client.js",
@@ -359,21 +359,21 @@
 	},
 	"nyc": {
 		"include": [
-		  "app/**/*.js",
-		  "app/**/*.ts",
-		  "ee/**/*.js",
-		  "ee/**/*.ts",
-		  "server/**/*.js",
-		  "server/**/*.ts"
+			"app/**/*.js",
+			"app/**/*.ts",
+			"ee/**/*.js",
+			"ee/**/*.ts",
+			"server/**/*.js",
+			"server/**/*.ts"
 		],
 		"exclude": [
-		  "node_modules",
-		  "**/.mocharc.js",
-		  "**/*.spec.js",
-		  "**/*.spec.ts",
-		  "**/*.tests.js",
-		  "**/*.tests.ts",
-		  "**/tests/*"
+			"node_modules",
+			"**/.mocharc.js",
+			"**/*.spec.js",
+			"**/*.spec.ts",
+			"**/*.tests.js",
+			"**/*.tests.ts",
+			"**/tests/*"
 		],
 		"all": true
 	}
