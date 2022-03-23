@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 
-import '../../../tests/unit/app/lib/server.mocks';
-import { AuthorizeRequest } from '../server/lib/generators/AuthorizeRequest';
-import { LogoutRequest } from '../server/lib/generators/LogoutRequest';
-import { LogoutResponse } from '../server/lib/generators/LogoutResponse';
-import { ServiceProviderMetadata } from '../server/lib/generators/ServiceProviderMetadata';
-import { LogoutRequestParser } from '../server/lib/parsers/LogoutRequest';
-import { LogoutResponseParser } from '../server/lib/parsers/LogoutResponse';
-import { ResponseParser } from '../server/lib/parsers/Response';
-import { SAMLUtils } from '../server/lib/Utils';
+import '../lib/server.mocks';
+import { AuthorizeRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/AuthorizeRequest';
+import { LogoutRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/LogoutRequest';
+import { LogoutResponse } from '../../../../app/meteor-accounts-saml/server/lib/generators/LogoutResponse';
+import { ServiceProviderMetadata } from '../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata';
+import { LogoutRequestParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutRequest';
+import { LogoutResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutResponse';
+import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/Response';
+import { SAMLUtils } from '../../../../app/meteor-accounts-saml/server/lib/Utils';
 import {
 	serviceProviderOptions,
 	simpleMetadata,
