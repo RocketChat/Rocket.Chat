@@ -369,10 +369,6 @@
 		"exclude": [
 			"node_modules",
 			"**/.mocharc.js",
-			"**/*.spec.js",
-			"**/*.spec.ts",
-			"**/*.tests.js",
-			"**/*.tests.ts",
 			"**/tests/*"
 		],
 		"all": true
