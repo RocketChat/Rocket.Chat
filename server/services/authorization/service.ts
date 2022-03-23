@@ -13,8 +13,10 @@ import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
-import { IRole } from '../../../definition/IRole';
-import { ISubscription } from '../../../definition/ISubscription';
+import type { IRole } from '../../../definition/IRole';
+import type { IRoom } from '../../../definition/IRoom';
+import type { ISubscription } from '../../../definition/ISubscription';
+import { License } from '../../sdk';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
@@ -73,6 +75,22 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 		this.onEvent('watch.roles', clearCache);
 		this.onEvent('permission.changed', clearCache);
+		this.onEvent('authorization.guestPermissions', (permissions: string[]) => {
+			AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
+		});
+	}
+
+	async started(): Promise<void> {
+		if (!(await License.isEnterprise())) {
+			return;
+		}
+
+		const permissions = await License.getGuestPermissions();
+		if (!permissions) {
+			return;
+		}
+
+		AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
 	}
 
 	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
@@ -100,7 +118,25 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return canAccessRoom(...args);
 	}
 
-	async addRoleRestrictions(role: string, permissions: string[]): Promise<void> {
+	async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'tokenpass'>>(rid, {
+			projection: {
+				_id: 1,
+				t: 1,
+				teamId: 1,
+				prid: 1,
+				tokenpass: 1,
+			},
+		});
+
+		if (!room) {
+			return false;
+		}
+
+		return this.canAccessRoom(room, { _id: uid });
+	}
+
+	async addRoleRestrictions(role: IRole['_id'], permissions: string[]): Promise<void> {
 		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
@@ -144,7 +180,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		{ maxAge: 10000 },
 	);
 
-	private async rolesHasPermission(permission: string, roles: string[]): Promise<boolean> {
+	private async rolesHasPermission(permission: string, roles: IRole['_id'][]): Promise<boolean> {
 		if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
 			return false;
 		}
@@ -153,7 +189,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return !!result;
 	}
 
-	private async getRoles(uid: string, scope?: string): Promise<string[]> {
+	private async getRoles(uid: string, scope?: IRoom['_id']): Promise<string[]> {
 		const { roles: userRoles = [] } = (await this.Users.findOneById(uid, { projection: { roles: 1 } })) || {};
 		const { roles: subscriptionsRoles = [] } =
 			(scope &&
@@ -164,8 +200,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private async atLeastOne(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.getRolesCached(uid, scope);
-		for (const permission of permissions) {
-			if (await this.rolesHasPermissionCached(permission, sortedRoles)) { // eslint-disable-line
+		for await (const permission of permissions) {
+			if (await this.rolesHasPermissionCached(permission, sortedRoles)) {
 				return true;
 			}
 		}
@@ -175,8 +211,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private async all(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.getRolesCached(uid, scope);
-		for (const permission of permissions) {
-			if (!await this.rolesHasPermissionCached(permission, sortedRoles)) { // eslint-disable-line
+		for await (const permission of permissions) {
+			if (!(await this.rolesHasPermissionCached(permission, sortedRoles))) {
 				return false;
 			}
 		}

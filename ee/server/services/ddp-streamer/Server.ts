@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import type WebSocket from 'ws';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
 
@@ -8,11 +9,27 @@ import { Publication } from './Publication';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
 import { MeteorService } from '../../../../server/sdk';
+import { isMeteorError, MeteorError } from '../../../../server/sdk/errors';
+import { Logger } from '../../../../server/lib/logger/Logger';
+
+const logger = new Logger('DDP-Streamer');
 
 type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
 type MethodFn = (this: Client, ...args: any[]) => any;
 type Methods = {
 	[k: string]: MethodFn;
+};
+
+const handleInternalException = (err: unknown, msg: string): MeteorError => {
+	if (err instanceof MeteorError) {
+		return err;
+	}
+
+	// default errors are logged to the console and redacted from the client
+	// TODO switch to using the logger (ideally broker.logger)
+	logger.error({ msg, err });
+
+	return new MeteorError(500, 'Internal server error');
 };
 
 // eslint-disable-next-line @typescript-eslint/camelcase
@@ -27,31 +44,37 @@ export class Server extends EventEmitter {
 
 	serialize = ejson.stringify;
 
-	parse = (packet: string): IPacket => {
+	parse = (data: WebSocket.Data, isBinary: boolean): IPacket => {
+		if (isBinary) {
+			throw new MeteorError(500, 'Binary data not supported');
+		}
+		const packet = data.toString();
+
 		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
 		return ejson.parse(payload);
 	};
 
 	async call(client: Client, packet: IPacket): Promise<void> {
 		try {
+			// if method was not defined on DDP Streamer we fall back to Meteor
 			if (!this._methods.has(packet.method)) {
 				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
 				if (result?.result) {
 					return this.result(client, packet, result.result);
 				}
 
-				throw new Error(`Method '${packet.method}' doesn't exist`);
+				throw new MeteorError(404, `Method '${packet.method}' not found`);
 			}
-			const fn = this._methods.get(packet.method);
 
+			const fn = this._methods.get(packet.method);
 			if (!fn) {
-				throw Error('method not found');
+				throw new MeteorError(404, `Method '${packet.method}' not found`);
 			}
 
 			const result = await fn.apply(client, packet.params);
 			return this.result(client, packet, result);
-		} catch (error) {
-			return this.result(client, packet, null, error.toString());
+		} catch (err: unknown) {
+			return this.result(client, packet, null, handleInternalException(err, 'Method call error'));
 		}
 	}
 
@@ -67,18 +90,18 @@ export class Server extends EventEmitter {
 	async subscribe(client: Client, packet: IPacket): Promise<void> {
 		try {
 			if (!this._subscriptions.has(packet.name)) {
-				throw new Error(`Subscription '${packet.name}' doesn't exist`);
+				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
 			}
 			const fn = this._subscriptions.get(packet.name);
 			if (!fn) {
-				throw new Error('subscription not found');
+				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
 			}
 
 			const publication = new Publication(client, packet, this);
 			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
-		} catch (error) {
-			this.nosub(client, packet, error.toString());
+		} catch (err: unknown) {
+			return this.nosub(client, packet, handleInternalException(err, 'Subscription error'));
 		}
 	}
 
@@ -93,13 +116,13 @@ export class Server extends EventEmitter {
 		return this.publish(`stream-${stream}`, fn);
 	}
 
-	result(client: Client, { id }: IPacket, result?: any, error?: string): void {
+	result(client: Client, { id }: IPacket, result?: any, error?: Error | MeteorError): void {
 		client.send(
 			this.serialize({
 				[DDP_EVENTS.MSG]: DDP_EVENTS.RESULT,
 				id,
 				...(result && { result }),
-				...(error && { error }),
+				...(error && { error: isMeteorError(error) ? error.toJSON() : error }),
 			}),
 		);
 		return client.send(
@@ -110,12 +133,12 @@ export class Server extends EventEmitter {
 		);
 	}
 
-	nosub(client: Client, { id }: IPacket, error?: string): void {
+	nosub(client: Client, { id }: IPacket, error?: Error | MeteorError): void {
 		return client.send(
 			this.serialize({
 				[DDP_EVENTS.MSG]: DDP_EVENTS.NO_SUBSCRIBE,
 				id,
-				...(error && { error }),
+				...(error && { error: isMeteorError(error) ? error.toJSON() : error }),
 			}),
 		);
 	}

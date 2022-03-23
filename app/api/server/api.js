@@ -453,10 +453,8 @@ export class APIClass extends Restivus {
 					return result;
 				};
 
-				if (this.hasHelperMethods()) {
-					for (const [name, helperMethod] of this.getHelperMethods()) {
-						endpoints[method][name] = helperMethod;
-					}
+				for (const [name, helperMethod] of this.getHelperMethods()) {
+					endpoints[method][name] = helperMethod;
 				}
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings

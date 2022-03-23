@@ -1,4 +1,4 @@
-import { Box, Select, SelectOptions, Field, Button } from '@rocket.chat/fuselage';
+import { Box, Select, SelectOption, Field, Button } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback, ReactElement } from 'react';
 
 import { WebdavAccounts } from '../../../app/models/client';
@@ -28,7 +28,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 		handlers: { handleSelected },
 	} = useForm({ selected: [] });
 
-	const options: SelectOptions = useMemo(() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]), [accounts]);
+	const options: SelectOption[] = useMemo(() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]), [accounts]);
 
 	const handleClickRemove = useCallback(() => {
 		try {

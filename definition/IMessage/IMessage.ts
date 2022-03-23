@@ -9,7 +9,21 @@ import type { FileProp } from './MessageAttachment/Files/FileProp';
 
 type MentionType = 'user' | 'team';
 
-type MessageTypesValues =
+type VoipMessageTypesValues =
+	| 'voip-call-started'
+	| 'voip-call-declined'
+	| 'voip-call-on-hold'
+	| 'voip-call-unhold'
+	| 'voip-call-ended'
+	| 'voip-call-duration'
+	| 'voip-call-wrapup'
+	| 'voip-call-ended-unexpectedly';
+
+type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close';
+
+type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
+
+export type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
 	| 'ul'
@@ -25,11 +39,15 @@ type MessageTypesValues =
 	| 'room_archived'
 	| 'room_unarchived'
 	| 'room_changed_privacy'
+	| 'room_changed_description'
+	| 'room_changed_announcement'
 	| 'room_changed_avatar'
 	| 'room_changed_topic'
 	| 'room_e2e_enabled'
 	| 'room_e2e_disabled'
-	| 'livechat-close';
+	| VoipMessageTypesValues
+	| OmnichannelTypesValues
+	| OtrSystemMessages;
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -73,6 +91,30 @@ export interface IMessage extends IRocketChatRecord {
 	attachments?: MessageAttachment[];
 }
 
+export type IVoipMessage = IMessage & {
+	voipData: {
+		callDuration?: number;
+		callStarted?: string;
+		callWaitingTime?: string;
+	};
+};
+export interface IMessageDiscussion extends IMessage {
+	drid: RoomID;
+}
+
+export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {
+	return 'drid' in message;
+};
+
+export type IMessageEdited = IMessage & {
+	editedAt: Date;
+	editedBy: Pick<IUser, '_id' | 'username'>;
+};
+
+export const isMessageEdited = (message: IMessage): message is IMessageEdited => {
+	return 'editedAt' in message && 'editedBy' in message;
+};
+
 export type IMessageInbox = IMessage & {
 	// email inbox fields
 	email?: {
@@ -82,3 +124,4 @@ export type IMessageInbox = IMessage & {
 };
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
+export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;

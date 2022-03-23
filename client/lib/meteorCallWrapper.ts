@@ -37,6 +37,12 @@ function wrapMeteorDDPCalls(): void {
 		};
 
 		const processResult = (_message: any): void => {
+			// Prevent error on reconnections and method retry.
+			// On those cases the API will be called 2 times but
+			// the handler will be deleted after the first execution.
+			if (!Meteor.connection._methodInvokers[message.id]) {
+				return;
+			}
 			Meteor.connection._livedata_data({
 				msg: 'updated',
 				methods: [message.id],

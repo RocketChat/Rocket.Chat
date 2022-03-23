@@ -1,6 +1,7 @@
 import '../ee/client/ecdh';
 import './polyfills';
 
+import '../lib/oauthRedirectUri';
 import './lib/meteorCallWrapper';
 import './importPackages';
 

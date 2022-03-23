@@ -4,6 +4,7 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
+import { otrSystemMessages } from '../../../otr/lib/constants';
 
 export class Messages extends Base {
 	constructor() {
@@ -105,7 +106,18 @@ export class Messages extends Base {
 	}
 
 	deleteOldOTRMessages(roomId, ts) {
-		const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
+		const query = {
+			rid: roomId,
+			t: {
+				$in: [
+					'otr',
+					otrSystemMessages.USER_JOINED_OTR,
+					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+				],
+			},
+			ts: { $lte: ts },
+		};
 		return this.remove(query);
 	}
 
@@ -449,11 +461,30 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
+	findE2EByRoom(roomId, options) {
+		const query = {
+			_hidden: { $ne: true },
+			rid: roomId,
+			t: 'e2e',
+		};
+		return this.find(query, options);
+	}
+
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
 			'rid': roomId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findStarredByRoom(roomId, options) {
+		const query = {
+			_hidden: { $ne: true },
+			starred: { $ne: null },
+			rid: roomId,
 		};
 
 		return this.find(query, options);
@@ -475,6 +506,34 @@ export class Messages extends Base {
 			_hidden: { $ne: true },
 			snippeted: true,
 			rid: roomId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findStarred(options) {
+		const query = {
+			_hidden: { $ne: true },
+			starred: { $ne: null },
+		};
+
+		return this.find(query, options);
+	}
+
+	findPinned(options) {
+		const query = {
+			t: { $ne: 'rm' },
+			_hidden: { $ne: true },
+			pinned: true,
+		};
+
+		return this.find(query, options);
+	}
+
+	findSnippet(options) {
+		const query = {
+			_hidden: { $ne: true },
+			snippeted: true,
 		};
 
 		return this.find(query, options);
@@ -911,14 +970,44 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('ult', roomId, message, user, extraData);
 	}
 
+	createUserConvertChannelToTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-converted-to-team', roomId, roomName, user, extraData);
+	}
+
+	createUserConvertTeamToChannelWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-converted-to-channel', roomId, roomName, user, extraData);
+	}
+
+	createUserRemoveRoomFromTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-removed-room-from-team', roomId, roomName, user, extraData);
+	}
+
+	createUserDeleteRoomFromTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-deleted-room-from-team', roomId, roomName, user, extraData);
+	}
+
+	createUserAddRoomToTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-added-room-to-team', roomId, roomName, user, extraData);
+	}
+
 	createUserRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ru', roomId, message, user, extraData);
 	}
 
+	createUserRemovedFromTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('removed-user-from-team', roomId, message, user, extraData);
+	}
+
 	createUserAddedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('au', roomId, message, user, extraData);
+	}
+
+	createUserAddedToTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('added-user-to-team', roomId, message, user, extraData);
 	}
 
 	createCommandWithRoomIdAndUser(command, roomId, user, extraData) {
@@ -973,6 +1062,11 @@ export class Messages extends Base {
 	createSubscriptionRoleRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
+	}
+
+	createOtrSystemMessagesWithRoomIdAndUser(roomId, user, id, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, extraData);
 	}
 
 	// REMOVE

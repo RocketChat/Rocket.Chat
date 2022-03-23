@@ -2,35 +2,47 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
-import { api } from '../../../../server/sdk/api';
 import { Roles } from '../../../models/server/raw';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { updateRoleAsync } from '../../../../server/lib/roles/updateRole';
+import { insertRoleAsync } from '../../../../server/lib/roles/insertRole';
+import { isRoleCreateProps } from '../../../../definition/rest/v1/roles';
 
 Meteor.methods({
-	async 'authorization:saveRole'(roleData) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
+	async 'authorization:saveRole'(roleData: Record<string, unknown>) {
+		methodDeprecationLogger.warn('authorization:saveRole will be deprecated in future versions of Rocket.Chat');
+		const userId = Meteor.userId();
+
+		if (!userId || !hasPermission(userId, 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:saveRole',
 				action: 'Accessing_permissions',
 			});
 		}
 
-		if (!roleData.name) {
-			throw new Meteor.Error('error-role-name-required', 'Role name is required', {
+		if (!isRoleCreateProps(roleData)) {
+			throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.', {
 				method: 'authorization:saveRole',
 			});
 		}
 
-		if (['Users', 'Subscriptions'].includes(roleData.scope) === false) {
-			roleData.scope = 'Users';
+		const role = {
+			description: roleData.description || '',
+			...(roleData.mandatory2fa !== undefined && { mandatory2fa: roleData.mandatory2fa }),
+			name: roleData.name,
+			scope: roleData.scope || 'Users',
+			protected: false,
+		};
+
+		const existingRole = await Roles.findOneByName(roleData.name, { projection: { _id: 1 } });
+		const options = {
+			broadcastUpdate: settings.get<boolean>('UI_DisplayRoles'),
+		};
+
+		if (existingRole) {
+			return updateRoleAsync(existingRole._id, role, options);
 		}
 
-		const update = await Roles.createOrUpdate(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
-		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
-				type: 'changed',
-				_id: roleData.name,
-			});
-		}
-		return update;
+		return insertRoleAsync(role);
 	},
 });
