@@ -1,4 +1,23 @@
 
+# 4.5.4
+`2022-03-24  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.31.0`
+
+### 🐛 Bug fixes
+
+
+- Force name to string ([#24930](https://github.com/RocketChat/Rocket.Chat/pull/24930))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+
 # 4.5.3
 `2022-03-21  ·  2 🚀  ·  8 🐛  ·  1 🔍  ·  5 👩‍💻👨‍💻`
 
