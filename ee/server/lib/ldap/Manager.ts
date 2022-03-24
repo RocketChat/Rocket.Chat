@@ -216,8 +216,8 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const ldapFields = Object.keys(fieldMap);
-		const roleList: Array<IRole['name']> = [];
-		const allowedRoles: Array<IRole['name']> = [];
+		const roleList: Array<IRole['_id']> = [];
+		const allowedRoles: Array<IRole['_id']> = [];
 
 		for await (const ldapField of ldapFields) {
 			if (!fieldMap[ldapField]) {
@@ -225,11 +225,11 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			const userField = fieldMap[ldapField];
-			const [roleName] = userField.split(/\.(.+)/);
-			allowedRoles.push(roleName);
+			const [roleId] = userField.split(/\.(.+)/);
+			allowedRoles.push(roleId);
 
 			if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-				roleList.push(roleName);
+				roleList.push(roleId);
 				continue;
 			}
 		}
@@ -243,7 +243,7 @@ export class LDAPEEManager extends LDAPManager {
 	private static createRoomForSync(channel: string): IRoom | undefined {
 		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
 
-		const roomOwner = settings.get('LDAP_Sync_User_Data_Channels_Admin') || '';
+		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
 		const room = createRoom('c', channel, roomOwner, [], false, {
 			customFields: { ldap: true },
@@ -308,7 +308,7 @@ export class LDAPEEManager extends LDAPManager {
 					} else if (syncUserChannelsRemove && !room.teamMain) {
 						const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
 						if (subscription) {
-							removeUserFromRoom(room._id, user);
+							await removeUserFromRoom(room._id, user);
 						}
 					}
 				} catch (e) {

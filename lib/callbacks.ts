@@ -36,7 +36,7 @@ type EventLikeCallbackSignatures = {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
-	'afterSaveMessage': (message: IMessage, room: IRoom) => void;
+	'afterSaveMessage': (message: IMessage, room: IRoom, uid: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.closeRoom': (room: IRoom) => void;
@@ -45,6 +45,13 @@ type EventLikeCallbackSignatures = {
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: ILivechatAgent) => void;
+	'afterAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
+	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
+	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[] }) => void;
+	'beforeDeleteRoom': (params: IRoom) => void;
+	'beforeJoinDefaultChannels': (user: IUser) => void;
+	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
+	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 };
 
 /**

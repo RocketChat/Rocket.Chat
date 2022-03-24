@@ -9,14 +9,18 @@ Meteor.methods({
 		check(name, String);
 		check(members, Match.Optional([String]));
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		const user = Meteor.user();
+
+		if (!uid || !user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
 		}
 
-		if (!hasPermission(Meteor.userId(), 'create-c')) {
+		if (!hasPermission(uid, 'create-c')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 		}
-		return createRoom('c', name, Meteor.user() && Meteor.user()?.username, members, readOnly, {
+		return createRoom('c', name, user.username, members, readOnly, {
 			customFields,
 			...extraData,
 		});

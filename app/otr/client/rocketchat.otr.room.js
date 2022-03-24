@@ -16,6 +16,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { otrSystemMessages } from '../lib/constants';
+import { APIClient } from '../../utils/client';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
@@ -51,6 +52,8 @@ OTR.Room = class {
 	}
 
 	acknowledge() {
+		APIClient.v1.post('statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this.roomId }] });
+
 		Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
 			roomId: this.roomId,
 			userId: this.userId,

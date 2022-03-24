@@ -337,7 +337,7 @@ API.v1.addRoute(
 				this.queryParams,
 				Match.ObjectIncluding({
 					userId: String,
-					canUserDelete: Match.Maybe(Boolean),
+					canUserDelete: Match.Maybe(String),
 				}),
 			);
 
@@ -356,7 +356,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { records, total } = await Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, canUserDelete ?? false, {
+			const booleanCanUserDelete = canUserDelete === 'true';
+			const { records, total } = await Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, booleanCanUserDelete, {
 				offset,
 				count,
 			});
@@ -515,11 +516,13 @@ API.v1.addRoute(
 			if (rooms?.length) {
 				const roomsFromTeam: string[] = await Team.getMatchingTeamRooms(team._id, rooms);
 
-				roomsFromTeam.forEach((rid) => {
-					removeUserFromRoom(rid, user, {
-						byUser: this.user,
-					});
-				});
+				await Promise.all(
+					roomsFromTeam.map((rid) =>
+						removeUserFromRoom(rid, user, {
+							byUser: this.user,
+						}),
+					),
+				);
 			}
 			return API.v1.success();
 		},
@@ -550,10 +553,7 @@ API.v1.addRoute(
 
 			if (rooms.length) {
 				const roomsFromTeam: string[] = await Team.getMatchingTeamRooms(team._id, rooms);
-
-				roomsFromTeam.forEach((rid) => {
-					removeUserFromRoom(rid, this.user);
-				});
+				await Promise.all(roomsFromTeam.map((rid) => removeUserFromRoom(rid, this.user)));
 			}
 
 			return API.v1.success();

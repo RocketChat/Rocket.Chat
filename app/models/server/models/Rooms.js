@@ -250,10 +250,7 @@ export class Rooms extends Base {
 		return this.update({ _id }, update);
 	}
 
-	setReadOnlyById(_id, readOnly, hasPermission) {
-		if (!hasPermission) {
-			throw new Error('You must provide "hasPermission" function to be able to call this method');
-		}
+	setReadOnlyById(_id, readOnly) {
 		const query = {
 			_id,
 		};
@@ -1345,6 +1342,15 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	findByE2E(options) {
+		return this.find(
+			{
+				encrypted: true,
+			},
+			options,
+		);
 	}
 
 	updateGroupDMsRemovingUsernamesByUsername(username, userId) {

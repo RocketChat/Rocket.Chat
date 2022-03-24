@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 
 import { API } from '../api';
-import { hasRole, hasPermission } from '../../../authorization/server';
+import { hasPermission } from '../../../authorization/server';
 import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
@@ -16,7 +16,7 @@ API.v1.addRoute(
 				cloudBlob: String,
 			});
 
-			if (!hasRole(this.userId, 'admin')) {
+			if (!hasPermission(this.userId, 'register-on-cloud')) {
 				return API.v1.unauthorized();
 			}
 

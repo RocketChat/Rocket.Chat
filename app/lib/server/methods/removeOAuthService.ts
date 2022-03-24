@@ -9,13 +9,15 @@ Meteor.methods({
 	async removeOAuthService(name) {
 		check(name, String);
 
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'removeOAuthService',
 			});
 		}
 
-		if (hasPermission(Meteor.userId(), 'add-oauth-service') !== true) {
+		if (hasPermission(userId, 'add-oauth-service') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'removeOAuthService' });
 		}
 

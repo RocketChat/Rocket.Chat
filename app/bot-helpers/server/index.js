@@ -43,12 +43,12 @@ class BotHelpers {
 		return this[prop];
 	}
 
-	addUserToRole(userName, roleName) {
-		Meteor.call('authorization:addUserToRole', roleName, userName);
+	addUserToRole(userName, roleId) {
+		Meteor.call('authorization:addUserToRole', roleId, userName);
 	}
 
-	removeUserFromRole(userName, roleName) {
-		Meteor.call('authorization:removeUserFromRole', roleName, userName);
+	removeUserFromRole(userName, roleId) {
+		Meteor.call('authorization:removeUserFromRole', roleId, userName);
 	}
 
 	addUserToRoom(userName, room) {

@@ -638,6 +638,11 @@ export class Users extends Base {
 		);
 	}
 
+	/**
+	 * @param {IRole['_id'][]} roles the list of role ids
+	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
+	 * @param {any} options
+	 */
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -648,7 +653,11 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findActiveUsersInRoles(roles, scope, options) {
+	/**
+	 * @param {IRole['_id'][]} roles the list of role ids
+	 * @param {any} options
+	 */
+	findActiveUsersInRoles(roles, options = undefined) {
 		roles = [].concat(roles);
 
 		const query = {
@@ -1310,6 +1319,11 @@ export class Users extends Base {
 		return this.update({}, update, { multi: true });
 	}
 
+	/**
+	 * @param latestLastLoginDate
+	 * @param {IRole['_id']} role the role id
+	 * @param {boolean} active
+	 */
 	setActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', active = false) {
 		const neverActive = { lastLogin: { $exists: 0 }, createdAt: { $lte: latestLastLoginDate } };
 		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
@@ -1687,6 +1701,16 @@ Find users to send a message by email if:
 		return this.find(query, options).count();
 	}
 
+	countUsersByService(serviceName, options) {
+		const query = {
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			[`services.${serviceName}`]: { $exists: true },
+		};
+
+		return this.find(query, options).count();
+	}
+
 	getActiveLocalUserCount() {
 		return this.findActive().count() - this.findActiveRemote().count();
 	}
@@ -1720,6 +1744,22 @@ Find users to send a message by email if:
 			},
 		};
 
+		return this.find(query, options);
+	}
+
+	findActiveUsersTOTPEnable(options) {
+		const query = {
+			'active': true,
+			'services.totp.enabled': true,
+		};
+		return this.find(query, options);
+	}
+
+	findActiveUsersEmail2faEnable(options) {
+		const query = {
+			'active': true,
+			'services.email2fa.enabled': true,
+		};
 		return this.find(query, options);
 	}
 
