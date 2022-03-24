@@ -428,7 +428,7 @@ export class SAMLUtils {
 			}
 			attributeList.set(attributeName, profile[attributeName]);
 		}
-		const email = this.getProfileValue(profile, userDataMap.email, true);
+		const email = this.getProfileValue(profile, userDataMap.email);
 		const profileUsername = this.getProfileValue(profile, userDataMap.username, true);
 		const name = this.getProfileValue(profile, userDataMap.name, true);
 
