@@ -102,7 +102,7 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 				throw new Error(t('No_messages_found_to_prune'));
 			}
 
-			dispatchToastMessage({ type: 'success', message: `${count} ${t('messages_pruned')}` });
+			dispatchToastMessage({ type: 'success', message: t("message_pruned", { count }) });
 			closeModal();
 			reset();
 		} catch (error) {
