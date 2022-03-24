@@ -2992,6 +2992,17 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
+		this.add('Cloud_Workspace_Had_Trial', '', {
+			type: 'boolean',
+			hidden: true,
+			readonly: true,
+			// enableQuery: {
+			// 	_id: 'Register_Server',
+			// 	value: true,
+			// },
+			secret: true,
+		});
+
 		this.add('Cloud_Workspace_Access_Token', '', {
 			type: 'string',
 			hidden: true,

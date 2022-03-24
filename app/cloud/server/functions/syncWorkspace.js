@@ -56,6 +56,11 @@ export async function syncWorkspace(reconnectCheck = false) {
 		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
 	}
 
+	// TODO find out how will this data come from cloud
+	// if (data.hadTrial) {
+	// 	Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
+	// }
+
 	if (data.nps) {
 		const { id: npsId, expireAt } = data.nps;
 
