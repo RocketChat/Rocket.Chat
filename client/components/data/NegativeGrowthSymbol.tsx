@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { ComponentProps, ReactElement } from 'react';
 
 const style = { width: '1.5em', height: '1.5em', verticalAlign: '-0.5em' };
 
-const NegativeGrowthSymbol = (props) => (
+type NegativeGrowthSymbolProps = Omit<ComponentProps<'svg'>, 'style'>;
+
+const NegativeGrowthSymbol = (props: NegativeGrowthSymbolProps): ReactElement => (
 	<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 25 24' style={style} {...props}>
 		<path
 			clipRule='evenodd'

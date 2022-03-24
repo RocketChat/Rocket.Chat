@@ -1,10 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ComponentProps, ReactElement } from 'react';
 
 import NegativeGrowthSymbol from './NegativeGrowthSymbol';
 import PositiveGrowthSymbol from './PositiveGrowthSymbol';
 
-function Growth({ children, ...props }) {
+type GrowthProps = ComponentProps<typeof Box> & {
+	children: number;
+};
+
+const Growth = ({ children, ...props }: GrowthProps): ReactElement | null => {
 	if (children === 0) {
 		return null;
 	}
@@ -15,6 +19,6 @@ function Growth({ children, ...props }) {
 			{String(Math.abs(children))}
 		</Box>
 	);
-}
+};
 
 export default Growth;
