@@ -297,7 +297,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 							{useMemo(
 								() => (
 									<Field>
-										<Field.Label>{t('Password')}</Field.Label>
+										<Field.Label>{t('New_password')}</Field.Label>
 										<Field.Row>
 											<PasswordInput
 												autoComplete='off'
