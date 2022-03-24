@@ -48,18 +48,6 @@ module.exports = {
 			use: '@settlin/spacebars-loader',
 		});
 
-		config.module.rules.push({
-			test: /\.(ts|tsx)$/,
-			use: [
-				{
-					loader: 'ts-loader',
-					options: {
-						configFile: join(__dirname, '../tsconfig.webpack.json'),
-					},
-				},
-			],
-		});
-
 		config.plugins.push(
 			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.js')),
 			new webpack.NormalModuleReplacementPlugin(/(app)\/*.*\/(server)\/*/, require.resolve('./mocks/empty.ts')),
