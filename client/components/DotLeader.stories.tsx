@@ -1,18 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
-import { Story } from '@storybook/react';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import DotLeader from './DotLeader';
 
 export default {
-	title: 'components/DotLeader',
+	title: 'Community/Components/DotLeader',
 	component: DotLeader,
-};
+} as ComponentMeta<typeof DotLeader>;
 
-export const Default: Story = () => (
+export const Default: ComponentStory<typeof DotLeader> = (args) => (
 	<Box display='flex' flexDirection='row'>
 		Label
-		<DotLeader />
+		<DotLeader {...args} />
 		12345
 	</Box>
 );
+Default.storyName = 'DotLeader';

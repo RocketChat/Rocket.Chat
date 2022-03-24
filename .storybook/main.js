@@ -3,15 +3,8 @@ const { resolve, relative, join } = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-	stories: [
-		'../app/**/*.stories.{js,tsx}',
-		'../client/**/*.stories.{js,tsx}',
-		...(process.env.EE === 'true' ? ['../ee/**/*.stories.{js,tsx}'] : []),
-	],
+	stories: ['../app/**/*.stories.{js,tsx}', '../client/**/*.stories.{js,tsx}', '../ee/**/*.stories.{js,tsx}'],
 	addons: ['@storybook/addon-essentials', '@storybook/addon-postcss'],
-	typescript: {
-		reactDocgen: 'none',
-	},
 	webpackFinal: async (config) => {
 		const cssRule = config.module.rules.find(({ test }) => test.test('index.css'));
 

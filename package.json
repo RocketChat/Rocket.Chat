@@ -42,9 +42,7 @@
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
 		"release": "meteor npm run set-version --silent",
-		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006",
-		"storybook-ee": "cross-env NODE_OPTIONS=--max-old-space-size=8192 EE=true start-storybook -p 6006",
-		"build-storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 EE=true build-storybook "
+		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006"
 	},
 	"license": "MIT",
 	"repository": {
