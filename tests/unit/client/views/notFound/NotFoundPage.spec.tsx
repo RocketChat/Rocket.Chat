@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { expect, spy } from 'chai';
 import React from 'react';
 
-import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
-import NotFoundPage from './NotFoundPage';
+import RouterContextMock from '../../../../mocks/client/RouterContextMock';
+import NotFoundPage from '../../../../../client/views/notFound/NotFoundPage';
 
 describe('views/notFound/NotFoundPage', () => {
 	it('should look good', async () => {
