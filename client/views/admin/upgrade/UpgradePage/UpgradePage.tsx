@@ -12,15 +12,15 @@ const iframeStyle = { width: '100%', height: '100%' };
 const getUrl = (type: UpgradeTabVariants, date: string | undefined): string => {
 	switch (type) {
 		case 'goFullyFeatured':
-			return 'https://rocket.chat/product-projects/upgrade-tab-ce-1-unregistered';
+			return 'https://go.rocket.chat/i/upgrade-ce-1-unregistered';
 		case 'goFullyFeaturedRegistered':
-			return 'https://rocket.chat/product-projects/upgrade-tab-ce-1-registered';
+			return 'https://go.rocket.chat/i/upgrade-ce-1-registered';
 		case 'trialGold':
-			return `https://rocket.chat/product-projects/upgrade-tab-gold-trial${date ? `?date=${date}` : ''}`;
+			return `https://go.rocket.chat/i/upgrade-gold-trial${date ? `?date=${date}` : ''}`;
 		case 'trialEnterprise':
-			return `https://rocket.chat/product-projects/upgrade-tab-ee-trial${date ? `?date=${date}` : ''}`;
+			return `https://go.rocket.chat/i/upgrade-ee-trial${date ? `?date=${date}` : ''}`;
 		case 'upgradeYourPlan':
-			return 'https://rocket.chat/product-projects/upgrade-tab-ce-2';
+			return 'https://go.rocket.chat/i/upgrade-ce-2';
 	}
 };
 
