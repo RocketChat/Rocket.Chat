@@ -15,7 +15,7 @@ const NewRolePage = () => {
 	const router = useRoute('admin-permissions');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm({
+	const { values, handlers, hasUnsavedChanges, reset } = useForm({
 		name: '',
 		description: '',
 		scope: 'Users',
