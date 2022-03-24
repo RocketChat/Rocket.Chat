@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect } from 'react';
 
-import NotAuthorizedPage from '../../../../../client/components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useCurrentRoute, useRoute } from '../../../../../client/contexts/RouterContext';
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';

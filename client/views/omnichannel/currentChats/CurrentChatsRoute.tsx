@@ -4,7 +4,7 @@ import moment from 'moment';
 import React, { useMemo, useCallback, useState, FC } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';

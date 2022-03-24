@@ -1,7 +1,7 @@
 import { Callout } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { usePermission } from '../../../contexts/AuthorizationContext';

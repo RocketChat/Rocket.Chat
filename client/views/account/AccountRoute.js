@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
-import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';

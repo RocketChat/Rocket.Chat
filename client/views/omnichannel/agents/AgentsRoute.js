@@ -3,7 +3,7 @@ import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.ch
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import VerticalBar from '../../../components/VerticalBar';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { usePermission } from '../../../contexts/AuthorizationContext';

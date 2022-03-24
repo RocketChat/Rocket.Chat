@@ -1,6 +1,6 @@
 import React from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRouteParameter } from '../../../contexts/RouterContext';
 import PermissionsTable from './PermissionsTable';

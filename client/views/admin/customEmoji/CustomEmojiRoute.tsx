@@ -1,7 +1,7 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import React, { useCallback, useRef, ReactElement } from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { usePermission } from '../../../contexts/AuthorizationContext';

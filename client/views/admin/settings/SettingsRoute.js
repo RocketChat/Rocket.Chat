@@ -1,6 +1,6 @@
 import React from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import { useRouteParameter } from '../../../contexts/RouterContext';
 import { useIsPrivilegedSettingsContext } from '../../../contexts/SettingsContext';
 import EditableSettingsProvider from '../../../providers/EditableSettingsProvider';

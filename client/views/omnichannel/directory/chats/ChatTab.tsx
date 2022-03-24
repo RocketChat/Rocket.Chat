@@ -1,6 +1,6 @@
 import React, { ReactElement, SetStateAction, Dispatch } from 'react';
 
-import NotAuthorizedPage from '../../../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 import ChatTable from './ChatTable';
 
