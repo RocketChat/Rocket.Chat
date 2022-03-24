@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
 
-import { sortAppsByAlphabeticalOrInverseOrder } from './sortAppsByAlphabeticalOrInverseOrder';
+import { sortAppsByAlphabeticalOrInverseOrder } from '../../../../../../../client/views/admin/apps/helpers/sortAppsByAlphabeticalOrInverseOrder';
 
 describe('sortAppsByAlphabeticalOrder', () => {
 	it('should return a positive number if first word is, alphabetically, after second word', () => {

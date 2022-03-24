@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
 
-import { filterAppsByPaid } from './filterAppsByPaid';
+import { filterAppsByPaid } from '../../../../../../../client/views/admin/apps/helpers/filterAppsByPaid';
 
 describe('filterAppsByPaid', () => {
 	it('should return true if both app purchase type is subscription and app price exists and is not 0', () => {
