@@ -24,7 +24,7 @@ module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
 	exit: true,
 	spec: [
-		'ee/**/*.tests.ts',
+		'ee/tests/**/*.tests.ts',
 		'tests/unit/app/**/*.spec.ts',
 		'tests/unit/app/**/*.tests.js',
 		'tests/unit/app/**/*.tests.ts',

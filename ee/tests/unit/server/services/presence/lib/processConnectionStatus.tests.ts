@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { expect } from 'chai';
 
-import { UserStatus } from '../../../../../definition/UserStatus';
-import { processConnectionStatus, processStatus, processPresenceAndStatus } from './processConnectionStatus';
+import { UserStatus } from '../../../../../../../definition/UserStatus';
+import {
+	processConnectionStatus,
+	processStatus,
+	processPresenceAndStatus,
+} from '../../../../../../server/services/presence/lib/processConnectionStatus';
 
 describe('Presence micro service', () => {
 	it('should return connection as online when there is a connection online', () => {
