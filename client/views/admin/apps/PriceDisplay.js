@@ -10,6 +10,7 @@ const formatPriceAndPurchaseType = (purchaseType, pricingPlans, price) => {
 		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
 			return { type, price: '-' };
 		}
+
 		return { type, price: formatPricingPlan(pricingPlans[0]) };
 	}
 
@@ -34,9 +35,7 @@ function PriceDisplay({ purchaseType, pricingPlans, price, showType = true, ...p
 					{t(type)}
 				</Box>
 			)}
-			<Box color='hint' withTruncatedText>
-				{!showType && type === 'Free' ? t(type) : formattedPrice}
-			</Box>
+			<Box withTruncatedText>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
 		</Box>
 	);
 }
