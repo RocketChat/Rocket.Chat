@@ -25,5 +25,5 @@ module.exports = {
 	require: [...base.require, './tests/setup/registerWebApiMocks.ts', './tests/setup/cleanupTestingLibrary.ts'],
 	exit: false,
 	slow: 200,
-	spec: ['tests/unit/client/**/*.spec.ts', 'tests/unit/client/**/*.spec.tsx'],
+	spec: ['tests/unit/client/**/*.spec.ts', 'tests/unit/lib/**/*.tests.ts', 'tests/unit/client/**/*.spec.tsx'],
 };
