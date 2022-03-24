@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { parseCSV } from './parseCSV';
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 
 describe('Parse CSV', () => {
 	it('should return an empty array for an empty string', () => {
