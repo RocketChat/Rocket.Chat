@@ -359,16 +359,20 @@
 	},
 	"nyc": {
 		"include": [
-			"app/**/*.js",
-			"app/**/*.ts",
-			"ee/**/*.js",
-			"ee/**/*.ts",
-			"server/**/*.js",
-			"server/**/*.ts"
+			"**/*.js",
+			"**/*.ts"
 		],
 		"exclude": [
+		  	".houston",
+		  	".meteor",
+		  	".scripts",
+		  	".snapcraft",
+		  	".storybook",
 			"node_modules",
 			"**/.mocharc.js",
+			"**/.mocharc.api.js",
+			"**/.mocharc.client.js",
+			"**/.mocharc.definition.js",
 			"**/tests/*"
 		],
 		"all": true
