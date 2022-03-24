@@ -15,7 +15,7 @@ const NewRolePage = () => {
 	const router = useRoute('admin-permissions');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { values, handlers } = useForm({
+	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm({
 		name: '',
 		description: '',
 		scope: 'Users',
@@ -45,6 +45,9 @@ const NewRolePage = () => {
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch w='full'>
+					<Button light disabled={!hasUnsavedChanges} onClick={reset}>
+						{t('Reset')}
+					</Button>
 					<Button primary onClick={handleSave}>
 						{t('Save')}
 					</Button>
