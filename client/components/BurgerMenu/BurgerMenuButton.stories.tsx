@@ -1,18 +1,44 @@
 import { action } from '@storybook/addon-actions';
-import { Story } from '@storybook/react';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { centeredDecorator } from '../../../.storybook/decorators';
+import { useAutoSequence } from '../../hooks/useAutoSequence';
 import BurgerMenuButton from './BurgerMenuButton';
 
 export default {
-	title: 'components/burger/BurgerMenuButton',
+	title: 'Community/Components/Burger Menu/BurgerMenuButton',
 	component: BurgerMenuButton,
-	decorators: [centeredDecorator],
+	parameters: {
+		layout: 'centered',
+		controls: { hideNoControlsWarning: true },
+		actions: { argTypesRegex: '^on.*' },
+	},
+} as ComponentMeta<typeof BurgerMenuButton>;
+
+export const Example: ComponentStory<typeof BurgerMenuButton> = () => {
+	const { open, badge } = useAutoSequence([
+		{},
+		{ open: true },
+		{},
+		{ badge: 99 },
+		{ open: true, badge: 99 },
+		{ badge: 99 },
+		{ open: true },
+	] as const);
+
+	return <BurgerMenuButton open={open} badge={badge} onClick={action('onClick')} />;
 };
 
-export const Basic: Story = () => <BurgerMenuButton onClick={action('click')} />;
+const Template: ComponentStory<typeof BurgerMenuButton> = (args) => <BurgerMenuButton {...args} />;
 
-export const Open: Story = () => <BurgerMenuButton open onClick={action('click')} />;
+export const Clean = Template.bind({});
 
-export const WithBadge: Story = () => <BurgerMenuButton badge={99} onClick={action('click')} />;
+export const Open = Template.bind({});
+Open.args = {
+	open: true,
+};
+
+export const WithBadge = Template.bind({});
+WithBadge.args = {
+	badge: 99,
+};

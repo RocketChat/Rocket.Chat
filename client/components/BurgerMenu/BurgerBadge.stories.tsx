@@ -1,21 +1,26 @@
 import { Box } from '@rocket.chat/fuselage';
-import { Story } from '@storybook/react';
-import React, { ReactNode, ReactElement } from 'react';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
+import React, { ReactElement } from 'react';
 
-import { centeredDecorator } from '../../../.storybook/decorators';
 import BurgerBadge from './BurgerBadge';
 
 export default {
-	title: 'components/burger/BurgerBadge',
+	title: 'Community/Components/Burger Menu/BurgerBadge',
 	component: BurgerBadge,
+	parameters: {
+		layout: 'centered',
+	},
 	decorators: [
-		(storyFn: () => ReactNode): ReactElement => (
-			<Box size={24} borderWidth='x1' borderStyle='dashed' position='relative'>
-				{storyFn()}
+		(fn): ReactElement => (
+			<Box size={24} backgroundColor='neutral-500' position='relative'>
+				{fn()}
 			</Box>
 		),
-		centeredDecorator,
 	],
-};
+} as ComponentMeta<typeof BurgerBadge>;
 
-export const Basic: Story = () => <BurgerBadge>99</BurgerBadge>;
+export const Default: ComponentStory<typeof BurgerBadge> = (args) => <BurgerBadge {...args} />;
+Default.storyName = 'BurgerBadge';
+Default.args = {
+	children: 99,
+};

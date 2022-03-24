@@ -1,18 +1,32 @@
-import { Story } from '@storybook/react';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { centeredDecorator } from '../../../.storybook/decorators';
-import { useAutoToggle } from '../../../.storybook/hooks';
+import { useAutoSequence } from '../../hooks/useAutoSequence';
 import BurgerIcon from './BurgerIcon';
 
 export default {
-	title: 'components/burger/BurgerIcon',
+	title: 'Community/Components/Burger Menu/BurgerIcon',
 	component: BurgerIcon,
-	decorators: [centeredDecorator],
+	parameters: {
+		layout: 'centered',
+		controls: { hideNoControlsWarning: true },
+	},
+} as ComponentMeta<typeof BurgerIcon>;
+
+export const Example: ComponentStory<typeof BurgerIcon> = () => {
+	const open = useAutoSequence([false, true]);
+
+	return <BurgerIcon open={open} />;
 };
 
-export const Normal: Story = () => <BurgerIcon />;
+const Template: ComponentStory<typeof BurgerIcon> = (args) => <BurgerIcon {...args} />;
 
-export const Open: Story = () => <BurgerIcon open />;
+export const Closed = Template.bind({});
+Closed.args = {
+	open: false,
+};
 
-export const Transitioning: Story = () => <BurgerIcon open={useAutoToggle()} />;
+export const Open = Template.bind({});
+Open.args = {
+	open: true,
+};

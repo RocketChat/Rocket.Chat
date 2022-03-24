@@ -48,16 +48,3 @@ export const fullHeightDecorator = (storyFn: () => ReactElement): ReactElement =
 		{storyFn()}
 	</div>
 );
-
-export const centeredDecorator = (storyFn: () => ReactElement): ReactElement => (
-	<div
-		style={{
-			display: 'flex',
-			alignItems: 'center',
-			justifyContent: 'center',
-			minHeight: '100vh',
-		}}
-	>
-		{storyFn()}
-	</div>
-);
