@@ -71688,6 +71688,31 @@
           ]
         }
       ]
+    },
+    "4.5.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24930",
+          "title": "[FIX] Force name to string",
+          "userLogin": "geekgonecrazy",
+          "milestone": "4.5.4",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
