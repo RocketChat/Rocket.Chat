@@ -3,22 +3,22 @@ import React, { ReactElement, useEffect, useRef, useState } from 'react';
 
 import type { UpgradeTabVariants } from '../../../../../lib/getUpgradeTabType';
 import Page from '../../../../components/Page';
-import { useRouteParameter } from '../../../../contexts/RouterContext';
+import { useRouteParameter, useQueryStringParameter } from '../../../../contexts/RouterContext';
 import { useAbsoluteUrl } from '../../../../contexts/ServerContext';
 import UpgradePageError from '../UpgradePageError';
 
 const iframeStyle = { width: '100%', height: '100%' };
 
-const getUrl = (type: UpgradeTabVariants): string => {
+const getUrl = (type: UpgradeTabVariants, date: string | undefined): string => {
 	switch (type) {
 		case 'goFullyFeatured':
 			return 'https://rocket.chat/product-projects/upgrade-tab-ce-1-unregistered';
 		case 'goFullyFeaturedRegistered':
 			return 'https://rocket.chat/product-projects/upgrade-tab-ce-1-registered';
 		case 'trialGold':
-			return 'https://rocket.chat/product-projects/upgrade-tab-gold-trial';
+			return `https://rocket.chat/product-projects/upgrade-tab-gold-trial${date ? `?date=${date}` : ''}`;
 		case 'trialEnterprise':
-			return 'https://rocket.chat/product-projects/upgrade-tab-ee-trial';
+			return `https://rocket.chat/product-projects/upgrade-tab-ee-trial${date ? `?date=${date}` : ''}`;
 		case 'upgradeYourPlan':
 			return 'https://rocket.chat/product-projects/upgrade-tab-ce-2';
 	}
@@ -49,10 +49,14 @@ const getWindowMessagePath = (e: MessageEvent<string>): string | undefined => {
 };
 
 const UpgradePage = (): ReactElement => {
-	const type = useRouteParameter('type') as UpgradeTabVariants;
-	const getAbsoluteUrl = useAbsoluteUrl();
 	const [isLoading, setIsLoading] = useState(true);
-	const pageUrl = getUrl(type);
+
+	const type = useRouteParameter('type') as UpgradeTabVariants;
+	const trialEndDate = useQueryStringParameter('trialEndDate');
+	const pageUrl = getUrl(type, trialEndDate);
+
+	const getAbsoluteUrl = useAbsoluteUrl();
+
 	const ref = useRef<HTMLIFrameElement>(null);
 	const hasConnection = navigator.onLine;
 

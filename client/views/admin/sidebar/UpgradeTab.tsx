@@ -27,9 +27,9 @@ const customColors = {
 	active: colors.p900,
 };
 
-type UpgradeTabProps = { type: UpgradeTabVariants; currentPath: string };
+type UpgradeTabProps = { type: UpgradeTabVariants; currentPath: string; trialEndDate: string | undefined };
 
-const UpgradeTab = ({ type, currentPath }: UpgradeTabProps): ReactElement => {
+const UpgradeTab = ({ type, currentPath, trialEndDate }: UpgradeTabProps): ReactElement => {
 	const path = useRoutePath(
 		'upgrade',
 		useMemo(
@@ -38,6 +38,7 @@ const UpgradeTab = ({ type, currentPath }: UpgradeTabProps): ReactElement => {
 			}),
 			[type],
 		),
+		useMemo(() => (trialEndDate ? { trialEndDate } : undefined), [trialEndDate]),
 	);
 	const t = useTranslation();
 

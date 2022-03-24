@@ -1,4 +1,5 @@
 import { check } from 'meteor/check';
+import { format } from 'date-fns';
 // import { HTTP } from 'meteor/http';
 
 import { API } from '../api';
@@ -97,7 +98,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'cloud.getUpgradeTabType',
+	'cloud.getUpgradeTabParams',
 	{ authRequired: true },
 	{
 		async get() {
@@ -105,32 +106,9 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { workspaceRegistered /* , workspaceId*/ } = retrieveRegistrationStatus();
+			const { workspaceRegistered } = retrieveRegistrationStatus();
 
 			const hadExpiredTrials = false;
-
-			// if (workspaceRegistered) {
-			// 	const accessToken = getWorkspaceAccessToken(true);
-
-			// 	console.log('\ntoken: ', accessToken);
-
-			// 	if (accessToken) {
-			// 		try {
-			// 			const cloudUrl = settings.get('Cloud_Url');
-
-			// 			const url = `${cloudUrl}/api/v2/my/workspaces/${workspaceId}`;
-			// 			console.log(url);
-
-			// 			const result = HTTP.get(url, {
-			// 				headers: { Authorization: `Bearer ${accessToken}` },
-			// 			});
-			// 			console.log(result);
-			// 			// 	hadExpiredTrials = result.trialId;
-			// 		} catch (e) {
-			// 			console.log(e.response);
-			// 		}
-			// 	}
-			// }
 
 			const licenses = getLicenses()
 				.filter(({ valid }) => valid)
@@ -138,8 +116,10 @@ API.v1.addRoute(
 
 			// TODO update license type to include META
 			// Depends on implementation on cloud side.
+			const trialLicense = licenses.find(({ meta }) => meta?.trial);
 			const isTrial = !licenses.map(({ meta }) => meta?.trial).includes(false);
 			const hasGoldLicense = licenses.map(({ tag }) => tag?.name === 'gold').includes(true);
+			const trialEndDate = trialLicense ? format(new Date(trialLicense.expiry), 'yyyy-MM-dd') : undefined;
 
 			const upgradeTabType = getUpgradeTabType({
 				registered: workspaceRegistered,
@@ -149,7 +129,7 @@ API.v1.addRoute(
 				hasGoldLicense,
 			});
 
-			return API.v1.success({ tabType: upgradeTabType });
+			return API.v1.success({ tabType: upgradeTabType, trialEndDate });
 		},
 	},
 );

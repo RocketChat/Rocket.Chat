@@ -11,7 +11,7 @@ export type CloudEndpoints = {
 	'cloud.confirmationPoll': {
 		GET: (params: { deviceCode: string; resend?: boolean }) => { pollData: CloudConfirmationPollData };
 	};
-	'cloud.getUpgradeTabType': {
-		GET: (params: void) => { tabType: UpgradeTabVariants | false };
+	'cloud.getUpgradeTabParams': {
+		GET: (params: void) => { tabType: UpgradeTabVariants | false; trialEndDate: string | undefined };
 	};
 };

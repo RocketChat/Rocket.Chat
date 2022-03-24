@@ -13,28 +13,28 @@ type AdminSidebarPagesProps = {
 	currentPath: string;
 };
 
-const useUpgradeTabType = (): [data: UpgradeTabVariants | false, isLoading: boolean] => {
-	const getUpgradeTabType = useEndpoint('GET', 'cloud.getUpgradeTabType');
+const useUpgradeTabParams = (): [data: UpgradeTabVariants | false, trialEndDate: string | undefined] => {
+	const getUpgradeTabParams = useEndpoint('GET', 'cloud.getUpgradeTabParams');
 
-	const { data, isLoading } = useQuery(
+	const { data } = useQuery(
 		'upgradeTabType',
-		useCallback(async () => getUpgradeTabType(), [getUpgradeTabType]),
+		useCallback(async () => getUpgradeTabParams(), [getUpgradeTabParams]),
 	);
 
 	console.log(data);
 
-	return [data?.tabType || false, isLoading];
+	return [data?.tabType || false, data?.trialEndDate];
 };
 
 const AdminSidebarPages: FC<AdminSidebarPagesProps> = ({ currentPath }) => {
 	const items = useSubscription(itemsSubscription);
-	const [upgradeTabType] = useUpgradeTabType();
+	const [upgradeTabType, trialEndDate] = useUpgradeTabParams();
 
 	console.log(upgradeTabType);
 
 	return (
 		<Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
-			{upgradeTabType && <UpgradeTab type={upgradeTabType} currentPath={currentPath} />}
+			{upgradeTabType && <UpgradeTab type={upgradeTabType} currentPath={currentPath} trialEndDate={trialEndDate} />}
 			<Sidebar.ItemsAssembler items={items} currentPath={currentPath} />
 		</Box>
 	);
