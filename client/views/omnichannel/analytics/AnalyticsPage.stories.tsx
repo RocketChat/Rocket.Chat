@@ -4,7 +4,7 @@ import React from 'react';
 import AnalyticsPage from './AnalyticsPage';
 
 export default {
-	title: 'Community/Views/Omnichannel/AnalyticsPage',
+	title: 'Omnichannel/AnalyticsPage',
 	component: AnalyticsPage,
 	parameters: {
 		layout: 'fullscreen',

@@ -5,7 +5,7 @@ import React from 'react';
 import GenericTable from '.';
 
 export default {
-	title: 'Community/Components/GenericTable',
+	title: 'Components/GenericTable',
 	component: GenericTable,
 	parameters: {
 		layout: 'padded',

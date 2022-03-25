@@ -4,7 +4,7 @@ import React from 'react';
 import { Mailer } from './Mailer';
 
 export default {
-	title: 'Community/Views/Admin/Mailer/Mailer',
+	title: 'Admin/Mailer/Mailer',
 	component: Mailer,
 	parameters: {
 		layout: 'fullscreen',

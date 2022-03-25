@@ -4,7 +4,7 @@ import React from 'react';
 import UserAutoComplete from '.';
 
 export default {
-	title: 'Community/Components/UserAutoComplete',
+	title: 'Components/UserAutoComplete',
 	component: UserAutoComplete,
 	parameters: {
 		layout: 'centered',

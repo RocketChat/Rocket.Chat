@@ -7,7 +7,7 @@ import VerticalBar from '../../../../../../client/components/VerticalBar';
 import CannedResponseList from './CannedResponseList';
 
 export default {
-	title: 'Enterprise/Views/Omnichannel/CannedResponseList',
+	title: 'Enterprise/Omnichannel/CannedResponseList',
 	component: CannedResponseList,
 	parameters: {
 		actions: {

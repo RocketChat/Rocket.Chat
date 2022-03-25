@@ -4,7 +4,7 @@ import React from 'react';
 import AuditPage from './AuditPage';
 
 export default {
-	title: 'Enterprise/Views/Auditing/AuditPage',
+	title: 'Enterprise/Auditing/AuditPage',
 	component: AuditPage,
 	parameters: {
 		layout: 'fullscreen',

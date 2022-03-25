@@ -4,7 +4,7 @@ import React from 'react';
 import UserCard from '.';
 
 export default {
-	title: 'Community/Components/UserCard',
+	title: 'Components/UserCard',
 	component: UserCard,
 	parameters: {
 		layout: 'centered',

@@ -5,7 +5,7 @@ import React from 'react';
 import BusinessHoursTable from './BusinessHoursTable';
 
 export default {
-	title: 'Enterprise/Views/Omnichannel/BusinessHoursTable',
+	title: 'Enterprise/Omnichannel/BusinessHoursTable',
 	component: BusinessHoursTable,
 	parameters: {
 		actions: {

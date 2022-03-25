@@ -5,7 +5,7 @@ import React from 'react';
 import AssetSettingInput from './AssetSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/AssetSettingInput',
+	title: 'Admin/Settings/Inputs/AssetSettingInput',
 	component: AssetSettingInput,
 	decorators: [
 		(fn) => (

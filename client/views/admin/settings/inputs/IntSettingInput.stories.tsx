@@ -5,7 +5,7 @@ import React from 'react';
 import IntSettingInput from './IntSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/IntSettingInput',
+	title: 'Admin/Settings/Inputs/IntSettingInput',
 	component: IntSettingInput,
 	parameters: {
 		actions: {

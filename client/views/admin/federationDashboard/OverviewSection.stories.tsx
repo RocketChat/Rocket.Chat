@@ -4,7 +4,7 @@ import React from 'react';
 import OverviewSection from './OverviewSection';
 
 export default {
-	title: 'Community/Views/Admin/Federation Dashboard/OverviewSection',
+	title: 'Admin/Federation Dashboard/OverviewSection',
 	component: OverviewSection,
 	parameters: {
 		layout: 'centered',

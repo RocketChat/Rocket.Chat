@@ -4,7 +4,7 @@ import React from 'react';
 import OfflineLicenseModal from './OfflineLicenseModal';
 
 export default {
-	title: 'Community/Views/Admin/Info/OfflineLicenseModal',
+	title: 'Admin/Info/OfflineLicenseModal',
 	component: OfflineLicenseModal,
 	parameters: {
 		layout: 'centered',

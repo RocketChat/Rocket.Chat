@@ -5,7 +5,7 @@ import React from 'react';
 import StringSettingInput from './StringSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/StringSettingInput',
+	title: 'Admin/Settings/Inputs/StringSettingInput',
 	component: StringSettingInput,
 	parameters: {
 		actions: {

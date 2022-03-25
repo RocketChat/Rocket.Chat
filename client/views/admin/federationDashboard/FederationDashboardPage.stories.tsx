@@ -4,7 +4,7 @@ import React from 'react';
 import FederationDashboardPage from './FederationDashboardPage';
 
 export default {
-	title: 'Community/Views/Admin/Federation Dashboard/FederationDashboardPage',
+	title: 'Admin/Federation Dashboard/FederationDashboardPage',
 	component: FederationDashboardPage,
 	parameters: {
 		layout: 'fullscreen',

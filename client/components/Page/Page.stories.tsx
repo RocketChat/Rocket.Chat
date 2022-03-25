@@ -5,7 +5,7 @@ import React from 'react';
 import Page from '.';
 
 export default {
-	title: 'Community/Components/Page',
+	title: 'Components/Page',
 	component: Page,
 	subcomponents: {
 		'Page.Content': Page.Content,

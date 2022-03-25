@@ -5,7 +5,7 @@ import React from 'react';
 import PasswordSettingInput from './PasswordSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/PasswordSettingInput',
+	title: 'Admin/Settings/Inputs/PasswordSettingInput',
 	component: PasswordSettingInput,
 	parameters: {
 		actions: {

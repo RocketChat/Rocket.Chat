@@ -4,7 +4,7 @@ import React from 'react';
 import DescriptionList from './DescriptionList';
 
 export default {
-	title: 'Community/Views/Admin/Info/DescriptionList',
+	title: 'Admin/Info/DescriptionList',
 	component: DescriptionList,
 	parameters: {
 		layout: 'centered',

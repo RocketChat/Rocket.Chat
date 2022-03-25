@@ -4,7 +4,7 @@ import React from 'react';
 import Counter from './Counter';
 
 export default {
-	title: 'Community/Components/Data/Counter',
+	title: 'Components/Data/Counter',
 	component: Counter,
 	parameters: {
 		layout: 'centered',

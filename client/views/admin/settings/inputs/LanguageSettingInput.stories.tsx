@@ -5,7 +5,7 @@ import React from 'react';
 import LanguageSettingInput from './LanguageSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/LanguageSettingInput',
+	title: 'Admin/Settings/Inputs/LanguageSettingInput',
 	component: LanguageSettingInput,
 	parameters: {
 		actions: {

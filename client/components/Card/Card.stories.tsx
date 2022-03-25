@@ -7,7 +7,7 @@ import TextSeparator from '../../views/admin/info/TextSeparator';
 import { UserStatus } from '../UserStatus';
 
 export default {
-	title: 'Community/Components/Card',
+	title: 'Components/Card',
 	component: Card,
 	subcomponents: {
 		'Card.Title': Card.Title,

@@ -5,7 +5,7 @@ import React from 'react';
 import Item from './Item';
 
 export default {
-	title: 'Enterprise/Views/Omnichannel/Item',
+	title: 'Enterprise/Omnichannel/Item',
 	component: Item,
 	parameters: {
 		actions: {

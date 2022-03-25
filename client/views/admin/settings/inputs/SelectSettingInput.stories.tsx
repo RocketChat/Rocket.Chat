@@ -5,7 +5,7 @@ import React from 'react';
 import SelectSettingInput from './SelectSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/SelectSettingInput',
+	title: 'Admin/Settings/Inputs/SelectSettingInput',
 	component: SelectSettingInput,
 	parameters: {
 		actions: {

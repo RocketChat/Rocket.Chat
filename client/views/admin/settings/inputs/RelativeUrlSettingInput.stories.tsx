@@ -5,7 +5,7 @@ import React from 'react';
 import RelativeUrlSettingInput from './RelativeUrlSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/RelativeUrlSettingInput',
+	title: 'Admin/Settings/Inputs/RelativeUrlSettingInput',
 	component: RelativeUrlSettingInput,
 	parameters: {
 		actions: {

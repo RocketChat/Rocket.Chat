@@ -4,7 +4,7 @@ import React from 'react';
 import GroupPage from './GroupPage';
 
 export default {
-	title: 'Community/Views/Admin/Settings/GroupPage',
+	title: 'Admin/Settings/GroupPage',
 	component: GroupPage,
 	subcomponents: {
 		'GroupPage.Skeleton': GroupPage.Skeleton,

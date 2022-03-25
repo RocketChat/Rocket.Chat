@@ -5,7 +5,7 @@ import * as UserStatus from '.';
 import { useAutoSequence } from '../../hooks/useAutoSequence';
 
 export default {
-	title: 'Community/Components/UserStatus',
+	title: 'Components/UserStatus',
 	component: UserStatus.UserStatus,
 	subcomponents: {
 		'UserStatus.Online': UserStatus.Online,

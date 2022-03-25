@@ -5,7 +5,7 @@ import React from 'react';
 import FontSettingInput from './FontSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/FontSettingInput',
+	title: 'Admin/Settings/Inputs/FontSettingInput',
 	component: FontSettingInput,
 	parameters: {
 		actions: {

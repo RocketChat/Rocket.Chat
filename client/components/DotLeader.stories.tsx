@@ -5,7 +5,7 @@ import React from 'react';
 import DotLeader from './DotLeader';
 
 export default {
-	title: 'Community/Components/DotLeader',
+	title: 'Components/DotLeader',
 	component: DotLeader,
 } as ComponentMeta<typeof DotLeader>;
 

@@ -4,7 +4,7 @@ import React from 'react';
 import Section from './Section';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Section',
+	title: 'Admin/Settings/Section',
 	component: Section,
 	subcomponents: {
 		'Section.Skeleton': Section.Skeleton,

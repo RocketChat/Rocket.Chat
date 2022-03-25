@@ -5,7 +5,7 @@ import React from 'react';
 import CodeSettingInput from './CodeSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/CodeSettingInput',
+	title: 'Admin/Settings/Inputs/CodeSettingInput',
 	component: CodeSettingInput,
 	parameters: {
 		actions: {

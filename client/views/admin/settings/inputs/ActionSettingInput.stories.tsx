@@ -5,7 +5,7 @@ import React from 'react';
 import ActionSettingInput from './ActionSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/ActionSettingInput',
+	title: 'Admin/Settings/Inputs/ActionSettingInput',
 	component: ActionSettingInput,
 	decorators: [(fn) => <Field>{fn()}</Field>],
 } as ComponentMeta<typeof ActionSettingInput>;

@@ -4,7 +4,7 @@ import React from 'react';
 import NewImportPage from './NewImportPage';
 
 export default {
-	title: 'Community/Views/Admin/Import/NewImportPage',
+	title: 'Admin/Import/NewImportPage',
 	component: NewImportPage,
 	parameters: {
 		layout: 'fullscreen',

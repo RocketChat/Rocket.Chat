@@ -5,7 +5,7 @@ import React from 'react';
 import GenericSettingInput from './GenericSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/GenericSettingInput',
+	title: 'Admin/Settings/Inputs/GenericSettingInput',
 	component: GenericSettingInput,
 	parameters: {
 		actions: {

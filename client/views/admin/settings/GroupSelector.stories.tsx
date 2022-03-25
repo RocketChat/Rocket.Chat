@@ -4,7 +4,7 @@ import React from 'react';
 import GroupSelector from './GroupSelector';
 
 export default {
-	title: 'Community/Views/Admin/Settings/GroupSelector',
+	title: 'Admin/Settings/GroupSelector',
 	component: GroupSelector,
 	parameters: {
 		layout: 'fullscreen',

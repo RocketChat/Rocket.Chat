@@ -5,7 +5,7 @@ import React from 'react';
 import BooleanSettingInput from './BooleanSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/BooleanSettingInput',
+	title: 'Admin/Settings/Inputs/BooleanSettingInput',
 	component: BooleanSettingInput,
 	parameters: {
 		actions: {

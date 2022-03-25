@@ -5,7 +5,7 @@ import React from 'react';
 import ImportOperationSummary from './ImportOperationSummary';
 
 export default {
-	title: 'Community/Views/Admin/Import/ImportOperationSummary',
+	title: 'Admin/Import/ImportOperationSummary',
 	component: ImportOperationSummary,
 	subcomponents: {
 		'ImportOperationSummary.Skeleton': ImportOperationSummary.Skeleton,

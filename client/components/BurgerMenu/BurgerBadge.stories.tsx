@@ -5,7 +5,7 @@ import React, { ReactElement } from 'react';
 import BurgerBadge from './BurgerBadge';
 
 export default {
-	title: 'Community/Components/Burger Menu/BurgerBadge',
+	title: 'Components/Burger Menu/BurgerBadge',
 	component: BurgerBadge,
 	parameters: {
 		layout: 'centered',

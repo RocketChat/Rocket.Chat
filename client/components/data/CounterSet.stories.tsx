@@ -4,7 +4,7 @@ import React from 'react';
 import CounterSet from './CounterSet';
 
 export default {
-	title: 'Community/Components/Data/CounterSet',
+	title: 'Components/Data/CounterSet',
 	component: CounterSet,
 	parameters: {
 		layout: 'padded',

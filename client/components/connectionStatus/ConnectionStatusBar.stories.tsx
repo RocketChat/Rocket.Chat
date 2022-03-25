@@ -7,7 +7,7 @@ import { ConnectionStatusContext } from '../../contexts/ConnectionStatusContext'
 import ConnectionStatusBar from './ConnectionStatusBar';
 
 export default {
-	title: 'Community/Components/ConnectionStatusBar',
+	title: 'Components/ConnectionStatusBar',
 	component: ConnectionStatusBar,
 	parameters: {
 		layout: 'fullscreen',

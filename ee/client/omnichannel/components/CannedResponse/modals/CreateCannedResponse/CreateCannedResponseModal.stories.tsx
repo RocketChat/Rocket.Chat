@@ -5,7 +5,7 @@ import React from 'react';
 import CreateCannedResponseModal from './CreateCannedResponseModal';
 
 export default {
-	title: 'Enterprise/Views/Omnichannel/CreateCannedResponseModal',
+	title: 'Enterprise/Omnichannel/CreateCannedResponseModal',
 	component: CreateCannedResponseModal,
 	parameters: {
 		actions: {

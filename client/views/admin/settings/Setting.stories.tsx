@@ -5,7 +5,7 @@ import React from 'react';
 import Setting from './Setting';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Setting',
+	title: 'Admin/Settings/Setting',
 	component: Setting,
 	subcomponents: {
 		'Setting.Memoized': Setting.Memoized,

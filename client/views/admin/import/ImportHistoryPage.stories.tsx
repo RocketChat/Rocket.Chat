@@ -4,7 +4,7 @@ import React from 'react';
 import ImportHistoryPage from './ImportHistoryPage';
 
 export default {
-	title: 'Community/Views/Admin/Import/ImportHistoryPage',
+	title: 'Admin/Import/ImportHistoryPage',
 	component: ImportHistoryPage,
 	parameters: {
 		layout: 'fullscreen',

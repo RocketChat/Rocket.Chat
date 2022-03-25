@@ -5,7 +5,7 @@ import React from 'react';
 import MarkdownText from './MarkdownText';
 
 export default {
-	title: 'Community/Components/MarkdownText',
+	title: 'Components/MarkdownText',
 	component: MarkdownText,
 	parameters: {
 		layout: 'padded',

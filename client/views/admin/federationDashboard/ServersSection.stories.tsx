@@ -4,7 +4,7 @@ import React from 'react';
 import ServersSection from './ServersSection';
 
 export default {
-	title: 'Community/Views/Admin/Federation Dashboard/ServersSection',
+	title: 'Admin/Federation Dashboard/ServersSection',
 	component: ServersSection,
 	parameters: {
 		layout: 'centered',

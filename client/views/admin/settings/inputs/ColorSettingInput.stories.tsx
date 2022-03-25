@@ -5,7 +5,7 @@ import React from 'react';
 import ColorSettingInput from './ColorSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/ColorSettingInput',
+	title: 'Admin/Settings/Inputs/ColorSettingInput',
 	component: ColorSettingInput,
 	parameters: {
 		actions: {

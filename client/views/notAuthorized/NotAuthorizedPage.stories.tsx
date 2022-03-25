@@ -4,7 +4,7 @@ import React from 'react';
 import NotAuthorizedPage from './NotAuthorizedPage';
 
 export default {
-	title: 'Community/Views/Not Authorized/NotAuthorizedPage',
+	title: 'Not Authorized/NotAuthorizedPage',
 	component: NotAuthorizedPage,
 	parameters: {
 		layout: 'fullscreen',

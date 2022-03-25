@@ -5,7 +5,7 @@ import { useAutoSequence } from '../../hooks/useAutoSequence';
 import BurgerIcon from './BurgerIcon';
 
 export default {
-	title: 'Community/Components/Burger Menu/BurgerIcon',
+	title: 'Components/Burger Menu/BurgerIcon',
 	component: BurgerIcon,
 	parameters: {
 		layout: 'centered',

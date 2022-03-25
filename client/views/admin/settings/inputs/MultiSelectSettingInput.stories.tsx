@@ -5,7 +5,7 @@ import React from 'react';
 import MultiSelectSettingInput from './MultiSelectSettingInput';
 
 export default {
-	title: 'Community/Views/Admin/Settings/Inputs/MultiSelectSettingInput',
+	title: 'Admin/Settings/Inputs/MultiSelectSettingInput',
 	component: MultiSelectSettingInput,
 	parameters: {
 		actions: {

@@ -6,7 +6,7 @@ import { useAutoSequence } from '../../hooks/useAutoSequence';
 import BurgerMenuButton from './BurgerMenuButton';
 
 export default {
-	title: 'Community/Components/Burger Menu/BurgerMenuButton',
+	title: 'Components/Burger Menu/BurgerMenuButton',
 	component: BurgerMenuButton,
 	parameters: {
 		layout: 'centered',

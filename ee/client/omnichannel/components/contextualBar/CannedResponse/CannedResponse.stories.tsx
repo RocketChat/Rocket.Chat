@@ -5,7 +5,7 @@ import React from 'react';
 import CannedResponse from './CannedResponse';
 
 export default {
-	title: 'Enterprise/Views/Omnichannel/CannedResponseList',
+	title: 'Enterprise/Omnichannel/CannedResponseList',
 	component: CannedResponse,
 	parameters: {
 		actions: {

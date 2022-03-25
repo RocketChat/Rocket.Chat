@@ -4,7 +4,7 @@ import React from 'react';
 import ResetSettingButton from './ResetSettingButton';
 
 export default {
-	title: 'Community/Views/Admin/Settings/ResetSettingButton',
+	title: 'Admin/Settings/ResetSettingButton',
 	component: ResetSettingButton,
 	parameters: {
 		layout: 'centered',

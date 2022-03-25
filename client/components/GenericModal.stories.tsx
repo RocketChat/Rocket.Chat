@@ -5,7 +5,7 @@ import React from 'react';
 import GenericModal, { GenericModalDoNotAskAgain } from './GenericModal';
 
 export default {
-	title: 'Community/Components/GenericModal',
+	title: 'Components/GenericModal',
 	component: GenericModal,
 	subcomponents: { GenericModalDoNotAskAgain },
 	args: {

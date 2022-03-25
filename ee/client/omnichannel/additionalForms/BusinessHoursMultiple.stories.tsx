@@ -5,7 +5,7 @@ import React from 'react';
 import BusinessHoursMultiple from './BusinessHoursMultiple';
 
 export default {
-	title: 'Enterprise/Views/Omnichannel/BusinessHoursMultiple',
+	title: 'Enterprise/Omnichannel/BusinessHoursMultiple',
 	component: BusinessHoursMultiple,
 	parameters: {
 		layout: 'fullscreen',

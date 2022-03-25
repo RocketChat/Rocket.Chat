@@ -4,7 +4,7 @@ import React from 'react';
 import DateRangePicker from './DateRangePicker';
 
 export default {
-	title: 'Community/Views/Omnichannel/DateRangePicker',
+	title: 'Omnichannel/DateRangePicker',
 	component: DateRangePicker,
 	parameters: {
 		layout: 'centered',

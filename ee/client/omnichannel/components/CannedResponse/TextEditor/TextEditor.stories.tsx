@@ -5,7 +5,7 @@ import React, { useRef } from 'react';
 import TextEditor from '.';
 
 export default {
-	title: 'Enterprise/Views/Omnichannel/TextEditor',
+	title: 'Enterprise/Omnichannel/TextEditor',
 	component: TextEditor,
 } as ComponentMeta<typeof TextEditor>;
 
