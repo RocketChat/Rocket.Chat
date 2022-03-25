@@ -157,11 +157,17 @@ export const statistics = {
 
 		statsPms.push(
 			LivechatBusinessHours.col.count().then((count) => {
+				let strat = settings.get('Livechat_enable_business_hours');
+				if (typeof strat === 'boolean') {
+					strat = strat ? 'enabled' : 'disabled';
+				} else if (strat === undefined) {
+					strat = '';
+				}
 				statistics.BusinessHours = {
 					// Number of Business Hours
 					total: count,
 					// Business Hours strategy
-					strategy: settings.get('Livechat_enable_business_hours') || '',
+					strategy: strat as string,
 				};
 			}),
 		);
