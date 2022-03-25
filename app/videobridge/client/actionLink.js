@@ -17,7 +17,7 @@ actionLinks.register('joinJitsiCall', function (message, params, instance) {
 	const username = Meteor.user()?.username;
 
 	if (!room) {
-		dispatchToastMessage({ type: 'info', message: TAPi18n.__('Call Already Ended', '') });
+		dispatchToastMessage({ type: 'info', message: TAPi18n.__('Call_Already_Ended', '') });
 		return;
 	}
 
@@ -54,6 +54,6 @@ actionLinks.register('joinJitsiCall', function (message, params, instance) {
 			return;
 		}
 
-		dispatchToastMessage({ type: 'info', message: TAPi18n.__('Call Already Ended', '') });
+		dispatchToastMessage({ type: 'info', message: TAPi18n.__('Call_Already_Ended', '') });
 	});
 });
