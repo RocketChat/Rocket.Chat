@@ -1,6 +1,53 @@
 
 # 4.6.0 (Under Release Candidate Process)
 
+## 4.6.0-rc.1
+`2022-03-25  ·  1 🎉  ·  4 🐛  ·  2 🔍  ·  9 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- Engagement Statistics ([#24777](https://github.com/RocketChat/Rocket.Chat/pull/24777) by [@eduardofcabrera](https://github.com/eduardofcabrera))
+
+### 🐛 Bug fixes
+
+
+- Duplicated "jump to message" button on starred messages ([#24867](https://github.com/RocketChat/Rocket.Chat/pull/24867) by [@Himanshu664](https://github.com/Himanshu664))
+
+- External search providers not working ([#24860](https://github.com/RocketChat/Rocket.Chat/pull/24860) by [@tkurz](https://github.com/tkurz))
+
+- LDAP avatars being rotated according to metadata even if the setting to rotate uploads is off ([#24320](https://github.com/RocketChat/Rocket.Chat/pull/24320))
+
+  - Use the `FileUpload_RotateImages` setting (**Administration > File Upload > Rotate images on upload**) to control whether avatars should be rotated automatically based on their data (XEIF);  
+  - Display the avatar image preview (orientation) according to the `FileUpload_RotateImages` setting.
+
+- SAML Force name to string ([#24930](https://github.com/RocketChat/Rocket.Chat/pull/24930))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Call doesn't stop ringing after agent unregistration ([#24908](https://github.com/RocketChat/Rocket.Chat/pull/24908))
+
+- Regression: Fix account service login expiration ([#24920](https://github.com/RocketChat/Rocket.Chat/pull/24920))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Himanshu664](https://github.com/Himanshu664)
+- [@eduardofcabrera](https://github.com/eduardofcabrera)
+- [@tkurz](https://github.com/tkurz)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@ostjen](https://github.com/ostjen)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 4.6.0-rc.0
 `2022-03-22  ·  1 🎉  ·  7 🚀  ·  49 🐛  ·  47 🔍  ·  28 👩‍💻👨‍💻`
 
@@ -329,6 +376,34 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 4.5.4
+`2022-03-24  ·  1 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.31.0`
+
+### 🐛 Bug fixes
+
+
+- SAML Force name to string ([#24930](https://github.com/RocketChat/Rocket.Chat/pull/24930))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 4.5.4 ([#24938](https://github.com/RocketChat/Rocket.Chat/pull/24938))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 
 # 4.5.3
 `2022-03-21  ·  2 🚀  ·  8 🐛  ·  1 🔍  ·  5 👩‍💻👨‍💻`
