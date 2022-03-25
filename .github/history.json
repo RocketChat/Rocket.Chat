@@ -72661,6 +72661,120 @@
           ]
         }
       ]
+    },
+    "4.5.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24938",
+          "title": "Release 4.5.4",
+          "userLogin": "AllanPazRibeiro",
+          "contributors": [
+            "geekgonecrazy",
+            "AllanPazRibeiro"
+          ]
+        },
+        {
+          "pr": "24930",
+          "title": "[FIX] SAML Force name to string",
+          "userLogin": "geekgonecrazy",
+          "milestone": "4.5.4",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "4.6.0-rc.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24320",
+          "title": "[FIX] LDAP avatars being rotated according to metadata even if the setting to rotate uploads is off",
+          "userLogin": "matheusbsilva137",
+          "description": "- Use the `FileUpload_RotateImages` setting (**Administration > File Upload > Rotate images on upload**) to control whether avatars should be rotated automatically based on their data (XEIF);\r\n- Display the avatar image preview (orientation) according to the `FileUpload_RotateImages` setting.",
+          "milestone": "4.6.0",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24930",
+          "title": "[FIX] SAML Force name to string",
+          "userLogin": "geekgonecrazy",
+          "milestone": "4.5.4",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24908",
+          "title": "Regression: Call doesn't stop ringing after agent unregistration",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.6.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24777",
+          "title": "[NEW] Engagement Statistics",
+          "userLogin": "eduardofcabrera",
+          "contributors": [
+            "eduardofcabrera",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24920",
+          "title": "Regression: Fix account service login expiration",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24867",
+          "title": "[FIX] Duplicated \"jump to message\" button on starred messages",
+          "userLogin": "Himanshu664",
+          "contributors": [
+            "Himanshu664"
+          ]
+        },
+        {
+          "pr": "24860",
+          "title": "[FIX] External search providers not working",
+          "userLogin": "tkurz",
+          "contributors": [
+            "tkurz"
+          ]
+        }
+      ]
     }
   }
 }
