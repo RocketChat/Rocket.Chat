@@ -535,7 +535,9 @@ API.v1.addRoute(
 				dateFrom = new Date(dateFrom);
 				dateTo = new Date(dateTo);
 				dateTo.setDate(dateTo.getDate() + 1);
-
+				if (dateFrom > dateTo) {
+					throw new Meteor.Error('error-invalid-dates');
+				}
 				sendFile(
 					{
 						rid,
