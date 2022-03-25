@@ -97,7 +97,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 	private async createVoipRoom(
 		rid: string,
 		name: string,
-		agent: { agentId: string; username: string },
+		agent: { agentId: string; username: string; extension: string },
 		guest: ILivechatVisitor,
 	): Promise<string> {
 		const status = 'online';
@@ -152,6 +152,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			// We assume room is created when call is started (there could be small delay)
 			callStarted: newRoomAt,
 			queue,
+			extension: agent.extension,
 			callUniqueId,
 
 			uids: [],
@@ -213,7 +214,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 	/* Voip calls */
 	async getNewRoom(
 		guest: ILivechatVisitor,
-		agent: { agentId: string; username: string },
+		agent: { agentId: string; username: string; extension: string },
 		rid: string,
 		options: FindOneOptions<IVoipRoom> = {},
 	): Promise<IRoomCreationResponse> {

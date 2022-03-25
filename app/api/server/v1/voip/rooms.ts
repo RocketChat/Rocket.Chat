@@ -105,14 +105,18 @@ API.v1.addRoute(
 				}
 
 				const agentObj: ILivechatAgent = await Users.findOneAgentById(agentId, {
-					projection: { username: 1 },
+					projection: { username: 1, extension: 1 },
 				});
 				if (!agentObj?.username) {
 					return API.v1.failure('agent-not-found');
 				}
 
-				const { username, _id } = agentObj;
-				const agent = { agentId: _id, username };
+				if (!agentObj?.extension) {
+					return API.v1.failure('agent-not-available-for-voip');
+				}
+
+				const { username, _id, extension } = agentObj;
+				const agent = { agentId: _id, username, extension };
 				const rid = Random.id();
 
 				return API.v1.success(await LivechatVoip.getNewRoom(guest, agent, rid, { projection: API.v1.defaultFieldsToExclude }));
