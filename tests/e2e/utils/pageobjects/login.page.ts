@@ -1,4 +1,4 @@
-import { FrameLocator, Locator } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
 import { ILogin, IRegister } from '../interfaces/Login';
 import Pages from './Pages';
@@ -8,7 +8,7 @@ class LoginPage extends Pages {
 		return this.page.locator('button.register');
 	}
 
-	get forgotPasswordButton(): FrameLocator {
+	private forgotPasswordButton(): Locator {
 		return this.page.locator('.forgot-password');
 	}
 
@@ -89,7 +89,7 @@ class LoginPage extends Pages {
 	}
 
 	public async gotToForgotPassword(): Promise<void> {
-		await this.forgotPasswordButton.click();
+		await this.forgotPasswordButton().click();
 	}
 
 	public async registerNewUser({ name, email, password }: IRegister): Promise<void> {
