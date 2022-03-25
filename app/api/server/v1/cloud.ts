@@ -11,7 +11,7 @@ import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirma
 // import { getWorkspaceAccessToken } from '../../../cloud/server/functions/getWorkspaceAccessToken';
 import { getLicenses } from '../../../../ee/app/license/server/license';
 import { getUpgradeTabType } from '../../../../lib/getUpgradeTabType';
-// import { settings } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 
 API.v1.addRoute(
 	'cloud.manualRegister',
@@ -108,18 +108,19 @@ API.v1.addRoute(
 
 			const { workspaceRegistered } = retrieveRegistrationStatus();
 
-			const hadExpiredTrials = false;
-
 			const licenses = getLicenses()
 				.filter(({ valid }) => valid)
 				.map(({ license }) => license);
 
-			// TODO update license type to include META
-			// Depends on implementation on cloud side.
+			// find any license that has trial
 			const trialLicense = licenses.find(({ meta }) => meta?.trial);
+
+			// if at least one license isn't trial, workspace isn't considered in trial
 			const isTrial = !licenses.map(({ meta }) => meta?.trial).includes(false);
 			const hasGoldLicense = licenses.map(({ tag }) => tag?.name === 'gold').includes(true);
 			const trialEndDate = trialLicense ? format(new Date(trialLicense.expiry), 'yyyy-MM-dd') : undefined;
+
+			const hadExpiredTrials = Boolean(settings.get('Cloud_Workspace_Had_Trial'));
 
 			const upgradeTabType = getUpgradeTabType({
 				registered: workspaceRegistered,
