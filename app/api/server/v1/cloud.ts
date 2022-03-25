@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 // import { HTTP } from 'meteor/http';
 
 import { API } from '../api';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermission, hasRole } from '../../../authorization/server';
 import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
