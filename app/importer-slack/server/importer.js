@@ -5,6 +5,7 @@ import { Messages, ImportData } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { USER_ORIGIN } from '../../../definition/IUser';
 
 export class SlackImporter extends Base {
 	parseData(data) {
@@ -143,6 +144,7 @@ export class SlackImporter extends Base {
 				statusText: user.profile.status_text || undefined,
 				bio: user.profile.title || undefined,
 				type: 'user',
+				origin: USER_ORIGIN.SLACK_IMPORT,
 			};
 
 			if (user.profile.email) {
