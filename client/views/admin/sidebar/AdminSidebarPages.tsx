@@ -21,16 +21,12 @@ const useUpgradeTabParams = (): [data: UpgradeTabVariants | false, trialEndDate:
 		useCallback(async () => getUpgradeTabParams(), [getUpgradeTabParams]),
 	);
 
-	console.log(data);
-
 	return [data?.tabType || false, data?.trialEndDate];
 };
 
 const AdminSidebarPages: FC<AdminSidebarPagesProps> = ({ currentPath }) => {
 	const items = useSubscription(itemsSubscription);
 	const [upgradeTabType, trialEndDate] = useUpgradeTabParams();
-
-	console.log(upgradeTabType);
 
 	return (
 		<Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
