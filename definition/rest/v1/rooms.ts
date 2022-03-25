@@ -47,8 +47,8 @@ export type RoomsEndpoints = {
 			additionalEmails?: string;
 			subject?: string;
 			messages?: IMessage['_id'][];
-			dateFrom?: Date;
-			dateTo?: Date;
+			dateFrom?: string;
+			dateTo?: string;
 			format?: 'html' | 'json';
 		}) => {
 			missing?: [];

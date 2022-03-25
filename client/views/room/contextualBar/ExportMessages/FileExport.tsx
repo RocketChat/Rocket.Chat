@@ -1,4 +1,4 @@
-import { Field, TextInput, Select, ButtonGroup, Button, FieldGroup, SelectOption } from '@rocket.chat/fuselage';
+import { Field, Select, ButtonGroup, Button, FieldGroup, SelectOption, InputBox } from '@rocket.chat/fuselage';
 import React, { FC, MouseEventHandler, useMemo } from 'react';
 
 import { IRoom } from '../../../../../definition/IRoom';
@@ -45,8 +45,8 @@ const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 			await roomsExport({
 				rid,
 				type: 'file',
-				...(dateFrom && { dateFrom: new Date(dateFrom) }),
-				...(dateTo && { dateTo: new Date(dateTo) }),
+				dateFrom,
+				dateTo,
 				format,
 			});
 
@@ -67,13 +67,13 @@ const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 			<Field>
 				<Field.Label>{t('Date_From')}</Field.Label>
 				<Field.Row>
-					<TextInput type='date' value={dateFrom} onChange={handleDateFrom} />
+					<InputBox type='date' value={dateFrom} onChange={handleDateFrom} />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Date_to')}</Field.Label>
 				<Field.Row>
-					<TextInput type='date' value={dateTo} onChange={handleDateTo} />
+					<InputBox type='date' value={dateTo} onChange={handleDateTo} />
 				</Field.Row>
 			</Field>
 			<Field>
