@@ -86,7 +86,11 @@ const VoipExtensionsPage: FC = () => {
 						{queues?.length > 2 && `+${(queues.length - 2).toString()}`}
 					</Box>
 				</Table.Cell>
-				{username ? <RemoveAgentButton username={username} reload={reload} /> : <AssignAgentButton extension={extension} reload={reload} />}
+				{username ? (
+					<RemoveAgentButton username={username} reload={reload} extension={extension} />
+				) : (
+					<AssignAgentButton extension={extension} reload={reload} />
+				)}
 			</Table.Row>
 		),
 		[reload, t],

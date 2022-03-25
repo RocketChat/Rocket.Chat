@@ -60,6 +60,14 @@ export interface IContactStatus extends IEventBase {
 	roundtripusec: string;
 }
 
+export interface IDeviceStateChangeEvent extends IEventBase {
+	event: 'DeviceStateChange';
+	privilege: string;
+	systemname: string;
+	device: string;
+	state: string;
+}
+
 export interface IAgentConnectEvent extends IQueueEvent {
 	event: 'AgentConnect';
 	holdtime: string;
@@ -115,3 +123,4 @@ export const isICallOnHoldEvent = (v: any): v is ICallOnHold => v?.event === 'Ho
 export const isICallUnHoldEvent = (v: any): v is ICallUnHold => v?.event === 'Unhold';
 export const isIContactStatusEvent = (v: any): v is IContactStatus => v?.event === 'ContactStatus';
 export const isICallHangupEvent = (v: any): v is ICallHangup => v?.event === 'Hangup';
+export const isIDeviceStateChangeEvent = (v: any): v is IDeviceStateChangeEvent => v?.event === 'DeviceStateChange';

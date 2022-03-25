@@ -13,6 +13,7 @@
  *
  */
 import { Db } from 'mongodb';
+import _ from 'underscore';
 
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
@@ -47,6 +48,8 @@ import {
 	IContactStatus,
 	isICallHangupEvent,
 	ICallHangup,
+	isIDeviceStateChangeEvent,
+	IDeviceStateChangeEvent,
 } from '../../../../../../definition/voip/IEvents';
 
 export class ContinuousMonitor extends Command {
@@ -85,6 +88,21 @@ export class ContinuousMonitor extends Command {
 		queue.connection = this.connection;
 		const queueDetails = await queue.executeCommand({ queueName });
 		return queueDetails.result as unknown as IQueueDetails;
+	}
+
+	private async findAdminUsers(): Promise<string[]> {
+		const roles: string[] = ['livechat-agent', 'livechat-manager', 'admin'];
+		const options = {
+			sort: {
+				username: 1,
+			},
+			projection: {
+				_id: 1,
+				username: 1,
+			},
+		};
+		const users = await this.users.findUsersInRoles(roles, null, options).toArray();
+		return _.map(users, '_id');
 	}
 
 	async processQueueMembershipChange(event: IQueueMemberAdded | IQueueMemberRemoved): Promise<void> {
@@ -222,6 +240,15 @@ export class ContinuousMonitor extends Command {
 		return this.storePbxEvent(event, event.event);
 	}
 
+	async processDeviceStateChangeEvent(event: IDeviceStateChangeEvent): Promise<void> {
+		const admins = await this.findAdminUsers();
+		const endpoint = event.device.toLowerCase().replace('pjsip/', '');
+		const deviceState = event.state.toLocaleLowerCase();
+		admins.forEach((m) => {
+			api.broadcast('agent.voipextensionstatechange', m, endpoint, deviceState);
+		});
+	}
+
 	async processContactStatusEvent(event: IContactStatus): Promise<void> {
 		if (event.contactstatus === 'Removed') {
 			// Room closing logic should be added here for the aor
@@ -267,6 +294,10 @@ export class ContinuousMonitor extends Command {
 			return this.processHangupEvents(event);
 		}
 
+		if (isIDeviceStateChangeEvent(event)) {
+			return this.processDeviceStateChangeEvent(event);
+		}
+
 		// Asterisk sends a metric ton of events, some may be useful but others doesn't
 		// We need to check which ones we want to use in future, but until that moment, this log
 		// Will be commented to avoid unnecesary noise. You can uncomment if you want to see all events
@@ -285,6 +316,7 @@ export class ContinuousMonitor extends Command {
 		this.connection.on('unhold', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('contactstatus', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('hangup', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('devicestatechange', new CallbackContext(this.onEvent.bind(this), this));
 	}
 
 	resetEventHandlers(): void {
@@ -298,6 +330,7 @@ export class ContinuousMonitor extends Command {
 		this.connection.off('unhold', this);
 		this.connection.off('contactstatus', this);
 		this.connection.off('hangup', this);
+		this.connection.off('devicestatechange', this);
 	}
 
 	initMonitor(_data: any): boolean {

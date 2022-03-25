@@ -1,18 +1,21 @@
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
+import { useEndpoint, useStream } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useUserId } from '../../../../../contexts/UserContext';
 
-const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ username, reload }) => {
+const RemoveAgentButton: FC<{ username: string; reload: () => void; extension: string }> = ({ username, reload, extension }) => {
 	const removeAgent = useEndpoint('DELETE', 'omnichannel/agent/extension');
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
+	const subscribeToNotifyUser = useStream('notify-user');
+	const userId = useUserId();
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
@@ -20,8 +23,19 @@ const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ usern
 		} catch (error: any) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-		reload();
 	});
+
+	useEffect(() => {
+		if (!userId) {
+			return;
+		}
+		const handleExtensionStateChange = (state: { userId: string; extension: string; state: string }): void => {
+			if (extension === state.extension) {
+				reload();
+			}
+		};
+		return subscribeToNotifyUser(`${userId}/voipextensionstatechange`, handleExtensionStateChange);
+	}, [subscribeToNotifyUser, userId, extension, reload]);
 
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
