@@ -1,6 +1,5 @@
 import { check } from 'meteor/check';
 import { format } from 'date-fns';
-// import { HTTP } from 'meteor/http';
 
 import { API } from '../api';
 import { hasPermission, hasRole } from '../../../authorization/server';
@@ -8,7 +7,6 @@ import { saveRegistrationData } from '../../../cloud/server/functions/saveRegist
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
-// import { getWorkspaceAccessToken } from '../../../cloud/server/functions/getWorkspaceAccessToken';
 import { getLicenses } from '../../../../ee/app/license/server/license';
 import { getUpgradeTabType } from '../../../../lib/getUpgradeTabType';
 import { settings } from '../../../settings/server';
