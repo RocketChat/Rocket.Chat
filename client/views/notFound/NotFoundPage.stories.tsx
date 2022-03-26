@@ -3,7 +3,7 @@ import React from 'react';
 import NotFoundPage from './NotFoundPage';
 
 export default {
-	title: 'components/NotFoundPage',
+	title: 'Not Found/NotFoundPage',
 	component: NotFoundPage,
 };
 

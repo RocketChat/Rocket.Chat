@@ -6,8 +6,9 @@ const message = {
 	msg: 'hello world',
 	ts: new Date(0),
 	username: 'guilherme.gazzo',
-	dcount: 5,
-	dlm: new Date(0).toISOString(),
+	replies: 1,
+	participants: 2,
+	tlm: new Date(0).toISOString(),
 };
 
 const largeText = {
@@ -15,13 +16,28 @@ const largeText = {
 	msg: 'Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text, Large text',
 };
 
-const noReplies = {
-	...message,
-	dcount: 0,
+const following = {
+	...largeText,
+	following: true,
+};
+
+const unread = {
+	...largeText,
+	unread: true,
+};
+
+const all = {
+	...unread,
+	all: true,
+};
+
+const mention = {
+	...all,
+	mention: true,
 };
 
 export default {
-	title: 'components/Discussion/Message',
+	title: 'Room/Contextual Bar/Threads/Message',
 	component: Message,
 };
 
@@ -29,4 +45,10 @@ export const Basic = () => <Message {...message} />;
 
 export const LargeText = () => <Message {...largeText} />;
 
-export const NoReplies = () => <Message {...noReplies} />;
+export const Following = () => <Message {...following} />;
+
+export const Unread = () => <Message {...unread} />;
+
+export const Mention = () => <Message {...mention} />;
+
+export const MentionAll = () => <Message {...all} />;

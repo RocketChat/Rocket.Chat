@@ -5,7 +5,7 @@ import Counter from './Counter';
 
 type CounterSetProps = {
 	counters: {
-		count: number;
+		count: ReactNode;
 		variation?: number;
 		description?: ReactNode;
 	}[];

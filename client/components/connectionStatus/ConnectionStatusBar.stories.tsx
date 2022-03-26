@@ -1,7 +1,7 @@
 import { action } from '@storybook/addon-actions';
 import { Title, Description, Stories } from '@storybook/addon-docs';
-import { ComponentMeta, ComponentStory, DecoratorFn } from '@storybook/react';
-import React, { ContextType } from 'react';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
+import React, { ContextType, ReactElement } from 'react';
 
 import { ConnectionStatusContext } from '../../contexts/ConnectionStatusContext';
 import ConnectionStatusBar from './ConnectionStatusBar';
@@ -24,10 +24,8 @@ export default {
 	},
 } as ComponentMeta<typeof ConnectionStatusBar>;
 
-const stateDecorator =
-	(value: ContextType<typeof ConnectionStatusContext>): DecoratorFn =>
-	(fn) =>
-		<ConnectionStatusContext.Provider value={value}>{fn()}</ConnectionStatusContext.Provider>;
+const stateDecorator = (value: ContextType<typeof ConnectionStatusContext>) => (fn: () => ReactElement) =>
+	<ConnectionStatusContext.Provider value={value}>{fn()}</ConnectionStatusContext.Provider>;
 
 const Template: ComponentStory<typeof ConnectionStatusBar> = () => <ConnectionStatusBar />;
 

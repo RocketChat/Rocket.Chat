@@ -4,7 +4,7 @@ import React, { ReactElement, ReactNode } from 'react';
 import Growth from './Growth';
 
 type CounterProps = {
-	count: number;
+	count: ReactNode;
 	variation?: number;
 	description?: ReactNode;
 };
