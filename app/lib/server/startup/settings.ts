@@ -3000,14 +3000,10 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 			secret: true,
 		});
 
-		this.add('Cloud_Workspace_Had_Trial', '', {
+		this.add('Cloud_Workspace_Had_Trial', false, {
 			type: 'boolean',
 			hidden: true,
 			readonly: true,
-			// enableQuery: {
-			// 	_id: 'Register_Server',
-			// 	value: true,
-			// },
 			secret: true,
 		});
 
