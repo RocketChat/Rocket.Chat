@@ -16,6 +16,7 @@ import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { call } from '../../../../client/lib/utils/call';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
@@ -85,7 +86,7 @@ export const RoomManager = new (function () {
 					return;
 				}
 				Tracker.nonreactive(() =>
-					Object.entries(openedRooms).forEach(([typeName, record]) => {
+					Object.entries(openedRooms).forEach(async ([typeName, record]) => {
 						if (record.active !== true || record.ready === true) {
 							return;
 						}
@@ -93,7 +94,7 @@ export const RoomManager = new (function () {
 						const type = typeName.substr(0, 1);
 						const name = typeName.substr(1);
 
-						const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name);
+						const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
 
 						if (room != null) {
 							record.rid = room._id;
