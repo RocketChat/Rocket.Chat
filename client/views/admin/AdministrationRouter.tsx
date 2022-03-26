@@ -1,18 +1,26 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, ReactElement, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
 import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import SettingsProvider from '../../providers/SettingsProvider';
+import { useUpgradeTabParams } from '../hooks/useUpgradeTabParams';
 import AdministrationLayout from './AdministrationLayout';
 
-function AdministrationRouter({ renderRoute }) {
+const AdministrationRouter = ({ renderRoute }: { renderRoute: () => ReactElement }): ReactElement => {
 	const [routeName] = useCurrentRoute();
+	const [upgradeTabType, trialEndDate] = useUpgradeTabParams();
 	const defaultRoute = useRoute('admin-info');
+	const upgradeRoute = useRoute('upgrade');
+
 	useEffect(() => {
-		if (routeName === 'admin-index') {
+		if (routeName === 'admin-index' && upgradeTabType) {
+			upgradeRoute.push({ type: upgradeTabType }, trialEndDate ? { trialEndDate } : undefined);
+		}
+
+		if (routeName === 'admin-index' && !upgradeTabType) {
 			defaultRoute.push();
 		}
-	}, [defaultRoute, routeName]);
+	}, [defaultRoute, upgradeRoute, routeName, upgradeTabType, trialEndDate]);
 
 	return (
 		<AdministrationLayout>
@@ -21,6 +29,6 @@ function AdministrationRouter({ renderRoute }) {
 			</SettingsProvider>
 		</AdministrationLayout>
 	);
-}
+};
 
 export default AdministrationRouter;
