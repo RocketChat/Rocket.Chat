@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import * as UserStatus from '.';
-import { useAutoSequence } from '../../hooks/useAutoSequence';
+import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
 
 export default {
 	title: 'Components/UserStatus',

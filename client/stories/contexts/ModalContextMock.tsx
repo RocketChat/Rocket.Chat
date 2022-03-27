@@ -1,7 +1,7 @@
 import { action } from '@storybook/addon-actions';
 import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
 
-import { ModalContext } from '../../../client/contexts/ModalContext';
+import { ModalContext } from '../../contexts/ModalContext';
 
 const logAction = action('ModalContext');
 

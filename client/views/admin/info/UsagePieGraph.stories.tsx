@@ -2,7 +2,7 @@ import colorTokens from '@rocket.chat/fuselage-tokens/colors.json';
 import { ComponentMeta, ComponentStory, Story } from '@storybook/react';
 import React, { ComponentProps } from 'react';
 
-import { useAutoSequence } from '../../../hooks/useAutoSequence';
+import { useAutoSequence } from '../../../stories/hooks/useAutoSequence';
 import UsagePieGraph from './UsagePieGraph';
 
 export default {

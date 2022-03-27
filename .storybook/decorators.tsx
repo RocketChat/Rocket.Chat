@@ -1,11 +1,11 @@
 import { DecoratorFunction } from '@storybook/addons';
 import React, { ReactElement } from 'react';
 
-import { MeteorProviderMock } from './mocks/providers';
-import ModalContextMock from './mocks/providers/ModalContextMock';
-import QueryClientProviderMock from './mocks/providers/QueryClientProviderMock';
-import RouterContextMock from './mocks/providers/RouterContextMock';
-import ServerProviderMock from './mocks/providers/ServerProviderMock';
+import ModalContextMock from '../client/stories/contexts/ModalContextMock';
+import QueryClientProviderMock from '../client/stories/contexts/QueryClientProviderMock';
+import RouterContextMock from '../client/stories/contexts/RouterContextMock';
+import ServerContextMock from '../client/stories/contexts/ServerContextMock';
+import TranslationContextMock from '../client/stories/contexts/TranslationContextMock';
 
 export const rocketChatDecorator: DecoratorFunction<ReactElement<unknown>> = (fn, { parameters }) => {
 	const linkElement = document.getElementById('theme-styles') || document.createElement('link');
@@ -25,8 +25,8 @@ export const rocketChatDecorator: DecoratorFunction<ReactElement<unknown>> = (fn
 
 	return (
 		<QueryClientProviderMock>
-			<ServerProviderMock {...parameters.serverContext}>
-				<MeteorProviderMock>
+			<ServerContextMock {...parameters.serverContext}>
+				<TranslationContextMock {...parameters.translationContext}>
 					<ModalContextMock {...parameters.modalContext}>
 						<RouterContextMock {...parameters.routerContext}>
 							<style>{`
@@ -38,8 +38,8 @@ export const rocketChatDecorator: DecoratorFunction<ReactElement<unknown>> = (fn
 							<div className='color-primary-font-color'>{fn()}</div>
 						</RouterContextMock>
 					</ModalContextMock>
-				</MeteorProviderMock>
-			</ServerProviderMock>
+				</TranslationContextMock>
+			</ServerContextMock>
 		</QueryClientProviderMock>
 	);
 };

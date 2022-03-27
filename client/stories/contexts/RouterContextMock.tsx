@@ -1,7 +1,7 @@
 import { action } from '@storybook/addon-actions';
 import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
 
-import { RouterContext } from '../../../client/contexts/RouterContext';
+import { RouterContext } from '../../contexts/RouterContext';
 
 const logAction = action('RouterContext');
 
