@@ -1,10 +1,11 @@
+import { DecoratorFunction } from '@storybook/addons';
 import React, { ReactElement } from 'react';
 
 import { MeteorProviderMock } from './mocks/providers';
 import QueryClientProviderMock from './mocks/providers/QueryClientProviderMock';
 import ServerProviderMock from './mocks/providers/ServerProviderMock';
 
-export const rocketChatDecorator = (storyFn: () => ReactElement): ReactElement => {
+export const rocketChatDecorator: DecoratorFunction<ReactElement<unknown>> = (fn, { parameters }) => {
 	const linkElement = document.getElementById('theme-styles') || document.createElement('link');
 	if (linkElement.id !== 'theme-styles') {
 		require('../app/theme/client/main.css');
@@ -22,7 +23,7 @@ export const rocketChatDecorator = (storyFn: () => ReactElement): ReactElement =
 
 	return (
 		<QueryClientProviderMock>
-			<ServerProviderMock>
+			<ServerProviderMock {...parameters.serverContext}>
 				<MeteorProviderMock>
 					<style>{`
 					body {
@@ -30,21 +31,9 @@ export const rocketChatDecorator = (storyFn: () => ReactElement): ReactElement =
 					}
 				`}</style>
 					<div dangerouslySetInnerHTML={{ __html: icons }} />
-					<div className='color-primary-font-color'>{storyFn()}</div>
+					<div className='color-primary-font-color'>{fn()}</div>
 				</MeteorProviderMock>
 			</ServerProviderMock>
 		</QueryClientProviderMock>
 	);
 };
-
-export const fullHeightDecorator = (storyFn: () => ReactElement): ReactElement => (
-	<div
-		style={{
-			display: 'flex',
-			flexDirection: 'column',
-			maxHeight: '100vh',
-		}}
-	>
-		{storyFn()}
-	</div>
-);

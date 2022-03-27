@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import React, { ContextType, FC } from 'react';
+import React, { ContextType, FC, useCallback } from 'react';
 
 import {
 	ServerContext,
@@ -16,14 +16,6 @@ const logAction = action('ServerProvider');
 const randomDelay = (): Promise<UploadResult> => new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
 
 const absoluteUrl = (path: string): string => new URL(path, '/').toString();
-
-const callMethod = <MethodName extends ServerMethodName>(
-	methodName: MethodName,
-	...args: ServerMethodParameters<MethodName>
-): Promise<ServerMethodReturn<MethodName>> =>
-	Promise.resolve(logAction('callMethod', methodName, ...args))
-		.then(randomDelay)
-		.then(() => undefined as any);
 
 const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	method: TMethod,
@@ -52,33 +44,73 @@ const getStream = (streamName: string, options: {} = {}): (<T>(eventName: string
 	};
 };
 
-const ServerProviderMock: FC<Partial<ContextType<typeof ServerContext>>> = ({ children, ...overrides }) => (
-	<ServerContext.Provider
-		children={children}
-		value={{
-			info: {
-				version: 'x.y.z',
-				build: {
-					platform: 'storybook',
-					arch: 'storybook cpu',
-					cpus: 1,
-					date: new Date().toLocaleDateString(),
-					nodeVersion: 'lts',
-					osRelease: 'x',
-					freeMemory: 639 * 1024,
-					totalMemory: 640 * 1024,
+type ServerProviderMockProps = Omit<Partial<ContextType<typeof ServerContext>>, 'callMethod'> & {
+	delay?: 'random' | number;
+	callMethod: {
+		[TMethodName in ServerMethodName]:
+			| ((...args: ServerMethodParameters<TMethodName>) => Promise<ServerMethodReturn<TMethodName>>)
+			| 'infinite'
+			| 'errored';
+	};
+};
+
+const ServerProviderMock: FC<ServerProviderMockProps> = ({ children, callMethod, ...overrides }) => {
+	const _callMethod = useCallback(
+		async <MethodName extends ServerMethodName>(
+			methodName: MethodName,
+			...args: ServerMethodParameters<MethodName>
+		): Promise<ServerMethodReturn<MethodName>> => {
+			if (methodName in callMethod) {
+				const handler = callMethod[methodName];
+
+				if (handler === 'infinite') {
+					logAction('callMethod (infinite)', methodName, ...args);
+					return new Promise(() => undefined);
+				}
+
+				if (handler === 'errored') {
+					logAction('callMethod (errored)', methodName, ...args);
+					throw new Error(`${methodName} failed`);
+				}
+
+				logAction('callMethod (intercepted)', methodName, ...args);
+				return handler(...args);
+			}
+
+			logAction('callMethod (undefined)', methodName, ...args);
+			return undefined as any;
+		},
+		[callMethod],
+	);
+
+	return (
+		<ServerContext.Provider
+			children={children}
+			value={{
+				info: {
+					version: 'x.y.z',
+					build: {
+						platform: 'storybook',
+						arch: 'storybook cpu',
+						cpus: 1,
+						date: new Date().toLocaleDateString(),
+						nodeVersion: 'lts',
+						osRelease: 'x',
+						freeMemory: 639 * 1024,
+						totalMemory: 640 * 1024,
+					},
+					commit: {},
+					marketplaceApiVersion: 'x.y.z',
 				},
-				commit: {},
-				marketplaceApiVersion: 'x.y.z',
-			},
-			absoluteUrl,
-			callMethod,
-			callEndpoint,
-			uploadToEndpoint,
-			getStream,
-			...overrides,
-		}}
-	/>
-);
+				absoluteUrl,
+				callMethod: _callMethod,
+				callEndpoint,
+				uploadToEndpoint,
+				getStream,
+				...overrides,
+			}}
+		/>
+	);
+};
 
 export default ServerProviderMock;
