@@ -2,6 +2,7 @@ import { Field, TextInput, FieldGroup, Modal, Icon, ButtonGroup, Button } from '
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
 
+import { EmojiPicker } from '../../../app/emoji/client/index';
 import { IUser } from '../../../definition/IUser';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';
@@ -37,7 +38,6 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	});
 
 	const handleStatusType = (type: IUser['status']): void => setStatusType(type);
-
 	const handleSaveStatus = useCallback(async () => {
 		try {
 			await setUserStatus(statusType, statusText);
@@ -49,6 +49,25 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		onClose();
 	}, [dispatchToastMessage, statusType, statusText, setUserStatus, onClose, t]);
 
+	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+	const handleEmojiPicker = (event: any) => {
+		const className = document.getElementsByClassName('custome_emoji_react')[0];
+		const inputField = className?.childNodes[0];
+		event.stopPropagation();
+		event.preventDefault();
+
+		if (EmojiPicker.isOpened()) {
+			EmojiPicker.close();
+		}
+		EmojiPicker.open(inputField, (emoji: any) => {
+			const emojiValue = `:${emoji}:`;
+			inputField.focus();
+
+			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
+				inputField.focus();
+			}
+		});
+	};
 	return (
 		<Modal>
 			<Modal.Header>
@@ -62,6 +81,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 						<Field.Label>{t('StatusMessage')}</Field.Label>
 						<Field.Row>
 							<TextInput
+								className='custome_emoji_react'
 								error={statusTextError}
 								disabled={!allowUserStatusMessageChange}
 								flexGrow={1}
@@ -70,6 +90,9 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 								placeholder={t('StatusMessage_Placeholder')}
 								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType} />}
 							/>
+							<button className='rc-message-box__icon emoji-picker-icon' aria-haspopup='true'>
+								<Icon name='emoji' size={24} onClick={handleEmojiPicker} />
+							</button>
 						</Field.Row>
 						{!allowUserStatusMessageChange && <Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
 						<Field.Error>{statusTextError}</Field.Error>
