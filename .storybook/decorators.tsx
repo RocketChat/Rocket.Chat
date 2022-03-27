@@ -2,7 +2,9 @@ import { DecoratorFunction } from '@storybook/addons';
 import React, { ReactElement } from 'react';
 
 import { MeteorProviderMock } from './mocks/providers';
+import ModalContextMock from './mocks/providers/ModalContextMock';
 import QueryClientProviderMock from './mocks/providers/QueryClientProviderMock';
+import RouterContextMock from './mocks/providers/RouterContextMock';
 import ServerProviderMock from './mocks/providers/ServerProviderMock';
 
 export const rocketChatDecorator: DecoratorFunction<ReactElement<unknown>> = (fn, { parameters }) => {
@@ -25,13 +27,17 @@ export const rocketChatDecorator: DecoratorFunction<ReactElement<unknown>> = (fn
 		<QueryClientProviderMock>
 			<ServerProviderMock {...parameters.serverContext}>
 				<MeteorProviderMock>
-					<style>{`
-					body {
-						background-color: white;
-					}
-				`}</style>
-					<div dangerouslySetInnerHTML={{ __html: icons }} />
-					<div className='color-primary-font-color'>{fn()}</div>
+					<ModalContextMock {...parameters.modalContext}>
+						<RouterContextMock {...parameters.routerContext}>
+							<style>{`
+								body {
+									background-color: white;
+								}
+							`}</style>
+							<div dangerouslySetInnerHTML={{ __html: icons }} />
+							<div className='color-primary-font-color'>{fn()}</div>
+						</RouterContextMock>
+					</ModalContextMock>
 				</MeteorProviderMock>
 			</ServerProviderMock>
 		</QueryClientProviderMock>

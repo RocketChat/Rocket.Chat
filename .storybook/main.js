@@ -4,7 +4,7 @@ const webpack = require('webpack');
 
 module.exports = {
 	stories: ['../app/**/*.stories.{js,tsx}', '../client/**/*.stories.{js,tsx}', '../ee/**/*.stories.{js,tsx}'],
-	addons: ['@storybook/addon-essentials', '@storybook/addon-postcss'],
+	addons: ['@storybook/addon-essentials', '@storybook/addon-interactions', '@storybook/addon-postcss'],
 	webpackFinal: async (config) => {
 		const cssRule = config.module.rules.find(({ test }) => test.test('index.css'));
 
