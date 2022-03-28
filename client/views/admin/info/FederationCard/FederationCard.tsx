@@ -63,7 +63,7 @@ const FederationCard: FC = () => {
 	);
 
 	return (
-		<Card>
+		<Box display='flex' flexDirection='column' pi='x16' pb='x8' width='100%' bg='neutral-100'>
 			<CardHeader>
 				<Card.Title>{t('Federation')}</Card.Title>
 				<Box display='flex'>
@@ -98,7 +98,7 @@ const FederationCard: FC = () => {
 					</Button>
 				</ButtonGroup>
 			</Card.Footer>
-		</Card>
+		</Box>
 	);
 };
 
