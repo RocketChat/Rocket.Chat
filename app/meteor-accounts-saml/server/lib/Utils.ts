@@ -430,7 +430,7 @@ export class SAMLUtils {
 		}
 		const email = this.getProfileValue(profile, userDataMap.email);
 		const profileUsername = this.getProfileValue(profile, userDataMap.username, true);
-		const name = this.getProfileValue(profile, userDataMap.name);
+		const name = this.getProfileValue(profile, userDataMap.name, true);
 
 		// Even if we're not using the email to identify the user, it is still mandatory because it's a mandatory information on Rocket.Chat
 		if (!email) {
