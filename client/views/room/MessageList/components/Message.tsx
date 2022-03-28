@@ -14,8 +14,6 @@ import MessageHeader from './MessageHeader';
 import { MessageIndicators } from './MessageIndicators';
 import Toolbox from './Toolbox';
 
-const style = { backgroundColor: 'var(--message-box-editing-color)' };
-
 const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
 	message,
 	sequential,
@@ -31,12 +29,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	useCountSelected();
 
 	return (
-		<MessageTemplate
-			{...props}
-			style={isEditingMessage ? style : undefined}
-			onClick={isSelecting ? toggleSelected : undefined}
-			selected={isSelected}
-		>
+		<MessageTemplate {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} isEditing={isEditingMessage}>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !isSelecting && <UserAvatar username={message.u.username} size={'x36'} />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
