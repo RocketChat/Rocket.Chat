@@ -550,13 +550,18 @@ API.v1.addRoute(
 			}
 
 			if (type === 'email') {
+				const nonEmptyStringArray = Match.Where((x) => {
+					check(x, [String]);
+					return x.length > 0;
+				});
+
 				check(
 					this.bodyParams,
 					Match.ObjectIncluding({
 						subject: String,
-						toUsers: Match.Where((x) => Array.isArray(x) && x.length > 0 && x.every((y) => typeof y === 'string')),
-						toEmails: Match.Where((x) => Array.isArray(x) && x.length > 0 && x.every((y) => typeof y === 'string')),
-						messages: Match.Where((x) => Array.isArray(x) && x.length > 0 && x.every((y) => typeof y === 'string')),
+						toUsers: nonEmptyStringArray,
+						toEmails: nonEmptyStringArray,
+						messages: nonEmptyStringArray,
 					}),
 				);
 
