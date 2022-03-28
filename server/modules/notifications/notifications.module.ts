@@ -313,7 +313,7 @@ export class NotificationsModule {
 				return true;
 			}
 
-			return this.userId != null && this.userId === userId;
+			return Boolean(this.userId) && this.userId === userId;
 		});
 
 		this.streamImporters.allowRead('all');
