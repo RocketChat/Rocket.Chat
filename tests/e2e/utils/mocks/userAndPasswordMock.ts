@@ -17,8 +17,8 @@ export const registerUser: IRegister = {
 };
 
 export const validUser: ILogin = {
-	email: 'rocketchat.internal.admin.test@rocket.chat',
-	password: 'rocketchat.internal.admin.test',
+	email: adminEmail,
+	password: adminPassword,
 };
 
 export const incorrectUser: ILogin = {

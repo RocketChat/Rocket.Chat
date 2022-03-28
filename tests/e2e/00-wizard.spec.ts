@@ -8,12 +8,11 @@ test.describe('[Wizard]', () => {
 
 	test.beforeAll(async ({ browser, baseURL }) => {
 		setupWizard = new SetupWizard(browser, baseURL as string);
-		await setupWizard.open('');
 	});
 
 	test.describe('[Step 1]', () => {
 		test.beforeEach(async () => {
-			await setupWizard.goto('');
+			await setupWizard.open('');
 		});
 
 		test('expect required field alert showed when user dont inform data', async () => {
@@ -45,7 +44,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 2]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.goto('');
+			await setupWizard.open('');
 			await setupWizard.stepOneSucess();
 		});
 
@@ -66,7 +65,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.goto('');
+			await setupWizard.open('');
 			await setupWizard.stepOneSucess();
 			await setupWizard.stepTwoSucess();
 		});
@@ -106,7 +105,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.goto('');
+			await setupWizard.open('');
 			await setupWizard.stepOneSucess();
 			await setupWizard.stepTwoSucess();
 			await setupWizard.stepThreeSucess();
