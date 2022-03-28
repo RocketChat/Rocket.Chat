@@ -1,5 +1,3 @@
-import { resolve } from 'path';
-
 import { Browser, Page } from '@playwright/test';
 
 class Pages {
@@ -30,14 +28,8 @@ class Pages {
 		await this.page.goto(`${this.baseURL}/${path}`);
 	}
 
-	protected getPage(): Page {
+	public getPage(): Page {
 		return this.page;
-	}
-
-	public async isSetUpWizzard(): Promise<boolean> {
-		await this.page.waitForURL('**/setup-wizard');
-
-		return !!this.page.url().match(/.*\/setup-wizard/);
 	}
 }
 export default Pages;
