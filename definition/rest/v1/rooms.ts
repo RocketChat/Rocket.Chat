@@ -40,7 +40,6 @@ export type RoomsEndpoints = {
 	};
 	'/v1/rooms.export': {
 		POST: {
-			(params: { rid: IRoom['_id']; type: 'file'; dateFrom?: string; dateTo?: string; format: 'html' | 'json' }): void;
 			(
 				params:
 					| {
@@ -60,7 +59,7 @@ export type RoomsEndpoints = {
 					  },
 			): {
 				missing: string[];
-			};
+			} | void;
 		};
 	};
 };
