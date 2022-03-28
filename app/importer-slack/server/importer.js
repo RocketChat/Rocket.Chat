@@ -5,6 +5,7 @@ import { Messages, ImportData } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { USER_ORIGIN } from '../../../definition/IUser';
 
 export class SlackImporter extends Base {
 	parseData(data) {
@@ -143,6 +144,7 @@ export class SlackImporter extends Base {
 				statusText: user.profile.status_text || undefined,
 				bio: user.profile.title || undefined,
 				type: 'user',
+				origin: USER_ORIGIN.SLACK_IMPORT,
 			};
 
 			if (user.profile.email) {
@@ -287,7 +289,7 @@ export class SlackImporter extends Base {
 
 	parseMentions(newMessage) {
 		const mentionsParser = new MentionsParser({
-			pattern: () => settings.get('UTF8_User_Names_Validation'),
+			pattern: () => '[0-9a-zA-Z]+',
 			useRealName: () => settings.get('UI_Use_Real_Name'),
 			me: () => 'me',
 		});
@@ -534,6 +536,9 @@ export class SlackImporter extends Base {
 	}
 
 	_replaceSlackUserIds(members) {
+		if (!members?.length) {
+			return [];
+		}
 		return members.map((userId) => this._replaceSlackUserId(userId));
 	}
 

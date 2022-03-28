@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../settings';
-import { hasRole } from '../../../authorization';
+import { hasPermission } from '../../../authorization';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { validateEmail } from '../../../../lib/emailValidator';
 
@@ -83,7 +83,7 @@ Template.ChatpalAdmin.helpers({
 		return Template.instance().apiKey.get();
 	},
 	isAdmin() {
-		return hasRole(Meteor.userId(), 'admin');
+		return hasPermission('manage-chatpal');
 	},
 	tac() {
 		return Template.instance().tac.get();

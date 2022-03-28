@@ -888,24 +888,26 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.update]', () => {
-		before((done) => {
-			updateSetting('Accounts_AllowUserProfileChange', true)
-				.then(() => updateSetting('Accounts_AllowUsernameChange', true))
-				.then(() => updateSetting('Accounts_AllowRealNameChange', true))
-				.then(() => updateSetting('Accounts_AllowUserStatusMessageChange', true))
-				.then(() => updateSetting('Accounts_AllowEmailChange', true))
-				.then(() => updateSetting('Accounts_AllowPasswordChange', true))
-				.then(done);
-		});
-		after((done) => {
-			updateSetting('Accounts_AllowUserProfileChange', true)
-				.then(() => updateSetting('Accounts_AllowUsernameChange', true))
-				.then(() => updateSetting('Accounts_AllowRealNameChange', true))
-				.then(() => updateSetting('Accounts_AllowUserStatusMessageChange', true))
-				.then(() => updateSetting('Accounts_AllowEmailChange', true))
-				.then(() => updateSetting('Accounts_AllowPasswordChange', true))
-				.then(done);
-		});
+		before(async () =>
+			Promise.all([
+				updateSetting('Accounts_AllowUserProfileChange', true),
+				updateSetting('Accounts_AllowUsernameChange', true),
+				updateSetting('Accounts_AllowRealNameChange', true),
+				updateSetting('Accounts_AllowUserStatusMessageChange', true),
+				updateSetting('Accounts_AllowEmailChange', true),
+				updateSetting('Accounts_AllowPasswordChange', true),
+			]),
+		);
+		after(async () =>
+			Promise.all([
+				updateSetting('Accounts_AllowUserProfileChange', true),
+				updateSetting('Accounts_AllowUsernameChange', true),
+				updateSetting('Accounts_AllowRealNameChange', true),
+				updateSetting('Accounts_AllowUserStatusMessageChange', true),
+				updateSetting('Accounts_AllowEmailChange', true),
+				updateSetting('Accounts_AllowPasswordChange', true),
+			]),
+		);
 
 		it("should update a user's info by userId", (done) => {
 			request
@@ -952,6 +954,22 @@ describe('[Users]', function () {
 					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${apiEmail}`);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
 					expect(res.body).to.not.have.nested.property('user.e2e');
+				})
+				.end(done);
+		});
+
+		it("should update a bot's email", (done) => {
+			request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: 'rocket.cat',
+					data: { email: 'nouser@rocket.cat' },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
@@ -2842,6 +2860,7 @@ describe('[Users]', function () {
 		let testUser;
 		let testUserCredentials;
 		const testRoleName = `role.test.${Date.now()}`;
+		let testRoleId = null;
 
 		before('Create a new role with Users scope', (done) => {
 			request
@@ -2854,6 +2873,9 @@ describe('[Users]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('role');
+					expect(res.body.role).to.have.property('name', testRoleName);
+					testRoleId = res.body.role._id;
 				})
 				.end(done);
 		});
@@ -2874,7 +2896,7 @@ describe('[Users]', function () {
 				.post(api('roles.addUserToRole'))
 				.set(credentials)
 				.send({
-					roleName: testRoleName,
+					roleId: testRoleId,
 					username: testUser.username,
 				})
 				.expect('Content-Type', 'application/json')
@@ -2942,7 +2964,7 @@ describe('[Users]', function () {
 					.set(credentials)
 					.send({
 						daysIdle: 0,
-						role: testRoleName,
+						role: testRoleId,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -2960,7 +2982,7 @@ describe('[Users]', function () {
 					.set(credentials)
 					.send({
 						daysIdle: 0,
-						role: testRoleName,
+						role: testRoleId,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)

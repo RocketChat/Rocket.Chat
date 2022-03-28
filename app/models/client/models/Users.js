@@ -10,11 +10,20 @@ export const Users = {
 		return this.findOne(query, options);
 	},
 
-	isUserInRole(userId, roleName) {
+	/**
+	 * @param {string} userId
+	 * @param {IRole['_id']} roleId
+	 */
+	isUserInRole(userId, roleId) {
 		const user = this.findOneById(userId, { fields: { roles: 1 } });
-		return user && Array.isArray(user.roles) && user.roles.includes(roleName);
+		return user && Array.isArray(user.roles) && user.roles.includes(roleId);
 	},
 
+	/**
+	 * @param {IRole['_id'][]} roles the list of role ids
+	 * @param {string} scope the value for the scope (room id)
+	 * @param {any} options
+	 */
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 

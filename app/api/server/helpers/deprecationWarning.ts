@@ -22,4 +22,4 @@ export function deprecationWarning<T>({
 	return response;
 }
 
-(API as any).helperMethods.set('deprecationWarning', deprecationWarning);
+API.helperMethods.set('deprecationWarning', deprecationWarning);

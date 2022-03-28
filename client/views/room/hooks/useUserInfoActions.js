@@ -4,7 +4,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import React, { useCallback, useMemo } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
-import { roomTypes, RoomMemberActions } from '../../../../app/utils/client';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { usePermission, useAllPermissions } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -14,6 +14,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserId, useUserSubscription, useUserSubscriptionByName } from '../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import RemoveUsersModal from '../../teams/contextualBar/members/RemoveUsersModal';
 import { useUserRoom } from './useUserRoom';
 import { useWebRTC } from './useWebRTC';
@@ -95,21 +96,21 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 
 	const endpointPrefix = room.t === 'p' ? 'groups' : 'channels';
 
-	const roomConfig = room && room.t && roomTypes.getConfig(room.t);
+	const roomDirectives = room && room.t && roomCoordinator.getRoomDirectives(room.t);
 
 	const [roomCanSetOwner, roomCanSetLeader, roomCanSetModerator, roomCanIgnore, roomCanBlock, roomCanMute, roomCanRemove] = [
-		...(roomConfig && [
-			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER),
-			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER),
-			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR),
-			roomConfig.allowMemberAction(room, RoomMemberActions.IGNORE),
-			roomConfig.allowMemberAction(room, RoomMemberActions.BLOCK),
-			roomConfig.allowMemberAction(room, RoomMemberActions.MUTE),
-			roomConfig.allowMemberAction(room, RoomMemberActions.REMOVE_USER),
+		...(roomDirectives && [
+			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.IGNORE),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.BLOCK),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.MUTE),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.REMOVE_USER),
 		]),
 	];
 
-	const roomName = room && room.t && escapeHTML(roomTypes.getRoomName(room.t, room));
+	const roomName = room && room.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const userCanSetOwner = usePermission('set-owner', rid);
 	const userCanSetLeader = usePermission('set-leader', rid);

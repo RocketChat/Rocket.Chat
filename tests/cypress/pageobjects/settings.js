@@ -2,7 +2,9 @@ import supertest from 'supertest';
 
 import { adminUsername, adminPassword } from '../../data/user.js';
 
-const request = supertest('http://localhost:3000');
+const testUrl = (typeof Cypress !== 'undefined' && Cypress.env('TEST_API_URL')) || process.env.TEST_API_URL || 'http://localhost:3000';
+
+const request = supertest(testUrl);
 const prefix = '/api/v1/';
 
 const login = {

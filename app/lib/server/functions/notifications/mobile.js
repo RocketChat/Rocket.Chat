@@ -2,7 +2,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../settings';
 import { Subscriptions } from '../../../../models/server/raw';
-import { roomTypes } from '../../../../utils';
+import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
@@ -30,7 +30,7 @@ export async function getPushData({
 	receiver,
 	shouldOmitMessage = true,
 }) {
-	const username = (settings.get('Push_show_username_room') && settings.get('UI_Use_Real_Name') && senderName) || senderUsername;
+	const username = settings.get('Push_show_username_room') ? (settings.get('UI_Use_Real_Name') && senderName) || senderUsername : '';
 
 	const lng = receiver.language || settings.get('Language') || 'en';
 
@@ -54,8 +54,8 @@ export async function getPushData({
 			...(message.t === 'e2e' && { msg: message.msg }),
 		},
 		roomName:
-			settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room)
-				? `#${roomTypes.getRoomName(room.t, room)}`
+			settings.get('Push_show_username_room') && roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)
+				? `#${roomCoordinator.getRoomName(room.t, room, userId)}`
 				: '',
 		username,
 		message: messageText,

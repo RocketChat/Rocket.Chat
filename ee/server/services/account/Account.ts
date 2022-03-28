@@ -38,7 +38,7 @@ const removeSession = async (uid: string, loginToken: string): Promise<void> => 
 	);
 };
 
-const loginViaResume = async (resume: string): Promise<false | ILoginResult> => {
+const loginViaResume = async (resume: string, loginExpiration: number): Promise<false | ILoginResult> => {
 	const Users = await getCollection<IUser>(Collections.User);
 	const hashedToken = _hashLoginToken(resume);
 
@@ -58,8 +58,7 @@ const loginViaResume = async (resume: string): Promise<false | ILoginResult> => 
 
 	const { when } = user.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken) || {};
 
-	const tokenExpires = when && _tokenExpiration(when);
-
+	const tokenExpires = when && _tokenExpiration(when, loginExpiration);
 	if (tokenExpires && new Date() >= tokenExpires) {
 		throw new MeteorError(403, 'Your session has expired. Please log in again.');
 	}
@@ -73,7 +72,11 @@ const loginViaResume = async (resume: string): Promise<false | ILoginResult> => 
 	};
 };
 
-const loginViaUsername = async ({ username }: { username: string }, password: string): Promise<false | ILoginResult> => {
+const loginViaUsername = async (
+	{ username }: { username: string },
+	password: string,
+	loginExpiration: number,
+): Promise<false | ILoginResult> => {
 	const Users = await getCollection<IUser>(Collections.User);
 	const user = await Users.findOne<IUser>({ username }, { projection: { 'services.password.bcrypt': 1 } });
 	if (!user) {
@@ -95,7 +98,7 @@ const loginViaUsername = async ({ username }: { username: string }, password: st
 		uid: user._id,
 		token: newToken.token,
 		hashedToken: hashedToken.hashedToken,
-		tokenExpires: _tokenExpiration(newToken.when),
+		tokenExpires: _tokenExpiration(newToken.when, loginExpiration),
 		type: 'password',
 	};
 };
@@ -103,13 +106,32 @@ const loginViaUsername = async ({ username }: { username: string }, password: st
 export class Account extends ServiceClass implements IAccount {
 	protected name = 'accounts';
 
+	private loginExpiration = 90;
+
+	constructor() {
+		super();
+
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			if (clientAction === 'removed') {
+				return;
+			}
+			const { _id, value } = setting;
+			if (_id !== 'Accounts_LoginExpiration') {
+				return;
+			}
+			if (typeof value === 'number') {
+				this.loginExpiration = value;
+			}
+		});
+	}
+
 	async login({ resume, user, password }: { resume: string; user: { username: string }; password: string }): Promise<false | ILoginResult> {
 		if (resume) {
-			return loginViaResume(resume);
+			return loginViaResume(resume, this.loginExpiration);
 		}
 
 		if (user && password) {
-			return loginViaUsername(user, password);
+			return loginViaUsername(user, password, this.loginExpiration);
 		}
 
 		return false;
@@ -117,5 +139,14 @@ export class Account extends ServiceClass implements IAccount {
 
 	async logout({ userId, token }: { userId: string; token: string }): Promise<void> {
 		return removeSession(userId, token);
+	}
+
+	async started(): Promise<void> {
+		const Settings = await getCollection<any>(Collections.Settings);
+
+		const expiry = await Settings.findOne({ _id: 'Accounts_LoginExpiration' }, { projection: { value: 1 } });
+		if (expiry?.value) {
+			this.loginExpiration = expiry.value;
+		}
 	}
 }

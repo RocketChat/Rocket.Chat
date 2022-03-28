@@ -71,7 +71,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 				open('room-info', username);
 				break;
 			case 'd':
-				room.uids?.length > 2 ? open('user-info-group', username) : open('user-info', username);
+				(room.uids?.length ?? 0) > 2 ? open('user-info-group', username) : open('user-info', username);
 				break;
 			default:
 				open('members-list', username);

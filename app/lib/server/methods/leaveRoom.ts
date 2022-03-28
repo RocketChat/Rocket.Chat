@@ -4,8 +4,10 @@ import { check } from 'meteor/check';
 import { hasPermission, hasRole } from '../../../authorization/server';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
-import { roomTypes, RoomMemberActions } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { Roles } from '../../../models/server/raw';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { IUser } from '../../../../definition/IUser';
 
 Meteor.methods({
 	async leaveRoom(rid) {
@@ -16,9 +18,9 @@ Meteor.methods({
 		}
 
 		const room = Rooms.findOneById(rid);
-		const user = Meteor.user();
+		const user = Meteor.user() as unknown as IUser;
 
-		if (!user || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.LEAVE)) {
+		if (!user || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.LEAVE)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 

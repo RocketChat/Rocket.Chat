@@ -1,6 +1,8 @@
 import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuselage';
 import React, { useState, useCallback } from 'react';
 
+import { useSetting } from '../../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
 import UserAvatar from '../UserAvatar';
@@ -8,10 +10,11 @@ import UserAvatarSuggestions from './UserAvatarSuggestions';
 
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled, etag }) {
 	const t = useTranslation();
+	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
 	const [urlEmpty, setUrlEmpty] = useState(true);
-
+	const dispatchToastMessage = useToastMessageDispatch();
 	const toDataURL = (file, callback) => {
 		const reader = new FileReader();
 		reader.onload = function (e) {
@@ -22,12 +25,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
-			setAvatarObj(avatarObj);
-			toDataURL(file, (dataurl) => {
-				setNewAvatarSource(dataurl);
-			});
+			if (file.type.startsWith('image/')) {
+				setAvatarObj(avatarObj);
+				toDataURL(file, (dataurl) => {
+					setNewAvatarSource(dataurl);
+				});
+			} else dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
 		},
-		[setAvatarObj],
+		[setAvatarObj, t, dispatchToastMessage],
 	);
 
 	const [clickUpload] = useFileInput(setUploadedPreview);
@@ -55,7 +60,17 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 		<Box display='flex' flexDirection='column' fontScale='p2m'>
 			{t('Profile_picture')}
 			<Box display='flex' flexDirection='row' mbs='x4'>
-				<UserAvatar size='x124' url={url} username={currentUsername} etag={etag} style={{ objectFit: 'contain' }} mie='x4' />
+				<UserAvatar
+					size='x124'
+					url={url}
+					username={currentUsername}
+					etag={etag}
+					style={{
+						objectFit: 'contain',
+						imageOrientation: rotateImages ? 'from-image' : 'none',
+					}}
+					mie='x4'
+				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Margins inline='x4'>

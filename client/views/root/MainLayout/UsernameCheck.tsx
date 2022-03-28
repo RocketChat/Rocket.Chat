@@ -7,12 +7,10 @@ import { useUserId } from '../../../contexts/UserContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import BlazeTemplate from '../BlazeTemplate';
 import PasswordChangeCheck from './PasswordChangeCheck';
-import { useCustomScript } from './useCustomScript';
 import { useViewportScrolling } from './useViewportScrolling';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	useViewportScrolling();
-	useCustomScript();
 
 	const uid = useUserId();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');

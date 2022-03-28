@@ -49,7 +49,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!saveUserIdentity({ _id: user?._id, username })) {
+		if (!saveUserIdentity({ _id: user._id, username })) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
 				method: 'setUsername',
 			});

@@ -81,7 +81,7 @@ export interface IUserServices {
 
 export interface IUserEmail {
 	address: string;
-	verified: boolean;
+	verified?: boolean;
 }
 
 export interface IUserSettings {
@@ -96,7 +96,6 @@ export interface IRole {
 	mandatory2fa?: boolean;
 	name: string;
 	protected: boolean;
-	// scope?: string;
 	scope: 'Users' | 'Subscriptions';
 	_id: string;
 }
@@ -104,7 +103,7 @@ export interface IRole {
 export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
-	roles: string[];
+	roles: IRole['_id'][];
 	type: string;
 	active: boolean;
 	username?: string;
@@ -136,6 +135,9 @@ export interface IUser extends IRocketChatRecord {
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
+	extension?: string;
+	origin?: string;
+	inviteToken?: string;
 }
 
 export interface IRegisterUser extends IUser {
@@ -159,3 +161,11 @@ export type IUserDataEvent = {
 			unset: Record<keyof IUser, boolean | 0 | 1>;
 	  }
 );
+
+export enum USER_ORIGIN {
+	ADMIN_ADD = 'admin_add',
+	SLACK_IMPORT = 'slack_import',
+	SLACK_USER_IMPORT = 'slack_user_import',
+	CSV_IMPORT = 'csv_import',
+	HIPTEXT_IMPORT = 'hiptext_import',
+}

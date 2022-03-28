@@ -19,7 +19,6 @@ import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
 import Settings from '../../../models/server/models/Settings';
 import { mime } from '../../../utils/lib/mimeTypes';
-import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
@@ -28,6 +27,7 @@ import { Messages } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
 import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -229,7 +229,9 @@ export const FileUpload = {
 		const future = new Future();
 
 		const s = sharp(tempFilePath);
-		s.rotate();
+		if (settings.get('FileUpload_RotateImages') === true) {
+			s.rotate();
+		}
 
 		s.metadata(
 			Meteor.bindEnvironment((err, metadata) => {
@@ -442,7 +444,8 @@ export const FileUpload = {
 		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
 		const isAuthorizedByHeaders =
 			headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
-		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
+		const isAuthorizedByRoom =
+			rc_room_type && roomCoordinator.getRoomDirectives(rc_room_type)?.canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
 		const isAuthorizedByJWT =
 			settings.get('FileUpload_Enable_json_web_token_for_files') &&
 			token &&

@@ -41,12 +41,6 @@ export class Settings extends Base {
 		return this.find(query);
 	}
 
-	findByRole(role, options) {
-		const query = { role };
-
-		return this.find(query, options);
-	}
-
 	findPublic(options) {
 		const query = { public: true };
 
@@ -145,6 +139,21 @@ export class Settings extends Base {
 		const update = {
 			$set: {
 				value,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	incrementValueById(_id) {
+		const query = {
+			blocked: { $ne: true },
+			_id,
+		};
+
+		const update = {
+			$inc: {
+				value: 1,
 			},
 		};
 

@@ -28,9 +28,7 @@ if (Meteor.isServer) {
 			Gitlab.configure(config);
 		}, 300);
 
-		settings.get('API_Gitlab_URL', updateConfig);
-		settings.get('Accounts_OAuth_Gitlab_identity_path', updateConfig);
-		settings.get('Accounts_OAuth_Gitlab_merge_users', updateConfig);
+		settings.watchMultiple(['API_Gitlab_URL', 'Accounts_OAuth_Gitlab_identity_path', 'Accounts_OAuth_Gitlab_merge_users'], updateConfig);
 	});
 } else {
 	Meteor.startup(function () {

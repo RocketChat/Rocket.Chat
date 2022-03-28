@@ -14,7 +14,7 @@ import {
 	Icon,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import {
@@ -25,7 +25,6 @@ import {
 	GenericTableLoadingTable,
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
@@ -33,10 +32,13 @@ import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
 import { useAppsReload, useAppsResult } from './AppsContext';
 import MarketplaceRow from './MarketplaceRow';
-import CategoryDropDown from './components/CategoryDropDown';
-import TagList from './components/TagList';
+import CategoryDropDown from './components/CategoryFilter/CategoryDropDown';
+import TagList from './components/CategoryFilter/TagList';
+import RadioDropDown from './components/RadioDropDown/RadioDropDown';
+import { RadioDropDownGroup } from './definitions/RadioDropDownDefinitions';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
+import { useRadioToggle } from './hooks/useRadioToggle';
 
 const AppsTable: FC<{
 	isMarketplace: boolean;
@@ -57,27 +59,52 @@ const AppsTable: FC<{
 
 	const [text, setText] = useDebouncedState('', 500);
 
-	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-
 	const reload = useAppsReload();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
+	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState<RadioDropDownGroup>({
+		label: t('Filter_By_Price'),
+		items: [
+			{ id: 'all', label: t('All_Apps'), checked: true },
+			{ id: 'free', label: t('Free_Apps'), checked: false },
+			{ id: 'paid', label: t('Paid_Apps'), checked: false },
+		],
+	});
+
+	const freePaidFilterOnSelected = useRadioToggle(setFreePaidFilterStructure);
+
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
+
+	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>({
+		label: 'Sort by',
+		items: [
+			{ id: 'az', label: 'A-Z', checked: true },
+			{ id: 'za', label: 'Z-A', checked: false },
+			{ id: 'mru', label: t('Most_recent_updated'), checked: false },
+			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
+		],
+	});
+
+	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 
 	const appsResult = useFilteredApps({
 		appsData: isMarketplace ? marketplaceApps : installedApps,
 		text,
 		current,
 		itemsPerPage,
-		sortDirection,
 		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
+		purchaseType: useMemo(() => freePaidFilterStructure.items.find(({ checked }) => checked)?.id, [freePaidFilterStructure]),
+		sortingMethod: useMemo(() => sortFilterStructure.items.find(({ checked }) => checked)?.id, [sortFilterStructure]),
 	});
 
 	return (
 		<>
+			{/* TODO Divide into two components: Filters and AppsTable */}
 			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
-				<CategoryDropDown data={categories} onSelected={onSelected} />
+				<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} mie='x8' />
+				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
+				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} mis='x8' />
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 			{(appsResult.phase === AsyncStatePhase.LOADING ||
@@ -85,15 +112,7 @@ const AppsTable: FC<{
 				<>
 					<GenericTable ref={ref}>
 						<GenericTableHeader>
-							<GenericTableHeaderCell
-								direction={sortDirection}
-								active={sortBy === 'name'}
-								sort='name'
-								width={onMediumBreakpoint ? 'x240' : 'x180'}
-								onClick={setSort}
-							>
-								{t('Name')}
-							</GenericTableHeaderCell>
+							<GenericTableHeaderCell width={onMediumBreakpoint ? 'x240' : 'x180'}>{t('Name')}</GenericTableHeaderCell>
 							{onMediumBreakpoint && <GenericTableHeaderCell>{t('Details')}</GenericTableHeaderCell>}
 							{isMarketplace && <GenericTableHeaderCell>{t('Price')}</GenericTableHeaderCell>}
 
@@ -181,7 +200,6 @@ const AppsTable: FC<{
 					</States>
 				</Box>
 			)}
-			{/* TODO: Create error variations for empty search message */}
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>
 					<States>

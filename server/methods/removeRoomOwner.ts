@@ -12,13 +12,15 @@ Meteor.methods({
 		check(rid, String);
 		check(userId, String);
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'removeRoomOwner',
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'set-owner', rid)) {
+		if (!hasPermission(uid, 'set-owner', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeRoomOwner',
 			});
@@ -55,7 +57,7 @@ Meteor.methods({
 
 		Subscriptions.removeRoleById(subscription._id, 'owner');
 
-		const fromUser = Users.findOneById(Meteor.userId());
+		const fromUser = Users.findOneById(uid);
 
 		Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(rid, user, {
 			u: {
