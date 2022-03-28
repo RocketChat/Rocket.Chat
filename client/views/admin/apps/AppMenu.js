@@ -2,7 +2,6 @@ import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
 import { useSetModal } from '../../../contexts/ModalContext';
-import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import CloudLoginModal from './CloudLoginModal';
@@ -13,7 +12,6 @@ import { appEnabledStatuses, warnStatusChange, handleAPIError } from './helpers'
 function AppMenu({ app, ...props }) {
 	const t = useTranslation();
 	const setModal = useSetModal();
-	const appsRoute = useRoute('admin-apps');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
 	const setAppStatus = useEndpoint('POST', `/apps/${app.id}/status`);
@@ -37,10 +35,6 @@ function AppMenu({ app, ...props }) {
 			handleAPIError(error);
 		}
 	}, [app.name, setAppStatus]);
-
-	const handleViewLogs = useCallback(() => {
-		appsRoute.push({ context: 'logs', id: app.id });
-	}, [app.id, appsRoute]);
 
 	const handleSubscription = useCallback(async () => {
 		if (!(await checkUserLoggedIn())) {
@@ -132,15 +126,6 @@ function AppMenu({ app, ...props }) {
 					action: handleSubscription,
 				},
 			}),
-			viewLogs: {
-				label: (
-					<Box>
-						<Icon name='list-alt' size='x16' marginInlineEnd='x4' />
-						{t('View_Logs')}
-					</Box>
-				),
-				action: handleViewLogs,
-			},
 			...(isAppEnabled && {
 				disable: {
 					label: (
@@ -173,7 +158,7 @@ function AppMenu({ app, ...props }) {
 				action: handleUninstall,
 			},
 		}),
-		[canAppBeSubscribed, t, handleSubscription, handleViewLogs, isAppEnabled, handleDisable, handleEnable, handleUninstall],
+		[canAppBeSubscribed, t, handleSubscription, isAppEnabled, handleDisable, handleEnable, handleUninstall],
 	);
 
 	return <Menu options={menuOptions} placement='bottom-start' {...props} />;

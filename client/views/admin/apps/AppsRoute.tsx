@@ -7,7 +7,6 @@ import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
-import AppLogsPage from './AppLogsPage';
 import AppsPage from './AppsPage';
 import AppsProvider from './AppsProvider';
 
@@ -62,7 +61,6 @@ const AppsRoute: FC = () => {
 		<AppsProvider>
 			{((!context || context === 'installed') && <AppsPage isMarketplace={isMarketplace} />) ||
 				(id && context === 'details' && <AppDetailsPage id={id} />) ||
-				(context === 'logs' && <AppLogsPage id={id} />) ||
 				(context === 'install' && <AppInstallPage />)}
 		</AppsProvider>
 	);

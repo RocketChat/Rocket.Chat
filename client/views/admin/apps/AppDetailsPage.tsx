@@ -9,6 +9,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import APIsDisplay from './APIsDisplay';
 import AppDetailsHeader from './AppDetailsHeader';
 import AppDetailsPageContent from './AppDetailsPageContent';
+import AppLogsPage from './AppLogsPage';
 import LoadingDetails from './LoadingDetails';
 import SettingsDisplay from './SettingsDisplay';
 import { handleAPIError } from './helpers';
@@ -131,7 +132,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 							{isDetailsTabSelected && <AppDetailsPageContent app={data} />}
 							{areApisVisible && <APIsDisplay apis={apis} />}
-							{isLogsTabSelected && <div>Logs will be here...</div>}
+							{isLogsTabSelected && <AppLogsPage id={id} />}
 							{isSettingsTabSelected && (
 								<SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef} />
 							)}
