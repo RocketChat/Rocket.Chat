@@ -14,13 +14,13 @@ test.describe('recoverPassword', () => {
 		await loginPage.gotToForgotPassword();
 	});
 
-	test('it should be required', async () => {
+	test('expect be required', async () => {
 		loginPage.submit();
 		// loginPage.emailField.should('have.class', 'error');
 		await expect(loginPage.emailInvalidText()).toBeVisible();
 	});
 
-	test('it should be invalid for email without domain', async () => {
+	test('expect invalid for email without domain', async () => {
 		const emailField = loginPage.emailField();
 		await emailField.type('invalidmail');
 		await loginPage.submit();
@@ -28,14 +28,14 @@ test.describe('recoverPassword', () => {
 		await expect(loginPage.emailInvalidText()).toBeVisible();
 	});
 
-	test('it should be invalid for email with invalid domain', async () => {
+	test('expect be invalid for email with invalid domain', async () => {
 		const emailField = loginPage.emailField();
 		await emailField.type('email@mail');
 		await loginPage.submit();
 		await expect(loginPage.emailInvalidText()).toBeVisible();
 	});
 
-	test('expect user type a valçid email', async () => {
+	test('expect user type a valçid email', async ({ page }) => {
 		const emailField = loginPage.emailField();
 		await emailField.type('any_user@gmail.com');
 		await loginPage.submit();
