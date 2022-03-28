@@ -20,5 +20,9 @@ class Pages {
 	public async goto(path: string): Promise<void> {
 		await this.page.goto(`${this.baseURL}/${path}`);
 	}
+
+	public getPage(): Page {
+		return this.page;
+	}
 }
 export default Pages;
