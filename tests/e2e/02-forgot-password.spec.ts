@@ -35,7 +35,7 @@ test.describe('recoverPassword', () => {
 		await expect(loginPage.emailInvalidText()).toBeVisible();
 	});
 
-	test('expect user type a valçid email', async ({ page }) => {
+	test('expect user type a valçid email', async () => {
 		const emailField = loginPage.emailField();
 		await emailField.type('any_user@gmail.com');
 		await loginPage.submit();
