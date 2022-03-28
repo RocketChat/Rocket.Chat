@@ -135,7 +135,6 @@ class SetupWizard extends Pages {
 		await this.userName().type(adminUsername);
 		await this.companyEmail().type(adminEmail);
 		await this.password().type(adminPassword);
-
 		await this.goNext();
 	}
 
