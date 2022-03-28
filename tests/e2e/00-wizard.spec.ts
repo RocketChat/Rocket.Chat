@@ -8,11 +8,12 @@ test.describe('[Wizard]', () => {
 
 	test.beforeAll(async ({ browser, baseURL }) => {
 		setupWizard = new SetupWizard(browser, baseURL as string);
+		await setupWizard.open('');
 	});
 
 	test.describe('[Step 1]', () => {
 		test.beforeEach(async () => {
-			await setupWizard.open('');
+			await setupWizard.goto('');
 		});
 
 		test('expect required field alert showed when user dont inform data', async () => {
@@ -44,7 +45,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 2]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.open('');
+			await setupWizard.goto('');
 			await setupWizard.stepOneSucess();
 		});
 
@@ -65,7 +66,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe.only('[Step 3]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.open('');
+			await setupWizard.goto('');
 			await setupWizard.stepOneSucess();
 			await setupWizard.stepTwoSucess();
 		});
@@ -97,15 +98,11 @@ test.describe('[Wizard]', () => {
 		test('expect have option for standalone server', async () => {
 			await expect(setupWizard.standaloneServer()).toBeVisible();
 		});
-
-		test('expect continue when clicking on "Continue as standalone"', async () => {
-			await setupWizard.standaloneServer().click();
-		});
 	});
 
-	test.describe('[Final Step]', async () => {
+	test.describe.only('[Final Step]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.open('');
+			await setupWizard.goto('');
 			await setupWizard.stepOneSucess();
 			await setupWizard.stepTwoSucess();
 			await setupWizard.stepThreeSucess();
