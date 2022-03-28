@@ -8,19 +8,19 @@ import AdministrationLayout from './AdministrationLayout';
 
 const AdministrationRouter = ({ renderRoute }: { renderRoute: () => ReactElement }): ReactElement => {
 	const [routeName] = useCurrentRoute();
-	const [upgradeTabType, trialEndDate] = useUpgradeTabParams();
+	const [upgradeTabType, trialEndDate, isLoading] = useUpgradeTabParams();
 	const defaultRoute = useRoute('admin-info');
 	const upgradeRoute = useRoute('upgrade');
 
 	useEffect(() => {
-		if (routeName === 'admin-index' && upgradeTabType) {
+		if (routeName === 'admin-index' && upgradeTabType && !isLoading) {
 			upgradeRoute.push({ type: upgradeTabType }, trialEndDate ? { trialEndDate } : undefined);
 		}
 
-		if (routeName === 'admin-index' && !upgradeTabType) {
+		if (routeName === 'admin-index' && !upgradeTabType && !isLoading) {
 			defaultRoute.push();
 		}
-	}, [defaultRoute, upgradeRoute, routeName, upgradeTabType, trialEndDate]);
+	}, [defaultRoute, upgradeRoute, routeName, upgradeTabType, trialEndDate, isLoading]);
 
 	return (
 		<AdministrationLayout>
