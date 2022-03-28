@@ -7,7 +7,7 @@ import { baseUrl } from '../utils/settings';
 import Index from './index';
 
 /**
- * The chatpal search provider enables chatpal search. An appropriate backedn has to be specified by settings.
+ * The chatpal search provider enables chatpal search. An appropriate backend has to be specified by settings.
  */
 class ChatpalProvider extends SearchProvider {
 	/**
