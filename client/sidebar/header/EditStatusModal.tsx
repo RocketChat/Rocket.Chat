@@ -1,6 +1,6 @@
 import { Field, TextInput, FieldGroup, Modal, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
+import React, { ReactElement, useState, useRef, ChangeEvent, useCallback } from 'react';
 
 import { EmojiPicker } from '../../../app/emoji/client/index';
 import { IUser } from '../../../definition/IUser';
@@ -49,22 +49,18 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		onClose();
 	}, [dispatchToastMessage, statusType, statusText, setUserStatus, onClose, t]);
 
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-	const handleEmojiPicker = (event: any) => {
-		const className = document.getElementsByClassName('custome_emoji_react')[0];
-		const inputField = className?.childNodes[0];
+	const inputRef = useRef(null);
+	const handleEmojiPicker = (event: any): void => {
 		event.stopPropagation();
 		event.preventDefault();
-
 		if (EmojiPicker.isOpened()) {
 			EmojiPicker.close();
 		}
-		EmojiPicker.open(inputField, (emoji: any) => {
+		EmojiPicker.open(inputRef.current, (emoji: any) => {
 			const emojiValue = `:${emoji}:`;
-			inputField.focus();
-
+			inputRef.current.focus();
 			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
-				inputField.focus();
+				inputRef.current.focus();
 			}
 		});
 	};
@@ -81,7 +77,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 						<Field.Label>{t('StatusMessage')}</Field.Label>
 						<Field.Row>
 							<TextInput
-								className='custome_emoji_react'
+								ref={inputRef}
 								error={statusTextError}
 								disabled={!allowUserStatusMessageChange}
 								flexGrow={1}
