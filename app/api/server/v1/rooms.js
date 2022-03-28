@@ -554,9 +554,9 @@ API.v1.addRoute(
 					this.bodyParams,
 					Match.ObjectIncluding({
 						subject: String,
-						toUsers: Match.Where((x) => Array.isArray(x) && x.length > 0 && typeof x[0] === 'string'),
-						toEmails: Match.Where((x) => Array.isArray(x) && x.length > 0 && typeof x[0] === 'string'),
-						messages: Match.Where((x) => Array.isArray(x) && x.length > 0 && typeof x[0] === 'string'),
+						toUsers: Match.Where((x) => Array.isArray(x) && x.length > 0 && x.every((y) => typeof y === 'string')),
+						toEmails: Match.Where((x) => Array.isArray(x) && x.length > 0 && x.every((y) => typeof y === 'string')),
+						messages: Match.Where((x) => Array.isArray(x) && x.length > 0 && x.every((y) => typeof y === 'string')),
 					}),
 				);
 
