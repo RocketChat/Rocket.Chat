@@ -1,18 +1,9 @@
-import { resolve } from 'path';
-
 import { Browser, Page } from '@playwright/test';
 
 class Pages {
 	protected page: Page;
 
-	protected browser: Browser;
-
-	protected baseURL: string;
-
-	constructor(browser: Browser, baseURL = '') {
-		this.browser = browser;
-		this.baseURL = baseURL;
-	}
+	constructor(protected readonly browser: Browser, protected readonly baseURL: string) {}
 
 	public async open(path: string): Promise<void> {
 		const context = await this.browser.newContext();
@@ -30,14 +21,8 @@ class Pages {
 		await this.page.goto(`${this.baseURL}/${path}`);
 	}
 
-	protected getPage(): Page {
+	public getPage(): Page {
 		return this.page;
-	}
-
-	public async isSetUpWizzard(): Promise<boolean> {
-		await this.page.waitForURL('**/setup-wizard');
-
-		return !!this.page.url().match(/.*\/setup-wizard/);
 	}
 }
 export default Pages;
