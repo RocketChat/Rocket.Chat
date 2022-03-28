@@ -294,8 +294,7 @@ export class NotificationsModule {
 			const [, e] = eventName.split('/');
 			if (e === 'otr' && (item === 'handshake' || item === 'acknowledge')) {
 				const isEnable = await Settings.getValueById('OTR_Enable');
-
-				return isEnable === 'true';
+				return Boolean(this.userId) && (isEnable === 'true' || isEnable === true);
 			}
 			if (e === 'webrtc') {
 				return true;
@@ -308,7 +307,7 @@ export class NotificationsModule {
 
 			if (e === 'otr') {
 				const isEnable = await Settings.getValueById('OTR_Enable');
-				return isEnable === 'true';
+				return Boolean(this.userId) && this.userId === userId && (isEnable === 'true' || isEnable === true);
 			}
 			if (e === 'webrtc') {
 				return true;
