@@ -3,25 +3,30 @@ import React, { ReactElement, useEffect, useRef, useState } from 'react';
 
 import type { UpgradeTabVariants } from '../../../../../lib/getUpgradeTabType';
 import Page from '../../../../components/Page';
+import PageHeader from '../../../../components/Page/PageHeader';
+import { useLayout } from '../../../../contexts/LayoutContext';
 import { useRouteParameter, useQueryStringParameter } from '../../../../contexts/RouterContext';
 import { useAbsoluteUrl } from '../../../../contexts/ServerContext';
+import { useLanguage } from '../../../../contexts/TranslationContext';
 import UpgradePageError from '../UpgradePageError';
 
 const iframeStyle = { width: '100%', height: '100%' };
 
-const getUrl = (type: UpgradeTabVariants, date: string | undefined): string => {
-	switch (type) {
-		case 'goFullyFeatured':
-			return 'https://go.rocket.chat/i/upgrade-ce-1-unregistered';
-		case 'goFullyFeaturedRegistered':
-			return 'https://go.rocket.chat/i/upgrade-ce-1-registered';
-		case 'trialGold':
-			return `https://go.rocket.chat/i/upgrade-gold-trial${date ? `?date=${date}` : ''}`;
-		case 'trialEnterprise':
-			return `https://go.rocket.chat/i/upgrade-ee-trial${date ? `?date=${date}` : ''}`;
-		case 'upgradeYourPlan':
-			return 'https://go.rocket.chat/i/upgrade-ce-2';
+const urlMap = {
+	goFullyFeatured: 'https://go.rocket.chat/i/upgrade-ce-1-unregistered',
+	goFullyFeaturedRegistered: 'https://go.rocket.chat/i/upgrade-ce-1-registered',
+	trialGold: 'https://go.rocket.chat/i/upgrade-gold-trial',
+	trialEnterprise: 'https://go.rocket.chat/i/upgrade-ee-trial',
+	upgradeYourPlan: 'https://go.rocket.chat/i/upgrade-ce-2',
+};
+
+const getUrl = (type: UpgradeTabVariants, date: string | undefined, language: string): string => {
+	const urlParams = new URLSearchParams({ lang: language.toLowerCase() });
+	if (date) {
+		urlParams.set('date', date);
 	}
+
+	return `${urlMap[type]}?${urlParams.toString()}`;
 };
 
 type NavigationMessage = { goTo: string };
@@ -53,9 +58,12 @@ const UpgradePage = (): ReactElement => {
 
 	const type = useRouteParameter('type') as UpgradeTabVariants;
 	const trialEndDate = useQueryStringParameter('trialEndDate');
-	const pageUrl = getUrl(type, trialEndDate);
+	const language = useLanguage();
+	const pageUrl = getUrl(type, trialEndDate, language);
 
 	const getAbsoluteUrl = useAbsoluteUrl();
+
+	const { isMobile } = useLayout();
 
 	const ref = useRef<HTMLIFrameElement>(null);
 	const hasConnection = navigator.onLine;
@@ -84,6 +92,7 @@ const UpgradePage = (): ReactElement => {
 
 	return (
 		<Page data-qa='admin-upgrade'>
+			{isMobile && <PageHeader title='' />}
 			{!hasConnection && <UpgradePageError />}
 			{hasConnection && isLoading && (
 				<Box pb='x24'>

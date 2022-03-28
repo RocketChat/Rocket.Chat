@@ -1,16 +1,25 @@
 import { useCallback } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 
 import { UpgradeTabVariants } from '../../../lib/getUpgradeTabType';
 import { useEndpoint } from '../../contexts/ServerContext';
 
-export const useUpgradeTabParams = (): [data: UpgradeTabVariants | false, trialEndDate: string | undefined, isLoading: boolean] => {
+const placeholderData = {
+	tabType: false as false,
+	trialEndDate: undefined,
+};
+
+export const useUpgradeTabParams = (): UseQueryResult<
+	{ tabType: UpgradeTabVariants | false; trialEndDate: string | undefined },
+	unknown
+> => {
 	const getUpgradeTabParams = useEndpoint('GET', 'cloud.getUpgradeTabParams');
 
-	const { data, isLoading } = useQuery(
+	const result = useQuery(
 		'upgradeTabType',
 		useCallback(async () => getUpgradeTabParams(), [getUpgradeTabParams]),
+		{ placeholderData },
 	);
 
-	return [data?.tabType || false, data?.trialEndDate, isLoading];
+	return result;
 };

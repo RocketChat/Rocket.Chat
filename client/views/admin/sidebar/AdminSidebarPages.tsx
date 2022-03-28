@@ -13,11 +13,11 @@ type AdminSidebarPagesProps = {
 
 const AdminSidebarPages: FC<AdminSidebarPagesProps> = ({ currentPath }) => {
 	const items = useSubscription(itemsSubscription);
-	const [upgradeTabType, trialEndDate] = useUpgradeTabParams();
+	const { data } = useUpgradeTabParams();
 
 	return (
 		<Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
-			{upgradeTabType && <UpgradeTab type={upgradeTabType} currentPath={currentPath} trialEndDate={trialEndDate} />}
+			{data?.tabType && <UpgradeTab type={data.tabType} currentPath={currentPath} trialEndDate={data.trialEndDate} />}
 			<Sidebar.ItemsAssembler items={items} currentPath={currentPath} />
 		</Box>
 	);
