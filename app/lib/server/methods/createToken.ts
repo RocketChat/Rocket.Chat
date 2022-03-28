@@ -5,9 +5,12 @@ import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
 	createToken(userId) {
+		const uid = Meteor.userId();
+
 		if (
 			!['yes', 'true'].includes(String(process.env.CREATE_TOKENS_FOR_USERS)) ||
-			(Meteor.userId() !== userId && !hasPermission(Meteor.userId(), 'user-generate-access-token'))
+			!uid ||
+			(uid !== userId && !hasPermission(uid, 'user-generate-access-token'))
 		) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'createToken' });
 		}

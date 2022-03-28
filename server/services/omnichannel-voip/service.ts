@@ -70,6 +70,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			return;
 		}
 		this.logger.debug(`Notifying agent ${agent._id} of hangup on room ${currentRoom._id}`);
+		// TODO evalute why this is 'notifyUserInThisInstance'
 		Notifications.notifyUserInThisInstance(agent._id, 'call.callerhangup', { roomId: currentRoom._id });
 	}
 
@@ -457,5 +458,22 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		} else {
 			this.logger.warn({ msg: 'Invalid room type or event type', type: room.t, event });
 		}
+	}
+
+	async getAvailableAgents(
+		includeExtension?: string,
+		text?: string,
+		count?: number,
+		offset?: number,
+		sort?: Record<string, unknown>,
+	): Promise<{ agents: ILivechatAgent[]; total: number }> {
+		const cursor = this.users.getAvailableAgentsIncludingExt(includeExtension, text, { count, skip: offset, sort });
+		const agents = await cursor.toArray();
+		const total = await cursor.count();
+
+		return {
+			agents,
+			total,
+		};
 	}
 }

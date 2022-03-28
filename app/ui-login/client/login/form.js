@@ -128,6 +128,9 @@ Template.loginForm.events({
 							return instance.state.set('wait-activation');
 						}
 						Session.set('forceLogin', false);
+						if (formData.secretURL) {
+							FlowRouter.go('home');
+						}
 					});
 				});
 			}

@@ -38,11 +38,17 @@ const AuditPage = () => {
 
 	const { handleMsg, handleType, handleVisitor, handleAgent, handleUsers, handleRid, handleDateRange } = handlers;
 
-	const onChangeUsers = useMutableCallback((value) => {
-		handleUsers(value);
+	const onChangeUsers = useMutableCallback((value, action) => {
+		if (!action) {
+			if (users.includes(value)) {
+				return;
+			}
+			return handleUsers([...users, value]);
+		}
+		handleUsers(users.filter((current) => current !== value));
 	});
 
-	const apply = useMutableCallback(() => {
+	const apply = useMutableCallback((eventStats) => {
 		if (!rid && type === '') {
 			return setErrors({
 				rid: t('The_field_is_required', t('Channel_name')),
@@ -72,7 +78,7 @@ const AuditPage = () => {
 		}
 
 		setErrors({});
-
+		eventStats();
 		setData.current({
 			msg,
 			type,

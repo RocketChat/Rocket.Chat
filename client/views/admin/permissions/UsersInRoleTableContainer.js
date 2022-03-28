@@ -33,6 +33,7 @@ const UsersInRoleTableContainer = ({ rid, roleId, roleName, description, reloadR
 			params={params}
 			setParams={setParams}
 			roleName={roleName}
+			roleId={roleId}
 			description={description}
 			rid={rid}
 		/>

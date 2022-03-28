@@ -1,7 +1,6 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
-import { IUser } from './IUser';
-
-type RoomType = 'c' | 'd' | 'p' | 'l';
+import { IUser, IRole } from './IUser';
+import { RoomType } from './RoomType';
 
 type RoomID = string;
 
@@ -33,14 +32,14 @@ export interface ISubscription extends IRocketChatRecord {
 
 	prid?: RoomID;
 
-	roles?: string[];
+	roles?: IRole['_id'][];
 
 	onHold?: boolean;
 	encrypted?: boolean;
 	E2EKey?: string;
 	unreadAlert?: 'default' | 'all' | 'mentions' | 'nothing';
 
-	fname?: unknown;
+	fname?: string;
 
 	code?: unknown;
 	archived?: unknown;

@@ -259,7 +259,11 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			Meteor.runAsUser(_id, () => saveUserIdentity({ _id, name: userData.name, username: userData.username }));
+			saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
+		}
+
+		if (userData.origin) {
+			Users.update({ _id }, { $set: { origin: userData.origin } });
 		}
 
 		if (userData.importIds.length) {
@@ -308,7 +312,7 @@ export class ImportDataConverter {
 	}
 
 	public convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const users = Promise.await(this.getUsersToImport());
+		const users = Promise.await(this.getUsersToImport()) as IImportUserRecord[];
 		users.forEach(({ data, _id }) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
@@ -316,7 +320,7 @@ export class ImportDataConverter {
 					return;
 				}
 
-				data.emails = data.emails.filter((item) => item);
+				const emails = data.emails.filter(Boolean).map((email) => ({ address: email }));
 				data.importIds = data.importIds.filter((item) => item);
 
 				if (!data.emails.length && !data.username) {
@@ -332,7 +336,7 @@ export class ImportDataConverter {
 				if (!data.username) {
 					data.username = generateUsernameSuggestion({
 						name: data.name,
-						emails: data.emails,
+						emails,
 					});
 				}
 
@@ -349,10 +353,11 @@ export class ImportDataConverter {
 				}
 
 				// Deleted users are 'inactive' users in Rocket.Chat
+				// TODO: Check data._id if exists/required or not
 				if (data.deleted && existingUser?.active) {
-					setUserActiveStatus(data._id, false, true);
+					data._id && setUserActiveStatus(data._id, false, true);
 				} else if (data.deleted === false && existingUser?.active === false) {
-					setUserActiveStatus(data._id, true);
+					data._id && setUserActiveStatus(data._id, true);
 				}
 
 				if (afterImportFn) {

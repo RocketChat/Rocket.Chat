@@ -1,4 +1,5 @@
 import { Permissions, Roles } from '../../../../app/models/server/raw';
+import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 export const createPermissions = async (): Promise<void> => {
 	const livechatMonitorRole = 'livechat-monitor';
@@ -7,7 +8,9 @@ export const createPermissions = async (): Promise<void> => {
 
 	const monitorRole = await Roles.findOneById(livechatMonitorRole, { fields: { _id: 1 } });
 	if (!monitorRole) {
-		await Roles.createOrUpdate(livechatMonitorRole);
+		await createOrUpdateProtectedRoleAsync(livechatMonitorRole, {
+			name: livechatMonitorRole,
+		});
 	}
 
 	await Promise.all([

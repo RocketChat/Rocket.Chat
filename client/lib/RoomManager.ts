@@ -54,7 +54,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 }> {
 	private rid: IRoom['_id'] | undefined;
 
-	private lastRid: IRoom['_id'] | undefined;
+	public lastRid: IRoom['_id'] | undefined;
 
 	private rooms: Map<IRoom['_id'], RoomStore> = new Map();
 
@@ -149,10 +149,12 @@ export const useHandleRoom = <T extends IRoom>(rid: IRoom['_id']): AsyncState<T>
 	const room = uid ? subscription || _room : _room;
 
 	useEffect(() => {
-		if (room) {
-			update();
-			resolve(room);
+		if (!room) {
+			return;
 		}
+
+		update();
+		resolve(room);
 	}, [resolve, update, room]);
 
 	return state;
