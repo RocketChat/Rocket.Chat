@@ -13,7 +13,7 @@
 	],
 	"scripts": {
 		"prepare": "husky install",
-		"start": "TEST_MODE=true meteor",
+		"start": "meteor",
 		"dev": "meteor reset && npm start",
 		"ha": "meteor npm run ha:start",
 		"ha:start": "ts-node .scripts/run-ha.ts main",
