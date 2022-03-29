@@ -15,7 +15,7 @@ test.describe('[Login]', () => {
 		await expect(loginPage.getHomeMessage()).toContainText('Home');
 	});
 
-	test('expect user write a password incorrectely', async () => {
+	test('expect user write a password incorrectly', async () => {
 		const invalidUserPassword = {
 			email: validUser.email,
 			password: 'any_password1',
