@@ -16,7 +16,6 @@ import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { call } from '../../../../client/lib/utils/call';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
@@ -94,11 +93,11 @@ export const RoomManager = new (function () {
 						const type = typeName.substr(0, 1);
 						const name = typeName.substr(1);
 
-						const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
+						const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name);
+
+						RoomHistoryManager.getMoreIfIsEmpty(record.rid);
 
 						if (room != null) {
-							record.rid = room._id;
-							RoomHistoryManager.getMoreIfIsEmpty(room._id);
 							if (record.streamActive !== true) {
 								record.streamActive = true;
 								msgStream.on(record.rid, async (msg) => {
@@ -195,10 +194,11 @@ export const RoomManager = new (function () {
 			Session.set('openedRoom');
 		}
 
-		open(typeName) {
+		open({ typeName, rid }) {
 			if (openedRooms[typeName] == null) {
 				openedRooms[typeName] = {
 					typeName,
+					rid,
 					active: false,
 					ready: false,
 					unreadSince: new ReactiveVar(undefined),
