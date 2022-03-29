@@ -100,6 +100,16 @@ export interface IRole {
 	_id: string;
 }
 
+export interface IGetRoomRoles {
+	_id: string;
+	rid: string;
+	u: {
+		_id: string;
+		username: string;
+	};
+	roles: string[];
+}
+
 export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
