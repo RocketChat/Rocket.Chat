@@ -1,7 +1,7 @@
 import React, { ReactElement, SetStateAction, Dispatch } from 'react';
 
-import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 import ChatTable from './ChatTable';
 
 // TODO Check if I need to type the setstateaction params, if I should do:
