@@ -85,7 +85,7 @@ export const RoomManager = new (function () {
 					return;
 				}
 				Tracker.nonreactive(() =>
-					Object.entries(openedRooms).forEach(async ([typeName, record]) => {
+					Object.entries(openedRooms).forEach(([typeName, record]) => {
 						if (record.active !== true || record.ready === true) {
 							return;
 						}
