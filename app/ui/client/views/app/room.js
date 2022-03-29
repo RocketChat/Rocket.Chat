@@ -558,6 +558,7 @@ Meteor.startup(() => {
 			e.preventDefault();
 			template.atBottom = true;
 			RoomHistoryManager.clear(template && template.data && template.data._id);
+			RoomHistoryManager.getMoreIfIsEmpty(this._id);
 		},
 		'load .gallery-item'(e, template) {
 			template.sendToBottomIfNecessary();
