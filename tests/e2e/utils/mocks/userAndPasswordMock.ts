@@ -11,14 +11,14 @@ export const adminEmail = `${adminUsername}@rocket.chat`;
 export const adminPassword = adminUsername;
 
 export const registerUser: IRegister = {
-	email: `${v4()}@email.com`,
+	email: `any_user@email.com`,
 	password: 'any_password',
 	name: `any_name${v4()}`,
 };
 
 export const validUser: ILogin = {
-	email: adminEmail,
-	password: adminPassword,
+	email: 'any_user@email.com',
+	password: 'any_password',
 };
 
 export const incorrectUser: ILogin = {
