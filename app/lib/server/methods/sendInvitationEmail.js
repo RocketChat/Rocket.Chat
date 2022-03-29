@@ -4,7 +4,6 @@ import { check } from 'meteor/check';
 import * as Mailer from '../../../mailer';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { Settings } from '../../../models/server';
 
 let html = '';
 Meteor.startup(() => {
@@ -38,7 +37,7 @@ Meteor.methods({
 
 		return validEmails.filter((email) => {
 			try {
-				const result = Mailer.send({
+				return Mailer.send({
 					to: email,
 					from: settings.get('From_Email'),
 					subject,
@@ -47,8 +46,6 @@ Meteor.methods({
 						email,
 					},
 				});
-				Settings.updateValueById('Invitation_Email_Count', settings.get('Invitation_Email_Count') + 1);
-				return result;
 			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 					method: 'sendInvitationEmail',
