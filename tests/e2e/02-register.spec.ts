@@ -26,14 +26,15 @@ test.describe('[Register]', () => {
 		expect(toastError).toBeVisible();
 		expect(toastError).toHaveText('User not found or incorrect password');
 	});
-	// TODO verify register flow
+
 	test('expect new user is created', async () => {
 		await loginPage.gotToRegister();
 		await loginPage.registerNewUser(registerUser);
 
 		const submitButton = loginPage.registerNextButton();
+		await loginPage.getPage().waitForSelector('//button[contains(text(), "Use this username")]');
 		await submitButton.click();
-		await expect(loginPage.getHomeMessage()).toContainText('Home');
+		await loginPage.getPage().waitForSelector('//span[@class="rc-header__block"]');
 	});
 
 	test('expect when user dont inform user and password error message is showed', async () => {
@@ -76,7 +77,7 @@ test.describe('[Register]', () => {
 		await expect(loginPage.passwordInvalidText()).toHaveText('The password must not be empty');
 	});
 
-	test('expect user click in register button withoud name and password', async () => {
+	test('expect user click in register button without name and password', async () => {
 		await loginPage.gotToRegister();
 
 		const inputEmail = loginPage.emailField();
@@ -87,7 +88,7 @@ test.describe('[Register]', () => {
 		await expect(loginPage.passwordInvalidText()).toHaveText('The password must not be empty');
 	});
 
-	test('expect user click in register button withoud name and email', async () => {
+	test('expect user click in register button without name and email', async () => {
 		await loginPage.gotToRegister();
 
 		const passwordFiled = loginPage.passwordField();
@@ -98,7 +99,7 @@ test.describe('[Register]', () => {
 		await expect(loginPage.emailInvalidText()).toHaveText('The email entered is invalid');
 	});
 
-	test('expect user click in register button with diferent password', async () => {
+	test('expect user click in register button with different password', async () => {
 		await loginPage.gotToRegister();
 
 		const passwordField = loginPage.passwordField();
