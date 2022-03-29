@@ -29,7 +29,7 @@ import { readSecondaryPreferred } from '../../../../server/database/readSecondar
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Analytics } from '../../../../server/sdk';
+import { Analytics, Team } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { IRoom } from '../../../../definition/IRoom';
 import { IStats } from '../../../../definition/IStats';
@@ -157,17 +157,11 @@ export const statistics = {
 
 		statsPms.push(
 			LivechatBusinessHours.col.count().then((count) => {
-				let strat = settings.get('Livechat_enable_business_hours');
-				if (typeof strat === 'boolean') {
-					strat = strat ? 'enabled' : 'disabled';
-				} else if (strat === undefined) {
-					strat = '';
-				}
 				statistics.BusinessHours = {
 					// Number of Business Hours
 					total: count,
 					// Business Hours strategy
-					strategy: strat as string,
+					enabled: settings.get('Livechat_enable_business_hours'),
 				};
 			}),
 		);
@@ -570,6 +564,12 @@ export const statistics = {
 		statistics.usersCreatedSlackUser = await Users.find({ origin: USER_ORIGIN.SLACK_USER_IMPORT }).count();
 		statistics.usersCreatedCSVImport = await Users.find({ origin: USER_ORIGIN.CSV_IMPORT }).count();
 		statistics.usersCreatedHiptext = await Users.find({ origin: USER_ORIGIN.HIPTEXT_IMPORT }).count();
+
+		statsPms.push(
+			Team.getStatistics().then((statisticsTeam) => {
+				statistics.teams = statisticsTeam;
+			}),
+		);
 
 		return statistics;
 	},

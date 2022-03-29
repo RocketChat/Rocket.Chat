@@ -1,6 +1,6 @@
 import { FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
 
-import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
+import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE, ITeamStats } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser, IRole } from '../../../definition/IUser';
 import { ICreateRoomParams } from './IRoomService';
@@ -103,6 +103,7 @@ export interface ITeamService {
 	getOneByMainRoomId(teamId: string): Promise<Pick<ITeam, '_id'> | null>;
 	getOneByRoomId(teamId: string): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
+	getStatistics(): Promise<ITeamStats>;
 	autocomplete(uid: string, name: string): Promise<ITeamAutocompleteResult[]>;
 	getAllPublicTeams(options?: WithoutProjection<FindOneOptions<ITeam>>): Promise<Array<ITeam>>;
 	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
