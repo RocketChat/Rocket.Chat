@@ -17,7 +17,7 @@ import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
 import { isOwnUserMessage } from './lib/isOwnUserMessage';
-import MessageEditingProvider from './providers/MessageEditingProvider';
+import MessageHighlightProvider from './providers/MessageHighlightProvider';
 import { MessageListProvider } from './providers/MessageListProvider';
 
 export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
@@ -31,7 +31,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	return (
 		<MessageListProvider rid={rid}>
 			<MessageProvider rid={rid} broadcast={isBroadcast}>
-				<MessageEditingProvider>
+				<MessageHighlightProvider>
 					{messages.map((message, index, arr) => {
 						const previous = arr[index - 1];
 
@@ -85,7 +85,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 							</Fragment>
 						);
 					})}
-				</MessageEditingProvider>
+				</MessageHighlightProvider>
 			</MessageProvider>
 		</MessageListProvider>
 	);
