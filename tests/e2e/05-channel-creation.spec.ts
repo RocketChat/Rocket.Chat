@@ -3,7 +3,9 @@ import { v4 } from 'uuid';
 
 import ChannelCreation from './utils/pageobjects/ChannelCreation';
 import LoginPage from './utils/pageobjects/login.page';
+import { validUser } from './utils/mocks/userAndPasswordMock';
 
+const targetUser = 'rocket.cat';
 test.describe.parallel('[Channel]', async () => {
 	let channelCreation: ChannelCreation;
 	let loginPage: LoginPage;
@@ -11,7 +13,7 @@ test.describe.parallel('[Channel]', async () => {
 	test.beforeAll(async ({ browser, baseURL }) => {
 		loginPage = new LoginPage(browser, baseURL as string);
 		await loginPage.open();
-		await loginPage.login({ email: 'weslleydrum@hotmail.com', password: 'Weslley901@@' });
+		await loginPage.login(validUser);
 
 		channelCreation = new ChannelCreation(loginPage.getPage());
 	});
@@ -19,14 +21,16 @@ test.describe.parallel('[Channel]', async () => {
 	test.beforeEach(async () => {
 		channelName = v4();
 	});
-	// Cenário negativo
-	// Cenário positivo
 
 	test('expect create privateChannel channel', async () => {
-		await channelCreation.createPrivateChannel(channelName, true);
+		await channelCreation.createChannel(channelName, true);
 	});
 
 	test('expect create public channel', async () => {
-		await channelCreation.createPrivateChannel(channelName, false);
+		await channelCreation.createChannel(channelName, false);
+	});
+
+	test.only('expect send to channel created', async () => {
+		await channelCreation.sendMessage(targetUser);
 	});
 });
