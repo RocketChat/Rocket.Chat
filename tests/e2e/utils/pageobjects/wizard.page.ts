@@ -131,7 +131,7 @@ class SetupWizard extends Pages {
 	}
 
 	public async stepOneSucess(): Promise<void> {
-		await this.fullName().type('Any admin Name');
+		await this.fullName().type(adminUsername);
 		await this.userName().type(adminUsername);
 		await this.companyEmail().type(adminEmail);
 		await this.password().type(adminPassword);

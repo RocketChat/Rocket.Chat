@@ -64,7 +64,7 @@ test.describe('[Wizard]', () => {
 		});
 	});
 
-	test.describe.only('[Step 3]', async () => {
+	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
 			await setupWizard.goto('');
 			await setupWizard.stepOneSucess();
@@ -100,7 +100,7 @@ test.describe('[Wizard]', () => {
 		});
 	});
 
-	test.describe.only('[Final Step]', async () => {
+	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
 			await setupWizard.goto('');
 			await setupWizard.stepOneSucess();
@@ -115,6 +115,7 @@ test.describe('[Wizard]', () => {
 
 		test('expect confirm standalone', async () => {
 			await setupWizard.goToWorkspace().click();
+			await setupWizard.getPage().waitForSelector('//span[@class="rc-header__block"]');
 		});
 	});
 });
