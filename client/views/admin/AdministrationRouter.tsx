@@ -7,8 +7,8 @@ import { useUpgradeTabParams } from '../hooks/useUpgradeTabParams';
 import AdministrationLayout from './AdministrationLayout';
 
 const AdministrationRouter = ({ renderRoute }: { renderRoute: () => ReactElement }): ReactElement => {
-	const [routeName] = useCurrentRoute();
 	const { data, isLoading } = useUpgradeTabParams();
+	const [routeName] = useCurrentRoute();
 	const defaultRoute = useRoute('admin-info');
 	const upgradeRoute = useRoute('upgrade');
 
@@ -19,12 +19,11 @@ const AdministrationRouter = ({ renderRoute }: { renderRoute: () => ReactElement
 
 		if (data?.tabType) {
 			upgradeRoute.push({ type: data?.tabType }, data?.trialEndDate ? { trialEndDate: data.trialEndDate } : undefined);
+			return;
 		}
 
-		if (!data?.tabType) {
-			defaultRoute.push();
-		}
-	}, [defaultRoute, upgradeRoute, routeName, data?.tabType, data?.trialEndDate, isLoading]);
+		defaultRoute.push();
+	}, [defaultRoute, upgradeRoute, routeName, data?.tabType, data?.trialEndDate, isLoading, data]);
 
 	return (
 		<AdministrationLayout>
