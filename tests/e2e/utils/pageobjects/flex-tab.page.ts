@@ -1,361 +1,358 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 
-import Pages from './Pages';
+import BasePage from './BasePage';
 // import Global from './global';
 
-class FlexTab extends Pages {
-	constructor(browser: any, baseURL: any, page: Page) {
-		super(browser, baseURL);
-		this.page = page;
-	}
+class FlexTab extends BasePage {
+
 
 	public headerMoreActions(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
+		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
 	}
 
 	public moreActions(): Locator {
-		return this.page.locator('.rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
+		return this.getPage().locator('.rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
 	}
 
 	public sendBtn(): Locator {
-		return this.page.locator('.rcx-vertical-bar .rc-message-box__icon.js-send');
+		return this.getPage().locator('.rcx-vertical-bar .rc-message-box__icon.js-send');
 	}
 
 	public messageInput(): Locator {
-		return this.page.locator('.rcx-vertical-bar .js-input-message');
+		return this.getPage().locator('.rcx-vertical-bar .js-input-message');
 	}
 
 	public threadTab(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-thread');
+		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-thread');
 	}
 
 	// Channel Info Tab
 	public channelTab(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-info-circled');
+		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-info-circled');
 	}
 
 	public channelSettings(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-info-circled');
+		return this.getPage().locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-info-circled');
 	}
 
 	public channelSettingName(): Locator {
-		return this.page.locator('.channel-settings .rc-user-info__name');
+		return this.getPage().locator('.channel-settings .rc-user-info__name');
 	}
 
 	public archiveBtn(): Locator {
-		return this.page.locator('.clearfix:last-child .icon-pencil');
+		return this.getPage().locator('.clearfix:last-child .icon-pencil');
 	}
 
 	public archiveRadio(): Locator {
-		return this.page.locator('.editing');
+		return this.getPage().locator('.editing');
 	}
 
 	public archiveSave(): Locator {
-		return this.page.locator('.save');
+		return this.getPage().locator('.save');
 	}
 
 	public editNameBtn(): Locator {
-		return this.page.locator('[data-edit="name"]');
+		return this.getPage().locator('[data-edit="name"]');
 	}
 
 	public editTopicBtn(): Locator {
-		return this.page.locator('[data-edit="topic"]');
+		return this.getPage().locator('[data-edit="topic"]');
 	}
 
 	public editAnnouncementBtn(): Locator {
-		return this.page.locator('[data-edit="announcement"]');
+		return this.getPage().locator('[data-edit="announcement"]');
 	}
 
 	public editDescriptionBtn(): Locator {
-		return this.page.locator('[data-edit="description"]');
+		return this.getPage().locator('[data-edit="description"]');
 	}
 
 	public editNotificationBtn(): Locator {
-		return this.page.locator('[data-edit="desktopNotifications"]');
+		return this.getPage().locator('[data-edit="desktopNotifications"]');
 	}
 
 	public editMobilePushBtn(): Locator {
-		return this.page.locator('[data-edit="mobilePushNotifications"]');
+		return this.getPage().locator('[data-edit="mobilePushNotifications"]');
 	}
 
 	public editEmailNotificationBtn(): Locator {
-		return this.page.locator('[data-edit="emailNotifications"]');
+		return this.getPage().locator('[data-edit="emailNotifications"]');
 	}
 
 	public editUnreadAlertBtn(): Locator {
-		return this.page.locator('[data-edit="unreadAlert"]');
+		return this.getPage().locator('[data-edit="unreadAlert"]');
 	}
 
 	public editNameTextInput(): Locator {
-		return this.page.locator('.channel-settings input[name="name"]');
+		return this.getPage().locator('.channel-settings input[name="name"]');
 	}
 
 	public editTopicTextInput(): Locator {
-		return this.page.locator('.channel-settings input[name="topic"]');
+		return this.getPage().locator('.channel-settings input[name="topic"]');
 	}
 
 	public editAnnouncementTextInput(): Locator {
-		return this.page.locator('.channel-settings input[name="announcement"]');
+		return this.getPage().locator('.channel-settings input[name="announcement"]');
 	}
 
 	public editDescriptionTextInput(): Locator {
-		return this.page.locator('.channel-settings input[name="description"]');
+		return this.getPage().locator('.channel-settings input[name="description"]');
 	}
 
 	public editNameSave(): Locator {
-		return this.page.locator('.channel-settings .save');
+		return this.getPage().locator('.channel-settings .save');
 	}
 
 	public deleteBtn(): Locator {
-		return this.page.locator('.channel-settings .js-delete');
+		return this.getPage().locator('.channel-settings .js-delete');
 	}
 
 	// Members Tab
 	public membersTab(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-members');
+		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-members');
 	}
 
 	public membersTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-members');
+		return this.getPage().locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-members');
 	}
 
 	public userSearchBar(): Locator {
-		return this.page.locator('#user-add-search');
+		return this.getPage().locator('#user-add-search');
 	}
 
 	public removeUserBtn(): Locator {
-		return this.page.locator('.remove-user');
+		return this.getPage().locator('.remove-user');
 	}
 
 	public setOwnerBtn(): Locator {
-		return this.page.locator('.set-owner');
+		return this.getPage().locator('.set-owner');
 	}
 
 	public setModeratorBtn(): Locator {
-		return this.page.locator('.set-moderator');
+		return this.getPage().locator('.set-moderator');
 	}
 
 	public muteUserBtn(): Locator {
-		return this.page.locator('.mute-user');
+		return this.getPage().locator('.mute-user');
 	}
 
 	public viewAllBtn(): Locator {
-		return this.page.locator('.button.back');
+		return this.getPage().locator('.button.back');
 	}
 
 	public startVideoCall(): Locator {
-		return this.page.locator('.start-video-call');
+		return this.getPage().locator('.start-video-call');
 	}
 
 	public startAudioCall(): Locator {
-		return this.page.locator('.start-audio-call');
+		return this.getPage().locator('.start-audio-call');
 	}
 
 	public showAll(): Locator {
-		return this.page.locator('.see-all');
+		return this.getPage().locator('.see-all');
 	}
 
 	public membersUserInfo(): Locator {
-		return this.page.locator('.flex-tab-container .info');
+		return this.getPage().locator('.flex-tab-container .info');
 	}
 
 	public avatarImage(): Locator {
-		return this.page.locator('aside.rcx-vertical-bar .rcx-avatar');
+		return this.getPage().locator('aside.rcx-vertical-bar .rcx-avatar');
 	}
 
 	public memberUserName(): Locator {
-		return this.page.locator('.info h3');
+		return this.getPage().locator('.info h3');
 	}
 
 	public memberRealName(): Locator {
-		return this.page.locator('.info p');
+		return this.getPage().locator('.info p');
 	}
 
 	// Search Tab
 	public searchTab(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-magnifier');
+		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-magnifier');
 	}
 
 	public searchTabContent(): Locator {
-		return this.page.locator('.rocket-search-result');
+		return this.getPage().locator('.rocket-search-result');
 	}
 
 	public messageSearchBar(): Locator {
-		return this.page.locator('#message-search');
+		return this.getPage().locator('#message-search');
 	}
 
 	public searchResult(): Locator {
-		return this.page.locator('.new-day');
+		return this.getPage().locator('.new-day');
 	}
 
 	// Notifications Tab
 	public notificationsTab(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Notifications Preferences")');
+		return this.getPage().locator('.rcx-option__content:contains("Notifications Preferences")');
 	}
 
 	public notificationsSettings(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-bell');
+		return this.getPage().locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-bell');
 	}
 
 	// Files Tab
 	public filesTab(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-clip');
+		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-clip');
 	}
 
 	public fileItem(): Locator {
-		return this.page.locator('.uploaded-files-list ul:first-child');
+		return this.getPage().locator('.uploaded-files-list ul:first-child');
 	}
 
 	public filesTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-icon--name-attachment');
+		return this.getPage().locator('aside > h3 > div > i.rcx-icon--name-attachment');
 	}
 
 	public fileDelete(): Locator {
-		return this.page.locator('.uploaded-files-list ul:first-child .file-delete');
+		return this.getPage().locator('.uploaded-files-list ul:first-child .file-delete');
 	}
 
 	public fileDownload(): Locator {
-		return this.page.locator('.uploaded-files-list ul:first-child .file-download');
+		return this.getPage().locator('.uploaded-files-list ul:first-child .file-download');
 	}
 
 	public fileName(): Locator {
-		return this.page.locator('.uploaded-files-list ul:first-child .room-file-item');
+		return this.getPage().locator('.uploaded-files-list ul:first-child .room-file-item');
 	}
 
 	// Mentions Tab
 	public mentionsTab(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Mentions")');
+		return this.getPage().locator('.rcx-option__content:contains("Mentions")');
 	}
 
 	public mentionsTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-icon--name-at');
+		return this.getPage().locator('aside > h3 > div > i.rcx-icon--name-at');
 	}
 
 	// Starred Tab
 	public starredTab(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Starred Messages")');
+		return this.getPage().locator('.rcx-option__content:contains("Starred Messages")');
 	}
 
 	public starredTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-icon--name-star');
+		return this.getPage().locator('aside > h3 > div > i.rcx-icon--name-star');
 	}
 
 	// Pinned Tab
 	public pinnedTab(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Pinned Messages")');
+		return this.getPage().locator('.rcx-option__content:contains("Pinned Messages")');
 	}
 
 	public pinnedTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-icon--name-pin');
+		return this.getPage().locator('aside > h3 > div > i.rcx-icon--name-pin');
 	}
 
 	public firstSetting(): Locator {
-		return this.page.locator('.clearfix li:nth-child(1) .current-setting');
+		return this.getPage().locator('.clearfix li:nth-child(1) .current-setting');
 	}
 
 	public secondSetting(): Locator {
-		return this.page.locator('.clearfix li:nth-child(2) .current-setting');
+		return this.getPage().locator('.clearfix li:nth-child(2) .current-setting');
 	}
 
 	public thirdSetting(): Locator {
-		return this.page.locator('.clearfix li:nth-child(3) .current-setting');
+		return this.getPage().locator('.clearfix li:nth-child(3) .current-setting');
 	}
 
 	public fourthSetting(): Locator {
-		return this.page.locator('.clearfix li:nth-child(4) .current-setting');
+		return this.getPage().locator('.clearfix li:nth-child(4) .current-setting');
 	}
 
 	// admin view flextab items
 	public usersSendInvitationTab(): Locator {
-		return this.page.locator('.tab-button:not(.hidden) .tab-button-icon--send');
+		return this.getPage().locator('.tab-button:not(.hidden) .tab-button-icon--send');
 	}
 
 	public usersAddUserTab(): Locator {
-		return this.page.locator('.tab-button:not(.hidden) .tab-button-icon--plus');
+		return this.getPage().locator('.tab-button:not(.hidden) .tab-button-icon--plus');
 	}
 
 	public usersSendInvitationTextArea(): Locator {
-		return this.page.locator('#inviteEmails');
+		return this.getPage().locator('#inviteEmails');
 	}
 
 	public usersButtonCancel(): Locator {
-		return this.page.locator('.button.cancel');
+		return this.getPage().locator('.button.cancel');
 	}
 
 	public usersSendInvitationSend(): Locator {
-		return this.page.locator('.button.send');
+		return this.getPage().locator('.button.send');
 	}
 
 	public usersButtonSave(): Locator {
-		return this.page.locator('.button.save');
+		return this.getPage().locator('.button.save');
 	}
 
 	public usersAddUserName(): Locator {
-		return this.page.locator('#name');
+		return this.getPage().locator('#name');
 	}
 
 	public usersAddUserUsername(): Locator {
-		return this.page.locator('#username');
+		return this.getPage().locator('#username');
 	}
 
 	public usersAddUserEmail(): Locator {
-		return this.page.locator('#email');
+		return this.getPage().locator('#email');
 	}
 
 	public usersAddUserRoleList(): Locator {
-		return this.page.locator('#roleSelect');
+		return this.getPage().locator('#roleSelect');
 	}
 
 	public usersAddUserPassword(): Locator {
-		return this.page.locator('#password');
+		return this.getPage().locator('#password');
 	}
 
 	public usersAddUserRoleButton(): Locator {
-		return this.page.locator('#addRole');
+		return this.getPage().locator('#addRole');
 	}
 
 	public usersAddUserVerifiedCheckbox(): Locator {
-		return this.page.locator('#verified');
+		return this.getPage().locator('#verified');
 	}
 
 	public usersAddUserChangePasswordCheckbox(): Locator {
-		return this.page.locator('#changePassword');
+		return this.getPage().locator('#changePassword');
 	}
 
 	public usersAddUserDefaultChannelCheckbox(): Locator {
-		return this.page.locator('#joinDefaultChannels');
+		return this.getPage().locator('#joinDefaultChannels');
 	}
 
 	public usersAddUserWelcomeEmailCheckbox(): Locator {
-		return this.page.locator('#sendWelcomeEmail');
+		return this.getPage().locator('#sendWelcomeEmail');
 	}
 
 	public usersAddUserRandomPassword(): Locator {
-		return this.page.locator('#randomPassword');
+		return this.getPage().locator('#randomPassword');
 	}
 
 	public emojiNewAliases(): Locator {
-		return this.page.locator('#aliases');
+		return this.getPage().locator('#aliases');
 	}
 
 	public emojiNewImageInput(): Locator {
-		return this.page.locator('#image');
+		return this.getPage().locator('#image');
 	}
 
 	public usersView(): Locator {
-		return this.page.locator('.rcx-vertical-bar:contains("User Info")');
+		return this.getPage().locator('.rcx-vertical-bar:contains("User Info")');
 	}
 
 	public usersActivate(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Activate")');
+		return this.getPage().locator('.rcx-option__content:contains("Activate")');
 	}
 
 	public usersDeactivate(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Deactivate")');
+		return this.getPage().locator('.rcx-option__content:contains("Deactivate")');
 	}
 
 	public getUserEl(username: any): Locator {
-		return this.page.locator(`.flex-tab button[title="${username}"] > p`);
+		return this.getPage().locator(`.flex-tab button[title="${username}"] > p`);
 	}
 
 	public async archiveChannel(): Promise<void> {
@@ -369,8 +366,8 @@ class FlexTab extends Pages {
 	public async addPeopleToChannel(user: any): Promise<void> {
 		await this.userSearchBar().waitFor();
 		await this.userSearchBar().type(user);
-		this.page.waitForSelector('.-autocomplete-item');
-		this.page.click('.-autocomplete-item');
+		this.getPage().waitForSelector('.-autocomplete-item');
+		this.getPage().click('.-autocomplete-item');
 	}
 
 	public async operateFlexTab(desiredTab: string, desiredState: boolean): Promise<void> {
@@ -384,6 +381,8 @@ class FlexTab extends Pages {
 			mentionsTabContent: this.mentionsTabContent,
 			starredTabContent: this.starredTabContent,
 			pinnedTabContent: this.pinnedTabContent,
+			channelTab: this.channelTab,
+
 		};
 
 		const callFunction = (name: string): Locator => {

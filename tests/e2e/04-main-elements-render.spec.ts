@@ -4,7 +4,8 @@ import MainContent from './utils/pageobjects/main-content.page';
 import SideNav from './utils/pageobjects/side-nav.page';
 import FlexTab from './utils/pageobjects/flex-tab.page';
 import LoginPage from './utils/pageobjects/login.page';
-import { adminUsername, adminPassword } from './utils/mocks/userAndPasswordMock';
+import { adminLogin } from './utils/mocks/userAndPasswordMock';
+import { LOCALHOST } from './utils/mocks/urlMock';
 
 const username = adminUsername;
 
@@ -15,12 +16,16 @@ test.describe('[Main Elements Render]', function () {
 	let flexTab: FlexTab;
 
 	test.beforeAll(async ({ browser, baseURL }) => {
-		loginPage = new LoginPage(browser, baseURL as string);
-		await loginPage.open();
-		await loginPage.login({ email: adminUsername, password: adminPassword });
-		sideNav = new SideNav(browser, baseURL as string, loginPage.getPage());
-		mainContent = new MainContent(browser, baseURL as string, loginPage.getPage());
-		flexTab = new FlexTab(browser, baseURL as string, loginPage.getPage());
+		const context = await browser.newContext();
+		const page = await context.newPage();
+		const URL = baseURL || LOCALHOST;
+		loginPage = new LoginPage(page);
+		await loginPage.goto(URL);
+
+		await loginPage.login(adminLogin);
+		sideNav = new SideNav(page);
+		mainContent = new MainContent(page);
+		flexTab = new FlexTab(page);
 	});
 
 	test.describe('[Side Nav Bar]', () => {
