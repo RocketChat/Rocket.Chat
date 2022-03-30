@@ -3,13 +3,13 @@ import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.ch
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import VerticalBar from '../../../components/VerticalBar';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AgentEditWithData from './AgentEditWithData';
 import AgentInfo from './AgentInfo';
 import AgentInfoActions from './AgentInfoActions';

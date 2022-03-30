@@ -150,13 +150,10 @@ export abstract class RoomCoordinator {
 	}
 
 	getRouteData(roomType: string, subData: RoomIdentification): Record<string, string> | false {
-		// Commented since it was breaking the ability to create DMs from room's search
-		// due to href be using the user's id rather than user's username
-
-		// if (!subData.rid && (subData as Record<string, string>)._id) {
-		// 	console.warn('Deprecated: RoomCoordinator.getRouteData received a room object');
-		// 	subData.rid = (subData as Record<string, string>)._id;
-		// }
+		if (!subData.rid && (subData as Record<string, string>)._id) {
+			console.warn('Deprecated: RoomCoordinator.getRouteData received a room object');
+			subData.rid = (subData as Record<string, string>)._id;
+		}
 
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config) {
