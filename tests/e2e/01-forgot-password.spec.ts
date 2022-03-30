@@ -1,45 +1,40 @@
 import { test, expect } from '@playwright/test';
 
 import LoginPage from './utils/pageobjects/login.page';
+import { LOCALHOST } from './utils/mocks/urlMock';
+import { VALID_EMAIL, INVALID_EMAIL, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from './utils/mocks/userAndPasswordMock';
 
-test.describe('recoverPassword', () => {
+test.describe('[Forgot Password]', () => {
 	let loginPage: LoginPage;
-	test.beforeAll(async ({ browser, baseURL }) => {
-		loginPage = new LoginPage(browser, baseURL as string);
-		await loginPage.open();
-	});
 
-	test.beforeEach(async () => {
-		await loginPage.goto('');
+	test.beforeEach(async ({ page, baseURL }) => {
+		loginPage = new LoginPage(page);
+		const baseUrl = baseURL || LOCALHOST;
+		await loginPage.goto(baseUrl);
 		await loginPage.gotToForgotPassword();
 	});
 
 	test('expect be required', async () => {
 		loginPage.submit();
-		// loginPage.emailField.should('have.class', 'error');
+
 		await expect(loginPage.emailInvalidText()).toBeVisible();
 	});
 
 	test('expect invalid for email without domain', async () => {
-		const emailField = loginPage.emailField();
-		await emailField.type('invalidmail');
+		await loginPage.emailField().type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
 		await loginPage.submit();
-		// loginPage.emailField.should('have.class', 'error');
 		await expect(loginPage.emailInvalidText()).toBeVisible();
 	});
 
 	test('expect be invalid for email with invalid domain', async () => {
-		const emailField = loginPage.emailField();
-		await emailField.type('email@mail');
+		await loginPage.emailField().type(INVALID_EMAIL);
 		await loginPage.submit();
 		await expect(loginPage.emailInvalidText()).toBeVisible();
 	});
 
 	test('expect user type a valid email', async () => {
-		const emailField = loginPage.emailField();
-		await emailField.type('any_user@gmail.com');
+		await loginPage.emailField().type(VALID_EMAIL);
 		await loginPage.submit();
-		const toastMessageSuccess = loginPage.getToastMessageSuccess();
-		await expect(toastMessageSuccess).toBeVisible();
+		await expect(loginPage.getToastMessageSuccess()).toBeVisible();
 	});
 });

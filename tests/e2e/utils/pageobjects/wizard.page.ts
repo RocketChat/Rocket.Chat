@@ -1,140 +1,140 @@
 import { expect, Locator } from '@playwright/test';
 
-import Pages from './Pages';
-import LoginPage from './login.page';
-import { adminUsername, adminEmail, adminPassword, reason } from '../mocks/userAndPasswordMock';
+import BasePage from './BasePage';
+import { reason, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from '../mocks/userAndPasswordMock';
+import { IRegister } from '../interfaces/Login';
+import { BACKSPACE } from '../mocks/keyboardKeyMock';
 
-class SetupWizard extends Pages {
+class SetupWizard extends BasePage {
 	private nextStep(): Locator {
-		return this.page.locator('//button[contains(text(), "Next")]');
+		return this.getPage().locator('//button[contains(text(), "Next")]');
 	}
 
-	public fullName(): Locator {
-		return this.page.locator('[name="fullname"]');
+	private fullName(): Locator {
+		return this.getPage().locator('[name="fullname"]');
 	}
 
-	public userName(): Locator {
-		return this.page.locator('[name="username"]');
+	private userName(): Locator {
+		return this.getPage().locator('[name="username"]');
 	}
 
-	public companyEmail(): Locator {
-		return this.page.locator('[name="companyEmail"]');
+	private companyEmail(): Locator {
+		return this.getPage().locator('[name="companyEmail"]');
 	}
 
-	public password(): Locator {
-		return this.page.locator('[name="password"]');
+	private password(): Locator {
+		return this.getPage().locator('[name="password"]');
 	}
 
 	public goToWorkspace(): Locator {
-		return this.page.locator('//button[contains(text(), "Confirm")]');
+		return this.getPage().locator('//button[contains(text(), "Confirm")]');
 	}
 
-	public organizationType(): Locator {
-		return this.page.locator('[name="organizationType"]');
+	private organizationType(): Locator {
+		return this.getPage().locator('[name="organizationType"]');
 	}
 
-	public organizationTypeSelect(): Locator {
-		return this.page.locator('.rcx-options .rcx-option:first-child');
+	private organizationTypeSelect(): Locator {
+		return this.getPage().locator('.rcx-options .rcx-option:first-child');
 	}
 
-	public organizationName(): Locator {
-		return this.page.locator('[name="organizationName"]');
+	private organizationName(): Locator {
+		return this.getPage().locator('[name="organizationName"]');
 	}
 
-	public industry(): Locator {
-		return this.page.locator('[name="organizationIndustry"]');
+	private industry(): Locator {
+		return this.getPage().locator('[name="organizationIndustry"]');
 	}
 
-	public industrySelect(): Locator {
-		return this.page.locator('.rcx-options .rcx-option:first-child');
+	private industrySelect(): Locator {
+		return this.getPage().locator('.rcx-options .rcx-option:first-child');
 	}
 
-	public size(): Locator {
-		return this.page.locator('[name="organizationSize"]');
+	private size(): Locator {
+		return this.getPage().locator('[name="organizationSize"]');
 	}
 
-	public sizeSelect(): Locator {
-		return this.page.locator('.rcx-options .rcx-option:first-child');
+	private sizeSelect(): Locator {
+		return this.getPage().locator('.rcx-options .rcx-option:first-child');
 	}
 
-	public country(): Locator {
-		return this.page.locator('[name="country"]');
+	private country(): Locator {
+		return this.getPage().locator('[name="country"]');
 	}
 
-	public countrySelect(): Locator {
-		return this.page.locator('.rcx-options .rcx-option:first-child');
+	private countrySelect(): Locator {
+		return this.getPage().locator('.rcx-options .rcx-option:first-child');
 	}
 
 	public registeredServer(): Locator {
-		return this.page.locator('input[name=email]');
+		return this.getPage().locator('input[name=email]');
 	}
 
 	public registerButton(): Locator {
-		return this.page.locator('//button[contains(text(), "Register")]');
+		return this.getPage().locator('//button[contains(text(), "Register")]');
 	}
 
 	public agreementField(): Locator {
-		return this.page.locator('//input[@name="agreement"]/../i[contains(@class, "rcx-check-box")]');
+		return this.getPage().locator('//input[@name="agreement"]/../i[contains(@class, "rcx-check-box")]');
 	}
 
 	public standaloneServer(): Locator {
-		return this.page.locator('//button[contains(text(), "Continue as standalone")]');
+		return this.getPage().locator('//button[contains(text(), "Continue as standalone")]');
 	}
 
 	public standaloneConfirmText(): Locator {
-		return this.page.locator('//*[contains(text(), "Standalone Server Confirmation")]');
+		return this.getPage().locator('//*[contains(text(), "Standalone Server Confirmation")]');
 	}
 
-	public fullNameIvalidtext(): Locator {
-		return this.page.locator('//input[@name="fullname"]/../following-sibling::span');
+	private fullNameIvalidtext(): Locator {
+		return this.getPage().locator('//input[@name="fullname"]/../following-sibling::span');
 	}
 
-	public userNameInvalidText(): Locator {
-		return this.page.locator('//input[@name="username"]/../following-sibling::span');
+	private userNameInvalidText(): Locator {
+		return this.getPage().locator('//input[@name="username"]/../following-sibling::span');
 	}
 
-	public companyEmailInvalidText(): Locator {
-		return this.page.locator('//input[@name="companyEmail"]/../following-sibling::span');
+	private companyEmailInvalidText(): Locator {
+		return this.getPage().locator('//input[@name="companyEmail"]/../following-sibling::span');
 	}
 
-	public organizationNameInvalidText(): Locator {
-		return this.page.locator('//input[@name="organizationName"]/../following-sibling::span');
+	private organizationNameInvalidText(): Locator {
+		return this.getPage().locator('//input[@name="organizationName"]/../following-sibling::span');
 	}
 
-	public passwordInvalidText(): Locator {
-		return this.page.locator('//input[@name="password"]/../../../span[contains(@class, "rcx-field__error")]');
+	private passwordInvalidText(): Locator {
+		return this.getPage().locator('//input[@name="password"]/../../../span[contains(@class, "rcx-field__error")]');
 	}
 
-	public industryInvalidSelect(): Locator {
-		return this.page.locator('//div[@name="organizationIndustry"]/../following-sibling::span');
+	private industryInvalidSelect(): Locator {
+		return this.getPage().locator('//div[@name="organizationIndustry"]/../following-sibling::span');
 	}
 
-	public sizeInvalidSelect(): Locator {
-		return this.page.locator('//div[@name="organizationSize"]/../following-sibling::span');
+	private sizeInvalidSelect(): Locator {
+		return this.getPage().locator('//div[@name="organizationSize"]/../following-sibling::span');
 	}
 
-	public countryInvalidSelect(): Locator {
-		return this.page.locator('//div[@name="country"]/../following-sibling::span');
+	private countryInvalidSelect(): Locator {
+		return this.getPage().locator('//div[@name="country"]/../following-sibling::span');
 	}
 
-	public invalidInputEmail(): Locator {
-		return this.page.locator('$$("input:invalid")');
-	}
-
-	public async login(): Promise<void> {
-		const loginObj = new LoginPage(this.browser, this.baseURL);
-		await loginObj.login({ email: adminEmail, password: adminPassword });
+	private invalidInputEmail(): Locator {
+		return this.getPage().locator('$$("input:invalid")');
 	}
 
 	public async goNext(): Promise<void> {
 		await this.nextStep().click();
 	}
 
-	public async stepOneSucess(): Promise<void> {
-		await this.fullName().type(adminUsername);
-		await this.userName().type(adminUsername);
-		await this.companyEmail().type(adminEmail);
-		await this.password().type(adminPassword);
+	private stepThreeInputInvalidMail(): Locator {
+		return this.getPage().locator('//input[@name="email"]/../../span[contains(text(), "This field is required")]');
+	}
+
+	public async stepOneSucess(adminCredential: IRegister): Promise<void> {
+		await this.fullName().type(adminCredential.name);
+		await this.userName().type(adminCredential.name);
+		await this.companyEmail().type(adminCredential.email);
+		await this.password().type(adminCredential.password);
 		await this.goNext();
 	}
 
@@ -163,9 +163,46 @@ class SetupWizard extends Pages {
 		await this.standaloneServer().click();
 	}
 
-	// goToHome() {
-	// 	this.goToWorkspace.click();
-	// }
+	public async stepOneFailedBlankFields(): Promise<void> {
+		await this.goNext();
+
+		await expect(this.fullNameIvalidtext()).toBeVisible();
+		await expect(this.userNameInvalidText()).toBeVisible();
+		await expect(this.companyEmailInvalidText()).toBeVisible();
+		await expect(this.passwordInvalidText()).toBeVisible();
+	}
+
+	public async stepOneFailedWithInvalidEmail(adminCredentials: IRegister): Promise<void> {
+		await this.fullName().type(adminCredentials.name);
+		await this.userName().type(adminCredentials.name);
+		await this.companyEmail().type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
+		await this.password().type(adminCredentials.password);
+
+		await this.goNext();
+
+		await expect(this.companyEmail()).toBeFocused();
+	}
+
+	public async stepTwoFailedWithBlankFields(): Promise<void> {
+		await this.goNext();
+
+		await expect(this.organizationName()).toBeVisible();
+		await expect(this.industryInvalidSelect()).toBeVisible();
+		await expect(this.sizeInvalidSelect()).toBeVisible();
+		await expect(this.countryInvalidSelect()).toBeVisible();
+	}
+
+	public async stepThreeFailedWithInvalidField(): Promise<void> {
+		await this.registeredServer().type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
+		await this.registeredServer().click({ clickCount: 3 });
+		await this.keyboardPress(BACKSPACE);
+
+		await expect(this.stepThreeInputInvalidMail()).toBeVisible();
+	}
+
+	async goToHome(): Promise<void> {
+		await this.goToWorkspace().click();
+	}
 }
 
 export default SetupWizard;
