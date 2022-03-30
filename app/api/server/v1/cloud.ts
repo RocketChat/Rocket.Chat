@@ -115,8 +115,8 @@ API.v1.addRoute(
 
 			// if at least one license isn't trial, workspace isn't considered in trial
 			const isTrial = !licenses.map(({ meta }) => meta?.trial).includes(false);
-			const hasGoldLicense = licenses.map(({ tag }) => tag?.name === 'gold').includes(true);
-			const trialEndDate = trialLicense ? format(new Date(trialLicense.expiry), 'yyyy-MM-dd') : undefined;
+			const hasGoldLicense = licenses.map(({ tag }) => tag?.name === 'Gold').includes(true);
+			const trialEndDate = trialLicense ? format(new Date(trialLicense?.meta?.trialEnd), 'yyyy-MM-dd') : undefined;
 
 			const hadExpiredTrials = Boolean(settings.get('Cloud_Workspace_Had_Trial'));
 
