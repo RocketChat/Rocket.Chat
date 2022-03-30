@@ -5,7 +5,7 @@ import React from 'react';
 import MessagesTab from './MessagesTab';
 
 export default {
-	title: 'admin/engagementDashboard/MessagesTab',
+	title: 'Enterprise/Admin/Engagement Dashboard/MessagesTab',
 	component: MessagesTab,
 	decorators: [(fn) => <Margins children={fn()} all='x24' />],
 } as Meta;
