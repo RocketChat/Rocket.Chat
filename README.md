@@ -2,7 +2,7 @@
 
 [Rocket.Chat](https://rocket.chat) is an open-source fully customizable communications platform developed in JavaScript for organizations with high standards of data protection.
 
-We are a MERN based application enabling real-time conversations between colleagues, with other companies or with your customers, regardless of how they connect with you. The result is an increase in productivity and customer satisfaction rates.
+We are a MERN based application that allows you to have real-time chats with your coworkers, other companies, or customers, regardless of how they engage with you. As a consequence, productivity and customer satisfaction have increased drastically.
 
 Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, The US Navy, and Credit Suisse trust [Rocket.Chat](https://rocket.chat) to keep their communications completely private and secure.
 
@@ -57,7 +57,7 @@ In addition to the web interface, you can also download Rocket.Chat clients for:
 * [See who's using Rocket.Chat](https://rocket.chat/customer-stories)
 
 ## Become a Rocketeer
-We're hiring developers, support people, and product managers all the time. Please check our [jobs page](https://rocket.chat/jobs).
+We're always looking for innovative developers, support team members, and product managers. Please check our [jobs page](https://rocket.chat/jobs).
 
 ## Get the Latest News
 
