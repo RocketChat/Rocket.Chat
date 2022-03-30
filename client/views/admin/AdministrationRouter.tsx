@@ -18,11 +18,11 @@ const AdministrationRouter = ({ renderRoute }: { renderRoute: () => ReactElement
 		}
 
 		if (data?.tabType) {
-			upgradeRoute.push({ type: data?.tabType }, data?.trialEndDate ? { trialEndDate: data.trialEndDate } : undefined);
+			upgradeRoute.replace({ type: data?.tabType }, data?.trialEndDate ? { trialEndDate: data.trialEndDate } : undefined);
 			return;
 		}
 
-		defaultRoute.push();
+		defaultRoute.replace();
 	}, [defaultRoute, upgradeRoute, routeName, data?.tabType, data?.trialEndDate, isLoading, data]);
 
 	return (
