@@ -1,0 +1,24 @@
+{
+	"name": "rocket.chat",
+	"version": "1.0.0",
+	"private": true,
+	"description": "<img src=\"https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png\" data-canonical-src=\"https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png\" width=\"500\" />",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+	"workspaces": [
+		"applications/*",
+		"packages/*"
+	]
+}
