@@ -33,4 +33,31 @@ export type ImEndpoints = {
 			total: number;
 		};
 	};
+	'im.history': {
+		GET: (params: { roomId: string; count: number; latest?: string }) => {
+			messages: IMessage[];
+		};
+	};
+	'im.close': {
+		POST: (params: { roomId: string }) => {};
+	};
+	'im.kick': {
+		POST: (params: { roomId: string; userId: string }) => {};
+	};
+	'im.delete': {
+		POST: (params: { roomId: string }) => {};
+	};
+	'im.leave': {
+		POST: (params: { roomId: string }) => {};
+	};
+	'im.messages': {
+		GET: (params: {
+			roomId: IRoom['_id'];
+			query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+			offset: number;
+			sort: { ts: number };
+		}) => {
+			messages: IMessage[];
+		};
+	};
 };

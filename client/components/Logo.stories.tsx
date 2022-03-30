@@ -4,8 +4,9 @@ import React from 'react';
 import Logo from './Logo';
 
 export default {
-	title: 'components/Logo',
+	title: 'Components/Logo',
 	component: Logo,
 };
 
-export const AsPlaceholder: Story = () => <Logo />;
+export const Default: Story = () => <Logo />;
+Default.storyName = 'Logo';
