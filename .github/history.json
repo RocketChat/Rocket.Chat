@@ -72741,16 +72741,6 @@
           ]
         },
         {
-          "pr": "24777",
-          "title": "[NEW] Engagement Statistics",
-          "userLogin": "eduardofcabrera",
-          "contributors": [
-            "eduardofcabrera",
-            "ostjen",
-            "web-flow"
-          ]
-        },
-        {
           "pr": "24920",
           "title": "Regression: Fix account service login expiration",
           "userLogin": "sampaiodiego",
@@ -72772,6 +72762,91 @@
           "userLogin": "tkurz",
           "contributors": [
             "tkurz"
+          ]
+        }
+      ]
+    },
+    "4.6.0-rc.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24955",
+          "title": "[FIX] room message not load when is a new message",
+          "userLogin": "filipemarins",
+          "description": "When the room object is searched for the first time, it does not exist on the front object yet (subscription), adding a fallback search for room list will guarantee to search the room details.\r\n\r\nbefore:\r\nhttps://user-images.githubusercontent.com/9275105/160223241-d2319f3e-82c5-47d6-867f-695ab2361a17.mp4\r\n\r\nafter:\r\nhttps://user-images.githubusercontent.com/9275105/160223244-84d0d2a1-3d95-464d-8b8a-e264b0d4d690.mp4",
+          "milestone": "4.5.5",
+          "contributors": [
+            "filipemarins",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24969",
+          "title": "Chore: Storybook mocking and examples improved",
+          "userLogin": "tassoevan",
+          "description": "- Stories from `ee/` included;\r\n- Differentiate root story kinds;\r\n- Mocking of `ServerContext` via Storybook parameters.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24990",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.5",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24897",
+          "title": "[FIX] Room archived/unarchived system messages aren't sent when editing room settings",
+          "userLogin": "matheusbsilva137",
+          "description": "- Send the \"Room archived\" and \"Room unarchived\" system messages when editing room settings (and not only when rooms are archived/unarchived with the slash-command);\r\n- Fix the \"Hide System Messages\" option for the \"Room archived\" and \"Room unarchived\" system messages;",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "24925",
+          "title": "Chore: add some missing REST definitions",
+          "userLogin": "gerzonc",
+          "description": "On the [mobile client](https://github.com/RocketChat/Rocket.Chat.ReactNative), we made an effort to collect more `REST API` definitions that are missing on the server side during our migration to TypeScript. Since we're both migrating to TypeScript, we thought it would be a good idea to share those so you guys can benefit from our initiative.",
+          "contributors": [
+            "gerzonc"
+          ]
+        },
+        {
+          "pr": "24971",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-03-28Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "24921",
+          "title": "[FIX] Register with Secret URL",
+          "userLogin": "yash-rajpal",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "24948",
+          "title": "Regression: Fix unexpected errors breaking ddp-streamer",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
           ]
         }
       ]
