@@ -1,5 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test.describe('[Messaging]', () => {
-	test.beforeAll(async ({ page }) => {});
+	test.beforeAll(async () => {
+		expect(1).toBe(1);
+	});
 });
