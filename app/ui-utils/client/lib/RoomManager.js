@@ -96,9 +96,9 @@ export const RoomManager = new (function () {
 
 						const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name);
 
+						RoomHistoryManager.getMoreIfIsEmpty(record.rid);
+
 						if (room != null) {
-							record.rid = room._id;
-							RoomHistoryManager.getMoreIfIsEmpty(room._id);
 							if (record.streamActive !== true) {
 								record.streamActive = true;
 								msgStream.on(record.rid, async (msg) => {
@@ -196,10 +196,11 @@ export const RoomManager = new (function () {
 			Session.set('openedRoom');
 		}
 
-		open(typeName) {
+		open({ typeName, rid }) {
 			if (openedRooms[typeName] == null) {
 				openedRooms[typeName] = {
 					typeName,
+					rid,
 					active: false,
 					ready: false,
 					unreadSince: new ReactiveVar(undefined),
