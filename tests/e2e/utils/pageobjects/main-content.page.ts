@@ -1,23 +1,28 @@
-import { expect, Locator } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 import Pages from './Pages';
 
 class MainContent extends Pages {
+	constructor(browser: any, baseURL: any, page: Page) {
+		super(browser, baseURL);
+		this.page = page;
+	}
+
 	public mainContent(): Locator {
 		return this.page.locator('.main-content');
 	}
 
 	// Main Content Header (Channel Title Area)
 	public emptyFavoriteStar(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-icon--name-star');
+		return this.page.locator('//*[contains(@class, "rcx-room-header")]//*[contains(@class, "rcx-icon--name-star")]');
 	}
 
 	public favoriteStar(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-icon--name-star-filled');
+		return this.page.locator('//*[contains(@class, "rcx-room-header")]//*[contains(@class, "rcx-icon--name-star-filled")]');
 	}
 
-	public channelTitle(): Locator {
-		return this.page.locator('.rcx-room-header');
+	public channelTitle(title: string): Locator {
+		return this.page.locator('.rcx-room-header', { hasText: title });
 	}
 
 	// Main Content Footer (Message Input Area)
@@ -30,7 +35,7 @@ class MainContent extends Pages {
 	}
 
 	public messageBoxActions(): Locator {
-		return this.page.locator('.rc-message-box__icon');
+		return this.page.locator('(//*[contains(@class, "rc-message-box__icon")])[1]');
 	}
 
 	public recordBtn(): Locator {

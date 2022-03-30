@@ -1,9 +1,14 @@
-import { expect, Locator } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 import Pages from './Pages';
 // import mainContent from './main-content.page';
 
 class SideNav extends Pages {
+	constructor(browser: any, baseURL: any, page: Page) {
+		super(browser, baseURL);
+		this.page = page;
+	}
+
 	// New channel
 	public channelType(): Locator {
 		return this.page.locator('#modal-root .rcx-field:contains("Private") .rcx-toggle-switch__fake');
@@ -59,31 +64,31 @@ class SideNav extends Pages {
 	}
 
 	public statusOnline(): Locator {
-		return this.page.locator('.rcx-box--with-inline-elements:contains("online")');
+		return this.page.locator('(//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "online")])[1]');
 	}
 
 	public statusAway(): Locator {
-		return this.page.locator('.rcx-box--with-inline-elements:contains("away")');
+		return this.page.locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "away")]');
 	}
 
 	public statusBusy(): Locator {
-		return this.page.locator('.rcx-box--with-inline-elements:contains("busy")');
+		return this.page.locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "busy")]');
 	}
 
 	public statusOffline(): Locator {
-		return this.page.locator('.rcx-box--with-inline-elements:contains("offline")');
+		return this.page.locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "offline")]');
 	}
 
 	public account(): Locator {
-		return this.page.locator('.rcx-option__content:contains("My Account")');
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "My Account")]');
 	}
 
 	public admin(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Administration")');
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Administration")]');
 	}
 
 	public logout(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Logout")');
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]');
 	}
 
 	public sideNavBar(): Locator {
@@ -120,7 +125,7 @@ class SideNav extends Pages {
 	}
 
 	// Rooms List
-	public async general(): Promise<void> {
+	public general(): Locator {
 		return this.getChannelFromList('general');
 	}
 
@@ -195,8 +200,8 @@ class SideNav extends Pages {
 	}
 
 	// Gets a channel from the rooms list
-	public async getChannelFromList(channelName: any): Promise<void> {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();
+	public getChannelFromList(channelName: any): Locator {
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
 	}
 
 	public async createChannel(channelName: any, isPrivate: any /* isReadOnly*/): Promise<void> {

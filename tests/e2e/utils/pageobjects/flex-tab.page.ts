@@ -1,9 +1,14 @@
-import { Locator } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 import Pages from './Pages';
 // import Global from './global';
 
 class FlexTab extends Pages {
+	constructor(browser: any, baseURL: any, page: Page) {
+		super(browser, baseURL);
+		this.page = page;
+	}
+
 	public headerMoreActions(): Locator {
 		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
 	}
@@ -366,6 +371,84 @@ class FlexTab extends Pages {
 		await this.userSearchBar().type(user);
 		this.page.waitForSelector('.-autocomplete-item');
 		this.page.click('.-autocomplete-item');
+	}
+
+	public async operateFlexTab(desiredTab: string, desiredState: boolean): Promise<void> {
+		// desiredState true=open false=closed
+		const functionNames: { [K: string]: Function } = {
+			channelSettings: this.channelSettings,
+			messageSearchBar: this.messageSearchBar,
+			avatarImage: this.avatarImage,
+			notificationsSettings: this.notificationsSettings,
+			filesTabContent: this.filesTabContent,
+			mentionsTabContent: this.mentionsTabContent,
+			starredTabContent: this.starredTabContent,
+			pinnedTabContent: this.pinnedTabContent,
+		};
+
+		const callFunction = (name: string): Locator => {
+			return functionNames[name]();
+		};
+
+		const operate = async (tab: string, panel: string, more: boolean): Promise<void> => {
+			// this[panel].should(!desiredState ? 'be.visible' : 'not.exist');
+			if (desiredState) {
+				await expect(callFunction(panel)).toBeVisible();
+			} else {
+				await expect(callFunction(panel)).toBeVisible();
+			}
+
+			if (more) {
+				this.headerMoreActions().click();
+			}
+
+			this[tab].click();
+
+			// The button "more" keeps the focus when popover is closed from a click
+			// on an item, need to click again to change the status to unselected and
+			// allow the next click to open the popover again
+			if (more) {
+				this.headerMoreActions.click();
+			}
+
+			this[panel].should(desiredState ? 'be.visible' : 'not.exist');
+		};
+
+		const tabs = {
+			info() {
+				operate('channelTab', 'channelSettings');
+			},
+
+			search() {
+				operate('searchTab', 'messageSearchBar');
+			},
+
+			members() {
+				operate('membersTab', 'avatarImage');
+			},
+
+			notifications() {
+				operate('notificationsTab', 'notificationsSettings', true);
+			},
+
+			files() {
+				operate('filesTab', 'filesTabContent');
+			},
+
+			mentions() {
+				operate('mentionsTab', 'mentionsTabContent', true);
+			},
+
+			starred() {
+				operate('starredTab', 'starredTabContent', true);
+			},
+
+			pinned() {
+				operate('pinnedTab', 'pinnedTabContent', true);
+			},
+		};
+
+		tabs[desiredTab].call(this);
 	}
 }
 
