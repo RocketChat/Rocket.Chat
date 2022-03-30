@@ -1,6 +1,23 @@
 
 # 4.6.0 (Under Release Candidate Process)
 
+## 4.6.0-rc.3
+`2022-03-30  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- High CPU usage caused by CallProvider ([#24994](https://github.com/RocketChat/Rocket.Chat/pull/24994))
+
+  Remove infinity loop inside useVoipClient hook.
+
+  #closes #24970
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 4.6.0-rc.2
 `2022-03-30  ·  3 🐛  ·  5 🔍  ·  8 👩‍💻👨‍💻`
 
