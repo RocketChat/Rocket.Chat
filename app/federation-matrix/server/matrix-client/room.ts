@@ -1,7 +1,7 @@
-import { IRoom } from '/definition/IRoom';
-import { IUser } from '/definition/IUser';
-import { MatrixBridgedRoom, MatrixBridgedUser } from '/app/models';
-import { matrixBridge } from '/app/federation-matrix/server/bridge';
+import { IRoom } from '../../../../definition/IRoom';
+import { IUser } from '../../../../definition/IUser';
+import { MatrixBridgedRoom, MatrixBridgedUser } from '../../../models/server';
+import { matrixBridge } from '../bridge';
 
 interface ICreateRoomResult {
 	rid: string;
