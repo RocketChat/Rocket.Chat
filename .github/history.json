@@ -71713,6 +71713,51 @@
           ]
         }
       ]
+    },
+    "4.5.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24994",
+          "title": "[FIX]  High CPU usage caused by CallProvider",
+          "userLogin": "tiagoevanp",
+          "description": "Remove infinity loop inside useVoipClient hook.\r\n\r\n#closes #24970",
+          "milestone": "4.5.5",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24955",
+          "title": "[FIX] Multiple issues starting a new DM",
+          "userLogin": "filipemarins",
+          "description": "When the room object is searched for the first time, it does not exist on the front object yet (subscription), adding a fallback search for room list will guarantee to search the room details.\r\n\r\nbefore:\r\nhttps://user-images.githubusercontent.com/9275105/160223241-d2319f3e-82c5-47d6-867f-695ab2361a17.mp4\r\n\r\nafter:\r\nhttps://user-images.githubusercontent.com/9275105/160223244-84d0d2a1-3d95-464d-8b8a-e264b0d4d690.mp4",
+          "milestone": "4.5.5",
+          "contributors": [
+            "filipemarins",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24990",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.5",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
     }
   }
 }
