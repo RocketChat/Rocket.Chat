@@ -9,17 +9,12 @@ const placeholderData = {
 	trialEndDate: undefined,
 };
 
-export const useUpgradeTabParams = (): UseQueryResult<
-	{ tabType: UpgradeTabVariants | false; trialEndDate: string | undefined },
-	unknown
-> => {
+export const useUpgradeTabParams = (): UseQueryResult<{ tabType: UpgradeTabVariants | false; trialEndDate: string | undefined }, Error> => {
 	const getUpgradeTabParams = useEndpoint('GET', 'cloud.getUpgradeTabParams');
 
-	const result = useQuery(
+	return useQuery(
 		'upgradeTabType',
 		useCallback(async () => getUpgradeTabParams(), [getUpgradeTabParams]),
 		{ placeholderData },
 	);
-
-	return result;
 };
