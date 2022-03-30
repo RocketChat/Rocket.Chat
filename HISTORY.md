@@ -1,13 +1,64 @@
 
 # 4.6.0 (Under Release Candidate Process)
 
+## 4.6.0-rc.2
+`2022-03-30  ·  3 🐛  ·  5 🔍  ·  8 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Register with Secret URL ([#24921](https://github.com/RocketChat/Rocket.Chat/pull/24921))
+
+- Room archived/unarchived system messages aren't sent when editing room settings ([#24897](https://github.com/RocketChat/Rocket.Chat/pull/24897))
+
+  - Send the "Room archived" and "Room unarchived" system messages when editing room settings (and not only when rooms are archived/unarchived with the slash-command);  
+  - Fix the "Hide System Messages" option for the "Room archived" and "Room unarchived" system messages;
+
+- room message not load when is a new message ([#24955](https://github.com/RocketChat/Rocket.Chat/pull/24955))
+
+  When the room object is searched for the first time, it does not exist on the front object yet (subscription), adding a fallback search for room list will guarantee to search the room details.
+
+  before:
+  https://user-images.githubusercontent.com/9275105/160223241-d2319f3e-82c5-47d6-867f-695ab2361a17.mp4
+
+  after:
+  https://user-images.githubusercontent.com/9275105/160223244-84d0d2a1-3d95-464d-8b8a-e264b0d4d690.mp4
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: add some missing REST definitions ([#24925](https://github.com/RocketChat/Rocket.Chat/pull/24925))
+
+  On the [mobile client](https://github.com/RocketChat/Rocket.Chat.ReactNative), we made an effort to collect more `REST API` definitions that are missing on the server side during our migration to TypeScript. Since we're both migrating to TypeScript, we thought it would be a good idea to share those so you guys can benefit from our initiative.
+
+- Chore: Storybook mocking and examples improved ([#24969](https://github.com/RocketChat/Rocket.Chat/pull/24969))
+
+  - Stories from `ee/` included;  
+  - Differentiate root story kinds;  
+  - Mocking of `ServerContext` via Storybook parameters.
+
+- Chore: Update Livechat ([#24990](https://github.com/RocketChat/Rocket.Chat/pull/24990))
+
+- i18n: Language update from LingoHub 🤖 on 2022-03-28Z ([#24971](https://github.com/RocketChat/Rocket.Chat/pull/24971))
+
+- Regression: Fix unexpected errors breaking ddp-streamer ([#24948](https://github.com/RocketChat/Rocket.Chat/pull/24948))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gerzonc](https://github.com/gerzonc)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 4.6.0-rc.1
-`2022-03-25  ·  1 🎉  ·  4 🐛  ·  2 🔍  ·  9 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-
-- Engagement Statistics ([#24777](https://github.com/RocketChat/Rocket.Chat/pull/24777) by [@eduardofcabrera](https://github.com/eduardofcabrera))
+`2022-03-25  ·  4 🐛  ·  2 🔍  ·  7 👩‍💻👨‍💻`
 
 ### 🐛 Bug fixes
 
@@ -36,7 +87,6 @@
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Himanshu664](https://github.com/Himanshu664)
-- [@eduardofcabrera](https://github.com/eduardofcabrera)
 - [@tkurz](https://github.com/tkurz)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
@@ -44,7 +94,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@ostjen](https://github.com/ostjen)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
