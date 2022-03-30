@@ -1,6 +1,5 @@
 **/bin/**
 **/build/*
-**/dist/*
 **/node_modules/*
 **/tmp/*
 **/.meteor/.id
@@ -84,3 +83,8 @@ tests/end-to-end/temporary_staged_test
 /tests/cypress/videos
 coverage
 .nyc_output
+
+
+
+.turbo
+**/dist/*

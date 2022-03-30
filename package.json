@@ -20,5 +20,8 @@
 	"workspaces": [
 		"applications/*",
 		"packages/*"
-	]
+	],
+	"devDependencies": {
+		"turbo": "^1.1.10"
+	}
 }
