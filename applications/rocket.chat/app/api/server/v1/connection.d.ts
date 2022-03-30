@@ -1,4 +1,4 @@
-import { IInstanceStatus } from '../../../../definition/IInstanceStatus';
+import type { IInstanceStatus } from '@rocket.chat/core-typings';
 
 export declare const connection:
 	| {

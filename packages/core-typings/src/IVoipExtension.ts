@@ -1,6 +1,6 @@
-import { IQueueSummary } from './ACDQueues';
-import { IUser } from './IUser';
-import { ICallServerConfigData } from './IVoipServerConfig';
+import type { IQueueSummary } from './ACDQueues';
+import type { IUser } from './IUser';
+import type { ICallServerConfigData } from './IVoipServerConfig';
 
 export enum EndpointState {
 	UNKNOWN = 'unknown',

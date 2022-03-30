@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -7,8 +8,6 @@ import { Uploads } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../apps/server';
-import { IMessage } from '../../../../definition/IMessage';
-import { IUser } from '../../../../definition/IUser';
 
 export const deleteMessage = async function (message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);

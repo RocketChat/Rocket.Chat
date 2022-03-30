@@ -1,12 +1,10 @@
+import { IRoom, IOmnichannelAgent, OmichannelRoutingConfig } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect, FC, useMemo, useCallback, memo, useRef } from 'react';
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { Notifications } from '../../app/notifications/client';
-import { IOmnichannelAgent } from '../../definition/IOmnichannelAgent';
-import { IRoom } from '../../definition/IRoom';
-import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
 import { ClientLogger } from '../../lib/ClientLogger';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';

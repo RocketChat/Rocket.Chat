@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { parser } from '@rocket.chat/message-parser';
+import type { IMessage, IMessageEdited, IUser } from '@rocket.chat/core-typings';
 
 import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -7,8 +8,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Apps } from '../../../apps/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-import { IMessage, IMessageEdited } from '../../../../definition/IMessage';
-import { IUser } from '../../../../definition/IUser';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 

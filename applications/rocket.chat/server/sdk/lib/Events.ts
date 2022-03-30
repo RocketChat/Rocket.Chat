@@ -1,28 +1,30 @@
 import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import {
+	IEmailInbox,
+	IEmoji,
+	IInquiry,
+	IInstanceStatus,
+	IIntegration,
+	IIntegrationHistory,
+	ILivechatDepartmentAgents,
+	ILoginServiceConfiguration,
+	IMessage,
+	INotificationDesktop,
+	IPbxEvent,
+	IRole,
+	IRoom,
+	ISetting,
+	ISocketConnection,
+	ISubscription,
+	IInvite,
+	IWebdavAccount,
+	ICustomSound,
+} from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { IUserSession } from '@rocket.chat/core-typingsSession';
+import { IUserStatus } from '@rocket.chat/core-typingsStatus';
 
-import { IEmailInbox } from '../../../definition/IEmailInbox';
-import { IEmoji } from '../../../definition/IEmoji';
-import { IInquiry } from '../../../definition/IInquiry';
-import { IInstanceStatus } from '../../../definition/IInstanceStatus';
-import { IIntegration } from '../../../definition/IIntegration';
-import { IIntegrationHistory } from '../../../definition/IIntegrationHistory';
-import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartmentAgents';
-import { ILoginServiceConfiguration } from '../../../definition/ILoginServiceConfiguration';
-import { IMessage } from '../../../definition/IMessage';
-import { INotificationDesktop } from '../../../definition/INotification';
-import { IPbxEvent } from '../../../definition/IPbxEvent';
-import { IRole } from '../../../definition/IRole';
-import { IRoom } from '../../../definition/IRoom';
-import { ISetting } from '../../../definition/ISetting';
-import { ISocketConnection } from '../../../definition/ISocketConnection';
-import { ISubscription } from '../../../definition/ISubscription';
-import { IUser } from '../../../definition/IUser';
-import { IUserSession } from '../../../definition/IUserSession';
-import { IUserStatus } from '../../../definition/IUserStatus';
 import { AutoUpdateRecord } from '../types/IMeteor';
-import { IInvite } from '../../../definition/IInvite';
-import { IWebdavAccount } from '../../../definition/IWebdavAccount';
-import { ICustomSound } from '../../../definition/ICustomSound';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 

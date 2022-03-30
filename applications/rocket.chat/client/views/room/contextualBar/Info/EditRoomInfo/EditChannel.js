@@ -1,3 +1,4 @@
+import { RoomSettingsEnum } from '@rocket.chat/core-typings';
 import {
 	Field,
 	TextInput,
@@ -19,7 +20,6 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
-import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
 import VerticalBar from '../../../../../components/VerticalBar';

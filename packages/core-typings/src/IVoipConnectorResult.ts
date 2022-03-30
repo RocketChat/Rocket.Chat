@@ -1,11 +1,11 @@
-import {
+import type {
 	IVoipExtensionConfig,
 	IVoipExtensionBase,
 	IQueueMembershipDetails,
 	IRegistrationInfo,
 	IQueueMembershipSubscription,
 } from './IVoipExtension';
-import { IQueueDetails, IQueueSummary } from './ACDQueues';
+import type { IQueueDetails, IQueueSummary } from './ACDQueues';
 
 export interface IVoipConnectorResult {
 	result:

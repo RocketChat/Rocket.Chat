@@ -1,5 +1,5 @@
-import { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import { parser } from '@rocket.chat/message-parser';
+import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import type { parser } from '@rocket.chat/message-parser';
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';

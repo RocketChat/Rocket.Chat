@@ -1,6 +1,5 @@
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import Ajv, { JSONSchemaType } from 'ajv';
-
-import { TEAM_TYPE } from '../../../ITeam';
 
 const ajv = new Ajv();
 

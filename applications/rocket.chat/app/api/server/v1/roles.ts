@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
+import type { IRole } from '@rocket.chat/core-typings';
 
 import { Users } from '../../../models/server';
 import { API } from '../api';
@@ -19,7 +20,6 @@ import {
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { updateRole } from '../../../../server/lib/roles/updateRole';
 import { insertRole } from '../../../../server/lib/roles/insertRole';
-import type { IRole } from '../../../../definition/IRole';
 
 API.v1.addRoute(
 	'roles.list',

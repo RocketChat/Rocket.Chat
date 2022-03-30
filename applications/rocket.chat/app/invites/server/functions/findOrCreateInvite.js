@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { api } from '../../../../server/sdk/api';
@@ -7,7 +8,6 @@ import { Subscriptions, Rooms } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/lib/getURL';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 function getInviteUrl(invite) {

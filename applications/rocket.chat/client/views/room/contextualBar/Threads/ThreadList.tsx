@@ -1,11 +1,9 @@
+import type { IUser, IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { IMessage } from '../../../../../definition/IMessage';
-import { IRoom } from '../../../../../definition/IRoom';
-import { IUser } from '../../../../../definition/IUser';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useRoute, useCurrentRoute, useQueryStringParameter } from '../../../../contexts/RouterContext';

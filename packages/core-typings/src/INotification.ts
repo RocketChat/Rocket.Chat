@@ -1,5 +1,5 @@
-import { IMessage } from './IMessage';
-import { IRoom } from './IRoom';
+import type { IMessage } from './IMessage';
+import type { IRoom } from './IRoom';
 
 export interface INotificationItemPush {
 	type: 'push';

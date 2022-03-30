@@ -1,4 +1,4 @@
-import { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface IAvatar extends IRocketChatRecord {
 	name: string;

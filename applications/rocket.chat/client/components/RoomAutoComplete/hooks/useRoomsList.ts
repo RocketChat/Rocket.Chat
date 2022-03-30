@@ -1,6 +1,6 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useCallback, useState } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';

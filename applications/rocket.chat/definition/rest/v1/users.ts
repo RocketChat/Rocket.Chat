@@ -1,5 +1,4 @@
-import type { ITeam } from '../../ITeam';
-import type { IUser } from '../../IUser';
+import type { ITeam, IUser } from '@rocket.chat/core-typings';
 
 export type UsersEndpoints = {
 	'users.info': {

@@ -1,4 +1,4 @@
-import { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface ILivechatCustomField extends IRocketChatRecord {
 	label: string;

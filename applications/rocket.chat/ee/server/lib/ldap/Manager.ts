@@ -1,11 +1,7 @@
 import _ from 'underscore';
 import type ldapjs from 'ldapjs';
+import type { ILDAPEntry, IImportUser, IUser, IRoom, ICreatedRoom, IRole } from '@rocket.chat/core-typings';
 
-import { ILDAPEntry } from '../../../../definition/ldap/ILDAPEntry';
-import type { IUser } from '../../../../definition/IUser';
-import type { IRoom, ICreatedRoom } from '../../../../definition/IRoom';
-import type { IRole } from '../../../../definition/IRole';
-import { IImportUser } from '../../../../definition/IImportUser';
 import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
 import { Rooms } from '../../../../app/models/server';

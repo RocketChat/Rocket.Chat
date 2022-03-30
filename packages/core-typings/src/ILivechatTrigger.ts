@@ -1,4 +1,4 @@
-import { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export enum ILivechatTriggerType {
 	TIME_ON_SITE = 'time-on-site',

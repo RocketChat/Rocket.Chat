@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 
 import { hasPermission, hasRole, getUsersInRole } from '../../app/authorization/server';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
-import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { Team } from '../sdk';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 

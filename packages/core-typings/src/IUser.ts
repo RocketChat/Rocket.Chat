@@ -1,5 +1,5 @@
-import { UserStatus } from './UserStatus';
-import { IRocketChatRecord } from './IRocketChatRecord';
+import type { UserStatus } from './UserStatus';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface ILoginToken {
 	hashedToken: string;

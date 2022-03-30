@@ -1,8 +1,7 @@
-import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { IMessage, IRoom, MessageAttachment } from '@rocket.chat/core-typings';
+
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { IMessage } from '../../../../definition/IMessage';
-import { IRoom } from '../../../../definition/IRoom';
-import { MessageAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachment';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 export const attachMessage = function (
 	message: IMessage,

@@ -1,6 +1,6 @@
 // DEPRECATED
 
-import { MessageAttachmentBase } from './MessageAttachmentBase';
+import type { MessageAttachmentBase } from './MessageAttachmentBase';
 
 type Action = {
 	msgId?: string;

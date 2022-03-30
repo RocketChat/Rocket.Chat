@@ -1,9 +1,8 @@
+import { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { AutoComplete, Box, Icon, Option, Options, Chip, AutoCompleteProps } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 
-import { IRoom } from '../../../../../../definition/IRoom';
-import { Serialized } from '../../../../../../definition/Serialized';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';

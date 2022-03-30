@@ -1,8 +1,13 @@
-import { IVoipCallServerConfig, IVoipManagementServerConfig, ServerType } from '../../../definition/IVoipServerConfig';
+import {
+	IVoipCallServerConfig,
+	IVoipManagementServerConfig,
+	ServerType,
+	IVoipConnectorResult,
+	IRegistrationInfo,
+	IManagementServerConnectionStatus,
+} from '@rocket.chat/core-typings';
+
 import { CommandHandler } from '../../services/voip/connector/asterisk/CommandHandler';
-import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
-import { IRegistrationInfo } from '../../../definition/voip/IRegistrationInfo';
-import { IManagementServerConnectionStatus } from '../../../definition/IVoipServerConnectivityStatus';
 
 export interface IVoipService {
 	getServerConfigData(serverType: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig;

@@ -1,4 +1,4 @@
-import { MessageAttachmentBase } from './MessageAttachmentBase';
+import type { MessageAttachmentBase } from './MessageAttachmentBase';
 
 export type MessageQuoteAttachment = {
 	author_name: string;

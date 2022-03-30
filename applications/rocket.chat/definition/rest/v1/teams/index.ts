@@ -1,7 +1,6 @@
+import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+
 import type { ITeamAutocompleteResult, ITeamMemberInfo } from '../../../../server/sdk/types/ITeamService';
-import type { IRoom } from '../../../IRoom';
-import type { ITeam } from '../../../ITeam';
-import type { IUser } from '../../../IUser';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';

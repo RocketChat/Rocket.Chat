@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions, Users, Messages } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { callbacks } from '../../lib/callbacks';
-import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 Meteor.methods({

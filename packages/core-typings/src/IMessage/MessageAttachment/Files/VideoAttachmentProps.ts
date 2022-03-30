@@ -1,6 +1,6 @@
-import { MessageAttachmentBase } from '../MessageAttachmentBase';
-import { FileAttachmentProps } from './FileAttachmentProps';
-import { FileProp } from './FileProp';
+import type { MessageAttachmentBase } from '../MessageAttachmentBase';
+import type { FileAttachmentProps } from './FileAttachmentProps';
+import type { FileProp } from './FileProp';
 
 export type VideoAttachmentProps = {
 	video_url: string;

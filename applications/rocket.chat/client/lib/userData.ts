@@ -1,11 +1,10 @@
+import { Serialized, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { Users } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
-import type { IUser, IUserDataEvent } from '../../definition/IUser';
-import { Serialized } from '../../definition/Serialized';
 
 export const isSyncReady = new ReactiveVar(false);
 

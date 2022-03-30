@@ -1,4 +1,4 @@
-import { IUser } from './IUser';
+import type { IUser } from './IUser';
 
 export enum IServerEventType {
 	FAILED_LOGIN_ATTEMPT = 'failed-login-attempt',

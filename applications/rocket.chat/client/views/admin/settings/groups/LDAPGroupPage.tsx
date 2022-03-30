@@ -1,8 +1,8 @@
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FormEvent, memo, useMemo } from 'react';
 
-import type { ISetting } from '../../../../../definition/ISetting';
 import GenericModal from '../../../../components/GenericModal';
 import { useEditableSettings } from '../../../../contexts/EditableSettingsContext';
 import { useSetModal } from '../../../../contexts/ModalContext';

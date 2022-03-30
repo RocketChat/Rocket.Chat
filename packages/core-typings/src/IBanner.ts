@@ -1,6 +1,6 @@
-import { IRocketChatRecord } from './IRocketChatRecord';
-import { IUser } from './IUser';
-import { UiKitBannerPayload } from './UIKit';
+import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IUser } from './IUser';
+import type { UiKitBannerPayload } from './UIKit';
 
 export enum BannerPlatform {
 	Web = 'web',

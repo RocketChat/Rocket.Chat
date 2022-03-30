@@ -1,5 +1,5 @@
-import { ILivechatMonitor } from '../../../../../definition/ILivechatMonitor';
-import { IOmnichannelBusinessUnit } from '../../../../../definition/IOmnichannelBusinessUnit';
+import type { ILivechatMonitor, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+
 import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 
 export type OmnichannelBusinessUnitsEndpoints = {

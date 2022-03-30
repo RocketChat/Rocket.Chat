@@ -1,8 +1,8 @@
 import moment from 'moment';
+import type { IServerEventType, IServerEvent } from '@rocket.chat/core-typings';
 
 import { ILoginAttempt } from '../ILoginAttempt';
 import { ServerEvents, Users, Rooms, Sessions } from '../../../models/server/raw';
-import { IServerEventType, IServerEvent } from '../../../../definition/IServerEvent';
 import { settings } from '../../../settings/server';
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';

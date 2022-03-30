@@ -8,7 +8,6 @@ import {
 	FilterQuery,
 	Cursor,
 } from 'mongodb';
-
 import type {
 	ISession,
 	UserSessionAggregation,
@@ -17,9 +16,10 @@ import type {
 	UserSessionAggregationResult,
 	DeviceSessionAggregationResult,
 	OSSessionAggregationResult,
-} from '../../../../definition/ISession';
+	IUser,
+} from '@rocket.chat/core-typings';
+
 import { BaseRaw, ModelOptionalId } from './BaseRaw';
-import type { IUser } from '../../../../definition/IUser';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {

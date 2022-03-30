@@ -1,6 +1,6 @@
-import { CallStates } from './CallStates';
-import { ICallerInfo } from './ICallerInfo';
-import { UserState } from './UserState';
+import type { CallStates } from './CallStates';
+import type { ICallerInfo } from './ICallerInfo';
+import type { UserState } from './UserState';
 
 export interface IState {
 	isReady: boolean;

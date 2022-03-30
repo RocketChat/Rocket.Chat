@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongodb';
+import type { FilterQuery } from 'mongodb';
 
 export type SettingId = string;
 export type GroupId = SettingId;

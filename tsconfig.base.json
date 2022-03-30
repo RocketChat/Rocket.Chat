@@ -1,8 +1,7 @@
 {
-	"compileOnSave": false,
 	"compilerOptions": {
 		"target": "es5",
-		"module": "ESNext",
+		"module": "commonjs",
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
@@ -15,5 +14,5 @@
 		"jsx": "react-jsx",
 		"importsNotUsedAsValues": "error"
 	},
-	"exclude": ["node_modules", "tmp"]
+	"exclude": ["./dist/", "./storybook-static/", "./src/**/*.spec.{js,ts,tsx}", "./*.js"]
 }

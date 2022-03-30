@@ -1,8 +1,8 @@
-import { processPresenceAndStatus } from '../lib/processConnectionStatus';
+import { IUser, UserStatus } from '@rocket.chat/core-typings';
+import { IUserSession } from '@rocket.chat/core-typingsSession';
+
 import { getCollection, Collections } from '../../mongo';
-import { IUser } from '../../../../../definition/IUser';
-import { UserStatus } from '../../../../../definition/UserStatus';
-import { IUserSession } from '../../../../../definition/IUserSession';
+import { processPresenceAndStatus } from '../lib/processConnectionStatus';
 import { api } from '../../../../../server/sdk/api';
 
 export async function setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {

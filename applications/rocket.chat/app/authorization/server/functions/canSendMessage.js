@@ -1,7 +1,8 @@
+import { RoomMemberActions } from '@rocket.chat/core-typings';
+
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions, Rooms } from '../../../models/server/raw';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 const subscriptionOptions = {

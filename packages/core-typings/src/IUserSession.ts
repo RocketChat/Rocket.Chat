@@ -1,4 +1,4 @@
-import { UserStatus } from './UserStatus';
+import type { UserStatus } from './UserStatus';
 
 export interface IUserSessionConnection {
 	id: string;

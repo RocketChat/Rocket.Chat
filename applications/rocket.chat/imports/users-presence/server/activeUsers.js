@@ -1,7 +1,7 @@
 import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
 import { settings } from '../../../app/settings/server';
-import { UserStatus } from '../../../definition/UserStatus';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { api } from '../../../server/sdk/api';
 
 export const STATUS_MAP = {

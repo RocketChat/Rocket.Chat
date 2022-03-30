@@ -1,7 +1,7 @@
 import type { CpuInfo } from 'os';
 
-import { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
-import { ISettingStatisticsObject, SettingValue } from './ISetting';
+import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
+import type { ISettingStatisticsObject, SettingValue } from './ISetting';
 import type { ITeamStats } from './ITeam';
 
 export interface IStats {

@@ -1,15 +1,14 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
-
 import type {
 	IRoomTypeConfig,
 	IRoomTypeRouteConfig,
 	IRoomTypeClientDirectives,
 	IRoomTypeServerDirectives,
 	RoomIdentification,
-} from '../../definition/IRoomTypeConfig';
-import type { SettingValue } from '../../definition/ISetting';
-import type { RoomType } from '../../definition/IRoom';
+	SettingValue,
+	RoomType,
+} from '@rocket.chat/core-typings';
 
 export abstract class RoomCoordinator {
 	roomTypes: Record<string, { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives | IRoomTypeServerDirectives }>;

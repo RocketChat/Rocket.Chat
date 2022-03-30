@@ -1,10 +1,9 @@
+import { Serialized, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
-import { IBanner, BannerPlatform } from '../../definition/IBanner';
-import { Serialized } from '../../definition/Serialized';
 import * as banners from '../lib/banners';
 
 const fetchInitialBanners = async (): Promise<void> => {

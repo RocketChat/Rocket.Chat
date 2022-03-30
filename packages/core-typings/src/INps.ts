@@ -1,5 +1,5 @@
-import { IRocketChatRecord } from './IRocketChatRecord';
-import { IUser } from './IUser';
+import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IUser } from './IUser';
 
 export enum NPSStatus {
 	OPEN = 'open',

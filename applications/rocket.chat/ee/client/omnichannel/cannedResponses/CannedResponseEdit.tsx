@@ -1,3 +1,4 @@
+import { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useState, useMemo, useEffect, useCallback } from 'react';
@@ -9,9 +10,6 @@ import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
-import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
-import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
-import { Serialized } from '../../../../definition/Serialized';
 import CannedResponseForm from './components/cannedResponseForm';
 
 const CannedResponseEdit: FC<{

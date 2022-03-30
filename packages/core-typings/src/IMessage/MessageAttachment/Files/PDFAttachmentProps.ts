@@ -1,5 +1,5 @@
-import { MessageAttachmentBase } from '../MessageAttachmentBase';
-import { FileProp } from './FileProp';
+import type { MessageAttachmentBase } from '../MessageAttachmentBase';
+import type { FileProp } from './FileProp';
 
 export type PDFAttachmentProps = {
 	file: FileProp;

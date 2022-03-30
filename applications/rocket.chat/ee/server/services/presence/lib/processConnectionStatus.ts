@@ -1,5 +1,5 @@
-import { IUserSessionConnection } from '../../../../../definition/IUserSession';
-import { UserStatus } from '../../../../../definition/UserStatus';
+import { IUserSessionConnection } from '@rocket.chat/core-typingsSession';
+import { UserStatus } from '@rocket.chat/core-typings';
 
 /**
  * Defines new connection status compared to a previous connection status

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const useInviteToken = async (userId, token) => {

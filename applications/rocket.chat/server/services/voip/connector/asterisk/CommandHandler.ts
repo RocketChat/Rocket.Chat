@@ -14,6 +14,7 @@
  * added as and when required.
  */
 import { Db } from 'mongodb';
+import { IVoipConnectorResult, IManagementConfigData, ServerType, IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
 
 import { Commands } from './Commands';
 import { IConnection } from './IConnection';
@@ -21,9 +22,6 @@ import { Logger } from '../../../../lib/logger/Logger';
 import { Command, CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
-import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
-import { IManagementConfigData, ServerType } from '../../../../../definition/IVoipServerConfig';
-import { IManagementServerConnectionStatus } from '../../../../../definition/IVoipServerConnectivityStatus';
 import { WebsocketConnection } from '../websocket/WebsocketConnection';
 import { getServerConfigDataFromSettings } from '../../lib/Helper';
 

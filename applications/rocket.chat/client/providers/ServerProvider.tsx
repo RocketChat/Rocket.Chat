@@ -1,8 +1,8 @@
+import { Serialized } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import React, { FC } from 'react';
 
 import { Info as info, APIClient } from '../../app/utils/client';
-import { Serialized } from '../../definition/Serialized';
 import { Method, PathFor, MatchPathPattern, OperationParams, OperationResult } from '../../definition/rest';
 import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '../contexts/ServerContext';
 

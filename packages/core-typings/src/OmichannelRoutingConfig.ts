@@ -1,4 +1,4 @@
-import { IRoom } from './IRoom';
+import type { IRoom } from './IRoom';
 
 export type OmichannelRoutingConfig = {
 	previewRoom: boolean;

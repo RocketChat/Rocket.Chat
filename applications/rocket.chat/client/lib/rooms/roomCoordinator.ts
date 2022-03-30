@@ -1,3 +1,16 @@
+import type {
+	IRoom,
+	RoomType,
+	IUser,
+	AtLeast,
+	ValueOf,
+	IRoomTypeConfig,
+	IRoomTypeClientDirectives,
+	RoomIdentification,
+	RoomSettingsEnum,
+	RoomMemberActions,
+	UiTextContext,
+} from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
@@ -5,11 +18,6 @@ import _ from 'underscore';
 import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
-import type { IRoom, RoomType } from '../../../definition/IRoom';
-import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
-import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
-import type { IUser } from '../../../definition/IUser';
-import type { AtLeast, ValueOf } from '../../../definition/utils';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { roomExit } from './roomExit';
 

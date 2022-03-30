@@ -1,6 +1,6 @@
+import { IRoomTypeServerDirectives, AtLeast } from '@rocket.chat/core-typings';
+
 import { Users } from '../../../../app/models/server';
-import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast } from '../../../../definition/utils';
 import { getVoipRoomType } from '../../../../lib/rooms/roomTypes/voip';
 import { roomCoordinator } from '../roomCoordinator';
 

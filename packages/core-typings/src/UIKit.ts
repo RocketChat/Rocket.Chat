@@ -1,5 +1,5 @@
 import { UIKitInteractionType as UIKitInteractionTypeApi } from '@rocket.chat/apps-engine/definition/uikit';
-import {
+import type {
 	IDividerBlock,
 	ISectionBlock,
 	IActionsBlock,

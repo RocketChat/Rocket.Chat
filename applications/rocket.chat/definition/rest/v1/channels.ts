@@ -1,7 +1,4 @@
-import type { IMessage } from '../../IMessage/IMessage';
-import type { IRoom } from '../../IRoom';
-import type { ITeam } from '../../ITeam';
-import type { IGetRoomRoles, IUser } from '../../IUser';
+import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser } from '@rocket.chat/core-typings';
 
 export type ChannelsEndpoints = {
 	'channels.files': {

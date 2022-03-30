@@ -1,8 +1,8 @@
-import { MessageAttachmentBase } from '../MessageAttachmentBase';
-import { AudioAttachmentProps } from './AudioAttachmentProps';
-import { FileProp } from './FileProp';
-import { ImageAttachmentProps } from './ImageAttachmentProps';
-import { VideoAttachmentProps } from './VideoAttachmentProps';
+import type { MessageAttachmentBase } from '../MessageAttachmentBase';
+import type { AudioAttachmentProps } from './AudioAttachmentProps';
+import type { FileProp } from './FileProp';
+import type { ImageAttachmentProps } from './ImageAttachmentProps';
+import type { VideoAttachmentProps } from './VideoAttachmentProps';
 
 export type FileAttachmentProps = {
 	type: 'file';

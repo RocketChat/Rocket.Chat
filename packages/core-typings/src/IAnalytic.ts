@@ -1,4 +1,4 @@
-import { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 interface IAnalyticsBase extends IRocketChatRecord {
 	type: 'messages' | 'users' | 'seat-request';

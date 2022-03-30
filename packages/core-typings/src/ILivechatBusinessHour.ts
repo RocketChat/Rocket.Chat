@@ -1,4 +1,4 @@
-import { ILivechatDepartment } from './ILivechatDepartment';
+import type { ILivechatDepartment } from './ILivechatDepartment';
 
 export enum LivechatBusinessHourTypes {
 	DEFAULT = 'default',

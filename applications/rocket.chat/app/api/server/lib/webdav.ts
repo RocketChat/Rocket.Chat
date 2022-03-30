@@ -1,5 +1,6 @@
+import type { IWebdavAccount } from '@rocket.chat/core-typings';
+
 import { WebdavAccounts } from '../../../models/server/raw';
-import { IWebdavAccount } from '../../../../definition/IWebdavAccount';
 
 export async function findWebdavAccountsByUserId({ uid }: { uid: string }): Promise<{ accounts: IWebdavAccount[] }> {
 	return {

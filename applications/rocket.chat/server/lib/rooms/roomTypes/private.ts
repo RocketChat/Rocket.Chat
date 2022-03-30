@@ -1,5 +1,6 @@
+import { RoomSettingsEnum, RoomMemberActions } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../../app/settings/server';
-import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPrivateRoomType } from '../../../../lib/rooms/roomTypes/private';
 import { roomCoordinator } from '../roomCoordinator';
 

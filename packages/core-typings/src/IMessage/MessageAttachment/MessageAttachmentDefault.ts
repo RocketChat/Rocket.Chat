@@ -1,6 +1,6 @@
-import { FieldProps } from './FieldProps';
-import { Dimensions } from './Files/Dimensions';
-import { MessageAttachmentBase } from './MessageAttachmentBase';
+import type { FieldProps } from './FieldProps';
+import type { Dimensions } from './Files/Dimensions';
+import type { MessageAttachmentBase } from './MessageAttachmentBase';
 
 export type MarkdownFields = 'text' | 'pretext' | 'fields';
 

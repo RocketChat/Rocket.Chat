@@ -1,8 +1,8 @@
+import { ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings/IMessage';
 import { Skeleton } from '@rocket.chat/fuselage';
 import React, { ReactElement, useMemo, useEffect } from 'react';
 
-import type { IMessage } from '../../../../../definition/IMessage/IMessage';
-import type { ReadReceipt } from '../../../../../definition/ReadReceipt';
 import GenericModal from '../../../../components/GenericModal';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';

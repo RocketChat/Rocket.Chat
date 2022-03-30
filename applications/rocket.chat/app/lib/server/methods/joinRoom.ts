@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 
 import { hasPermission, canAccessRoom } from '../../../authorization/server';
 import { Rooms } from '../../../models/server';
 import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';
 import { addUserToRoom } from '../functions';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 Meteor.methods({

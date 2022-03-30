@@ -1,6 +1,6 @@
+import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
+
 import type { JoinPathPattern, Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '../../../definition/rest';
-import type { IUser } from '../../../definition/IUser';
-import { IMethodConnection } from '../../../definition/IMethodThisType';
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
 type SuccessResult<T> = {

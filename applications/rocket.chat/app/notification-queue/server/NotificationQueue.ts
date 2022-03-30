@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
 
-import { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem } from '../../../definition/INotification';
 import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
-import { IUser } from '../../../definition/IUser';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
 const {
