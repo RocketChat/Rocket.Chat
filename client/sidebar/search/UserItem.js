@@ -11,7 +11,7 @@ const UserItem = ({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, use
 			<ReactiveUserStatus uid={item._id} />
 		</Sidebar.Item.Icon>
 	);
-	const href = roomCoordinator.getRouteLink(item.t, item);
+	const href = roomCoordinator.getRouteLink(item.t, { name: item.name });
 
 	return (
 		<SideBarItemTemplate
