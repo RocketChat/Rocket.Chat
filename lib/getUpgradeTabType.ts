@@ -1,4 +1,4 @@
-export type UpgradeTabVariants = 'goFullyFeatured' | 'goFullyFeaturedRegistered' | 'trialGold' | 'trialEnterprise' | 'upgradeYourPlan';
+export type UpgradeTabVariant = 'goFullyFeatured' | 'goFullyFeaturedRegistered' | 'trialGold' | 'trialEnterprise' | 'upgradeYourPlan';
 
 type UpgradeTabConditions = {
 	registered: boolean;
@@ -14,7 +14,7 @@ export const getUpgradeTabType = ({
 	isTrial,
 	hasGoldLicense,
 	hadExpiredTrials,
-}: UpgradeTabConditions): UpgradeTabVariants | false => {
+}: UpgradeTabConditions): UpgradeTabVariant | false => {
 	if (!hasValidLicense) {
 		if (hadExpiredTrials) {
 			return 'upgradeYourPlan';

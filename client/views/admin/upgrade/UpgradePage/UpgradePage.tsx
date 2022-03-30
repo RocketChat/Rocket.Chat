@@ -1,7 +1,7 @@
 import { Throbber, Box } from '@rocket.chat/fuselage';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 
-import type { UpgradeTabVariants } from '../../../../../lib/getUpgradeTabType';
+import type { UpgradeTabVariant } from '../../../../../lib/getUpgradeTabType';
 import Page from '../../../../components/Page';
 import PageHeader from '../../../../components/Page/PageHeader';
 import { useLayout } from '../../../../contexts/LayoutContext';
@@ -12,7 +12,7 @@ import UpgradePageError from '../UpgradePageError';
 
 const iframeStyle = { width: '100%', height: '100%' };
 
-const urlMap = {
+const urlMap: Record<UpgradeTabVariant, string> = {
 	goFullyFeatured: 'https://go.rocket.chat/i/upgrade-ce-1-unregistered',
 	goFullyFeaturedRegistered: 'https://go.rocket.chat/i/upgrade-ce-1-registered',
 	trialGold: 'https://go.rocket.chat/i/upgrade-gold-trial',
@@ -20,7 +20,7 @@ const urlMap = {
 	upgradeYourPlan: 'https://go.rocket.chat/i/upgrade-ce-2',
 };
 
-const getUrl = (type: UpgradeTabVariants, date: string | undefined, language: string): string => {
+const getUrl = (type: UpgradeTabVariant, date: string | undefined, language: string): string => {
 	const urlParams = new URLSearchParams({ lang: language.toLowerCase() });
 	if (date) {
 		urlParams.set('date', date);
@@ -56,7 +56,7 @@ const getWindowMessagePath = (e: MessageEvent<string>): string | undefined => {
 const UpgradePage = (): ReactElement => {
 	const [isLoading, setIsLoading] = useState(true);
 
-	const type = useRouteParameter('type') as UpgradeTabVariants;
+	const type = useRouteParameter('type') as UpgradeTabVariant;
 	const trialEndDate = useQueryStringParameter('trialEndDate');
 	const language = useLanguage();
 	const pageUrl = getUrl(type, trialEndDate, language);

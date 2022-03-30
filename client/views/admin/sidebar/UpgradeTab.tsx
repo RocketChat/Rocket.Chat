@@ -2,13 +2,13 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement, useMemo } from 'react';
 
-import type { UpgradeTabVariants } from '../../../../lib/getUpgradeTabType';
+import type { UpgradeTabVariant } from '../../../../lib/getUpgradeTabType';
 import Emoji from '../../../components/Emoji';
 import Sidebar from '../../../components/Sidebar';
 import { useRoutePath } from '../../../contexts/RouterContext';
 import { useTranslation, TranslationKey } from '../../../contexts/TranslationContext';
 
-const getUpgradeTabLabel = (type: UpgradeTabVariants): TranslationKey => {
+const getUpgradeTabLabel = (type: UpgradeTabVariant): TranslationKey => {
 	switch (type) {
 		case 'goFullyFeatured':
 		case 'goFullyFeaturedRegistered':
@@ -27,7 +27,7 @@ const customColors = {
 	active: colors.p900,
 };
 
-type UpgradeTabProps = { type: UpgradeTabVariants; currentPath: string; trialEndDate: string | undefined };
+type UpgradeTabProps = { type: UpgradeTabVariant; currentPath: string; trialEndDate: string | undefined };
 
 const UpgradeTab = ({ type, currentPath, trialEndDate }: UpgradeTabProps): ReactElement => {
 	const path = useRoutePath(

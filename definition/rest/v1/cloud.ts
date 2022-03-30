@@ -1,4 +1,4 @@
-import { UpgradeTabVariants } from '../../../lib/getUpgradeTabType';
+import { UpgradeTabVariant } from '../../../lib/getUpgradeTabType';
 import { CloudRegistrationIntentData, CloudConfirmationPollData } from '../../ICloud';
 
 export type CloudEndpoints = {
@@ -12,6 +12,6 @@ export type CloudEndpoints = {
 		GET: (params: { deviceCode: string; resend?: boolean }) => { pollData: CloudConfirmationPollData };
 	};
 	'cloud.getUpgradeTabParams': {
-		GET: (params: void) => { tabType: UpgradeTabVariants | false; trialEndDate: string | undefined };
+		GET: (params: void) => { tabType: UpgradeTabVariant | false; trialEndDate: string | undefined };
 	};
 };
