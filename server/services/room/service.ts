@@ -34,7 +34,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			throw new Error('User not found');
 		}
 
-		// TODO convert `createRoom` function to "raw" and move to here
+		// TODO convert `createRoom.ts` function to "raw" and move to here
 		return createRoom(type, name, user.username, members, readOnly, extraData, options) as unknown as IRoom;
 	}
 

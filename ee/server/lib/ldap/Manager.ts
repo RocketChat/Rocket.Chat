@@ -244,7 +244,7 @@ export class LDAPEEManager extends LDAPManager {
 		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
 
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
-		// #ToDo: Remove typecastings when createRoom is converted to ts.
+		// #ToDo: Remove typecastings when createRoom.ts is converted to ts.
 		const room = createRoom('c', channel, roomOwner, [], false, {
 			customFields: { ldap: true },
 		} as any) as unknown as ICreatedRoom | undefined;
