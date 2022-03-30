@@ -1,127 +1,122 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 
-import Pages from './Pages';
+import BasePage from './BasePage';
 // import mainContent from './main-content.page';
 
-class SideNav extends Pages {
-	constructor(browser: any, baseURL: any, page: Page) {
-		super(browser, baseURL);
-		this.page = page;
-	}
-
+class SideNav extends BasePage {
 	// New channel
 	public channelType(): Locator {
-		return this.page.locator('#modal-root .rcx-field:contains("Private") .rcx-toggle-switch__fake');
+		return this.getPage().locator('#modal-root .rcx-field:contains("Private") .rcx-toggle-switch__fake');
 	}
 
 	public channelReadOnly(): Locator {
-		return this.page.locator('.create-channel__switches .rc-switch__button');
+		return this.getPage().locator('.create-channel__switches .rc-switch__button');
 	}
 
 	public channelName(): Locator {
-		return this.page.locator('#modal-root [placeholder="Channel Name"]');
+		return this.getPage().locator('#modal-root [placeholder="Channel Name"]');
 	}
 
 	public saveChannelBtn(): Locator {
-		return this.page.locator('#modal-root button:contains("Create")');
+		return this.getPage().locator('#modal-root button:contains("Create")');
 	}
 
 	// Account box
 	public getPopOverContent(): Locator {
-		return this.page.locator('.rc-popover__content');
+		return this.getPage().locator('.rc-popover__content');
 	}
 
 	public accountBoxUserName(): Locator {
-		return this.page.locator('.sidebar__account-username');
+		return this.getPage().locator('.sidebar__account-username');
 	}
 
 	public accountBoxUserAvatar(): Locator {
-		return this.page.locator('.sidebar__account .avatar-image');
+		return this.getPage().locator('.sidebar__account .avatar-image');
 	}
 
 	public accountMenu(): Locator {
-		return this.page.locator('.sidebar__account');
+		return this.getPage().locator('.sidebar__account');
 	}
 
 	public sidebarHeader(): Locator {
-		return this.page.locator('.sidebar__header');
+		return this.getPage().locator('.sidebar__header');
 	}
 
 	public sidebarUserMenu(): Locator {
-		return this.page.locator('[data-qa="sidebar-avatar-button"]');
+		return this.getPage().locator('[data-qa="sidebar-avatar-button"]');
 	}
 
 	public sidebarMenu(): Locator {
-		return this.page.locator('.sidebar__toolbar-button-icon--menu');
+		return this.getPage().locator('.sidebar__toolbar-button-icon--menu');
 	}
 
 	public popOverContent(): Locator {
-		return this.page.locator('.rc-popover__content');
+		return this.getPage().locator('.rc-popover__content');
 	}
 
 	public popOverHideOption(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Hide")');
+		return this.getPage().locator('.rcx-option__content:contains("Hide")');
 	}
 
 	public statusOnline(): Locator {
-		return this.page.locator('(//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "online")])[1]');
+		return this.getPage().locator('(//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "online")])[1]');
 	}
 
 	public statusAway(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "away")]');
+		return this.getPage().locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "away")]');
 	}
 
 	public statusBusy(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "busy")]');
+		return this.getPage().locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "busy")]');
 	}
 
 	public statusOffline(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "offline")]');
+		return this.getPage().locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "offline")]');
 	}
 
 	public account(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "My Account")]');
+		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "My Account")]');
 	}
 
 	public admin(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Administration")]');
+		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Administration")]');
 	}
 
 	public logout(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]');
+		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]');
 	}
 
 	public sideNavBar(): Locator {
-		return this.page.locator('.sidebar');
+		return this.getPage().locator('.sidebar');
 	}
 
 	// Toolbar
 	public spotlightSearchIcon(): Locator {
-		return this.page.locator('[data-qa="sidebar-search"]');
+		return this.getPage().locator('[data-qa="sidebar-search"]');
 	}
 
 	public spotlightSearch(): Locator {
-		return this.page.locator('[data-qa="sidebar-search-input"]');
+		return this.getPage().locator('[data-qa="sidebar-search-input"]');
 	}
 
 	public spotlightSearchPopUp(): Locator {
-		return this.page.locator('[data-qa="sidebar-search-result"]');
+		return this.getPage().locator('[data-qa="sidebar-search-result"]');
 	}
 
 	public newChannelBtnToolbar(): Locator {
-		return this.page.locator('[data-qa="sidebar-create"]');
+		return this.getPage().locator('[data-qa="sidebar-create"]');
 	}
 
 	public newChannelBtn(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Channel")');
+		return this.getPage().locator('.rcx-option__content:contains("Channel")');
 	}
 
 	public newDiscussionBtn(): Locator {
-		return this.page.locator('.rcx-option__content:contains("Discussion")');
+		return this.getPage().locator('.rcx-option__content:contains("Discussion")');
 	}
 
 	public newChannelIcon(): Locator {
-		return this.page.locator('[data-qa="sidebar-create-channel"]');
+		return this.getPage().locator('[data-qa="sidebar-create-channel"]');
 	}
 
 	// Rooms List
@@ -130,55 +125,55 @@ class SideNav extends Pages {
 	}
 
 	public channelLeave(): Locator {
-		return this.page.locator('.leave-room');
+		return this.getPage().locator('.leave-room');
 	}
 
 	public channelHoverIcon(): Locator {
-		return this.page.locator('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off');
+		return this.getPage().locator('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off');
 	}
 
 	// Account
 	public preferences(): Locator {
-		return this.page.locator('[href="/account/preferences"]');
+		return this.getPage().locator('[href="/account/preferences"]');
 	}
 
 	public profile(): Locator {
-		return this.page.locator('[href="/account/profile"]');
+		return this.getPage().locator('[href="/account/profile"]');
 	}
 
 	public avatar(): Locator {
-		return this.page.locator('[href="/changeavatar"]');
+		return this.getPage().locator('[href="/changeavatar"]');
 	}
 
 	public preferencesClose(): Locator {
-		return this.page.locator('.flex-nav i.rcx-icon--name-cross');
+		return this.getPage().locator('.flex-nav i.rcx-icon--name-cross');
 	}
 
 	public burgerBtn(): Locator {
-		return this.page.locator('.burger, [aria-label="Open_menu"]');
+		return this.getPage().locator('.burger, [aria-label="Open_menu"]');
 	}
 
 	public sidebarWrap(): Locator {
-		return this.page.locator('.sidebar-wrap');
+		return this.getPage().locator('.sidebar-wrap');
 	}
 
 	public firstSidebarItem(): Locator {
-		return this.page.locator('.sidebar-item');
+		return this.getPage().locator('.sidebar-item');
 	}
 
 	public firstSidebarItemMenu(): Locator {
-		return this.page.locator('[data-qa=sidebar-avatar-button]');
+		return this.getPage().locator('[data-qa=sidebar-avatar-button]');
 	}
 
 	public popoverOverlay(): Locator {
-		return this.page.locator('.rc-popover.rc-popover--sidebar-item');
+		return this.getPage().locator('.rc-popover.rc-popover--sidebar-item');
 	}
 
 	// Opens a channel via rooms list
 	public async openChannel(channelName: any): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).click();
-		await expect(this.page.locator('.rcx-room-header')).toContainText(channelName);
+		await this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();
+		await this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).click();
+		await expect(this.getPage().locator('.rcx-room-header')).toContainText(channelName);
 	}
 
 	// Opens a channel via spotlight search
@@ -196,12 +191,12 @@ class SideNav extends Pages {
 		// 	`[data-qa="sidebar-search-result"] .rcx-sidebar-item--clickable:contains("${channelName}"), [data-qa="sidebar-search-result"] .rcx-sidebar-item[aria-label='${channelName}']`,
 		// ).click();
 
-		await expect(this.page.locator('.rcx-room-header')).toContainText(channelName);
+		await expect(this.getPage().locator('.rcx-room-header')).toContainText(channelName);
 	}
 
 	// Gets a channel from the rooms list
 	public getChannelFromList(channelName: any): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
+		return this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
 	}
 
 	public async createChannel(channelName: any, isPrivate: any /* isReadOnly*/): Promise<void> {
