@@ -1,87 +1,88 @@
-import { Locator } from '@playwright/test';
+import { Locator, expect } from '@playwright/test';
 
 import { ILogin, IRegister } from '../interfaces/Login';
-import Pages from './Pages';
+import BasePage from './BasePage';
+import { HOME_SELECTOR, REGISTER_STEP2_BUTTON } from '../mocks/waitSelectorsMock';
 
-class LoginPage extends Pages {
+class LoginPage extends BasePage {
 	private registerButton(): Locator {
-		return this.page.locator('button.register');
+		return this.getPage().locator('button.register');
 	}
 
 	private forgotPasswordButton(): Locator {
-		return this.page.locator('.forgot-password');
+		return this.getPage().locator('.forgot-password');
 	}
 
 	public submitButton(): Locator {
-		return this.page.locator('.login');
+		return this.getPage().locator('.login');
 	}
 
 	public registerNextButton(): Locator {
-		return this.page.locator('button[data-loading-text=" Please_wait ..."]');
+		return this.getPage().locator('button[data-loading-text=" Please_wait ..."]');
 	}
 
 	public registerMessage(): Locator {
-		return this.page.locator('//form[@id["login-card"]]//header//p');
+		return this.getPage().locator('//form[@id["login-card"]]//header//p');
 	}
 
 	public emailOrUsernameField(): Locator {
-		return this.page.locator('[name=emailOrUsername]');
+		return this.getPage().locator('[name=emailOrUsername]');
 	}
 
 	public nameField(): Locator {
-		return this.page.locator('[name=name]');
+		return this.getPage().locator('[name=name]');
 	}
 
 	public emailField(): Locator {
-		return this.page.locator('[name=email]');
+		return this.getPage().locator('[name=email]');
 	}
 
 	public passwordField(): Locator {
-		return this.page.locator('[name=pass]');
+		return this.getPage().locator('[name=pass]');
 	}
 
 	public userNameField(): Locator {
-		return this.page.locator('[name=username]');
+		return this.getPage().locator('[name=username]');
 	}
 
 	public confirmPasswordField(): Locator {
-		return this.page.locator('[name=confirm-pass]');
+		return this.getPage().locator('[name=confirm-pass]');
 	}
 
 	public getToastError(): Locator {
-		return this.page.locator('.toast');
+		return this.getPage().locator('.toast');
 	}
 
 	public getToastMessageSuccess(): Locator {
-		return this.page.locator('.toast-message');
+		return this.getPage().locator('.toast-message');
 	}
 
 	public emailOrUsernameInvalidText(): Locator {
-		return this.page.locator('[name=emailOrUsername]~.input-error');
+		return this.getPage().locator('[name=emailOrUsername]~.input-error');
 	}
 
 	public nameInvalidText(): Locator {
-		return this.page.locator('[name=name]~.input-error');
+		return this.getPage().locator('[name=name]~.input-error');
 	}
 
 	public emailInvalidText(): Locator {
-		return this.page.locator('[name=email]~.input-error');
+		return this.getPage().locator('[name=email]~.input-error');
 	}
 
 	public passwordInvalidText(): Locator {
-		return this.page.locator('[name=pass]~.input-error');
+		return this.getPage().locator('[name=pass]~.input-error');
 	}
 
 	public confirmPasswordInvalidText(): Locator {
-		return this.page.locator('[name=confirm-pass]~.input-error');
+		return this.getPage().locator('[name=confirm-pass]~.input-error');
 	}
 
 	public getHomeMessage(): Locator {
-		return this.page.locator('//span[@class="rc-header__block"]');
+		return this.getPage().locator('//span[@class="rc-header__block"]');
 	}
 
-	public async open(): Promise<void> {
-		await super.open('');
+	public async open(path: string): Promise<void> {
+		await super.goto(path);
 	}
 
 	public async gotToRegister(): Promise<void> {
@@ -98,6 +99,10 @@ class LoginPage extends Pages {
 		await this.passwordField().type(password);
 		await this.confirmPasswordField().type(password);
 		await this.submit();
+
+		await this.waitForSelector(REGISTER_STEP2_BUTTON);
+		await this.registerNextButton().click();
+		await this.waitForSelector(HOME_SELECTOR);
 	}
 
 	public async login({ email, password }: ILogin): Promise<void> {
@@ -108,6 +113,27 @@ class LoginPage extends Pages {
 
 	public async submit(): Promise<void> {
 		await this.submitButton().click();
+	}
+
+	public async registerFail(): Promise<void> {
+		await this.gotToRegister();
+		await this.submit();
+
+		await expect(this.nameInvalidText()).toBeVisible();
+		await expect(this.emailInvalidText()).toBeVisible();
+		await expect(this.passwordInvalidText()).toBeVisible();
+	}
+
+	public async registerFailWithDifentPassword({ name, email, password }: IRegister, invalidPassword: string): Promise<void> {
+		await this.gotToRegister();
+		await this.passwordField().type(password);
+		await this.emailField().type(email);
+		await this.nameField().type(name);
+		await this.confirmPasswordField().type(invalidPassword);
+
+		await this.submit();
+		await expect(this.confirmPasswordInvalidText()).toBeVisible();
+		await expect(this.confirmPasswordInvalidText()).toHaveText('The password confirmation does not match password');
 	}
 }
 

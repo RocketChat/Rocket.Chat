@@ -1,62 +1,75 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Locator, expect } from '@playwright/test';
 
-export default class ChannelCreation {
-	private inputChannelName: Locator;
+import BasePage from './BasePage';
+import { ENTER } from '../mocks/keyboardKeyMock';
 
-	private buttonCreateChannel: Locator;
+export default class ChannelCreation extends BasePage {
+	private buttonCreate(): Locator {
+		return this.getPage().locator('[data-qa="sidebar-create"]');
+	}
 
-	private buttonCreate: Locator;
+	private inputChannelName(): Locator {
+		return this.getPage().locator('[placeholder="Channel Name"]');
+	}
 
-	private inputChannelDescription: Locator;
+	private inputChannelDescription(): Locator {
+		return this.getPage().locator('[placeholder="What is this channel about?"]');
+	}
 
-	private page: Page;
+	private buttonCreateChannel(): Locator {
+		return this.getPage().locator('//ul[@class="rc-popover__list"]//li[@class="rcx-option"][1]');
+	}
 
-	private channelName: Locator;
+	private channelName(): Locator {
+		return this.getPage().locator('//header//div//div//div//div[2]');
+	}
 
-	private buttonConfirmCreation: Locator;
+	private buttonConfirmCreation(): Locator {
+		return this.getPage().locator('//button[contains(text(), "Create" )]');
+	}
 
-	private privateChannel: Locator;
+	private privateChannel(): Locator {
+		return this.getPage().locator('//label[contains(text(),"Private")]/../following-sibling::label/i');
+	}
 
-	private searchChannel: Locator;
+	private searchChannel(): Locator {
+		return this.getPage().locator('[data-qa="sidebar-search"]');
+	}
 
-	private searchChannelInput: Locator;
+	private searchChannelInput(): Locator {
+		return this.getPage().locator('[data-qa="sidebar-search-input"]');
+	}
 
-	constructor(page: Page) {
-		this.page = page;
-		this.buttonCreate = page.locator('[data-qa="sidebar-create"]');
-		this.inputChannelName = page.locator('[placeholder="Channel Name"]');
-		this.inputChannelDescription = page.locator('[placeholder="What is this channel about?"]');
-		this.buttonCreateChannel = page.locator('//ul[@class="rc-popover__list"]//li[@class="rcx-option"][1]');
-		this.channelName = page.locator('//header//div//div//div//div[2]');
-		this.buttonConfirmCreation = page.locator('//button[contains(text(), "Create" )]');
-		this.privateChannel = page.locator('//label[contains(text(),"Private")]/../following-sibling::label/i');
-		this.searchChannel = page.locator('[data-qa="sidebar-search"]');
-		this.searchChannelInput = page.locator('[data-qa="sidebar-search-input"]');
+	private textArea(): Locator {
+		return this.getPage().locator('.rc-message-box__textarea');
+	}
+
+	private lastMessage(): Locator {
+		return this.getPage().locator('.message:last-child .body');
 	}
 
 	public async createChannel(name: string, isPrivate: boolean): Promise<void> {
-		await this.buttonCreate.click();
-		await this.buttonCreateChannel.click();
-		await this.inputChannelName.type(name);
-		await this.inputChannelDescription.type('any_description');
+		await this.buttonCreate().click();
+		await this.buttonCreateChannel().click();
+		await this.inputChannelName().type(name);
+		await this.inputChannelDescription().type('any_description');
 		if (!isPrivate) {
-			await this.privateChannel.click();
+			await this.privateChannel().click();
 		}
-		await this.buttonConfirmCreation.click();
+		await this.buttonConfirmCreation().click();
 
-		await expect(this.channelName).toHaveText(name);
+		await expect(this.channelName()).toHaveText(name);
 	}
 
-	public async sendMessage(targetUser: string): Promise<void> {
-		await this.searchChannel.click();
-		await this.searchChannelInput.type(targetUser);
-		await this.page.keyboard.press('Enter');
+	public async sendMessage(targetUser: string, message: string): Promise<void> {
+		await this.searchChannel().click();
+		await this.searchChannelInput().type(targetUser);
+		await this.keyboardPress(ENTER);
 
-		await this.page.type('.rc-message-box__textarea', 'Hello');
-		await this.page.keyboard.press('Enter');
-		const message = this.page.locator('.message:last-child .body');
+		await this.textArea().type(message);
+		await this.keyboardPress(ENTER);
 
-		await expect(message).toBeVisible();
-		await expect(message).toHaveText('Hello');
+		await expect(this.lastMessage()).toBeVisible();
+		await expect(this.lastMessage()).toHaveText(message);
 	}
 }
