@@ -1,10 +1,9 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import { Button, ButtonGroup, Icon, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
 import React, { useState, useCallback, useRef, FC, MouseEventHandler } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
-import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import APIsDisplay from './APIsDisplay';
 import AppDetailsHeader from './AppDetailsHeader';
@@ -29,13 +28,6 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
 
 	const data = useAppInfo(id);
-
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
-	const router = useRoute(currentRouteName);
-	const handleReturn = (): void => router.push({});
 
 	const { settings, apis } = { settings: {}, apis: [], ...data };
 
@@ -95,15 +87,11 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 	return (
 		<Page flexDirection='column'>
-			<Page.Header title={t('App_Details')}>
+			<Page.Header title={t('Back')} isAppDetails>
 				<ButtonGroup>
 					<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
 						{!isSaving && t('Save_changes')}
 						{isSaving && <Throbber inheritColor />}
-					</Button>
-					<Button onClick={handleReturn}>
-						<Icon name='back' />
-						{t('Back')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
