@@ -72850,6 +72850,31 @@
           ]
         }
       ]
+    },
+    "4.6.0-rc.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24994",
+          "title": "[FIX]  High CPU usage caused by CallProvider",
+          "userLogin": "tiagoevanp",
+          "description": "Remove infinity loop inside useVoipClient hook.\r\n\r\n#closes #24970",
+          "milestone": "4.5.5",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        }
+      ]
     }
   }
 }
