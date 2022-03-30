@@ -31,7 +31,7 @@ const getUrl = (type: UpgradeTabVariants, date: string | undefined, language: st
 
 type NavigationMessage = { goTo: string };
 
-const messageIsNavigation = (message: unknown): message is NavigationMessage => {
+const isNavigationMessage = (message: unknown): message is NavigationMessage => {
 	if (typeof message === 'object' && message !== null) {
 		return 'goTo' in message;
 	}
@@ -48,7 +48,7 @@ const getWindowMessagePath = (e: MessageEvent<string>): string | undefined => {
 		return;
 	}
 
-	if (messageIsNavigation(parsedMessage)) {
+	if (isNavigationMessage(parsedMessage)) {
 		return parsedMessage.goTo;
 	}
 };
@@ -69,7 +69,7 @@ const UpgradePage = (): ReactElement => {
 	const hasConnection = navigator.onLine;
 
 	useEffect(() => {
-		const navigate = (e: MessageEvent<string>): void => {
+		const handleNavigationMessage = (e: MessageEvent<string>): void => {
 			if (ref?.current?.contentWindow !== e.source) {
 				return;
 			}
@@ -83,10 +83,10 @@ const UpgradePage = (): ReactElement => {
 			window.location.href = getAbsoluteUrl(path);
 		};
 
-		window.addEventListener('message', navigate);
+		window.addEventListener('message', handleNavigationMessage);
 
 		return (): void => {
-			window.removeEventListener('message', navigate);
+			window.removeEventListener('message', handleNavigationMessage);
 		};
 	}, [getAbsoluteUrl]);
 

@@ -3,7 +3,7 @@ import { describe, it } from 'mocha';
 
 import { getUpgradeTabType } from './getUpgradeTabType';
 
-describe('getUpgradeTabtType function', () => {
+describe('getUpgradeTabType()', () => {
 	it("should return 'goFullyFeatured'", () => {
 		expect(
 			getUpgradeTabType({
