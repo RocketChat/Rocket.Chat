@@ -18,6 +18,9 @@ addParameters({
 		page: DocsPage,
 	},
 	options: {
-		storySort: ([, a], [, b]): number => a.kind.localeCompare(b.kind),
+		storySort: {
+			method: 'alphabetical',
+			order: ['Components', '*', 'Enterprise'],
+		},
 	},
 });

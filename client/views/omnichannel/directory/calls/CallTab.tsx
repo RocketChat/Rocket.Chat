@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 
-import NotAuthorizedPage from '../../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 import CallTable from './CallTable';
 
 // TODO Check if I need to type the setstateaction params, if I should do:
