@@ -1,4 +1,48 @@
 
+# 4.5.5
+`2022-03-30  ·  2 🐛  ·  1 🔍  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.31.0`
+
+### 🐛 Bug fixes
+
+
+- High CPU usage caused by CallProvider ([#24994](https://github.com/RocketChat/Rocket.Chat/pull/24994))
+
+  Remove infinity loop inside useVoipClient hook.
+
+  #closes #24970
+
+- Multiple issues starting a new DM ([#24955](https://github.com/RocketChat/Rocket.Chat/pull/24955))
+
+  When the room object is searched for the first time, it does not exist on the front object yet (subscription), adding a fallback search for room list will guarantee to search the room details.
+
+  before:
+  https://user-images.githubusercontent.com/9275105/160223241-d2319f3e-82c5-47d6-867f-695ab2361a17.mp4
+
+  after:
+  https://user-images.githubusercontent.com/9275105/160223244-84d0d2a1-3d95-464d-8b8a-e264b0d4d690.mp4
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Update Livechat ([#24990](https://github.com/RocketChat/Rocket.Chat/pull/24990))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@filipemarins](https://github.com/filipemarins)
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 4.5.4
 `2022-03-24  ·  1 🐛  ·  2 👩‍💻👨‍💻`
 
