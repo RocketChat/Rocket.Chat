@@ -83,6 +83,7 @@ const _setEmail = function (userId: string, email: string, shouldSendVerificatio
 
 export const setEmail = RateLimiter.limitFunction(_setEmail, 1, 60000, {
 	0() {
-		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
+		const userId = Meteor.userId();
+		return !userId || !hasPermission(userId, 'edit-other-user-info');
 	}, // Administrators have permission to change others emails, so don't limit those
 });

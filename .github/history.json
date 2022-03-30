@@ -71299,13 +71299,395 @@
       "npm_version": "6.14.15",
       "apps_engine_version": "1.31.0",
       "mongo_versions": [
-        "'3.6'",
-        "'4.0'",
-        "'4.2'",
-        "'4.4'",
-        "'5.0'"
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
       ],
       "pull_requests": []
+    },
+    "4.5.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24782",
+          "title": "Release 4.5.1",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "renatobecker",
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "matheusbsilva137",
+            "amolghode1981",
+            "juliajforesti",
+            "tiagoevanp",
+            "KevLehman",
+            "MartinSchoeler",
+            "Aman-Maheshwari",
+            "cuonghuunguyen"
+          ]
+        },
+        {
+          "pr": "24760",
+          "title": "[FIX] Apple login script being loaded even when Apple Login is disabled.",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.5.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24754",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24683",
+          "title": "[FIX] no id of room closer in livechat-close message",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "4.5.1",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "23795",
+          "title": "[FIX] Reload roomslist after successful deletion of a room from admin panel.",
+          "userLogin": "Aman-Maheshwari",
+          "description": "Removed the logic for calling the `rooms.adminRooms` endPoint from the `RoomsTable` Component and moved it to its parent component `RoomsPage`.\r\nThis allows to call the endPoint `rooms.adminRooms` from `EditRoomContextBar` Component which is also has `RoomPage` Component as its parent.\r\n\r\nAlso added a succes toast message after the successful deletion of room.",
+          "milestone": "4.5.1",
+          "contributors": [
+            "Aman-Maheshwari",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24743",
+          "title": "[FIX] System messages are sent when adding or removing a group from a team",
+          "userLogin": "matheusbsilva137",
+          "description": "- Do not send system messages when adding or removing a new or existing _group_ from a team.",
+          "milestone": "4.5.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "24737",
+          "title": "[FIX] Typo and placeholder on wrap up call modal",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24680",
+          "title": "[FIX] Show only available agents on extension association modal",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.1",
+          "contributors": [
+            "KevLehman",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24607",
+          "title": "[FIX] VoIP Enable/Disable setting on CallContext/CallProvider Notifications",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.5.1",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24677",
+          "title": "[FIX] Components for user search",
+          "userLogin": "juliajforesti",
+          "milestone": "4.5.1",
+          "contributors": [
+            "juliajforesti",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24657",
+          "title": "[FIX] Voip Stream Reinitialization Error",
+          "userLogin": "amolghode1981",
+          "milestone": "4.5.1",
+          "contributors": [
+            "amolghode1981"
+          ]
+        },
+        {
+          "pr": "24696",
+          "title": "[FIX] Room's message count not being incremented on import",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix rooms' message counter not being incremented on message import.",
+          "milestone": "4.5.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "24674",
+          "title": "[FIX] Missing username on messages imported from Slack",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix missing sender's username on messages imported from Slack.",
+          "milestone": "4.5.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "24590",
+          "title": "[FIX] Duplicated 'name' log key",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.5.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24661",
+          "title": "[FIX] Typo in wrap-up term",
+          "userLogin": "renatobecker",
+          "milestone": "4.5.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
+    },
+    "4.5.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24812",
+          "title": "[FIX] Revert AutoComplete",
+          "userLogin": "juliajforesti",
+          "milestone": "4.5.2",
+          "contributors": [
+            "juliajforesti",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "24809",
+          "title": "Regression: Fix ParentRoomWithEndpointData in loop",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.5.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24732",
+          "title": "[FIX] `PaginatedSelectFiltered` not handling changes",
+          "userLogin": "tassoevan",
+          "milestone": "4.5.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24805",
+          "title": "[FIX] Critical: Incorrect visitor getting assigned to a chat from apps",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24804",
+          "title": "[FIX] \"livechat/webrtc.call\" endpoint not working",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24792",
+          "title": "[FIX] VoipExtensionsPage component call",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24705",
+          "title": "[FIX] Broken multiple OAuth integrations",
+          "userLogin": "debdutdeb",
+          "milestone": "4.5.2",
+          "contributors": [
+            "debdutdeb"
+          ]
+        },
+        {
+          "pr": "24623",
+          "title": "[FIX] Opening a new DM from user card",
+          "userLogin": "tassoevan",
+          "description": "A race condition on `useRoomIcon` -- delayed merge of rooms and subscriptions -- was causing a UI crash whenever someone tried to open a DM from the user card component.",
+          "milestone": "4.5.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24750",
+          "title": "[IMPROVE] Voip Extensions disabled state",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "4.5.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24901",
+          "title": "[FIX] Custom script not being fired",
+          "userLogin": "ggazzo",
+          "milestone": "4.5.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "24877",
+          "title": "Chore: Fix MongoDB versions on release notes",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.5.3",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24864",
+          "title": "[FIX] Disable voip button when call is in progress",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24863",
+          "title": "[FIX] Broken build caused by PRs modifying same file differently",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24838",
+          "title": "[FIX] [VOIP] SidebarFooter component ",
+          "userLogin": "tiagoevanp",
+          "description": "- Improve the CallProvider code;\r\n- Adjust the text case of the VoIP component on the FooterSidebar;\r\n- Fix the bad behavior with the changes in queue's name.",
+          "milestone": "4.5.3",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24837",
+          "title": "[IMPROVE] Standarize queue behavior for managers and agents when subscribing",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24829",
+          "title": "[FIX] Show only enabled departments on forward",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24799",
+          "title": "[FIX] Wrong param usage on queue summary call",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24789",
+          "title": "[FIX] VoIP button gets disabled whenever user status changes",
+          "userLogin": "amolghode1981",
+          "milestone": "4.5.3",
+          "contributors": [
+            "amolghode1981"
+          ]
+        },
+        {
+          "pr": "24752",
+          "title": "[FIX] Show call icon only when user has extension associated",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24748",
+          "title": "[IMPROVE] UX - VoIP Call Component",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.5.3",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        }
+      ]
     }
   }
 }

@@ -214,5 +214,13 @@ settingsRegistry.addGroup('Video Conference', function () {
 			i18nLabel: 'Jitsi_Limit_Token_To_Room',
 			public: true,
 		});
+		this.add('Jitsi_Click_To_Join_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Jitsi_Start_SlashCommands_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 	});
 });

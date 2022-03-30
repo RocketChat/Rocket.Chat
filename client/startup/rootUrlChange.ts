@@ -12,7 +12,8 @@ import { isSyncReady } from '../lib/userData';
 
 Meteor.startup(() => {
 	Tracker.autorun((c) => {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			return;
 		}
 
@@ -20,7 +21,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		if (hasRole(Meteor.userId(), 'admin') === false) {
+		if (hasRole(userId, 'admin') === false) {
 			return c.stop();
 		}
 

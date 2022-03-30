@@ -49,7 +49,7 @@ export const openRoom = async function (type, name, render = true) {
 				return;
 			}
 
-			RoomManager.open(type + name);
+			RoomManager.open({ typeName: type + name, rid: room._id });
 
 			if (render) {
 				appLayout.renderMainLayout({ center: 'room' });

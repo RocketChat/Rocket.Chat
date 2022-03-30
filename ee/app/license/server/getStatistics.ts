@@ -61,6 +61,7 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 			return true;
 		}),
 	);
+
 	await Promise.all(statsPms).catch(log);
 	return statistics;
 }

@@ -2860,6 +2860,7 @@ describe('[Users]', function () {
 		let testUser;
 		let testUserCredentials;
 		const testRoleName = `role.test.${Date.now()}`;
+		let testRoleId = null;
 
 		before('Create a new role with Users scope', (done) => {
 			request
@@ -2872,6 +2873,9 @@ describe('[Users]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('role');
+					expect(res.body.role).to.have.property('name', testRoleName);
+					testRoleId = res.body.role._id;
 				})
 				.end(done);
 		});
@@ -2892,7 +2896,7 @@ describe('[Users]', function () {
 				.post(api('roles.addUserToRole'))
 				.set(credentials)
 				.send({
-					roleName: testRoleName,
+					roleId: testRoleId,
 					username: testUser.username,
 				})
 				.expect('Content-Type', 'application/json')
@@ -2960,7 +2964,7 @@ describe('[Users]', function () {
 					.set(credentials)
 					.send({
 						daysIdle: 0,
-						role: testRoleName,
+						role: testRoleId,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -2978,7 +2982,7 @@ describe('[Users]', function () {
 					.set(credentials)
 					.send({
 						daysIdle: 0,
-						role: testRoleName,
+						role: testRoleId,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)

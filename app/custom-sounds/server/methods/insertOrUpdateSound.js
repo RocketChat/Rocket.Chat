@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { CustomSounds } from '../../../models/server/raw';
-import { Notifications } from '../../../notifications';
+import { api } from '../../../../server/sdk/api';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({
@@ -71,7 +71,7 @@ Meteor.methods({
 
 		if (soundData.name !== soundData.previousName) {
 			await CustomSounds.setName(soundData._id, soundData.name);
-			Notifications.notifyAll('updateCustomSound', { soundData });
+			api.broadcast('notify.updateCustomSound', { soundData });
 		}
 
 		return soundData._id;
