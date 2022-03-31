@@ -101,7 +101,7 @@ export function AddUser({ roles, onReload, ...props }) {
 	});
 
 	const availableRoles = useMemo(
-		() => roleData?.roles?.map(({ _id, description, name }) => [_id, description || name || _id]) ?? [],
+		() => roleData?.roles?.map(({ _id, description, name }) => [_id, description || name]) ?? [],
 		[roleData],
 	);
 
