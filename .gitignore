@@ -41,7 +41,6 @@
 .loadpath
 .map
 .metadata
-packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 .mule
 .pmd
 .project
@@ -72,12 +71,8 @@ tramp
 ecosystem.json
 pm2.json
 settings.json
-build.sh
-/public/livechat
-packages/rocketchat-i18n/i18n/livechat.*
 tests/end-to-end/temporary_staged_test
 .screenshots
-/private/livechat
 /storybook-static
 /tests/cypress/screenshots
 /tests/cypress/videos

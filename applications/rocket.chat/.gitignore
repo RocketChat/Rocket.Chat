@@ -77,7 +77,6 @@ tramp
 ecosystem.json
 pm2.json
 settings.json
-build.sh
 tests/end-to-end/temporary_staged_test
 .screenshots
 /storybook-static
