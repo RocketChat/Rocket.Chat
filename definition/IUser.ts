@@ -146,6 +146,7 @@ export interface IUser extends IRocketChatRecord {
 	defaultRoom?: string;
 	ldap?: boolean;
 	extension?: string;
+	origin?: string;
 	inviteToken?: string;
 }
 
@@ -170,3 +171,11 @@ export type IUserDataEvent = {
 			unset: Record<keyof IUser, boolean | 0 | 1>;
 	  }
 );
+
+export enum USER_ORIGIN {
+	ADMIN_ADD = 'admin_add',
+	SLACK_IMPORT = 'slack_import',
+	SLACK_USER_IMPORT = 'slack_user_import',
+	CSV_IMPORT = 'csv_import',
+	HIPTEXT_IMPORT = 'hiptext_import',
+}
