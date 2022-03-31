@@ -17,7 +17,6 @@ export * from './IInstanceStatus';
 export * from './IWebdavAccount';
 export * from './IPermission';
 export * from './utils';
-export * from './IRoomTypeConfig';
 export * from './IRole';
 export * from './IIntegration';
 export * from './IIntegrationHistory';
