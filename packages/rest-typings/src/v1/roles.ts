@@ -1,5 +1,4 @@
-import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IRole, IUser } from '@rocket.chat/core-typings';
+import type { RocketChatRecordDeleted, IRole, IUser } from '@rocket.chat/core-typings';
 import Ajv, { JSONSchemaType } from 'ajv';
 
 const ajv = new Ajv();

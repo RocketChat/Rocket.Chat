@@ -61,4 +61,4 @@ export interface IRegistrationInfo {
 }
 
 export const IRegistrationInfo = (prop: any): prop is IRegistrationInfo =>
-	prop.hasOwnProperty('host') && prop.hasOwnProperty('callServerConfig') && prop.hasOwnProperty('extensionDetails');
+	'host' in prop && 'callServerConfig' in prop && 'extensionDetails' in prop;

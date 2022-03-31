@@ -1,4 +1,5 @@
 import type { ICustomEmojiDescriptor } from '@rocket.chat/core-typings';
+
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 

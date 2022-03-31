@@ -1,13 +1,18 @@
-import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import type { ILivechatMonitor } from '@rocket.chat/core-typings';
-import type { ILivechatTag } from '@rocket.chat/core-typings';
-import type { ILivechatVisitor, ILivechatVisitorDTO } from '@rocket.chat/core-typings';
-import type { IMessage } from '@rocket.chat/core-typings';
-import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
-import type { ISetting } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelCannedResponse,
+	ILivechatAgent,
+	ILivechatDepartment,
+	ILivechatDepartmentAgents,
+	ILivechatMonitor,
+	ILivechatTag,
+	ILivechatVisitor,
+	ILivechatVisitorDTO,
+	IMessage,
+	IOmnichannelRoom,
+	IRoom,
+	ISetting,
+} from '@rocket.chat/core-typings';
+
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 

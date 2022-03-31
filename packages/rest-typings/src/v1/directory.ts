@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type DirectoryEndpoint = {

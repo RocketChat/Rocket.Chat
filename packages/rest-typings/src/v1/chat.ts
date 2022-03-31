@@ -1,6 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ReadReceipt } from '@rocket.chat/core-typings';
 
 export type ChatEndpoints = {
 	'chat.getMessage': {

@@ -21,3 +21,5 @@ ee/server/services/dist/**
 !/.storybook/
 !/client/.eslintrc.js
 !/ee/client/.eslintrc.js
+dist/*
+**/dist/*

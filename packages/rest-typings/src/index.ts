@@ -1,9 +1,5 @@
 import type { KeyOfEach } from '@rocket.chat/core-typings';
 
-export * from './v1/permissions';
-export * from './v1/roles';
-export * from './v1/settings';
-
 // import type { EnterpriseEndpoints } from '../../ee/definition/rest';
 import type { AppsEndpoints } from './apps';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
@@ -32,6 +28,10 @@ import type { StatisticsEndpoints } from './v1/statistics';
 import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VoipEndpoints } from './v1/voip';
+
+export * from './v1/permissions';
+export * from './v1/roles';
+export * from './v1/settings';
 
 type CommunityEndpoints = BannersEndpoints &
 	ChatEndpoints &

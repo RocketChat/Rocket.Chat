@@ -1,11 +1,16 @@
-import type { IQueueSummary } from '@rocket.chat/core-typings';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
-import type { IVoipRoom } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
-import type { IQueueMembershipDetails, IQueueMembershipSubscription, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
-import type { IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
-import type { IRegistrationInfo } from '@rocket.chat/core-typings';
-import type { VoipClientEvents } from '@rocket.chat/core-typings';
+import type {
+	IQueueSummary,
+	ILivechatAgent,
+	IVoipRoom,
+	IUser,
+	IQueueMembershipDetails,
+	IQueueMembershipSubscription,
+	IVoipExtensionWithAgentInfo,
+	IManagementServerConnectionStatus,
+	IRegistrationInfo,
+	VoipClientEvents,
+} from '@rocket.chat/core-typings';
+
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 

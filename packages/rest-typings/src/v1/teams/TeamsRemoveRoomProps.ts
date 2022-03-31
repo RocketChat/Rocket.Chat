@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+// import Ajv, { JSONSchemaType } from 'ajv';
 
-const ajv = new Ajv();
+// const ajv = new Ajv();
 
 export type TeamsRemoveRoomProps = ({ teamId: string } | { teamName: string }) & {
 	roomId: IRoom['_id'];

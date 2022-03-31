@@ -23,9 +23,19 @@
 	],
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "^0.4.0",
-		"@typescript-eslint/parser": "^5.17.0",
+		"@typescript-eslint/eslint-plugin": "^2.34.0",
+		"@typescript-eslint/parser": "^3.0.0",
 		"babel-eslint": "^10.1.0",
+		"eslint": "^6.8.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-anti-trojan-source": "^1.0.6",
+		"eslint-plugin-import": "^2.24.2",
+		"eslint-plugin-prettier": "^3.4.1",
+		"eslint-plugin-react": "^7.24.0",
+		"eslint-plugin-react-hooks": "^4.2.0",
+		"eslint-plugin-testing-library": "^5.0.0",
 		"node-gyp": "^9.0.0",
+		"prettier": "^2.6.1",
 		"turbo": "^1.1.10"
 	}
 }
