@@ -22,8 +22,6 @@ const runActionLink = () => () => (): void => {
 export type MessageContextValue = {
 	broadcast: boolean;
 	oembedMaxWidth: `${number}px` | '100%';
-	// buttons: any[];
-	// menuButtons: any[];
 	oembedEnabled: boolean;
 	actions: {
 		openUserCard: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
@@ -33,10 +31,9 @@ export type MessageContextValue = {
 		replyBroadcast: (message: IMessage) => void;
 	};
 	formatters: {
-		// newDay: (date: Date) => string;
-		messageHeader: (date: Date) => string;
+		time: (date: Date) => string;
+		dateAndTime: (date: Date) => string;
 	};
-	// tabBar: TabBar;
 };
 
 export const MessageContext = createContext<MessageContextValue>({
@@ -53,8 +50,8 @@ export const MessageContext = createContext<MessageContextValue>({
 		replyBroadcast,
 	},
 	formatters: {
-		// newDay: (date: Date): string => date.toISOString(),
-		messageHeader: (date: Date): string => date.toISOString(),
+		time: (date: Date): string => date.toISOString(),
+		dateAndTime: (date: Date): string => date.toISOString(),
 	},
 });
 
