@@ -16,7 +16,10 @@ const UserRow = ({ emails, _id, username, name, roles, status, avatarETag, onCli
 	const t = useTranslation();
 
 	const statusText = active ? t(capitalize(status)) : t('Disabled');
-	const roleNames = (roles || []).map((roleId) => Roles.findOne(roleId, { fields: { name: 1 } })?.name || roleId).join(', ');
+	const roleNames = (roles || [])
+		.map((roleId) => Roles.findOne(roleId, { fields: { name: 1 } })?.name)
+		.filter((roleName) => !!roleName)
+		.join(', ');
 
 	return (
 		<Table.Row onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
