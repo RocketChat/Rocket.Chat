@@ -1,5 +1,6 @@
 import { IOmnichannelCannedResponse } from '../../../ee/client/omnichannel/cannedResponses/IOmnichannelCannedResponse';
 import { ILivechatAgent } from '../../ILivechatAgent';
+import { ILivechatCustomField } from '../../ILivechatCustomField';
 import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatDepartmentAgents } from '../../ILivechatDepartmentAgents';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
@@ -103,12 +104,7 @@ export type OmnichannelEndpoints = {
 
 	'livechat/custom-fields': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
-			customFields: [
-				{
-					_id: string;
-					label: string;
-				},
-			];
+			customFields: ILivechatCustomField[];
 		}>;
 	};
 	'livechat/rooms': {

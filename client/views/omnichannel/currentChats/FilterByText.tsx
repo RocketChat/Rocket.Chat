@@ -18,10 +18,11 @@ import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;
+	setCustomFieldsSearchBarOpen: Dispatch<SetStateAction<boolean>>;
 	reload?: () => void;
 }>;
 
-const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
+const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSearchBarOpen, ...props }) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
@@ -119,6 +120,11 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		);
 	});
 
+	const handleCustomFieldsNew = (): void => {
+		console.log('handleCustomFields called');
+		setCustomFieldsSearchBarOpen(true);
+	};
+
 	return (
 		<Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
 			<Box display='flex' flexDirection='row' flexWrap='wrap' {...props}>
@@ -143,7 +149,11 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 					<InputBox type='date' flexShrink={0} placeholder={t('To')} onChange={handleTo} value={to} />
 				</Box>
 
-				<RemoveAllClosed handleClearFilters={handleClearFilters} handleRemoveClosed={handleRemoveClosed} />
+				<RemoveAllClosed
+					handleClearFilters={handleClearFilters}
+					handleRemoveClosed={handleRemoveClosed}
+					handleCustomFields={handleCustomFieldsNew}
+				/>
 			</Box>
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>

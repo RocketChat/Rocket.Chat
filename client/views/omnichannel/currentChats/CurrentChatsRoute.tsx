@@ -213,7 +213,7 @@ const CurrentChatsRoute: FC = () => {
 			header={header}
 			renderRow={renderRow}
 			title={t('Current_Chats')}
-		></CurrentChatsPage>
+		/>
 	);
 };
 
