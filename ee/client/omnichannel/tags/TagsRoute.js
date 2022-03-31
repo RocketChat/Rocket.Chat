@@ -3,11 +3,11 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
-import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import RemoveTagButton from './RemoveTagButton';
 import TagEditWithData from './TagEditWithData';
 import TagsPage from './TagsPage';

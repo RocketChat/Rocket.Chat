@@ -2,7 +2,6 @@ import { Random } from 'meteor/random';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Users } from '../../models/server';
-import { USER_ORIGIN } from '../../../definition/IUser';
 
 export class CsvImporter extends Base {
 	constructor(info, importRecord) {
@@ -117,7 +116,6 @@ export class CsvImporter extends Base {
 						emails: [email],
 						username,
 						name,
-						origin: USER_ORIGIN.CSV_IMPORT,
 					});
 				}
 

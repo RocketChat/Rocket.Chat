@@ -3,7 +3,6 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import React, { useMemo, useCallback, useState, FC, ReactElement } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
-import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import PageSkeleton from '../../../../client/components/PageSkeleton';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
@@ -14,6 +13,7 @@ import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
 import { AsyncStatePhase } from '../../../../client/lib/asyncState';
+import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import CannedResponseEditWithData from './CannedResponseEditWithData';
 import CannedResponseFilter from './CannedResponseFilter';
 import CannedResponseNew from './CannedResponseNew';

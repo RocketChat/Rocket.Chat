@@ -1,11 +1,11 @@
 import { Tabs } from '@rocket.chat/fuselage';
 import React, { useEffect, useCallback, useState, ReactElement } from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useCurrentRoute, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ContextualBar from './ContextualBar';
 import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
