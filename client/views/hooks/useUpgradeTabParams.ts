@@ -11,23 +11,21 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
 	const { data: registrationStatusData } = useQuery(['registrationStatus'], () => getRegistrationStatus());
-	const { data: getLicensesData, isLoading } = useQuery(['licences'], () => getLicenses(), {
+	const { data: getValidLicensesData, isLoading } = useQuery(['licences'], () => getLicenses(), {
 		enabled: !!registrationStatusData,
 	});
 
 	const { registrationStatus } = registrationStatusData ?? {};
-	const { licenses } = getLicensesData ?? {};
+	const { licenses } = getValidLicensesData ?? {};
 
 	const registered = registrationStatus?.workspaceRegistered ?? false;
 	const hasValidLicense = (licenses?.length ?? 0) > 0;
 	const hadExpiredTrials = cloudWorkspaceHadTrial ?? false;
+
+	const trialLicense = licenses?.find(({ meta }) => meta?.trial);
 	const isTrial = licenses?.every(({ meta }) => meta.trial) ?? false;
 	const hasGoldLicense = licenses?.some(({ tag }) => tag?.name === 'Gold') ?? false;
-
-	const longestTrialLicense = isTrial
-		? licenses?.filter(({ meta }) => meta?.trial).sort((a, b) => Date.parse(b.meta.trialEnd) - Date.parse(a.meta.trialEnd))[0]
-		: undefined;
-	const trialEndDate = longestTrialLicense ? format(new Date(longestTrialLicense.meta.trialEnd), 'yyyy-MM-dd') : undefined;
+	const trialEndDate = trialLicense ? format(new Date(trialLicense?.meta?.trialEnd), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({
 		registered,
