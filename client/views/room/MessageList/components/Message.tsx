@@ -6,7 +6,7 @@ import React, { FC, memo } from 'react';
 import { IMessage } from '../../../../../definition/IMessage';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useIsEditingMessage } from '../contexts/MessageEditingContext';
+import { useIsMessageHighlight } from '../contexts/MessageHighlightContext';
 import MessageContent from './MessageContent';
 import MessageContentIgnored from './MessageContentIgnored';
 import MessageHeader from './MessageHeader';
@@ -21,11 +21,11 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	subscription,
 	...props
 }) => {
-	const isEditingMessage = useIsEditingMessage(message._id);
+	const isMessageHighlight = useIsMessageHighlight(message._id);
 	const [isMessageIgnored, toggleMessageIgnored] = useToggle(message.ignored);
 
 	return (
-		<MessageTemplate {...props} style={isEditingMessage ? style : undefined}>
+		<MessageTemplate {...props} style={isMessageHighlight ? style : undefined}>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && <UserAvatar username={message.u.username} size={'x36'} />}
 				{sequential && <MessageIndicators message={message} />}

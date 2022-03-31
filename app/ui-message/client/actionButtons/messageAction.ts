@@ -18,11 +18,11 @@ export const onAdded = (button: IUIActionButton): void =>
 		condition({ room }) {
 			return applyButtonFilters(button, room);
 		},
-		async action() {
-			const { msg } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			triggerActionButtonAction({
-				rid: msg.rid,
-				mid: msg._id,
+				rid: message.rid,
+				mid: message._id,
 				actionId: button.actionId,
 				appId: button.appId,
 				payload: { context: button.context },

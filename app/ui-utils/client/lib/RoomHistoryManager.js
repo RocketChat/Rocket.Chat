@@ -16,6 +16,10 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { getUserPreference } from '../../../utils/client';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
+import {
+	setHighlightMessage,
+	clearHighlightMessage,
+} from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
@@ -269,9 +273,8 @@ export const RoomHistoryManager = new (class extends Emitter {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		const { ts } = lastMessage;
-
-		if (ts) {
+		if (lastMessage?.ts) {
+			const { ts } = lastMessage;
 			const result = await callWithErrorHandling('loadNextMessages', rid, ts, limit);
 			upsertMessageBulk({
 				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
@@ -290,7 +293,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 				room.hasMoreNext.set(false);
 			}
 		}
-		await this.unqueue();
+		this.unqueue();
 	}
 
 	async getSurroundingMessages(message, limit = defaultLimit) {
@@ -302,8 +305,11 @@ export const RoomHistoryManager = new (class extends Emitter {
 
 		const instance = Blaze.getView(w).templateInstance();
 
-		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
-			const msgElement = $(`#${message._id}, [data-mid=${message._id}]`, w);
+		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
+
+		if (surroundingMessage) {
+			const msgElement = $(`[data-id='${message._id}']`, w);
+
 			if (msgElement.length === 0) {
 				return;
 			}
@@ -317,7 +323,18 @@ export const RoomHistoryManager = new (class extends Emitter {
 				500,
 			);
 
-			return setTimeout(() => msgElement.removeClass('highlight'), 500);
+			msgElement.addClass('highlight');
+			setHighlightMessage(message._id);
+
+			setTimeout(() => {
+				msgElement.removeClass('highlight');
+			}, 500);
+
+			setTimeout(() => {
+				clearHighlightMessage();
+			}, 1000);
+
+			return;
 		}
 
 		const room = this.getRoom(message.rid);
@@ -337,7 +354,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 			if (!result || !result.messages) {
 				return;
 			}
-			ChatMessage.remove({ rid: message.rid });
+			RoomHistoryManager.clear(message.rid);
 			for (const msg of Array.from(result.messages)) {
 				if (msg.t !== 'command') {
 					upsertMessage({ msg, subscription });
@@ -347,9 +364,15 @@ export const RoomHistoryManager = new (class extends Emitter {
 			readMessage.refreshUnreadMark(message.rid);
 			RoomManager.updateMentionsMarksOfRoom(typeName);
 
-			Tracker.afterFlush(() => {
+			Tracker.afterFlush(async () => {
+				await waitUntilWrapperExists(`[data-id='${message._id}']`);
 				const wrapper = $('.messages-box .wrapper');
-				const msgElement = $(`#${message._id}, [data-mid=${message._id}]`, wrapper);
+				const msgElement = $(`[data-id=${message._id}]`, wrapper);
+
+				if (msgElement.length === 0) {
+					return;
+				}
+
 				const pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height() / 2;
 				wrapper.animate(
 					{
@@ -359,10 +382,19 @@ export const RoomHistoryManager = new (class extends Emitter {
 				);
 
 				msgElement.addClass('highlight');
+				setHighlightMessage(message._id);
+
 				room.isLoading.set(false);
 				const messages = wrapper[0];
 				instance.atBottom = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
-				setTimeout(() => msgElement.removeClass('highlight'), 500);
+
+				setTimeout(() => {
+					msgElement.removeClass('highlight');
+				}, 500);
+
+				setTimeout(() => {
+					clearHighlightMessage();
+				}, 1000);
 			});
 
 			if (!room.loaded) {
@@ -397,12 +429,12 @@ export const RoomHistoryManager = new (class extends Emitter {
 		return room.isLoading.get();
 	}
 
-	clear(rid) {
+	async clear(rid) {
+		const room = this.getRoom(rid);
 		ChatMessage.remove({ rid });
-		if (this.histories[rid]) {
-			this.histories[rid].hasMore.set(true);
-			this.histories[rid].isLoading.set(false);
-			this.histories[rid].loaded = undefined;
-		}
+		room.isLoading.set(true);
+		room.hasMore.set(true);
+		room.hasMoreNext.set(false);
+		room.loaded = undefined;
 	}
 })();
