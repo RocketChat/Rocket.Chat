@@ -23,6 +23,7 @@ import {
 	LivechatBusinessHours,
 	Messages as MessagesRaw,
 	InstanceStatus,
+	Invites,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
@@ -32,6 +33,7 @@ import { Analytics, Team } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { IRoom } from '../../../../definition/IRoom';
 import { IStats } from '../../../../definition/IStats';
+import { USER_ORIGIN } from '/definition/IUser';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -568,7 +570,7 @@ export const statistics = {
 				statistics.teams = statisticsTeam;
 			}),
 		);
-    
+
 		return statistics;
 	},
 	async save(): Promise<IStats> {
