@@ -11,7 +11,7 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
 	const { data: registrationStatusData } = useQuery(['registrationStatus'], () => getRegistrationStatus());
-	const { data: getValidLicensesData, isLoading } = useQuery(['licences'], () => getLicenses(), {
+	const { data: getValidLicensesData, isSuccess } = useQuery(['licences'], () => getLicenses(), {
 		enabled: !!registrationStatusData,
 	});
 
@@ -35,5 +35,5 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 		hasGoldLicense,
 	});
 
-	return { tabType: upgradeTabType, trialEndDate, isLoading };
+	return { tabType: upgradeTabType, trialEndDate, isLoading: !isSuccess };
 };
