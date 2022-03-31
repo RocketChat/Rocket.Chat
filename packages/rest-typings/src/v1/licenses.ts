@@ -1,9 +1,9 @@
-import type { ILicense } from '../../../ee/app/license/definitions/ILicense';
+// import type { ILicense } from '../../../ee/app/license/definitions/ILicense';
 
 export type LicensesEndpoints = {
-	'licenses.get': {
-		GET: () => { licenses: Array<ILicense> };
-	};
+	// 'licenses.get': {
+	// 	GET: () => { licenses: Array<ILicense> };
+	// };
 	'licenses.add': {
 		POST: (params: { license: string }) => void;
 	};

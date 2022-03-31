@@ -1,6 +1,6 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import type { IPermission } from '@rocket.chat/core-typings';
 
-import { IPermission } from '../../IPermission';
+import Ajv, { JSONSchemaType } from 'ajv';
 
 const ajv = new Ajv();
 

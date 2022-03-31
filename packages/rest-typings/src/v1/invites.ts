@@ -1,5 +1,5 @@
-import type { IInvite } from '../../IInvite';
-import type { IRoom } from '../../IRoom';
+import type { IInvite } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 export type InvitesEndpoints = {
 	'listInvites': {

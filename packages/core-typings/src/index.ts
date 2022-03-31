@@ -38,6 +38,7 @@ export * from './INps';
 export * from './ISession';
 export * from './IEmoji';
 export * from './IEmojiCustom';
+export * from './ICustomEmojiDescriptor';
 export * from './IAnalytic';
 export * from './ICredentialToken';
 export * from './IAvatar';

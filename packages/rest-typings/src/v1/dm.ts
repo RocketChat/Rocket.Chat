@@ -1,5 +1,5 @@
-import type { IRoom } from '../../IRoom';
-import type { IUser } from '../../IUser';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export type DmEndpoints = {
 	'dm.create': {

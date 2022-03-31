@@ -1,4 +1,4 @@
-import type { BannerPlatform, IBanner } from '../../IBanner';
+import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
 
 export type BannersEndpoints = {
 	/* @deprecated */

@@ -1,6 +1,6 @@
-import type { IMessage } from '../../IMessage';
-import type { IRoom } from '../../IRoom';
-import type { IUser } from '../../IUser';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export type ImEndpoints = {
 	'im.create': {

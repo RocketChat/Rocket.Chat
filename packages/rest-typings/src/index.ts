@@ -1,5 +1,10 @@
-import type { EnterpriseEndpoints } from '../../ee/definition/rest';
-import type { KeyOfEach } from '../utils';
+import type { KeyOfEach } from '@rocket.chat/core-typings';
+
+export * from './v1/permissions';
+export * from './v1/roles';
+export * from './v1/settings';
+
+// import type { EnterpriseEndpoints } from '../../ee/definition/rest';
 import type { AppsEndpoints } from './apps';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
 import type { BannersEndpoints } from './v1/banners';
@@ -9,7 +14,7 @@ import type { CloudEndpoints } from './v1/cloud';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DmEndpoints } from './v1/dm';
 import type { DnsEndpoints } from './v1/dns';
-import { E2eEndpoints } from './v1/e2e';
+import type { E2eEndpoints } from './v1/e2e';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { GroupsEndpoints } from './v1/groups';
 import type { ImEndpoints } from './v1/im';
@@ -55,7 +60,7 @@ type CommunityEndpoints = BannersEndpoints &
 	InvitesEndpoints &
 	E2eEndpoints;
 
-type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
+type Endpoints = CommunityEndpoints;
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>

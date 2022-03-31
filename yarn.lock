@@ -2872,7 +2872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/core-typings@workspace:packages/core-typings, @rocket.chat/core-typings@workspace:~":
+"@rocket.chat/core-typings@workspace:^, @rocket.chat/core-typings@workspace:packages/core-typings, @rocket.chat/core-typings@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-typings@workspace:packages/core-typings"
   dependencies:
@@ -3088,6 +3088,20 @@ __metadata:
   checksum: a8475656b62f599d5f2067b1f6212d9663cd0071be4d61c111fc871827a9341266af3e8a5b1bc6431a6e4b154b2b43d4031142d408b3b768455e8cb5e4891b38
   languageName: node
   linkType: hard
+
+"@rocket.chat/rest-typings@workspace:^, @rocket.chat/rest-typings@workspace:packages/rest-typings":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/rest-typings@workspace:packages/rest-typings"
+  dependencies:
+    "@rocket.chat/apps-engine": ^1.31.0
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/message-parser": ^0.31.6
+    "@rocket.chat/ui-kit": ^0.31.6
+    "@types/mongodb": ^3.6.10
+    ajv: ^8.11.0
+    typescript: ^4.3.5
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/sdk@npm:^1.0.0-alpha.42":
   version: 1.0.0-alpha.42
@@ -6027,6 +6041,7 @@ __metadata:
     "@rocket.chat/message-parser": ~0.31.6
     "@rocket.chat/mp3-encoder": ^0.24.0
     "@rocket.chat/onboarding-ui": ~0.31.6
+    "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.6
     "@rocket.chat/ui-kit": ~0.31.6
     "@settlin/spacebars-loader": ^1.0.9
@@ -6566,7 +6581,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^8.0.1, ajv@npm:^8.7.1":
+"ajv@npm:^8.0.1, ajv@npm:^8.11.0, ajv@npm:^8.7.1":
   version: 8.11.0
   resolution: "ajv@npm:8.11.0"
   dependencies:

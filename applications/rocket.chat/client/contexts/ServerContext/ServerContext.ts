@@ -1,7 +1,7 @@
 import { Serialized, IServerInfo } from '@rocket.chat/core-typings';
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
-import type { Method, PathFor, OperationParams, MatchPathPattern, OperationResult, PathPattern } from '../../../definition/rest';
+import type { Method, PathFor, OperationParams, MatchPathPattern, OperationResult, PathPattern } from '@rocket.chat/rest-typings';
 import { ServerMethodFunction, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethods } from './methods';
 
 export type UploadResult = {

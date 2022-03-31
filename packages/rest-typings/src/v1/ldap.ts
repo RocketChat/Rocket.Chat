@@ -1,19 +1,20 @@
-import type { TranslationKey } from '../../../client/contexts/TranslationContext';
+// import type { TranslationKey } from '../../../client/contexts/TranslationContext';
 
+// TODO: move to translation package
 export type LDAPEndpoints = {
 	'ldap.testConnection': {
 		POST: () => {
-			message: TranslationKey;
+			message: string;
 		};
 	};
 	'ldap.testSearch': {
 		POST: (params: { username: string }) => {
-			message: TranslationKey;
+			message: string;
 		};
 	};
 	'ldap.syncNow': {
 		POST: () => {
-			message: TranslationKey;
+			message: string;
 		};
 	};
 };

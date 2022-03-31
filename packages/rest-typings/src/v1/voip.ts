@@ -1,13 +1,13 @@
-import { IQueueSummary } from '../../ACDQueues';
-import { ILivechatAgent } from '../../ILivechatAgent';
-import { IVoipRoom } from '../../IRoom';
-import { IUser } from '../../IUser';
-import { IQueueMembershipDetails, IQueueMembershipSubscription, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
-import { IManagementServerConnectionStatus } from '../../IVoipServerConnectivityStatus';
-import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
-import { VoipClientEvents } from '../../voip/VoipClientEvents';
-import { PaginatedRequest } from '../helpers/PaginatedRequest';
-import { PaginatedResult } from '../helpers/PaginatedResult';
+import type { IQueueSummary } from '@rocket.chat/core-typings';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { IQueueMembershipDetails, IQueueMembershipSubscription, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
+import type { IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
+import type { IRegistrationInfo } from '@rocket.chat/core-typings';
+import type { VoipClientEvents } from '@rocket.chat/core-typings';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {

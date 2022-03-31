@@ -16,7 +16,7 @@ import {
 	isRoleDeleteProps,
 	isRoleRemoveUserFromRoleProps,
 	isRoleUpdateProps,
-} from '../../../../definition/rest/v1/roles';
+} from '@rocket.chat/rest-typings';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { updateRole } from '../../../../server/lib/roles/updateRole';
 import { insertRole } from '../../../../server/lib/roles/insertRole';

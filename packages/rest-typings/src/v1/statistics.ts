@@ -1,4 +1,4 @@
-import type { IStats } from '../../IStats';
+import type { IStats } from '@rocket.chat/core-typings';
 
 export type StatisticsEndpoints = {
 	'statistics': {

@@ -1,15 +1,15 @@
-import { IOmnichannelCannedResponse } from '../../../ee/client/omnichannel/cannedResponses/IOmnichannelCannedResponse';
-import { ILivechatAgent } from '../../ILivechatAgent';
-import { ILivechatDepartment } from '../../ILivechatDepartment';
-import { ILivechatDepartmentAgents } from '../../ILivechatDepartmentAgents';
-import { ILivechatMonitor } from '../../ILivechatMonitor';
-import { ILivechatTag } from '../../ILivechatTag';
-import { ILivechatVisitor, ILivechatVisitorDTO } from '../../ILivechatVisitor';
-import { IMessage } from '../../IMessage';
-import { IOmnichannelRoom, IRoom } from '../../IRoom';
-import { ISetting } from '../../ISetting';
-import { PaginatedRequest } from '../helpers/PaginatedRequest';
-import { PaginatedResult } from '../helpers/PaginatedResult';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatMonitor } from '@rocket.chat/core-typings';
+import type { ILivechatTag } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, ILivechatVisitorDTO } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 type booleanString = 'true' | 'false';
 

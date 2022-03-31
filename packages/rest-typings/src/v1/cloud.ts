@@ -1,4 +1,4 @@
-import { CloudRegistrationIntentData, CloudConfirmationPollData } from '../../ICloud';
+import type { CloudRegistrationIntentData, CloudConfirmationPollData } from '@rocket.chat/core-typings';
 
 export type CloudEndpoints = {
 	'cloud.manualRegister': {
