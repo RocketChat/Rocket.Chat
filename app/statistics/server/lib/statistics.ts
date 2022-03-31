@@ -28,7 +28,7 @@ import { readSecondaryPreferred } from '../../../../server/database/readSecondar
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Analytics } from '../../../../server/sdk';
+import { Analytics, Team } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { IRoom } from '../../../../definition/IRoom';
 import { IStats } from '../../../../definition/IStats';
@@ -159,7 +159,7 @@ export const statistics = {
 					// Number of Business Hours
 					total: count,
 					// Business Hours strategy
-					strategy: settings.get('Livechat_enable_business_hours') || '',
+					enabled: settings.get('Livechat_enable_business_hours'),
 				};
 			}),
 		);
@@ -449,15 +449,32 @@ export const statistics = {
 			}),
 		);
 
-		statsPms.push(Analytics.resetSeatRequestCount());
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.totalOTRRooms = Rooms.find({ createdOTR: true }).count();
+				resolve();
+			}),
+		);
 
-		statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
-		statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count');
-		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
-		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
-		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = Rooms.find({ createdOTR: true }).count();
-		statistics.totalOTR = settings.get('OTR_Count');
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statsPms.push(Analytics.resetSeatRequestCount());
+
+				statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
+				statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count');
+				statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
+				statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
+				statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
+				statistics.totalOTR = settings.get('OTR_Count');
+				resolve();
+			}),
+		);
+
+		statsPms.push(
+			Team.getStatistics().then((statisticsTeam) => {
+				statistics.teams = statisticsTeam;
+			}),
+		);
 
 		await Promise.all(statsPms).catch(log);
 

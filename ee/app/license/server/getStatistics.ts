@@ -3,6 +3,7 @@ import { log } from 'console';
 import { getModules, getTags } from './license';
 import { Analytics } from '../../../../server/sdk';
 import { CannedResponseRaw, LivechatPriorityRaw, LivechatTagRaw, LivechatUnitRaw } from '../../models/server';
+import { settings } from '../../../../app/settings/server';
 
 type ENTERPRISE_STATISTICS = {
 	modules: string[];
@@ -12,6 +13,7 @@ type ENTERPRISE_STATISTICS = {
 	cannedResponses: number;
 	priorities: number;
 	businessUnits: number;
+	businessHourType: string;
 };
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
@@ -59,6 +61,13 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 		LivechatUnitRaw.col.count().then((count) => {
 			statistics.businessUnits = count;
 			return true;
+		}),
+	);
+
+	statsPms.push(
+		new Promise<void>((resolve) => {
+			statistics.businessHourType = settings.get('Livechat_business_hour_type');
+			resolve();
 		}),
 	);
 
