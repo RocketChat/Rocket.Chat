@@ -178,7 +178,7 @@ class SideNav extends BasePage {
 
 	// Opens a channel via spotlight search
 	public async searchChannel(channelName: any): Promise<void> {
-		await this.spotlightSearch().should('be.visible');
+		await expect(this.spotlightSearch()).toBeVisible();
 
 		// Should have focus automatically, but some times it's not happening
 		await this.spotlightSearch().click();
