@@ -1,6 +1,5 @@
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 
-// import type { ITeamAutocompleteResult, ITeamMemberInfo } from '../../../../server/sdk/types/ITeamService';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
@@ -11,6 +10,15 @@ import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 import type { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
 import type { TeamsUpdateMemberProps } from './TeamsUpdateMemberProps';
 import type { TeamsUpdateProps } from './TeamsUpdateProps';
+
+export * from './TeamsAddMembersProps';
+export * from './TeamsConvertToChannelProps';
+export * from './TeamsDeleteProps';
+export * from './TeamsLeaveProps';
+export * from './TeamsRemoveMemberProps';
+export * from './TeamsRemoveRoomProps';
+export * from './TeamsUpdateMemberProps';
+export * from './TeamsUpdateProps';
 
 type TeamProps =
 	| TeamsRemoveRoomProps

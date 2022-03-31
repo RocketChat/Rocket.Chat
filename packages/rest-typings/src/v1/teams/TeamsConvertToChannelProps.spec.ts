@@ -1,43 +1,38 @@
-import { assert } from 'chai';
-
 import { isTeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 
 describe('TeamsConvertToChannelProps (definition/rest/v1)', () => {
 	describe('isTeamsConvertToChannelProps', () => {
-		it('should be a function', () => {
-			assert.isFunction(isTeamsConvertToChannelProps);
-		});
 		it('should return false if neither teamName or teamId is provided', () => {
-			assert.isFalse(isTeamsConvertToChannelProps({}));
+			expect(isTeamsConvertToChannelProps({})).toBeFalsy();
 		});
 
 		it('should return true if teamName is provided', () => {
-			assert.isTrue(isTeamsConvertToChannelProps({ teamName: 'teamName' }));
+			expect(isTeamsConvertToChannelProps({ teamName: 'teamName' })).toBeTruthy();
 		});
 
 		it('should return true if teamId is provided', () => {
-			assert.isTrue(isTeamsConvertToChannelProps({ teamId: 'teamId' }));
+			expect(isTeamsConvertToChannelProps({ teamId: 'teamId' })).toBeTruthy();
 		});
 
 		it('should return false if both teamName and teamId are provided', () => {
-			assert.isFalse(isTeamsConvertToChannelProps({ teamName: 'teamName', teamId: 'teamId' }));
+			expect(isTeamsConvertToChannelProps({ teamName: 'teamName', teamId: 'teamId' })).toBeFalsy();
 		});
 
 		it('should return false if teamName is not a string', () => {
-			assert.isFalse(isTeamsConvertToChannelProps({ teamName: 1 }));
+			expect(isTeamsConvertToChannelProps({ teamName: 1 })).toBeFalsy();
 		});
 
 		it('should return false if teamId is not a string', () => {
-			assert.isFalse(isTeamsConvertToChannelProps({ teamId: 1 }));
+			expect(isTeamsConvertToChannelProps({ teamId: 1 })).toBeFalsy();
 		});
 
 		it('should return false if an additionalProperties is provided', () => {
-			assert.isFalse(
+			expect(
 				isTeamsConvertToChannelProps({
 					teamName: 'teamName',
 					additionalProperties: 'additionalProperties',
 				}),
-			);
+			).toBeFalsy();
 		});
 	});
 });

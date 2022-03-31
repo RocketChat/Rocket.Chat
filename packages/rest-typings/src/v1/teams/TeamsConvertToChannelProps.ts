@@ -1,49 +1,49 @@
-// import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv, { JSONSchemaType } from 'ajv';
 
-// const ajv = new Ajv();
+const ajv = new Ajv();
 
 export type TeamsConvertToChannelProps = {
 	roomsToRemove?: string[];
 } & ({ teamId: string } | { teamName: string });
 
-// const teamsConvertToTeamsPropsSchema: JSONSchemaType<TeamsConvertToChannelProps> = {
-// 	oneOf: [
-// 		{
-// 			type: 'object',
+const teamsConvertToTeamsPropsSchema: JSONSchemaType<TeamsConvertToChannelProps> = {
+	oneOf: [
+		{
+			type: 'object',
 
-// 			properties: {
-// 				roomsToRemove: {
-// 					type: 'array',
-// 					items: {
-// 						type: 'string',
-// 					},
-// 					nullable: true,
-// 				},
-// 				teamId: {
-// 					type: 'string',
-// 				},
-// 			},
-// 			required: ['teamId'],
-// 			additionalProperties: false,
-// 		},
-// 		{
-// 			type: 'object',
-// 			properties: {
-// 				roomsToRemove: {
-// 					type: 'array',
-// 					items: {
-// 						type: 'string',
-// 					},
-// 					nullable: true,
-// 				},
-// 				teamName: {
-// 					type: 'string',
-// 				},
-// 			},
-// 			required: ['teamName'],
-// 			additionalProperties: false,
-// 		},
-// 	],
-// };
+			properties: {
+				roomsToRemove: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				teamId: {
+					type: 'string',
+				},
+			},
+			required: ['teamId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomsToRemove: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				teamName: {
+					type: 'string',
+				},
+			},
+			required: ['teamName'],
+			additionalProperties: false,
+		},
+	],
+};
 
-// export const isTeamsConvertToChannelProps = ajv.compile(teamsConvertToTeamsPropsSchema);
+export const isTeamsConvertToChannelProps = ajv.compile(teamsConvertToTeamsPropsSchema);

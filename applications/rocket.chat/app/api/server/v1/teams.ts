@@ -3,20 +3,22 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { IUser, ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
+import {
+	isTeamsConvertToChannelProps,
+	isTeamsRemoveRoomProps,
+	isTeamsUpdateMemberProps,
+	isTeamsRemoveMemberProps,
+	isTeamsAddMembersProps,
+	isTeamsDeleteProps,
+	isTeamsLeaveProps,
+	isTeamsUpdateProps,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { isTeamsConvertToChannelProps } from '../../../../definition/rest/v1/teams/TeamsConvertToChannelProps';
-import { isTeamsRemoveRoomProps } from '../../../../definition/rest/v1/teams/TeamsRemoveRoomProps';
-import { isTeamsUpdateMemberProps } from '../../../../definition/rest/v1/teams/TeamsUpdateMemberProps';
-import { isTeamsRemoveMemberProps } from '../../../../definition/rest/v1/teams/TeamsRemoveMemberProps';
-import { isTeamsAddMembersProps } from '../../../../definition/rest/v1/teams/TeamsAddMembersProps';
-import { isTeamsDeleteProps } from '../../../../definition/rest/v1/teams/TeamsDeleteProps';
-import { isTeamsLeaveProps } from '../../../../definition/rest/v1/teams/TeamsLeaveProps';
-import { isTeamsUpdateProps } from '../../../../definition/rest/v1/teams/TeamsUpdateProps';
 
 API.v1.addRoute(
 	'teams.list',

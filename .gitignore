@@ -84,7 +84,13 @@ tests/end-to-end/temporary_staged_test
 coverage
 .nyc_output
 
-
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 **/.turbo
 **/dist/*

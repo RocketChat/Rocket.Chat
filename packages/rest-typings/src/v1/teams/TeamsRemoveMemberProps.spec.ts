@@ -1,88 +1,83 @@
-import { assert } from 'chai';
-
 import { isTeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 
 describe('Teams (definition/rest/v1)', () => {
 	describe('isTeamsRemoveMemberProps', () => {
-		it('should be a function', () => {
-			assert.isFunction(isTeamsRemoveMemberProps);
-		});
 		it('should return false if parameter is empty', () => {
-			assert.isFalse(isTeamsRemoveMemberProps({}));
+			expect(isTeamsRemoveMemberProps({})).toBeFalsy();
 		});
 		it('should return false if teamId is is informed but missing userId', () => {
-			assert.isFalse(isTeamsRemoveMemberProps({ teamId: 'teamId' }));
+			expect(isTeamsRemoveMemberProps({ teamId: 'teamId' })).toBeFalsy();
 		});
 		it('should return false if teamName is is informed but missing userId', () => {
-			assert.isFalse(isTeamsRemoveMemberProps({ teamName: 'teamName' }));
+			expect(isTeamsRemoveMemberProps({ teamName: 'teamName' })).toBeFalsy();
 		});
 
 		it('should return true if teamId and userId are informed', () => {
-			assert.isTrue(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId' }));
+			expect(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId' })).toBeTruthy();
 		});
 		it('should return true if teamName and userId are informed', () => {
-			assert.isTrue(isTeamsRemoveMemberProps({ teamName: 'teamName', userId: 'userId' }));
+			expect(isTeamsRemoveMemberProps({ teamName: 'teamName', userId: 'userId' })).toBeTruthy();
 		});
 
 		it('should return false if teamName and userId are informed but rooms are empty', () => {
-			assert.isFalse(isTeamsRemoveMemberProps({ teamName: 'teamName', userId: 'userId', rooms: [] }));
+			expect(isTeamsRemoveMemberProps({ teamName: 'teamName', userId: 'userId', rooms: [] })).toBeFalsy();
 		});
 
 		it('should return true if teamName and userId are informed but rooms are undefined', () => {
-			assert.isTrue(isTeamsRemoveMemberProps({ teamName: 'teamName', userId: 'userId', rooms: undefined }));
+			expect(isTeamsRemoveMemberProps({ teamName: 'teamName', userId: 'userId', rooms: undefined })).toBeTruthy();
 		});
 
 		it('should return false if teamId and userId are informed and rooms are empty', () => {
-			assert.isFalse(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: [] }));
+			expect(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: [] })).toBeFalsy();
 		});
 
 		it('should return true if teamId and userId are informed but rooms are undefined', () => {
-			assert.isTrue(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: undefined }));
+			expect(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: undefined })).toBeTruthy();
 		});
 
 		it('should return false if teamId and userId are informed but rooms are empty', () => {
-			assert.isFalse(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: [] }));
+			expect(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: [] })).toBeFalsy();
 		});
 
 		it('should return true if teamId and userId are informed and rooms are informed', () => {
-			assert.isTrue(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: ['room'] }));
+			expect(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: ['room'] })).toBeTruthy();
 		});
 
 		it('should return false if teamId and userId are informed and rooms are informed but rooms is not an array of strings', () => {
-			assert.isFalse(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: [123] }));
+			expect(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: [123] })).toBeFalsy();
 		});
 
 		it('should return false if teamName and userId are informed and rooms are informed but there is an extra property', () => {
-			assert.isFalse(
+			expect(
 				isTeamsRemoveMemberProps({
 					teamName: 'teamName',
 					userId: 'userId',
 					rooms: ['room'],
 					extra: 'extra',
 				}),
-			);
+			).toBeFalsy();
 		});
 
 		it('should return false if teamId and userId are informed and rooms are informed but there is an extra property', () => {
-			assert.isFalse(
+			expect(
 				isTeamsRemoveMemberProps({
 					teamId: 'teamId',
 					userId: 'userId',
 					rooms: ['room'],
 					extra: 'extra',
 				}),
-			);
+			).toBeFalsy();
 		});
 
 		it('should return false if teamName and userId are informed and rooms are informed but there is an extra property', () => {
-			assert.isFalse(
+			expect(
 				isTeamsRemoveMemberProps({
 					teamName: 'teamName',
 					userId: 'userId',
 					rooms: ['room'],
 					extra: 'extra',
 				}),
-			);
+			).toBeFalsy();
 		});
 	});
 });

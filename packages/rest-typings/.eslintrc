@@ -8,5 +8,9 @@
 			}
 		}
 	],
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["**/dist"],
+	"plugins": ["jest"],
+	"env": {
+		"jest/globals": true
+	}
 }

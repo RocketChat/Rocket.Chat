@@ -2,18 +2,18 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 import { ISetting, ISettingColor, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
-
-import { Settings } from '../../../models/server/raw';
-import { hasPermission } from '../../../authorization/server';
-import { API, ResultFor } from '../api';
-import { SettingsEvents, settings } from '../../../settings/server';
-import { setValue } from '../../../settings/server/raw';
 import {
 	isOauthCustomConfiguration,
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
 } from '@rocket.chat/rest-typings';
+
+import { Settings } from '../../../models/server/raw';
+import { hasPermission } from '../../../authorization/server';
+import { API, ResultFor } from '../api';
+import { SettingsEvents, settings } from '../../../settings/server';
+import { setValue } from '../../../settings/server/raw';
 
 const fetchSettings = async (
 	query: Parameters<typeof Settings.find>[0],

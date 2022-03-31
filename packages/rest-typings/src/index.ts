@@ -32,6 +32,7 @@ import type { VoipEndpoints } from './v1/voip';
 export * from './v1/permissions';
 export * from './v1/roles';
 export * from './v1/settings';
+export * from './v1/teams';
 
 type CommunityEndpoints = BannersEndpoints &
 	ChatEndpoints &

@@ -1,69 +1,63 @@
-import { assert } from 'chai';
-
 import { isTeamsDeleteProps } from './TeamsDeleteProps';
 
 describe('TeamsDeleteProps (definition/rest/v1)', () => {
 	describe('isTeamsDeleteProps', () => {
-		it('should be a function', () => {
-			assert.isFunction(isTeamsDeleteProps);
-		});
-
 		it('should return false if neither teamName or teamId is provided', () => {
-			assert.isFalse(isTeamsDeleteProps({}));
+			expect(isTeamsDeleteProps({})).toBeFalsy();
 		});
 
 		it('should return true if teamId is provided', () => {
-			assert.isTrue(isTeamsDeleteProps({ teamId: 'teamId' }));
+			expect(isTeamsDeleteProps({ teamId: 'teamId' })).toBeTruthy();
 		});
 
 		it('should return true if teamName is provided', () => {
-			assert.isTrue(isTeamsDeleteProps({ teamName: 'teamName' }));
+			expect(isTeamsDeleteProps({ teamName: 'teamName' })).toBeTruthy();
 		});
 
 		it('should return false if teamId and roomsToRemove are provided, but roomsToRemove is empty', () => {
-			assert.isFalse(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: [] }));
+			expect(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: [] })).toBeFalsy();
 		});
 
 		it('should return false if teamName and roomsToRemove are provided, but roomsToRemove is empty', () => {
-			assert.isFalse(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: [] }));
+			expect(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: [] })).toBeFalsy();
 		});
 
 		it('should return true if teamId and roomsToRemove are provided', () => {
-			assert.isTrue(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: ['roomId'] }));
+			expect(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: ['roomId'] })).toBeTruthy();
 		});
 
 		it('should return true if teamName and roomsToRemove are provided', () => {
-			assert.isTrue(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: ['roomId'] }));
+			expect(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: ['roomId'] })).toBeTruthy();
 		});
 
 		it('should return false if teamId and roomsToRemove are provided, but roomsToRemove is not an array', () => {
-			assert.isFalse(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: {} }));
+			expect(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: {} })).toBeFalsy();
 		});
 
 		it('should return false if teamName and roomsToRemove are provided, but roomsToRemove is not an array', () => {
-			assert.isFalse(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: {} }));
+			expect(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: {} })).toBeFalsy();
 		});
 
 		it('should return false if teamId and roomsToRemove are provided, but roomsToRemove is not an array of strings', () => {
-			assert.isFalse(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: [1] }));
+			expect(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: [1] })).toBeFalsy();
 		});
 
 		it('should return false if teamName and roomsToRemove are provided, but roomsToRemove is not an array of strings', () => {
-			assert.isFalse(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: [1] }));
+			expect(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: [1] })).toBeFalsy();
 		});
 
 		it('should return false if teamName and rooms are provided but an extra property is provided', () => {
-			assert.isFalse(
+			expect(
 				isTeamsDeleteProps({
 					teamName: 'teamName',
 					roomsToRemove: ['roomsToRemove'],
 					extra: 'extra',
 				}),
-			);
+			).toBeFalsy();
 		});
 
 		it('should return false if teamId and rooms are provided but an extra property is provided', () => {
-			assert.isFalse(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: ['roomsToRemove'], extra: 'extra' }));
+			expect(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: ['roomsToRemove'], extra: 'extra' })).toBeFalsy();
 		});
 	});
 });
