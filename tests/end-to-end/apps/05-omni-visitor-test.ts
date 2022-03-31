@@ -4,7 +4,7 @@ import type { Response } from 'supertest';
 
 import { getCredentials, request, credentials } from '../../data/api-data.js';
 import { apps } from '../../data/apps/apps-data.js';
-// import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
+import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
 
 const createUniqueId = (): string => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 const createRandomPhoneNumber = (): string => `+1${Math.floor(Math.random() * 10000000000)}`;
@@ -44,13 +44,12 @@ const generateVisitor = (type: 'visitorWithUsernameAndId' | 'visitorWithPhoneNoA
 
 describe('Omnichannel - Visitor Tests', function () {
 	this.retries(0);
-	// let appId = 'bc4dd4a1-bf9b-408e-83a4-aba7eba0bf02';
-	const appId = 'bc4dd4a1-bf9b-408e-83a4-aba7eba0bf02';
+	let appId = '';
 
 	before((done) => getCredentials(done));
 	before(async () => {
-		// await cleanupApps();
-		// appId = (await installTestApp()).id;
+		await cleanupApps();
+		appId = (await installTestApp()).id;
 	});
 
 	const visitors = {
