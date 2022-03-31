@@ -452,11 +452,10 @@ export const statistics = {
 		);
 
 		statsPms.push(
-			Rooms.find({ createdOTR: true })
-				.count()
-				.then((count: number) => {
-					statistics.totalOTRRooms = count;
-				}),
+			new Promise<void>((resolve) => {
+				statistics.totalOTRRooms = Rooms.find({ createdOTR: true }).count();
+				resolve();
+			}),
 		);
 
 		statsPms.push(
@@ -628,59 +627,52 @@ export const statistics = {
 		);
 
 		statsPms.push(
-			Users.findActiveUsersTOTPEnable()
-				.count()
-				.then((count: number) => {
-					statistics.totalUserTOTP = count;
-				}),
+			new Promise<void>((resolve) => {
+				statistics.totalUserTOTP = Users.findActiveUsersTOTPEnable().count();
+				resolve();
+			}),
 		);
 
 		statsPms.push(
-			Users.findActiveUsersEmail2faEnable()
-				.count()
-				.then((count: number) => {
-					statistics.totalUserEmail2fa = count;
-				}),
+			new Promise<void>((resolve) => {
+				statistics.totalUserEmail2fa = Users.findActiveUsersEmail2faEnable().count();
+				resolve();
+			}),
 		);
 
 		statsPms.push(
-			Users.find({ origin: USER_ORIGIN.ADMIN_ADD })
-				.count()
-				.then((count: number) => {
-					statistics.usersCreatedADM = count;
-				}),
+			new Promise<void>((resolve) => {
+				statistics.usersCreatedADM = Users.find({ origin: USER_ORIGIN.ADMIN_ADD }).count();
+				resolve();
+			}),
 		);
 
 		statsPms.push(
-			Users.find({ origin: USER_ORIGIN.SLACK_IMPORT })
-				.count()
-				.then((count: number) => {
-					statistics.usersCreatedSlackImport = count;
-				}),
+			new Promise<void>((resolve) => {
+				statistics.usersCreatedSlackImport = Users.find({ origin: USER_ORIGIN.SLACK_IMPORT }).count();
+				resolve();
+			}),
 		);
 
 		statsPms.push(
-			Users.find({ origin: USER_ORIGIN.SLACK_USER_IMPORT })
-				.count()
-				.then((count: number) => {
-					statistics.usersCreatedSlackUser = count;
-				}),
+			new Promise<void>((resolve) => {
+				statistics.usersCreatedSlackUser = Users.find({ origin: USER_ORIGIN.SLACK_USER_IMPORT }).count();
+				resolve();
+			}),
 		);
 
 		statsPms.push(
-			Users.find({ origin: USER_ORIGIN.CSV_IMPORT })
-				.count()
-				.then((count: number) => {
-					statistics.usersCreatedCSVImport = count;
-				}),
+			new Promise<void>((resolve) => {
+				statistics.usersCreatedCSVImport = Users.find({ origin: USER_ORIGIN.CSV_IMPORT }).count();
+				resolve();
+			}),
 		);
 
 		statsPms.push(
-			Users.find({ origin: USER_ORIGIN.HIPTEXT_IMPORT })
-				.count()
-				.then((count: number) => {
-					statistics.usersCreatedHiptext = count;
-				}),
+			new Promise<void>((resolve) => {
+				statistics.usersCreatedHiptext = Users.find({ origin: USER_ORIGIN.HIPTEXT_IMPORT }).count();
+				resolve();
+			}),
 		);
 
 		statsPms.push(
