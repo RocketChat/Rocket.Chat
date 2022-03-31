@@ -1,5 +1,5 @@
-import { ILivechatInquiryRecord } from '../../IInquiry';
 import { IOmnichannelCannedResponse } from '../../../ee/client/omnichannel/cannedResponses/IOmnichannelCannedResponse';
+import { ILivechatInquiryRecord } from '../../IInquiry';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { IBusinessHourWorkHour, ILivechatBusinessHour } from '../../ILivechatBusinessHour';
 import { ILivechatCustomField } from '../../ILivechatCustomField';
@@ -449,6 +449,8 @@ export type OmnichannelEndpoints = {
 
 	'livechat/webrtc.call/:callId': {
 		PUT: (params: { callId: string; rid?: string; status?: string }) => { status: string | undefined };
+	};
+
 	'livechat/agents/:uid/departments?enabledDepartmentsOnly=true': {
 		GET: () => { departments: ILivechatDepartment[] };
 	};
