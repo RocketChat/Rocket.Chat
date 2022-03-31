@@ -33,7 +33,7 @@ import { Analytics, Team } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { IRoom } from '../../../../definition/IRoom';
 import { IStats } from '../../../../definition/IStats';
-import { USER_ORIGIN } from '/definition/IUser';
+import { USER_ORIGIN } from '../../../../definition/IUser';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -451,125 +451,245 @@ export const statistics = {
 			}),
 		);
 
-		statsPms.push(Analytics.resetSeatRequestCount());
-
-		statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
-		statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count');
-		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
-		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
-		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = Rooms.find({ createdOTR: true }).count();
-		statistics.totalOTR = settings.get('OTR_Count');
-
-		await Promise.all(statsPms).catch(log);
-
-		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
-		statistics.homeTitle = settings.get('Layout_Home_Title');
-
-		const layoutHomeBody = settings.get('Layout_Home_Body') as string;
-		if (layoutHomeBody) {
-			statistics.homeBody = layoutHomeBody.split('\n')[0];
-		}
-
-		const homeBody = settings.get('Layout_Home_Body') as string;
-		if (homeBody) {
-			statistics.homeBody = homeBody.split('\n')[0];
-		}
-
-		const logoChange = Object.keys(settings.get('Assets_logo'));
-		if (logoChange) {
-			statistics.logoChange = logoChange.includes('url');
-		}
-
-		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
-
-		const customCSS = settings.get('theme-custom-css') as string;
-		if (customCSS) {
-			statistics.customCSS = customCSS.split('\n').length;
-		}
-		statistics.customScript = _.reduce(
-			['Custom_Script_On_Logout', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In'],
-			function _custonScript(num, setting) {
-				const script = settings.get(setting) as string;
-				if (script !== '//Add your script') {
-					return num + script.split('\n').length;
-				}
-				return num;
-			},
-			0,
+		statsPms.push(
+			Rooms.find({ createdOTR: true })
+				.count()
+				.then((count: number) => {
+					statistics.totalOTRRooms = count;
+				}),
 		);
 
-		statistics.tabInvites = await Invites.find().count();
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statsPms.push(Analytics.resetSeatRequestCount());
+
+				statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
+				statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count');
+				statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
+				statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
+				statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
+				statistics.totalOTR = settings.get('OTR_Count');
+
+				statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
+				statistics.homeTitle = settings.get('Layout_Home_Title');
+
+				const layoutHomeBody = settings.get('Layout_Home_Body') as string;
+				if (layoutHomeBody) {
+					statistics.homeBody = layoutHomeBody.split('\n')[0];
+				}
+
+				const homeBody = settings.get('Layout_Home_Body') as string;
+				if (homeBody) {
+					statistics.homeBody = homeBody.split('\n')[0];
+				}
+
+				const logoChange = Object.keys(settings.get('Assets_logo'));
+				if (logoChange) {
+					statistics.logoChange = logoChange.includes('url');
+				}
+
+				statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
+				resolve();
+			}),
+		);
+
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				const customCSS = settings.get('theme-custom-css') as string;
+				if (customCSS) {
+					statistics.customCSS = customCSS.split('\n').length;
+				}
+				resolve();
+			}),
+		);
+
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.customScript = _.reduce(
+					['Custom_Script_On_Logout', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In'],
+					function _custonScript(num, setting) {
+						const script = settings.get(setting) as string;
+						if (script !== '//Add your script') {
+							return num + script.split('\n').length;
+						}
+						return num;
+					},
+					0,
+				);
+				resolve();
+			}),
+		);
+
+		statsPms.push(
+			Invites.find()
+				.count()
+				.then((invitesCount: number) => {
+					statistics.tabInvites = invitesCount;
+				}),
+		);
+
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 
-		statistics.totalRoomsWithSnippet = _.reduce(
-			Rooms.find({}).fetch(),
-			function _roomsWithSnippet(num, room: any) {
-				const { _id } = room;
-				const snippetMessages = Messages.findSnippetedByRoom(_id).count();
-				if (snippetMessages > 0) {
-					return num + 1;
-				}
-				return num;
-			},
-			0,
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.totalRoomsWithSnippet = _.reduce(
+					Rooms.find({}).fetch(),
+					function _roomsWithSnippet(num, room: any) {
+						const { _id } = room;
+						const snippetMessages = Messages.findSnippetedByRoom(_id).count();
+						if (snippetMessages > 0) {
+							return num + 1;
+						}
+						return num;
+					},
+					0,
+				);
+				resolve();
+			}),
 		);
 
-		statistics.totalRoomsWithStarred = _.reduce(
-			Rooms.find({}).fetch(),
-			function _roomsWithPinned(num, room: any) {
-				const { _id } = room;
-				const starredMessages = Messages.findStarredByRoom(_id).count();
-				if (starredMessages > 0) {
-					return num + 1;
-				}
-				return num;
-			},
-			0,
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.totalRoomsWithStarred = _.reduce(
+					Rooms.find({}).fetch(),
+					function _roomsWithPinned(num, room: any) {
+						const { _id } = room;
+						const starredMessages = Messages.findStarredByRoom(_id).count();
+						if (starredMessages > 0) {
+							return num + 1;
+						}
+						return num;
+					},
+					0,
+				);
+				resolve();
+			}),
 		);
 
-		statistics.totalRoomsWithPinned = _.reduce(
-			Rooms.find({}).fetch(),
-			function _roomsWithPinned(num, room: any) {
-				const { _id } = room;
-				const pinnedMessages = Messages.findPinnedByRoom(_id).count();
-				if (pinnedMessages > 0) {
-					return num + 1;
-				}
-				return num;
-			},
-			0,
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.totalRoomsWithPinned = _.reduce(
+					Rooms.find({}).fetch(),
+					function _roomsWithPinned(num, room: any) {
+						const { _id } = room;
+						const pinnedMessages = Messages.findPinnedByRoom(_id).count();
+						if (pinnedMessages > 0) {
+							return num + 1;
+						}
+						return num;
+					},
+					0,
+				);
+				resolve();
+			}),
 		);
 
-		statistics.totalSnippet = Messages.findSnippet().count();
-		statistics.totalStarred = Messages.findStarred().count();
-		statistics.totalPinned = Messages.findPinned().count();
-
-		statistics.totalE2ERooms = Rooms.findByE2E().count();
-		statistics.totalE2EMessages = _.reduce(
-			Rooms.findByE2E().fetch(),
-			function _e2eMessages(num, room: any) {
-				const { _id } = room;
-				const e2eMessages = Messages.findE2EByRoom(_id).count();
-				return num + e2eMessages;
-			},
-			0,
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.totalSnippet = Messages.findSnippet().count();
+				resolve();
+			}),
 		);
 
-		statistics.totalUserTOTP = Users.findActiveUsersTOTPEnable().count();
-		statistics.totalUserEmail2fa = Users.findActiveUsersEmail2faEnable().count();
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.totalStarred = Messages.findStarred().count();
+				resolve();
+			}),
+		);
 
-		statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.ADMIN_ADD }).count();
-		statistics.usersCreatedSlackImport = await Users.find({ origin: USER_ORIGIN.SLACK_IMPORT }).count();
-		statistics.usersCreatedSlackUser = await Users.find({ origin: USER_ORIGIN.SLACK_USER_IMPORT }).count();
-		statistics.usersCreatedCSVImport = await Users.find({ origin: USER_ORIGIN.CSV_IMPORT }).count();
-		statistics.usersCreatedHiptext = await Users.find({ origin: USER_ORIGIN.HIPTEXT_IMPORT }).count();
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.totalPinned = Messages.findPinned().count();
+				resolve();
+			}),
+		);
+
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.totalE2ERooms = Rooms.findByE2E().count();
+				resolve();
+			}),
+		);
+
+		statsPms.push(
+			new Promise<void>((resolve) => {
+				statistics.totalE2EMessages = _.reduce(
+					Rooms.findByE2E().fetch(),
+					function _e2eMessages(num, room: any) {
+						const { _id } = room;
+						const e2eMessages = Messages.findE2EByRoom(_id).count();
+						return num + e2eMessages;
+					},
+					0,
+				);
+				resolve();
+			}),
+		);
+
+		statsPms.push(
+			Users.findActiveUsersTOTPEnable()
+				.count()
+				.then((count: number) => {
+					statistics.totalUserTOTP = count;
+				}),
+		);
+
+		statsPms.push(
+			Users.findActiveUsersEmail2faEnable()
+				.count()
+				.then((count: number) => {
+					statistics.totalUserEmail2fa = count;
+				}),
+		);
+
+		statsPms.push(
+			Users.find({ origin: USER_ORIGIN.ADMIN_ADD })
+				.count()
+				.then((count: number) => {
+					statistics.usersCreatedADM = count;
+				}),
+		);
+
+		statsPms.push(
+			Users.find({ origin: USER_ORIGIN.SLACK_IMPORT })
+				.count()
+				.then((count: number) => {
+					statistics.usersCreatedSlackImport = count;
+				}),
+		);
+
+		statsPms.push(
+			Users.find({ origin: USER_ORIGIN.SLACK_USER_IMPORT })
+				.count()
+				.then((count: number) => {
+					statistics.usersCreatedSlackUser = count;
+				}),
+		);
+
+		statsPms.push(
+			Users.find({ origin: USER_ORIGIN.CSV_IMPORT })
+				.count()
+				.then((count: number) => {
+					statistics.usersCreatedCSVImport = count;
+				}),
+		);
+
+		statsPms.push(
+			Users.find({ origin: USER_ORIGIN.HIPTEXT_IMPORT })
+				.count()
+				.then((count: number) => {
+					statistics.usersCreatedHiptext = count;
+				}),
+		);
 
 		statsPms.push(
 			Team.getStatistics().then((statisticsTeam) => {
 				statistics.teams = statisticsTeam;
 			}),
 		);
+
+		await Promise.all(statsPms).catch(log);
 
 		return statistics;
 	},
