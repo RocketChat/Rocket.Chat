@@ -174,7 +174,6 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	ts: Date;
 	label?: string;
 	crmData?: unknown;
-	isWaitingResponse?: boolean;
 
 	facebook?: {
 		page: {
