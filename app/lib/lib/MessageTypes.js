@@ -373,11 +373,11 @@ export const MessageTypesValues = [
 		i18nLabel: 'Message_HideType_subscription_role_removed',
 	},
 	{
-		key: 'room_archived',
+		key: 'room-archived',
 		i18nLabel: 'Message_HideType_room_archived',
 	},
 	{
-		key: 'room_unarchived',
+		key: 'room-unarchived',
 		i18nLabel: 'Message_HideType_room_unarchived',
 	},
 	{

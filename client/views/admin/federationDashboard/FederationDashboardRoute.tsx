@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { useRole } from '../../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import FederationDashboardPage from './FederationDashboardPage';
 
 const FederationDashboardRoute: FC = () => {

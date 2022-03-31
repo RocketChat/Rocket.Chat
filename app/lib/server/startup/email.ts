@@ -473,10 +473,6 @@ settingsRegistry.addGroup('Email', function () {
 			},
 		);
 	});
-	this.add('Invitation_Email_Count', 0, {
-		type: 'int',
-		hidden: true,
-	});
 
 	this.section('Forgot_password_section', function () {
 		this.add('Forgot_Password_Email_Subject', '{Forgot_Password_Email_Subject}', {
