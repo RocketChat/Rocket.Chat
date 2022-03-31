@@ -7,7 +7,7 @@ import LoginPage from './utils/pageobjects/login.page';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 
-const username = adminUsername;
+const username = adminLogin.password;
 
 test.describe('[Main Elements Render]', function () {
 	let loginPage: LoginPage;
@@ -93,7 +93,7 @@ test.describe('[Main Elements Render]', function () {
 		});
 	});
 
-	test.describe.only('[Main Content]', () => {
+	test.describe('[Main Content]', () => {
 		test.describe('render:', () => {
 			test.beforeAll(async () => {
 				await sideNav.openChannel('general');
@@ -166,134 +166,128 @@ test.describe('[Main Elements Render]', function () {
 					await flexTab.operateFlexTab('info', true);
 				});
 
-				test.afterAll(() => {
-					flexTab.operateFlexTab('info', false);
+				test.afterAll(async () => {
+					await flexTab.operateFlexTab('info', false);
 				});
 
-				test('expect show the room info button', () => {
-					flexTab.channelTab.should('be.visible');
+				test('expect show the room info button', async () => {
+					await expect(flexTab.channelTab()).toBeVisible();
 				});
 
-				test('expect show the room info tab content', () => {
-					flexTab.channelSettings.should('be.visible');
-				});
-
-				it.skip('expect show the room name', () => {
-					flexTab.channelSettingName.should('have.attr', 'title', 'general');
+				test('expect show the room info tab content', async () => {
+					await expect(flexTab.channelSettings()).toBeVisible();
 				});
 			});
-		}); // remove
-	}); // remove
-}); // remove
-	// 		describe('Search Tab:', () => {
-	// 			before(() => {
-	// 				flexTab.operateFlexTab('search', true);
-	// 			});
 
-	// 			after(() => {
-	// 				flexTab.operateFlexTab('search', false);
-	// 			});
+			test.describe('Search Tab:', () => {
+				test.beforeAll(async () => {
+					await flexTab.operateFlexTab('search', true);
+				});
 
-	// 			test('expect show the message search  button', () => {
-	// 				flexTab.searchTab.should('be.visible');
-	// 			});
+				test.afterAll(async () => {
+					await flexTab.operateFlexTab('search', false);
+				});
 
-	// 			test('expect show the message tab content', () => {
-	// 				flexTab.searchTabContent.should('be.visible');
-	// 			});
-	// 		});
+				test('expect show the message search  button', async () => {
+					await expect(flexTab.searchTab()).toBeVisible();
+				});
 
-	// 		describe('Members Tab:', () => {
-	// 			before(() => {
-	// 				flexTab.operateFlexTab('members', true);
-	// 			});
+				test('expect show the message tab content', async () => {
+					await expect(flexTab.searchTabContent()).toBeVisible();
+				});
+			});
 
-	// 			after(() => {
-	// 				flexTab.operateFlexTab('members', false);
-	// 			});
+			test.describe('Members Tab:', () => {
+				test.beforeAll(async () => {
+					await flexTab.operateFlexTab('members', true);
+				});
 
-	// 			test('expect show the members tab button', () => {
-	// 				flexTab.membersTab.should('be.visible');
-	// 			});
+				test.afterAll(async () => {
+					await flexTab.operateFlexTab('members', false);
+				});
 
-	// 			test('expect show the members content', () => {
-	// 				flexTab.membersTabContent.should('be.visible');
-	// 			});
-	// 		});
+				test('expect show the members tab button', async () => {
+					await expect(flexTab.membersTab()).toBeVisible();
+				});
 
-	// 		describe('Notifications Tab:', () => {
-	// 			before(() => {
-	// 				flexTab.operateFlexTab('notifications', true);
-	// 			});
+				test('expect show the members content', async () => {
+					await expect(flexTab.membersTabContent()).toBeVisible();
+				});
+			});
 
-	// 			after(() => {
-	// 				flexTab.operateFlexTab('notifications', false);
-	// 			});
+			test.describe('Notifications Tab:', () => {
+				test.beforeAll(async () => {
+					await flexTab.operateFlexTab('notifications', true);
+				});
 
-	// 			test('expect not show the notifications button', () => {
-	// 				flexTab.notificationsTab.should('not.exist');
-	// 			});
+				test.afterAll(async () => {
+					await flexTab.operateFlexTab('notifications', false);
+				});
 
-	// 			test('expect show the notifications Tab content', () => {
-	// 				flexTab.notificationsSettings.should('be.visible');
-	// 			});
-	// 		});
+				test('expect not show the notifications button', async () => {
+					await expect(flexTab.notificationsTab()).not.toBeVisible();
+				});
 
-	// 		describe('Files Tab:', () => {
-	// 			before(() => {
-	// 				flexTab.operateFlexTab('files', true);
-	// 			});
+				test('expect show the notifications Tab content', async () => {
+					await expect(flexTab.notificationsSettings()).toBeVisible();
+				});
+			});
 
-	// 			after(() => {
-	// 				flexTab.operateFlexTab('files', false);
-	// 			});
+			test.describe('Files Tab:', () => {
+				test.beforeAll(async () => {
+					await flexTab.operateFlexTab('files', true);
+				});
 
-	// 			test('expect show the files Tab content', () => {
-	// 				flexTab.filesTabContent.should('be.visible');
-	// 			});
-	// 		});
+				test.afterAll(async () => {
+					await flexTab.operateFlexTab('files', false);
+				});
 
-	// 		describe('Mentions Tab:', () => {
-	// 			before(() => {
-	// 				flexTab.operateFlexTab('mentions', true);
-	// 			});
+				test('expect show the files Tab content', async () => {
+					await expect(flexTab.filesTabContent()).toBeVisible();
+				});
+			});
 
-	// 			after(() => {
-	// 				flexTab.operateFlexTab('mentions', false);
-	// 			});
+			test.describe('Mentions Tab:', () => {
+				test.beforeAll(async () => {
+					await flexTab.operateFlexTab('mentions', true);
+				});
 
-	// 			test('expect show the mentions Tab content', () => {
-	// 				flexTab.mentionsTabContent.should('be.visible');
-	// 			});
-	// 		});
+				test.afterAll(async () => {
+					await flexTab.operateFlexTab('mentions', false);
+				});
 
-	// 		describe('Starred Messages Tab:', () => {
-	// 			before(() => {
-	// 				flexTab.operateFlexTab('starred', true);
-	// 			});
+				test('expect show the mentions Tab content', async () => {
+					await expect(flexTab.mentionsTabContent()).toBeVisible();
+				});
+			});
 
-	// 			after(() => {
-	// 				flexTab.operateFlexTab('starred', false);
-	// 			});
+			test.describe('Starred Messages Tab:', () => {
+				test.beforeAll(async () => {
+					await flexTab.operateFlexTab('starred', true);
+				});
 
-	// 			test('expect show the starred messages Tab content', () => {
-	// 				flexTab.starredTabContent.should('be.visible');
-	// 			});
-	// 		});
+				test.afterAll(async () => {
+					await flexTab.operateFlexTab('starred', false);
+				});
 
-	// 		describe('Pinned Messages Tab:', () => {
-	// 			before(() => {
-	// 				flexTab.operateFlexTab('pinned', true);
-	// 			});
+				test('expect show the starred messages Tab content', async () => {
+					await expect(flexTab.starredTabContent()).toBeVisible();
+				});
+			});
 
-	// 			after(() => {
-	// 				flexTab.operateFlexTab('pinned', false);
-	// 			});
+			test.describe('Pinned Messages Tab:', () => {
+				test.beforeAll(async () => {
+					await flexTab.operateFlexTab('pinned', true);
+				});
 
-	// 			test('expect show the pinned messages Tab content', () => {
-	// 				flexTab.pinnedTabContent.should('be.visible');
-	// 			});
-	// 		});
-	// 	});
-	// });
-// });
+				test.afterAll(async () => {
+					await flexTab.operateFlexTab('pinned', false);
+				});
+
+				test('expect show the pinned messages Tab content', async () => {
+					await expect(flexTab.pinnedTabContent()).toBeVisible();
+				});
+			});
+		});
+	});
+});

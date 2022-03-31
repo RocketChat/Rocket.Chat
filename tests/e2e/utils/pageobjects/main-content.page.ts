@@ -67,7 +67,7 @@ class MainContent extends BasePage {
 
 	// Messages
 	public lastMessageUser(): Locator {
-		return this.getPage().locator('.message:last-child .title .user-card-message');
+		return this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "user-card-message")])[last()]');
 	}
 
 	public lastMessage(): Locator {

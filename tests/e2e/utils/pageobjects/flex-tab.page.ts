@@ -4,10 +4,8 @@ import BasePage from './BasePage';
 // import Global from './global';
 
 class FlexTab extends BasePage {
-
-
 	public headerMoreActions(): Locator {
-		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
+		return this.getPage().locator('//main/header//*[contains(@class, "rcx-icon--name-kebab")]/..');
 	}
 
 	public moreActions(): Locator {
@@ -28,11 +26,13 @@ class FlexTab extends BasePage {
 
 	// Channel Info Tab
 	public channelTab(): Locator {
-		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-info-circled');
+		return this.getPage().locator('(//main//*[contains(@class, "rcx-icon--name-info-circled")])[1]/..');
 	}
 
 	public channelSettings(): Locator {
-		return this.getPage().locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-info-circled');
+		return this.getPage().locator(
+			'//aside/h3/div/i[contains(@class,"rcx-icon--name-info-circled") and contains(@class,"rcx-icon--name-info-circled")]',
+		);
 	}
 
 	public channelSettingName(): Locator {
@@ -187,7 +187,8 @@ class FlexTab extends BasePage {
 
 	// Notifications Tab
 	public notificationsTab(): Locator {
-		return this.getPage().locator('.rcx-option__content:contains("Notifications Preferences")');
+		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Notifications Preferences")]');
+		// return this.getPage().locator('.rcx-option__content:contains("Notifications Preferences")');
 	}
 
 	public notificationsSettings(): Locator {
@@ -221,16 +222,17 @@ class FlexTab extends BasePage {
 
 	// Mentions Tab
 	public mentionsTab(): Locator {
-		return this.getPage().locator('.rcx-option__content:contains("Mentions")');
+		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Mentions")]');
 	}
 
 	public mentionsTabContent(): Locator {
 		return this.getPage().locator('aside > h3 > div > i.rcx-icon--name-at');
+		// aside//h3//div//i[contains(@class, "i.rcx-icon--name-at")]
 	}
 
 	// Starred Tab
 	public starredTab(): Locator {
-		return this.getPage().locator('.rcx-option__content:contains("Starred Messages")');
+		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Starred Messages")]');
 	}
 
 	public starredTabContent(): Locator {
@@ -239,7 +241,7 @@ class FlexTab extends BasePage {
 
 	// Pinned Tab
 	public pinnedTab(): Locator {
-		return this.getPage().locator('.rcx-option__content:contains("Pinned Messages")');
+		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Pinned Messages")]');
 	}
 
 	public pinnedTabContent(): Locator {
@@ -372,82 +374,92 @@ class FlexTab extends BasePage {
 
 	public async operateFlexTab(desiredTab: string, desiredState: boolean): Promise<void> {
 		// desiredState true=open false=closed
-		const functionNames: { [K: string]: Function } = {
-			channelSettings: this.channelSettings,
-			messageSearchBar: this.messageSearchBar,
-			avatarImage: this.avatarImage,
-			notificationsSettings: this.notificationsSettings,
-			filesTabContent: this.filesTabContent,
-			mentionsTabContent: this.mentionsTabContent,
-			starredTabContent: this.starredTabContent,
-			pinnedTabContent: this.pinnedTabContent,
-			channelTab: this.channelTab,
-
-		};
-
-		const callFunction = (name: string): Locator => {
-			return functionNames[name]();
+		const locator: { [K: string]: Locator } = {
+			channelSettings: this.channelSettings(),
+			messageSearchBar: this.messageSearchBar(),
+			avatarImage: this.avatarImage(),
+			notificationsSettings: this.notificationsSettings(),
+			filesTabContent: this.filesTabContent(),
+			mentionsTabContent: this.mentionsTabContent(),
+			starredTabContent: this.starredTabContent(),
+			pinnedTabContent: this.pinnedTabContent(),
+			channelTab: this.channelTab(),
+			searchTab: this.searchTab(),
+			membersTab: this.membersTab(),
+			notificationsTab: this.notificationsTab(),
+			filesTab: this.filesTab(),
+			mentionsTab: this.mentionsTab(),
+			starredTab: this.starredTab(),
+			pinnedTab: this.pinnedTab(),
 		};
 
 		const operate = async (tab: string, panel: string, more: boolean): Promise<void> => {
 			// this[panel].should(!desiredState ? 'be.visible' : 'not.exist');
-			if (desiredState) {
-				await expect(callFunction(panel)).toBeVisible();
+			if (!desiredState) {
+				await expect(locator[panel]).toBeVisible();
 			} else {
-				await expect(callFunction(panel)).toBeVisible();
+				await expect(locator[panel]).not.toBeVisible();
 			}
 
 			if (more) {
-				this.headerMoreActions().click();
+				await this.headerMoreActions().click();
 			}
 
-			this[tab].click();
+			await locator[tab].click();
 
 			// The button "more" keeps the focus when popover is closed from a click
 			// on an item, need to click again to change the status to unselected and
 			// allow the next click to open the popover again
 			if (more) {
-				this.headerMoreActions.click();
+				await this.headerMoreActions().click();
 			}
 
-			this[panel].should(desiredState ? 'be.visible' : 'not.exist');
+			if (desiredState) {
+				await expect(locator[panel]).toBeVisible();
+			} else {
+				await expect(locator[panel]).not.toBeVisible();
+			}
 		};
 
-		const tabs = {
-			info() {
-				operate('channelTab', 'channelSettings');
+		const tabs: { [K: string]: Function } = {
+			info: async (): Promise<void> => {
+				await operate('channelTab', 'channelSettings', false);
 			},
 
-			search() {
-				operate('searchTab', 'messageSearchBar');
+			search: async (): Promise<void> => {
+				await operate('searchTab', 'messageSearchBar', false);
 			},
 
-			members() {
-				operate('membersTab', 'avatarImage');
+			members: async (): Promise<void> => {
+				await operate('membersTab', 'avatarImage', false);
 			},
 
-			notifications() {
-				operate('notificationsTab', 'notificationsSettings', true);
+			notifications: async (): Promise<void> => {
+				await operate('notificationsTab', 'notificationsSettings', true);
 			},
 
-			files() {
-				operate('filesTab', 'filesTabContent');
+			files: async (): Promise<void> => {
+				await operate('filesTab', 'filesTabContent', false);
 			},
 
-			mentions() {
-				operate('mentionsTab', 'mentionsTabContent', true);
+			mentions: async (): Promise<void> => {
+				await operate('mentionsTab', 'mentionsTabContent', true);
 			},
 
-			starred() {
-				operate('starredTab', 'starredTabContent', true);
+			starred: async (): Promise<void> => {
+				await operate('starredTab', 'starredTabContent', true);
 			},
 
-			pinned() {
-				operate('pinnedTab', 'pinnedTabContent', true);
+			pinned: async (): Promise<void> => {
+				await operate('pinnedTab', 'pinnedTabContent', true);
 			},
 		};
 
-		tabs[desiredTab].call(this);
+		const callFunctionTabs = async (name: string): Promise<void> => {
+			return tabs[name]();
+		};
+
+		await callFunctionTabs(desiredTab);
 	}
 }
 
