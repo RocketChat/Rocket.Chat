@@ -1,3 +1,12 @@
+export type CloudRegistrationStatus = {
+	connectToCloud: boolean;
+	email: string;
+	token: string;
+	uniqueId: string;
+	workspaceId: string;
+	workspaceRegistered: boolean;
+};
+
 export type CloudRegistrationIntentData = {
 	device_code: string;
 	user_code: string;
