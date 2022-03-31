@@ -57,6 +57,10 @@ export class ACDQueue extends Command {
 		}
 		this.resetEventHandlers();
 		const { result } = this;
+		if (!result.queueSummary) {
+			this.logger.info({ msg: 'No Queues available' });
+			result.queueSummary = [];
+		}
 		this.returnResolve({ result: result.queueSummary } as IVoipConnectorResult);
 	}
 
