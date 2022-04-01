@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { renderEmoji } from '../lib/utils/renderEmoji';
 
-function Emoji({ emojiHandle, className = undefined }) {
+type EmojiProps = {
+	emojiHandle: string; // :emoji:
+	className?: string;
+};
+
+function Emoji({ emojiHandle, className = undefined }: EmojiProps): ReactElement {
 	const markup = { __html: `${renderEmoji(emojiHandle)}` };
 	return <span className={className} dangerouslySetInnerHTML={markup} />;
 }
