@@ -87,6 +87,7 @@
 		"@types/fibers": "^3.1.1",
 		"@types/google-libphonenumber": "^7.4.21",
 		"@types/imap": "^0.8.35",
+		"@types/js-yaml": "^4.0.5",
 		"@types/jsdom": "^16.2.12",
 		"@types/jsdom-global": "^3.0.2",
 		"@types/jsrsasign": "^9.0.3",
@@ -329,7 +330,8 @@
 		"xml-encryption": "0.11.2",
 		"xml2js": "0.4.23",
 		"xmldom": "^0.6.0",
-		"yaqrcode": "^0.2.1"
+		"yaqrcode": "^0.2.1",
+		"yarn": "^1.22.18"
 	},
 	"meteor": {
 		"mainModule": {

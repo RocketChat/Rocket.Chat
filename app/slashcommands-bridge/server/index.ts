@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { matrixClient } from '../../federation-matrix/server/matrix-client';
+import { matrixClient } from '../../federation-v2/server/matrix-client';
 
 function Bridge(_command: 'bridge', stringParams: string, item: Record<string, string>): void {
 	if (_command !== 'bridge' || !Match.test(stringParams, String)) {

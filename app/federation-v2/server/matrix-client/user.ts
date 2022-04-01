@@ -3,7 +3,7 @@ import { MatrixProfileInfo } from 'matrix-bot-sdk';
 import { IUser } from '../../../../definition/IUser';
 import { matrixBridge } from '../bridge';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '../../../models/server';
-import { config } from '../config';
+import { getConfig } from '../config';
 import { matrixClient } from '.';
 import { dataInterface } from '../data-interface';
 
@@ -48,10 +48,13 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 		console.log(`[${inviterId}-${invitedId}-${roomId}] Inviter user created as ${inviterUser.mui}...`);
 	}
 
+	// Normalize the user situation
+	// If the user does not exist locally, we might need to create one
+
 	// Determine if the user is local or remote
 	let invitedUserMatrixId = invitedId;
 	const invitedUserDomain = invitedId.includes(':') ? invitedId.split(':').pop() : '';
-	const invitedUserIsRemote = invitedUserDomain && invitedUserDomain !== config.serverDomain;
+	const invitedUserIsRemote = invitedUserDomain && invitedUserDomain !== getConfig().homeserverDomain;
 
 	console.log(invitedUserMatrixId, invitedUserDomain, invitedUserIsRemote);
 
@@ -90,7 +93,7 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 };
 
 export const createRemote = async (u: IUser): Promise<ICreateUserResult> => {
-	const matrixUserId = `@${u.username?.toLowerCase()}:${config.serverDomain}`;
+	const matrixUserId = `@${u.username?.toLowerCase()}:${getConfig().homeserverDomain}`;
 
 	console.log(`Creating remote user ${matrixUserId}...`);
 

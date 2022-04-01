@@ -13,7 +13,7 @@ import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
-import { matrixClient } from '../../../federation-matrix/server/matrix-client';
+import { matrixClient } from '../../../federation-v2/server/matrix-client';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {
