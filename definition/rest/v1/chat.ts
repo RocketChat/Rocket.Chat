@@ -64,9 +64,6 @@ export type ChatEndpoints = {
 			message: Pick<IMessage, '_id' | 'rid' | 'u'>;
 		};
 	};
-	'chat.react': {
-		POST: (params: { emoji: string; messageId: string }) => void;
-	};
 	'chat.ignoreUser': {
 		GET: (params: { rid: string; userId: string; ignore: boolean }) => {};
 	};
