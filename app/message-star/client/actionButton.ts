@@ -69,9 +69,10 @@ Meteor.startup(function () {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
+
 		context: ['starred', 'threads', 'message-mobile'],
-		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
+		action() {
+			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				(Template.instance() as any).tabBar.close();
 			}

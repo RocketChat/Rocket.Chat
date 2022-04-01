@@ -11,7 +11,7 @@ import {
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser, IRole } from '../../../../definition/IUser';
 
 type T = ITeamMember;
 export class TeamMemberRaw extends BaseRaw<T> {
@@ -81,15 +81,15 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		return options ? this.col.find({ teamId: { $in: teamIds } }, options) : this.col.find({ teamId: { $in: teamIds } }, options);
 	}
 
-	findByTeamIdAndRole(teamId: string, role: string): Cursor<ITeamMember>;
+	findByTeamIdAndRole(teamId: string, role: IRole['_id']): Cursor<ITeamMember>;
 
-	findByTeamIdAndRole(teamId: string, role: string, options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
+	findByTeamIdAndRole(teamId: string, role: IRole['_id'], options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
 
-	findByTeamIdAndRole<P>(teamId: string, role: string, options: FindOneOptions<P>): Cursor<P>;
+	findByTeamIdAndRole<P>(teamId: string, role: IRole['_id'], options: FindOneOptions<P>): Cursor<P>;
 
 	findByTeamIdAndRole<P>(
 		teamId: string,
-		role: string,
+		role: IRole['_id'],
 		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Cursor<P> | Cursor<ITeamMember> {
 		return options ? this.col.find({ teamId, roles: role }, options) : this.col.find({ teamId, roles: role });
@@ -136,7 +136,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		});
 	}
 
-	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
+	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<UpdateWriteOpResult> {
 		return this.updateOne(
 			{
 				teamId,
@@ -150,7 +150,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		);
 	}
 
-	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
+	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<UpdateWriteOpResult> {
 		return this.updateOne(
 			{
 				teamId,

@@ -289,5 +289,41 @@ export class ListenersModule {
 		service.onEvent('queue.callabandoned', (userId, queuename: string, queuedcallafterabandon: string): void => {
 			notifications.notifyUserInThisInstance(userId, 'callabandoned', { queuename, queuedcallafterabandon });
 		});
+
+		service.onEvent('notify.desktop', (uid, notification): void => {
+			notifications.notifyUserInThisInstance(uid, 'notification', notification);
+		});
+
+		service.onEvent('notify.uiInteraction', (uid, interaction): void => {
+			notifications.notifyUserInThisInstance(uid, 'uiInteraction', interaction);
+		});
+
+		service.onEvent('notify.updateInvites', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'updateInvites', data);
+		});
+
+		service.onEvent('notify.webdav', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'webdav', data);
+		});
+
+		service.onEvent('notify.e2e.keyRequest', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'e2e.keyRequest', data);
+		});
+
+		service.onEvent('notify.deleteMessage', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'deleteMessage', data);
+		});
+
+		service.onEvent('notify.deleteMessageBulk', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'deleteMessageBulk', data);
+		});
+
+		service.onEvent('notify.deleteCustomSound', (data): void => {
+			notifications.notifyAllInThisInstance('deleteCustomSound', data);
+		});
+
+		service.onEvent('notify.updateCustomSound', (data): void => {
+			notifications.notifyAllInThisInstance('updateCustomSound', data);
+		});
 	}
 }

@@ -1,7 +1,7 @@
 import { SortOptionObject, FilterQuery, SchemaMember } from 'mongodb';
 
 import { IRocketChatRecord } from './IRocketChatRecord';
-import { IUser } from './IUser';
+import { IUser, IRole } from './IUser';
 
 export enum TEAM_TYPE {
 	PUBLIC = 0,
@@ -21,7 +21,7 @@ export interface ITeam extends IRocketChatRecord {
 export interface ITeamMember extends IRocketChatRecord {
 	teamId: string;
 	userId: string;
-	roles?: Array<string>;
+	roles?: Array<IRole['_id']>;
 	createdBy: Pick<IUser, '_id' | 'username'>;
 	createdAt: Date;
 }

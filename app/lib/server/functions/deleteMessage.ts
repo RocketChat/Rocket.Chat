@@ -4,7 +4,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
 import { Uploads } from '../../../models/server/raw';
-import { Notifications } from '../../../notifications/server';
+import { api } from '../../../../server/sdk/api';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../apps/server';
 import { IMessage } from '../../../../definition/IMessage';
@@ -66,7 +66,7 @@ export const deleteMessage = async function (message: IMessage, user: IUser): Pr
 	if (showDeletedStatus) {
 		Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {
-		Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
+		api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
 
 	if (bridges) {

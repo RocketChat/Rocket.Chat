@@ -10,8 +10,9 @@ import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Settings, Users } from '../../../models/server';
 import { Roles, Users as UsersRaw } from '../../../models/server/raw';
-import { addUserRoles } from '../../../authorization/server';
+import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
@@ -222,9 +223,10 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	delete user.globalRoles;
 
 	if (user.services && !user.services.password) {
-		const defaultAuthServiceRoles = String(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles')).split(',');
+		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
+
 		if (defaultAuthServiceRoles.length > 0) {
-			globalRoles.push(...defaultAuthServiceRoles.map((s) => s.trim()));
+			globalRoles.push(...defaultAuthServiceRoles);
 		}
 	}
 
