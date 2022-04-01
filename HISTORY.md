@@ -1,6 +1,27 @@
 
 # 4.6.0 (Under Release Candidate Process)
 
+## 4.6.0-rc.5
+`2022-04-01  ·  4 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump @rocket.chat/emitter from 0.31.4 to 0.31.9 in /ee/server/services ([#25021](https://github.com/RocketChat/Rocket.Chat/pull/25021) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+- Bump @rocket.chat/message-parser from 0.31.4 to 0.31.9 in /ee/server/services ([#25019](https://github.com/RocketChat/Rocket.Chat/pull/25019) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+- Bump @rocket.chat/string-helpers from 0.31.4 to 0.31.9 in /ee/server/services ([#25018](https://github.com/RocketChat/Rocket.Chat/pull/25018) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+- Bump @rocket.chat/ui-kit from 0.31.4 to 0.31.9 in /ee/server/services ([#25020](https://github.com/RocketChat/Rocket.Chat/pull/25020) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+
 ## 4.6.0-rc.4
 `2022-04-01  ·  1 🎉  ·  4 🔍  ·  6 👩‍💻👨‍💻`
 

@@ -72999,6 +72999,56 @@
           ]
         }
       ]
+    },
+    "4.6.0-rc.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25021",
+          "title": "Bump @rocket.chat/emitter from 0.31.4 to 0.31.9 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25020",
+          "title": "Bump @rocket.chat/ui-kit from 0.31.4 to 0.31.9 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25019",
+          "title": "Bump @rocket.chat/message-parser from 0.31.4 to 0.31.9 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25018",
+          "title": "Bump @rocket.chat/string-helpers from 0.31.4 to 0.31.9 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
