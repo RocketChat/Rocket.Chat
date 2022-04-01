@@ -147,6 +147,12 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findActive(query, options = {}) {
+		Object.assign(query, { active: true });
+
+		return this.find(query, options);
+	}
+
 	findActiveByIds(userIds, options = {}) {
 		const query = {
 			_id: { $in: userIds },
