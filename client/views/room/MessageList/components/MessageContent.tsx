@@ -18,7 +18,7 @@ import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
+import { useMessageListHighlights, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import EncryptedMessageRender from './EncryptedMessageRender';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
@@ -30,10 +30,12 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 }) => {
 	const {
 		broadcast,
-		actions: { openDiscussion, openThread, openUserCard, replyBroadcast },
+		actions: { openRoom, openThread, openUserCard, replyBroadcast },
 	} = useMessageActions();
 
 	const runActionLink = useMessageRunActionLink();
+
+	const highlights = useMessageListHighlights();
 
 	const oembedIsEnabled = useMessageOembedIsEnabled();
 	const shouldShowReadReceipt = useMessageListShowReadReceipt();
@@ -48,7 +50,14 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 		<>
 			<MessageBody>
 				{!isEncryptedMessage && !message.blocks && message.md && (
-					<MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={message.md} />
+					<MessageBodyRender
+						onUserMentionClick={openUserCard}
+						onChannelMentionClick={openRoom}
+						mentions={message?.mentions || []}
+						channels={message?.channels || []}
+						highlights={highlights}
+						tokens={message.md}
+					/>
 				)}
 
 				{!isEncryptedMessage && !message.blocks && !message.md && message.msg}
@@ -93,7 +102,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 					drid={message.drid}
 					lm={message.dlm}
 					rid={message.rid}
-					openDiscussion={openDiscussion(message.drid)}
+					openDiscussion={openRoom(message.drid)}
 				/>
 			)}
 

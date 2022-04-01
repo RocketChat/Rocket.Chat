@@ -15,6 +15,13 @@ export type MessageListContextValue = {
 	showRealName: boolean;
 	showUsername: boolean;
 	showReadReceipt: boolean;
+	highlights:
+		| {
+				highlight: string;
+				regex: RegExp;
+				urlRegex: RegExp;
+		  }[]
+		| undefined;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -36,6 +43,7 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showRealName: false,
 	showUsername: false,
 	showReadReceipt: false,
+	highlights: [],
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
@@ -51,6 +59,7 @@ export const useMessageListShowRealName = (): MessageListContextValue['showRealN
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
 export const useMessageListShowReadReceipt = (): MessageListContextValue['showReadReceipt'] =>
 	useContext(MessageListContext).showReadReceipt;
+export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 
 export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
 	useContext(MessageListContext).useUserHasReacted(message);

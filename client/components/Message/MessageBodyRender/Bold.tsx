@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 
 import Italic from './Italic';
 import Link from './Link';
+import PlainText from './PlainText';
 import Strike from './Strike';
 
 const Bold: FC<{ value: ASTBold['value'] }> = ({ value = [] }) => (
@@ -12,7 +13,7 @@ const Bold: FC<{ value: ASTBold['value'] }> = ({ value = [] }) => (
 				case 'LINK':
 					return <Link key={index} value={block.value} />;
 				case 'PLAIN_TEXT':
-					return block.value;
+					return <PlainText key={index} value={block.value} />;
 				case 'STRIKE':
 					return <Strike key={index} value={block.value} />;
 				case 'ITALIC':
