@@ -25,7 +25,7 @@
 		"@rocket.chat/apps-engine": "^1.31.0",
 		"@rocket.chat/emitter": "~0.31.4",
 		"@rocket.chat/message-parser": "~0.31.4",
-		"@rocket.chat/string-helpers": "~0.31.4",
+		"@rocket.chat/string-helpers": "~0.31.9",
 		"@rocket.chat/ui-kit": "~0.31.4",
 		"ajv": "^8.7.1",
 		"bcrypt": "^5.0.1",
