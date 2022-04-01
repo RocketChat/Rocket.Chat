@@ -43,7 +43,6 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 							}}
 						/>
 					)}
-					{/* @ts-ignore title should be on fuselage component */}
 					<MessageSystemTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (
