@@ -98,10 +98,6 @@ class SetupWizard extends BasePage {
 		return this.getPage().locator('//input[@name="companyEmail"]/../following-sibling::span');
 	}
 
-	private organizationNameInvalidText(): Locator {
-		return this.getPage().locator('//input[@name="organizationName"]/../following-sibling::span');
-	}
-
 	private passwordInvalidText(): Locator {
 		return this.getPage().locator('//input[@name="password"]/../../../span[contains(@class, "rcx-field__error")]');
 	}
@@ -116,10 +112,6 @@ class SetupWizard extends BasePage {
 
 	private countryInvalidSelect(): Locator {
 		return this.getPage().locator('//div[@name="country"]/../following-sibling::span');
-	}
-
-	private invalidInputEmail(): Locator {
-		return this.getPage().locator('$$("input:invalid")');
 	}
 
 	public async goNext(): Promise<void> {

@@ -190,7 +190,6 @@ class SideNav extends BasePage {
 
 	public async searchChannelAndOpen(channelName: string): Promise<void> {
 		await this.searchChannel(channelName);
-
 	}
 
 	// Gets a channel from the rooms list

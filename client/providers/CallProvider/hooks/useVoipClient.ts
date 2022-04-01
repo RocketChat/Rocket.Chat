@@ -6,7 +6,7 @@ import { IRegistrationInfo } from '../../../../definition/voip/IRegistrationInfo
 import { WorkflowTypes } from '../../../../definition/voip/WorkflowTypes';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
-import { useUser, useUserId } from '../../../contexts/UserContext';
+import { useUser } from '../../../contexts/UserContext';
 import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
@@ -17,6 +17,8 @@ type UseVoipClientResult = {
 	error?: Error | unknown;
 };
 
+const empty = {};
+
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
 export const useVoipClient = (): UseVoipClientResult => {
@@ -24,18 +26,19 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
 	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
 	const user = useUser();
-	const userId = useUserId();
-	const [extension, setExtension] = useSafely(useState<string | null>(null));
-
 	const iceServers = useWebRtcServers();
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
+
 	useEffect(() => {
-		if (!userId || !extension || !voipEnabled) {
-			setResult({});
+		const uid = user?._id;
+		const userExtension = user?.extension;
+
+		if (!uid || !userExtension || !voipEnabled) {
+			setResult(empty);
 			return;
 		}
 		let client: VoIPUser;
-		registrationInfo({ id: userId }).then(
+		registrationInfo({ id: uid }).then(
 			(data) => {
 				let parsedData: IRegistrationInfo;
 				if (isSignedResponse(data)) {
@@ -74,24 +77,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 				client.clear();
 			}
 		};
-	}, [userId, iceServers, registrationInfo, setResult, membership, voipEnabled, extension]);
+	}, [iceServers, registrationInfo, setResult, membership, voipEnabled, user?._id, user?.extension]);
 
-	useEffect(() => {
-		if (!user) {
-			setResult({});
-			return;
-		}
-		if (user.extension) {
-			setExtension(user.extension);
-		} else {
-			setExtension(null);
-
-			if (!result.voipClient) {
-				return;
-			}
-
-			result.voipClient.clear();
-		}
-	}, [result, setExtension, setResult, user]);
 	return result;
 };

@@ -1344,15 +1344,6 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	findByE2E(options) {
-		return this.find(
-			{
-				encrypted: true,
-			},
-			options,
-		);
-	}
-
 	updateGroupDMsRemovingUsernamesByUsername(username, userId) {
 		const query = {
 			t: 'd',
