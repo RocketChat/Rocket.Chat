@@ -41,6 +41,8 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 					key={action.id}
 					icon={action.icon}
 					title={t(action.label)}
+					data-type='message-action-menu'
+					data-id={action.label}
 				/>
 			))}
 			{menuActions.length > 0 && (
@@ -51,6 +53,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 							action.action(e, { message, tabbar, room });
 						},
 					}))}
+					data-type='message-action-menu-options'
 				/>
 			)}
 		</MessageToolbox>

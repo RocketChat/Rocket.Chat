@@ -15,6 +15,7 @@ const style = css`
 export const ToolboxDropdown = <R extends HTMLElement>({
 	reference,
 	children,
+	...rest
 }: {
 	reference: React.RefObject<R>;
 	children: ReactNode;
@@ -26,7 +27,7 @@ export const ToolboxDropdown = <R extends HTMLElement>({
 	return (
 		<>
 			<Box className={style} position='fixed' />
-			<DropdownTemplate ref={target} reference={reference}>
+			<DropdownTemplate ref={target} reference={reference} {...rest}>
 				{children}
 			</DropdownTemplate>
 		</>

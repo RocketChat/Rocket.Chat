@@ -241,44 +241,44 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 		return true;
 	}
 
-	const startIdx = orderedMigrations.findIndex((migration) => migration.version === currentVersion);
-	if (startIdx === -1) {
-		throw new Error(`Can't find migration version ${currentVersion}`);
-	}
+	// const startIdx = orderedMigrations.findIndex((migration) => migration.version === currentVersion);
+	// if (startIdx === -1) {
+	// 	throw new Error(`Can't find migration version ${currentVersion}`);
+	// }
 
-	const endIdx = orderedMigrations.findIndex((migration) => migration.version === version);
-	if (endIdx === -1) {
-		throw new Error(`Can't find migration version ${version}`);
-	}
+	// const endIdx = orderedMigrations.findIndex((migration) => migration.version === version);
+	// if (endIdx === -1) {
+	// 	throw new Error(`Can't find migration version ${version}`);
+	// }
 
-	log.startup(`Migrating from version ${orderedMigrations[startIdx].version} -> ${orderedMigrations[endIdx].version}`);
+	// log.startup(`Migrating from version ${orderedMigrations[startIdx].version} -> ${orderedMigrations[endIdx].version}`);
 
-	try {
-		if (currentVersion < version) {
-			for (let i = startIdx; i < endIdx; i++) {
-				migrate('up', orderedMigrations[i + 1]);
-				setControl({
-					locked: true,
-					version: orderedMigrations[i + 1].version,
-				});
-			}
-		} else {
-			for (let i = startIdx; i > endIdx; i--) {
-				migrate('down', orderedMigrations[i]);
-				setControl({
-					locked: true,
-					version: orderedMigrations[i - 1].version,
-				});
-			}
-		}
-	} catch (e) {
-		showError(version, control, e);
-		log.error({ err: e });
-		process.exit(1);
-	}
+	// try {
+	// 	if (currentVersion < version) {
+	// 		for (let i = startIdx; i < endIdx; i++) {
+	// 			migrate('up', orderedMigrations[i + 1]);
+	// 			setControl({
+	// 				locked: true,
+	// 				version: orderedMigrations[i + 1].version,
+	// 			});
+	// 		}
+	// 	} else {
+	// 		for (let i = startIdx; i > endIdx; i--) {
+	// 			migrate('down', orderedMigrations[i]);
+	// 			setControl({
+	// 				locked: true,
+	// 				version: orderedMigrations[i - 1].version,
+	// 			});
+	// 		}
+	// 	}
+	// } catch (e) {
+	// 	showError(version, control, e);
+	// 	log.error({ err: e });
+	// 	process.exit(1);
+	// }
 
-	unlock(orderedMigrations[endIdx].version);
-	log.startup('Finished migrating.');
+	// unlock(orderedMigrations[endIdx].version);
+	// log.startup('Finished migrating.');
 
 	// remember to run meteor with --once otherwise it will restart
 	if (subcommands?.includes('exit')) {

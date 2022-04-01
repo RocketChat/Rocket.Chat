@@ -146,7 +146,7 @@ describe('[Main Elements Render]', function () {
 			});
 
 			it('it should be that the last message is from the logged user', () => {
-				mainContent.lastMessageUser.should('contain', username);
+				mainContent.lastMessage.should('contain', username);
 			});
 
 			it('it should not show the Admin tag', () => {

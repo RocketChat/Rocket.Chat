@@ -67,6 +67,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 										sequential={shouldShowAsSequential}
 										message={message}
 										subscription={subscription}
+										data-type='message'
 									/>
 								)}
 

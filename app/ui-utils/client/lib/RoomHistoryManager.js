@@ -164,6 +164,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 	}
 
 	async getMore(rid, limit = defaultLimit) {
+		console.log('pegareeei maaais');
 		let ts;
 		const room = this.getRoom(rid);
 
@@ -249,6 +250,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 	}
 
 	async getMoreNext(rid, limit = defaultLimit) {
+		console.log('pegareeei maaais next');
 		const room = this.getRoom(rid);
 		if (room.hasMoreNext.curValue !== true) {
 			return;

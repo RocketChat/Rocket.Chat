@@ -10,7 +10,11 @@ export const ToolboxWrapper: FC<{ message: IMessage }> = (props) => {
 
 	const [isVisible] = useIsVisible(ref);
 
-	return <MessageToolboxWrapper ref={ref}>{isVisible && <Toolbox {...props} />}</MessageToolboxWrapper>;
+	return (
+		<MessageToolboxWrapper ref={ref} data-type='message-action-menu-wrapper'>
+			{isVisible && <Toolbox {...props} />}
+		</MessageToolboxWrapper>
+	);
 };
 
 export default memo(ToolboxWrapper);

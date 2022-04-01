@@ -66,59 +66,63 @@ class MainContent extends Page {
 
 	// Messages
 	get lastMessageUser() {
-		return browser.element('.message:last-child .title .user-card-message');
+		return browser.element('[data-type="message"]:last-child [data-username]');
 	}
 
 	get lastMessage() {
-		return browser.element('.message:last-child');
+		return browser.element('[data-type="message"]:last-child');
 	}
 
 	get lastMessageDesc() {
-		return browser.element('.message:last-child .body .attachment-description');
+		return browser.element('[data-type="message"]:last-child .body .attachment-description');
 	}
 
 	get lastMessageRoleAdded() {
-		return browser.element('.message:last-child.subscription-role-added .body');
+		return browser.element('[data-type="message"]:last-child.subscription-role-added .body');
 	}
 
 	get beforeLastMessage() {
-		return browser.element('.message:nth-last-child(2) .body');
+		return browser.element('[data-type="message"]:nth-last-child(2) [data-type="message-body"]');
 	}
 
 	get lastMessageUserTag() {
-		return browser.element('.message:last-child .role-tag');
+		return browser.element('[data-type="message"]:last-child .role-tag');
 	}
 
 	get lastMessageImg() {
-		return browser.element('.message:last-child .attachment-image img');
+		return browser.element('[data-type="message"]:last-child .attachment-image img');
 	}
 
 	get lastMessageTextAttachment() {
-		return browser.element('.message:last-child .attachment-text');
+		return browser.element('[data-type="message"]:last-child .attachment-text');
 	}
 
 	get beforeLastMessageQuote() {
-		return browser.element('.message:nth-last-child(2)');
+		return browser.element('[data-type="message"]:nth-last-child(2)');
 	}
 
 	get lastMessageQuote() {
-		return browser.element('.message:last-child');
+		return browser.element('[data-type="message"]:last-child');
 	}
 
 	get messageOptionsBtn() {
-		return browser.element('.message:last-child .message-actions__menu');
+		return browser.element('[data-type="message"]:last-child [data-type="message-action-menu"][data-id="menu"]');
 	}
 
 	get messageOptionsBtns() {
-		return browser.element('.message:last-child .message-actions');
+		return browser.element('[data-type="message"]:last-child [data-type="message-action-menu"]');
 	}
 
 	get messageActionMenu() {
-		return browser.element('.rc-popover .rc-popover__content');
+		return browser.element('[data-type="message-action-menu-options"]');
+	}
+
+	get messageActionMenuBtns() {
+		return browser.element('[data-type="message-action-menu-options"] [data-type="message-action"]');
 	}
 
 	get messageReply() {
-		return browser.element('.message:last-child .message-actions__button[data-message-action="reply-in-thread"]');
+		return browser.element('[data-type="message"]:last-child [data-type="message-action"][data-id="reply-in-thread"]');
 	}
 
 	get messageEdit() {
@@ -237,8 +241,8 @@ class MainContent extends Page {
 	sendMessage(text) {
 		this.setTextToInput(text);
 		this.sendBtn.click();
-		cy.get('.message:last-child .body').should('be.visible');
-		cy.get('.message:last-child .body').should('contain', text);
+		cy.get('[data-type="message"]:last-child [data-type="message-body"]').should('be.visible');
+		cy.get('[data-type="message"]:last-child [data-type="message-body"]').should('contain', text);
 	}
 
 	// adds text to the input
@@ -262,33 +266,43 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageEqualsText(text) {
-		cy.get('.message:last-child .body').should('contain', text);
+		cy.get('[data-type="message"]:last-child [data-type="message-body"]').should('contain', text);
 	}
 
 	waitForLastMessageQuoteEqualsText(text) {
-		cy.get('.message:last-child .rcx-attachment__details').should('contain', text);
+		cy.get('[data-type="message"]:last-child .rcx-attachment__details').should('contain', text);
 	}
 
 	waitForLastMessageEqualsHtml(text) {
-		cy.get('.message:last-child .body').should('contain.html', text);
+		cy.get('[data-type="message"]:last-child [data-type="message-body"]').should('contain.html', text);
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
-		return cy.get('.message:last-child .rcx-attachment__details .rcx-box--with-inline-elements').should('contain', text);
-	}
-
-	// Wait for the last message author username to equal the provided text
-	waitForLastMessageUserEqualsText(text) {
-		browser.waitUntil(function () {
-			browser.waitForVisible('.message:last-child .user-card-message:nth-of-type(2)', 5000);
-			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
-		}, 5000);
+		return cy.get('[data-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements').should('contain', text);
 	}
 
 	openMessageActionMenu() {
-		this.lastMessage.scrollIntoView().should('be.visible').should('not.have.class', 'temp');
-		this.messageOptionsBtns.invoke('show');
+		this.lastMessage.realHover().should('be.visible');
+
+		cy.waitUntil(() => {
+			return this.messageOptionsBtns.then((el) => el.length);
+		});
+
+		this.messageOptionsBtns.should('be.visible');
+
 		this.messageOptionsBtn.click();
+
+		cy.waitUntil(() => {
+			return this.messageActionMenuBtns.then((el) => el.length);
+		});
+
+		this.messageActionMenuBtns.should('be.visible');
+	}
+
+	closeMessageActionMenu() {
+		cy.get('body').realHover({ position: 'topLeft' });
+		this.messageOptionsBtns.should('not.exist');
+		this.messageActionMenuBtns.should('not.exist');
 	}
 
 	setLanguageToEnglish() {
