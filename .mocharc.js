@@ -29,6 +29,7 @@ module.exports = {
 		'tests/unit/app/**/*.tests.js',
 		'tests/unit/app/**/*.tests.ts',
 		'tests/unit/lib/**/*.tests.ts',
+		'tests/unit/lib/**/*.spec.ts',
 		'tests/unit/server/**/*.tests.ts',
 	],
 };

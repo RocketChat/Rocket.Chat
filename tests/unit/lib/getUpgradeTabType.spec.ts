@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { getUpgradeTabType } from './getUpgradeTabType';
+import { getUpgradeTabType } from '../../../lib/getUpgradeTabType';
 
 describe('getUpgradeTabType()', () => {
 	it("should return 'goFullyFeatured'", () => {
