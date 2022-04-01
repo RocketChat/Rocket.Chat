@@ -3,13 +3,6 @@ import { PassThrough } from 'stream';
 
 import { EmailTest, Email } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
-import { HTTP } from 'meteor/http';
-
-import { httpCall } from '../../../server/lib/http/call';
-
-HTTP.call = function _call(...args) {
-	return httpCall.call(HTTP, ...args);
-};
 
 if (!process.env.USE_NATIVE_OPLOG) {
 	Package['disable-oplog'] = {};

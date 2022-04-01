@@ -3,7 +3,7 @@ import { fetch, Request } from 'meteor/fetch';
 import { URL, URLSearchParams } from 'meteor/url';
 import HttpProxyAgent from 'http-proxy-agent';
 import HttpsProxyAgent from 'https-proxy-agent';
-import getProxy from 'get-url-proxy';
+import { getProxyForUrl } from 'proxy-from-env';
 
 import { truncate } from '../../../lib/utils/stringUtils';
 
@@ -136,7 +136,7 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 	// is false if false, otherwise always true
 	const followRedirects = options.followRedirects === false ? 'manual' : 'follow';
 
-	const proxy = getProxy(newUrl);
+	const proxy = getProxyForUrl(newUrl);
 	const AgentClass = /^https/.test(newUrl) ? HttpsProxyAgent : HttpProxyAgent;
 	const agent = proxy ? new AgentClass(proxy) : undefined;
 
