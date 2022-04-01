@@ -47,3 +47,13 @@ export const downloadCsvAs = (csvData: readonly (readonly unknown[])[], basename
 		`${basename}.csv`,
 	);
 };
+
+export const downloadTxtAs = (data: string, basename: string): void => {
+	downloadAs(
+		{
+			data: [decodeURIComponent(encodeURI(data))],
+			type: 'text/plain',
+		},
+		`${basename}.txt`,
+	);
+};
