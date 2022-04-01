@@ -72875,6 +72875,130 @@
           ]
         }
       ]
+    },
+    "4.5.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24998",
+          "title": "Release 4.5.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "MartinSchoeler",
+            "sampaiodiego",
+            "filipemarins",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24994",
+          "title": "[FIX]  High CPU usage caused by CallProvider",
+          "userLogin": "tiagoevanp",
+          "description": "Remove infinity loop inside useVoipClient hook.\r\n\r\n#closes #24970",
+          "milestone": "4.5.5",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24955",
+          "title": "[FIX] Multiple issues starting a new DM",
+          "userLogin": "filipemarins",
+          "description": "When the room object is searched for the first time, it does not exist on the front object yet (subscription), adding a fallback search for room list will guarantee to search the room details.\r\n\r\nbefore:\r\nhttps://user-images.githubusercontent.com/9275105/160223241-d2319f3e-82c5-47d6-867f-695ab2361a17.mp4\r\n\r\nafter:\r\nhttps://user-images.githubusercontent.com/9275105/160223244-84d0d2a1-3d95-464d-8b8a-e264b0d4d690.mp4",
+          "milestone": "4.5.5",
+          "contributors": [
+            "filipemarins",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24990",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.5",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "4.6.0-rc.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25017",
+          "title": "Regression: Add createdOTR index",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25015",
+          "title": "Chore: Bump Fuselage packages",
+          "userLogin": "dougfabris",
+          "description": "It uses the last stable version of Fuselage packages.",
+          "milestone": "4.6.0",
+          "contributors": [
+            "dougfabris",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24999",
+          "title": "Regression: Custom roles displaying ID instead of name on some admin screens",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "![image](https://user-images.githubusercontent.com/55164754/160981416-555bcaa1-c075-4260-937c-64523472da43.png)\r\n![image](https://user-images.githubusercontent.com/55164754/160981452-6eae4e74-8425-4073-8256-472aba72b9db.png)",
+          "milestone": "4.6.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24835",
+          "title": "[NEW] Upgrade Tab",
+          "userLogin": "gabriellsh",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/160172260-c656282e-a487-4092-948d-d11c9bacb598.png)",
+          "milestone": "4.6.0",
+          "contributors": [
+            "gabriellsh",
+            "dougfabris",
+            "web-flow",
+            "tassoevan",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24980",
+          "title": "Regression: Error is raised when there's no Asterisk queue available yet",
+          "userLogin": "amolghode1981",
+          "milestone": "4.7.0",
+          "contributors": [
+            "amolghode1981"
+          ]
+        }
+      ]
     }
   }
 }
