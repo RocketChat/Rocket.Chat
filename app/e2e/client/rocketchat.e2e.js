@@ -144,32 +144,6 @@ class E2E extends Emitter {
 		if (randomPassword) {
 			const passwordRevealText = TAPi18n.__('E2E_password_reveal_text');
 
-			// this.openAlert({
-			// 	title: TAPi18n.__('Save_Your_Encryption_Password'),
-			// 	html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
-			// 	modifiers: ['large'],
-			// 	closable: false,
-			// 	icon: 'key',
-			// 	action: () => {
-			// 		imperativeModal.open({
-			// 			component: SaveE2EPasswordModal,
-			// 			props: {
-			// 				passwordRevealText,
-			// 				randomPassword,
-			// 				onClose: imperativeModal.close,
-			// 				onCancel: () => {
-			// 					this.closeAlert();
-			// 					imperativeModal.close();
-			// 				},
-			// 				onConfirm: () => {
-			// 					Meteor._localStorage.removeItem('e2e.randomPassword');
-			// 					this.closeAlert();
-			// 					imperativeModal.close();
-			// 				},
-			// 			},
-			// 		});
-			// 	},
-			// });
 			imperativeModal.open({
 				component: SaveE2EPasswordModal,
 				props: {
