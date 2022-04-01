@@ -3,7 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { RocketChatFile } from '../../app/file';
 import { FileUpload } from '../../app/file-upload/server';
-import { addUserRolesAsync, getUsersInRole } from '../../app/authorization/server';
+import { getUsersInRole } from '../../app/authorization/server';
+import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 import { Users, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
@@ -29,7 +30,7 @@ Meteor.startup(async function () {
 			type: 'bot',
 		});
 
-		await addUserRolesAsync('rocket.cat', 'bot');
+		await addUserRolesAsync('rocket.cat', ['bot']);
 
 		const buffer = Buffer.from(Assets.getBinary('avatars/rocketcat.png'));
 
@@ -113,7 +114,7 @@ Meteor.startup(async function () {
 
 			Accounts.setPassword(id, process.env.ADMIN_PASS);
 
-			await addUserRolesAsync(id, 'admin');
+			await addUserRolesAsync(id, ['admin']);
 		} else {
 			console.log('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'.red);
 		}

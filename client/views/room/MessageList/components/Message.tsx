@@ -6,7 +6,7 @@ import React, { FC, memo } from 'react';
 import { IMessage } from '../../../../../definition/IMessage';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useIsEditingMessage } from '../contexts/MessageEditingContext';
+import { useIsMessageHighlight } from '../contexts/MessageHighlightContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import MessageContent from './MessageContent';
 import MessageContentIgnored from './MessageContentIgnored';
@@ -20,7 +20,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	subscription,
 	...props
 }) => {
-	const isEditingMessage = useIsEditingMessage(message._id);
+	const isMessageHighlight = useIsMessageHighlight(message._id);
 	const [isMessageIgnored, toggleMessageIgnored] = useToggle(message.ignored);
 
 	const isSelecting = useIsSelecting();
@@ -33,7 +33,9 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 			{...props}
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
-			isEditing={isEditingMessage}
+			isEditing={isMessageHighlight}
+			// highlight={isMessageHighlight}
+			data-qa-editing={isMessageHighlight}
 			data-qa-selected={isSelected}
 		>
 			<MessageLeftContainer>

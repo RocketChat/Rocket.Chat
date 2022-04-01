@@ -8,34 +8,34 @@ import InlineCode from './InlineCode';
 import Italic from './Italic';
 import Link from './Link';
 import Mention from './Mention';
-import Plain from './Plain';
+import MentionChannel from './MentionChannel';
+import PlainText from './PlainText';
 import Strike from './Strike';
 
 const Inline: FC<{ value: ASTParagraph['value'] }> = ({ value = [] }) => (
 	<>
-		{value.map((block, idx) => {
+		{value.map((block, index) => {
 			switch (block.type) {
 				case 'IMAGE':
-					return <Image key={idx} value={block.value} />;
+					return <Image key={index} value={block.value} />;
 				case 'PLAIN_TEXT':
-					return block.value;
+					return <PlainText key={index} value={block.value} />;
 				case 'BOLD':
-					return <Bold key={idx} value={block.value} />;
+					return <Bold key={index} value={block.value} />;
 				case 'STRIKE':
-					return <Strike key={idx} value={block.value} />;
+					return <Strike key={index} value={block.value} />;
 				case 'ITALIC':
-					return <Italic key={idx} value={block.value} />;
+					return <Italic key={index} value={block.value} />;
 				case 'LINK':
-					return <Link key={idx} value={block.value} />;
+					return <Link key={index} value={block.value} />;
 				case 'MENTION_USER':
-					return <Mention key={idx} value={block.value} />;
-				case 'EMOJI':
-					return <Emoji key={idx} emojiHandle={`:${block.value.value}:`} />;
+					return <Mention key={index} value={block.value} />;
 				case 'MENTION_CHANNEL':
-					// case 'COLOR':
-					return <Plain key={idx} value={block.value} />;
+					return <MentionChannel key={index} value={block.value} />;
+				case 'EMOJI':
+					return <Emoji key={index} emojiHandle={`:${block.value.value}:`} />;
 				case 'INLINE_CODE':
-					return <InlineCode key={idx} value={block.value} />;
+					return <InlineCode key={index} value={block.value} />;
 				default:
 					return null;
 			}

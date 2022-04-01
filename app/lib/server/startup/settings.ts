@@ -1320,6 +1320,14 @@ settingsRegistry.addGroup('Message', function () {
 			public: true,
 		},
 	);
+	this.add('Message_Auditing_Panel_Load_Count', 0, {
+		type: 'int',
+		hidden: true,
+	});
+	this.add('Message_Auditing_Apply_Count', 0, {
+		type: 'int',
+		hidden: true,
+	});
 });
 
 settingsRegistry.addGroup('Meta', function () {
@@ -2992,6 +3000,13 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
+		});
+
+		this.add('Cloud_Workspace_Had_Trial', false, {
+			type: 'boolean',
+			hidden: true,
+			readonly: true,
 			secret: true,
 		});
 

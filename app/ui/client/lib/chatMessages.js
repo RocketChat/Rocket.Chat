@@ -10,7 +10,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { KonchatNotification } from './notification';
 import { UserAction, USER_ACTIVITIES } from '../index';
 import { fileUpload } from './fileUpload';
-import { t, slashCommands } from '../../../utils/client';
+import { t, slashCommands, APIClient } from '../../../utils/client';
 import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
@@ -26,7 +26,10 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
-import { setEditingMessage, clearEditingMessage } from '../../../../client/views/room/MessageList/providers/messageEditingSubscription';
+import {
+	setHighlightMessage,
+	clearHighlightMessage,
+} from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -211,7 +214,7 @@ export class ChatMessages {
 		this.editing.id = message._id;
 		this.input.parentElement.classList.add('editing');
 		element.classList.add('editing');
-		setEditingMessage(message._id);
+		setHighlightMessage(message._id);
 
 		if (message.attachments && message.attachments[0].description) {
 			messageBoxState.set(this.input, message.attachments[0].description);
@@ -236,7 +239,7 @@ export class ChatMessages {
 		this.editing.element.classList.remove('editing');
 		delete this.editing.id;
 		delete this.editing.element;
-		clearEditingMessage();
+		clearHighlightMessage();
 
 		messageBoxState.set(this.input, this.editing.saved || '');
 		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : -1;
@@ -425,6 +428,7 @@ export class ChatMessages {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
+							APIClient.v1.post('statistics.telemetry', { params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command }] });
 							const triggerId = generateTriggerId(slashCommands.commands[command].appId);
 							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err, result) => {
 								typeof commandOptions.result === 'function' &&

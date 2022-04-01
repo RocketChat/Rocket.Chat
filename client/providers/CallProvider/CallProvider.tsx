@@ -43,8 +43,6 @@ export const CallProvider: FC = ({ children }) => {
 
 	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
-	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
-
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
 
@@ -210,7 +208,7 @@ export const CallProvider: FC = ({ children }) => {
 		 *
 		 */
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
-	});
+	}, [result.voipClient]);
 
 	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', 'voip/room');
@@ -324,11 +322,7 @@ export const CallProvider: FC = ({ children }) => {
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
-			{contextValue.enabled && (
-				<AudioTagPortal>
-					<audio ref={remoteAudioMediaRef} />
-				</AudioTagPortal>
-			)}
+			{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
 		</CallContext.Provider>
 	);
 };

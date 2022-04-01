@@ -7,7 +7,7 @@ import RadioDropDownAnchor from './RadioDownAnchor';
 import RadioDropDown from './RadioDropDown';
 
 export default {
-	title: 'apps/components/SortDropDown',
+	title: 'Admin/Apps/SortDropDown',
 	component: RadioDropDown,
 };
 

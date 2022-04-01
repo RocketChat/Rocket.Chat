@@ -93,6 +93,11 @@ export class Client extends EventEmitter {
 			clearTimeout(this.timeout);
 		});
 
+		this.ws.on('error', (err) => {
+			console.error('Unexpected error:', err);
+			this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
+		});
+
 		this.setMaxListeners(50);
 
 		this.greeting();

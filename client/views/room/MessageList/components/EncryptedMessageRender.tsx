@@ -5,20 +5,31 @@ import { IMessage } from '../../../../../definition/IMessage';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useMessageActions } from '../../contexts/MessageContext';
+import { useMessageListHighlights } from '../contexts/MessageListContext';
 
 const EncryptedMessageRender = ({ message }: { message: IMessage }): ReactElement => {
 	const tokens = useMemo(() => parser(message.msg), [message.msg]);
 	const t = useTranslation();
+	const highlights = useMessageListHighlights();
 
 	const {
-		actions: { openUserCard },
+		actions: { openUserCard, openRoom },
 	} = useMessageActions();
 
 	if (message.e2e === 'pending') {
 		return <>{t('E2E_message_encrypted_placeholder')}</>;
 	}
 
-	return <MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={tokens} />;
+	return (
+		<MessageBodyRender
+			onUserMentionClick={openUserCard}
+			onChannelMentionClick={openRoom}
+			mentions={message?.mentions || []}
+			channels={message?.channels || []}
+			highlights={highlights}
+			tokens={tokens}
+		/>
+	);
 };
 
 export default EncryptedMessageRender;

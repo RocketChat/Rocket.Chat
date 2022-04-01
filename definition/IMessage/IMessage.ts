@@ -4,7 +4,7 @@ import { parser } from '@rocket.chat/message-parser';
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';
-import type { ChannelName, RoomID } from '../IRoom';
+import type { IRoom, RoomID } from '../IRoom';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 
@@ -86,7 +86,7 @@ export interface IMessage extends IRocketChatRecord {
 		type: MentionType;
 	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
 	groupable?: false;
-	channels?: Array<ChannelName>;
+	channels?: Pick<IRoom, '_id' | 'name'>[];
 	u: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
 	blocks?: MessageSurfaceLayout;
 	alias?: string;

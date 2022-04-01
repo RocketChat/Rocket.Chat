@@ -8,9 +8,7 @@ const openUserCard =
 		console.log('openUserCard');
 	};
 
-const openDiscussion = () => (): void => {
-	console.log('openDiscussion');
-};
+const openRoom = () => (): void => console.log('openRoom');
 const openThread = () => (): void => console.log('openThread');
 const replyBroadcast = (): void => {
 	console.log('replyBroadcast');
@@ -22,21 +20,18 @@ const runActionLink = () => () => (): void => {
 export type MessageContextValue = {
 	broadcast: boolean;
 	oembedMaxWidth: `${number}px` | '100%';
-	// buttons: any[];
-	// menuButtons: any[];
 	oembedEnabled: boolean;
 	actions: {
 		openUserCard: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
-		openDiscussion: (drid: string) => () => void;
+		openRoom: (id: string) => () => void;
 		openThread: (tmid: string, jump?: string) => () => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;
 		replyBroadcast: (message: IMessage) => void;
 	};
 	formatters: {
-		// newDay: (date: Date) => string;
-		messageHeader: (date: Date) => string;
+		time: (date: Date) => string;
+		dateAndTime: (date: Date) => string;
 	};
-	// tabBar: TabBar;
 };
 
 export const MessageContext = createContext<MessageContextValue>({
@@ -47,14 +42,14 @@ export const MessageContext = createContext<MessageContextValue>({
 	broadcast: false,
 	actions: {
 		openUserCard,
-		openDiscussion,
+		openRoom,
 		openThread,
 		runActionLink,
 		replyBroadcast,
 	},
 	formatters: {
-		// newDay: (date: Date): string => date.toISOString(),
-		messageHeader: (date: Date): string => date.toISOString(),
+		time: (date: Date): string => date.toISOString(),
+		dateAndTime: (date: Date): string => date.toISOString(),
 	},
 });
 

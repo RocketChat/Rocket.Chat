@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
 import { Messages, Rooms, Subscriptions } from '../../../models/server';
-import { Notifications } from '../../../notifications/server';
+import { api } from '../../../../server/sdk/api';
 import { IMessage, IMessageDiscussion } from '../../../../definition/IMessage';
 
 export const cleanRoomHistory = function ({
@@ -68,7 +68,7 @@ export const cleanRoomHistory = function ({
 	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
 	if (count) {
 		Rooms.resetLastMessageById(rid);
-		Notifications.notifyRoom(rid, 'deleteMessageBulk', {
+		api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,
 			excludePinned,
 			ignoreDiscussion,

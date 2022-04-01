@@ -15,7 +15,7 @@ Meteor.startup(() => {
 		}
 
 		const options = {
-			wordsToHighlight: highlights?.filter((highlight) => highlight?.trim()),
+			wordsToHighlight: (highlights?.filter((highlight) => highlight?.trim()) as string[]) || [],
 		};
 
 		import('../../../app/highlight-words').then(({ createHighlightWordsMessageRenderer }) => {
