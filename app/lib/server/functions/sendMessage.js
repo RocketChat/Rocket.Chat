@@ -23,7 +23,7 @@ const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
  * is going to be rendered in the href attribute of a
  * link.
  */
-const ValidFullURLParam = Match.Where((value) => {
+const validFullURLParam = Match.Where((value) => {
 	check(value, String);
 
 	if (!isURL(value) && !value.startsWith(FileUpload.getPath())) {
@@ -37,7 +37,7 @@ const ValidFullURLParam = Match.Where((value) => {
 	return true;
 });
 
-const ValidPartialURLParam = Match.Where((value) => {
+const validPartialURLParam = Match.Where((value) => {
 	check(value, String);
 
 	if (!isRelativeURL(value) && !isURL(value) && !value.startsWith(FileUpload.getPath())) {
@@ -88,8 +88,8 @@ const validateAttachmentsActions = (attachmentActions) => {
 		objectMaybeIncluding({
 			type: String,
 			text: String,
-			url: ValidFullURLParam,
-			image_url: ValidFullURLParam,
+			url: validFullURLParam,
+			image_url: validFullURLParam,
 			is_webview: Boolean,
 			webview_height_ratio: String,
 			msg: String,
@@ -105,26 +105,26 @@ const validateAttachment = (attachment) => {
 			color: String,
 			text: String,
 			ts: Match.OneOf(String, Number),
-			thumb_url: ValidFullURLParam,
+			thumb_url: validFullURLParam,
 			button_alignment: String,
 			actions: [Match.Any],
-			message_link: ValidFullURLParam,
+			message_link: validFullURLParam,
 			collapsed: Boolean,
 			author_name: String,
-			author_link: ValidFullURLParam,
-			author_icon: ValidFullURLParam,
+			author_link: validFullURLParam,
+			author_icon: validFullURLParam,
 			title: String,
-			title_link: ValidFullURLParam,
+			title_link: validFullURLParam,
 			title_link_download: Boolean,
 			image_dimensions: Object,
-			image_url: ValidFullURLParam,
+			image_url: validFullURLParam,
 			image_preview: String,
 			image_type: String,
 			image_size: Number,
-			audio_url: ValidFullURLParam,
+			audio_url: validFullURLParam,
 			audio_type: String,
 			audio_size: Number,
-			video_url: ValidFullURLParam,
+			video_url: validFullURLParam,
 			video_type: String,
 			video_size: Number,
 			fields: [Match.Any],
@@ -153,7 +153,7 @@ export const validateMessage = (message, room, user) => {
 			emoji: String,
 			tmid: String,
 			tshow: Boolean,
-			avatar: ValidPartialURLParam,
+			avatar: validPartialURLParam,
 			attachments: [Match.Any],
 			blocks: [Match.Any],
 		}),
@@ -198,6 +198,14 @@ export const prepareMessageObject = function (message, rid, user) {
 	}
 };
 
+/**
+ * Clean up the message object before saving on db
+ * @param {IMessage} message
+ */
+function cleanupMessageObject(message) {
+	['customClass'].forEach((field) => delete message[field]);
+}
+
 export const sendMessage = function (user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
@@ -232,6 +240,8 @@ export const sendMessage = function (user, message, room, upsert = false) {
 			validateMessage(message, room, user);
 		}
 	}
+
+	cleanupMessageObject(message);
 
 	parseUrlsInMessage(message);
 

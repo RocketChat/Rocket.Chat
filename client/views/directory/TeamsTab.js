@@ -1,7 +1,7 @@
 import React from 'react';
 
-import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import TeamsTable from './TeamsTable';
 
 function TeamsTab(props) {

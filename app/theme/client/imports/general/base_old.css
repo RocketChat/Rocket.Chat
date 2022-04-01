@@ -2939,6 +2939,7 @@
 	padding: 2px;
 
 	border-radius: 15px;
+	background-color: var(--selection-background);
 }
 
 .rc-old .avatar-suggestions {

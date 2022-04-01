@@ -43,6 +43,7 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 
 export const setRealName = RateLimiter.limitFunction(_setRealName, 1, 60000, {
 	0() {
-		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
+		const userId = Meteor.userId();
+		return !userId || !hasPermission(userId, 'edit-other-user-info');
 	}, // Administrators have permission to change others names, so don't limit those
 });

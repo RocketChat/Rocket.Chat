@@ -1,3 +1,6 @@
+import { IMessage } from './IMessage';
+import { IRoom } from './IRoom';
+
 export interface INotificationItemPush {
 	type: 'push';
 	data: {
@@ -42,4 +45,22 @@ export interface INotification {
 	sending?: Date;
 	error?: string;
 	items: NotificationItem[];
+}
+
+export interface INotificationDesktop {
+	title: string;
+	text: string;
+	duration?: number;
+	payload: {
+		_id: IMessage['_id'];
+		rid: IMessage['rid'];
+		tmid?: IMessage['tmid'];
+		sender: IMessage['u'];
+		type: IRoom['t'];
+		name: IRoom['name'];
+		message: {
+			msg: IMessage['msg'];
+			t?: IMessage['t'];
+		};
+	};
 }

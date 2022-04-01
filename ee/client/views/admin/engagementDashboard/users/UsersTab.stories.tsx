@@ -5,7 +5,7 @@ import React, { ReactElement } from 'react';
 import UsersTab from './UsersTab';
 
 export default {
-	title: 'admin/engagementDashboard/UsersTab',
+	title: 'Enterprise/Admin/Engagement Dashboard/UsersTab',
 	component: UsersTab,
 	decorators: [(fn): ReactElement => <Margins children={fn()} all='x24' />],
 } as Meta;

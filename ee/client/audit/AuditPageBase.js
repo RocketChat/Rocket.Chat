@@ -4,6 +4,7 @@ import React from 'react';
 
 import Page from '../../../client/components/Page';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
+import { useEndpointAction } from '../../../client/hooks/useEndpointAction';
 import DateRangePicker from './DateRangePicker';
 import Result from './Result';
 import ChannelTab from './Tabs/ChannelTab';
@@ -41,6 +42,10 @@ export const AuditPageBase = ({
 			handleUsers([]);
 			handleType(type);
 		});
+
+	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+		params: [{ eventName: 'updateCounter', settingsId: 'Message_Auditing_Apply_Count', timestamp: Date.now() }],
+	});
 
 	return (
 		<Page>
@@ -88,7 +93,7 @@ export const AuditPageBase = ({
 								<VisitorsTab errors={errors} visitor={visitor} handleVisitor={handleVisitor} agent={agent} handleAgent={handleAgent} />
 							)}
 							<ButtonGroup mis='x8' align='end'>
-								<Button primary onClick={apply}>
+								<Button primary onClick={() => apply(eventStats)}>
 									{t('Apply')}
 								</Button>
 							</ButtonGroup>
