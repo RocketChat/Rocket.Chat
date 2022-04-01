@@ -6,7 +6,7 @@ import TimeRangeFieldsAssembler from './TimeRangeFieldsAssembler';
 
 export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const BusinessHoursForm = ({ values, handlers, className }) => {
+const BusinessHoursForm = ({ values, handlers, className = undefined }) => {
 	const t = useTranslation();
 
 	const daysOptions = useMemo(() => DAYS_OF_WEEK.map((day) => [day, t(day)]), [t]);

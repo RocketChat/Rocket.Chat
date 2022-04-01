@@ -20,14 +20,14 @@ import StringSettingInput from './inputs/StringSettingInput';
 
 const MemoizedSetting = ({
 	type,
-	hint,
-	callout,
-	value,
-	editor,
+	hint = undefined,
+	callout = undefined,
+	value = undefined,
+	editor = undefined,
 	onChangeValue = () => {},
 	onChangeEditor = () => {},
-	className,
-	invisible,
+	className = undefined,
+	invisible = undefined,
 	...inputProps
 }) => {
 	if (invisible) {

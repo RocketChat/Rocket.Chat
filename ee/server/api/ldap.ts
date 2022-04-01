@@ -1,4 +1,4 @@
-import { hasRole } from '../../../app/authorization/server';
+import { hasPermission } from '../../../app/authorization/server';
 import { settings } from '../../../app/settings/server';
 import { API } from '../../../app/api/server/api';
 import { LDAPEE } from '../sdk';
@@ -16,7 +16,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-user');
 			}
 
-			if (!hasRole(this.userId, 'admin')) {
+			if (!hasPermission(this.userId, 'sync-auth-services-users')) {
 				throw new Error('error-not-authorized');
 			}
 

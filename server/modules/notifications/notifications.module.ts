@@ -51,8 +51,6 @@ export class NotificationsModule {
 
 	public readonly streamRoomData: IStreamer;
 
-	public readonly streamLocal: IStreamer;
-
 	public readonly streamPresence: IStreamer;
 
 	constructor(private Streamer: IStreamerConstructor) {
@@ -95,8 +93,6 @@ export class NotificationsModule {
 		});
 
 		this.streamUser = new this.Streamer('notify-user');
-
-		this.streamLocal = new this.Streamer('local');
 	}
 
 	async configure({ Rooms, Subscriptions, Users, Settings }: IModelsParam): Promise<void> {
@@ -258,9 +254,9 @@ export class NotificationsModule {
 			// DEPRECATED
 			// Keep compatibility between old and new events
 			if (e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing'))) {
-				streamRoom.emit(`${rid}/typing`, username, _activity.includes('user-typing'));
+				streamRoom._emit(`${rid}/typing`, [username, _activity.includes('user-typing')], this.connection, true);
 			} else if (e === 'typing') {
-				streamRoom.emit(`${rid}/user-activity`, username, _activity ? ['user-typing'] : [], extraData);
+				streamRoom._emit(`${rid}/user-activity`, [username, _activity ? ['user-typing'] : [], extraData], this.connection, true);
 			}
 
 			return true;
@@ -451,11 +447,6 @@ export class NotificationsModule {
 				});
 			}
 		});
-
-		this.streamLocal.serverOnly = true;
-		this.streamLocal.allowRead('none');
-		this.streamLocal.allowEmit('all');
-		this.streamLocal.allowWrite('none');
 
 		this.streamPresence.allowRead('logged');
 		this.streamPresence.allowWrite('none');

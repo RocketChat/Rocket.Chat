@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
-import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
+import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import AccountIntegrationsPage from './AccountIntegrationsPage';
 import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';

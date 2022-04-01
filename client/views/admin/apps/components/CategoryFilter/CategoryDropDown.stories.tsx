@@ -11,7 +11,7 @@ import CategoryDropDownList from './CategoryDropDownList';
 import TagList from './TagList';
 
 export default {
-	title: 'apps/components/CategoryDropDown',
+	title: 'Admin/Apps/CategoryDropDown',
 	component: CategoryDropDownAnchor,
 };
 

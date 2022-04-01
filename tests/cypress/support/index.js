@@ -19,15 +19,27 @@ import './commands';
 // Cypress.Cookies.debug(true);
 
 Cypress.Cookies.defaults({
-	whitelist: ['rc_uid', 'rc_token'],
+	preserve: ['rc_uid', 'rc_token'],
 });
 
 Cypress.LocalStorage.clear = function () {};
 
-Cypress.on('fail', () => {
-	Cypress.stop();
-	throw new Error();
+Cypress.on('uncaught:exception', (error) => {
+	console.error(error);
+	return false;
 });
+
+// Disable CSS animations
+// Cypress.on('window:load', (win) => {
+// 	win.document.querySelector('head').insertAdjacentHTML(
+// 		'beforeend',
+// 		`
+// 		  <style>
+// 			* { transition-duration: 0.001s !important; animation-duration: 0.001s !important;}
+// 		  </style>
+// 		`,
+// 	);
+// });
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

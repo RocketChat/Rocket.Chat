@@ -24,7 +24,9 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	encrypted?: boolean;
-	topic?: any;
+	topic?: string;
+
+	reactWhenReadOnly?: boolean;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids?: Array<string>;
@@ -78,6 +80,8 @@ export interface IRoom extends IRocketChatRecord {
 	archived?: boolean;
 	announcement?: string;
 	description?: string;
+	createdOTR?: boolean;
+	e2eKeyId?: string;
 }
 
 export interface ICreatedRoom extends IRoom {

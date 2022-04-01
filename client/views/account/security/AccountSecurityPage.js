@@ -1,10 +1,10 @@
 import { Box, Accordion } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EndToEnd from './EndToEnd';
 import TwoFactorEmail from './TwoFactorEmail';
 import TwoFactorTOTP from './TwoFactorTOTP';

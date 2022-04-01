@@ -1,8 +1,9 @@
 import React, { ReactElement, useEffect } from 'react';
 
-import NotAuthorizedPage from '../../../../../client/components/NotAuthorizedPage';
 import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useCurrentRoute, useRoute } from '../../../../../client/contexts/RouterContext';
+import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
+import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
 import EngagementDashboardPage from './EngagementDashboardPage';
 
 const isValidTab = (tab: string | undefined): tab is 'users' | 'messages' | 'channels' =>
@@ -24,6 +25,10 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		}
 	}, [routeName, engagementDashboardRoute, tab]);
 
+	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count', timestamp: Date.now() }],
+	});
+
 	if (!isValidTab(tab)) {
 		return null;
 	}
@@ -32,6 +37,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		return <NotAuthorizedPage />;
 	}
 
+	eventStats();
 	return <EngagementDashboardPage tab={tab} onSelectTab={(tab): void => engagementDashboardRoute.push({ tab })} />;
 };
 

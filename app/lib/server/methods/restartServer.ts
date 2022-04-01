@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasRole } from '../../../authorization/server';
+import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
 	// eslint-disable-next-line @typescript-eslint/camelcase
@@ -11,7 +11,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'restart_server' });
 		}
 
-		if (hasRole(uid, 'admin') !== true) {
+		if (hasPermission(uid, 'restart-server') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'restart_server' });
 		}
 

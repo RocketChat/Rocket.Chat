@@ -4,7 +4,7 @@ import React, { ReactElement, useState } from 'react';
 import { VoipFooter } from './VoipFooter';
 
 export default {
-	title: 'sidebar/footer/voip',
+	title: 'Sidebar/Footer/VoipFooter',
 	component: VoipFooter,
 };
 
