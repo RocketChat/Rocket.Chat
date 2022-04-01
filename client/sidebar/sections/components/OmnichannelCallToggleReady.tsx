@@ -2,7 +2,7 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useEffect, useState } from 'react';
 
-import { useCallClient, useCallerInfo } from '../../../contexts/CallContext';
+import { useCallClient, useCallerInfo, useCallActions } from '../../../contexts/CallContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 export const OmnichannelCallToggleReady = (): ReactElement => {
@@ -12,6 +12,7 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 	const voipClient = useCallClient();
 	const [onCall, setOnCall] = useState(false);
 	const callerInfo = useCallerInfo();
+	const callActions = useCallActions();
 
 	const getTooltip = (): string => {
 		if (!registered) {
@@ -54,6 +55,7 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		// TODO: backend set voip call status
 		// voipClient.setVoipCallStatus(!registered);
 		if (agentEnabled) {
+			callerInfo.state === 'OFFER_RECEIVED' && callActions.reject();
 			setAgentEnabled(false);
 			voipClient.unregister();
 			return;
