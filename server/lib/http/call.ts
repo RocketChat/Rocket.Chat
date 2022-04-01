@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { fetch, Request } from 'meteor/fetch';
 import { URL, URLSearchParams } from 'meteor/url';
-import HttpProxyAgent from 'http-proxy-agent';
-import HttpsProxyAgent from 'https-proxy-agent';
+import createHttpProxyAgent from 'http-proxy-agent';
+import createHttpsProxyAgent from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 
 import { truncate } from '../../../lib/utils/stringUtils';
@@ -16,7 +16,7 @@ const envTimeout = parseInt(process.env.HTTP_DEFAULT_TIMEOUT || '', 10);
 const defaultTimeout = !isNaN(envTimeout) ? envTimeout : 20000;
 
 export type HttpCallOptions = {
-	content?: string;
+	content?: string | URLSearchParams;
 	data?: Record<string, any>;
 	query?: string;
 	params?: Record<string, string>;
@@ -137,8 +137,8 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 	const followRedirects = options.followRedirects === false ? 'manual' : 'follow';
 
 	const proxy = getProxyForUrl(newUrl);
-	const AgentClass = /^https/.test(newUrl) ? HttpsProxyAgent : HttpProxyAgent;
-	const agent = proxy ? new AgentClass(proxy) : undefined;
+	const agentFn = /^https/.test(newUrl) ? createHttpsProxyAgent : createHttpProxyAgent;
+	const agent = proxy ? agentFn(proxy) : undefined;
 
 	const requestOptions = {
 		method,
