@@ -1,6 +1,7 @@
 import React, { useMemo, FC, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
+import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
 import { IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '../../../../../definition/IMessage';
 import { IRoom } from '../../../../../definition/IRoom';
 import { useLayout } from '../../../../contexts/LayoutContext';
@@ -84,7 +85,13 @@ export const MessageListProvider: FC<{
 			showRealName,
 			showUsername,
 			showReadReceipt,
-			highlights: highlights || [],
+			highlights: highlights
+				?.map((str) => str.trim())
+				.map((highlight) => ({
+					highlight,
+					regex: getRegexHighlight(highlight),
+					urlRegex: getRegexHighlightUrl(highlight),
+				})),
 			useReactToMessage: uid
 				? (message) =>
 						(reaction): void =>

@@ -15,7 +15,13 @@ import { UserMention } from './definitions/UserMention';
 
 type BodyProps = {
 	tokens: MarkdownAST;
-	highlights: string[];
+	highlights:
+		| {
+				highlight: string;
+				regex: RegExp;
+				urlRegex: RegExp;
+		  }[]
+		| undefined;
 	mentions: UserMention[];
 	channels: ChannelMention[];
 	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
@@ -26,7 +32,7 @@ const isBigEmoji = (tokens: MarkdownAST): tokens is [ASTBigEmoji] => tokens.leng
 
 const MessageBodyRender: FC<BodyProps> = ({
 	tokens,
-	highlights = [],
+	highlights,
 	mentions = [],
 	channels = [],
 	onUserMentionClick,

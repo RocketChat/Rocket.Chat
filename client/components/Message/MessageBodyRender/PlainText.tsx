@@ -11,7 +11,7 @@ type PlainTextType = {
 const PlainText: FC<PlainTextType> = ({ value: text }) => {
 	const highlights = useMessageBodyHighlights();
 
-	if (highlights.length) {
+	if (highlights) {
 		return <Highlighter text={text} wordsToHighlight={highlights} />;
 	}
 

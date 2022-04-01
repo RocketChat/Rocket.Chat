@@ -1,21 +1,18 @@
 import React, { FC, memo } from 'react';
 
-import { getRegexHighlight, getRegexHighlightUrl, highlightWords } from '../../app/highlight-words/client/helper';
+import { highlightWords } from '../../app/highlight-words/client/helper';
 
 type HighlighterType = {
 	text: string;
-	wordsToHighlight: string[];
+	wordsToHighlight: {
+		highlight: string;
+		regex: RegExp;
+		urlRegex: RegExp;
+	}[];
 };
 
-const Highlighter: FC<HighlighterType> = ({ text, wordsToHighlight }) => {
-	const highlights =
-		wordsToHighlight?.map((highlight) => ({
-			highlight,
-			regex: getRegexHighlight(highlight),
-			urlRegex: getRegexHighlightUrl(highlight),
-		})) || [];
-
-	return <span dangerouslySetInnerHTML={{ __html: highlightWords(text, highlights) }} />;
-};
+const Highlighter: FC<HighlighterType> = ({ text, wordsToHighlight }) => (
+	<span dangerouslySetInnerHTML={{ __html: highlightWords(text, wordsToHighlight) }} />
+);
 
 export default memo(Highlighter);
