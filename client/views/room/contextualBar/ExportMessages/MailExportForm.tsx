@@ -40,6 +40,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const [errorMessage, setErrorMessage] = useState<string>();
 
 	const messages = selectedMessageStore ? selectedMessageStore.getSelectedMessages() : selectedMessages;
+	const count = useCountSelected();
 
 	const { values, handlers } = useForm({
 		dateFrom: '',
@@ -120,14 +121,14 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Callout onClick={clearSelection} title={t('Messages_selected')} type={useCountSelected() > 0 ? 'success' : 'info'}>
-					<p>{`${useCountSelected()} Messages selected`}</p>
-					{useCountSelected() > 0 && (
+				<Callout onClick={clearSelection} title={t('Messages_selected')} type={count > 0 ? 'success' : 'info'}>
+					<p>{`${count} Messages selected`}</p>
+					{count > 0 && (
 						<Box is='p' className={clickable}>
 							{t('Click_here_to_clear_the_selection')}
 						</Box>
 					)}
-					{useCountSelected() === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
+					{count === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
 				</Callout>
 			</Field>
 			<Field>

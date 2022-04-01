@@ -29,7 +29,13 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	useCountSelected();
 
 	return (
-		<MessageTemplate {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} isEditing={isEditingMessage}>
+		<MessageTemplate
+			{...props}
+			onClick={isSelecting ? toggleSelected : undefined}
+			isSelected={isSelected}
+			isEditing={isEditingMessage}
+			data-qa-selected={isSelected}
+		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !isSelecting && <UserAvatar username={message.u.username} size={'x36'} />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
