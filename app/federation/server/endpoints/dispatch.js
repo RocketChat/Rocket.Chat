@@ -7,7 +7,7 @@ import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../
 import { FederationServers } from '../../../models/server/raw';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
-import { Notifications } from '../../../notifications/server';
+import { api } from '../../../../server/sdk/api';
 import { FileUpload } from '../../../file-upload';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { decryptIfNeeded } from '../lib/crypt';
@@ -327,7 +327,7 @@ const eventHandlers = {
 			Messages.removeById(messageId);
 
 			// Notify the room
-			Notifications.notifyRoom(roomId, 'deleteMessage', { _id: messageId });
+			api.broadcast('notify.deleteMessage', roomId, { _id: messageId });
 		}
 
 		return eventResult;

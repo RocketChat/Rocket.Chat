@@ -30,11 +30,11 @@ jobs:
           cat $GITHUB_EVENT_PATH
 
       - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.18.3'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Free disk space
         run: |
@@ -189,7 +189,7 @@ jobs:
           cd -
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -202,7 +202,7 @@ jobs:
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Cache cypress
         id: cache-cypress
@@ -234,7 +234,7 @@ jobs:
       - name: Unit Test (client)
         run: npm run testunit-client
 
-      - name: E2E Test
+      - name: E2E Test API
         env:
           TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
@@ -242,7 +242,31 @@ jobs:
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
-          for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
+          for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
+      - name: E2E Test UI
+        env:
+          TEST_MODE: 'true'
+          MONGO_URL: mongodb://localhost:27017/rocketchat
+          MONGO_OPLOG_URL: mongodb://localhost:27017/local
+        run: |
+          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+          Xvfb -screen 0 1024x768x24 :99 &
+          for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
+
+      - name: Store cypress test screenshots
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-test-screenshots
+          path: tests/cypress/screenshots*
+
+      - name: Store cypress test videos
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-test-videos
+          path: tests/cypress/videos*
 
   test-ee:
     runs-on: ubuntu-20.04
@@ -275,7 +299,7 @@ jobs:
           cd -
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -288,7 +312,7 @@ jobs:
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Cache cypress
         id: cache-cypress
@@ -318,21 +342,50 @@ jobs:
           cd ./ee/server/services
           npm run build
 
-      - name: E2E Test
+      - name: E2E Test API
         env:
           TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
           TRANSPORTER: nats://localhost:4222
-          TEST_URL: http://localhost:4000
           SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
 
-          for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise && s=0 && break || s=$? && sleep 1; done; (exit $s)
+          for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
+      - name: E2E Test UI
+        env:
+          TEST_MODE: 'true'
+          MONGO_URL: mongodb://localhost:27017/rocketchat
+          MONGO_OPLOG_URL: mongodb://localhost:27017/local
+          ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
+          TRANSPORTER: nats://localhost:4222
+          CYPRESS_BASE_URL: http://localhost:4000
+          CYPRESS_TEST_API_URL: http://localhost:4000
+          OVERWRITE_SETTING_Site_Url: http://localhost:4000
+          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
+        run: |
+          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+          Xvfb -screen 0 1024x768x24 :99 &
+
+          for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
+
+      - name: Store cypress test screenshots
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ee-cypress-test-screenshots
+          path: tests/cypress/screenshots*
+
+      - name: Store cypress test videos
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ee-cypress-test-videos
+          path: tests/cypress/videos*
   #   notification:
   #     runs-on: ubuntu-20.04
   #     needs: test
@@ -356,7 +409,7 @@ jobs:
         release: ['official', 'preview']
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -395,7 +448,7 @@ jobs:
           key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
 
       - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.18.3'
 
@@ -480,7 +533,7 @@ jobs:
     needs: test
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -565,7 +618,7 @@ jobs:
       IMAGE_NAME: 'rocketchat/rocket.chat'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -677,10 +730,10 @@ jobs:
         service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.18.3'
 

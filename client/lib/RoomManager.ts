@@ -54,7 +54,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 }> {
 	private rid: IRoom['_id'] | undefined;
 
-	private lastRid: IRoom['_id'] | undefined;
+	public lastRid: IRoom['_id'] | undefined;
 
 	private rooms: Map<IRoom['_id'], RoomStore> = new Map();
 

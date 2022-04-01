@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasRole } from '../../app/authorization/server';
+import { hasPermission } from '../../app/authorization/server';
 import { Users, Rooms, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
@@ -11,7 +11,7 @@ Meteor.methods({
 		check(rid, String);
 		check(activeUsersOnly, Boolean);
 
-		if (!hasRole(this.userId, 'admin')) {
+		if (!hasPermission(this.userId, 'add-all-to-room')) {
 			throw new Meteor.Error(403, 'Access to Method Forbidden', {
 				method: 'addAllToRoom',
 			});

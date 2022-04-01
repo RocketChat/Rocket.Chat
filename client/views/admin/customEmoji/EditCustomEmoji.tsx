@@ -95,7 +95,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 				await deleteAction();
 				dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 			} finally {
 				onChange();
 				setModal(null);

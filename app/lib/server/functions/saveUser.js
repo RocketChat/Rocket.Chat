@@ -71,7 +71,7 @@ function validateUserData(userId, userData) {
 	}
 
 	if (userData.roles && _.difference(userData.roles, existingRoles).length > 0) {
-		throw new Meteor.Error('error-action-not-allowed', 'The field Roles consist invalid role name', {
+		throw new Meteor.Error('error-action-not-allowed', 'The field Roles consist invalid role id', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_role',
 		});
@@ -207,7 +207,7 @@ export function validateUserEditing(userId, userData) {
 	}
 
 	if (
-		user.emails[0] &&
+		user.emails?.[0] &&
 		isEditingField(user.emails[0].address, userData.email) &&
 		!settings.get('Accounts_AllowEmailChange') &&
 		(!canEditOtherUserInfo || editingMyself)

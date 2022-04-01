@@ -70,6 +70,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			return;
 		}
 		this.logger.debug(`Notifying agent ${agent._id} of hangup on room ${currentRoom._id}`);
+		// TODO evalute why this is 'notifyUserInThisInstance'
 		Notifications.notifyUserInThisInstance(agent._id, 'call.callerhangup', { roomId: currentRoom._id });
 	}
 

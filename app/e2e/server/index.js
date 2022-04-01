@@ -1,5 +1,5 @@
 import { callbacks } from '../../../lib/callbacks';
-import { Notifications } from '../../notifications';
+import { api } from '../../../server/sdk/api';
 
 import './settings';
 import './beforeCreateRoom';
@@ -14,7 +14,7 @@ import './methods/requestSubscriptionKeys';
 callbacks.add(
 	'afterJoinRoom',
 	(user, room) => {
-		Notifications.notifyRoom('e2e.keyRequest', room._id, room.e2eKeyId);
+		api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
 	},
 	callbacks.priority.MEDIUM,
 	'e2e',

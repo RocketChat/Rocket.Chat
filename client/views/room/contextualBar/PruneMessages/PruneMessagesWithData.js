@@ -106,7 +106,7 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 			closeModal();
 			reset();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error.message });
 			closeModal();
 		}
 	});

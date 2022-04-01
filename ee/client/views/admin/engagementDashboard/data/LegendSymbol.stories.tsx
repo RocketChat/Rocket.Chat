@@ -6,7 +6,7 @@ import LegendSymbol from './LegendSymbol';
 import { monochromaticColors, polychromaticColors } from './colors';
 
 export default {
-	title: 'admin/engagementDashboard/data/LegendSymbol',
+	title: 'Enterprise/Admin/Engagement Dashboard/LegendSymbol',
 	component: LegendSymbol,
 	decorators: [(fn): ReactElement => <Margins children={fn()} all='x16' />],
 } as Meta;

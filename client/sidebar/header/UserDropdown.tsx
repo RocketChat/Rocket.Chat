@@ -97,7 +97,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	});
 
 	const handleAdmin = useMutableCallback(() => {
-		adminRoute.push({ group: 'info' });
+		adminRoute.push();
 		sidebar.toggle();
 		onClose();
 	});
