@@ -1,6 +1,5 @@
 import { Box, Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
-import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, ReactNode } from 'react';
 
 import Page from '../../../components/Page';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -8,6 +7,7 @@ import { useQueryStringParameter, useRoute, useRouteParameter } from '../../../c
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useMethodData } from '../../../hooks/useMethodData';
 import ConnectToCloudSection from './ConnectToCloudSection';
 import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';
 import TroubleshootingSection from './TroubleshootingSection';
@@ -16,7 +16,7 @@ import WorkspaceLoginSection from './WorkspaceLoginSection';
 import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
 import { cloudConsoleUrl } from './constants';
 
-function CloudPage() {
+const CloudPage = function CloudPage(): ReactNode {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -30,11 +30,14 @@ function CloudPage() {
 	const token = useQueryStringParameter('token');
 
 	const finishOAuthAuthorization = useMethod('cloud:finishOAuthAuthorization');
-	const checkRegisterStatus = useMethod('cloud:checkRegisterStatus');
+	// const checkRegisterStatus = useMethod('cloud:checkRegisterStatus');
+
+	const checkRegisterStatus = useMethodData('cloud:checkRegisterStatus');
+
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
 
 	useEffect(() => {
-		const acceptOAuthAuthorization = async () => {
+		const acceptOAuthAuthorization = async (): Promise<void> => {
 			if (page !== 'oauth-callback') {
 				return;
 			}
@@ -61,20 +64,10 @@ function CloudPage() {
 		acceptOAuthAuthorization();
 	}, [errorCode, code, state, page, dispatchToastMessage, t, cloudRoute, finishOAuthAuthorization]);
 
-	const [registerStatus, setRegisterStatus] = useSafely(useState());
 	const setModal = useSetModal();
 
-	const fetchRegisterStatus = useMutableCallback(async () => {
-		try {
-			const registerStatus = await checkRegisterStatus();
-			setRegisterStatus(registerStatus);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
 	useEffect(() => {
-		const acceptWorkspaceToken = async () => {
+		const acceptWorkspaceToken = async (): Promise<void> => {
 			try {
 				if (token) {
 					const isConnected = await connectWorkspace(token);
@@ -88,23 +81,31 @@ function CloudPage() {
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
-				await fetchRegisterStatus();
+				await checkRegisterStatus.reload();
 			}
 		};
 
 		acceptWorkspaceToken();
-	}, [connectWorkspace, dispatchToastMessage, fetchRegisterStatus, t, token]);
+	}, [checkRegisterStatus, connectWorkspace, dispatchToastMessage, t, token]);
 
-	const handleManualWorkspaceRegistrationButtonClick = () => {
-		const handleModalClose = () => {
+	const handleManualWorkspaceRegistrationButtonClick = (): void => {
+		const handleModalClose = (): void => {
 			setModal(null);
-			fetchRegisterStatus();
+			checkRegisterStatus.reload();
 		};
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
-	const isConnectToCloudDesired = registerStatus?.connectToCloud;
-	const isWorkspaceRegistered = registerStatus?.workspaceRegistered;
+	if (checkRegisterStatus.phase === 'loading') {
+		return null;
+	}
+
+	if (checkRegisterStatus.phase === 'rejected') {
+		return null;
+	}
+
+	const isConnectToCloudDesired = checkRegisterStatus.value.connectToCloud;
+	const isWorkspaceRegistered = checkRegisterStatus.value.workspaceRegistered;
 
 	return (
 		<Page>
@@ -125,27 +126,27 @@ function CloudPage() {
 							<>
 								{isWorkspaceRegistered ? (
 									<>
-										<WorkspaceLoginSection onRegisterStatusChange={fetchRegisterStatus} />
-										<TroubleshootingSection onRegisterStatusChange={fetchRegisterStatus} />
+										<WorkspaceLoginSection onRegisterStatusChange={checkRegisterStatus.reload} />
+										<TroubleshootingSection onRegisterStatusChange={checkRegisterStatus.reload} />
 									</>
 								) : (
 									<WorkspaceRegistrationSection
-										email={registerStatus?.email}
-										token={registerStatus?.token}
-										workspaceId={registerStatus?.workspaceId}
-										uniqueId={registerStatus?.uniqueId}
-										onRegisterStatusChange={fetchRegisterStatus}
+										email={checkRegisterStatus.value.email}
+										token={checkRegisterStatus.value.token}
+										workspaceId={checkRegisterStatus.value.workspaceId}
+										uniqueId={checkRegisterStatus.value.uniqueId}
+										onRegisterStatusChange={checkRegisterStatus.reload}
 									/>
 								)}
 							</>
 						)}
 
-						{!isConnectToCloudDesired && <ConnectToCloudSection onRegisterStatusChange={fetchRegisterStatus} />}
+						{!isConnectToCloudDesired && <ConnectToCloudSection onRegisterStatusChange={checkRegisterStatus.reload} />}
 					</Margins>
 				</Box>
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);
-}
+};
 
 export default CloudPage;
