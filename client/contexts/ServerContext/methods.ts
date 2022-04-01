@@ -85,7 +85,21 @@ export type ServerMethods = {
 	'livechat:changeLivechatStatus': (...args: any[]) => any;
 	'livechat:closeRoom': (...args: any[]) => any;
 	'livechat:discardTranscript': (...args: any[]) => any;
-	'livechat:facebook': (...args: any[]) => any;
+
+	// TODO: chapter day backend - enhance/deprecate
+	'livechat:facebook':
+		| ((...args: [{ action: 'initialState' }]) => {
+				enabled: boolean;
+				hasToken: boolean;
+		  })
+		| ((...args: [{ action: 'list-pages' }]) => {
+				name: string;
+				subscribed: boolean;
+				id: string;
+		  }[])
+		| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => {})
+		| ((...args: [{ action: 'enable' }]) => { url: string } | undefined)
+		| ((...args: [{ action: 'disable' }]) => {});
 	'livechat:getAgentOverviewData': (...args: any[]) => any;
 	'livechat:getAnalyticsChartData': (...args: any[]) => any;
 	'livechat:getAnalyticsOverviewData': (...args: any[]) => any;

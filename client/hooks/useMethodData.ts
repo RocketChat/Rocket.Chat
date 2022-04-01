@@ -1,17 +1,13 @@
 import { useCallback, useEffect } from 'react';
 
 import type { Awaited } from '../../definition/utils';
-import { ServerMethodFunction, ServerMethods, useMethod } from '../contexts/ServerContext';
+import { ServerMethodFunction, ServerMethodParameters, ServerMethods, useMethod } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { AsyncState, useAsyncState } from './useAsyncState';
 
-export const useMethodData = <
-	MethodName extends keyof ServerMethods,
-	MethodArg = Parameters<ServerMethodFunction<MethodName>>,
-	Result = Awaited<ReturnType<ServerMethodFunction<MethodName>>>,
->(
+export const useMethodData = <MethodName extends keyof ServerMethods, Result = Awaited<ReturnType<ServerMethodFunction<MethodName>>>>(
 	methodName: MethodName,
-	args: MethodArg,
+	args: ServerMethodParameters<MethodName>,
 	initialValue?: Result | (() => Result),
 ): AsyncState<Result> & { reload: () => void } => {
 	const { resolve, reject, reset, ...state } = useAsyncState<Result>(initialValue);
