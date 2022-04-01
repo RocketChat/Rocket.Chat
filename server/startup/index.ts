@@ -8,5 +8,4 @@ import './presence';
 import './serverRunning';
 import './coreApps';
 import '../hooks';
-import './overrides/http';
 import '../lib/rooms/roomTypes';
