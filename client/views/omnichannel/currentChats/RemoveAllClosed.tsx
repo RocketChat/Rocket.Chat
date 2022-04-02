@@ -8,8 +8,8 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 const RemoveAllClosed: FC<{
 	handleClearFilters: any;
 	handleRemoveClosed: any;
-	handleCustomFields: any;
-}> = ({ handleClearFilters, handleRemoveClosed, handleCustomFields, ...props }) => {
+	handleCustomFieldsFilterToggle: any;
+}> = ({ handleClearFilters, handleRemoveClosed, handleCustomFieldsFilterToggle, ...props }) => {
 	const t = useTranslation();
 	const canRemove = usePermission('remove-closed-livechat-rooms');
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
@@ -23,7 +23,7 @@ const RemoveAllClosed: FC<{
 						{t('Custom_Fields')}
 					</Box>
 				),
-				action: handleCustomFields,
+				action: handleCustomFieldsFilterToggle,
 			},
 		}),
 		clearFilters: {

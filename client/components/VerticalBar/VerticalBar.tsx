@@ -1,9 +1,13 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC, ComponentProps, memo } from 'react';
+import React, { FC, ComponentProps, memo, CSSProperties } from 'react';
 
 import { useLayoutContextualBarPosition, useLayoutSizes } from '../../providers/LayoutProvider';
 
-const VerticalBar: FC<ComponentProps<typeof Box>> = ({ children, ...props }) => {
+const VerticalBar: FC<ComponentProps<typeof Box> & { overridePosition?: CSSProperties['position'] }> = ({
+	children,
+	overridePosition,
+	...props
+}) => {
 	const sizes = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
 	return (
@@ -18,7 +22,7 @@ const VerticalBar: FC<ComponentProps<typeof Box>> = ({ children, ...props }) => 
 			borderInlineStartColor='neutral-300'
 			borderInlineStartStyle='solid'
 			height='full'
-			position={position}
+			position={overridePosition || position}
 			zIndex={5}
 			insetInlineEnd={'none'}
 			insetBlockStart={'none'}

@@ -1,16 +1,21 @@
-import { TextInput, Box, MultiSelect, Select, InputBox } from '@rocket.chat/fuselage';
+import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
-import React, { Dispatch, FC, SetStateAction, useEffect, useMemo } from 'react';
+import React, { Dispatch, FC, SetStateAction, useEffect, useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
+import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
+import { ILivechatCustomField } from '../../../../definition/ILivechatCustomField';
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
+import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import GenericModal from '../../../components/GenericModal';
+import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { formsSubscription } from '../additionalForms';
 import Label from './Label';
@@ -18,26 +23,22 @@ import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;
-	setCustomFieldsSearchBarOpen: Dispatch<SetStateAction<boolean>>;
 	reload?: () => void;
 }>;
 
-const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSearchBarOpen, ...props }) => {
+type CustomFieldsData = Record<string, Pick<ILivechatCustomField, 'label' | 'type' | 'required' | 'defaultValue'> & { options?: string[] }>;
+
+const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const { value: allCustomFields } = useEndpointData('livechat/custom-fields');
 	const statusOptions: [string, string][] = [
 		['all', t('All')],
 		['closed', t('Closed')],
 		['opened', t('Open')],
 		['onhold', t('On_Hold_Chats')],
 	];
-	const customFieldsOptions: [string, string][] = useMemo(
-		() => (allCustomFields?.customFields ? allCustomFields.customFields.map(({ _id, label }) => [_id, label]) : []),
-		[allCustomFields],
-	);
 
 	const [guest, setGuest] = useLocalStorage('guest', '');
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
@@ -46,7 +47,12 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSear
 	const [from, setFrom] = useLocalStorage('from', '');
 	const [to, setTo] = useLocalStorage('to', '');
 	const [tags, setTags] = useLocalStorage<never | { label: string; value: string }[]>('tags', []);
-	const [customFields, setCustomFields] = useLocalStorage<any[]>('tags', []);
+	const [customFields, setCustomFields] = useLocalStorage<{}>('customFields', {
+		CustomFieldTest: '',
+		SurveySubmitted: t('None'),
+	});
+
+	console.log('final customFields', customFields);
 
 	const handleGuest = useMutableCallback((e) => setGuest(e.target.value));
 	const handleServedBy = useMutableCallback((e) => setServedBy(e));
@@ -55,7 +61,6 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSear
 	const handleFrom = useMutableCallback((e) => setFrom(e.target.value));
 	const handleTo = useMutableCallback((e) => setTo(e.target.value));
 	const handleTags = useMutableCallback((e) => setTags(e));
-	const handleCustomFields = useMutableCallback((e) => setCustomFields(e));
 
 	const reset = useMutableCallback(() => {
 		setGuest('');
@@ -65,7 +70,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSear
 		setFrom('');
 		setTo('');
 		setTags([]);
-		setCustomFields([]);
+		setCustomFields({});
 	});
 
 	const forms = useSubscription<any>(formsSubscription);
@@ -75,10 +80,60 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSear
 	const Tags = useCurrentChatTags();
 
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
-	const reducer = function (acc: any, curr: string): any {
-		acc[curr] = '';
-		return acc;
+
+	const [customFieldsSearchBarOpen, setCustomFieldsSearchBarOpen] = useState<boolean>(false);
+
+	const handleCustomFieldsFilterToggle = (): void => setCustomFieldsSearchBarOpen(true);
+
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
+
+	const jsonConverterToValidFormat = (customFields: Omit<ILivechatCustomField, '_updatedAt'>[]): CustomFieldsData => {
+		const jsonObj: CustomFieldsData = {};
+		console.log('raw customFields', customFields);
+		customFields.forEach(({ _id, label, visibility, options, scope, required }) => {
+			if (visibility === 'visible' && scope === 'room') {
+				const optionsArrayWithClearFilterOption = options ? options.split(',').map((item) => item.trim()) : [];
+				optionsArrayWithClearFilterOption.length && optionsArrayWithClearFilterOption.unshift(t('None'));
+				jsonObj[_id] = {
+					label,
+					type: options ? 'select' : 'text',
+					required,
+					defaultValue: options ? t('None') : '',
+					...(optionsArrayWithClearFilterOption.length && {
+						options: optionsArrayWithClearFilterOption,
+					}),
+				};
+			}
+		});
+		return jsonObj;
 	};
+
+	const jsonCustomField = useMemo(
+		() => (allCustomFields?.customFields ? jsonConverterToValidFormat(allCustomFields.customFields) : {}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[allCustomFields],
+	);
+	console.log('final jsonCustomField', jsonCustomField);
+
+	const handleCustomFields = useMutableCallback((newCustomFields: Record<string, string>) => {
+		console.log('newCustomFields b4', newCustomFields);
+		Object.entries(newCustomFields).forEach(([key, value]) => {
+			const customFieldDefinition = jsonCustomField[key];
+			if (!customFieldDefinition) {
+				delete newCustomFields[key];
+			}
+			const { options } = customFieldDefinition;
+			if (options) {
+				// type select
+				value === t('None') && delete newCustomFields[key];
+			} else {
+				// type text
+				value.trim() === '' && delete newCustomFields[key];
+			}
+		});
+		console.log('newCustomFields after', newCustomFields);
+		setCustomFields(newCustomFields);
+	});
 
 	useEffect(() => {
 		setFilter({
@@ -89,9 +144,10 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSear
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
-			customFields: customFields.reduce(reducer, {}),
+			customFields,
 		});
 	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields]);
+	console.log('customFields', customFields);
 
 	const handleClearFilters = useMutableCallback(() => {
 		reset();
@@ -120,10 +176,11 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSear
 		);
 	});
 
-	const handleCustomFieldsNew = (): void => {
-		console.log('handleCustomFields called');
-		setCustomFieldsSearchBarOpen(true);
-	};
+	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+
+	if ([stateCustomFields].includes(AsyncStatePhase.LOADING)) {
+		return <>{t('Loading')}</>;
+	}
 
 	return (
 		<Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
@@ -152,7 +209,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSear
 				<RemoveAllClosed
 					handleClearFilters={handleClearFilters}
 					handleRemoveClosed={handleRemoveClosed}
-					handleCustomFields={handleCustomFieldsNew}
+					handleCustomFieldsFilterToggle={handleCustomFieldsFilterToggle}
 				/>
 			</Box>
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
@@ -169,13 +226,37 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, setCustomFieldsSear
 					</Box>
 				</Box>
 			)}
-			{allCustomFields && (
-				<Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
-					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-						<Label mb='x4'>{t('Custom_Fields')}</Label>
-						<MultiSelect options={customFieldsOptions} value={customFields} onChange={handleCustomFields} flexGrow={1} {...props} />
-					</Box>
-				</Box>
+			{customFieldsSearchBarOpen && (
+				<VerticalBar overridePosition='absolute'>
+					<VerticalBar.Header>
+						{t('Filter_by_Custom_Fields')}
+						<VerticalBar.Close
+							onClick={(): void => {
+								console.log('close button clicked');
+								setCustomFieldsSearchBarOpen(false);
+							}}
+						/>
+					</VerticalBar.Header>
+					<VerticalBar.ScrollableContent>
+						{canViewCustomFields && allCustomFields && (
+							<CustomFieldsForm
+								jsonCustomFields={jsonCustomField}
+								customFieldsData={customFields}
+								setCustomFieldsData={(newCustomFields: Record<string, string>): void => {
+									if (!newCustomFields) {
+										return;
+									}
+
+									console.log('setting new custom fields', newCustomFields);
+									handleCustomFields(newCustomFields);
+								}}
+								setCustomFieldsError={(): void => {
+									console.log('setCustomFieldsData called');
+								}}
+							/>
+						)}
+					</VerticalBar.ScrollableContent>
+				</VerticalBar>
 			)}
 		</Box>
 	);
