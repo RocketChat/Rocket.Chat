@@ -4,11 +4,6 @@ import { ChannelMention } from '../definitions/ChannelMention';
 import { UserMention } from '../definitions/UserMention';
 
 type MessageBodyContextType = {
-	highlights?: {
-		highlight: string;
-		regex: RegExp;
-		urlRegex: RegExp;
-	}[];
 	mentions?: UserMention[];
 	channels?: ChannelMention[];
 	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
@@ -16,7 +11,6 @@ type MessageBodyContextType = {
 };
 
 export const MessageBodyContext = createContext<MessageBodyContextType>({
-	highlights: undefined,
 	mentions: [],
 	channels: [],
 });
@@ -26,17 +20,6 @@ export const useMessageBodyContext = (): MessageBodyContextType => useContext(Me
 export const useMessageBodyUserMentions = (): UserMention[] => {
 	const { mentions = [] } = useMessageBodyContext();
 	return mentions;
-};
-
-export const useMessageBodyHighlights = ():
-	| {
-			highlight: string;
-			regex: RegExp;
-			urlRegex: RegExp;
-	  }[]
-	| undefined => {
-	const { highlights } = useMessageBodyContext();
-	return highlights;
 };
 
 export const useMessageBodyChannelMentions = (): ChannelMention[] => {

@@ -5,12 +5,10 @@ import { IMessage } from '../../../../../definition/IMessage';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useMessageActions } from '../../contexts/MessageContext';
-import { useMessageListHighlights } from '../contexts/MessageListContext';
 
 const EncryptedMessageRender = ({ message }: { message: IMessage }): ReactElement => {
 	const tokens = useMemo(() => parser(message.msg), [message.msg]);
 	const t = useTranslation();
-	const highlights = useMessageListHighlights();
 
 	const {
 		actions: { openUserCard, openRoom },
@@ -26,7 +24,6 @@ const EncryptedMessageRender = ({ message }: { message: IMessage }): ReactElemen
 			onChannelMentionClick={openRoom}
 			mentions={message?.mentions || []}
 			channels={message?.channels || []}
-			highlights={highlights}
 			tokens={tokens}
 		/>
 	);

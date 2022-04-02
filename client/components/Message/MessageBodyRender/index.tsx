@@ -15,13 +15,6 @@ import { UserMention } from './definitions/UserMention';
 
 type BodyProps = {
 	tokens: MarkdownAST;
-	highlights:
-		| {
-				highlight: string;
-				regex: RegExp;
-				urlRegex: RegExp;
-		  }[]
-		| undefined;
 	mentions: UserMention[];
 	channels: ChannelMention[];
 	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
@@ -30,20 +23,13 @@ type BodyProps = {
 
 const isBigEmoji = (tokens: MarkdownAST): tokens is [ASTBigEmoji] => tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
-const MessageBodyRender: FC<BodyProps> = ({
-	tokens,
-	highlights,
-	mentions = [],
-	channels = [],
-	onUserMentionClick,
-	onChannelMentionClick,
-}) => {
+const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [], channels = [], onUserMentionClick, onChannelMentionClick }) => {
 	if (isBigEmoji(tokens)) {
 		return <BigEmoji value={tokens[0].value} />;
 	}
 
 	return (
-		<MessageBodyContext.Provider value={{ highlights, mentions, channels, onUserMentionClick, onChannelMentionClick }}>
+		<MessageBodyContext.Provider value={{ mentions, channels, onUserMentionClick, onChannelMentionClick }}>
 			{tokens.map((block, index) => {
 				if (block.type === 'UNORDERED_LIST') {
 					return <UnorderedList value={block.value} key={index} />;

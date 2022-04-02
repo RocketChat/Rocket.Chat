@@ -15,13 +15,12 @@ export type MessageListContextValue = {
 	showRealName: boolean;
 	showUsername: boolean;
 	showReadReceipt: boolean;
-	highlights:
+	highlights?:
 		| {
 				highlight: string;
 				regex: RegExp;
 				urlRegex: RegExp;
-		  }[]
-		| undefined;
+		  }[];
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -43,7 +42,6 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showRealName: false,
 	showUsername: false,
 	showReadReceipt: false,
-	highlights: [],
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
