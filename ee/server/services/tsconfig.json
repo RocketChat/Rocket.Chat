@@ -33,7 +33,9 @@
 		"esModuleInterop": true,
 		"preserveSymlinks": true,
 
-		"outDir": "./dist"
+		"outDir": "./dist",
+
+		"skipLibCheck": true
 
 		// "sourceMap": true,
 		// "declaration": true,
