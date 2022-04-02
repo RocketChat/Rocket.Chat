@@ -3,14 +3,6 @@ import type { IRoom } from '../../IRoom';
 import type { ReadReceipt } from '../../ReadReceipt';
 
 export type ChatEndpoints = {
-	'chat.react': {
-		POST: (
-			params: {
-				messageId: IMessage['_id'];
-				shouldReact?: boolean;
-			} & ({ emoji: keyof Required<IMessage>['reactions'] } | { reaction: keyof Required<IMessage>['reactions'] }),
-		) => void;
-	};
 	'chat.getMessage': {
 		GET: (params: { msgId: IMessage['_id'] }) => {
 			message: IMessage;
@@ -63,6 +55,14 @@ export type ChatEndpoints = {
 			ts: string;
 			message: Pick<IMessage, '_id' | 'rid' | 'u'>;
 		};
+	};
+	'chat.react': {
+		POST: (
+			params: {
+				messageId: IMessage['_id'];
+				shouldReact?: boolean;
+			} & ({ emoji: string } | { reaction: string }),
+		) => void;
 	};
 	'chat.ignoreUser': {
 		GET: (params: { rid: string; userId: string; ignore: boolean }) => {};

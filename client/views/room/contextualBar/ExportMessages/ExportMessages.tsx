@@ -1,19 +1,23 @@
-import { Field, Select, FieldGroup } from '@rocket.chat/fuselage';
-import React, { useState, useMemo } from 'react';
+import { Field, Select, FieldGroup, SelectOption } from '@rocket.chat/fuselage';
+import React, { useState, useMemo, FC } from 'react';
 
+import { IRoom } from '../../../../../definition/IRoom';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
 
-function ExportMessages({ rid }) {
+type ExportMessagesProps = {
+	rid: IRoom['_id'];
+};
+const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 	const t = useTranslation();
 	const close = useTabBarClose();
 
 	const [type, setType] = useState('email');
 
-	const exportOptions = useMemo(
+	const exportOptions = useMemo<SelectOption[]>(
 		() => [
 			['email', t('Send_via_email')],
 			['file', t('Export_as_file')],
@@ -32,7 +36,7 @@ function ExportMessages({ rid }) {
 					<Field>
 						<Field.Label>{t('Method')}</Field.Label>
 						<Field.Row>
-							<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions} />
+							<Select value={type} onChange={(value): void => setType(value)} placeholder={t('Type')} options={exportOptions} />
 						</Field.Row>
 					</Field>
 				</FieldGroup>
@@ -41,6 +45,6 @@ function ExportMessages({ rid }) {
 			</VerticalBar.ScrollableContent>
 		</>
 	);
-}
+};
 
 export default ExportMessages;
