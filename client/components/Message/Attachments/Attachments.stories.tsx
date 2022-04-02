@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/camelcase */
-import React, { ReactElement } from 'react';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
+import React from 'react';
 
 import Attachments from '.';
 import { FileAttachmentProps } from '../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
@@ -10,8 +10,7 @@ import { MessageAttachmentDefault } from '../../../../definition/IMessage/Messag
 export default {
 	title: 'Message/Attachments',
 	component: Attachments,
-	decorators: [(storyFn: any): ReactElement => storyFn()],
-};
+} as ComponentMeta<typeof Attachments>;
 
 const field: MessageAttachmentDefault = {
 	color: '#ff0000',
@@ -94,16 +93,16 @@ const message = {
 	attachments: [field, image],
 };
 
-// window.__meteor_runtime_config__ = { ROOT_URL_PATH_PREFIX: '' };
+export const Default: ComponentStory<typeof Attachments> = () => <Attachments attachments={message.attachments} />;
 
-export const Default = () => <Attachments attachments={message.attachments} />;
+export const Fields: ComponentStory<typeof Attachments> = () => <Attachments attachments={[field]} />;
 
-export const Fields = () => <Attachments attachments={[field]} />;
+export const FailingImage: ComponentStory<typeof Attachments> = () => (
+	<Attachments attachments={[{ ...image, image_url: 'invalid.url' } as FileAttachmentProps]} />
+);
 
-export const FailingImage = () => <Attachments attachments={[{ ...image, image_url: 'invalid.url' } as FileAttachmentProps]} />;
+export const Image: ComponentStory<typeof Attachments> = () => <Attachments attachments={[image]} />;
 
-export const Image = () => <Attachments attachments={[image]} />;
+export const Video: ComponentStory<typeof Attachments> = () => <Attachments attachments={[video]} file={{} as FileProp} />;
 
-export const Video = () => <Attachments attachments={[video]} file={{} as FileProp} />;
-
-export const Audio = () => <Attachments attachments={[audio]} file={{} as FileProp} />;
+export const Audio: ComponentStory<typeof Attachments> = () => <Attachments attachments={[audio]} file={{} as FileProp} />;

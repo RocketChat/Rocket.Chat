@@ -1,7 +1,7 @@
 import React from 'react';
 
-import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import PageSkeleton from '../../../../client/components/PageSkeleton';
+import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import { useHasLicense } from '../../hooks/useHasLicense';
 import MonitorsPage from './MonitorsPage';
 
