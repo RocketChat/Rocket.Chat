@@ -13,6 +13,7 @@ import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import { useRoom } from '../contexts/RoomContext';
 import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
+import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import LazyComponent from './LazyComponent';
 
@@ -44,27 +45,31 @@ export const Room: FC<{}> = () => {
 			{tab && (
 				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
 					<ErrorBoundary>
-						{typeof tab.template === 'string' && (
-							<VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} />
-						)}
-						{typeof tab.template !== 'string' && (
-							<LazyComponent template={tab.template} tabBar={tabBar} rid={room._id} teamId={room.teamId} _id={room._id} />
-						)}
+						<SelectedMessagesProvider>
+							{typeof tab.template === 'string' && (
+								<VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} />
+							)}
+							{typeof tab.template !== 'string' && (
+								<LazyComponent template={tab.template} tabBar={tabBar} rid={room._id} teamId={room.teamId} _id={room._id} />
+							)}
+						</SelectedMessagesProvider>
 					</ErrorBoundary>
 				</RoomTemplate.Aside>
 			)}
 			{appsContextualBarContext && (
-				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
-					<ErrorBoundary>
-						<LazyComponent
-							template={AppsContextualBar}
-							viewId={appsContextualBarContext.viewId}
-							roomId={appsContextualBarContext.roomId}
-							payload={appsContextualBarContext.payload}
-							appInfo={appsContextualBarContext.appInfo}
-						/>
-					</ErrorBoundary>
-				</RoomTemplate.Aside>
+				<SelectedMessagesProvider>
+					<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
+						<ErrorBoundary>
+							<LazyComponent
+								template={AppsContextualBar}
+								viewId={appsContextualBarContext.viewId}
+								roomId={appsContextualBarContext.roomId}
+								payload={appsContextualBarContext.payload}
+								appInfo={appsContextualBarContext.appInfo}
+							/>
+						</ErrorBoundary>
+					</RoomTemplate.Aside>
+				</SelectedMessagesProvider>
 			)}
 		</RoomTemplate>
 	);

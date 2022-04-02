@@ -8,6 +8,7 @@ import { useSettings } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUser, useUserRoom, useUserSubscription } from '../../../../../contexts/UserContext';
 import { getTabBarContext } from '../../../lib/Toolbox/ToolboxContext';
+import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
 import { MessageActionMenu } from './MessageActionMenu';
 
 export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
@@ -30,6 +31,12 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const menuActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, 'message', 'menu');
 
 	const tabbar = getTabBarContext(message.rid);
+
+	const isSelecting = useIsSelecting();
+
+	if (isSelecting) {
+		return null;
+	}
 
 	return (
 		<MessageToolbox>

@@ -1,12 +1,21 @@
-import { Field, TextInput, Select, ButtonGroup, Button, FieldGroup } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import { Field, Select, ButtonGroup, Button, FieldGroup, SelectOption, InputBox } from '@rocket.chat/fuselage';
+import React, { FC, MouseEventHandler, useMemo } from 'react';
 
+import { IRoom } from '../../../../../definition/IRoom';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 
-const FileExport = ({ onCancel, rid }) => {
+type MailExportFormValues = {
+	dateFrom: string;
+	dateTo: string;
+	format: 'html' | 'json';
+};
+
+type FileExportProps = { onCancel: MouseEventHandler<HTMLOrSVGElement>; rid: IRoom['_id'] };
+
+const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 	const t = useTranslation();
 
 	const { values, handlers } = useForm({
@@ -15,11 +24,11 @@ const FileExport = ({ onCancel, rid }) => {
 		format: 'html',
 	});
 
-	const { dateFrom, dateTo, format } = values;
+	const { dateFrom, dateTo, format } = values as MailExportFormValues;
 
 	const { handleDateFrom, handleDateTo, handleFormat } = handlers;
 
-	const outputOptions = useMemo(
+	const outputOptions = useMemo<SelectOption[]>(
 		() => [
 			['html', t('HTML')],
 			['json', t('JSON')],
@@ -31,13 +40,13 @@ const FileExport = ({ onCancel, rid }) => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (): Promise<void> => {
 		try {
 			await roomsExport({
 				rid,
 				type: 'file',
-				...(dateFrom && { dateFrom: new Date(dateFrom) }),
-				...(dateTo && { dateTo: new Date(dateTo) }),
+				dateFrom,
+				dateTo,
 				format,
 			});
 
@@ -48,7 +57,7 @@ const FileExport = ({ onCancel, rid }) => {
 		} catch (error) {
 			dispatchToastMessage({
 				type: 'error',
-				message: error,
+				message: error as string | Error,
 			});
 		}
 	};
@@ -58,13 +67,13 @@ const FileExport = ({ onCancel, rid }) => {
 			<Field>
 				<Field.Label>{t('Date_From')}</Field.Label>
 				<Field.Row>
-					<TextInput type='date' value={dateFrom} onChange={handleDateFrom} />
+					<InputBox type='date' value={dateFrom} onChange={handleDateFrom} />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Date_to')}</Field.Label>
 				<Field.Row>
-					<TextInput type='date' value={dateTo} onChange={handleDateTo} />
+					<InputBox type='date' value={dateTo} onChange={handleDateTo} />
 				</Field.Row>
 			</Field>
 			<Field>
@@ -75,7 +84,7 @@ const FileExport = ({ onCancel, rid }) => {
 			</Field>
 			<ButtonGroup stretch mb='x12'>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary onClick={() => handleSubmit()}>
+				<Button primary onClick={(): Promise<void> => handleSubmit()}>
 					{t('Export')}
 				</Button>
 			</ButtonGroup>
