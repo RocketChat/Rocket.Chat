@@ -815,7 +815,7 @@
   "Chatpal_AdminPage": "Chatpal Admin Page",
   "Chatpal_All_Results": "Everything",
   "Chatpal_API_Key": "API Key",
-  "Chatpal_API_Key_Description": "You don't yet have an API Key? Get one! Your local host + /admin/chatpal, e.g. http://localhost:3000/admin/chatpal.",
+  "Chatpal_API_Key_Description": "You don't yet have an API Key? [Get one!](../admin/chatpal)",
   "Chatpal_Backend": "Backend Type",
   "Chatpal_Backend_Description": "Select if you want to use Chatpal as a Service or as On-Site Installation",
   "Chatpal_Base_URL": "Base Url",
