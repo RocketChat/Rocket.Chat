@@ -8,4 +8,9 @@ export interface ILicense {
 	maxGuestUsers: number;
 	maxRoomsPerGuest: number;
 	tag?: ILicenseTag;
+	meta?: {
+		trial: boolean;
+		trialEnd: string;
+		workspaceId: string;
+	};
 }

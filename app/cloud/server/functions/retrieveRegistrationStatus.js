@@ -8,14 +8,12 @@ export function retrieveRegistrationStatus() {
 		workspaceId: settings.get('Cloud_Workspace_Id'),
 		uniqueId: settings.get('uniqueID'),
 		token: '',
-		email: '',
+		email: settings.get('Organization_Email'),
 	};
 
-	const firstUser = Users.getOldest({ emails: 1 });
-	info.email = firstUser && firstUser.emails && firstUser.emails[0].address;
-
-	if (settings.get('Organization_Email')) {
-		info.email = settings.get('Organization_Email');
+	if (!info.email) {
+		const firstUser = Users.getOldest({ emails: 1 });
+		info.email = firstUser && firstUser.emails && firstUser.emails[0].address;
 	}
 
 	return info;
