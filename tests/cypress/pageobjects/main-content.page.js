@@ -273,6 +273,7 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageEqualsHtml(text) {
+		cy.wait(200);
 		cy.get('[data-qa-type="message"]:last-child [data-qa-type="message-body"]').should('contain.html', text);
 	}
 
