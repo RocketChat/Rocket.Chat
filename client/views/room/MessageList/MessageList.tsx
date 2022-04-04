@@ -77,6 +77,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 										<ThreadMessagePreview
 											data-system-message={Boolean(message.t)}
 											data-mid={message._id}
+											data-tmid={message.tmid}
 											data-unread={isFirstUnread}
 											data-sequential={isSequential}
 											sequential={shouldShowAsSequential}
