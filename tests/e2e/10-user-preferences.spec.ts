@@ -3,12 +3,14 @@ import { test, expect } from '@playwright/test';
 import MainContent from './utils/pageobjects/main-content.page';
 import SideNav from './utils/pageobjects/side-nav.page';
 import LoginPage from './utils/pageobjects/login.page';
+import FlexTab from './utils/pageobjects/flex-tab.page';
 import PreferencesMainContent from './utils/pageobjects/preferences-main-content.page';
 import { adminLogin, adminRegister } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 
 test.describe('[User Preferences]', function () {
 	test.describe('default', () => {
+		let flexTab: FlexTab;
 		let loginPage: LoginPage;
 		let mainContent: MainContent;
 		let sideNav: SideNav;
@@ -78,21 +80,9 @@ test.describe('[User Preferences]', function () {
 				await preferencesMainContent.changeUsername(`Edited${adminRegister.name}${Date.now()}`);
 			});
 
-			// test.skip('expect change the email field', async () => {
-			// 	preferencesMainContent.changeEmail(`EditedUserEmail${adminRegister.name}@gmail.com`);
-			// });
-			//
-			// test.skip('expect put the password in the modal input', async () => {
-			// 	preferencesMainContent.acceptPasswordOverlay(adminLogin.password);
-			// });
-
 			test('expect save the settings', async () => {
 				await preferencesMainContent.saveChanges();
 			});
-
-			// test.skip('expect put the password in the modal input', async () => {
-			// 	preferencesMainContent.acceptPasswordOverlay(adminLogin.password);
-			// });
 
 			test('expect close the preferences menu', async () => {
 				await sideNav.preferencesClose().click();
@@ -105,62 +95,18 @@ test.describe('[User Preferences]', function () {
 				await mainContent.waitForLastMessageEqualsText('HI');
 			});
 
-			// test.skip('expect be that the name on the last message is the edited one', async () => {
-			// 	mainContent.waitForLastMessageUserEqualsText(`EditedUserName${adminRegister.name}`);
-			// 	mainContent.lastMessageUser().getText().should.equal(`EditedUserName${adminRegister.name}`);
-			// });
-			//
-			// test.skip('expect be that the user name on the members flex tab is the edited one', async () => {
-			// 	mainContent.lastMessageUser().click();
-			// 	flexTab.memberUserName.getText().should.equal(`EditedUserName${adminRegister.name}`);
-			// });
-			//
-			// test.skip('expect that the real name on the members flex tab is the edited one', async () => {
-			// 	flexTab.memberRealName.getText().should.equal(`EditedRealName${adminRegister.name}`);
-			// });
+			test('expect be that the name on the last message is the edited one', async () => {
+				await expect(mainContent.lastMessageUser()).toContainText(`Edited${adminRegister.name}`);
+			});
+
+			test.skip('expect be that the user name on the members flex tab is the edited one', async () => {
+				mainContent.lastMessageUser().click();
+				await expect(flexTab.memberUserName()).toContainText(`Edited${adminRegister.name}`);
+			});
+
+			test.skip('expect that the real name on the members flex tab is the edited one', async () => {
+				await expect(flexTab.memberRealName()).toContainText(`Edited${adminRegister.name}`);
+			});
 		});
 	});
-
-	// test.describe('admin', () => {
-	// 	test.describe.skip('user info change forbidden:', () => {
-	// 		test.beforeAll(() => {
-	// 			checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
-	// 			admin.open('admin/Accounts');
-	// 			admin.accountsRealNameChangeFalse.click();
-	// 			admin.adminSaveChanges();
-	// 			admin.accountsUsernameChangeFalse.click();
-	// 			admin.adminSaveChanges();
-	// 			admin.settingsSearch.type('');
-	// 			sideNav.preferencesClose.click();
-	// 		});
-	//
-	// 		test.afterAll(() => {
-	// 			admin.open('admin/Accounts');
-	// 			admin.accountsRealNameChangeTrue.click();
-	// 			admin.adminSaveChanges();
-	// 			admin.accountsUsernameChangeTrue.click();
-	// 			admin.adminSaveChanges();
-	// 			admin.settingsSearch.type('');
-	// 			sideNav.preferencesClose.click();
-	// 		});
-	//
-	// 		test('expect open profile', () => {
-	// 			sideNav.accountMenu.click();
-	// 			sideNav.account.click();
-	// 			sideNav.profile.click();
-	// 		});
-	//
-	// 		test('expect be that the name field is disabled', () => {
-	// 			preferencesMainContent.realNameTextInputEnabled().should.be.false;
-	// 		});
-	//
-	// 		test('expect be that the Username field is disabled', () => {
-	// 			preferencesMainContent.userNameTextInputEnabled().should.be.false;
-	// 		});
-	//
-	// 		test('expect close profile', () => {
-	// 			sideNav.preferencesClose.click();
-	// 		});
-	// 	});
-	// });
 });
