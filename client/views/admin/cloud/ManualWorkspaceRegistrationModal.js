@@ -10,7 +10,7 @@ const Steps = {
 	PASTE: 'paste',
 };
 
-function ManualWorkspaceRegistrationModal({ onClose, props }) {
+function ManualWorkspaceRegistrationModal({ onClose, ...props }) {
 	const t = useTranslation();
 
 	const [step, setStep] = useState(Steps.COPY);
