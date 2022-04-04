@@ -7,8 +7,6 @@ import LoginPage from './utils/pageobjects/login.page';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 
-const username = adminLogin.password;
-
 test.describe('[Main Elements Render]', function () {
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
@@ -146,7 +144,7 @@ test.describe('[Main Elements Render]', function () {
 			});
 
 			test('expect be that the last message is from the logged user', async () => {
-				await expect(mainContent.lastMessageUser()).toContainText(username);
+				await expect(mainContent.lastMessageUser()).toContainText(adminLogin.password);
 			});
 
 			test('expect not show the Admin tag', async () => {

@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 test.describe('[Messaging]', () => {
 	test.beforeAll(async () => {

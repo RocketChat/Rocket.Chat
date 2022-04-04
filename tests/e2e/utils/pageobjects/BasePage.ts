@@ -19,7 +19,7 @@ class BasePage {
 		await this.page.waitForSelector(selector);
 	}
 
-	protected async keyboardPress(key: string): Promise<void> {
+	public async keyboardPress(key: string): Promise<void> {
 		await this.page.keyboard.press(key);
 	}
 }
