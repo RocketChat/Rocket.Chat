@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { BannersRaw } from '../../../app/models/server/raw/Banners';
 import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
@@ -11,7 +11,7 @@ import { api } from '../../sdk/api';
 import { IUser } from '../../../definition/IUser';
 import { Optional } from '../../../definition/utils';
 
-export class BannerService extends ServiceClass implements IBannerService {
+export class BannerService extends ServiceClassInternal implements IBannerService {
 	protected name = 'banner';
 
 	private Banners: BannersRaw;
@@ -69,7 +69,9 @@ export class BannerService extends ServiceClass implements IBannerService {
 	}
 
 	async getBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]> {
-		const user = await this.Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
+		const user = await this.Users.findOneById<Pick<IUser, 'roles'>>(userId, {
+			projection: { roles: 1 },
+		});
 
 		const { roles } = user || { roles: [] };
 
@@ -77,7 +79,9 @@ export class BannerService extends ServiceClass implements IBannerService {
 
 		const bannerIds = banners.map(({ _id }) => _id);
 
-		const result = await this.BannersDismiss.findByUserIdAndBannerId<Pick<IBannerDismiss, 'bannerId'>>(userId, bannerIds, { projection: { bannerId: 1, _id: 0 } }).toArray();
+		const result = await this.BannersDismiss.findByUserIdAndBannerId<Pick<IBannerDismiss, 'bannerId'>>(userId, bannerIds, {
+			projection: { bannerId: 1, _id: 0 },
+		}).toArray();
 
 		const dismissed = new Set(result.map(({ bannerId }) => bannerId));
 
@@ -94,7 +98,9 @@ export class BannerService extends ServiceClass implements IBannerService {
 			throw new Error('Banner not found');
 		}
 
-		const user = await this.Users.findOneById<Pick<IUser, 'username' | '_id'>>(userId, { projection: { username: 1 } });
+		const user = await this.Users.findOneById<Pick<IUser, 'username' | '_id'>>(userId, {
+			projection: { username: 1 },
+		});
 		if (!user) {
 			throw new Error('User not found');
 		}

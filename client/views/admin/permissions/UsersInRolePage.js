@@ -85,11 +85,7 @@ const UsersInRolePage = ({ data }) => {
 						<Field>
 							<Field.Label>{t('Add_user')}</Field.Label>
 							<Field.Row>
-								<UserAutoCompleteMultiple
-									value={users}
-									onChange={handleUserChange}
-									placeholder={t('User')}
-								/>
+								<UserAutoCompleteMultiple value={users} onChange={handleUserChange} placeholder={t('User')} />
 
 								<ButtonGroup mis='x8' align='end'>
 									<Button primary onClick={handleAdd} disabled={!users.length}>

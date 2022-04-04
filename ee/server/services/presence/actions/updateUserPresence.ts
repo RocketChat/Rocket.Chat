@@ -3,7 +3,6 @@ import { processPresenceAndStatus } from '../lib/processConnectionStatus';
 import { getCollection, Collections } from '../../mongo';
 import { IUserSession } from '../../../../../definition/IUserSession';
 import { IUser } from '../../../../../definition/IUser';
-import { UserStatus } from '../../../../../definition/UserStatus';
 import { api } from '../../../../../server/sdk/api';
 
 const projection = {
@@ -21,11 +20,16 @@ export async function updateUserPresence(uid: string): Promise<void> {
 	const User = await getCollection<IUser>(Collections.User);
 
 	const user = await User.findOne<IUser>(query, projection);
-	if (!user) { return; }
+	if (!user) {
+		return;
+	}
 
-	const userSessions = await UserSession.findOne(query) || { connections: [] };
-	const { statusDefault = UserStatus.OFFLINE } = user;
+	const userSessions = (await UserSession.findOne(query)) || { connections: [] };
+
+	const { statusDefault } = user;
+
 	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
+
 	const result = await User.updateOne(query, {
 		$set: { status, statusConnection },
 	});

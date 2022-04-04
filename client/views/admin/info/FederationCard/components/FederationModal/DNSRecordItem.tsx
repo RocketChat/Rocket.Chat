@@ -11,8 +11,7 @@ export const DNSRecordItem: FC<{
 	<Box display='flex' alignItems='flex-start'>
 		{getStatusIcon(status)}
 		<Box flexDirection='column' fontSize='x12'>
-			<b>{title}</b>: {expectedValue}{' '}
-			{!hideErrorString && status === SectionStatus.FAILED ? `(${value || '?'})` : ''}
+			<b>{title}</b>: {expectedValue} {!hideErrorString && status === SectionStatus.FAILED ? `(${value || '?'})` : ''}
 		</Box>
 	</Box>
 );

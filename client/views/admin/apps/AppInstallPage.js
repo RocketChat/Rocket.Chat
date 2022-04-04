@@ -1,12 +1,4 @@
-import {
-	Button,
-	ButtonGroup,
-	Icon,
-	Field,
-	FieldGroup,
-	TextInput,
-	Throbber,
-} from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -122,12 +114,7 @@ function AppInstallPage() {
 			const isInstalled = await isAppInstalled(id);
 
 			if (isInstalled) {
-				setModal(
-					<AppUpdateModal
-						cancel={cancelAction}
-						confirm={() => handleAppPermissionsReview(permissions, appFile, id)}
-					/>,
-				);
+				setModal(<AppUpdateModal cancel={cancelAction} confirm={() => handleAppPermissionsReview(permissions, appFile, id)} />);
 			} else {
 				await handleAppPermissionsReview(permissions, appFile);
 			}
@@ -146,22 +133,11 @@ function AppInstallPage() {
 		<Page flexDirection='column'>
 			<Page.Header title={t('App_Installation')} />
 			<Page.ScrollableContent>
-				<FieldGroup
-					display='flex'
-					flexDirection='column'
-					alignSelf='center'
-					maxWidth='x600'
-					w='full'
-				>
+				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
 					<Field>
 						<Field.Label>{t('App_Url_to_Install_From')}</Field.Label>
 						<Field.Row>
-							<TextInput
-								placeholder={placeholderUrl}
-								value={url}
-								onChange={handleUrl}
-								addon={<Icon name='permalink' size='x20' />}
-							/>
+							<TextInput placeholder={placeholderUrl} value={url} onChange={handleUrl} addon={<Icon name='permalink' size='x20' />} />
 						</Field.Row>
 					</Field>
 					<Field>

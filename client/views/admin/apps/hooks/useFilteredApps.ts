@@ -1,42 +1,106 @@
-import { useContext } from 'react';
+import { useMemo, ContextType } from 'react';
 
-import { AppsContext } from '../AppsContext';
+import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
+import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
+import type { AppsContext } from '../AppsContext';
+import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
+import { filterAppsByFree } from '../helpers/filterAppsByFree';
+import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
+import { filterAppsByText } from '../helpers/filterAppsByText';
+import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlphabeticalOrInverseOrder';
+import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
 import { App } from '../types';
 
+type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
+
 export const useFilteredApps = ({
-	filterFunction = (text: string): ((app: App) => boolean) => {
-		if (!text) {
-			return (): boolean => true;
-		}
-		return (app: App): boolean => app.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-	},
+	appsData,
 	text,
-	sort: [, sortDirection],
 	current,
 	itemsPerPage,
+	categories = [],
+	purchaseType,
+	sortingMethod,
 }: {
-	filterFunction: (text: string) => (app: App) => boolean;
+	appsData: appsDataType;
 	text: string;
-	sort: [string, 'asc' | 'desc'];
 	current: number;
 	itemsPerPage: number;
-	apps: App[];
-}): [App[] | null, number] => {
-	const { apps } = useContext(AppsContext);
+	categories?: string[];
+	purchaseType?: string;
+	sortingMethod?: string;
+}): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
+	const value = useMemo(() => {
+		if (appsData.value === undefined) {
+			return undefined;
+		}
 
-	if (!Array.isArray(apps) || apps.length === 0) {
-		return [null, 0];
+		const { apps } = appsData.value;
+
+		let filtered: App[] = apps;
+		let shouldShowSearchText = true;
+
+		const sortingMethods: Record<string, () => App[]> = {
+			az: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(firstApp.name, secondApp.name)),
+			za: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(secondApp.name, firstApp.name)),
+			mru: () =>
+				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(firstApp.modifiedAt, secondApp.modifiedAt)),
+			lru: () =>
+				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
+		};
+
+		if (sortingMethod) {
+			filtered = sortingMethods[sortingMethod]();
+		}
+
+		if (purchaseType && purchaseType !== 'all') {
+			filtered =
+				purchaseType === 'paid' ? filtered.filter((app) => filterAppsByPaid(app)) : filtered.filter((app) => filterAppsByFree(app));
+
+			if (!filtered.length) {
+				shouldShowSearchText = false;
+			}
+		}
+
+		if (Boolean(categories.length) && Boolean(text)) {
+			filtered = apps.filter((app) => filterAppsByCategories(app, categories)).filter(({ name }) => filterAppsByText(name, text));
+			shouldShowSearchText = true;
+		}
+
+		if (Boolean(categories.length) && !text) {
+			filtered = apps.filter((app) => filterAppsByCategories(app, categories));
+			shouldShowSearchText = false;
+		}
+
+		if (!categories.length && Boolean(text)) {
+			filtered = apps.filter(({ name }) => filterAppsByText(name, text));
+			shouldShowSearchText = true;
+		}
+
+		const total = filtered.length;
+		const offset = current > total ? 0 : current;
+		const end = current + itemsPerPage;
+		const slice = filtered.slice(offset, end);
+
+		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
+	}, [appsData.value, sortingMethod, purchaseType, categories, text, current, itemsPerPage]);
+
+	if (appsData.phase === AsyncStatePhase.RESOLVED) {
+		if (!value) {
+			throw new Error('useFilteredApps - Unexpected state');
+		}
+		return {
+			...appsData,
+			value,
+		};
 	}
 
-	const filtered = apps.filter(filterFunction(text));
-	if (sortDirection === 'desc') {
-		filtered.reverse();
+	if (appsData.phase === AsyncStatePhase.UPDATING) {
+		throw new Error('useFilteredApps - Unexpected state');
 	}
 
-	const total = filtered.length;
-	const start = current > total ? 0 : current;
-	const end = current + itemsPerPage;
-	const slice = filtered.slice(start, end);
-
-	return [slice, total];
+	return {
+		...appsData,
+		value: undefined,
+	};
 };

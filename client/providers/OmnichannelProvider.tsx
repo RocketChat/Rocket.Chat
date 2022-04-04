@@ -1,4 +1,5 @@
-import React, { useState, useEffect, FC, useMemo, useCallback, memo } from 'react';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
+import React, { useState, useEffect, FC, useMemo, useCallback, memo, useRef } from 'react';
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
@@ -6,6 +7,7 @@ import { Notifications } from '../../app/notifications/client';
 import { IOmnichannelAgent } from '../../definition/IOmnichannelAgent';
 import { IRoom } from '../../definition/IRoom';
 import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
+import { ClientLogger } from '../../lib/ClientLogger';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { useMethod } from '../contexts/ServerContext';
@@ -24,22 +26,22 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
-	const omnichannelPoolMaxIncoming = useSetting(
-		'Livechat_guest_pool_max_number_incoming_livechats_displayed',
-	) as number;
+	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
 
+	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
-
 	const user = useUser() as IOmnichannelAgent;
 
 	const agentAvailable = user?.statusLivechat === 'available';
+	const voipCallAvailable = true; // TODO: use backend check;
 
 	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
 
-	const [routeConfig, setRouteConfig] = useState<OmichannelRoutingConfig | undefined>(undefined);
+	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
 
 	const accessible = hasAccess && omniChannelEnabled;
+	const iceServersSetting: any = useSetting('WebRTC_Servers');
 
 	useEffect(() => {
 		if (!accessible) {
@@ -51,23 +53,18 @@ const OmnichannelProvider: FC = ({ children }) => {
 				const routeConfig = await getRoutingConfig();
 				setRouteConfig(routeConfig);
 			} catch (error) {
-				console.error(error);
+				loggerRef.current.error(`update() error in routeConfig ${error}`);
 			}
 		};
 
 		if (omnichannelRouting || !omnichannelRouting) {
 			update();
 		}
-	}, [accessible, getRoutingConfig, omnichannelRouting]);
+	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
 
 	const enabled = accessible && !!user && !!routeConfig;
 	const manuallySelected =
-		enabled &&
-		canViewOmnichannelQueue &&
-		!!routeConfig &&
-		routeConfig.showQueue &&
-		!routeConfig.autoAssignAgent &&
-		agentAvailable;
+		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
 
 	useEffect(() => {
 		if (!manuallySelected) {
@@ -119,6 +116,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				...emptyContextValue,
 				enabled: true,
 				agentAvailable,
+				voipCallAvailable,
 				routeConfig,
 			};
 		}
@@ -127,6 +125,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 			...emptyContextValue,
 			enabled: true,
 			agentAvailable,
+			voipCallAvailable,
 			routeConfig,
 			inquiries: queue
 				? {
@@ -136,7 +135,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 		};
-	}, [agentAvailable, enabled, manuallySelected, queue, routeConfig, showOmnichannelQueueLink]);
+	}, [agentAvailable, voipCallAvailable, enabled, manuallySelected, queue, routeConfig, showOmnichannelQueueLink]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;
 };

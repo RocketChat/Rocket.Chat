@@ -10,9 +10,7 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		const user = Meteor.user();
 		if (
-			user &&
-			user.emails &&
-			user.emails[0] &&
+			user?.emails?.[0] &&
 			user.emails[0].verified !== true &&
 			settings.get('Accounts_EmailVerification') === true &&
 			!Session.get('Accounts_EmailVerification_Warning')

@@ -13,7 +13,7 @@ import { getUserPreference, t } from '../../app/utils/client';
 import 'highlight.js/styles/github.css';
 import { UserStatus } from '../../definition/UserStatus';
 import * as banners from '../lib/banners';
-import { synchronizeUserData } from '../lib/userData';
+import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 if (window.DISABLE_ANIMATION) {
@@ -39,6 +39,7 @@ Meteor.startup(() => {
 	Tracker.autorun(async () => {
 		const uid = Meteor.userId();
 		if (!uid) {
+			removeLocalUserData();
 			return;
 		}
 		if (!Meteor.status().connected) {
@@ -77,26 +78,23 @@ Meteor.startup(() => {
 			return;
 		}
 
-		Meteor.call(
-			'cloud:checkRegisterStatus',
-			(err: unknown, data: { connectToCloud?: boolean; workspaceRegistered?: boolean }) => {
-				if (err) {
-					console.log(err);
-					return;
-				}
+		Meteor.call('cloud:checkRegisterStatus', (err: unknown, data: { connectToCloud?: boolean; workspaceRegistered?: boolean }) => {
+			if (err) {
+				console.log(err);
+				return;
+			}
 
-				c.stop();
-				const { connectToCloud = false, workspaceRegistered = false } = data;
-				if (connectToCloud === true && workspaceRegistered !== true) {
-					banners.open({
-						id: 'cloud-registration',
-						title: t('Cloud_registration_pending_title'),
-						html: t('Cloud_registration_pending_html'),
-						modifiers: ['large', 'danger'],
-					});
-				}
-			},
-		);
+			c.stop();
+			const { connectToCloud = false, workspaceRegistered = false } = data;
+			if (connectToCloud === true && workspaceRegistered !== true) {
+				banners.open({
+					id: 'cloud-registration',
+					title: t('Cloud_registration_pending_title'),
+					html: t('Cloud_registration_pending_html'),
+					modifiers: ['large', 'danger'],
+				});
+			}
+		});
 	});
 });
 Meteor.startup(() => {

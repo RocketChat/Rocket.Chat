@@ -31,7 +31,7 @@ export function userLogout(userId) {
 
 			const { refreshToken } = user.services.cloud;
 
-			HTTP.post(`${ cloudUrl }/api/oauth/revoke`, {
+			HTTP.post(`${cloudUrl}/api/oauth/revoke`, {
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				params: {
 					client_id,
@@ -42,7 +42,7 @@ export function userLogout(userId) {
 			});
 		} catch (e) {
 			if (e.response && e.response.data && e.response.data.error) {
-				SystemLogger.error(`Failed to get Revoke refresh token to logout of Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+				SystemLogger.error(`Failed to get Revoke refresh token to logout of Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 			} else {
 				SystemLogger.error(e);
 			}

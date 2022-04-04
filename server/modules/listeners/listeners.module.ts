@@ -1,24 +1,24 @@
 import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { EnterpriseSettings, MeteorService } from '../../sdk/index';
-import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import { EnterpriseSettings } from '../../sdk/index';
 import { UserStatus } from '../../../definition/UserStatus';
 import { isSettingColor } from '../../../definition/ISetting';
 
-const STATUS_MAP: {[k: string]: number} = {
+const STATUS_MAP: { [k: string]: number } = {
 	[UserStatus.OFFLINE]: 0,
 	[UserStatus.ONLINE]: 1,
 	[UserStatus.AWAY]: 2,
 	[UserStatus.BUSY]: 3,
 };
 
-export const minimongoChangeMap: Record<string, string> = { inserted: 'added', updated: 'changed', removed: 'removed' };
+export const minimongoChangeMap: Record<string, string> = {
+	inserted: 'added',
+	updated: 'changed',
+	removed: 'removed',
+};
 
 export class ListenersModule {
-	constructor(
-		service: IServiceClass,
-		notifications: NotificationsModule,
-	) {
+	constructor(service: IServiceClass, notifications: NotificationsModule) {
 		service.onEvent('emoji.deleteCustom', (emoji) => {
 			notifications.notifyLoggedInThisInstance('deleteEmojiCustom', {
 				emojiData: emoji,
@@ -80,9 +80,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('presence.status', ({ user }) => {
-			const {
-				_id, username, status, statusText,
-			} = user;
+			const { _id, username, status, statusText } = user;
 			if (!status) {
 				return;
 			}
@@ -105,10 +103,12 @@ export class ListenersModule {
 				return;
 			}
 
-			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
-				eventName,
-				args: [...args, allowed],
-			}));
+			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) =>
+				streamer.changedPayload(streamer.subscriptionName, 'id', {
+					eventName,
+					args: [...args, allowed],
+				}),
+			);
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
 		});
@@ -125,12 +125,7 @@ export class ListenersModule {
 
 			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
 
-			notifications.notifyUserInThisInstance(
-				subscription.u._id,
-				'subscriptions-changed',
-				clientAction,
-				subscription,
-			);
+			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription);
 		});
 
 		service.onEvent('watch.roles', ({ clientAction, role }): void => {
@@ -141,39 +136,37 @@ export class ListenersModule {
 			notifications.streamRoles.emitWithoutBroadcast('roles', payload);
 		});
 
-		let autoAssignAgent: IRoutingManagerConfig | undefined;
-		async function getRoutingManagerConfig(): Promise<IRoutingManagerConfig> {
-			if (!autoAssignAgent) {
-				autoAssignAgent = await MeteorService.getRoutingManagerConfig();
-			}
-
-			return autoAssignAgent;
-		}
-
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
-			const config = await getRoutingManagerConfig();
-			if (!config || config.autoAssignAgent) {
-				return;
-			}
-
 			const type = minimongoChangeMap[clientAction];
 			if (clientAction === 'removed') {
-				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, { _id: inquiry._id, clientAction });
+				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
+					_id: inquiry._id,
+					clientAction,
+				});
 
 				if (inquiry.department) {
-					return notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${ inquiry.department }`, { type, ...inquiry });
+					return notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
 				}
 
-				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });
+				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
+					type,
+					...inquiry,
+				});
 			}
 
-			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, { ...inquiry, clientAction });
+			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
+				...inquiry,
+				clientAction,
+			});
 
 			if (!inquiry.department) {
-				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });
+				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
+					type,
+					...inquiry,
+				});
 			}
 
-			notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${ inquiry.department }`, { type, ...inquiry });
+			notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
 
 			if (clientAction === 'updated' && !diff?.department) {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });
@@ -181,10 +174,6 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (setting._id === 'Livechat_Routing_Method') {
-				autoAssignAgent = undefined;
-			}
-
 			if (clientAction !== 'removed') {
 				const result = await EnterpriseSettings.changeSettingValue(setting);
 				if (result !== undefined && !(result instanceof Error)) {
@@ -199,7 +188,7 @@ export class ListenersModule {
 			const value = {
 				_id: setting._id,
 				value: setting.value,
-				...isSettingColor(setting) && { editor: setting.editor },
+				...(isSettingColor(setting) && { editor: setting.editor }),
 				properties: setting.properties,
 				enterprise: setting.enterprise,
 				requiredOnWizard: setting.requiredOnWizard,
@@ -222,7 +211,11 @@ export class ListenersModule {
 		service.onEvent('watch.users', ({ clientAction, data, diff, unset, id }): void => {
 			switch (clientAction) {
 				case 'updated':
-					notifications.notifyUserInThisInstance(id, 'userData', { diff, unset, type: clientAction });
+					notifications.notifyUserInThisInstance(id, 'userData', {
+						diff,
+						unset,
+						type: clientAction,
+					});
 					break;
 				case 'inserted':
 					notifications.notifyUserInThisInstance(id, 'userData', { data, type: clientAction });
@@ -239,11 +232,18 @@ export class ListenersModule {
 			}
 			switch (clientAction) {
 				case 'updated': {
-					notifications.streamIntegrationHistory.emitWithoutBroadcast(data.integration._id, { id, diff, type: clientAction });
+					notifications.streamIntegrationHistory.emitWithoutBroadcast(data.integration._id, {
+						id,
+						diff,
+						type: clientAction,
+					});
 					break;
 				}
 				case 'inserted': {
-					notifications.streamIntegrationHistory.emitWithoutBroadcast(data.integration._id, { data, type: clientAction });
+					notifications.streamIntegrationHistory.emitWithoutBroadcast(data.integration._id, {
+						data,
+						type: clientAction,
+					});
 					break;
 				}
 			}
@@ -270,6 +270,60 @@ export class ListenersModule {
 		});
 		service.onEvent('banner.enabled', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
+		});
+		service.onEvent('queue.agentcalled', (userId, queuename, callerId): void => {
+			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename, callerId });
+		});
+		service.onEvent('queue.agentconnected', (userId, queuename: string, queuedcalls: string, waittimeinqueue: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'agentconnected', { queuename, queuedcalls, waittimeinqueue });
+		});
+		service.onEvent('queue.callerjoined', (userId, queuename, callerid, queuedcalls): void => {
+			notifications.notifyUserInThisInstance(userId, 'callerjoined', { queuename, callerid, queuedcalls });
+		});
+		service.onEvent('queue.queuememberadded', (userId, queuename: string, queuedcalls: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'queuememberadded', { queuename, queuedcalls });
+		});
+		service.onEvent('queue.queuememberremoved', (userId, queuename: string, queuedcalls: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'queuememberremoved', { queuename, queuedcalls });
+		});
+		service.onEvent('queue.callabandoned', (userId, queuename: string, queuedcallafterabandon: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'callabandoned', { queuename, queuedcallafterabandon });
+		});
+
+		service.onEvent('notify.desktop', (uid, notification): void => {
+			notifications.notifyUserInThisInstance(uid, 'notification', notification);
+		});
+
+		service.onEvent('notify.uiInteraction', (uid, interaction): void => {
+			notifications.notifyUserInThisInstance(uid, 'uiInteraction', interaction);
+		});
+
+		service.onEvent('notify.updateInvites', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'updateInvites', data);
+		});
+
+		service.onEvent('notify.webdav', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'webdav', data);
+		});
+
+		service.onEvent('notify.e2e.keyRequest', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'e2e.keyRequest', data);
+		});
+
+		service.onEvent('notify.deleteMessage', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'deleteMessage', data);
+		});
+
+		service.onEvent('notify.deleteMessageBulk', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'deleteMessageBulk', data);
+		});
+
+		service.onEvent('notify.deleteCustomSound', (data): void => {
+			notifications.notifyAllInThisInstance('deleteCustomSound', data);
+		});
+
+		service.onEvent('notify.updateCustomSound', (data): void => {
+			notifications.notifyAllInThisInstance('updateCustomSound', data);
 		});
 	}
 }

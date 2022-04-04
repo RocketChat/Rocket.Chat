@@ -13,7 +13,7 @@ const options = {
 };
 
 let lastEntries = [];
-const handleEntries = function(entries) {
+const handleEntries = function (entries) {
 	lastEntries = entries.filter(({ isIntersecting }) => isIntersecting);
 	lastEntries.forEach(async (entry) => {
 		const { uid } = data.get(entry.target);
@@ -43,13 +43,12 @@ Tracker.autorun(() => {
 		return;
 	}
 
-
 	Accounts.onLogout(() => {
 		Presence.reset();
 	});
 });
 
-Template.userPresence.onRendered(function() {
+Template.userPresence.onRendered(function () {
 	if (!this.data || !this.data.uid) {
 		return;
 	}

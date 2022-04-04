@@ -7,12 +7,27 @@ import { useCurrentRoute } from '../../../../contexts/RouterContext';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import { ToolboxActionConfig } from '../../lib/Toolbox';
 import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
-import RoomHeader, { RoomHeaderProps } from '../RoomHeader';
-import BackButton from './BackButton';
+import RoomHeader from '../RoomHeader';
+import { BackButton } from './BackButton';
 import QuickActions from './QuickActions';
 import { useQuickActions } from './QuickActions/hooks/useQuickActions';
 
-const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
+type OmnichannelRoomHeaderProps = {
+	slots: {
+		start?: unknown;
+		preContent?: unknown;
+		insideContent?: unknown;
+		posContent?: unknown;
+		end?: unknown;
+		toolbox?: {
+			pre?: unknown;
+			content?: unknown;
+			pos?: unknown;
+		};
+	};
+};
+
+const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSlot }) => {
 	const [name] = useCurrentRoute();
 	const { isMobile } = useLayout();
 	const room = useOmnichannelRoom();
@@ -22,10 +37,10 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 	const slots = useMemo(
 		() => ({
 			...parentSlot,
-			start: (!!isMobile || name === 'omnichannel-directory') && (
+			start: (!!isMobile || name === 'omnichannel-directory' || name === 'omnichannel-current-chats') && (
 				<TemplateHeader.ToolBox>
 					{isMobile && <BurgerMenu />}
-					{name === 'omnichannel-directory' && <BackButton />}
+					{<BackButton routeName={name} />}
 				</TemplateHeader.ToolBox>
 			),
 			...(!isMobile && { insideContent: <QuickActions room={room} /> }),

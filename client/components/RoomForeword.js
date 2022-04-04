@@ -6,12 +6,17 @@ import { getUserAvatarURL } from '../../app/utils/client';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useUser } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
+import { VoipRoomForeword } from './voip/room/VoipRoomForeword';
 
 const RoomForeword = ({ _id: rid }) => {
 	const t = useTranslation();
 
 	const user = useUser();
 	const room = useReactiveValue(useCallback(() => Rooms.findOne({ _id: rid }), [rid]));
+
+	if (room?.t === 'v') {
+		return <VoipRoomForeword room={room} />;
+	}
 
 	if (room?.t !== 'd') {
 		return <>{t('Start_of_conversation')}</>;
@@ -32,20 +37,12 @@ const RoomForeword = ({ _id: rid }) => {
 
 							const avatarUrl = getUserAvatarURL(username, user?.avatarETag);
 
-							return (
-								<Avatar
-									key={index}
-									size='x48'
-									title={username}
-									url={avatarUrl}
-									data-username={username}
-								/>
-							);
+							return <Avatar key={index} size='x48' title={username} url={avatarUrl} data-username={username} />;
 						})}
 					</Avatar.Stack>
 				</Margins>
 			</Flex.Item>
-			<Box color='default' fontScale='h1' flexGrow={1}>
+			<Box color='default' fontScale='h2' flexGrow={1}>
 				{t('Direct_message_you_have_joined')}
 			</Box>
 			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>

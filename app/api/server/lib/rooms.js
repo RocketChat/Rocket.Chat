@@ -1,34 +1,12 @@
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server/raw';
 import { Subscriptions } from '../../../models/server';
+import { adminFields } from '../../../../lib/rooms/adminFields';
 
 export async function findAdminRooms({ uid, filter, types = [], pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(uid, 'view-room-administration')) {
+	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
-	const fields = {
-		prid: 1,
-		fname: 1,
-		name: 1,
-		t: 1,
-		cl: 1,
-		u: 1,
-		usernames: 1,
-		usersCount: 1,
-		muted: 1,
-		unmuted: 1,
-		ro: 1,
-		default: 1,
-		favorite: 1,
-		featured: 1,
-		topic: 1,
-		msgs: 1,
-		archived: 1,
-		tokenpass: 1,
-		teamId: 1,
-		teamMain: 1,
-	};
-
 	const name = filter && filter.trim();
 	const discussion = types && types.includes('discussions');
 	const includeTeams = types && types.includes('teams');
@@ -36,7 +14,7 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 	const typesToRemove = ['discussions', 'teams'];
 	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options = {
-		fields,
+		fields: adminFields,
 		sort: sort || { default: -1, name: 1 },
 		skip: offset,
 		limit: count,
@@ -64,33 +42,11 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 }
 
 export async function findAdminRoom({ uid, rid }) {
-	if (!await hasPermissionAsync(uid, 'view-room-administration')) {
+	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
-	const fields = {
-		prid: 1,
-		fname: 1,
-		name: 1,
-		t: 1,
-		cl: 1,
-		u: 1,
-		usernames: 1,
-		usersCount: 1,
-		muted: 1,
-		unmuted: 1,
-		ro: 1,
-		default: 1,
-		favorite: 1,
-		featured: 1,
-		topic: 1,
-		msgs: 1,
-		archived: 1,
-		tokenpass: 1,
-		announcement: 1,
-		description: 1,
-	};
 
-	return Rooms.findOneById(rid, { fields });
+	return Rooms.findOneById(rid, { fields: adminFields });
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
@@ -113,6 +69,31 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 		.map((item) => item.rid);
 
 	const rooms = await Rooms.findRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options).toArray();
+
+	return {
+		items: rooms,
+	};
+}
+
+export async function findAdminRoomsAutocomplete({ uid, selector }) {
+	if (!(await hasAtLeastOnePermissionAsync(uid, ['view-room-administration', 'can-audit']))) {
+		throw new Error('error-not-authorized');
+	}
+	const options = {
+		fields: {
+			_id: 1,
+			fname: 1,
+			name: 1,
+			t: 1,
+			avatarETag: 1,
+		},
+		limit: 10,
+		sort: {
+			name: 1,
+		},
+	};
+
+	const rooms = await Rooms.findRoomsByNameOrFnameStarting(selector.name, options).toArray();
 
 	return {
 		items: rooms,

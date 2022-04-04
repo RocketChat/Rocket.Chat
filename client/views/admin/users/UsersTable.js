@@ -117,9 +117,7 @@ function UsersTable({ params, onChangeParams, sort, onChangeSort, ...props }) {
 			total={props.total}
 			setParams={onChangeParams}
 			params={params}
-			renderFilter={({ onChange, ...props }) => (
-				<FilterByText placeholder={t('Search_Users')} onChange={onChange} {...props} />
-			)}
+			renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Users')} onChange={onChange} {...props} />}
 		>
 			{(props) => <UserRow key={props._id} onClick={onClick} mediaQuery={mediaQuery} {...props} />}
 		</GenericTable>

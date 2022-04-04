@@ -8,9 +8,12 @@ export class CannedResponse extends Base {
 	constructor() {
 		super('canned_response');
 
-		this.tryEnsureIndex({
-			shortcut: 1,
-		});
+		this.tryEnsureIndex(
+			{
+				shortcut: 1,
+			},
+			{ unique: true },
+		);
 	}
 
 	createOrUpdateCannedResponse(_id, { shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }) {

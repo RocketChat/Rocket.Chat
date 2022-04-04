@@ -26,7 +26,7 @@ Template.starredMessages.helpers({
 	messageContext,
 });
 
-Template.starredMessages.onCreated(function() {
+Template.starredMessages.onCreated(function () {
 	this.rid = this.data.rid;
 	this.messages = new Mongo.Collection(null);
 	this.hasMore = new ReactiveVar(true);
@@ -34,10 +34,10 @@ Template.starredMessages.onCreated(function() {
 
 	this.autorun(() => {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'starred._id': Meteor.userId(),
-			rid: this.rid,
-			_updatedAt: {
+			'rid': this.rid,
+			'_updatedAt': {
 				$gt: new Date(),
 			},
 		};
@@ -61,7 +61,7 @@ Template.starredMessages.onCreated(function() {
 
 	this.autorun(async () => {
 		const limit = this.limit.get();
-		const { messages, total } = await APIClient.v1.get(`chat.getStarredMessages?roomId=${ this.rid }&count=${ limit }`);
+		const { messages, total } = await APIClient.v1.get(`chat.getStarredMessages?roomId=${this.rid}&count=${limit}`);
 
 		upsertMessageBulk({ msgs: messages }, this.messages);
 
@@ -69,13 +69,13 @@ Template.starredMessages.onCreated(function() {
 	});
 });
 
-Template.mentionsFlexTab.onDestroyed(function() {
+Template.mentionsFlexTab.onDestroyed(function () {
 	this.cursor.stop();
 });
 
 Template.starredMessages.events({
 	...getCommonRoomEvents(),
-	'scroll .js-list': _.throttle(function(e, instance) {
+	'scroll .js-list': _.throttle(function (e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
 			return instance.limit.set(instance.limit.get() + 50);
 		}

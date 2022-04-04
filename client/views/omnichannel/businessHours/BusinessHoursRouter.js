@@ -9,8 +9,7 @@ import EditBusinessHoursPage from './EditBusinessHoursPage';
 import NewBusinessHoursPage from './NewBusinessHoursPage';
 
 export const useIsSingleBusinessHours = () =>
-	useReactiveValue(useMutableCallback(() => businessHourManager.getTemplate())) ===
-	'livechatBusinessHoursForm';
+	useReactiveValue(useMutableCallback(() => businessHourManager.getTemplate())) === 'livechatBusinessHoursForm';
 
 const BusinessHoursRouter = () => {
 	const context = useRouteParameter('context');
@@ -21,15 +20,15 @@ const BusinessHoursRouter = () => {
 	const router = useRoute('omnichannel-businessHours');
 
 	useEffect(() => {
-		if (isSingleBH && (context !== 'edit' || type !== 'default')) {
+		if (isSingleBH) {
 			router.push({
 				context: 'edit',
 				type: 'default',
 			});
 		}
-	}, [context, isSingleBH, router, type]);
+	}, [isSingleBH, router]);
 
-	if ((context === 'edit' && type) || (isSingleBH && (context !== 'edit' || type !== 'default'))) {
+	if (context === 'edit' || isSingleBH) {
 		return type ? <EditBusinessHoursPage type={type} id={id} /> : null;
 	}
 

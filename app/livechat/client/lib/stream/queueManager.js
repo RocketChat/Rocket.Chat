@@ -40,33 +40,35 @@ const events = {
 	removed: (inquiry) => LivechatInquiry.remove(inquiry._id),
 };
 
-const updateCollection = (inquiry) => { events[inquiry.type](inquiry); };
+const updateCollection = (inquiry) => {
+	events[inquiry.type](inquiry);
+};
 
 const getInquiriesFromAPI = async () => {
-	const { inquiries } = await APIClient.v1.get('livechat/inquiries.queued?sort={"ts": 1}');
+	const { inquiries } = await APIClient.v1.get('livechat/inquiries.queuedForUser?sort={"ts": 1}');
 	return inquiries;
 };
 
 const removeListenerOfDepartment = (departmentId) => {
-	inquiryDataStream.removeListener(`department/${ departmentId }`, updateCollection);
+	inquiryDataStream.removeListener(`department/${departmentId}`, updateCollection);
 	departments.delete(departmentId);
 };
 
 const appendListenerToDepartment = (departmentId) => {
 	departments.add(departmentId);
-	inquiryDataStream.on(`department/${ departmentId }`, updateCollection);
+	inquiryDataStream.on(`department/${departmentId}`, updateCollection);
 	return () => removeListenerOfDepartment(departmentId);
 };
-const addListenerForeachDepartment = async (departments = []) => {
+const addListenerForeachDepartment = (departments = []) => {
 	const cleanupFunctions = departments.map((department) => appendListenerToDepartment(department));
 	return () => cleanupFunctions.forEach((cleanup) => cleanup());
 };
 
-
-const updateInquiries = async (inquiries = []) => inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
+const updateInquiries = async (inquiries = []) =>
+	inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
 
 const getAgentsDepartments = async (userId) => {
-	const { departments } = await APIClient.v1.get(`livechat/agents/${ userId }/departments?enabledDepartmentsOnly=true`);
+	const { departments } = await APIClient.v1.get(`livechat/agents/${userId}/departments?enabledDepartmentsOnly=true`);
 	return departments;
 };
 
@@ -77,7 +79,6 @@ const addGlobalListener = () => {
 	return removeGlobalListener;
 };
 
-
 const subscribe = async (userId) => {
 	const config = await callWithErrorHandling('livechat:getRoutingConfig');
 	if (config && config.autoAssignAgent) {
@@ -86,14 +87,17 @@ const subscribe = async (userId) => {
 
 	const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
 
-	const cleanUp = agentDepartments.length ? await addListenerForeachDepartment(agentDepartments) : addGlobalListener();
+	// Register to all depts + public queue always to match the inquiry list returned by backend
+	const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
+	const globalCleanup = addGlobalListener();
 
 	updateInquiries(await getInquiriesFromAPI());
 
 	return () => {
 		LivechatInquiry.remove({});
 		removeGlobalListener();
-		cleanUp && cleanUp();
+		cleanDepartmentListeners && cleanDepartmentListeners();
+		globalCleanup && globalCleanup();
 		departments.clear();
 	};
 };

@@ -32,15 +32,15 @@ function removeUsersFromTokenChannels() {
 				const valid = Tokenpass.validateAccess(rooms[roomId], balances);
 
 				if (!valid) {
-					removeUserFromRoom(roomId, userInfo);
+					Promise.await(removeUserFromRoom(roomId, userInfo));
 				}
 			});
 		}
 	});
 }
 
-Meteor.startup(function() {
-	Meteor.defer(function() {
+Meteor.startup(function () {
+	Meteor.defer(function () {
 		removeUsersFromTokenChannels();
 
 		SyncedCron.add({

@@ -11,7 +11,7 @@ const builder = new Builder({
 
 const parse = (str) => new Promise((resolve, reject) => parseString(str, (err, json) => (err ? reject(err) : resolve(json))));
 
-const sort = function(a, b) {
+const sort = function (a, b) {
 	if (a.toLocaleLowerCase() < b.toLocaleLowerCase()) {
 		return -1;
 	}
@@ -24,7 +24,7 @@ const sort = function(a, b) {
 const toSymbol = (id, viewBox, { id: _, ...args }) => ({
 	symbol: {
 		$: {
-			id: `icon-${ id }`,
+			id: `icon-${id}`,
 			viewBox,
 			fill: 'currentColor',
 		},
@@ -35,7 +35,7 @@ const toSymbol = (id, viewBox, { id: _, ...args }) => ({
 const xml = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none">';
 const start = async () => {
 	const stream = fs.createWriteStream('icons.svg', { flags: 'w' });
-	stream.write(`${ xml }\n`);
+	stream.write(`${xml}\n`);
 	try {
 		await new Promise((resolve) => {
 			const path = './icons';
@@ -44,23 +44,20 @@ const start = async () => {
 					.sort(sort)
 					.filter((file) => {
 						if (!/\.svg/.test(file)) {
-							console.log(`invalid extension ${ file }`);
+							console.log(`invalid extension ${file}`);
 							return false;
 						}
 						return true;
-					}).map(async (file) => {
+					})
+					.map(async (file) => {
 						const name = file.replace('.svg', '').toLocaleLowerCase();
 						try {
-							const content = fs.readFileSync(`${ path }/${ file }`, 'utf8');
-							const {
-								svg,
-							} = await parse(content);
+							const content = fs.readFileSync(`${path}/${file}`, 'utf8');
+							const { svg } = await parse(content);
 
 							const { $, ...args } = svg;
-							const {
-								viewBox,
-							} = $;
-							stream.write(`${ builder.buildObject(toSymbol(name, viewBox, args)) }\n`);
+							const { viewBox } = $;
+							stream.write(`${builder.buildObject(toSymbol(name, viewBox, args))}\n`);
 						} catch (error) {
 							console.log(error);
 							return Promise.resolve(error);

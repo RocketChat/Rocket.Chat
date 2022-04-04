@@ -7,11 +7,11 @@ import { IUser } from '../../../definition/IUser';
 import { IRole } from '../../../definition/IRole';
 import { IPermission } from '../../../definition/IPermission';
 
-const isValidScope = (scope: IRole['scope']): scope is keyof typeof Models =>
-	typeof scope === 'string' && scope in Models;
+const isValidScope = (scope: IRole['scope']): boolean => typeof scope === 'string' && scope in Models;
 
-const createPermissionValidator = (quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
-	(permissionIds: IPermission['_id'][], scope: IRole['scope'], userId: IUser['_id']): boolean => {
+const createPermissionValidator =
+	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
+	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']): boolean => {
 		const user: IUser | null = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 
 		const checkEachPermission = quantifier.bind(permissionIds);
@@ -23,19 +23,21 @@ const createPermissionValidator = (quantifier: (predicate: (permissionId: IPermi
 				}
 			}
 
-			const permission: IPermission | null = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
+			const permission: IPermission | null = ChatPermissions.findOne(permissionId, {
+				fields: { roles: 1 },
+			});
 			const roles = permission?.roles ?? [];
 
-			return roles.some((roleName) => {
-				const role = Models.Roles.findOne(roleName, { fields: { scope: 1 } });
+			return roles.some((roleId) => {
+				const role = Models.Roles.findOne(roleId, { fields: { scope: 1 } });
 				const roleScope = role?.scope;
 
 				if (!isValidScope(roleScope)) {
 					return false;
 				}
 
-				const model = Models[roleScope];
-				return model.isUserInRole && model.isUserInRole(userId, roleName, scope);
+				const model = Models[roleScope as keyof typeof Models];
+				return model.isUserInRole && model.isUserInRole(userId, roleId, scope);
 			});
 		});
 	};
@@ -46,8 +48,8 @@ const all = createPermissionValidator(Array.prototype.every);
 
 const validatePermissions = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope: IRole['scope'],
-	predicate: (permissionIds: IPermission['_id'][], scope: IRole['scope'], userId: IUser['_id']) => boolean,
+	scope: string | undefined,
+	predicate: (permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']) => boolean,
 	userId?: IUser['_id'] | null,
 ): boolean => {
 	userId = userId ?? Meteor.userId();
@@ -63,19 +65,15 @@ const validatePermissions = (
 	return predicate(([] as IPermission['_id'][]).concat(permissions), scope, userId);
 };
 
-export const hasAllPermission = (
-	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: IRole['scope'],
-): boolean => validatePermissions(permissions, scope, all);
+export const hasAllPermission = (permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>
+	validatePermissions(permissions, scope, all);
 
-export const hasAtLeastOnePermission = (
-	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: IRole['scope'],
-): boolean => validatePermissions(permissions, scope, atLeastOne);
+export const hasAtLeastOnePermission = (permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>
+	validatePermissions(permissions, scope, atLeastOne);
 
 export const userHasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: IRole['scope'],
+	scope?: string,
 	userId?: IUser['_id'] | null,
 ): boolean => validatePermissions(permissions, scope, all, userId);
 

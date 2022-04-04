@@ -14,11 +14,7 @@ const SharingOptions: FC<{
 	return (
 		<>
 			<Box display='flex' mie='12px'>
-				<RadioButton
-					onChange={setPublic}
-					disabled={isMonitor && !isManager}
-					checked={scope === 'global'}
-				/>
+				<RadioButton onChange={setPublic} disabled={isMonitor && !isManager} checked={scope === 'global'} />
 				<Box mis='8px'>{t('Public')}</Box>
 			</Box>
 			<Box display='flex' mie='12px'>

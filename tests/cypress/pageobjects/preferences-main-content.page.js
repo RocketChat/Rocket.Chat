@@ -1,27 +1,49 @@
 import Page from './Page';
 
 class PreferencesMainContent extends Page {
-	get formTextInput() { return browser.element('.rocket-form'); }
+	get formTextInput() {
+		return browser.element('.rocket-form');
+	}
 
-	get realNameTextInput() { return browser.element('input[name="realname"]'); }
+	get realNameTextInput() {
+		return browser.element('label:contains("Name")').closest('.rcx-field').find('input');
+	}
 
-	get userNameTextInput() { return browser.element('input[name="username"]'); }
+	get userNameTextInput() {
+		return browser.element('label:contains("Username")').closest('.rcx-field').find('input');
+	}
 
-	get emailTextInput() { return browser.element('[name="email"]'); }
+	get emailTextInput() {
+		return browser.element('label:contains("Email")').closest('.rcx-field').find('input');
+	}
 
-	get passwordTextInput() { return browser.element('[name="password"]'); }
+	get passwordTextInput() {
+		return browser.element('label:contains("Password")').closest('.rcx-field').find('input');
+	}
 
-	get resendVerificationEmailBtn() { return browser.element('#resend-verification-email'); }
+	get resendVerificationEmailBtn() {
+		return browser.element('#resend-verification-email');
+	}
 
-	get avatarFileInput() { return browser.element('.avatar-file-input'); }
+	get avatarFileInput() {
+		return browser.element('.avatar-file-input');
+	}
 
-	get useUploadedAvatar() { return browser.element('.avatar-suggestion-item:nth-of-type(2) .select-service'); }
+	get useUploadedAvatar() {
+		return browser.element('.avatar-suggestion-item:nth-of-type(2) .select-service');
+	}
 
-	get submitBtn() { return browser.element('.rc-button[type="submit"]'); }
+	get submitBtn() {
+		return browser.element('button:contains("Save changes")');
+	}
 
-	realNameTextInputEnabled() { return browser.isEnabled('input[name="realname"]'); }
+	realNameTextInputEnabled() {
+		return browser.isEnabled('input[name="realname"]');
+	}
 
-	userNameTextInputEnabled() { return browser.isEnabled('input[name="username"]'); }
+	userNameTextInputEnabled() {
+		return browser.isEnabled('input[name="username"]');
+	}
 
 	changeUsername(userName) {
 		this.userNameTextInput.clear().type(userName);
@@ -36,7 +58,7 @@ class PreferencesMainContent extends Page {
 	}
 
 	saveChanges() {
-		cy.get('.rc-button[type="submit"]').should('be.enabled');
+		this.submitBtn.should('be.enabled');
 		this.submitBtn.click();
 	}
 
@@ -46,5 +68,4 @@ class PreferencesMainContent extends Page {
 	}
 }
 
-
-module.exports = new PreferencesMainContent();
+export default new PreferencesMainContent();

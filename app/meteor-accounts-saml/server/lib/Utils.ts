@@ -9,6 +9,7 @@ import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import { StatusCode } from './constants';
 import { Logger } from '../../../../server/lib/logger/Logger';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
@@ -121,7 +122,7 @@ export class SAMLUtils {
 
 		for (const variable in data) {
 			if (variable in data) {
-				const key = `__${ variable }__`;
+				const key = `__${variable}__`;
 				while (newTemplate.includes(key)) {
 					newTemplate = newTemplate.replace(key, data[variable]);
 				}
@@ -143,11 +144,15 @@ export class SAMLUtils {
 		}
 	}
 
-	public static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: string | object | null) => void): void {
+	public static inflateXml(
+		base64Data: string,
+		successCallback: (xml: string) => void,
+		errorCallback: (err: string | object | null) => void,
+	): void {
 		const buffer = Buffer.from(base64Data, 'base64');
 		zlib.inflateRaw(buffer, (err, decoded) => {
 			if (err) {
-				this.log(`Error while inflating. ${ err }`);
+				this.log(`Error while inflating. ${err}`);
 				return errorCallback(err);
 			}
 
@@ -160,7 +165,11 @@ export class SAMLUtils {
 		});
 	}
 
-	public static validateStatus(doc: Document): { success: boolean; message: string; statusCode: string } {
+	public static validateStatus(doc: Document): {
+		success: boolean;
+		message: string;
+		statusCode: string;
+	} {
 		let successStatus = false;
 		let status = null;
 		let messageText = '';
@@ -171,7 +180,7 @@ export class SAMLUtils {
 			const statusNode = statusNodes[0];
 			const statusMessage = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage')[0];
 
-			if (statusMessage && statusMessage.firstChild && statusMessage.firstChild.textContent) {
+			if (statusMessage?.firstChild?.textContent) {
 				messageText = statusMessage.firstChild.textContent;
 			}
 
@@ -193,7 +202,8 @@ export class SAMLUtils {
 			return cert;
 		}
 
-		return cert.replace(/-+BEGIN CERTIFICATE-+\r?\n?/, '')
+		return cert
+			.replace(/-+BEGIN CERTIFICATE-+\r?\n?/, '')
 			.replace(/-+END CERTIFICATE-+\r?\n?/, '')
 			.replace(/\r\n/g, '\n')
 			.trim();
@@ -237,7 +247,7 @@ export class SAMLUtils {
 
 			const attribute = map[spFieldName];
 			if (typeof attribute !== 'string' && typeof attribute !== 'object') {
-				throw new Error(`SAML User Map: Invalid configuration for ${ spFieldName } field.`);
+				throw new Error(`SAML User Map: Invalid configuration for ${spFieldName} field.`);
 			}
 
 			if (spFieldName === '__identifier__') {
@@ -248,7 +258,6 @@ export class SAMLUtils {
 				identifier = attribute;
 				continue;
 			}
-
 
 			let attributeMap: IAttributeMapping | null = null;
 
@@ -264,7 +273,7 @@ export class SAMLUtils {
 
 				if (Array.isArray(fieldName)) {
 					if (!fieldName.length) {
-						throw new Error(`SAML User Map: Invalid configuration for ${ spFieldName } field.`);
+						throw new Error(`SAML User Map: Invalid configuration for ${spFieldName} field.`);
 					}
 
 					for (const idpFieldName of fieldName) {
@@ -284,8 +293,8 @@ export class SAMLUtils {
 
 				attributeMap = {
 					fieldName,
-					...regex && { regex },
-					...template && { template },
+					...(regex && { regex }),
+					...(template && { template }),
 				};
 			} else if (typeof attribute === 'string') {
 				attributeMap = {
@@ -301,12 +310,8 @@ export class SAMLUtils {
 			}
 		}
 
-
 		if (identifier) {
-			const defaultTypes = [
-				'email',
-				'username',
-			];
+			const defaultTypes = ['email', 'username'];
 
 			if (defaultTypes.includes(identifier)) {
 				parsedMap.identifier.type = identifier;
@@ -323,7 +328,7 @@ export class SAMLUtils {
 		const values: Record<string, string> = {
 			regex: '',
 		};
-		const fieldNames = this.ensureArray<string>(mapping.fieldName);
+		const fieldNames = ensureArray<string>(mapping.fieldName);
 
 		let mainValue;
 		for (const fieldName of fieldNames) {
@@ -332,10 +337,10 @@ export class SAMLUtils {
 			if (Array.isArray(profileValue)) {
 				for (let i = 0; i < profile[fieldName].length; i++) {
 					// Add every index to the list of possible values to be used, both first to last and from last to first
-					values[`${ fieldName }[${ i }]`] = profileValue[i];
-					values[`${ fieldName }[-${ Math.abs(0 - profileValue.length + i) }]`] = profileValue[i];
+					values[`${fieldName}[${i}]`] = profileValue[i];
+					values[`${fieldName}[-${Math.abs(0 - profileValue.length + i)}]`] = profileValue[i];
 				}
-				values[`${ fieldName }[]`] = profileValue.join(' ');
+				values[`${fieldName}[]`] = profileValue.join(' ');
 				if (forceString) {
 					profileValue = profileValue.join(' ');
 				}
@@ -363,7 +368,7 @@ export class SAMLUtils {
 		if (mapping.regex && mainValue && mainValue.match) {
 			let regexValue;
 			const match = mainValue.match(new RegExp(mapping.regex));
-			if (match && match.length) {
+			if (match?.length) {
 				if (match.length >= 2) {
 					regexValue = match[1];
 				} else {
@@ -402,11 +407,6 @@ export class SAMLUtils {
 		return name;
 	}
 
-	public static ensureArray<T>(param: T | Array<T>): Array<T> {
-		const emptyArray: Array<T> = [];
-		return emptyArray.concat(param);
-	}
-
 	public static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
 		const userDataMap = this.getUserDataMapping();
 		SAMLUtils.log('parsed userDataMap', userDataMap);
@@ -416,21 +416,21 @@ export class SAMLUtils {
 				throw new Error('SAML User Data Map: invalid Identifier configuration received.');
 			}
 			if (!profile[userDataMap.identifier.attribute]) {
-				throw new Error(`SAML Profile did not have the expected identifier (${ userDataMap.identifier.attribute }).`);
+				throw new Error(`SAML Profile did not have the expected identifier (${userDataMap.identifier.attribute}).`);
 			}
 		}
 
 		const attributeList = new Map();
 		for (const attributeName of userDataMap.attributeList) {
 			if (profile[attributeName] === undefined) {
-				this.log(`SAML user profile is missing the attribute ${ attributeName }.`);
+				this.log(`SAML user profile is missing the attribute ${attributeName}.`);
 				continue;
 			}
 			attributeList.set(attributeName, profile[attributeName]);
 		}
 		const email = this.getProfileValue(profile, userDataMap.email);
 		const profileUsername = this.getProfileValue(profile, userDataMap.username, true);
-		const name = this.getProfileValue(profile, userDataMap.name);
+		const name = this.getProfileValue(profile, userDataMap.name, true);
 
 		// Even if we're not using the email to identify the user, it is still mandatory because it's a mandatory information on Rocket.Chat
 		if (!email) {
@@ -444,7 +444,7 @@ export class SAMLUtils {
 				idpSession: profile.sessionIndex,
 				nameID: profile.nameID,
 			},
-			emailList: this.ensureArray<string>(email),
+			emailList: ensureArray<string>(email),
 			fullName: name || profile.displayName || profile.username,
 			eppn: profile.eppn,
 			attributeList,

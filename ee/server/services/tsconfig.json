@@ -3,7 +3,6 @@
 		"module": "CommonJS",
 		"target": "es2018",
 		"lib": ["esnext", "dom"],
-		"types" : ["node"],
 
 		"allowJs": true,
 		"checkJs": false,
@@ -42,6 +41,10 @@
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
+	"include": [
+		"./**/*",
+		"../../../definition"
+	],
 	"exclude": [
 		"./dist",
 		"./ecosystem.config.js"

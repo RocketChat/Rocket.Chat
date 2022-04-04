@@ -40,11 +40,7 @@ const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 
 	useEffect(() => {
 		department?.requestTagBeforeClosingChat && setTagRequired(true);
-		setTagError(
-			tagRequired && (!tags || tags.length === 0)
-				? t('error-tags-must-be-assigned-before-closing-chat')
-				: '',
-		);
+		setTagError(tagRequired && (!tags || tags.length === 0) ? t('error-tags-must-be-assigned-before-closing-chat') : '');
 	}, [department, tagRequired, t, tags]);
 
 	if (!commentRequired && !tagRequired) {
@@ -67,7 +63,7 @@ const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 				<Modal.Title>{t('Closing_chat')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>
+			<Modal.Content fontScale='p2'>
 				<Box color='neutral-600'>{t('Close_room_description')}</Box>
 				<Field marginBlock='x15'>
 					<Field.Label required={commentRequired}>{t('Comment')}</Field.Label>

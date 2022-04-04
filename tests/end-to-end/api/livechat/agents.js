@@ -4,7 +4,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { createAgent, createManager } from '../../../data/livechat/rooms.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - Agents', function() {
+describe('LIVECHAT - Agents', function () {
 	this.retries(0);
 	let agent;
 	let manager;
@@ -29,7 +29,8 @@ describe('LIVECHAT - Agents', function() {
 			updatePermission('view-l-room', [])
 				.then(() => updatePermission('transfer-livechat-guest', []))
 				.then(() => {
-					request.get(api('livechat/users/agent'))
+					request
+						.get(api('livechat/users/agent'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -44,7 +45,8 @@ describe('LIVECHAT - Agents', function() {
 			updatePermission('view-livechat-manager', ['admin'])
 				.then(() => updatePermission('manage-livechat-agents', ['admin']))
 				.then(() => {
-					request.get(api('livechat/users/invalid-type'))
+					request
+						.get(api('livechat/users/invalid-type'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -59,7 +61,8 @@ describe('LIVECHAT - Agents', function() {
 			updatePermission('view-l-room', ['admin'])
 				.then(() => updatePermission('transfer-livechat-guest', ['admin']))
 				.then(() => {
-					request.get(api('livechat/users/agent'))
+					request
+						.get(api('livechat/users/agent'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -79,7 +82,8 @@ describe('LIVECHAT - Agents', function() {
 			updatePermission('view-livechat-manager', ['admin'])
 				.then(() => updatePermission('manage-livechat-agents', ['admin']))
 				.then(() => {
-					request.get(api('livechat/users/manager'))
+					request
+						.get(api('livechat/users/manager'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -99,49 +103,49 @@ describe('LIVECHAT - Agents', function() {
 
 	describe('livechat/agents/:agentId/departments', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-l-room', [])
-				.then(() => {
-					request.get(api(`livechat/agents/${ agent._id }/departments`))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.error).to.be.equal('error-not-authorized');
-						})
-						.end(done);
-				});
+			updatePermission('view-l-room', []).then(() => {
+				request
+					.get(api(`livechat/agents/${agent._id}/departments`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('error-not-authorized');
+					})
+					.end(done);
+			});
 		});
 		it('should return an empty array of departments when the agentId is invalid', (done) => {
-			updatePermission('view-l-room', ['admin'])
-				.then(() => {
-					request.get(api('livechat/agents/invalid-id/departments'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('departments').and.to.be.an('array');
-						})
-						.end(done);
-				});
+			updatePermission('view-l-room', ['admin']).then(() => {
+				request
+					.get(api('livechat/agents/invalid-id/departments'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('departments').and.to.be.an('array');
+					})
+					.end(done);
+			});
 		});
 		it('should return an array of departments when the agentId is valid', (done) => {
-			updatePermission('view-l-room', ['admin'])
-				.then(() => {
-					request.get(api(`livechat/agents/${ agent._id }/departments`))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('departments').and.to.be.an('array');
-							res.body.departments.forEach((department) => {
-								expect(department.agentId).to.be.equal(agent._id);
-							});
-						})
-						.end(done);
-				});
+			updatePermission('view-l-room', ['admin']).then(() => {
+				request
+					.get(api(`livechat/agents/${agent._id}/departments`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('departments').and.to.be.an('array');
+						res.body.departments.forEach((department) => {
+							expect(department.agentId).to.be.equal(agent._id);
+						});
+					})
+					.end(done);
+			});
 		});
 	});
 });

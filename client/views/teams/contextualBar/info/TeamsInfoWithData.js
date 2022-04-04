@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback } from 'react';
 
-import { roomTypes, UiTextContext } from '../../../../../app/utils/client';
+import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import MarkdownText from '../../../../components/MarkdownText';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
@@ -14,6 +14,7 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useTabBarClose, useTabBarOpen } from '../../../room/providers/ToolboxProvider';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
@@ -32,7 +33,7 @@ const retentionPolicyAppliesTo = {
 	d: 'RetentionPolicy_AppliesToDMs',
 };
 
-function TeamsInfoWithLogic({ room, openEditing }) {
+const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const onClickClose = useTabBarClose();
 	const openTabbar = useTabBarOpen();
 	const t = useTranslation();
@@ -72,15 +73,17 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 
 	const onClickDelete = useMutableCallback(() => {
 		const onConfirm = async (deletedRooms) => {
-			const roomsToRemove =
-				Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : null;
+			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : [];
+
 			try {
-				await deleteTeam({ teamId: room.teamId, roomsToRemove });
+				await deleteTeam({ teamId: room.teamId, ...(roomsToRemove.length && { roomsToRemove }) });
+				dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				closeModal();
 			}
-			closeModal();
 		};
 
 		setModal(<DeleteTeamModal onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
@@ -88,16 +91,20 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 
 	const onClickLeave = useMutableCallback(() => {
 		const onConfirm = async (roomsLeft) => {
-			const rooms = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : null;
+			const roomsToLeave = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : [];
 
 			try {
-				await leaveTeam({ teamId: room.teamId, rooms });
+				await leaveTeam({
+					teamId: room.teamId,
+					...(roomsToLeave.length && { rooms: roomsToLeave }),
+				});
 				dispatchToastMessage({ type: 'success', message: t('Teams_left_team_successfully') });
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				closeModal();
 			}
-			closeModal();
 		};
 
 		setModal(<LeaveTeamModal onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
@@ -110,11 +117,12 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				closeModal();
 			}
-			closeModal();
 		};
 
-		const warnText = roomTypes.getConfig(room.t).getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(room.t)?.getUiText(UiTextContext.HIDE_WARNING);
 
 		if (dontAskHideRoom) {
 			return hide();
@@ -157,13 +165,7 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 		};
 
 		setModal(
-			<ConvertToChannelModal
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={onConfirm}
-				teamId={room.teamId}
-				userId={userId}
-			/>,
+			<ConvertToChannelModal onClose={closeModal} onCancel={closeModal} onConfirm={onConfirm} teamId={room.teamId} userId={userId} />,
 		);
 	});
 
@@ -181,13 +183,11 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 			onClickHide={/* joined && */ handleHide}
 			onClickViewChannels={onClickViewChannels}
 			onClickConvertToChannel={canEdit && onClickConvertToChannel}
-			announcement={
-				room.announcement && <MarkdownText variant='inline' content={room.announcement} />
-			}
+			announcement={room.announcement && <MarkdownText variant='inline' content={room.announcement} />}
 			description={room.description && <MarkdownText variant='inline' content={room.description} />}
 			topic={room.topic && <MarkdownText variant='inline' content={room.topic} />}
 		/>
 	);
-}
+};
 
 export default TeamsInfoWithLogic;

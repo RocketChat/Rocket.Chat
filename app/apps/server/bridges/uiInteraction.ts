@@ -2,7 +2,7 @@ import { UiInteractionBridge as UiIntBridge } from '@rocket.chat/apps-engine/ser
 import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import { Notifications } from '../../../notifications/server';
+import { api } from '../../../../server/sdk/api';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class UiInteractionBridge extends UiIntBridge {
@@ -12,7 +12,7 @@ export class UiInteractionBridge extends UiIntBridge {
 	}
 
 	protected async notifyUser(user: IUser, interaction: IUIKitInteraction, appId: string): Promise<void> {
-		this.orch.debugLog(`The App ${ appId } is sending an interaction to user.`);
+		this.orch.debugLog(`The App ${appId} is sending an interaction to user.`);
 
 		const app = this.orch.getManager()?.getOneById(appId);
 
@@ -20,6 +20,6 @@ export class UiInteractionBridge extends UiIntBridge {
 			throw new Error('Invalid app provided');
 		}
 
-		Notifications.notifyUser(user.id, 'uiInteraction', interaction);
+		api.broadcast('notify.uiInteraction', user.id, interaction);
 	}
 }

@@ -10,9 +10,5 @@ Meteor.startup(() => {
 			return;
 		}
 		(window as any).__meteor_runtime_config__.ROOT_URL = value;
-
-		if (Meteor.absoluteUrl.defaultOptions && Meteor.absoluteUrl.defaultOptions.rootUrl) {
-			Meteor.absoluteUrl.defaultOptions.rootUrl = value;
-		}
 	});
 });

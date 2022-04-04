@@ -3,6 +3,7 @@ import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { clear } from '@rocket.chat/memo';
 import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, memo } from 'react';
 
+import { Subscriptions } from '../../../../../../app/models/client';
 import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/constants';
 import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
@@ -44,6 +45,7 @@ const CallJitsiWithData = ({ rid }) => {
 	const closeModal = useMutableCallback(() => setModal(null));
 	const generateAccessToken = useMethod('jitsi:generateAccessToken');
 	const updateTimeout = useMethod('jitsi:updateTimeout');
+	const joinRoom = useMethod('joinRoom');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -87,9 +89,7 @@ const CallJitsiWithData = ({ rid }) => {
 		}
 	}, [connected, handleClose]);
 
-	const rname = useHashName
-		? uniqueID + rid
-		: encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+	const rname = useHashName ? uniqueID + rid : encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
 
 	const jitsi = useMemo(() => {
 		if (isEnabledTokenAuth && !accessToken) {
@@ -124,13 +124,13 @@ const CallJitsiWithData = ({ rid }) => {
 		user.username,
 	]);
 
-	const testAndHandleTimeout = useMutableCallback(async () => {
+	const testAndHandleTimeout = useMutableCallback(() => {
 		if (jitsi.openNewWindow) {
 			if (jitsi.window?.closed) {
 				return jitsi.dispose();
 			}
 			try {
-				await updateTimeout(rid, false);
+				return updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
@@ -144,7 +144,7 @@ const CallJitsiWithData = ({ rid }) => {
 
 		if (new Date() - new Date(room.jitsiTimeout) + TIMEOUT > DEBOUNCE) {
 			try {
-				await updateTimeout(rid, false);
+				return updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
@@ -155,51 +155,33 @@ const CallJitsiWithData = ({ rid }) => {
 	});
 
 	useEffect(() => {
-		let shouldDispose = false;
-
-		async function fetchData() {
-			if (!accepted || !jitsi) {
-				return;
-			}
-
-			const clear = () => {
-				jitsi.off('HEARTBEAT', testAndHandleTimeout);
-				jitsi.dispose();
-			};
-
-			try {
-				if (jitsi.needsStart) {
-					jitsi.start(ref.current);
-					await updateTimeout(rid, true);
-				} else {
-					await updateTimeout(rid, false);
-				}
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t(error.reason) });
-				clear();
-				handleClose();
-			}
-
-			jitsi.on('HEARTBEAT', testAndHandleTimeout);
-
-			shouldDispose = jitsi.openNewWindow;
+		if (!accepted || !jitsi) {
+			return;
 		}
 
-		fetchData().then(() => {
-			if (shouldDispose) {
-				jitsi.dispose();
+		const clear = () => {
+			jitsi.off('HEARTBEAT', testAndHandleTimeout);
+			jitsi.dispose();
+		};
+
+		try {
+			if (jitsi.needsStart) {
+				jitsi.start(ref.current);
+				updateTimeout(rid, true);
+			} else {
+				updateTimeout(rid, false);
 			}
-		});
-	}, [
-		accepted,
-		jitsi,
-		rid,
-		testAndHandleTimeout,
-		updateTimeout,
-		dispatchToastMessage,
-		handleClose,
-		t,
-	]);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t(error.reason) });
+			clear();
+			handleClose();
+		}
+		jitsi.on('HEARTBEAT', testAndHandleTimeout);
+
+		return () => {
+			if (!jitsi.openNewWindow) clear();
+		};
+	}, [accepted, jitsi, rid, testAndHandleTimeout, updateTimeout, dispatchToastMessage, handleClose, t]);
 
 	const handleYes = useMutableCallback(() => {
 		if (jitsi) {
@@ -207,6 +189,10 @@ const CallJitsiWithData = ({ rid }) => {
 		}
 
 		setAccepted(true);
+		const sub = Subscriptions.findOne({ rid, 'u._id': user._id });
+		if (!sub) {
+			joinRoom(rid);
+		}
 
 		if (openNewWindow) {
 			handleClose();
