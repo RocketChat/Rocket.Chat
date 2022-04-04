@@ -6,7 +6,7 @@ import React, { useMemo, useCallback, useState, FC } from 'react';
 import GenericTable from '../../../components/GenericTable';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { TranslationContextValue, useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import Chat from '../directory/chats/Chat';
@@ -23,11 +23,12 @@ type useQueryType = (
 		from: string;
 		to: string;
 		tags: any[];
-		customFields: any;
+		customFields: Record<string, string>;
 		itemsPerPage: number;
 		current: number;
 	},
 	debouncedSort: any[],
+	t: TranslationContextValue['translate'],
 ) => any;
 
 const sortDir = (sortDir: string): number => (sortDir === 'asc' ? 1 : -1);
@@ -35,6 +36,7 @@ const sortDir = (sortDir: string): number => (sortDir === 'asc' ? 1 : -1);
 const useQuery: useQueryType = (
 	{ guest, servedBy, department, status, from, to, tags, customFields, itemsPerPage, current },
 	[column, direction],
+	t,
 ) =>
 	useMemo(() => {
 		const query: {
@@ -86,11 +88,19 @@ const useQuery: useQueryType = (
 		}
 
 		if (customFields && Object.keys(customFields).length > 0) {
-			query.customFields = JSON.stringify(customFields);
+			const newCF: Record<string, string> = {};
+			Object.entries(customFields).forEach(([key, value]) => {
+				if (value?.trim().length && value !== t('None_no_option_selected')) {
+					newCF[key] = value;
+				}
+			});
+			if (Object.keys(newCF).length > 0) {
+				query.customFields = JSON.stringify(newCF);
+			}
 		}
 
 		return query;
-	}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags, customFields]);
+	}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags, customFields, t]);
 
 const CurrentChatsRoute: FC = () => {
 	const t = useTranslation();
@@ -116,7 +126,7 @@ const CurrentChatsRoute: FC = () => {
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
+	const query = useQuery(debouncedParams, debouncedSort, t);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
