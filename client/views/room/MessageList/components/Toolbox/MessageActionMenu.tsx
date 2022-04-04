@@ -30,7 +30,13 @@ export const MessageActionMenu: FC<{
 	};
 
 	return (
-		<MessageToolboxItem ref={ref} icon='kebab' onClick={(): void => setVisible(!visible)} data-type='message-action-menu' data-id='menu'>
+		<MessageToolboxItem
+			ref={ref}
+			icon='kebab'
+			onClick={(): void => setVisible(!visible)}
+			data-qa-id='menu'
+			data-qa-type='message-action-menu'
+		>
 			{visible && (
 				<ToolboxDropdown reference={ref} {...rest}>
 					{Object.entries(groupOptions).map(([, options], index, arr) => (
@@ -43,8 +49,8 @@ export const MessageActionMenu: FC<{
 									icon={option.icon as ComponentProps<typeof Option>['icon']}
 									label={t(option.label)}
 									onClick={option.action as any}
-									data-type='message-action'
-									data-id={option.id}
+									data-qa-type='message-action'
+									data-qa-id={option.id}
 								/>
 							))}
 							{index !== arr.length - 1 && <Option.Divider />}

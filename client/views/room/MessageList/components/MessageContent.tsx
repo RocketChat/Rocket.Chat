@@ -48,7 +48,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	return (
 		<>
-			<MessageBody data-type='message-body'>
+			<MessageBody data-qa-type='message-body'>
 				{!isEncryptedMessage && !message.blocks && message.md && (
 					<MessageBodyRender
 						onUserMentionClick={openUserCard}

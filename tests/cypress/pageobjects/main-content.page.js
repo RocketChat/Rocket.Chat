@@ -66,100 +66,100 @@ class MainContent extends Page {
 
 	// Messages
 	get lastMessageUser() {
-		return browser.element('[data-type="message"]:last-child [data-username]');
+		return browser.element('[data-qa-type="message"]:last-child [data-username]');
 	}
 
 	get lastMessage() {
-		return browser.element('[data-type="message"]:last-child');
+		return browser.element('[data-qa-type="message"]:last-child');
 	}
 
 	get lastMessageDesc() {
-		return browser.element('[data-type="message"]:last-child .body .attachment-description');
+		return browser.element('[data-qa-type="message"]:last-child .body .attachment-description');
 	}
 
 	get lastMessageRoleAdded() {
-		return browser.element('[data-type="message"]:last-child.subscription-role-added .body');
+		return browser.element('[data-qa-type="message"]:last-child.subscription-role-added .body');
 	}
 
 	get beforeLastMessage() {
-		return browser.element('[data-type="message"]:nth-last-child(2) [data-type="message-body"]');
+		return browser.element('[data-qa-type="message"]:nth-last-child(2) [data-qa-type="message-body"]');
 	}
 
 	get lastMessageUserTag() {
-		return browser.element('[data-type="message"]:last-child .role-tag');
+		return browser.element('[data-qa-type="message"]:last-child .role-tag');
 	}
 
 	get lastMessageImg() {
-		return browser.element('[data-type="message"]:last-child .attachment-image img');
+		return browser.element('[data-qa-type="message"]:last-child .attachment-image img');
 	}
 
 	get lastMessageTextAttachment() {
-		return browser.element('[data-type="message"]:last-child .attachment-text');
+		return browser.element('[data-qa-type="message"]:last-child .attachment-text');
 	}
 
 	get beforeLastMessageQuote() {
-		return browser.element('[data-type="message"]:nth-last-child(2)');
+		return browser.element('[data-qa-type="message"]:nth-last-child(2)');
 	}
 
 	get lastMessageQuote() {
-		return browser.element('[data-type="message"]:last-child');
+		return browser.element('[data-qa-type="message"]:last-child');
 	}
 
 	get messageOptionsBtn() {
-		return browser.element('[data-type="message"]:last-child [data-type="message-action-menu"][data-id="menu"]');
+		return browser.element('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"][data-qa-id="menu"]');
 	}
 
 	get messageOptionsBtns() {
-		return browser.element('[data-type="message"]:last-child [data-type="message-action-menu"]');
+		return browser.element('[data-qa-type="message"]:last-child [data-qa-type="message-action-menu"]');
 	}
 
 	get messageActionMenu() {
-		return browser.element('[data-type="message-action-menu-options"]');
+		return browser.element('[data-qa-type="message-action-menu-options"]');
 	}
 
 	get messageActionMenuBtns() {
-		return browser.element('[data-type="message-action-menu-options"] [data-type="message-action"]');
+		return browser.element('[data-qa-type="message-action-menu-options"] [data-qa-type="message-action"]');
 	}
 
 	get messageReply() {
-		return browser.element('[data-type="message"]:last-child [data-type="message-action"][data-id="reply-in-thread"]');
+		return browser.element('[data-qa-type="message"]:last-child [data-qa-type="message-action"][data-qa-id="reply-in-thread"]');
 	}
 
 	get messageEdit() {
-		return browser.element('[data-id="edit-message"][data-type="message-action"]');
+		return browser.element('[data-qa-id="edit-message"][data-qa-type="message-action"]');
 	}
 
 	get messageDelete() {
-		return browser.element('[data-id="delete-message"][data-type="message-action"]');
+		return browser.element('[data-qa-id="delete-message"][data-qa-type="message-action"]');
 	}
 
 	get messagePermalink() {
-		return browser.element('[data-id="permalink"][data-type="message-action"]');
+		return browser.element('[data-qa-id="permalink"][data-qa-type="message-action"]');
 	}
 
 	get messageCopy() {
-		return browser.element('[data-id="copy"][data-type="message-action"]');
+		return browser.element('[data-qa-id="copy"][data-qa-type="message-action"]');
 	}
 
 	get messageQuote() {
-		return browser.element('[data-id="quote-message"][data-type="message-action"]');
+		return browser.element('[data-qa-id="quote-message"][data-qa-type="message-action"]');
 	}
 
 	get messageStar() {
-		return browser.element('[data-id="star-message"][data-type="message-action"]');
+		return browser.element('[data-qa-id="star-message"][data-qa-type="message-action"]');
 	}
 
 	get messageUnread() {
-		return browser.element('[data-id="mark-message-as-unread"][data-type="message-action"]');
+		return browser.element('[data-qa-id="mark-message-as-unread"][data-qa-type="message-action"]');
 	}
 
 	get messageReplyInDM() {
-		return browser.element('[data-id="reply-directly"][data-type="message-action"]');
+		return browser.element('[data-qa-id="reply-directly"][data-qa-type="message-action"]');
 	}
 
 	// get messageReaction() { return browser.element('.message-actions__button[data-message-action="reaction-message"]'); }
 	get messagePin() {
-		return browser.element('[data-id="pin-message"][data-type="message-action"]');
+		return browser.element('[data-qa-id="pin-message"][data-qa-type="message-action"]');
 	}
 	// get messageClose() { return browser.element('[data-id="rc-popover-close"][data-type="message-action"]'); }
 
@@ -241,8 +241,8 @@ class MainContent extends Page {
 	sendMessage(text) {
 		this.setTextToInput(text);
 		this.sendBtn.click();
-		cy.get('[data-type="message"]:last-child [data-type="message-body"]').should('be.visible');
-		cy.get('[data-type="message"]:last-child [data-type="message-body"]').should('contain', text);
+		cy.get('[data-qa-type="message"]:last-child [data-qa-type="message-body"]').should('be.visible');
+		cy.get('[data-qa-type="message"]:last-child [data-qa-type="message-body"]').should('contain', text);
 	}
 
 	// adds text to the input
@@ -266,19 +266,19 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageEqualsText(text) {
-		cy.get('[data-type="message"]:last-child [data-type="message-body"]').should('contain', text);
+		cy.get('[data-qa-type="message"]:last-child [data-qa-type="message-body"]').should('contain', text);
 	}
 
 	waitForLastMessageQuoteEqualsText(text) {
-		cy.get('[data-type="message"]:last-child .rcx-attachment__details').should('contain', text);
+		cy.get('[data-qa-type="message"]:last-child .rcx-attachment__details').should('contain', text);
 	}
 
 	waitForLastMessageEqualsHtml(text) {
-		cy.get('[data-type="message"]:last-child [data-type="message-body"]').should('contain.html', text);
+		cy.get('[data-qa-type="message"]:last-child [data-qa-type="message-body"]').should('contain.html', text);
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
-		return cy.get('[data-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements').should('contain', text);
+		return cy.get('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements').should('contain', text);
 	}
 
 	openMessageActionMenu() {

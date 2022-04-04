@@ -283,7 +283,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 	unlock(orderedMigrations[endIdx].version);
 	log.startup('Finished migrating.');
 
-	remember to run meteor with --once otherwise it will restart
+	// remember to run meteor with --once otherwise it will restart
 	if (subcommands?.includes('exit')) {
 		process.exit(0);
 	}

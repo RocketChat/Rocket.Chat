@@ -66,7 +66,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 											data-unread={isFirstUnread}
 											data-sequential={isSequential}
 											data-own={isUserOwnMessage}
-											data-type='message'
+											data-qa-type='message'
 											sequential={shouldShowAsSequential}
 											message={message}
 											subscription={subscription}
