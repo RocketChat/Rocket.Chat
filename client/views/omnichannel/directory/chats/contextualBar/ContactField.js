@@ -1,12 +1,12 @@
 import { Avatar, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { roomTypes } from '../../../../../../app/utils/client';
 import UserCard from '../../../../../components/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
+import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
@@ -16,7 +16,7 @@ const ContactField = ({ contact, room }) => {
 	const t = useTranslation();
 	const { status } = contact;
 	const { fname, t: type } = room;
-	const avatarUrl = roomTypes.getConfig(type).getAvatarPath(room);
+	const avatarUrl = roomCoordinator.getRoomDirectives(type)?.getAvatarPath(room);
 
 	const { value: data, phase: state, error } = useEndpointData(`livechat/visitors.info?visitorId=${contact._id}`);
 

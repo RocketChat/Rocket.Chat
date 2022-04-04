@@ -6,9 +6,18 @@ import {
 	IndexSpecification,
 	UpdateWriteOpResult,
 	FilterQuery,
+	Cursor,
 } from 'mongodb';
 
-import type { ISession } from '../../../../definition/ISession';
+import type {
+	ISession,
+	UserSessionAggregation,
+	DeviceSessionAggregation,
+	OSSessionAggregation,
+	UserSessionAggregationResult,
+	DeviceSessionAggregationResult,
+	OSSessionAggregationResult,
+} from '../../../../definition/ISession';
 import { BaseRaw, ModelOptionalId } from './BaseRaw';
 import type { IUser } from '../../../../definition/IUser';
 
@@ -21,7 +30,6 @@ type DestructuredDateWithType = {
 };
 type DestructuredRange = { start: DestructuredDate; end: DestructuredDate };
 type DateRange = { start: Date; end: Date };
-type FullReturn = { year: number; month: number; day: number; data: ISession[] };
 
 const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): FilterQuery<ISession> => {
 	if (start.year === end.year && start.month === end.month) {
@@ -268,9 +276,12 @@ export const aggregates = {
 		);
 	},
 
-	async getUniqueUsersOfYesterday(collection: Collection<ISession>, { year, month, day }: DestructuredDate): Promise<ISession[]> {
+	async getUniqueUsersOfYesterday(
+		collection: Collection<ISession>,
+		{ year, month, day }: DestructuredDate,
+	): Promise<UserSessionAggregation[]> {
 		return collection
-			.aggregate([
+			.aggregate<UserSessionAggregation>([
 				{
 					$match: {
 						year,
@@ -340,9 +351,9 @@ export const aggregates = {
 	async getUniqueUsersOfLastMonthOrWeek(
 		collection: Collection<ISession>,
 		{ year, month, day, type = 'month' }: DestructuredDateWithType,
-	): Promise<ISession[]> {
+	): Promise<UserSessionAggregation[]> {
 		return collection
-			.aggregate(
+			.aggregate<UserSessionAggregation>(
 				[
 					{
 						$match: {
@@ -523,9 +534,9 @@ export const aggregates = {
 	async getUniqueDevicesOfLastMonthOrWeek(
 		collection: Collection<ISession>,
 		{ year, month, day, type = 'month' }: DestructuredDateWithType,
-	): Promise<ISession[]> {
+	): Promise<DeviceSessionAggregation[]> {
 		return collection
-			.aggregate(
+			.aggregate<DeviceSessionAggregation>(
 				[
 					{
 						$match: {
@@ -572,9 +583,12 @@ export const aggregates = {
 			.toArray();
 	},
 
-	getUniqueDevicesOfYesterday(collection: Collection<ISession>, { year, month, day }: DestructuredDate): Promise<ISession[]> {
+	getUniqueDevicesOfYesterday(
+		collection: Collection<ISession>,
+		{ year, month, day }: DestructuredDate,
+	): Promise<DeviceSessionAggregation[]> {
 		return collection
-			.aggregate([
+			.aggregate<DeviceSessionAggregation>([
 				{
 					$match: {
 						year,
@@ -623,9 +637,9 @@ export const aggregates = {
 	getUniqueOSOfLastMonthOrWeek(
 		collection: Collection<ISession>,
 		{ year, month, day, type = 'month' }: DestructuredDateWithType,
-	): Promise<ISession[]> {
+	): Promise<OSSessionAggregation[]> {
 		return collection
-			.aggregate(
+			.aggregate<OSSessionAggregation>(
 				[
 					{
 						$match: {
@@ -673,9 +687,9 @@ export const aggregates = {
 			.toArray();
 	},
 
-	getUniqueOSOfYesterday(collection: Collection<ISession>, { year, month, day }: DestructuredDate): Promise<ISession[]> {
+	getUniqueOSOfYesterday(collection: Collection<ISession>, { year, month, day }: DestructuredDate): Promise<OSSessionAggregation[]> {
 		return collection
-			.aggregate([
+			.aggregate<OSSessionAggregation>([
 				{
 					$match: {
 						year,
@@ -772,6 +786,19 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				limit: 1,
 			},
 		);
+	}
+
+	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
+		const query = {
+			year,
+			month,
+			day,
+			type: 'session',
+			closedAt: { $exists: false },
+			lastActivityAt: { $exists: false },
+		};
+
+		return this.find(query);
 	}
 
 	async getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<
@@ -984,7 +1011,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			.toArray();
 	}
 
-	async getUniqueUsersOfYesterday(): Promise<FullReturn> {
+	async getUniqueUsersOfYesterday(): Promise<UserSessionAggregationResult> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -1004,7 +1031,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async getUniqueUsersOfLastMonth(): Promise<FullReturn> {
+	async getUniqueUsersOfLastMonth(): Promise<UserSessionAggregationResult> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -1024,7 +1051,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async getUniqueUsersOfLastWeek(): Promise<FullReturn> {
+	async getUniqueUsersOfLastWeek(): Promise<UserSessionAggregationResult> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -1045,7 +1072,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async getUniqueDevicesOfYesterday(): Promise<FullReturn> {
+	async getUniqueDevicesOfYesterday(): Promise<DeviceSessionAggregationResult> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -1065,7 +1092,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async getUniqueDevicesOfLastMonth(): Promise<FullReturn> {
+	async getUniqueDevicesOfLastMonth(): Promise<DeviceSessionAggregationResult> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -1085,7 +1112,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async getUniqueDevicesOfLastWeek(): Promise<FullReturn> {
+	async getUniqueDevicesOfLastWeek(): Promise<DeviceSessionAggregationResult> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -1106,7 +1133,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async getUniqueOSOfYesterday(): Promise<FullReturn> {
+	async getUniqueOSOfYesterday(): Promise<OSSessionAggregationResult> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -1122,7 +1149,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async getUniqueOSOfLastMonth(): Promise<FullReturn> {
+	async getUniqueOSOfLastMonth(): Promise<OSSessionAggregationResult> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -1142,7 +1169,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async getUniqueOSOfLastWeek(): Promise<FullReturn> {
+	async getUniqueOSOfLastWeek(): Promise<OSSessionAggregationResult> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -1163,7 +1190,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async createOrUpdate(data: ISession): Promise<UpdateWriteOpResult | undefined> {
+	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined> {
 		const { year, month, day, sessionId, instanceId } = data;
 
 		if (!year || !month || !day || !sessionId || !instanceId) {
@@ -1215,6 +1242,23 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			day,
 			sessionId: { $in: sessions },
 			closedAt: { $exists: false },
+		};
+
+		const update = {
+			$set: data,
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	async updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data = {}): Promise<UpdateWriteOpResult> {
+		const query = {
+			year,
+			month,
+			day,
+			type: 'session',
+			closedAt: { $exists: false },
+			lastActivityAt: { $exists: false },
 		};
 
 		const update = {

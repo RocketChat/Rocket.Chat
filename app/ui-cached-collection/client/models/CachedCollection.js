@@ -8,7 +8,7 @@ import localforage from 'localforage';
 import _ from 'underscore';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { call } from '../../../../client/lib/utils/call';
@@ -210,7 +210,9 @@ export class CachedCollection extends Emitter {
 			}
 		});
 
-		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
+		this.collection._collection._docs._map = new Map(
+			data.records.map((record) => [this.collection._collection._docs._idStringify(record._id), record]),
+		);
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
@@ -226,7 +228,6 @@ export class CachedCollection extends Emitter {
 		this.log(`${data.length} records loaded from server`);
 		data.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromServer-${this.name}`, record, 'changed');
-
 			this.collection.direct.upsert({ _id: record._id }, _.omit(record, '_id'));
 
 			this.onSyncData('changed', record);

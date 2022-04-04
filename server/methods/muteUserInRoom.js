@@ -3,8 +3,9 @@ import { Match, check } from 'meteor/check';
 
 import { Rooms, Subscriptions, Users, Messages } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
-import { callbacks } from '../../app/callbacks';
-import { roomTypes, RoomMemberActions } from '../../app/utils/server';
+import { callbacks } from '../../lib/callbacks';
+import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 Meteor.methods({
 	muteUserInRoom(data) {
@@ -38,7 +39,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.MUTE)) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.MUTE)) {
 			throw new Meteor.Error('error-invalid-room-type', `${room.t} is not a valid room type`, {
 				method: 'muteUserInRoom',
 				type: room.t,

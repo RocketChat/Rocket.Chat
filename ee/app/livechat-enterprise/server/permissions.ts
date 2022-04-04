@@ -1,4 +1,5 @@
 import { Permissions, Roles } from '../../../../app/models/server/raw';
+import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 export const createPermissions = async (): Promise<void> => {
 	const livechatMonitorRole = 'livechat-monitor';
@@ -7,7 +8,9 @@ export const createPermissions = async (): Promise<void> => {
 
 	const monitorRole = await Roles.findOneById(livechatMonitorRole, { fields: { _id: 1 } });
 	if (!monitorRole) {
-		await Roles.createOrUpdate(livechatMonitorRole);
+		await createOrUpdateProtectedRoleAsync(livechatMonitorRole, {
+			name: livechatMonitorRole,
+		});
 	}
 
 	await Promise.all([
@@ -16,5 +19,7 @@ export const createPermissions = async (): Promise<void> => {
 		Permissions.create('manage-livechat-tags', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-priorities', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-canned-responses', [adminRole, livechatManagerRole, livechatMonitorRole]),
+		Permissions.create('spy-voip-calls', [adminRole, livechatManagerRole, livechatMonitorRole]),
+		Permissions.create('outbound-voip-calls', [adminRole, livechatManagerRole]),
 	]);
 };

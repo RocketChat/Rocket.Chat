@@ -1,5 +1,5 @@
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';

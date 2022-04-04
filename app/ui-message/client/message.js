@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import dompurify from 'dompurify';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
@@ -11,7 +12,7 @@ import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTi
 import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles } from '../../models/client';
 import { Markdown } from '../../markdown/client';
-import { t, roomTypes } from '../../utils';
+import { t } from '../../utils';
 import { AutoTranslate } from '../../autotranslate/client';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
@@ -20,6 +21,7 @@ import { formatTime } from '../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../client/lib/utils/formatDate';
 import './messageThread';
 import './message.html';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -32,9 +34,8 @@ const renderBody = (msg, settings) => {
 		// render template
 	} else if (messageType.message) {
 		msg.msg = escapeHTML(msg.msg);
-		msg = TAPi18n.__(messageType.message, {
-			...(typeof messageType.data === 'function' && messageType.data(msg)),
-		});
+		msg = TAPi18n.__(messageType.message, { ...(typeof messageType.data === 'function' && messageType.data(msg)) });
+		msg = dompurify.sanitize(msg);
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
 		msg = renderMentions(msg);
@@ -373,7 +374,7 @@ Template.message.helpers({
 			return true;
 		}
 
-		if (roomTypes.readOnly(room._id, u._id) && !room.reactWhenReadOnly) {
+		if (roomCoordinator.readOnly(room._id, u) && !room.reactWhenReadOnly) {
 			return true;
 		}
 	},
@@ -422,15 +423,15 @@ Template.message.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(room);
+		return roomCoordinator.getIcon(room);
 	},
 	customClass() {
-		const { customClass, msg } = this;
-		return customClass || msg.customClass;
+		const { customClass } = this;
+		return customClass;
 	},
 	fromSearch() {
-		const { customClass, msg } = this;
-		return [msg.customClass, customClass].includes('search');
+		const { customClass } = this;
+		return customClass === 'search';
 	},
 	actionContext() {
 		const { msg } = this;

@@ -2,13 +2,13 @@ import { Button, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomUserStatus from './AddCustomUserStatus';
 import CustomUserStatus from './CustomUserStatus';
 import EditCustomUserStatusWithData from './EditCustomUserStatusWithData';
@@ -75,8 +75,8 @@ function CustomUserStatusRoute() {
 		<Page flexDirection='row'>
 			<Page name='admin-custom-user-status'>
 				<Page.Header title={t('Custom_User_Status')}>
-					<Button small onClick={handleNewButtonClick} aria-label={t('New')}>
-						<Icon name='plus' />
+					<Button primary onClick={handleNewButtonClick} aria-label={t('New')}>
+						<Icon name='plus' /> {t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>

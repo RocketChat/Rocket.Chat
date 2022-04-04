@@ -19,6 +19,7 @@ import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -127,7 +128,7 @@ export class SAML {
 
 		if (!user) {
 			// If we received any role from the mapping, use them - otherwise use the default role for creation.
-			const roles = userObject.roles?.length ? userObject.roles : SAMLUtils.ensureArray<string>(defaultUserRole.split(','));
+			const roles = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
 
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
@@ -218,7 +219,7 @@ export class SAML {
 		);
 
 		if (username && username !== user.username) {
-			saveUserIdentity({ _id: user._id, username });
+			saveUserIdentity({ _id: user._id, username } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		// sending token along with the userId

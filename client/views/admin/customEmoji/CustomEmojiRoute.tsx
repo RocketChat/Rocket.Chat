@@ -1,12 +1,12 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import React, { useCallback, useRef, ReactElement } from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
@@ -47,8 +47,8 @@ const CustomEmojiRoute = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
 				<Page.Header title={t('Custom_Emoji')}>
-					<Button small onClick={handleAddEmoji} aria-label={t('New')}>
-						<Icon name='plus' />
+					<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
+						<Icon name='plus' /> {t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>

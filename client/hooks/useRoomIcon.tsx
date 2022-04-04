@@ -1,6 +1,7 @@
-import React, { ReactNode } from 'react';
+import { Icon } from '@rocket.chat/fuselage';
+import React, { ComponentProps, ReactElement } from 'react';
 
-import { IRoom, isOmnichannelRoom, isDirectMessageRoom } from '../../definition/IRoom';
+import { IRoom } from '../../definition/IRoom';
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const colors = {
@@ -10,7 +11,9 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: string } | null => {
+export const useRoomIcon = (
+	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>,
+): ReactElement | ComponentProps<typeof Icon> | null => {
 	if (room.prid) {
 		return { name: 'baloons' };
 	}
@@ -19,29 +22,21 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 		return { name: room.t === 'p' ? 'team-lock' : 'team' };
 	}
 
-	if (isOmnichannelRoom(room)) {
-		const icon =
-			{
-				widget: 'livechat',
-				email: 'mail',
-				sms: 'sms',
-				app: 'headset', // TODO: use app icon
-				api: 'headset', // TODO: use api icon
-				other: 'headset',
-			}[room.source?.type || 'other'] || 'headset';
-
-		return {
-			name: icon,
-			color: colors[room.v.status || 'offline'],
-		};
-	}
-	if (isDirectMessageRoom(room)) {
+	if (room.t === 'd') {
 		if (room.uids && room.uids.length > 2) {
 			return { name: 'balloon' };
 		}
+
 		if (room.uids && room.uids.length > 0) {
-			return <ReactiveUserStatus uid={room.uids.find((uid) => uid !== room.u._id) || room.u._id} />;
+			const uid = room.uids.find((uid) => uid !== room?.u?._id) || room?.u?._id;
+
+			if (!uid) {
+				return null;
+			}
+
+			return <ReactiveUserStatus uid={uid} />;
 		}
+
 		return { name: 'at' };
 	}
 

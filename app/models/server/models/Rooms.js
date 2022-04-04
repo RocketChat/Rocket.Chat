@@ -25,6 +25,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
+		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
 
 		this.tryEnsureIndex(
 			{
@@ -250,10 +251,7 @@ export class Rooms extends Base {
 		return this.update({ _id }, update);
 	}
 
-	setReadOnlyById(_id, readOnly, hasPermission) {
-		if (!hasPermission) {
-			throw new Error('You must provide "hasPermission" function to be able to call this method');
-		}
+	setReadOnlyById(_id, readOnly) {
 		const query = {
 			_id,
 		};
@@ -375,7 +373,7 @@ export class Rooms extends Base {
 		let channelName = s.trim(name);
 		try {
 			// TODO evaluate if this function call should be here
-			const { getValidRoomName } = import('../../../utils/lib/getValidRoomName');
+			const { getValidRoomName } = Promise.await(import('../../../utils/lib/getValidRoomName'));
 			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);
@@ -882,6 +880,10 @@ export class Rooms extends Base {
 			},
 			options,
 		);
+	}
+
+	findByCreatedOTR() {
+		return this.find({ createdOTR: true });
 	}
 
 	// UPDATE
@@ -1463,6 +1465,18 @@ export class Rooms extends Base {
 
 	countDiscussions() {
 		return this.find({ prid: { $exists: true } }).count();
+	}
+
+	setOTRForDMByRoomID(rid) {
+		const query = { _id: rid, t: 'd' };
+
+		const update = {
+			$set: {
+				createdOTR: true,
+			},
+		};
+
+		return this.update(query, update);
 	}
 }
 

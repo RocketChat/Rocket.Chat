@@ -1,5 +1,5 @@
 import { ReadReceipt } from './lib/ReadReceipt';
-import { callbacks } from '../../../app/callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { Subscriptions } from '../../../app/models';
 
 callbacks.add(
@@ -16,7 +16,7 @@ callbacks.add(
 		}
 
 		// mark message as read as well
-		ReadReceipt.markMessageAsReadBySender(message, room._id, message.u._id);
+		ReadReceipt.markMessageAsReadBySender(message, room, message.u._id);
 
 		return message;
 	},

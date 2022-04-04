@@ -1,11 +1,11 @@
 import type { Db } from 'mongodb';
 
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IAnalyticsService } from '../../sdk/types/IAnalyticsService';
 import { AnalyticsRaw } from '../../../app/models/server/raw/Analytics';
 import { IAnalyticsSeatRequest } from '../../../definition/IAnalytic';
 
-export class AnalyticsService extends ServiceClass implements IAnalyticsService {
+export class AnalyticsService extends ServiceClassInternal implements IAnalyticsService {
 	protected name = 'analytics';
 
 	private Analytics: AnalyticsRaw;

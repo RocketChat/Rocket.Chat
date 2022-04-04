@@ -1,16 +1,17 @@
 import moment from 'moment';
 
-import { roomTypes } from '../../../../app/utils/server';
 import { Messages, Analytics } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 import { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
 import { IMessage } from '../../../../definition/IMessage';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
-export const handleMessagesSent = (message: IMessage, room: IRoom): IMessage => {
-	const roomTypesToShow = roomTypes.getTypesToShowOnDashboard();
-	if (!roomTypesToShow.includes(room.t)) {
+export const handleMessagesSent = (message: IMessage, room?: IRoom): IMessage => {
+	const roomTypesToShow = roomCoordinator.getTypesToShowOnDashboard();
+	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
 	}
+
 	Promise.await(
 		Analytics.saveMessageSent({
 			date: convertDateToInt(message.ts),
@@ -20,11 +21,12 @@ export const handleMessagesSent = (message: IMessage, room: IRoom): IMessage => 
 	return message;
 };
 
-export const handleMessagesDeleted = (message: IMessage, room: IRoom): IMessage => {
-	const roomTypesToShow = roomTypes.getTypesToShowOnDashboard();
-	if (!roomTypesToShow.includes(room.t)) {
+export const handleMessagesDeleted = (message: IMessage, room?: IRoom): IMessage => {
+	const roomTypesToShow = roomCoordinator.getTypesToShowOnDashboard();
+	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
 	}
+
 	Promise.await(
 		Analytics.saveMessageDeleted({
 			date: convertDateToInt(message.ts),
@@ -124,7 +126,7 @@ export const findMessagesSentOrigin = async ({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
 	}).toArray();
-	const roomTypesToShow: IRoom['t'][] = roomTypes.getTypesToShowOnDashboard() as IRoom['t'][];
+	const roomTypesToShow: IRoom['t'][] = roomCoordinator.getTypesToShowOnDashboard() as IRoom['t'][];
 	const responseTypes = origins.map((origin) => origin.t);
 	const missingTypes = roomTypesToShow.filter((type): type is IRoom['t'] => !responseTypes.includes(type));
 	if (missingTypes.length) {

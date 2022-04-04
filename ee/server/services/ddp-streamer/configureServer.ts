@@ -4,7 +4,9 @@ import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Account, Presence, MeteorService } from '../../../../server/sdk';
 import { UserStatus } from '../../../../definition/UserStatus';
 import { Server } from './Server';
-import { AutoUpdateRecord } from '../../../../server/sdk/types/IMeteor';
+import { api } from '../../../../server/sdk/api';
+import { MeteorError } from '../../../../server/sdk/errors';
+import { Autoupdate } from './lib/Autoupdate';
 
 export const server = new Server();
 
@@ -41,25 +43,21 @@ server.publish(loginServiceConfigurationPublication, async function () {
 	this.ready();
 });
 
-const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
-
-MeteorService.getLastAutoUpdateClientVersions().then((records = []) => {
-	records.forEach((record) => autoUpdateRecords.set(record._id, record));
-});
-
 const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
 server.publish(autoUpdateCollection, function () {
-	autoUpdateRecords.forEach((record) => this.added(autoUpdateCollection, record._id, record));
+	Autoupdate.getVersions().forEach((version, arch) => {
+		this.added(autoUpdateCollection, arch, version);
+	});
 
 	const fn = (record: any): void => {
-		autoUpdateRecords.set(record._id, record);
-		this.changed(autoUpdateCollection, record._id, record);
+		const { _id, ...version } = record;
+		this.changed(autoUpdateCollection, _id, version);
 	};
 
-	events.on('meteor.autoUpdateClientVersionChanged', fn);
+	Autoupdate.on('update', fn);
 
 	this.onStop(() => {
-		events.removeListener('meteor.autoUpdateClientVersionChanged', fn);
+		Autoupdate.removeListener('update', fn);
 	});
 
 	this.ready();
@@ -67,32 +65,37 @@ server.publish(autoUpdateCollection, function () {
 
 server.methods({
 	async 'login'({ resume, user, password }: { resume: string; user: { username: string }; password: string }) {
-		const result = await Account.login({ resume, user, password });
-		if (!result) {
-			throw new Error('login error');
+		try {
+			const result = await Account.login({ resume, user, password });
+			if (!result) {
+				throw new MeteorError(403, "You've been logged out by the server. Please log in again");
+			}
+
+			this.userId = result.uid;
+			this.userToken = result.hashedToken;
+
+			this.emit(DDP_EVENTS.LOGGED);
+
+			server.emit(DDP_EVENTS.LOGGED, this);
+
+			return {
+				id: result.uid,
+				token: result.token,
+				tokenExpires: result.tokenExpires,
+				type: result.type,
+			};
+		} catch (error) {
+			throw error;
 		}
-
-		this.userId = result.uid;
-		this.userToken = result.hashedToken;
-
-		this.emit(DDP_EVENTS.LOGGED);
-
-		server.emit(DDP_EVENTS.LOGGED, this);
-
-		return {
-			id: result.uid,
-			token: result.token,
-			tokenExpires: result.tokenExpires,
-			type: result.type,
-		};
 	},
 	async 'logout'() {
 		if (this.userToken && this.userId) {
 			await Account.logout({ userId: this.userId, token: this.userToken });
 		}
 
-		// TODO: run the handles on monolith to track SAU correctly
-		// accounts._successfulLogout(this.connection, this.userId);
+		this.emit(DDP_EVENTS.LOGGEDOUT);
+		server.emit(DDP_EVENTS.LOGGEDOUT, this);
+
 		this.userToken = undefined;
 		this.userId = undefined;
 
@@ -149,53 +152,30 @@ server.methods({
 	},
 });
 
-server.on(DDP_EVENTS.LOGGED, ({ userId, session }) => {
-	Presence.newConnection(userId, session);
+server.on(DDP_EVENTS.LOGGED, (info) => {
+	const { userId, connection } = info;
+
+	Presence.newConnection(userId, connection.id);
+	api.broadcast('accounts.login', { userId, connection });
 });
 
-server.on(DDP_EVENTS.DISCONNECTED, ({ userId, session }) => {
+server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
+	const { userId, connection } = info;
+
+	api.broadcast('accounts.logout', { userId, connection });
+});
+
+server.on(DDP_EVENTS.DISCONNECTED, (info) => {
+	const { userId, connection } = info;
+
+	api.broadcast('socket.disconnected', connection);
+
 	if (!userId) {
 		return;
 	}
-	Presence.removeConnection(userId, session);
+	Presence.removeConnection(userId, connection.id);
 });
 
-// TODO: resolve metrics
-// server.on(DDP_EVENTS.CONNECTED, () => {
-// 	broker.emit('metrics.update', {
-// 		name: 'streamer_users_connected',
-// 		method: 'inc',
-// 		labels: {
-// 			nodeID: broker.nodeID,
-// 		},
-// 	});
-// });
-
-// server.on(DDP_EVENTS.LOGGED, (/* client*/) => {
-// 	broker.emit('metrics.update', {
-// 		name: 'streamer_users_logged',
-// 		method: 'inc',
-// 		labels: {
-// 			nodeID: broker.nodeID,
-// 		},
-// 	});
-// });
-
-// server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
-// 	broker.emit('metrics.update', {
-// 		name: 'streamer_users_connected',
-// 		method: 'dec',
-// 		labels: {
-// 			nodeID: broker.nodeID,
-// 		},
-// 	});
-// 	if (userId) {
-// 		broker.emit('metrics.update', {
-// 			name: 'streamer_users_logged',
-// 			method: 'dec',
-// 			labels: {
-// 				nodeID: broker.nodeID,
-// 			},
-// 		});
-// 	}
-// });
+server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
+	api.broadcast('socket.connected', connection);
+});

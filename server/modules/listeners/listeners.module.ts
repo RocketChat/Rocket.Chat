@@ -1,7 +1,6 @@
 import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { EnterpriseSettings, MeteorService } from '../../sdk/index';
-import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import { EnterpriseSettings } from '../../sdk/index';
 import { UserStatus } from '../../../definition/UserStatus';
 import { isSettingColor } from '../../../definition/ISetting';
 
@@ -137,21 +136,7 @@ export class ListenersModule {
 			notifications.streamRoles.emitWithoutBroadcast('roles', payload);
 		});
 
-		let autoAssignAgent: IRoutingManagerConfig | undefined;
-		async function getRoutingManagerConfig(): Promise<IRoutingManagerConfig> {
-			if (!autoAssignAgent) {
-				autoAssignAgent = await MeteorService.getRoutingManagerConfig();
-			}
-
-			return autoAssignAgent;
-		}
-
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
-			const config = await getRoutingManagerConfig();
-			if (!config || config.autoAssignAgent) {
-				return;
-			}
-
 			const type = minimongoChangeMap[clientAction];
 			if (clientAction === 'removed') {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
@@ -189,10 +174,6 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (setting._id === 'Livechat_Routing_Method') {
-				autoAssignAgent = undefined;
-			}
-
 			if (clientAction !== 'removed') {
 				const result = await EnterpriseSettings.changeSettingValue(setting);
 				if (result !== undefined && !(result instanceof Error)) {
@@ -289,6 +270,60 @@ export class ListenersModule {
 		});
 		service.onEvent('banner.enabled', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
+		});
+		service.onEvent('queue.agentcalled', (userId, queuename, callerId): void => {
+			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename, callerId });
+		});
+		service.onEvent('queue.agentconnected', (userId, queuename: string, queuedcalls: string, waittimeinqueue: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'agentconnected', { queuename, queuedcalls, waittimeinqueue });
+		});
+		service.onEvent('queue.callerjoined', (userId, queuename, callerid, queuedcalls): void => {
+			notifications.notifyUserInThisInstance(userId, 'callerjoined', { queuename, callerid, queuedcalls });
+		});
+		service.onEvent('queue.queuememberadded', (userId, queuename: string, queuedcalls: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'queuememberadded', { queuename, queuedcalls });
+		});
+		service.onEvent('queue.queuememberremoved', (userId, queuename: string, queuedcalls: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'queuememberremoved', { queuename, queuedcalls });
+		});
+		service.onEvent('queue.callabandoned', (userId, queuename: string, queuedcallafterabandon: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'callabandoned', { queuename, queuedcallafterabandon });
+		});
+
+		service.onEvent('notify.desktop', (uid, notification): void => {
+			notifications.notifyUserInThisInstance(uid, 'notification', notification);
+		});
+
+		service.onEvent('notify.uiInteraction', (uid, interaction): void => {
+			notifications.notifyUserInThisInstance(uid, 'uiInteraction', interaction);
+		});
+
+		service.onEvent('notify.updateInvites', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'updateInvites', data);
+		});
+
+		service.onEvent('notify.webdav', (uid, data): void => {
+			notifications.notifyUserInThisInstance(uid, 'webdav', data);
+		});
+
+		service.onEvent('notify.e2e.keyRequest', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'e2e.keyRequest', data);
+		});
+
+		service.onEvent('notify.deleteMessage', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'deleteMessage', data);
+		});
+
+		service.onEvent('notify.deleteMessageBulk', (rid, data): void => {
+			notifications.notifyRoomInThisInstance(rid, 'deleteMessageBulk', data);
+		});
+
+		service.onEvent('notify.deleteCustomSound', (data): void => {
+			notifications.notifyAllInThisInstance('deleteCustomSound', data);
+		});
+
+		service.onEvent('notify.updateCustomSound', (data): void => {
+			notifications.notifyAllInThisInstance('updateCustomSound', data);
 		});
 	}
 }

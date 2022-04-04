@@ -4,10 +4,11 @@ import { Template } from 'meteor/templating';
 
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
-import { t, roomTypes } from '../../../../../utils';
-import { isEmail } from '../../../../../../lib/utils/isEmail';
+import { t } from '../../../../../utils';
 import { APIClient } from '../../../../../utils/client';
 import './visitorTranscript.html';
+import { validateEmail } from '../../../../../../lib/emailValidator';
+import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 
 const validateTranscriptData = (instance) => {
 	const subject = instance.$('[name="subject"]').val();
@@ -18,7 +19,7 @@ const validateTranscriptData = (instance) => {
 		return false;
 	}
 
-	if (!isEmail(email)) {
+	if (!validateEmail(email)) {
 		instance.errorMessage.set(t('Mail_Message_Invalid_emails', email));
 		return false;
 	}
@@ -63,7 +64,7 @@ Template.visitorTranscript.helpers({
 			return room.transcriptRequest.subject;
 		}
 
-		return t('Transcript_of_your_livechat_conversation') || (room && roomTypes.getRoomName(room.t, room));
+		return t('Transcript_of_your_livechat_conversation') || (room && roomCoordinator.getRoomName(room.t, room));
 	},
 	errorEmail() {
 		const instance = Template.instance();

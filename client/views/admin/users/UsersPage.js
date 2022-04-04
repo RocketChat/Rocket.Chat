@@ -110,7 +110,7 @@ function UsersPage() {
 						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 					</VerticalBar.Header>
 
-					{context === 'info' && <UserInfoWithData uid={id} onReload={reload} />}
+					{context === 'info' && id && <UserInfoWithData uid={id} onReload={reload} />}
 					{context === 'edit' && <EditUserWithData uid={id} onReload={reload} />}
 					{context === 'new' && <AddUser onReload={reload} />}
 					{context === 'invite' && <InviteUsers />}

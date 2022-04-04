@@ -41,7 +41,7 @@ const updateUser = (userData: IUser): void => {
 	const user: IUser = Users.findOne({ _id: userData._id });
 
 	if (!user || !user._updatedAt || user._updatedAt.getTime() < userData._updatedAt.getTime()) {
-		Meteor.users.upsert({ _id: userData._id }, userData);
+		Meteor.users.upsert({ _id: userData._id }, userData as Meteor.User);
 		return;
 	}
 
@@ -49,7 +49,7 @@ const updateUser = (userData: IUser): void => {
 	Object.keys(user).forEach((key) => {
 		delete userData[key as keyof IUser];
 	});
-	Meteor.users.update({ _id: user._id }, { $set: userData });
+	Meteor.users.update({ _id: user._id }, { $set: userData as Meteor.User });
 };
 
 let cancel: undefined | (() => void);
@@ -58,6 +58,9 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 		return;
 	}
 
+	// Remove data from any other user that we may have retained
+	Meteor.users.remove({ _id: { $ne: uid } });
+
 	cancel?.();
 
 	cancel = await Notifications.onUser('userData', (data: IUserDataEvent) => {
@@ -65,11 +68,11 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 			case 'inserted':
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { type, id, ...user } = data;
-				Meteor.users.insert(user);
+				Meteor.users.insert(user as Meteor.User);
 				break;
 
 			case 'updated':
-				Meteor.users.upsert({ _id: uid }, { $set: data.diff, $unset: data.unset });
+				Meteor.users.upsert({ _id: uid }, { $set: data.diff as Meteor.User, $unset: data.unset });
 				break;
 
 			case 'removed':
@@ -90,3 +93,5 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 
 	return userData;
 };
+
+export const removeLocalUserData = (): number => Meteor.users.remove({});

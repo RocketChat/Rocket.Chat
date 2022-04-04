@@ -14,6 +14,7 @@ type DepartmentsListOptions = {
 	haveAll?: boolean;
 	haveNone?: boolean;
 	excludeDepartmentId?: string;
+	enabled?: boolean;
 };
 
 export const useDepartmentsList = (
@@ -44,6 +45,7 @@ export const useDepartmentsList = (
 				count: end + start,
 				sort: `{ "name": 1 }`,
 				excludeDepartmentId: options.excludeDepartmentId,
+				enabled: options.enabled,
 			});
 
 			const items = departments
@@ -87,6 +89,7 @@ export const useDepartmentsList = (
 			options.onlyMyDepartments,
 			options.haveNone,
 			options.excludeDepartmentId,
+			options.enabled,
 			t,
 		],
 	);

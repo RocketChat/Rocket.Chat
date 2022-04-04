@@ -11,7 +11,7 @@ import { Logger } from '../../logger';
 import { Users } from '../../models';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 
 const logger = new Logger('CustomOAuth');
 
@@ -191,7 +191,7 @@ export class CustomOAuth {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
 			const response = self.getAccessToken(query);
-			const identity = self.getIdentity(response.access_token);
+			const identity = self.getIdentity(response.access_token, query);
 
 			const serviceData = {
 				_OAuthCustom: true,

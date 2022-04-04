@@ -1,15 +1,16 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import $ from 'jquery';
 import React, { useState, useEffect } from 'react';
 
-import { roomTypes } from '../../../../../app/utils/client';
-import { isEmail } from '../../../../../lib/utils/isEmail';
+import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useUserRoom } from '../../hooks/useUserRoom';
 
 const clickable = css`
@@ -20,7 +21,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 	const t = useTranslation();
 
 	const room = useUserRoom(rid);
-	const roomName = room && room.t && roomTypes.getRoomName(room.t, room);
+	const roomName = room && room.t && roomCoordinator.getRoomName(room.t, room);
 
 	const [selectedMessages, setSelected] = useState([]);
 
@@ -85,7 +86,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
 		}
-		if (additionalEmails !== '' && !isEmail(additionalEmails)) {
+		if (additionalEmails !== '' && !validateEmail(additionalEmails)) {
 			setErrorMessage(t('Mail_Message_Invalid_emails', additionalEmails));
 			return;
 		}

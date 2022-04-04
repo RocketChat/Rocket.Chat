@@ -15,8 +15,8 @@ import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
 import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
-import { api } from '../../../../server/sdk/api';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
+import { syncUserRoles } from '../syncUserRoles';
 import { Team } from '../../../../server/sdk';
 
 export class LDAPEEManager extends LDAPManager {
@@ -114,9 +114,14 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	public static async advancedSyncForUser(ldap: LDAPConnection, user: IUser, isNewRecord: boolean, dn: string): Promise<void> {
-		await this.syncUserRoles(ldap, user, dn);
-		await this.syncUserChannels(ldap, user, dn);
-		await this.syncUserTeams(ldap, user, dn, isNewRecord);
+		try {
+			await this.syncUserRoles(ldap, user, dn);
+			await this.syncUserChannels(ldap, user, dn);
+			await this.syncUserTeams(ldap, user, dn, isNewRecord);
+		} catch (e) {
+			logger.debug(`Advanced Sync failed for user: ${dn}`);
+			logger.error(e);
+		}
 	}
 
 	private static async advancedSync(
@@ -173,22 +178,6 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
-	private static broadcastRoleChange(type: string, _id: string, uid: string, username: string): void {
-		// #ToDo: would be better to broadcast this only once for all users and roles, or at least once by user.
-		if (!settings.get('UI_DisplayRoles')) {
-			return;
-		}
-
-		api.broadcast('user.roleUpdate', {
-			type,
-			_id,
-			u: {
-				_id: uid,
-				username,
-			},
-		});
-	}
-
 	private static async syncUserRoles(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
 		const { username } = user;
 		if (!username) {
@@ -196,13 +185,13 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const syncUserRoles = settings.get<boolean>('LDAP_Sync_User_Data_Roles') ?? false;
+		const shouldSyncUserRoles = settings.get<boolean>('LDAP_Sync_User_Data_Roles') ?? false;
 		const syncUserRolesAutoRemove = settings.get<boolean>('LDAP_Sync_User_Data_Roles_AutoRemove') ?? false;
 		const syncUserRolesFieldMap = (settings.get<string>('LDAP_Sync_User_Data_RolesMap') ?? '').trim();
 		const syncUserRolesFilter = (settings.get<string>('LDAP_Sync_User_Data_Roles_Filter') ?? '').trim();
 		const syncUserRolesBaseDN = (settings.get<string>('LDAP_Sync_User_Data_Roles_BaseDN') ?? '').trim();
 
-		if (!syncUserRoles || !syncUserRolesFieldMap) {
+		if (!shouldSyncUserRoles || !syncUserRolesFieldMap) {
 			logger.debug('not syncing user roles');
 			return;
 		}
@@ -227,43 +216,34 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const ldapFields = Object.keys(fieldMap);
+		const roleList: Array<IRole['_id']> = [];
+		const allowedRoles: Array<IRole['_id']> = [];
+
 		for await (const ldapField of ldapFields) {
 			if (!fieldMap[ldapField]) {
 				continue;
 			}
 
 			const userField = fieldMap[ldapField];
-
-			const [roleName] = userField.split(/\.(.+)/);
-			if (!_.find<IRole>(roles, (el) => el.name === roleName)) {
-				logger.debug(`User Role doesn't exist: ${roleName}`);
-				continue;
-			}
-
-			logger.debug(`User role exists for mapping ${ldapField} -> ${roleName}`);
+			const [roleId] = userField.split(/\.(.+)/);
+			allowedRoles.push(roleId);
 
 			if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-				if (await Roles.addUserRoles(user._id, roleName)) {
-					this.broadcastRoleChange('added', roleName, user._id, username);
-				}
-				logger.debug(`Synced user group ${roleName} from LDAP for ${user.username}`);
+				roleList.push(roleId);
 				continue;
-			}
-
-			if (!syncUserRolesAutoRemove) {
-				continue;
-			}
-
-			if (await Roles.removeUserRoles(user._id, roleName)) {
-				this.broadcastRoleChange('removed', roleName, user._id, username);
 			}
 		}
+
+		await syncUserRoles(user._id, roleList, {
+			allowedRoles,
+			skipRemovingRoles: !syncUserRolesAutoRemove,
+		});
 	}
 
 	private static createRoomForSync(channel: string): IRoom | undefined {
 		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
 
-		const roomOwner = settings.get('LDAP_Sync_User_Data_Channels_Admin') || '';
+		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
 		const room = createRoom('c', channel, roomOwner, [], false, {
 			customFields: { ldap: true },
@@ -312,23 +292,28 @@ export class LDAPEEManager extends LDAPManager {
 
 			const channels: Array<string> = [].concat(fieldMap[ldapField]);
 			for await (const channel of channels) {
-				const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
-				if (!room) {
-					return;
-				}
+				try {
+					const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
+					if (!room) {
+						return;
+					}
 
-				if (isUserInGroup) {
-					if (room.teamMain) {
-						logger.error(`Can't add user to channel ${channel} because it is a team.`);
-					} else {
-						addUserToRoom(room._id, user);
-						logger.debug(`Synced user channel ${room._id} from LDAP for ${username}`);
+					if (isUserInGroup) {
+						if (room.teamMain) {
+							logger.error(`Can't add user to channel ${channel} because it is a team.`);
+						} else {
+							addUserToRoom(room._id, user);
+							logger.debug(`Synced user channel ${room._id} from LDAP for ${username}`);
+						}
+					} else if (syncUserChannelsRemove && !room.teamMain) {
+						const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
+						if (subscription) {
+							await removeUserFromRoom(room._id, user);
+						}
 					}
-				} else if (syncUserChannelsRemove && !room.teamMain) {
-					const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
-					if (subscription) {
-						removeUserFromRoom(room._id, user);
-					}
+				} catch (e) {
+					logger.debug(`Failed to sync user room, user = ${username}, channel = ${channel}`);
+					logger.error(e);
 				}
 			}
 		}

@@ -1,8 +1,9 @@
 import { Random } from 'meteor/random';
+import { UserPresence } from 'meteor/konecty:user-presence';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
+import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
 import { Subscriptions, Users as UsersRaw } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
@@ -90,16 +91,18 @@ export class AppUserBridge extends UserBridge {
 			throw new Error('User not provided');
 		}
 
-		if (typeof fields.statusText === 'string') {
-			await _setStatusTextPromise(user.id, fields.statusText);
-			delete fields.statusText;
-		}
-
 		if (!Object.keys(fields).length) {
 			return true;
 		}
 
+		const { status } = fields;
+		delete fields.status;
+
 		await UsersRaw.update({ _id: user.id }, { $set: fields });
+
+		if (status) {
+			UserPresence.setDefaultStatus(user.id, status);
+		}
 
 		return true;
 	}

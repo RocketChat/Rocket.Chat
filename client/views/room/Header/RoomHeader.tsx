@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { IOmnichannelRoom } from '../../../../definition/IRoom';
+import { IRoom } from '../../../../definition/IRoom';
 import Header from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
@@ -13,7 +13,7 @@ import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
 
 export type RoomHeaderProps = {
-	room: IOmnichannelRoom;
+	room: IRoom;
 	topic?: string;
 	slots: {
 		start?: unknown;
@@ -47,7 +47,9 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => (
 				{slots?.insideContent}
 			</Header.Content.Row>
 			<Header.Content.Row>
-				<Header.Subtitle>{topic && <MarkdownText variant='inlineWithoutBreaks' withTruncatedText content={topic} />}</Header.Subtitle>
+				<Header.Subtitle>
+					{topic && <MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />}
+				</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
 		{slots?.posContent}

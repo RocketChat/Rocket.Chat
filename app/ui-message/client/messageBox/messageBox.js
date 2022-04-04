@@ -13,7 +13,7 @@ import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import { fileUpload, KonchatNotification } from '../../../ui';
 import { messageBox, popover } from '../../../ui-utils';
-import { t, roomTypes, getUserPreference } from '../../../utils/client';
+import { t, getUserPreference } from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './userActionIndicator.ts';
@@ -25,6 +25,7 @@ import { getImageExtensionFromMime } from '../../../../lib/getImageExtensionFrom
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 Template.messageBox.onCreated(function () {
 	this.state = new ReactiveDict();
@@ -207,8 +208,8 @@ Template.messageBox.helpers({
 			return false;
 		}
 
-		const isReadOnly = roomTypes.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
-		const isArchived = roomTypes.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
+		const isReadOnly = roomCoordinator.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
+		const isArchived = roomCoordinator.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
 
 		return !isReadOnly && !isArchived;
 	},
@@ -236,7 +237,7 @@ Template.messageBox.helpers({
 			return true;
 		}
 
-		return roomTypes.verifyCanSendMessage(rid);
+		return roomCoordinator.verifyCanSendMessage(rid);
 	},
 	actions() {
 		const actionGroups = messageBox.actions.get();

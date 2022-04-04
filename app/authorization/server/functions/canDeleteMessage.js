@@ -25,7 +25,7 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 
 	const allowedToDeleteAny = await hasPermissionAsync(uid, 'delete-message', rid);
 
-	const allowed = allowedToDeleteAny || (uid === u._id && (await hasPermissionAsync(uid, 'delete-own-message')));
+	const allowed = allowedToDeleteAny || (uid === u._id && (await hasPermissionAsync(uid, 'delete-own-message', rid)));
 	if (!allowed) {
 		return false;
 	}

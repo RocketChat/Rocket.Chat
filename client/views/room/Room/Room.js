@@ -68,6 +68,7 @@ const Room = () => {
 						<LazyComponent
 							template={AppsContextualBar}
 							viewId={appsContextualBarContext.viewId}
+							roomId={appsContextualBarContext.roomId}
 							payload={appsContextualBarContext.payload}
 							appInfo={appsContextualBarContext.appInfo}
 						/>

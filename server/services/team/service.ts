@@ -15,6 +15,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IRoom } from '../../../definition/IRoom';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '../../../definition/ITeam';
 import { IUser } from '../../../definition/IUser';
+import { Messages } from '../../../app/models/server';
 import { Room, Authorization } from '../../sdk';
 import {
 	IListRoomsFilter,
@@ -26,13 +27,12 @@ import {
 	ITeamService,
 	ITeamUpdateData,
 } from '../../sdk/types/ITeamService';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { canAccessRoom } from '../authorization/canAccessRoom';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
 import { ISubscription } from '../../../definition/ISubscription';
 
-export class TeamService extends ServiceClass implements ITeamService {
+export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
 	private TeamModel: TeamRaw;
@@ -125,6 +125,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			let roomId = room.id;
 			if (roomId) {
 				await this.RoomsModel.setTeamMainById(roomId, teamId);
+				Messages.createUserConvertChannelToTeamWithRoomIdAndUser(roomId, team.name, createdBy);
 			} else {
 				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
@@ -172,7 +173,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const { name, type, updateRoom = true } = updateData;
 
 		if (updateRoom && name) {
-			saveRoomName(team.roomId, name, user);
+			await saveRoomName(team.roomId, name, user);
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {
@@ -342,7 +343,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('missing-userId');
 		}
 
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
+		const team = await this.TeamModel.findOneById<Pick<ITeam, '_id' | 'roomId'>>(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -358,7 +359,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		// validate access for every room first
 		for await (const room of validRooms) {
-			const canSeeRoom = await canAccessRoom(room, user);
+			const canSeeRoom = await Authorization.canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
@@ -371,6 +372,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			if (!(await this.SubscriptionsModel.isUserInRole(uid, 'owner', room._id))) {
 				throw new Error('error-no-owner-channel');
+			}
+
+			if (room.t === 'c') {
+				Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, user);
 			}
 
 			room.teamId = teamId;
@@ -396,15 +401,15 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-room');
 		}
 
+		const user = await this.Users.findOneById(uid);
 		if (!canRemoveAnyRoom) {
-			const user = await this.Users.findOneById(uid);
-			const canSeeRoom = await canAccessRoom(room, user);
+			const canSeeRoom = await Authorization.canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
 		}
 
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
+		const team = await this.TeamModel.findOneById<Pick<ITeam, '_id' | 'roomId'>>(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -416,15 +421,34 @@ export class TeamService extends ServiceClass implements ITeamService {
 		delete room.teamId;
 		delete room.teamDefault;
 		this.RoomsModel.unsetTeamById(room._id);
+
+		if (room.t === 'c') {
+			Messages.createUserRemoveRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
+		}
+
 		return {
 			...room,
 		};
 	}
 
-	async unsetTeamIdOfRooms(teamId: string): Promise<void> {
+	async unsetTeamIdOfRooms(uid: string, teamId: string): Promise<void> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
+
+		const team = await this.TeamModel.findOneById<Pick<ITeam, 'roomId'>>(teamId, { projection: { roomId: 1 } });
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+
+		const room = await this.RoomsModel.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+
+		const user = await this.Users.findOneById(uid);
+
+		Messages.createUserConvertTeamToChannelWithRoomIdAndUser(team.roomId, room.name, user);
 
 		await this.RoomsModel.unsetTeamId(teamId);
 	}
@@ -444,7 +468,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		const user = await this.Users.findOneById(uid);
 		if (!canUpdateAnyRoom) {
-			const canSeeRoom = await canAccessRoom(room, user);
+			const canSeeRoom = await Authorization.canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
@@ -546,10 +570,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('user-not-on-private-team');
 		}
 
-		const teamRooms = await this.RoomsModel.findByTeamId(teamId, {
+		const teamRooms: (IRoom & {
+			userCanDelete?: boolean;
+		})[] = await this.RoomsModel.findByTeamId(teamId, {
 			projection: { _id: 1, t: 1 },
 		}).toArray();
-		let teamRoomIds: any[];
+
+		let teamRoomIds: string[];
+
 		if (showCanDeleteOnly) {
 			for await (const room of teamRooms) {
 				const roomType = room.t;
@@ -574,6 +602,9 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		for (const room of rooms) {
 			const roomInfo = roomData.find((data) => data.rid === room._id);
+			if (!roomInfo) {
+				continue;
+			}
 			room.isLastOwner = roomInfo.userIsLastOwner;
 			records.push(room);
 		}
@@ -638,6 +669,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 					username: user.username,
 					name: user.name,
 					status: user.status,
+					settings: user.settings,
 				},
 				roles: record.roles,
 				createdBy: {
@@ -655,7 +687,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void> {
-		const createdBy = await this.Users.findOneById(uid, { projection: { username: 1 } });
+		const createdBy = (await this.Users.findOneById(uid, { projection: { username: 1 } })) as Pick<IUser, '_id' | 'username'>;
 		if (!createdBy) {
 			throw new Error('invalid-user');
 		}
@@ -668,7 +700,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		for await (const member of members) {
-			const user = await this.Users.findOneById(member.userId, { projection: { username: 1 } });
+			const user = (await this.Users.findOneById(member.userId, { projection: { username: 1 } })) as Pick<IUser, '_id' | 'username'>;
 			await addUserToRoom(team.roomId, user, createdBy, false);
 
 			if (member.roles) {
@@ -705,7 +737,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const usersToRemove = await this.Users.findByIds(membersIds, {
 			projection: { _id: 1, username: 1 },
 		}).toArray();
-		const byUser = await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
+		const byUser = (await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } })) as Pick<IUser, '_id' | 'username'>;
 
 		for await (const member of members) {
 			if (!member.userId) {
@@ -727,9 +759,15 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			this.TeamMembersModel.removeById(existingMember._id);
 			const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
-			removeUserFromRoom(team.roomId, removedUser, {
-				byUser: uid !== member.userId ? byUser : undefined,
-			});
+			await removeUserFromRoom(
+				team.roomId,
+				removedUser,
+				uid !== member.userId
+					? {
+							byUser,
+					  }
+					: undefined,
+			);
 		}
 
 		return true;
@@ -777,7 +815,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.TeamMembersModel.deleteByTeamId(team._id);
 	}
 
-	async addMember(inviter: IUser, userId: string, teamId: string): Promise<boolean> {
+	async addMember(inviter: Pick<IUser, '_id' | 'username'>, userId: string, teamId: string): Promise<boolean> {
 		const isAlreadyAMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, {
 			projection: { _id: 1 },
 		});
@@ -896,7 +934,11 @@ export class TeamService extends ServiceClass implements ITeamService {
 		);
 	}
 
-	async addMembersToDefaultRooms(inviter: IUser, teamId: string, members: Array<Partial<ITeamMember>>): Promise<void> {
+	async addMembersToDefaultRooms(
+		inviter: Pick<IUser, '_id' | 'username'>,
+		teamId: string,
+		members: Array<Partial<ITeamMember>>,
+	): Promise<void> {
 		const defaultRooms = await this.RoomsModel.findDefaultRoomsForTeam(teamId).toArray();
 		const users = await this.Users.findActiveByIds(members.map((member) => member.userId)).toArray();
 
