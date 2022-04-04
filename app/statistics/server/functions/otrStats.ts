@@ -7,12 +7,7 @@ type otrDataType = { rid: string };
 export function otrStats(data: otrDataType): void {
 	updateCounter({ settingsId: 'OTR_Count' });
 
-	try {
-		// only update DM's
-		Rooms.update({ _id: data.rid, t: 'd' }, { $set: { createdOTR: true } });
-	} catch (e) {
-		throw new Error('error-invalid-rid');
-	}
+	Rooms.setOTRForDMByRoomID(data.rid);
 }
 
 telemetryEvent.register('otrStats', otrStats);
