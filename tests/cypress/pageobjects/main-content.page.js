@@ -252,7 +252,7 @@ class MainContent extends Page {
 
 	// Clear and sets the text to the input
 	setTextToInput(text) {
-		cy.wait(200);
+		cy.wait(400);
 		this.messageInput.clear(text);
 		if (text) {
 			this.messageInput.type(text);
