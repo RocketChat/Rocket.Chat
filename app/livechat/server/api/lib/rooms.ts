@@ -16,7 +16,7 @@ export async function findRooms({
 	agents: string[];
 	roomName: string;
 	departmentId: string;
-	open: boolean;
+	open?: boolean;
 	createdAt: { start?: string; end?: string };
 	closedAt: { start?: string; end?: string };
 	tags: string[];

@@ -3,24 +3,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
-import { typedJsonParse } from '../../../../../lib/typedJsonParse';
-
-type DateParam = { start?: string; end?: string };
-const parseDateParams = (date?: string): DateParam => {
-	return date && typeof date === 'string' ? typedJsonParse<DateParam>(date) : {};
-};
-const validateDateParams = (property: string, date: DateParam = {}): DateParam => {
-	if (date?.start && isNaN(Date.parse(date.start))) {
-		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
-	}
-	if (date?.end && isNaN(Date.parse(date.end))) {
-		throw new Error(`The "${property}.end" query parameter must be a valid date.`);
-	}
-	return date;
-};
-const parseAndValidate = (property: string, date?: string): DateParam => {
-	return validateDateParams(property, parseDateParams(date));
-};
+import { parseAndValidate } from '../../../lib/parseAndValidate';
 
 API.v1.addRoute(
 	'livechat/rooms',
@@ -66,7 +49,7 @@ API.v1.addRoute(
 					agents,
 					roomName,
 					departmentId,
-					open: open === 'true',
+					open: open !== undefined ? open === 'true' : undefined,
 					createdAt,
 					closedAt,
 					tags,

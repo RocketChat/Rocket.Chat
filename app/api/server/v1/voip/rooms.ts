@@ -6,24 +6,8 @@ import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw
 import { LivechatVoip } from '../../../../../server/sdk';
 import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
 import { hasPermission } from '../../../../authorization/server';
-import { typedJsonParse } from '../../../../../lib/typedJsonParse';
+import { parseAndValidate } from '../../../../livechat/lib/parseAndValidate';
 
-type DateParam = { start?: string; end?: string };
-const parseDateParams = (date?: string): DateParam => {
-	return date && typeof date === 'string' ? typedJsonParse<DateParam>(date) : {};
-};
-const validateDateParams = (property: string, date: DateParam = {}): DateParam => {
-	if (date?.start && isNaN(Date.parse(date.start))) {
-		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
-	}
-	if (date?.end && isNaN(Date.parse(date.end))) {
-		throw new Error(`The "${property}.end" query parameter must be a valid date.`);
-	}
-	return date;
-};
-const parseAndValidate = (property: string, date?: string): DateParam => {
-	return validateDateParams(property, parseDateParams(date));
-};
 /**
  * @openapi
  *  /voip/server/api/v1/voip/room
