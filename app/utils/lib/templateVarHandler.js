@@ -3,18 +3,18 @@ import { Meteor } from 'meteor/meteor';
 let logger;
 
 if (Meteor.isServer) {
-	const { Logger } = require('../../logger/server/server');
-	logger = new Logger('TemplateVarHandler', {});
+	const { Logger } = require('../../../server/lib/logger/Logger');
+	logger = new Logger('TemplateVarHandler');
 }
 
-export const templateVarHandler = function(variable, object) {
+export const templateVarHandler = function (variable, object) {
 	const templateRegex = /#{([\w\-]+)}/gi;
 	let match = templateRegex.exec(variable);
 	let tmpVariable = variable;
 
 	if (match == null) {
 		if (!object.hasOwnProperty(variable)) {
-			logger && logger.debug(`user does not have attribute: ${ variable }`);
+			logger && logger.debug(`user does not have attribute: ${variable}`);
 			return;
 		}
 		return object[variable];
@@ -25,12 +25,12 @@ export const templateVarHandler = function(variable, object) {
 		const tmplAttrName = match[1];
 
 		if (!object.hasOwnProperty(tmplAttrName)) {
-			logger && logger.debug(`user does not have attribute: ${ tmplAttrName }`);
+			logger && logger.debug(`user does not have attribute: ${tmplAttrName}`);
 			return;
 		}
 
 		const attrVal = object[tmplAttrName];
-		logger && logger.debug(`replacing template var: ${ tmplVar } with value: ${ attrVal }`);
+		logger && logger.debug(`replacing template var: ${tmplVar} with value: ${attrVal}`);
 		tmpVariable = tmpVariable.replace(tmplVar, attrVal);
 		match = templateRegex.exec(variable);
 	}

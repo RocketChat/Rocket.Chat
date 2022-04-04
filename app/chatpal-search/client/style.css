@@ -1,5 +1,4 @@
 .chatpal-admin-link {
-
 	text-decoration: underline !important;
 
 	color: red !important;
@@ -39,7 +38,6 @@
 }
 
 .chatpal-search-typefilter li {
-
 	display: flex;
 	flex: 0 0 33%;
 
@@ -57,7 +55,6 @@
 }
 
 .chatpal-admin-header {
-
 	margin-bottom: 20px;
 
 	font-size: 18px;
@@ -70,7 +67,6 @@
 }
 
 .chatpal-search-result-single {
-
 	position: relative;
 
 	min-height: 92px;
@@ -84,7 +80,6 @@
 }
 
 .chatpal-search-result-user {
-
 	position: relative;
 
 	min-height: 40px;
@@ -98,7 +93,6 @@
 }
 
 .chatpal-search-result-user .chatpal-avatar {
-
 	position: absolute;
 
 	width: 36px;
@@ -106,7 +100,6 @@
 }
 
 .chatpal-search-result-user .chatpal-avatar .chatpal-avatar-image {
-
 	width: 100%;
 	height: 100%;
 
@@ -135,7 +128,6 @@
 }
 
 .chatpal-show-more-messages {
-
 	margin-bottom: 20px;
 
 	cursor: pointer;
@@ -161,7 +153,6 @@
 }
 
 .chatpal-search-result-single h2 {
-
 	display: flex;
 
 	margin-bottom: 20px;
@@ -169,7 +160,6 @@
 }
 
 .chatpal-search-result-single .chatpal-avatar {
-
 	position: absolute;
 
 	width: 36px;
@@ -177,7 +167,6 @@
 }
 
 .chatpal-search-result-single .chatpal-avatar .chatpal-avatar-image {
-
 	width: 100%;
 	height: 100%;
 
@@ -196,7 +185,6 @@
 }
 
 .chatpal-search-result-single .chatpal-date {
-
 	color: #a0a0a0;
 
 	font-size: 12px;
@@ -205,7 +193,6 @@
 }
 
 .chatpal-search-result-single .chatpal-time {
-
 	margin-left: 3px;
 
 	color: #a0a0a0;
@@ -214,7 +201,6 @@
 }
 
 .chatpal-search-result-single .chatpal-message {
-
 	overflow-x: hidden;
 
 	margin-top: 5px;
@@ -224,7 +210,6 @@
 }
 
 .chatpal-search-result-single .chatpal-message em {
-
 	background-color: #faf9c8;
 
 	font-style: normal;
@@ -246,14 +231,12 @@
 }
 
 .chatpal-paging {
-
 	margin: 30px 0 50px;
 
 	text-align: center;
 }
 
 .chatpal-paging-text {
-
 	position: relative;
 	top: -2px;
 
@@ -261,7 +244,6 @@
 }
 
 .chatpal-paging .chatpal-paging-button {
-
 	display: inline-block;
 
 	cursor: pointer;
@@ -285,7 +267,6 @@
 }
 
 .chatpal-search-welcome {
-
 	padding-top: 40px;
 
 	text-align: center;
@@ -296,7 +277,6 @@
 }
 
 .chatpal-search-result-list em {
-
 	background-color: #faf9c8;
 
 	font-style: normal;
@@ -319,7 +299,6 @@
 }
 
 .chatpal-search-pills div {
-
 	display: inline-block;
 
 	margin-top: 5px;
@@ -337,7 +316,6 @@
 }
 
 .apikey .key {
-
 	position: relative;
 
 	margin: 20px 0;
@@ -356,7 +334,6 @@
 }
 
 .chatpal-suggestion {
-
 	display: flex;
 
 	padding: 10px;

@@ -1,8 +1,8 @@
-import React from 'react';
+import { Icon } from '@rocket.chat/fuselage';
+import React, { ComponentProps, ReactElement } from 'react';
 
-import { IRoom, IOmnichannelRoom, IDirectMessageRoom } from '../../definition/IRoom';
+import { IRoom } from '../../definition/IRoom';
 import { ReactiveUserStatus } from '../components/UserStatus';
-
 
 export const colors = {
 	busy: 'danger-500',
@@ -11,9 +11,33 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const useRoomIcon = (room: IRoom, small = true): JSX.Element | { name: string; color?: string } | null => {
+export const useRoomIcon = (
+	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>,
+): ReactElement | ComponentProps<typeof Icon> | null => {
 	if (room.prid) {
 		return { name: 'baloons' };
+	}
+
+	if (room.teamMain) {
+		return { name: room.t === 'p' ? 'team-lock' : 'team' };
+	}
+
+	if (room.t === 'd') {
+		if (room.uids && room.uids.length > 2) {
+			return { name: 'balloon' };
+		}
+
+		if (room.uids && room.uids.length > 0) {
+			const uid = room.uids.find((uid) => uid !== room?.u?._id) || room?.u?._id;
+
+			if (!uid) {
+				return null;
+			}
+
+			return <ReactiveUserStatus uid={uid} />;
+		}
+
+		return { name: 'at' };
 	}
 
 	switch (room.t) {
@@ -21,17 +45,6 @@ export const useRoomIcon = (room: IRoom, small = true): JSX.Element | { name: st
 			return { name: 'hashtag-lock' };
 		case 'c':
 			return { name: 'hash' };
-		case 'l':
-			return { name: 'headset', color: colors[(room as unknown as IOmnichannelRoom).v.status] };
-		case 'd':
-			const direct = room as unknown as IDirectMessageRoom;
-			if (direct.uids && direct.uids.length > 2) {
-				return { name: 'baloon-arrow-left' };
-			}
-			if (direct.uids && direct.uids.length > 0) {
-				return <ReactiveUserStatus { ...{ small, uid: direct.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id } as any } />;
-			}
-			return { name: 'at' };
 		default:
 			return null;
 	}

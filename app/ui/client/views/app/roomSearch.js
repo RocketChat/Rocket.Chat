@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 
-import { roomTypes } from '../../../../utils';
+import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 
 Template.roomSearch.helpers({
 	roomIcon() {
@@ -8,12 +8,12 @@ Template.roomSearch.helpers({
 			return 'icon-at';
 		}
 		if (this.type === 'r') {
-			return roomTypes.getIcon(this);
+			return roomCoordinator.getIcon(this);
 		}
 	},
 	userStatus() {
 		if (this.type === 'u') {
-			return `status-${ this.status }`;
+			return `status-${this.status}`;
 		}
 	},
 });

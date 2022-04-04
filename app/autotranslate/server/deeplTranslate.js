@@ -7,7 +7,7 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings';
 
 /**
@@ -28,7 +28,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		this.name = 'deepl-translate';
 		this.apiEndPointUrl = 'https://api.deepl.com/v2/translate';
 		// Get the service provide API key.
-		settings.get('AutoTranslate_DeepLAPIKey', (key, value) => {
+		settings.watch('AutoTranslate_DeepLAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}
@@ -76,24 +76,64 @@ class DeeplAutoTranslate extends AutoTranslate {
 		}
 		this.supportedLanguages[target] = [
 			{
-				language: 'en',
-				name: TAPi18n.__('Language_English', { lng: target }),
+				language: 'bg',
+				name: TAPi18n.__('Language_Bulgarian', { lng: target }),
+			},
+			{
+				language: 'cs',
+				name: TAPi18n.__('Language_Czech', { lng: target }),
+			},
+			{
+				language: 'da',
+				name: TAPi18n.__('Language_Danish', { lng: target }),
 			},
 			{
 				language: 'de',
 				name: TAPi18n.__('Language_German', { lng: target }),
 			},
 			{
-				language: 'fr',
-				name: TAPi18n.__('Language_French', { lng: target }),
+				language: 'el',
+				name: TAPi18n.__('Language_Greek', { lng: target }),
+			},
+			{
+				language: 'en',
+				name: TAPi18n.__('Language_English', { lng: target }),
 			},
 			{
 				language: 'es',
 				name: TAPi18n.__('Language_Spanish', { lng: target }),
 			},
 			{
+				language: 'et',
+				name: TAPi18n.__('Language_Estonian', { lng: target }),
+			},
+			{
+				language: 'fi',
+				name: TAPi18n.__('Language_Finnish', { lng: target }),
+			},
+			{
+				language: 'fr',
+				name: TAPi18n.__('Language_French', { lng: target }),
+			},
+			{
+				language: 'hu',
+				name: TAPi18n.__('Language_Hungarian', { lng: target }),
+			},
+			{
 				language: 'it',
 				name: TAPi18n.__('Language_Italian', { lng: target }),
+			},
+			{
+				language: 'ja',
+				name: TAPi18n.__('Language_Japanese', { lng: target }),
+			},
+			{
+				language: 'lt',
+				name: TAPi18n.__('Language_Lithuanian', { lng: target }),
+			},
+			{
+				language: 'lv',
+				name: TAPi18n.__('Language_Latvian', { lng: target }),
 			},
 			{
 				language: 'nl',
@@ -108,8 +148,28 @@ class DeeplAutoTranslate extends AutoTranslate {
 				name: TAPi18n.__('Language_Portuguese', { lng: target }),
 			},
 			{
+				language: 'ro',
+				name: TAPi18n.__('Language_Romanian', { lng: target }),
+			},
+			{
 				language: 'ru',
 				name: TAPi18n.__('Language_Russian', { lng: target }),
+			},
+			{
+				language: 'sk',
+				name: TAPi18n.__('Language_Slovak', { lng: target }),
+			},
+			{
+				language: 'sl',
+				name: TAPi18n.__('Language_Slovenian', { lng: target }),
+			},
+			{
+				language: 'sv',
+				name: TAPi18n.__('Language_Swedish', { lng: target }),
+			},
+			{
+				language: 'zh',
+				name: TAPi18n.__('Language_Chinese', { lng: target }),
 			},
 		];
 
@@ -128,7 +188,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		const translations = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
-		const query = `text=${ msgs.join('&text=') }`;
+		const query = `text=${msgs.join('&text=')}`;
 		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -143,7 +203,13 @@ class DeeplAutoTranslate extends AutoTranslate {
 					query,
 				});
 
-				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
+				if (
+					result.statusCode === 200 &&
+					result.data &&
+					result.data.translations &&
+					Array.isArray(result.data.translations) &&
+					result.data.translations.length > 0
+				) {
 					// store translation only when the source and target language are different.
 					// multiple lines might contain different languages => Mix the text between source and detected target if neccessary
 					const translatedText = result.data.translations
@@ -167,7 +233,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
-		const query = `text=${ encodeURIComponent(attachment.description || attachment.text) }`;
+		const query = `text=${encodeURIComponent(attachment.description || attachment.text)}`;
 		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -181,7 +247,13 @@ class DeeplAutoTranslate extends AutoTranslate {
 					},
 					query,
 				});
-				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
+				if (
+					result.statusCode === 200 &&
+					result.data &&
+					result.data.translations &&
+					Array.isArray(result.data.translations) &&
+					result.data.translations.length > 0
+				) {
 					if (result.data.translations.map((translation) => translation.detected_source_language).join() !== language) {
 						translations[language] = result.data.translations.map((translation) => translation.text);
 					}

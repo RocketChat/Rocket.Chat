@@ -1,13 +1,16 @@
+import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import { AppSettingsManager } from '@rocket.chat/apps-engine/server/managers/AppSettingsManager';
 import { useState, useEffect, useContext } from 'react';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { AppsContext } from '../AppsContext';
+import { AppInfo } from '../definitions/AppInfo';
 import { handleAPIError } from '../helpers';
 import { App } from '../types';
 
 const getBundledIn = async (appId: string, appVersion: string): Promise<App['bundledIn']> => {
 	try {
-		const { bundledIn } = await Apps.getLatestAppFromMarketplace(appId, appVersion) as App;
+		const { bundledIn } = (await Apps.getLatestAppFromMarketplace(appId, appVersion)) as App;
 		if (!bundledIn) {
 			return [];
 		}
@@ -25,7 +28,7 @@ const getBundledIn = async (appId: string, appVersion: string): Promise<App['bun
 	}
 };
 
-const getSettings = async (appId: string, installed: boolean): Promise<Record<string, unknown>> => {
+const getSettings = async (appId: string, installed: boolean): Promise<ReturnType<AppSettingsManager['getAppSettings']>> => {
 	if (!installed) {
 		return {};
 	}
@@ -38,37 +41,42 @@ const getSettings = async (appId: string, installed: boolean): Promise<Record<st
 	}
 };
 
-const getApis = async (appId: string, installed: boolean): Promise<Record<string, unknown>> => {
+const getApis = async (appId: string, installed: boolean): Promise<Array<IApiEndpointMetadata>> => {
 	if (!installed) {
-		return {};
+		return [];
 	}
 
 	try {
 		return Apps.getAppApis(appId);
 	} catch (e) {
 		handleAPIError(e);
-		return {};
+		return [];
 	}
 };
 
-type AppInfo = Partial<App & {
-	settings: Record<string, unknown>;
-	apis: Record<string, unknown>;
-}>;
+export const useAppInfo = (appId: string): AppInfo | undefined => {
+	const { installedApps, marketplaceApps } = useContext(AppsContext);
 
-export const useAppInfo = (appId: string): AppInfo => {
-	const { apps } = useContext(AppsContext);
-
-	const [appData, setAppData] = useState({});
+	const [appData, setAppData] = useState<AppInfo>();
 
 	useEffect(() => {
+		const apps: App[] = [];
+
+		if (marketplaceApps.value) {
+			apps.push(...marketplaceApps.value.apps);
+		}
+
+		if (installedApps.value) {
+			apps.push(...installedApps.value.apps);
+		}
+
 		const fetchAppInfo = async (): Promise<void> => {
-			if (!apps.length || !appId) {
+			if (!apps?.length || !appId) {
 				return;
 			}
 
 			const app = apps.find((app) => app.id === appId) ?? {
-				...await Apps.getApp(appId),
+				...(await Apps.getApp(appId)),
 				installed: true,
 				marketplace: false,
 			};
@@ -82,7 +90,7 @@ export const useAppInfo = (appId: string): AppInfo => {
 		};
 
 		fetchAppInfo();
-	}, [appId, apps]);
+	}, [appId, installedApps, marketplaceApps]);
 
 	return appData;
 };

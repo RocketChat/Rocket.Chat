@@ -1,6 +1,7 @@
-import { MessageList } from './MessageList';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { IMessage } from '../../../definition/IMessage';
-import { escapeRegExp } from '../../../lib/escapeRegExp';
+import { MessageList } from './MessageList';
 
 type DiscussionMessage = Omit<IMessage, 'drid'> & Required<Pick<IMessage, 'drid'>>;
 
@@ -12,8 +13,7 @@ export type DiscussionsListOptions = {
 const isDiscussionMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is DiscussionMessage =>
 	message.rid === rid && 'drid' in message;
 
-const isDiscussionTextMatching = (discussionMessage: DiscussionMessage, regex: RegExp): boolean =>
-	regex.test(discussionMessage.msg);
+const isDiscussionTextMatching = (discussionMessage: DiscussionMessage, regex: RegExp): boolean => regex.test(discussionMessage.msg);
 
 export class DiscussionsList extends MessageList {
 	public constructor(private _options: DiscussionsListOptions) {
@@ -37,10 +37,7 @@ export class DiscussionsList extends MessageList {
 		}
 
 		if (this._options.text) {
-			const regex = new RegExp(
-				this._options.text.split(/\s/g)
-					.map((text) => escapeRegExp(text)).join('|'),
-			);
+			const regex = new RegExp(escapeRegExp(this._options.text), 'i');
 			if (!isDiscussionTextMatching(message, regex)) {
 				return false;
 			}

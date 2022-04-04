@@ -8,22 +8,26 @@ import { Meteor } from 'meteor/meteor';
 import { Facts } from 'meteor/facts-base';
 
 import { Info, getOplogInfo } from '../../../utils/server';
-import { Migrations } from '../../../migrations';
-import { settings } from '../../../settings';
-import { Statistics } from '../../../models';
+import { getControl } from '../../../../server/lib/migrations';
+import { settings } from '../../../settings/server';
+import { Statistics } from '../../../models/server/raw';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { metrics } from './metrics';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
 
-Facts.incrementServerFact = function(pkg, fact, increment) {
+Facts.incrementServerFact = function (pkg, fact, increment) {
 	metrics.meteorFacts.inc({ pkg, fact }, increment);
 };
 
 const setPrometheusData = async () => {
-	metrics.info.set({
-		version: Info.version,
-		unique_id: settings.get('uniqueID'),
-		site_url: settings.get('Site_Url'),
-	}, 1);
+	metrics.info.set(
+		{
+			version: Info.version,
+			unique_id: settings.get('uniqueID'),
+			site_url: settings.get('Site_Url'),
+		},
+		1,
+	);
 
 	const sessions = Array.from(Meteor.server.sessions.values());
 	const authenticatedSessions = sessions.filter((s) => s.userId);
@@ -41,13 +45,13 @@ const setPrometheusData = async () => {
 	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
 	metrics.oplogQueue.set(oplogQueue);
 
-	const statistics = Statistics.findLast();
+	const statistics = await Statistics.findLast();
 	if (!statistics) {
 		return;
 	}
 
 	metrics.version.set({ version: statistics.version }, 1);
-	metrics.migration.set(Migrations._getControl().version);
+	metrics.migration.set(getControl().version);
 	metrics.instanceCount.set(statistics.instanceCount);
 	metrics.oplogEnabled.set({ enabled: statistics.oplogEnabled }, 1);
 
@@ -136,7 +140,7 @@ const updatePrometheusConfig = async () => {
 
 	if (!is.enabled) {
 		if (was.enabled) {
-			console.log('Disabling Prometheus');
+			SystemLogger.info('Disabling Prometheus');
 			server.close();
 			Meteor.clearInterval(timer);
 		}
@@ -144,7 +148,7 @@ const updatePrometheusConfig = async () => {
 		return;
 	}
 
-	console.log('Configuring Prometheus', is);
+	SystemLogger.debug({ msg: 'Configuring Prometheus', is });
 
 	if (!was.enabled) {
 		server.listen({
@@ -158,7 +162,9 @@ const updatePrometheusConfig = async () => {
 	Meteor.clearInterval(resetTimer);
 	if (is.resetInterval) {
 		resetTimer = Meteor.setInterval(() => {
-			client.register.getMetricsAsArray().forEach((metric) => { metric.hashMap = {}; });
+			client.register.getMetricsAsArray().forEach((metric) => {
+				metric.hashMap = {};
+			});
 		}, is.resetInterval);
 	}
 
@@ -174,12 +180,12 @@ const updatePrometheusConfig = async () => {
 			gcStats()();
 		}
 	} catch (error) {
-		console.error(error);
+		SystemLogger.error(error);
 	}
 
 	Object.assign(was, is);
 };
 
 Meteor.startup(async () => {
-	settings.get(/^Prometheus_.+/, updatePrometheusConfig);
+	settings.watchByRegex(/^Prometheus_.+/, updatePrometheusConfig);
 });

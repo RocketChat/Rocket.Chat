@@ -3,39 +3,44 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { handleError } from '../../../utils';
-import { settings } from '../../../settings';
+import { handleError } from '../../../../client/lib/utils/handleError';
+import { settings } from '../../../settings/client';
 
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {
-	if (!('WebSocket' in window)) { // eslint-disable-line no-negated-in-lhs
+	if (!('WebSocket' in window)) {
+		// eslint-disable-line no-negated-in-lhs
 		return false;
 	}
 
 	const ws = new WebSocket(url);
-	ws.onerror = (evt) => console.error(`Error: ${ evt.data }`);
+	ws.onerror = (evt) => console.error(`Error: ${evt.data}`);
 	return ws;
 };
 const sendMessageToWebSocket = (message, ws) => {
 	if (ws != null) {
-		if (ws.readyState === 1) { ws.send(message); }
+		if (ws.readyState === 1) {
+			ws.send(message);
+		}
 	}
 };
-export const call = (...args) => new Promise(function(resolve, reject) {
-	Meteor.call(...args, function(err, result) {
-		if (err) {
-			handleError(err);
-			reject(err);
-		}
-		resolve(result);
+export const call = (...args) =>
+	new Promise(function (resolve, reject) {
+		Meteor.call(...args, function (err, result) {
+			if (err) {
+				handleError(err);
+				reject(err);
+			}
+			resolve(result);
+		});
 	});
-});
 
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const waitForStreamStatus = async (id, status) => {
 	const streamActive = new Promise(async (resolve) => {
-		while (true) { // eslint-disable-line no-constant-condition
+		// eslint-disable-next-line no-constant-condition
+		while (true) {
 			const currentStatus = await call('livestreamStreamStatus', { streamId: id }); // eslint-disable-line no-await-in-loop
 			if (currentStatus === status) {
 				return resolve(status);
@@ -47,7 +52,8 @@ const waitForStreamStatus = async (id, status) => {
 };
 const waitForBroadcastStatus = async (id, status) => {
 	const broadcastActive = new Promise(async (resolve) => {
-		while (true) { // eslint-disable-line no-constant-condition
+		// eslint-disable-next-line no-constant-condition
+		while (true) {
 			const currentStatus = await call('getBroadcastStatus', { broadcastId: id }); // eslint-disable-line no-await-in-loop
 			if (currentStatus === status) {
 				return resolve(status);
@@ -67,13 +73,13 @@ Template.broadcastView.helpers({
 	},
 });
 
-Template.broadcastView.onCreated(async function() {
-	const connection = createAndConnect(`${ settings.get('Broadcasting_media_server_url') }/${ this.data.id }`);
+Template.broadcastView.onCreated(async function () {
+	const connection = createAndConnect(`${settings.get('Broadcasting_media_server_url')}/${this.data.id}`);
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
 	this.connection = new ReactiveVar(connection);
 });
-Template.broadcastView.onDestroyed(function() {
+Template.broadcastView.onDestroyed(function () {
 	if (this.connection.get()) {
 		this.connection.get().close();
 	}
@@ -82,11 +88,14 @@ Template.broadcastView.onDestroyed(function() {
 		this.mediaRecorder.set(null);
 	}
 	if (this.mediaStream.get()) {
-		this.mediaStream.get().getTracks().map((track) => track.stop());
+		this.mediaStream
+			.get()
+			.getTracks()
+			.map((track) => track.stop());
 		this.mediaStream.set(null);
 	}
 });
-Template.broadcastView.onRendered(async function() {
+Template.broadcastView.onRendered(async function () {
 	navigator.getMedia = getMedia();
 	if (!navigator.getMedia) {
 		return alert('getUserMedia() is not supported in your browser!');
@@ -130,7 +139,11 @@ Template.broadcastView.events({
 	async 'startStreaming .streaming-popup'(e, i) {
 		await call('setLivestreamStatus', { broadcastId: i.data.broadcast.id, status: 'live' });
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStream'));
-		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', { id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg` });
+		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {
+			id: i.data.broadcast.id,
+			url: `https://www.youtube.com/embed/${i.data.broadcast.id}`,
+			thumbnail: `https://img.youtube.com/vi/${i.data.broadcast.id}/0.jpg`,
+		});
 	},
 	async 'stopStreaming .streaming-popup'(e, i) {
 		await call('setBroadcastStatus', { broadcastId: i.data.broadcast.id, status: 'complete' });
@@ -146,7 +159,10 @@ Template.broadcastView.events({
 			i.mediaRecorder.set(null);
 		}
 		if (i.mediaStream.get()) {
-			i.mediaStream.get().getTracks().map((track) => track.stop());
+			i.mediaStream
+				.get()
+				.getTracks()
+				.map((track) => track.stop());
 			i.mediaStream.set(null);
 		}
 	},

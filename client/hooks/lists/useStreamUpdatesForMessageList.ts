@@ -1,15 +1,11 @@
 import { useEffect } from 'react';
 
-import { useStream } from '../../contexts/ServerContext';
 import { IMessage } from '../../../definition/IMessage';
-import {
-	createFilterFromQuery,
-	FieldExpression,
-	Query,
-} from '../../lib/minimongo';
-import { MessageList } from '../../lib/lists/MessageList';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
+import { useStream } from '../../contexts/ServerContext';
+import { MessageList } from '../../lib/lists/MessageList';
+import { createFilterFromQuery, FieldExpression, Query } from '../../lib/minimongo';
 
 type RoomMessagesRidEvent = IMessage;
 
@@ -23,9 +19,7 @@ type NotifyRoomRidDeleteMessageBulkEvent = {
 	users: string[];
 };
 
-const createDeleteCriteria = (
-	params: NotifyRoomRidDeleteMessageBulkEvent,
-): ((message: IMessage) => boolean) => {
+const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
 	const query: Query<IMessage> = { ts: params.ts };
 
 	if (params.excludePinned) {
@@ -56,15 +50,12 @@ export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IU
 			messageList.handle(message);
 		});
 
-		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(
-			`${ rid }/deleteMessage`,
-			({ _id: mid }) => {
-				messageList.remove(mid);
-			},
-		);
+		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(`${rid}/deleteMessage`, ({ _id: mid }) => {
+			messageList.remove(mid);
+		});
 
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageBulkEvent>(
-			`${ rid }/deleteMessageBulk`,
+			`${rid}/deleteMessageBulk`,
 			(params) => {
 				const matchDeleteCriteria = createDeleteCriteria(params);
 				messageList.prune(matchDeleteCriteria);

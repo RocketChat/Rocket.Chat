@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import { compareBSONValues, getBSONType } from './bson';
 import { equals, flatSome, isObject, some } from './comparisons';
 import { createLookupFunction } from './lookups';
 import { BSONType, FieldExpression, Query } from './types';
-import { compareBSONValues, getBSONType } from './bson';
 
 const isArrayOfFields = <T>(values: unknown[]): values is T[] =>
 	values.every((value) => ['number', 'string', 'symbol'].includes(typeof value));
@@ -16,13 +16,14 @@ const $in = <T extends string>(operand: T[], _options: undefined): ((value: T) =
 		}
 	}
 
-	return (value: T): boolean => some(value, (x) => {
-		if (typeof x === 'string' && index !== null) {
-			return !!index[x];
-		}
+	return (value: T): boolean =>
+		some(value, (x) => {
+			if (typeof x === 'string' && index !== null) {
+				return !!index[x];
+			}
 
-		return operand.some((operandElement) => equals(operandElement, x));
-	});
+			return operand.some((operandElement) => equals(operandElement, x));
+		});
 };
 
 const $nin = <T extends string>(operand: T[], _options: undefined): ((value: T) => boolean) => {
@@ -37,7 +38,8 @@ const $nin = <T extends string>(operand: T[], _options: undefined): ((value: T) 
 	};
 };
 
-const $all = <T>(operand: T[], _options: undefined): ((value: T) => boolean) =>
+const $all =
+	<T>(operand: T[], _options: undefined): ((value: T) => boolean) =>
 	(value: T): boolean => {
 		if (!Array.isArray(value)) {
 			return false;
@@ -46,31 +48,48 @@ const $all = <T>(operand: T[], _options: undefined): ((value: T) => boolean) =>
 		return operand.every((operandElement) => value.some((valueElement) => equals(operandElement, valueElement)));
 	};
 
-const $lt = <T>(operand: T, _options: undefined): ((value: T) => boolean) =>
-	(value: T): boolean => flatSome(value, (x) => compareBSONValues(x, operand) < 0);
+const $lt =
+	<T>(operand: T, _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean =>
+		flatSome(value, (x) => compareBSONValues(x, operand) < 0);
 
-const $lte = <T>(operand: T, _options: undefined): ((value: T) => boolean) =>
-	(value: T): boolean => flatSome(value, (x) => compareBSONValues(x, operand) <= 0);
+const $lte =
+	<T>(operand: T, _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean =>
+		flatSome(value, (x) => compareBSONValues(x, operand) <= 0);
 
-const $gt = <T>(operand: T, _options: undefined): ((value: T) => boolean) =>
-	(value: T): boolean => flatSome(value, (x) => compareBSONValues(x, operand) > 0);
+const $gt =
+	<T>(operand: T, _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean =>
+		flatSome(value, (x) => compareBSONValues(x, operand) > 0);
 
-const $gte = <T>(operand: T, _options: undefined): ((value: T) => boolean) =>
-	(value: T): boolean => flatSome(value, (x) => compareBSONValues(x, operand) >= 0);
+const $gte =
+	<T>(operand: T, _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean =>
+		flatSome(value, (x) => compareBSONValues(x, operand) >= 0);
 
-const $ne = <T>(operand: T, _options: undefined): ((value: T) => boolean) =>
-	(value: T): boolean => !some(value, (x) => equals(x, operand));
+const $ne =
+	<T>(operand: T, _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean =>
+		!some(value, (x) => equals(x, operand));
 
-const $exists = <T>(operand: boolean, _options: undefined): ((value: T) => boolean) =>
-	(value: T): boolean => operand === (value !== undefined);
+const $exists =
+	<T>(operand: boolean, _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean =>
+		operand === (value !== undefined);
 
-const $mod = <T>([divisor, remainder]: [number, number], _options: undefined): ((value: T) => boolean) =>
-	(value: T): boolean => flatSome(value, (x) => Number(x) % divisor === remainder);
+const $mod =
+	<T>([divisor, remainder]: [number, number], _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean =>
+		flatSome(value, (x) => Number(x) % divisor === remainder);
 
-const $size = <T>(operand: number, _options: undefined): ((value: T) => boolean) =>
-	(value: T): boolean => Array.isArray(value) && operand === value.length;
+const $size =
+	<T>(operand: number, _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean =>
+		Array.isArray(value) && operand === value.length;
 
-const $type = <T>(operand: BSONType, _options: undefined): ((value: T) => boolean) =>
+const $type =
+	<T>(operand: BSONType, _options: undefined): ((value: T) => boolean) =>
 	(value: T): boolean => {
 		if (value === undefined) {
 			return false;
@@ -115,8 +134,10 @@ const $not = <T>(operand: FieldExpression<T>, _options: undefined): ((value: T) 
 	return (value: T): boolean => !matcher(value);
 };
 
-const dummyOperator = <T>(_operand: unknown, _options: undefined): ((value: T) => boolean) =>
-	(_value: T): boolean => true;
+const dummyOperator =
+	<T>(_operand: unknown, _options: undefined): ((value: T) => boolean) =>
+	(_value: T): boolean =>
+		true;
 
 const $options = dummyOperator;
 const $near = dummyOperator;
@@ -159,7 +180,7 @@ const $nor = <T>(subSelector: Query<T>[]): ((doc: T) => boolean) => {
 };
 
 const $where = <T>(selectorValue: string | Function): ((doc: T) => boolean) => {
-	const fn = selectorValue instanceof Function ? selectorValue : Function(`return ${ selectorValue }`);
+	const fn = selectorValue instanceof Function ? selectorValue : Function(`return ${selectorValue}`);
 	return (doc: T): boolean => !!fn.call(doc);
 };
 
@@ -170,22 +191,25 @@ const logicalOperators = {
 	$where,
 } as const;
 
-const isValueOperator = (operator: string): operator is keyof typeof valueOperators =>
-	operator in valueOperators;
+const isValueOperator = (operator: string): operator is keyof typeof valueOperators => operator in valueOperators;
 
-const isLogicalOperator = (operator: string): operator is keyof typeof logicalOperators =>
-	operator in logicalOperators;
+const isLogicalOperator = (operator: string): operator is keyof typeof logicalOperators => operator in logicalOperators;
 
 const hasValueOperators = <T>(valueSelector: FieldExpression<T>): boolean =>
 	Object.keys(valueSelector).every((key) => key.slice(0, 1) === '$');
 
-const compileUndefinedOrNullSelector = <T>(): ((value: T) => boolean) =>
-	(value: T): boolean => flatSome(value, (x) => x === undefined || x === null);
+const compileUndefinedOrNullSelector =
+	<T>(): ((value: T) => boolean) =>
+	(value: T): boolean =>
+		flatSome(value, (x) => x === undefined || x === null);
 
-const compilePrimitiveSelector = <T>(primitive: T) =>
-	(value: T): boolean => flatSome(value, (x) => x === primitive);
+const compilePrimitiveSelector =
+	<T>(primitive: T) =>
+	(value: T): boolean =>
+		flatSome(value, (x) => x === primitive);
 
-const compileRegexSelector = <T>(regex: RegExp) =>
+const compileRegexSelector =
+	<T>(regex: RegExp) =>
 	(value: T): boolean => {
 		if (value === undefined) {
 			return false;
@@ -194,7 +218,8 @@ const compileRegexSelector = <T>(regex: RegExp) =>
 		return flatSome(value, (x) => regex.test(String(x)));
 	};
 
-const compileArraySelector = <T>(expected: T) =>
+const compileArraySelector =
+	<T>(expected: T) =>
 	(value: T): boolean => {
 		if (!Array.isArray(value)) {
 			return false;
@@ -211,7 +236,7 @@ const compileValueOperatorsSelector = <T>(expression: FieldExpression<T>): ((val
 		}
 
 		const operand = expression[operator];
-		const operation = valueOperators[operator] as unknown as ((operand: unknown, options: unknown) => (value: T) => boolean);
+		const operation = valueOperators[operator] as unknown as (operand: unknown, options: unknown) => (value: T) => boolean;
 		operatorFunctions.push(operation(operand, expression.$options));
 	}
 	return (value: T): boolean => operatorFunctions.every((f) => f(value));

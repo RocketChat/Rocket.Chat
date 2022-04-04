@@ -6,10 +6,10 @@ import moment from 'moment';
 
 import { settings } from '../../../app/settings/server';
 import { IBanner, BannerPlatform } from '../../../definition/IBanner';
-import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins.js';
+import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 
 export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<IBanner, '_id'> => {
-	const lng = settings.get('Language') || 'en';
+	const lng = settings.get<string>('Language') || 'en';
 
 	return {
 		platform: [BannerPlatform.Web],
@@ -25,23 +25,33 @@ export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<
 		view: {
 			viewId: '',
 			appId: '',
-			blocks: [{
-				type: BlockType.SECTION,
-				blockId: 'attention',
-				text: {
-					type: TextObjectType.PLAINTEXT,
-					text: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', { date: moment(expireAt).format('YYYY-MM-DD'), lng }),
-					emoji: false,
+			blocks: [
+				{
+					type: BlockType.SECTION,
+					blockId: 'attention',
+					text: {
+						type: TextObjectType.PLAINTEXT,
+						text: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
+							date: moment(expireAt).format('YYYY-MM-DD'),
+							lng,
+						}),
+						emoji: false,
+					},
 				},
-			}],
+			],
 		},
 	};
 });
 
 export const notifyAdmins = Meteor.bindEnvironment((expireAt: Date) => {
-	sendMessagesToAdmins({
-		msgs: ({ adminUser }: { adminUser: any }): any => ({
-			msg: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', { date: moment(expireAt).format('YYYY-MM-DD'), lng: adminUser.language }),
+	Promise.await(
+		sendMessagesToAdmins({
+			msgs: ({ adminUser }: { adminUser: any }): any => ({
+				msg: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
+					date: moment(expireAt).format('YYYY-MM-DD'),
+					lng: adminUser.language,
+				}),
+			}),
 		}),
-	});
+	);
 });

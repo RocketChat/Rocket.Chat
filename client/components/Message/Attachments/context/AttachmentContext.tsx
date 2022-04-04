@@ -10,7 +10,6 @@ export type AttachmentContextValue = {
 	autoLoadEmbedMedias: boolean;
 };
 
-
 export const AttachmentContext = createContext<AttachmentContextValue>({
 	getURL: (url: string) => url,
 	dimensions: {
@@ -21,7 +20,7 @@ export const AttachmentContext = createContext<AttachmentContextValue>({
 	autoLoadEmbedMedias: true,
 });
 
-export const useMediaUrl = (): (path: string) => string => {
+export const useMediaUrl = (): ((path: string) => string) => {
 	const { getURL } = useContext(AttachmentContext);
 	return getURL;
 };

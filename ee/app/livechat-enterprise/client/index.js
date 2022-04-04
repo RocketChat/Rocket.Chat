@@ -11,4 +11,6 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	require('./views/app/registerCustomTemplates');
 	require('./views/livechatSideNavItems');
 	require('./views/business-hours/Multiple');
+	require('../lib/QuickActions/defaultActions');
+	require('./messageTypes');
 });

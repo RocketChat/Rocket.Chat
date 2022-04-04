@@ -1,6 +1,6 @@
 .message {
 	& .reactions {
-		margin-top: 4px;
+		margin-top: 8px;
 		padding: 0;
 
 		& > li {

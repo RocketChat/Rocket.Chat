@@ -3,10 +3,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { check } from 'meteor/check';
 
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { checkCodeForUser } from './code/index';
 
-Accounts.registerLoginHandler('totp', function(options) {
+Accounts.registerLoginHandler('totp', function (options) {
 	if (!options.totp || !options.totp.code) {
 		return;
 	}
@@ -14,23 +14,32 @@ Accounts.registerLoginHandler('totp', function(options) {
 	return Accounts._runLoginHandlers(this, options.totp.login);
 });
 
-callbacks.add('onValidateLogin', (login) => {
-	if (login.type === 'resume' || login.type === 'proxy') {
+callbacks.add(
+	'onValidateLogin',
+	(login) => {
+		if (login.type === 'resume' || login.type === 'proxy' || login.methodName === 'verifyEmail') {
+			return login;
+		}
+
+		const [loginArgs] = login.methodArguments;
+		// CAS login doesn't yet support 2FA.
+		if (loginArgs.cas) {
+			return login;
+		}
+
+		const { totp } = loginArgs;
+
+		checkCodeForUser({
+			user: login.user,
+			code: totp && totp.code,
+			options: { disablePasswordFallback: true },
+		});
+
 		return login;
-	}
-
-	const [loginArgs] = login.methodArguments;
-	// CAS login doesn't yet support 2FA.
-	if (loginArgs.cas) {
-		return login;
-	}
-
-	const { totp } = loginArgs;
-
-	checkCodeForUser({ user: login.user, code: totp && totp.code, options: { disablePasswordFallback: true } });
-
-	return login;
-}, callbacks.priority.MEDIUM, '2fa');
+	},
+	callbacks.priority.MEDIUM,
+	'2fa',
+);
 
 const recreateError = (errorDoc) => {
 	let error;
@@ -48,7 +57,7 @@ const recreateError = (errorDoc) => {
 	return error;
 };
 
-OAuth._retrievePendingCredential = function(key, ...args) {
+OAuth._retrievePendingCredential = function (key, ...args) {
 	const credentialSecret = args.length > 0 && args[0] !== undefined ? args[0] : null;
 	check(key, String);
 
@@ -72,13 +81,16 @@ OAuth._retrievePendingCredential = function(key, ...args) {
 	const future = new Date();
 	future.setMinutes(future.getMinutes() + 2);
 
-	OAuth._pendingCredentials.update({
-		_id: pendingCredential._id,
-	}, {
-		$set: {
-			createdAt: future,
+	OAuth._pendingCredentials.update(
+		{
+			_id: pendingCredential._id,
 		},
-	});
+		{
+			$set: {
+				createdAt: future,
+			},
+		},
+	);
 
 	return OAuth.openSecret(pendingCredential.credential);
 };

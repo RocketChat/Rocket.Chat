@@ -20,7 +20,7 @@ export const useSession = (name: string): unknown => {
 	return useSubscription(subscription);
 };
 
-export const useSessionDispatch = (name: string): ((name: string, value: unknown) => void) => {
+export const useSessionDispatch = (name: string): ((value: unknown) => void) => {
 	const { dispatch } = useContext(SessionContext);
 	return useCallback((value) => dispatch(name, value), [dispatch, name]);
 };

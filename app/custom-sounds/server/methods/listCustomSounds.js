@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { CustomSounds } from '../../../models';
+import { CustomSounds } from '../../../models/server/raw';
 
 Meteor.methods({
-	listCustomSounds() {
-		return CustomSounds.find({}).fetch();
+	async listCustomSounds() {
+		return CustomSounds.find({}).toArray();
 	},
 });

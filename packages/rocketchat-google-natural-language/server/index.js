@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
 import { Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import './settings.js';
+import { Meteor } from 'meteor/meteor';
 import googleLanguage from '@google-cloud/language';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+
+import { settings } from '../../../app/settings/server';
 
 let languageClient;
 
-settings.get('GoogleNaturalLanguage_ServiceAccount', (key, value) => {
+settings.watch('GoogleNaturalLanguage_ServiceAccount', (value) => {
 	if (value) {
 		try {
 			languageClient = googleLanguage({
@@ -20,21 +20,24 @@ settings.get('GoogleNaturalLanguage_ServiceAccount', (key, value) => {
 	}
 });
 
-const setRoomSentiment = function(message) {
+const setRoomSentiment = function (message) {
 	if (!languageClient) {
 		return message;
 	}
 
-	languageClient.detectSentiment(message.msg, Meteor.bindEnvironment((error, result) => {
-		if (!error) {
-			Rooms.setSentiment(message.rid, result);
-		}
-	}));
+	languageClient.detectSentiment(
+		message.msg,
+		Meteor.bindEnvironment((error, result) => {
+			if (!error) {
+				Rooms.setSentiment(message.rid, result);
+			}
+		}),
+	);
 
 	return message;
 };
 
-settings.get('GoogleNaturalLanguage_Enabled', (key, value) => {
+settings.watch('GoogleNaturalLanguage_Enabled', (value) => {
 	if (value) {
 		callbacks.add('afterSaveMessage', setRoomSentiment, callbacks.priority.MEDIUM, 'GoogleNaturalLanguage');
 	} else {

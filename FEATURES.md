@@ -48,7 +48,7 @@
     - Reactions
 - Message editing
   - Editing is as simple as using your arrow keys for picking the right message to edit
-  - Setup to keep history of edits or discard the previous text
+  - Setup to keep the history of edits or discard the previous text
   - Show or hide edited/deleted status
 - History
   - Search
@@ -58,10 +58,10 @@
 - Add stars and pins to messages
   - Star messages that are important to you. Only you have access to your stars.
   - Pin messages that are important to everyone.
-  - Access your starred/pinned and messages you were mentioned on quickly through side bar buttons
-- REST Api
+  - Access your starred/pinned and messages you were mentioned on quickly through sidebar buttons
+- REST API
 - Roles and Permissions
 - Public and Private multi-user rooms
 - One-on-one conversations
-  - Off-the-record messaging (messages are encrypted and transiently saved on database)
-- Slashcommands
+  - Off-the-record messaging (messages are encrypted and transiently saved on the database)
+- Slash commands

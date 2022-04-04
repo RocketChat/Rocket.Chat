@@ -1,8 +1,6 @@
 import { Random } from 'meteor/random';
 import katex from 'katex';
-
-import { escapeHTML } from '../../../lib/escapeHTML';
-import { unescapeHTML } from '../../../lib/unescapeHTML';
+import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 
 import 'katex/dist/katex.min.css';
 import './style.css';
@@ -26,17 +24,20 @@ class Katex {
 				closer: '\\]',
 				displayMode: true,
 				enabled: () => parenthesisSyntax,
-			}, {
+			},
+			{
 				opener: '\\(',
 				closer: '\\)',
 				displayMode: false,
 				enabled: () => parenthesisSyntax,
-			}, {
+			},
+			{
 				opener: '$$',
 				closer: '$$',
 				displayMode: true,
 				enabled: () => dollarSyntax,
-			}, {
+			},
+			{
 				opener: '$',
 				closer: '$',
 				displayMode: false,
@@ -46,10 +47,12 @@ class Katex {
 	}
 
 	findOpeningDelimiter(str, start) {
-		const matches = this.delimitersMap.filter((options) => options.enabled()).map((options) => ({
-			options,
-			pos: str.indexOf(options.opener, start),
-		}));
+		const matches = this.delimitersMap
+			.filter((options) => options.enabled())
+			.map((options) => ({
+				options,
+				pos: str.indexOf(options.opener, start),
+			}));
 
 		const positions = matches.filter(({ pos }) => pos >= 0).map(({ pos }) => pos);
 
@@ -129,10 +132,9 @@ class Katex {
 				},
 			});
 		} catch ({ message }) {
-			return `<div class="katex-error katex-${ displayMode ? 'block' : 'inline' }-error">`
-				+ `${ escapeHTML(message) }</div>`;
+			return `<div class="katex-error katex-${displayMode ? 'block' : 'inline'}-error">${escapeHTML(message)}</div>`;
 		}
-	}
+	};
 
 	// Takes a string and renders all latex blocks inside it
 	render(str, renderFunction) {
@@ -167,7 +169,7 @@ class Katex {
 		}
 
 		message.html = this.render(message.html, (latex, displayMode) => {
-			const token = `=!=${ Random.id() }=!=`;
+			const token = `=!=${Random.id()}=!=`;
 			message.tokens.push({
 				token,
 				text: this.renderLatex(latex, displayMode),
@@ -176,7 +178,7 @@ class Katex {
 		});
 
 		return message;
-	}
+	};
 }
 
 export const createKatexMessageRendering = (options) => {

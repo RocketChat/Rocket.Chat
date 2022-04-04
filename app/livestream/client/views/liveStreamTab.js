@@ -4,45 +4,50 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import toastr from 'toastr';
 
 import { auth } from '../oauth.js';
 import { RocketChatAnnouncement } from '../../../lib';
 import { popout } from '../../../ui-utils';
-import { t, handleError } from '../../../utils';
+import { t } from '../../../utils';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { hasAllPermission } from '../../../authorization';
 import { Users, Rooms } from '../../../models';
+import { handleError } from '../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-export const call = (...args) => new Promise(function(resolve, reject) {
-	Meteor.call(...args, function(err, result) {
-		if (err) {
-			handleError(err);
-			reject(err);
-		}
-		resolve(result);
+export const call = (...args) =>
+	new Promise(function (resolve, reject) {
+		Meteor.call(...args, function (err, result) {
+			if (err) {
+				handleError(err);
+				reject(err);
+			}
+			resolve(result);
+		});
 	});
-});
 
-export const close = (popup) => new Promise(function(resolve) {
-	const checkInterval = setInterval(() => {
-		if (popup.closed) {
-			clearInterval(checkInterval);
-			resolve();
-		}
-	}, 300);
-});
+export const close = (popup) =>
+	new Promise(function (resolve) {
+		const checkInterval = setInterval(() => {
+			if (popup.closed) {
+				clearInterval(checkInterval);
+				resolve();
+			}
+		}, 300);
+	});
 
 function optionsFromUrl(url) {
 	const options = {};
-	const parsedUrl = url.match(/(http:|https:|)\/\/(www.)?(youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
+	const parsedUrl = url.match(
+		/(http:|https:|)\/\/(www.)?(youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/,
+	);
 	options.url = url;
 	if (parsedUrl != null) {
 		options.id = parsedUrl[6];
 		if (parsedUrl[3].includes('youtu')) {
-			options.url = `https://www.youtube.com/embed/${ parsedUrl[6] }`;
-			options.thumbnail = `https://img.youtube.com/vi/${ parsedUrl[6] }/0.jpg`;
+			options.url = `https://www.youtube.com/embed/${parsedUrl[6]}`;
+			options.thumbnail = `https://img.youtube.com/vi/${parsedUrl[6]}/0.jpg`;
 		}
 		// @TODO add support for other urls
 	}
@@ -57,22 +62,39 @@ Template.liveStreamTab.helpers({
 		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().url : '';
 	},
 	streamingUnavailableMessage() {
-		return Template.instance().streamingOptions.get() && Template.instance().streamingOptions.get().message && Template.instance().streamingOptions.get().message !== '' ? Template.instance().streamingOptions.get().message : t('Livestream_not_found');
+		return Template.instance().streamingOptions.get() &&
+			Template.instance().streamingOptions.get().message &&
+			Template.instance().streamingOptions.get().message !== ''
+			? Template.instance().streamingOptions.get().message
+			: t('Livestream_not_found');
 	},
 	thumbnailUrl() {
 		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().thumbnail : '';
 	},
 	hasThumbnail() {
-		return !!Template.instance().streamingOptions.get() && !!Template.instance().streamingOptions.get().thumbnail && Template.instance().streamingOptions.get().thumbnail !== '';
+		return (
+			!!Template.instance().streamingOptions.get() &&
+			!!Template.instance().streamingOptions.get().thumbnail &&
+			Template.instance().streamingOptions.get().thumbnail !== ''
+		);
 	},
 	hasSource() {
-		return !!Template.instance().streamingOptions.get() && !!Template.instance().streamingOptions.get().url && Template.instance().streamingOptions.get().url !== '';
+		return (
+			!!Template.instance().streamingOptions.get() &&
+			!!Template.instance().streamingOptions.get().url &&
+			Template.instance().streamingOptions.get().url !== ''
+		);
 	},
 	canEdit() {
 		return hasAllPermission('edit-room', this.rid);
 	},
 	editing() {
-		return Template.instance().editing.get() || Template.instance().streamingOptions.get() == null || (Template.instance().streamingOptions.get() != null && (Template.instance().streamingOptions.get().url == null || Template.instance().streamingOptions.get().url === ''));
+		return (
+			Template.instance().editing.get() ||
+			Template.instance().streamingOptions.get() == null ||
+			(Template.instance().streamingOptions.get() != null &&
+				(Template.instance().streamingOptions.get().url == null || Template.instance().streamingOptions.get().url === ''))
+		);
 	},
 	canDock() {
 		const livestreamTabSource = Template.instance().streamingOptions.get().url;
@@ -97,7 +119,7 @@ Template.liveStreamTab.helpers({
 	},
 });
 
-Template.liveStreamTab.onCreated(function() {
+Template.liveStreamTab.onCreated(function () {
 	this.editing = new ReactiveVar(false);
 	this.streamingOptions = new ReactiveVar();
 	this.popoutOpen = new ReactiveVar(popout.context != null);
@@ -108,12 +130,11 @@ Template.liveStreamTab.onCreated(function() {
 	});
 });
 
-Template.liveStreamTab.onDestroyed(function() {
+Template.liveStreamTab.onDestroyed(function () {
 	if (popout.docked) {
 		popout.close();
 	}
 });
-
 
 Template.liveStreamTab.events({
 	'click .js-cancel'(e, i) {
@@ -123,18 +144,22 @@ Template.liveStreamTab.events({
 	'click .js-clear'(e, i) {
 		e.preventDefault();
 
-		const clearedObject = {
-		};
+		const clearedObject = {};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', clearedObject, function(err) {
+		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', clearedObject, function (err) {
 			if (err) {
 				return handleError(err);
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(clearedObject);
 			const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
-			if (roomAnnouncement.getMessage() !== '') { roomAnnouncement.clear(); }
-			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
+			if (roomAnnouncement.getMessage() !== '') {
+				roomAnnouncement.clear();
+			}
+			return dispatchToastMessage({
+				type: 'success',
+				message: TAPi18n.__('Livestream_source_changed_succesfully'),
+			});
 		});
 	},
 	'click .js-save'(e, i) {
@@ -147,7 +172,7 @@ Template.liveStreamTab.events({
 			type: 'livestream',
 		};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
+		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function (err) {
 			if (err) {
 				return handleError(err);
 			}
@@ -166,7 +191,10 @@ Template.liveStreamTab.events({
 				}
 			}
 
-			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
+			return dispatchToastMessage({
+				type: 'success',
+				message: TAPi18n.__('Livestream_source_changed_succesfully'),
+			});
 		});
 	},
 	'click .streaming-source-settings'(e, i) {
@@ -208,7 +236,7 @@ Template.liveStreamTab.events({
 			type: 'livestream',
 		};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
+		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function (err) {
 			if (err) {
 				return handleError(err);
 			}
@@ -226,7 +254,10 @@ Template.liveStreamTab.events({
 					roomAnnouncement.clear();
 				}
 			}
-			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
+			return dispatchToastMessage({
+				type: 'success',
+				message: TAPi18n.__('Livestream_source_changed_succesfully'),
+			});
 		});
 	},
 	'click .js-popout'(e, i) {
@@ -270,8 +301,10 @@ Template.liveStreamTab.events({
 });
 
 callbacks.add('openBroadcast', (rid) => {
-	const roomData = Session.get(`roomData${ rid }`);
-	if (!roomData) { return; }
+	const roomData = Session.get(`roomData${rid}`);
+	if (!roomData) {
+		return;
+	}
 	popout.open({
 		content: 'liveStreamView',
 		data: {

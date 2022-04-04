@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { SettingValue } from '../../../definition/ISetting';
 
-export type SettingComposedValue = {key: string; value: SettingValue};
+export type SettingComposedValue<T extends SettingValue = SettingValue> = { key: string; value: T };
 export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
 
 interface ISettingRegexCallbacks {
@@ -17,8 +17,18 @@ export class SettingsBase {
 	private regexCallbacks = new Map<string, ISettingRegexCallbacks>();
 
 	// private ts = new Date()
+	public get<T extends SettingValue = SettingValue>(_id: RegExp, callback: SettingCallback): void;
 
-	public get(_id: string | RegExp, callback?: SettingCallback): SettingValue | SettingComposedValue[] | void {
+	public get<T extends SettingValue = SettingValue>(_id: string, callback: SettingCallback): void;
+
+	public get<T extends SettingValue = SettingValue>(_id: RegExp): SettingComposedValue<T>[];
+
+	public get<T extends SettingValue = SettingValue>(_id: string): T | undefined;
+
+	public get<T extends SettingValue = SettingValue>(
+		_id: string | RegExp,
+		callback?: SettingCallback,
+	): T | undefined | SettingComposedValue<T>[] | void {
 		if (callback != null) {
 			this.onload(_id, callback);
 			if (!Meteor.settings) {
@@ -41,7 +51,11 @@ export class SettingsBase {
 			}
 
 			if (typeof _id === 'string') {
-				return Meteor.settings[_id] != null && callback(_id, Meteor.settings[_id]);
+				const value = Meteor.settings[_id];
+				if (value != null) {
+					callback(_id, Meteor.settings[_id]);
+				}
+				return;
 			}
 		}
 
@@ -50,7 +64,7 @@ export class SettingsBase {
 		}
 
 		if (_.isRegExp(_id)) {
-			return Object.keys(Meteor.settings).reduce((items: SettingComposedValue[], key) => {
+			return Object.keys(Meteor.settings).reduce((items: SettingComposedValue<T>[], key) => {
 				const value = Meteor.settings[key];
 				if (_id.test(key)) {
 					items.push({
@@ -69,7 +83,7 @@ export class SettingsBase {
 		Meteor.call('saveSetting', _id, value, callback);
 	}
 
-	batchSet(settings: Array<{_id: string; value: SettingValue}>, callback: () => void): void {
+	batchSet(settings: Array<{ _id: string; value: SettingValue }>, callback: () => void): void {
 		Meteor.call('saveSettings', settings, callback);
 	}
 

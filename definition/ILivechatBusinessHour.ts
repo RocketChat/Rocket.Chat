@@ -21,6 +21,7 @@ export interface IBusinessHourWorkHour {
 	start: IBusinessHourTime;
 	finish: IBusinessHourTime;
 	open: boolean;
+	code: unknown;
 }
 
 export interface IBusinessHourTimezone {

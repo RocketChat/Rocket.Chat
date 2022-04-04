@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { HTML } from 'meteor/htmljs';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -7,14 +6,15 @@ import { Template } from 'meteor/templating';
 
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
-import { roomTypes, getUserPreference } from '../../utils';
+import { getUserPreference } from '../../utils';
 import { Users } from '../../models';
-import { createTemplateForComponent } from '../../../client/reactAdapters';
-
-createTemplateForComponent('sidebarHeader', () => import('../../../client/sidebar/header'));
-createTemplateForComponent('sidebarChats', () => import('../../../client/sidebar/RoomList'), { renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }) });// eslint-disable-line new-cap
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Template.sideNav.helpers({
+	dataQa() {
+		return Template.instance().menuState.get() === 'opened';
+	},
+
 	flexTemplate() {
 		return SideNav.getFlex().template;
 	},
@@ -23,18 +23,13 @@ Template.sideNav.helpers({
 		return SideNav.getFlex().data;
 	},
 
-	footer() {
-		return String(settings.get('Layout_Sidenav_Footer')).trim();
-	},
-
 	roomType() {
-		return roomTypes.getTypes().map((roomType) => ({
-			template: roomType.customTemplate || 'roomList',
+		return roomCoordinator.getSortedTypes().map(({ config }) => ({
+			template: config.customTemplate || 'roomList',
 			data: {
-				header: roomType.header,
-				identifier: roomType.identifier,
-				isCombined: roomType.isCombined,
-				label: roomType.label,
+				header: config.header,
+				identifier: config.identifier,
+				label: config.label,
 			},
 		}));
 	},
@@ -49,21 +44,13 @@ Template.sideNav.helpers({
 	},
 
 	sidebarHideAvatar() {
-		return getUserPreference(Meteor.userId(), 'sidebarHideAvatar');
+		return !getUserPreference(Meteor.userId(), 'sidebarDisplayAvatar');
 	},
 });
 
 Template.sideNav.events({
 	'click .close-flex'() {
 		return SideNav.closeFlex();
-	},
-
-	'click .arrow'() {
-		return SideNav.toggleCurrent();
-	},
-
-	'scroll .rooms-list'() {
-		return menu.updateUnreadBars();
 	},
 
 	'dropped .sidebar'(e) {
@@ -98,27 +85,34 @@ const redirectToDefaultChannelIfNeeded = () => {
 			return c.stop();
 		}
 
-		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+		const room = roomCoordinator.getRoomDirectives('c')?.findRoom(firstChannelAfterLogin);
 
 		if (!room) {
 			return;
 		}
 
 		c.stop();
-		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
+		FlowRouter.go(`/channel/${firstChannelAfterLogin}`);
 	});
 };
 
-Template.sideNav.onRendered(function() {
+Template.sideNav.onRendered(function () {
 	SideNav.init();
 	menu.init();
-	redirectToDefaultChannelIfNeeded();
 
-	return Meteor.defer(() => menu.updateUnreadBars());
+	this.stopMenuListener = menu.on('change', () => {
+		this.menuState.set(menu.isOpen() ? 'opened' : 'closed');
+	});
+	redirectToDefaultChannelIfNeeded();
 });
 
-Template.sideNav.onCreated(function() {
+Template.sideNav.onDestroyed(function () {
+	this.stopMenuListener();
+});
+Template.sideNav.onCreated(function () {
 	this.groupedByType = new ReactiveVar(false);
+
+	this.menuState = new ReactiveVar(menu.isOpen() ? 'opened' : 'closed');
 
 	this.autorun(() => {
 		const user = Users.findOne(Meteor.userId(), {

@@ -1,21 +1,21 @@
-import { FederationKeys } from '../../../models/server';
+import { FederationKeys } from '../../../models/server/raw';
 import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
-import { logger } from './logger';
+import { cryptLogger } from './logger';
 
-export function decrypt(data, peerKey) {
+export async function decrypt(data, peerKey) {
 	//
 	// Decrypt the payload
 	const payloadBuffer = Buffer.from(data);
 
 	// Decrypt with the peer's public key
 	try {
-		data = FederationKeys.loadKey(peerKey, 'public').decryptPublic(payloadBuffer);
+		data = (await FederationKeys.loadKey(peerKey, 'public')).decryptPublic(payloadBuffer);
 
 		// Decrypt with the local private key
-		data = FederationKeys.getPrivateKey().decrypt(data);
+		data = (await FederationKeys.getPrivateKey()).decrypt(data);
 	} catch (err) {
-		logger.crypt.error(err);
+		cryptLogger.error(err);
 
 		throw new Error('Could not decrypt');
 	}
@@ -23,7 +23,7 @@ export function decrypt(data, peerKey) {
 	return JSON.parse(data.toString());
 }
 
-export function decryptIfNeeded(request, bodyParams) {
+export async function decryptIfNeeded(request, bodyParams) {
 	//
 	// Look for the domain that sent this event
 	const remotePeerDomain = request.headers['x-federation-domain'];
@@ -48,19 +48,19 @@ export function decryptIfNeeded(request, bodyParams) {
 	return decrypt(bodyParams, peerKey);
 }
 
-export function encrypt(data, peerKey) {
+export async function encrypt(data, peerKey) {
 	if (!data) {
 		return data;
 	}
 
 	try {
 		// Encrypt with the peer's public key
-		data = FederationKeys.loadKey(peerKey, 'public').encrypt(data);
+		data = (await FederationKeys.loadKey(peerKey, 'public')).encrypt(data);
 
 		// Encrypt with the local private key
-		return FederationKeys.getPrivateKey().encryptPrivate(data);
+		return (await FederationKeys.getPrivateKey()).encryptPrivate(data);
 	} catch (err) {
-		logger.crypt.error(err);
+		cryptLogger.error(err);
 
 		throw new Error('Could not encrypt');
 	}

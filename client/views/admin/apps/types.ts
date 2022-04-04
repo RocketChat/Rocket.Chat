@@ -1,3 +1,5 @@
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+
 export type App = {
 	id: string;
 	iconFileData: string;
@@ -10,11 +12,12 @@ export type App = {
 	description: string;
 	categories: string[];
 	version: string;
-	price: string;
-	purchaseType: unknown[];
+	price: number;
+	purchaseType: string;
 	pricingPlans: unknown[];
 	iconFileContent: unknown;
 	installed?: boolean;
+	isEnterpriseOnly?: boolean;
 	bundledIn: {
 		bundleId: string;
 		bundleName: string;
@@ -22,7 +25,12 @@ export type App = {
 	}[];
 	marketplaceVersion: string;
 	latest: App;
-	status: unknown;
+	status?: AppStatus;
+	licenseValidation?: {
+		errors: { [key: string]: string };
+		warnings: { [key: string]: string };
+	};
 	marketplace: unknown;
+	modifiedAt: string;
 	permissions: unknown[];
 };

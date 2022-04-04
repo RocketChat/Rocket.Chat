@@ -2,10 +2,12 @@ import React, { FunctionComponent } from 'react';
 
 import { GroupId } from '../../../../definition/ISetting';
 import { useSettingStructure } from '../../../contexts/SettingsContext';
-import AssetsGroupPage from './groups/AssetsGroupPage';
-import OAuthGroupPage from './groups/OAuthGroupPage';
-import GenericGroupPage from './groups/GenericGroupPage';
 import GroupPage from './GroupPage';
+import AssetsGroupPage from './groups/AssetsGroupPage';
+import LDAPGroupPage from './groups/LDAPGroupPage';
+import OAuthGroupPage from './groups/OAuthGroupPage';
+import TabbedGroupPage from './groups/TabbedGroupPage';
+import VoipGroupPage from './groups/VoipGroupPage';
 
 type GroupSelectorProps = {
 	groupId: GroupId;
@@ -26,7 +28,15 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
 		return <OAuthGroupPage {...group} />;
 	}
 
-	return <GenericGroupPage {...group} />;
+	if (groupId === 'LDAP') {
+		return <LDAPGroupPage {...group} />;
+	}
+
+	if (groupId === 'Call_Center') {
+		return <VoipGroupPage {...group} />;
+	}
+
+	return <TabbedGroupPage {...group} />;
 };
 
 export default GroupSelector;

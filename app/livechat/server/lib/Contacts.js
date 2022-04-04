@@ -1,14 +1,9 @@
 import { check } from 'meteor/check';
 import s from 'underscore.string';
 
-import {
-	LivechatVisitors,
-	LivechatCustomField,
-} from '../../../models';
-
+import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models';
 
 export const Contacts = {
-
 	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
 		check(token, String);
 
@@ -59,6 +54,14 @@ export const Contacts = {
 		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
 
 		LivechatVisitors.updateById(contactId, updateUser);
+
+		const rooms = LivechatRooms.findByVisitorId(contactId).fetch();
+
+		rooms?.length &&
+			rooms.forEach((room) => {
+				const { _id: rid } = room;
+				Rooms.setFnameById(rid, name) && LivechatInquiry.setNameByRoomId(rid, name) && Subscriptions.updateDisplayNameByRoomId(rid, name);
+			});
 
 		return contactId;
 	},

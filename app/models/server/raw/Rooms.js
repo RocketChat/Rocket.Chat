@@ -1,14 +1,25 @@
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
-	findOneByRoomIdAndUserId(rid, uid, options) {
+	findOneByRoomIdAndUserId(rid, uid, options = {}) {
 		const query = {
-			rid,
+			'_id': rid,
 			'u._id': uid,
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findManyByRoomIds(roomIds, options = {}) {
+		const query = {
+			_id: {
+				$in: roomIds,
+			},
+		};
+
+		return this.find(query, options);
 	}
 
 	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
@@ -16,15 +27,19 @@ export class RoomsRaw extends BaseRaw {
 			{
 				$match: {
 					t: 'l',
+					...(department && { departmentId: department }),
 					closedAt: { $exists: true },
-					metrics: { $exists: true },
-					'metrics.chatDuration': { $exists: true },
-					...department && { departmentId: department },
 				},
 			},
 			{ $sort: { closedAt: -1 } },
 			{ $limit: numberMostRecentChats },
-			{ $group: { _id: null, chats: { $sum: 1 }, sumChatDuration: { $sum: '$metrics.chatDuration' } } },
+			{
+				$group: {
+					_id: null,
+					chats: { $sum: 1 },
+					sumChatDuration: { $sum: '$metrics.chatDuration' },
+				},
+			},
 			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
 		];
 
@@ -32,8 +47,19 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
+	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
+
+		const teamCondition = teams
+			? {}
+			: {
+					teamMain: {
+						$exists: false,
+					},
+			  };
+
 		const query = {
 			t: {
 				$in: types,
@@ -46,22 +72,46 @@ export class RoomsRaw extends BaseRaw {
 					usernames: nameRegex,
 				},
 			],
+			...teamCondition,
+			...onlyTeamsQuery,
 		};
 		return this.find(query, options);
 	}
 
-	findByTypes(types, discussion = false, options = {}) {
+	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
+		const teamCondition = teams
+			? {}
+			: {
+					teamMain: {
+						$exists: false,
+					},
+			  };
+
+		const onlyTeamsCondition = onlyTeams ? { teamMain: { $exists: true } } : {};
+
 		const query = {
 			t: {
 				$in: types,
 			},
 			prid: { $exists: discussion },
+			...teamCondition,
+			...onlyTeamsCondition,
 		};
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, options = {}) {
+	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const teamCondition = teams
+			? {}
+			: {
+					teamMain: {
+						$exists: false,
+					},
+			  };
+
+		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
 
 		const query = {
 			prid: { $exists: discussion },
@@ -72,21 +122,181 @@ export class RoomsRaw extends BaseRaw {
 					usernames: nameRegex,
 				},
 			],
+			...teamCondition,
+			...onlyTeamsCondition,
 		};
+
 		return this.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+	findByTeamId(teamId, options = {}) {
+		const query = {
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findByTeamIdContainingNameAndDefault(teamId, name, teamDefault, ids, options = {}) {
+		const query = {
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+			...(name ? { name: new RegExp(escapeRegExp(name), 'i') } : {}),
+			...(teamDefault === true ? { teamDefault } : {}),
+			...(ids ? { $or: [{ t: 'c' }, { _id: { $in: ids } }] } : {}),
+		};
+
+		return this.find(query, options);
+	}
+
+	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
+		const query = {
+			teamId,
+			_id: {
+				$in: rids,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findChannelAndPrivateByNameStarting(name, sIds, options) {
+		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query = {
 			t: {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
+			teamMain: {
+				$exists: false,
+			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: sIds,
+					},
+				},
+			],
 		};
 
 		return this.find(query, options);
+	}
+
+	findRoomsByNameOrFnameStarting(name, options) {
+		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
+
+		const query = {
+			t: {
+				$in: ['c', 'p'],
+			},
+			$or: [
+				{
+					name: nameRegex,
+				},
+				{
+					fname: nameRegex,
+				},
+			],
+		};
+
+		return this.find(query, options);
+	}
+
+	findRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
+		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
+
+		const query = {
+			_id: {
+				$in: roomIds,
+			},
+			t: {
+				$in: ['c', 'p'],
+			},
+			name: nameRegex,
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: roomIds,
+					},
+				},
+			],
+			prid: { $exists: false },
+		};
+
+		return this.find(query, options);
+	}
+
+	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, groupsToAccept, options) {
+		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
+
+		const query = {
+			teamId: {
+				$exists: false,
+			},
+			prid: {
+				$exists: false,
+			},
+			_id: {
+				$in: groupsToAccept,
+			},
+			name: nameRegex,
+		};
+		return this.find(query, options);
+	}
+
+	unsetTeamId(teamId, options = {}) {
+		const query = { teamId };
+		const update = {
+			$unset: {
+				teamId: '',
+				teamDefault: '',
+				teamMain: '',
+			},
+		};
+
+		return this.updateMany(query, update, options);
+	}
+
+	unsetTeamById(rid, options = {}) {
+		return this.updateOne({ _id: rid }, { $unset: { teamId: '', teamDefault: '' } }, options);
+	}
+
+	setTeamById(rid, teamId, teamDefault, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
+	}
+
+	setTeamMainById(rid, teamId, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamId, teamMain: true } }, options);
+	}
+
+	setTeamByIds(rids, teamId, options = {}) {
+		return this.updateMany({ _id: { $in: rids } }, { $set: { teamId } }, options);
+	}
+
+	setTeamDefaultById(rid, teamDefault, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
@@ -106,10 +316,7 @@ export class RoomsRaw extends BaseRaw {
 						input: '$messages',
 						as: 'message',
 						cond: {
-							$and: [
-								{ $gte: ['$$message.date', start] },
-								{ $lte: ['$$message.date', end] },
-							],
+							$and: [{ $gte: ['$$message.date', start] }, { $lte: ['$$message.date', end] }],
 						},
 					},
 				},
@@ -118,10 +325,7 @@ export class RoomsRaw extends BaseRaw {
 						input: '$messages',
 						as: 'message',
 						cond: {
-							$and: [
-								{ $gte: ['$$message.date', startOfLastWeek] },
-								{ $lte: ['$$message.date', endOfLastWeek] },
-							],
+							$and: [{ $gte: ['$$message.date', startOfLastWeek] }, { $lte: ['$$message.date', endOfLastWeek] }],
 						},
 					},
 				},
@@ -175,20 +379,83 @@ export class RoomsRaw extends BaseRaw {
 				diffFromLastWeek: { $subtract: ['$messages', '$lastWeekMessages'] },
 			},
 		};
-		const firstParams = [lookup, messagesProject, messagesUnwind, messagesGroup, lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
+		const firstParams = [
+			lookup,
+			messagesProject,
+			messagesUnwind,
+			messagesGroup,
+			lastWeekMessagesUnwind,
+			lastWeekMessagesGroup,
+			presentationProject,
+		];
 		const sort = { $sort: options.sort || { messages: -1 } };
 		const params = [...firstParams, sort];
+
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params);
 		}
+
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
+
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
 
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
+	}
+
+	findOneByName(name, options = {}) {
+		return this.col.findOne({ name }, options);
+	}
+
+	findDefaultRoomsForTeam(teamId) {
+		return this.col.find({
+			teamId,
+			teamDefault: true,
+			teamMain: {
+				$exists: false,
+			},
+		});
+	}
+
+	incUsersCountByIds(ids, inc = 1) {
+		const query = {
+			_id: {
+				$in: ids,
+			},
+		};
+
+		const update = {
+			$inc: {
+				usersCount: inc,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	findOneByNameOrFname(name, options = {}) {
+		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
+	}
+
+	allRoomSourcesCount() {
+		return this.col.aggregate([
+			{
+				$match: {
+					source: {
+						$exists: true,
+					},
+					t: 'l',
+				},
+			},
+			{
+				$group: {
+					_id: '$source',
+					count: { $sum: 1 },
+				},
+			},
+		]);
 	}
 }

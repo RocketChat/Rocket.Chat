@@ -1,5 +1,5 @@
 import { transformMappedData } from '../../lib/misc/transformMappedData';
-import Uploads from '../../../models/server/models/Uploads';
+import { Uploads } from '../../../models/server/raw';
 
 export class AppUploadsConverter {
 	constructor(orch) {
@@ -7,7 +7,7 @@ export class AppUploadsConverter {
 	}
 
 	convertById(id) {
-		const upload = Uploads.findOneById(id);
+		const upload = Promise.await(Uploads.findOneById(id));
 
 		return this.convertToApp(upload);
 	}
