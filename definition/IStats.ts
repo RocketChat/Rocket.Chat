@@ -145,4 +145,6 @@ export interface IStats {
 	messageAuditLoad: number;
 	dashboardCount: number;
 	joinJitsiButton: number;
+	totalRoomsWithStarred: number;
+	totalRoomsWithPinned: number;
 }

@@ -458,4 +458,13 @@ export class RoomsRaw extends BaseRaw {
 			},
 		]);
 	}
+
+	findByE2E(options) {
+		return this.find(
+			{
+				encrypted: true,
+			},
+			options,
+		);
+	}
 }

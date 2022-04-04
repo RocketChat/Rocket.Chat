@@ -188,4 +188,20 @@ export class MessagesRaw extends BaseRaw {
 			options,
 		);
 	}
+
+	async countRoomsWithStarredMessages() {
+		const queryResult = await this.col
+			.aggregate([{ $match: { starred: { $exists: true } } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }])
+			.toArray();
+
+		return queryResult[0].total;
+	}
+
+	async countRoomsWithPinnedMessages() {
+		const queryResult = await this.col
+			.aggregate([{ $match: { pinned: true } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }])
+			.toArray();
+
+		return queryResult[0].total;
+	}
 }
