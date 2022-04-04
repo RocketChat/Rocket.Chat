@@ -26,13 +26,21 @@ type InitialStateData = {
 	hasToken: boolean;
 };
 
-const initialStateArgs = [
+const initialStateArgs: [
+	{
+		action: 'initialState';
+	},
+] = [
 	{
 		action: 'initialState',
 	},
 ];
 
-const listPageArgs = [
+const listPageArgs: [
+	{
+		action: 'list-pages';
+	},
+] = [
 	{
 		action: 'list-pages',
 	},
@@ -41,16 +49,12 @@ const listPageArgs = [
 const FacebookPageContainer: FC = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const {
-		value: initialStateData,
-		phase: state,
-		reload: reloadInitial,
-	} = useMethodData<InitialStateData>('livechat:facebook', initialStateArgs);
+	const { value: initialStateData, phase: state, reload: reloadInitial } = useMethodData('livechat:facebook', initialStateArgs);
 
-	const { value: pagesData, phase: listState, reload: reloadData } = useMethodData<PageData>('livechat:facebook', listPageArgs);
+	const { value: pagesData, phase: listState, reload: reloadData } = useMethodData('livechat:facebook', listPageArgs);
 
-	const { enabled, hasToken } = initialStateData || { enabled: false, hasToken: false };
-	const { pages } = pagesData || { pages: [] };
+	const { enabled, hasToken } = (initialStateData as InitialStateData) || { enabled: false, hasToken: false };
+	const { pages } = (pagesData as unknown as PageData) || { pages: [] };
 
 	const livechatFacebook = useMethod('livechat:facebook');
 
@@ -92,8 +96,8 @@ const FacebookPageContainer: FC = () => {
 	const onEnable = useMutableCallback(async () => {
 		try {
 			const result = await livechatFacebook({ action: 'enable' });
-			if (result?.url) {
-				openOauthWindow(result?.url, () => {
+			if (result && 'url' in result) {
+				openOauthWindow(result.url, () => {
 					onEnable();
 				});
 			} else {

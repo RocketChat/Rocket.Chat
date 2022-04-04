@@ -4,6 +4,23 @@ import React, { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
+/**
+ * @param {Object} props
+ * @param {React.ReactNode} props.icon
+ * @param {React.ReactNode} props.title
+ * @param {any} props.avatar
+ * @param {any} props.actions
+ * @param {any} props.href
+ * @param {any} props.time
+ * @param {any} props.menu
+ * @param {any} props.menuOptions
+ * @param {React.ReactNode} props.subtitle
+ * @param {any} props.titleIcon
+ * @param {any} props.badges
+ * @param {any} props.threadUnread
+ * @param {any} props.unread
+ * @param {any} props.selected
+ */
 const Extended = ({
 	icon,
 	title = '',

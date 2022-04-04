@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import $ from 'jquery';
 import React, { useState, useEffect } from 'react';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
@@ -68,8 +69,14 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
-	const onChangeUsers = useMutableCallback((value) => {
-		handleToUsers(value);
+	const onChangeUsers = useMutableCallback((value, action) => {
+		if (!action) {
+			if (toUsers.includes(value)) {
+				return;
+			}
+			return handleToUsers([...toUsers, value]);
+		}
+		handleToUsers(toUsers.filter((current) => current !== value));
 	});
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');

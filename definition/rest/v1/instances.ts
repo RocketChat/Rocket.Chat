@@ -7,10 +7,10 @@ export type InstancesEndpoints = {
 				| IInstanceStatus
 				| {
 						connection: {
-							address: unknown;
-							currentStatus: unknown;
-							instanceRecord: unknown;
-							broadcastAuth: unknown;
+							address: string;
+							currentStatus: IInstanceStatus['currentStatus'];
+							instanceRecord: IInstanceStatus['instanceRecord'];
+							broadcastAuth: boolean;
 						};
 				  }
 			)[];

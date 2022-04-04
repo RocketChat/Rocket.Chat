@@ -11,7 +11,9 @@ Meteor.methods({
 	archiveRoom(rid) {
 		check(rid, String);
 
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
 		}
 
@@ -25,7 +27,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-direct-message-room', `rooms type: ${room.t} can not be archived`, { method: 'archiveRoom' });
 		}
 
-		if (!hasPermission(Meteor.userId(), 'archive-room', room._id)) {
+		if (!hasPermission(userId, 'archive-room', room._id)) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
 		}
 

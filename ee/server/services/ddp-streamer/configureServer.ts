@@ -4,9 +4,9 @@ import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Account, Presence, MeteorService } from '../../../../server/sdk';
 import { UserStatus } from '../../../../definition/UserStatus';
 import { Server } from './Server';
-import { AutoUpdateRecord } from '../../../../server/sdk/types/IMeteor';
 import { api } from '../../../../server/sdk/api';
 import { MeteorError } from '../../../../server/sdk/errors';
+import { Autoupdate } from './lib/Autoupdate';
 
 export const server = new Server();
 
@@ -43,28 +43,21 @@ server.publish(loginServiceConfigurationPublication, async function () {
 	this.ready();
 });
 
-const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
-
-events.on('meteor.autoUpdateClientVersionChanged', (record: any): void => {
-	autoUpdateRecords.set(record._id, record);
-});
-
-MeteorService.getLastAutoUpdateClientVersions().then((records = []) => {
-	records.forEach((record) => autoUpdateRecords.set(record._id, record));
-});
-
 const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
 server.publish(autoUpdateCollection, function () {
-	autoUpdateRecords.forEach((record) => this.added(autoUpdateCollection, record._id, record));
+	Autoupdate.getVersions().forEach((version, arch) => {
+		this.added(autoUpdateCollection, arch, version);
+	});
 
 	const fn = (record: any): void => {
-		this.changed(autoUpdateCollection, record._id, record);
+		const { _id, ...version } = record;
+		this.changed(autoUpdateCollection, _id, version);
 	};
 
-	events.on('meteor.autoUpdateClientVersionChanged', fn);
+	Autoupdate.on('update', fn);
 
 	this.onStop(() => {
-		events.removeListener('meteor.autoUpdateClientVersionChanged', fn);
+		Autoupdate.removeListener('update', fn);
 	});
 
 	this.ready();
@@ -72,24 +65,28 @@ server.publish(autoUpdateCollection, function () {
 
 server.methods({
 	async 'login'({ resume, user, password }: { resume: string; user: { username: string }; password: string }) {
-		const result = await Account.login({ resume, user, password });
-		if (!result) {
-			throw new MeteorError(403, "You've been logged out by the server. Please log in again");
+		try {
+			const result = await Account.login({ resume, user, password });
+			if (!result) {
+				throw new MeteorError(403, "You've been logged out by the server. Please log in again");
+			}
+
+			this.userId = result.uid;
+			this.userToken = result.hashedToken;
+
+			this.emit(DDP_EVENTS.LOGGED);
+
+			server.emit(DDP_EVENTS.LOGGED, this);
+
+			return {
+				id: result.uid,
+				token: result.token,
+				tokenExpires: result.tokenExpires,
+				type: result.type,
+			};
+		} catch (error) {
+			throw error;
 		}
-
-		this.userId = result.uid;
-		this.userToken = result.hashedToken;
-
-		this.emit(DDP_EVENTS.LOGGED);
-
-		server.emit(DDP_EVENTS.LOGGED, this);
-
-		return {
-			id: result.uid,
-			token: result.token,
-			tokenExpires: result.tokenExpires,
-			type: result.type,
-		};
 	},
 	async 'logout'() {
 		if (this.userToken && this.userId) {
