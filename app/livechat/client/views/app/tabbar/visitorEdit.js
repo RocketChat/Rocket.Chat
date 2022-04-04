@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { t } from '../../../../../utils';
-import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../../authorization/client';
+import { hasAtLeastOnePermission, hasPermission, hasAnyRole } from '../../../../../authorization/client';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
@@ -87,7 +87,7 @@ Template.visitorEdit.helpers({
 
 	canRemoveTag(availableUserTags, tag) {
 		return (
-			hasRole(Meteor.userId(), ['admin', 'livechat-manager']) ||
+			hasAnyRole(Meteor.userId(), ['admin', 'livechat-manager']) ||
 			(Array.isArray(availableUserTags) && (availableUserTags.length === 0 || availableUserTags.indexOf(tag) > -1))
 		);
 	},
@@ -136,7 +136,7 @@ Template.visitorEdit.onCreated(async function () {
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {
 		this.availableTags.set(tagsList);
 		const agentDepartments = this.agentDepartments.get();
-		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
+		const isAdmin = hasAnyRole(uid, ['admin', 'livechat-manager']);
 		const tags = this.availableTags.get() || [];
 		const availableTags = tags
 			.filter(({ departments }) => isAdmin || departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1))
@@ -200,7 +200,7 @@ Template.visitorEdit.events({
 		const hasAvailableTags = availableTags && availableTags.length > 0;
 		const availableUserTags = t.availableUserTags.get();
 		if (
-			!hasRole(Meteor.userId(), ['admin', 'livechat-manager']) &&
+			!hasAnyRole(Meteor.userId(), ['admin', 'livechat-manager']) &&
 			hasAvailableTags &&
 			(!availableUserTags || availableUserTags.indexOf(tag) === -1)
 		) {

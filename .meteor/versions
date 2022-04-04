@@ -1,4 +1,4 @@
-accounts-base@2.2.0
+accounts-base@2.2.1
 accounts-facebook@1.3.3
 accounts-github@1.5.0
 accounts-google@1.4.0
@@ -118,7 +118,7 @@ rocketchat:oauth2-server@3.0.0
 rocketchat:postcss@1.0.0
 rocketchat:restivus@1.0.0
 rocketchat:streamer@1.1.0
-rocketchat:tap-i18n@2.0.0
+rocketchat:tap-i18n@3.0.0
 rocketchat:version@1.0.0
 routepolicy@1.1.1
 service-configuration@1.3.0

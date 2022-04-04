@@ -9,8 +9,6 @@ import _ from 'underscore';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
-import { menu } from './menu';
-import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../../lib/callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
@@ -19,6 +17,7 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
@@ -69,7 +68,7 @@ export const RoomManager = new (function () {
 				const room = ChatRoom.findOne(msg.rid);
 				if (room.name !== FlowRouter.getParam('name')) {
 					RoomManager.close(room.t + FlowRouter.getParam('name'));
-					roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+					roomCoordinator.openRouteLink(room.t, room, FlowRouter.current().queryParams);
 				}
 			}
 		});
@@ -85,7 +84,6 @@ export const RoomManager = new (function () {
 				if (ready !== true) {
 					return;
 				}
-				const user = Meteor.user();
 				Tracker.nonreactive(() =>
 					Object.entries(openedRooms).forEach(([typeName, record]) => {
 						if (record.active !== true || record.ready === true) {
@@ -95,11 +93,11 @@ export const RoomManager = new (function () {
 						const type = typeName.substr(0, 1);
 						const name = typeName.substr(1);
 
-						const room = roomTypes.findRoom(type, name, user);
+						const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name);
+
+						RoomHistoryManager.getMoreIfIsEmpty(record.rid);
 
 						if (room != null) {
-							record.rid = room._id;
-							RoomHistoryManager.getMoreIfIsEmpty(room._id);
 							if (record.streamActive !== true) {
 								record.streamActive = true;
 								msgStream.on(record.rid, async (msg) => {
@@ -118,7 +116,6 @@ export const RoomManager = new (function () {
 											name,
 										};
 										if (isNew) {
-											menu.updateUnreadBars();
 											callbacks.run('streamNewMessage', msg);
 										}
 									}
@@ -197,10 +194,11 @@ export const RoomManager = new (function () {
 			Session.set('openedRoom');
 		}
 
-		open(typeName) {
+		open({ typeName, rid }) {
 			if (openedRooms[typeName] == null) {
 				openedRooms[typeName] = {
 					typeName,
+					rid,
 					active: false,
 					ready: false,
 					unreadSince: new ReactiveVar(undefined),
@@ -321,10 +319,8 @@ Meteor.startup(() => {
 		if (currentUsername === undefined && (user != null ? user.username : undefined) != null) {
 			currentUsername = user.username;
 			RoomManager.closeAllRooms();
-			const { roomTypes: types } = roomTypes;
-
 			// Reload only if the current route is a channel route
-			const roomType = Object.keys(types).find((key) => types[key].route && types[key].route.name === FlowRouter.current().route.name);
+			const roomType = roomCoordinator.getRouteNameIdentifier(FlowRouter.current().route.name);
 			if (roomType) {
 				FlowRouter.reload();
 			}

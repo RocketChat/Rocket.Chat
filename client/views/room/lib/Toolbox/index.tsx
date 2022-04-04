@@ -28,9 +28,9 @@ export type ToolboxActionConfig = {
 	full?: true;
 	renderOption?: OptionRenderer;
 	order?: number;
-	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team'>;
+	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
 	hotkey?: string;
-	action?: (e: MouseEvent<HTMLElement>) => void;
+	action?: (e?: MouseEvent<HTMLElement>) => void;
 	template?: string | FC | LazyExoticComponent<FC<{ rid: string; tabBar: any }>>;
 };
 

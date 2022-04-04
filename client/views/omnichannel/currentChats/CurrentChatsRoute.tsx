@@ -1,14 +1,15 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import React, { useMemo, useCallback, useState, FC } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
+import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
+import Chat from '../directory/chats/Chat';
 import CurrentChatsPage from './CurrentChatsPage';
 import RemoveChatButton from './RemoveChatButton';
 
@@ -95,6 +96,8 @@ const CurrentChatsRoute: FC = () => {
 	const t = useTranslation();
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
+	const directoryRoute = useRoute('omnichannel-current-chats');
+	const id = useRouteParameter('id');
 
 	const [params, setParams] = useState({
 		guest: '',
@@ -126,9 +129,7 @@ const CurrentChatsRoute: FC = () => {
 	});
 
 	const onRowClick = useMutableCallback((_id) => {
-		FlowRouter.go('live', { id: _id });
-		// routing this way causes a 404 that only goes away with a refresh, need to fix in review
-		// livechatRoomRoute.push({ id: _id });
+		directoryRoute.push({ id: _id });
 	});
 
 	const { value: data, reload } = useEndpointData('livechat/rooms', query);
@@ -201,7 +202,9 @@ const CurrentChatsRoute: FC = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	return (
+	return id ? (
+		<Chat rid={id} />
+	) : (
 		<CurrentChatsPage
 			setParams={setParams}
 			params={params}

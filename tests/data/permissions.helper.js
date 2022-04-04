@@ -1,5 +1,7 @@
 import { api, credentials, request } from './api-data';
 
+const delay = typeof cy !== 'undefined' ? 1000 : 100;
+
 export const updatePermission = (permission, roles) =>
 	new Promise((resolve) => {
 		request
@@ -8,7 +10,7 @@ export const updatePermission = (permission, roles) =>
 			.send({ permissions: [{ _id: permission, roles }] })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end(() => setTimeout(resolve, 500));
+			.end(() => setTimeout(resolve, delay));
 	});
 
 export const updateSetting = (setting, value) =>
@@ -19,5 +21,5 @@ export const updateSetting = (setting, value) =>
 			.send({ value })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end(() => setTimeout(resolve, 500));
+			.end(() => setTimeout(resolve, delay));
 	});

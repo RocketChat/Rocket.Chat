@@ -1,12 +1,12 @@
 import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { hasAllPermission, hasPermission, canAccessRoom } from '../../app/authorization/server';
+import { hasAllPermission, hasPermission, canAccessRoom, roomAccessAttributes } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../../app/models/server';
 import { Users } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
-import { searchableRoomTypes } from '../../app/utils/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
+import { roomCoordinator } from './rooms/roomCoordinator';
 
 export class Spotlight {
 	fetchRooms(userId, rooms) {
@@ -48,7 +48,7 @@ export class Spotlight {
 			return [];
 		}
 
-		const searchableRoomTypeIds = searchableRoomTypes();
+		const searchableRoomTypeIds = roomCoordinator.searchableRoomTypes();
 
 		const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
 			fields: { rid: 1 },
@@ -137,7 +137,7 @@ export class Spotlight {
 			readPreference: readSecondaryPreferred(Users.col.s.db),
 		};
 
-		const room = Rooms.findOneById(rid, { fields: { _id: 1, t: 1, uids: 1 } });
+		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, _id: 1, t: 1, uids: 1 } });
 
 		if (rid && !room) {
 			return users;

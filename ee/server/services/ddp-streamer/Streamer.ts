@@ -58,12 +58,19 @@ export class Stream extends Streamer {
 
 		for await (const { subscription } of subscriptions) {
 			if (this.retransmitToSelf === false && origin && origin === subscription.connection) {
-				return;
+				continue;
 			}
 
 			if (await this.isEmitAllowed(subscription, eventName, ...args)) {
-				await new Promise((resolve) => {
-					subscription.client.ws._sender.sendFrame(data[subscription.client.meteorClient ? 'meteor' : 'normal'], resolve);
+				await new Promise<void>((resolve, reject) => {
+					const frame = data[subscription.client.meteorClient ? 'meteor' : 'normal'];
+
+					subscription.client.ws._sender.sendFrame(frame, (err: unknown) => {
+						if (err) {
+							return reject(err);
+						}
+						resolve();
+					});
 				});
 			}
 		}

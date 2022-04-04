@@ -24,7 +24,7 @@ const Tokenpass = new CustomOAuth('tokenpass', config);
 
 if (Meteor.isServer) {
 	Meteor.startup(function () {
-		settings.get('API_Tokenpass_URL', function (key, value) {
+		settings.watch('API_Tokenpass_URL', function (value) {
 			config.serverURL = value;
 			Tokenpass.configure(config);
 		});

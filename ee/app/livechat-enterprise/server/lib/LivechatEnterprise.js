@@ -7,7 +7,8 @@ import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
-import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
+import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
+import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
 import {
 	processWaitingQueue,
 	removePriorityFromRooms,
@@ -33,7 +34,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (addUserRoles(user._id, 'livechat-monitor')) {
+		if (addUserRoles(user._id, ['livechat-monitor'])) {
 			return user;
 		}
 
@@ -51,7 +52,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (removeUserFromRoles(user._id, 'livechat-monitor')) {
+		if (removeUserFromRoles(user._id, ['livechat-monitor'])) {
 			return true;
 		}
 

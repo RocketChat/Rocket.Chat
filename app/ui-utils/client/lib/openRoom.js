@@ -8,13 +8,13 @@ import { appLayout } from '../../../../client/lib/appLayout';
 import { Messages, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
-import { roomTypes } from '../../../utils';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
 import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { Rooms } from '../../../models/client';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 window.currentTracker = undefined;
 
@@ -36,7 +36,7 @@ export const openRoom = async function (type, name, render = true) {
 		}
 
 		try {
-			const room = roomTypes.findRoom(type, name, user) || (await call('getRoomByTypeAndName', type, name));
+			const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (room._id !== name && type === 'd') {
@@ -49,7 +49,7 @@ export const openRoom = async function (type, name, render = true) {
 				return;
 			}
 
-			RoomManager.open(type + name);
+			RoomManager.open({ typeName: type + name, rid: room._id });
 
 			if (render) {
 				appLayout.renderMainLayout({ center: 'room' });
@@ -62,6 +62,7 @@ export const openRoom = async function (type, name, render = true) {
 			}
 
 			NewRoomManager.open(room._id);
+			Session.set('openedRoom', room._id);
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 

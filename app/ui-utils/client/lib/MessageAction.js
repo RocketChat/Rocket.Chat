@@ -9,7 +9,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { messageArgs } from './messageArgs';
-import { roomTypes } from '../../../utils/client';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
@@ -139,7 +139,7 @@ export const MessageAction = new (class {
 		}
 
 		const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
-		const roomURL = roomTypes.getURL(roomData.t, subData || roomData);
+		const roomURL = roomCoordinator.getURL(roomData.t, subData || roomData);
 		return `${roomURL}?msg=${msgId}`;
 	}
 })();
@@ -160,7 +160,7 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg } = messageArgs(this);
-			roomTypes.openRouteLink(
+			roomCoordinator.openRouteLink(
 				'd',
 				{ name: msg.u.username },
 				{
@@ -211,7 +211,7 @@ Meteor.startup(async function () {
 			if (subscription == null) {
 				return false;
 			}
-			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}
@@ -312,7 +312,7 @@ Meteor.startup(async function () {
 			if (!subscription) {
 				return false;
 			}
-			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}
@@ -353,7 +353,7 @@ Meteor.startup(async function () {
 						return false;
 					}
 
-					if (inputValue === '') {
+					if (!inputValue.trim()) {
 						modal.showInputError(TAPi18n.__('You_need_to_write_something'));
 						return false;
 					}
@@ -371,7 +371,7 @@ Meteor.startup(async function () {
 			);
 		},
 		condition({ subscription, room }) {
-			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}

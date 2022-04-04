@@ -1,5 +1,5 @@
-import '../ee/server/broker';
 import '../app/settings/server/startup';
+import '../lib/oauthRedirectUri';
 import './lib/logger/startup';
 import './importPackages';
 import '../imports/startup/server';
@@ -70,6 +70,7 @@ import './publications/settings';
 import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
+import './routes/i18n';
 import './stream/stdout';
 import './stream/streamBroadcast';
 import './settings/index';

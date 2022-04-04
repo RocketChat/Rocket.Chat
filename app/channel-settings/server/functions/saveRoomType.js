@@ -4,7 +4,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions, Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { roomTypes, RoomSettingsEnum } from '../../../utils/server';
+import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
@@ -26,7 +27,7 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 		});
 	}
 
-	if (!roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.TYPE)) {
+	if (!roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.TYPE)) {
 		throw new Meteor.Error('error-direct-room', "Can't change type of direct rooms", {
 			function: 'RocketChat.saveRoomType',
 		});

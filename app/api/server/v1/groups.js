@@ -5,7 +5,13 @@ import { Match, check } from 'meteor/check';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
 import { Integrations, Uploads } from '../../../models/server/raw';
-import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission } from '../../../authorization/server';
+import {
+	hasPermission,
+	hasAtLeastOnePermission,
+	canAccessRoom,
+	hasAllPermission,
+	roomAccessAttributes,
+} from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -19,6 +25,7 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 
 	const roomOptions = {
 		fields: {
+			...roomAccessAttributes,
 			t: 1,
 			ro: 1,
 			name: 1,
@@ -640,7 +647,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			if (findResult.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list')) {
+			if (findResult.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list', findResult.rid)) {
 				return API.v1.unauthorized();
 			}
 

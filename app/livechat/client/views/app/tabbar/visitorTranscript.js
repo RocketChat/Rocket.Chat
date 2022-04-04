@@ -4,10 +4,11 @@ import { Template } from 'meteor/templating';
 
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
-import { t, roomTypes } from '../../../../../utils';
+import { t } from '../../../../../utils';
 import { APIClient } from '../../../../../utils/client';
 import './visitorTranscript.html';
 import { validateEmail } from '../../../../../../lib/emailValidator';
+import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 
 const validateTranscriptData = (instance) => {
 	const subject = instance.$('[name="subject"]').val();
@@ -63,7 +64,7 @@ Template.visitorTranscript.helpers({
 			return room.transcriptRequest.subject;
 		}
 
-		return t('Transcript_of_your_livechat_conversation') || (room && roomTypes.getRoomName(room.t, room));
+		return t('Transcript_of_your_livechat_conversation') || (room && roomCoordinator.getRoomName(room.t, room));
 	},
 	errorEmail() {
 		const instance = Template.instance();

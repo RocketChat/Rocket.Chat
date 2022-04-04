@@ -2,11 +2,11 @@ import { ActionButton, Box, Icon, Option, Tag } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
-import { roomTypes } from '../../../../../app/utils/client';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { usePreventProgation } from '../../../../hooks/usePreventProgation';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import RoomActions from './RoomActions';
 
 const TeamsChannelItem = ({ room, onClickView, reload }) => {
@@ -35,7 +35,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15' /> : <Icon name='hashtag-lock' size='x15' />}</Option.Column>
 			<Option.Content>
 				<Box display='inline-flex' alignItems='center'>
-					{roomTypes.getRoomName(room.t, room)}{' '}
+					{roomCoordinator.getRoomName(room.t, room)}{' '}
 					{room.teamDefault ? (
 						<Box mi='x4'>
 							<Tag>{t('Team_Auto-join')}</Tag>

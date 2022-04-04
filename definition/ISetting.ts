@@ -137,3 +137,107 @@ export const isSettingCode = (setting: ISettingBase): setting is ISettingCode =>
 export const isSettingAction = (setting: ISettingBase): setting is ISettingAction => setting.type === 'action';
 
 export const isSettingAsset = (setting: ISettingBase): setting is ISettingAsset => setting.type === 'asset';
+
+export interface ISettingStatistics {
+	account2fa?: boolean;
+	cannedResponsesEnabled?: boolean;
+	e2e?: boolean;
+	e2eDefaultDirectRoom?: boolean;
+	e2eDefaultPrivateRoom?: boolean;
+	smtpHost?: string;
+	smtpPort?: string;
+	fromEmail?: string;
+	fileUploadEnable?: boolean;
+	frameworkDevMode?: boolean;
+	frameworkEnable?: boolean;
+	surveyEnabled?: boolean;
+	updateChecker?: boolean;
+	liveStream?: boolean;
+	broadcasting?: boolean;
+	allowEditing?: boolean;
+	allowDeleting?: boolean;
+	allowUnrecognizedSlashCommand?: boolean;
+	allowBadWordsFilter?: boolean;
+	readReceiptEnabled?: boolean;
+	readReceiptStoreUsers?: boolean;
+	otrEnable?: boolean;
+	pushEnable?: boolean;
+	globalSearchEnabled?: boolean;
+	threadsEnabled?: boolean;
+	bigBlueButton?: boolean;
+	jitsiEnabled?: boolean;
+	webRTCEnableChannel?: boolean;
+	webRTCEnablePrivate?: boolean;
+	webRTCEnableDirect?: boolean;
+}
+
+export interface ISettingStatisticsObject {
+	accounts?: {
+		account2fa?: boolean;
+	};
+	cannedResponses?: {
+		cannedResponsesEnabled?: boolean;
+	};
+	e2ee?: {
+		e2e?: boolean;
+		e2eDefaultDirectRoom?: boolean;
+		e2eDefaultPrivateRoom?: boolean;
+	};
+	email?: {
+		smtp?: {
+			smtpHost?: string;
+			smtpPort?: string;
+			fromEmail?: string;
+		};
+	};
+	fileUpload?: {
+		fileUploadEnable?: boolean;
+	};
+	general?: {
+		apps?: {
+			frameworkDevMode?: boolean;
+			frameworkEnable?: boolean;
+		};
+		nps?: {
+			surveyEnabled?: boolean;
+		};
+		update?: {
+			updateChecker?: boolean;
+		};
+	};
+	liveStreamAndBroadcasting?: {
+		liveStream?: boolean;
+		broadcasting?: boolean;
+	};
+	message?: {
+		allowEditing?: boolean;
+		allowDeleting?: boolean;
+		allowUnrecognizedSlashCommand?: boolean;
+		allowBadWordsFilter?: boolean;
+		readReceiptEnabled?: boolean;
+		readReceiptStoreUsers?: boolean;
+	};
+	otr?: {
+		otrEnable?: boolean;
+	};
+	push?: {
+		pushEnable?: boolean;
+	};
+	search?: {
+		defaultProvider?: {
+			globalSearchEnabled?: boolean;
+		};
+	};
+	threads?: {
+		threadsEnabled?: boolean;
+	};
+	videoConference?: {
+		bigBlueButton?: boolean;
+		jitsiEnabled?: boolean;
+	};
+	webRTC?: {
+		webRTCEnableChannel?: boolean;
+		webRTCEnablePrivate?: boolean;
+		webRTCEnableDirect?: boolean;
+	};
+}

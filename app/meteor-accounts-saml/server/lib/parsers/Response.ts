@@ -403,7 +403,7 @@ export class ResponseParser {
 
 				const key = attributes[i].getAttribute('Name');
 				if (key) {
-					SAMLUtils.log(`Name:  ${attributes[i]}`);
+					SAMLUtils.log(`Attribute:  ${attributes[i]} has ${values.length} value(s).`);
 					SAMLUtils.log(`Adding attribute from SAML response to profile: ${key} = ${value}`);
 					profile[key] = value;
 				}
