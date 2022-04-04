@@ -146,7 +146,7 @@ class SideNav extends BasePage {
 	}
 
 	public preferencesClose(): Locator {
-		return this.getPage().locator('.flex-nav i.rcx-icon--name-cross');
+		return this.getPage().locator('//*[contains(@class,"flex-nav")]//i[contains(@class, "rcx-icon--name-cross")]');
 	}
 
 	public burgerBtn(): Locator {
@@ -177,21 +177,19 @@ class SideNav extends BasePage {
 	}
 
 	// Opens a channel via spotlight search
-	public async searchChannel(channelName: any): Promise<void> {
-		await this.spotlightSearch().should('be.visible');
+	public async searchChannel(channelName: string): Promise<void> {
+		await expect(this.spotlightSearch()).toBeVisible();
 
-		// Should have focus automatically, but some times it's not happening
 		await this.spotlightSearch().click();
 
 		await expect(this.spotlightSearch()).toBeFocused();
 		await this.spotlightSearch().type(channelName);
-		// cy.wait(500);
-
-		// cy.get(
-		// 	`[data-qa="sidebar-search-result"] .rcx-sidebar-item--clickable:contains("${channelName}"), [data-qa="sidebar-search-result"] .rcx-sidebar-item[aria-label='${channelName}']`,
-		// ).click();
 
 		await expect(this.getPage().locator('.rcx-room-header')).toContainText(channelName);
+	}
+
+	public async searchChannelAndOpen(channelName: string): Promise<void> {
+		await this.searchChannel(channelName);
 	}
 
 	// Gets a channel from the rooms list

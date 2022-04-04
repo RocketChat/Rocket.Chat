@@ -166,19 +166,19 @@ class MainContent extends BasePage {
 	}
 
 	public emojiPickerPeopleIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-people');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-people")]');
 	}
 
 	public emojiPickerNatureIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-nature');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-nature")]');
 	}
 
 	public emojiPickerFoodIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-food');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-food")]');
 	}
 
 	public emojiPickerActivityIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-activity');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-activity")]');
 	}
 
 	public emojiPickerTravelIcon(): Locator {
@@ -186,47 +186,47 @@ class MainContent extends BasePage {
 	}
 
 	public emojiPickerObjectsIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-objects');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-objects")]');
 	}
 
 	public emojiPickerSymbolsIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-symbols');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-symbols")]');
 	}
 
 	public emojiPickerFlagsIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-flags');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-flags")]');
 	}
 
 	public emojiPickerModifierIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-symbols');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-symbols")]');
 	}
 
 	public emojiPickerChangeTone(): Locator {
-		return this.getPage().locator('.emoji-picker .change-tone');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "change-tone")]');
 	}
 
 	public emojiPickerCustomIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-rocket');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-rocket")]');
 	}
 
 	public emojiPickerRecentIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-recent');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-recent")]');
 	}
 
 	public emojiPickerFilter(): Locator {
-		return this.getPage().locator('.emoji-picker .js-emojipicker-search');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "js-emojipicker-search")]');
 	}
 
 	public emojiPickerEmojiContainer(): Locator {
-		return this.getPage().locator('.emoji-picker .emojis');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emojis")]');
 	}
 
 	public emojiGrinning(): Locator {
-		return this.getPage().locator('.emoji-picker .emoji-grinning');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-grinning")]');
 	}
 
 	public emojiSmile(): Locator {
-		return this.getPage().locator('.emoji-picker .emoji-smile');
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-smile")]');
 	}
 
 	// Popover
@@ -234,12 +234,21 @@ class MainContent extends BasePage {
 		return this.getPage().locator('.rc-popover');
 	}
 
+	public async waitForLastMessageEqualsHtml(text: string): Promise<void> {
+		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
+	}
+
+	public async waitForLastMessageEqualsText(text: string): Promise<void> {
+		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
+	}
+
 	// Sends a message and wait for the message to equal the text sent
 	public async sendMessage(text: any): Promise<void> {
-		this.setTextToInput(text);
+		await this.setTextToInput(text);
 		await this.sendBtn().click();
-		await expect(this.getPage().locator('.message:last-child .body')).toBeVisible();
-		await expect(this.getPage().locator('.message:last-child .body')).toContain(text);
+		await expect(
+			this.getPage().locator('(//*[contains(@class, "message-body-wrapper")])[last()]/div[contains(@class, "body")]'),
+		).toContainText(text);
 	}
 
 	// adds text to the input
@@ -252,7 +261,7 @@ class MainContent extends BasePage {
 		// cy.wait(200);
 		await this.messageInput().fill('');
 		if (text) {
-			this.messageInput().type(text);
+			await this.messageInput().type(text);
 		}
 	}
 }
