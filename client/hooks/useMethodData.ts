@@ -29,6 +29,7 @@ export const useMethodData = <MethodName extends keyof ServerMethods, Result = A
 	}, [reset, getData, args, resolve, dispatchToastMessage, reject]);
 
 	useEffect(() => {
+		console.log('as');
 		fetchData();
 	}, [fetchData]);
 

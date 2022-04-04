@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
-import React, { useEffect, ReactNode, useMemo } from 'react';
+import React, { useEffect, ReactNode } from 'react';
 
 import Page from '../../../components/Page';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -16,6 +16,8 @@ import WorkspaceLoginSection from './WorkspaceLoginSection';
 import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
 import { cloudConsoleUrl } from './constants';
 
+const args: [] = [];
+
 const CloudPage = function CloudPage(): ReactNode {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -30,12 +32,12 @@ const CloudPage = function CloudPage(): ReactNode {
 	const token = useQueryStringParameter('token');
 
 	const finishOAuthAuthorization = useMethod('cloud:finishOAuthAuthorization');
-	// const checkRegisterStatus = useMethod('cloud:checkRegisterStatus');
 
-	const checkRegisterStatus = useMethodData(
-		'cloud:checkRegisterStatus',
-		useMemo(() => [], []),
-	);
+	const { reload, ...checkRegisterStatus } = useMethodData('cloud:checkRegisterStatus', args);
+
+	useEffect(() => {
+		console.log('checkRegisterStatus', checkRegisterStatus);
+	}, [checkRegisterStatus]);
 
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
 
@@ -84,17 +86,17 @@ const CloudPage = function CloudPage(): ReactNode {
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
-				await checkRegisterStatus.reload();
+				await reload();
 			}
 		};
 
 		acceptWorkspaceToken();
-	}, [checkRegisterStatus, connectWorkspace, dispatchToastMessage, t, token]);
+	}, [reload, connectWorkspace, dispatchToastMessage, t, token]);
 
 	const handleManualWorkspaceRegistrationButtonClick = (): void => {
 		const handleModalClose = (): void => {
 			setModal(null);
-			checkRegisterStatus.reload();
+			reload();
 		};
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
@@ -129,8 +131,8 @@ const CloudPage = function CloudPage(): ReactNode {
 							<>
 								{isWorkspaceRegistered ? (
 									<>
-										<WorkspaceLoginSection onRegisterStatusChange={checkRegisterStatus.reload} />
-										<TroubleshootingSection onRegisterStatusChange={checkRegisterStatus.reload} />
+										<WorkspaceLoginSection onRegisterStatusChange={reload} />
+										<TroubleshootingSection onRegisterStatusChange={reload} />
 									</>
 								) : (
 									<WorkspaceRegistrationSection
@@ -138,13 +140,13 @@ const CloudPage = function CloudPage(): ReactNode {
 										token={checkRegisterStatus.value.token}
 										workspaceId={checkRegisterStatus.value.workspaceId}
 										uniqueId={checkRegisterStatus.value.uniqueId}
-										onRegisterStatusChange={checkRegisterStatus.reload}
+										onRegisterStatusChange={reload}
 									/>
 								)}
 							</>
 						)}
 
-						{!isConnectToCloudDesired && <ConnectToCloudSection onRegisterStatusChange={checkRegisterStatus.reload} />}
+						{!isConnectToCloudDesired && <ConnectToCloudSection onRegisterStatusChange={reload} />}
 					</Margins>
 				</Box>
 			</Page.ScrollableContentWithShadow>
