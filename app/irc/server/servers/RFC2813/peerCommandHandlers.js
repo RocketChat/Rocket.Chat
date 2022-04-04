@@ -43,7 +43,8 @@ function NICK(parsedMessage) {
 				name: parsedMessage.args[6],
 			},
 		};
-	} else { // Otherwise, it is a nick change
+	} else {
+		// Otherwise, it is a nick change
 		command = {
 			identifier: 'nickChanged',
 			args: {

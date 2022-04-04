@@ -26,13 +26,7 @@ type CustomEmojiProps = {
 const CustomEmoji: FC<CustomEmojiProps> = function CustomEmoji({ onClick, reload }) {
 	const t = useTranslation();
 
-	const {
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination();
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [text, setText] = useState('');
 
@@ -42,7 +36,7 @@ const CustomEmoji: FC<CustomEmojiProps> = function CustomEmoji({ onClick, reload
 		useMemo(
 			() => ({
 				query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
-				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,
 			}),
@@ -61,14 +55,7 @@ const CustomEmoji: FC<CustomEmojiProps> = function CustomEmoji({ onClick, reload
 			<FilterByText onChange={({ text }): void => setText(text)} />
 			<GenericTable>
 				<GenericTableHeader>
-					<GenericTableHeaderCell
-						key='name'
-						direction={sortDirection}
-						active={sortBy === 'name'}
-						onClick={setSort}
-						sort='name'
-						w='x200'
-					>
+					<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
 						{t('Name')}
 					</GenericTableHeaderCell>
 					<GenericTableHeaderCell key='aliases' w='x200'>

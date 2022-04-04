@@ -41,12 +41,6 @@ export class Settings extends Base {
 		return this.find(query);
 	}
 
-	findByRole(role, options) {
-		const query = { role };
-
-		return this.find(query, options);
-	}
-
 	findPublic(options) {
 		const query = { public: true };
 
@@ -63,7 +57,17 @@ export class Settings extends Base {
 			filter._id = { $in: ids };
 		}
 
-		return this.find(filter, { fields: { _id: 1, value: 1, editor: 1, enterprise: 1, invalidValue: 1, modules: 1, requiredOnWizard: 1 } });
+		return this.find(filter, {
+			fields: {
+				_id: 1,
+				value: 1,
+				editor: 1,
+				enterprise: 1,
+				invalidValue: 1,
+				modules: 1,
+				requiredOnWizard: 1,
+			},
+		});
 	}
 
 	findNotHiddenPublicUpdatedAfter(updatedAt) {
@@ -75,7 +79,17 @@ export class Settings extends Base {
 			},
 		};
 
-		return this.find(filter, { fields: { _id: 1, value: 1, editor: 1, enterprise: 1, invalidValue: 1, modules: 1, requiredOnWizard: 1 } });
+		return this.find(filter, {
+			fields: {
+				_id: 1,
+				value: 1,
+				editor: 1,
+				enterprise: 1,
+				invalidValue: 1,
+				modules: 1,
+				requiredOnWizard: 1,
+			},
+		});
 	}
 
 	findNotHiddenPrivate() {
@@ -125,6 +139,21 @@ export class Settings extends Base {
 		const update = {
 			$set: {
 				value,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	incrementValueById(_id) {
+		const query = {
+			blocked: { $ne: true },
+			_id,
+		};
+
+		const update = {
+			$inc: {
+				value: 1,
 			},
 		};
 

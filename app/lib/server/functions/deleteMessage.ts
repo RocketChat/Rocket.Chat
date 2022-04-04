@@ -4,18 +4,18 @@ import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
 import { Uploads } from '../../../models/server/raw';
-import { Notifications } from '../../../notifications/server';
-import { callbacks } from '../../../callbacks/server';
+import { api } from '../../../../server/sdk/api';
+import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../apps/server';
 import { IMessage } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';
 
-export const deleteMessage = async function(message: IMessage, user: IUser): Promise<void> {
+export const deleteMessage = async function (message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
-	const bridges = Apps && Apps.isLoaded() && Apps.getBridges();
+	const bridges = Apps?.isLoaded() && Apps.getBridges();
 
 	if (deletedMsg && bridges) {
 		const prevent = Promise.await(bridges.getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
@@ -38,7 +38,7 @@ export const deleteMessage = async function(message: IMessage, user: IUser): Pro
 		}
 
 		for await (const file of files) {
-			file?._id && await Uploads.update({ _id: file._id }, { $set: { _hidden: true } });
+			file?._id && (await Uploads.update({ _id: file._id }, { $set: { _hidden: true } }));
 		}
 	} else {
 		if (!showDeletedStatus) {
@@ -66,7 +66,7 @@ export const deleteMessage = async function(message: IMessage, user: IUser): Pro
 	if (showDeletedStatus) {
 		Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {
-		Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
+		api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
 
 	if (bridges) {

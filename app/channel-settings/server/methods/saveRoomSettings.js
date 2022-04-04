@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';
 import { Rooms } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
@@ -17,11 +17,36 @@ import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
-import { RoomSettingsEnum, roomTypes } from '../../../utils';
 import { Team } from '../../../../server/sdk';
 import { TEAM_TYPE } from '../../../../definition/ITeam';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
-const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
+const fields = [
+	'roomAvatar',
+	'featured',
+	'roomName',
+	'roomTopic',
+	'roomAnnouncement',
+	'roomCustomFields',
+	'roomDescription',
+	'roomType',
+	'readOnly',
+	'reactWhenReadOnly',
+	'systemMessages',
+	'default',
+	'joinCode',
+	'tokenpass',
+	'streamingOptions',
+	'retentionEnabled',
+	'retentionMaxAge',
+	'retentionExcludePinned',
+	'retentionFilesOnly',
+	'retentionIgnoreThreads',
+	'retentionOverrideGlobal',
+	'encrypted',
+	'favorite',
+];
 
 const validators = {
 	default({ userId }) {
@@ -61,7 +86,7 @@ const validators = {
 	},
 	encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
-			if (!roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
+			if (!roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
@@ -173,10 +198,12 @@ const settingSavers = {
 	tokenpass({ value, rid }) {
 		check(value, {
 			require: String,
-			tokens: [{
-				token: String,
-				balance: String,
-			}],
+			tokens: [
+				{
+					token: String,
+					balance: String,
+				},
+			],
 		});
 		saveRoomTokenpass(rid, value);
 	},
@@ -327,7 +354,7 @@ Meteor.methods({
 			}
 		}
 
-		Meteor.defer(function() {
+		Meteor.defer(function () {
 			const room = Rooms.findOneById(rid);
 			callbacks.run('afterSaveRoomSettings', room);
 		});

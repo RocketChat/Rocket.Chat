@@ -8,13 +8,16 @@ addMigration({
 	async up() {
 		const current = await Settings.findOneById('Industry');
 		if (current && typeof current.value === 'string' && removed.includes(current.value)) {
-			await Settings.update({
-				_id: 'Industry',
-			}, {
-				$set: {
-					value: 'other',
+			await Settings.update(
+				{
+					_id: 'Industry',
 				},
-			});
+				{
+					$set: {
+						value: 'other',
+					},
+				},
+			);
 		}
 	},
 });

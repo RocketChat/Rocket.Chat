@@ -7,7 +7,9 @@ Meteor.methods({
 		const userId = Meteor.userId();
 
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'e2e.setUserPublicAndPrivateKeys' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'e2e.setUserPublicAndPrivateKeys',
+			});
 		}
 
 		return Users.setE2EPublicAndPrivateKeysByUserId(userId, { public_key, private_key });

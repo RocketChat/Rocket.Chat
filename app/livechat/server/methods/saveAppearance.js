@@ -6,7 +6,9 @@ import { Settings } from '../../../models/server';
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAppearance' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:saveAppearance',
+			});
 		}
 
 		const validSettings = [

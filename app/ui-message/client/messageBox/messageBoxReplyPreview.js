@@ -1,7 +1,6 @@
 import { Template } from 'meteor/templating';
 import './messageBoxReplyPreview.html';
 
-
 Template.messageBoxReplyPreview.helpers({
 	attachments() {
 		const { replyMessageData } = this;

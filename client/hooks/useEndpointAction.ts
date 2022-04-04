@@ -1,13 +1,7 @@
 import { useCallback } from 'react';
 
 import { Serialized } from '../../definition/Serialized';
-import {
-	MatchPathPattern,
-	Method,
-	OperationParams,
-	OperationResult,
-	PathFor,
-} from '../../definition/rest';
+import { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '../../definition/rest';
 import { useEndpoint } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
@@ -32,7 +26,7 @@ export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<
 
 			return data;
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 			throw error;
 		}
 	}, [dispatchToastMessage, params, sendData, successMessage]);

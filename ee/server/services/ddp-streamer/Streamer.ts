@@ -8,15 +8,11 @@ import { Streamer, StreamerCentral } from '../../../../server/modules/streamer/s
 import { api } from '../../../../server/sdk/api';
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
-	api.broadcast('stream', [
-		name,
-		eventName,
-		args,
-	]);
+	api.broadcast('stream', [name, eventName, args]);
 });
 
 export class Stream extends Streamer {
-	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
+	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
 		server.publish(name, fn);
 	}
 
@@ -25,15 +21,24 @@ export class Stream extends Streamer {
 	}
 
 	changedPayload(collection: string, id: string, fields: Record<string, any>): string | false {
-		return !isEmpty(fields) && server.serialize({
-			[DDP_EVENTS.MSG]: DDP_EVENTS.CHANGED,
-			[DDP_EVENTS.COLLECTION]: collection,
-			[DDP_EVENTS.ID]: id,
-			[DDP_EVENTS.FIELDS]: fields,
-		});
+		return (
+			!isEmpty(fields) &&
+			server.serialize({
+				[DDP_EVENTS.MSG]: DDP_EVENTS.CHANGED,
+				[DDP_EVENTS.COLLECTION]: collection,
+				[DDP_EVENTS.ID]: id,
+				[DDP_EVENTS.FIELDS]: fields,
+			})
+		);
 	}
 
-	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], getMsg: string | TransformMessage): Promise<void> {
+	async sendToManySubscriptions(
+		subscriptions: Set<DDPSubscription>,
+		origin: Connection | undefined,
+		eventName: string,
+		args: any[],
+		getMsg: string | TransformMessage,
+	): Promise<void> {
 		if (typeof getMsg === 'function') {
 			return super.sendToManySubscriptions(subscriptions, origin, eventName, args, getMsg);
 		}
@@ -47,21 +52,25 @@ export class Stream extends Streamer {
 		};
 
 		const data = {
-			meteor: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(`a${ JSON.stringify([getMsg]) }`), options))],
+			meteor: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(`a${JSON.stringify([getMsg])}`), options))],
 			normal: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(getMsg), options))],
 		};
 
 		for await (const { subscription } of subscriptions) {
 			if (this.retransmitToSelf === false && origin && origin === subscription.connection) {
-				return;
+				continue;
 			}
 
 			if (await this.isEmitAllowed(subscription, eventName, ...args)) {
-				await new Promise((resolve) => {
-					subscription.client.ws._sender.sendFrame(
-						data[subscription.client.meteorClient ? 'meteor' : 'normal'],
-						resolve,
-					);
+				await new Promise<void>((resolve, reject) => {
+					const frame = data[subscription.client.meteorClient ? 'meteor' : 'normal'];
+
+					subscription.client.ws._sender.sendFrame(frame, (err: unknown) => {
+						if (err) {
+							return reject(err);
+						}
+						resolve();
+					});
 				});
 			}
 		}

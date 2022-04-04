@@ -20,9 +20,9 @@ const denormalizeAllSubscriptions = (resources) => resources.map(denormalizeSubs
 const normalizeSubscription = (originalResource) => {
 	const resource = { ...originalResource };
 
-	resource.u.username = !isFullyQualified(resource.u.username) ? `${ resource.u.username }@${ getFederationDomain() }` : resource.u.username;
+	resource.u.username = !isFullyQualified(resource.u.username) ? `${resource.u.username}@${getFederationDomain()}` : resource.u.username;
 
-	resource.name = !isFullyQualified(resource.name) ? `${ resource.name }@${ getFederationDomain() }` : resource.name;
+	resource.name = !isFullyQualified(resource.name) ? `${resource.name}@${getFederationDomain()}` : resource.name;
 
 	// Federation
 	resource.federation = resource.federation || {

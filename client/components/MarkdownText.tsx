@@ -79,7 +79,6 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 	let markedOptions: {};
 
-	const withRichContent = variant;
 	switch (variant) {
 		case 'inline':
 			markedOptions = inlineOptions;
@@ -115,7 +114,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 		<Box
 			dangerouslySetInnerHTML={{ __html }}
 			withTruncatedText={withTruncatedText}
-			withRichContent={withRichContent}
+			withRichContent={variant === 'inlineWithoutBreaks' ? 'inlineWithoutBreaks' : true}
 			{...props}
 		/>
 	) : null;

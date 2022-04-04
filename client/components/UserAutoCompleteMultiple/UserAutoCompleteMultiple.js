@@ -4,7 +4,6 @@ import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
-import Avatar from './Avatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
@@ -15,10 +14,7 @@ const UserAutoCompleteMultiple = (props) => {
 		'users.autocomplete',
 		useMemo(() => query(debouncedFilter), [debouncedFilter]),
 	);
-	const options = useMemo(
-		() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [],
-		[data],
-	);
+	const options = useMemo(() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [], [data]);
 	const onClickRemove = useMutableCallback((e) => {
 		e.stopPropagation();
 		e.preventDefault();
@@ -40,8 +36,15 @@ const UserAutoCompleteMultiple = (props) => {
 					</Chip>
 				))
 			}
-			renderItem={({ value, ...props }) => (
-				<Option key={value} {...props} avatar={<Avatar value={value} />} />
+			renderItem={({ value, label, ...props }) => (
+				<Option key={value} {...props}>
+					<Option.Avatar>
+						<UserAvatar username={value} size='x20' />
+					</Option.Avatar>
+					<Option.Content>
+						{label} <Option.Description>({value})</Option.Description>
+					</Option.Content>
+				</Option>
 			)}
 			options={options}
 		/>

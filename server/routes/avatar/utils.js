@@ -14,10 +14,8 @@ export const serveAvatar = (avatar, format, res) => {
 	res.setHeader('Last-Modified', FALLBACK_LAST_MODIFIED);
 
 	if (['png', 'jpg', 'jpeg'].includes(format)) {
-		res.setHeader('Content-Type', `image/${ format }`);
-		sharp(Buffer.from(avatar))
-			.toFormat(format)
-			.pipe(res);
+		res.setHeader('Content-Type', `image/${format}`);
+		sharp(Buffer.from(avatar)).toFormat(format).pipe(res);
 		return;
 	}
 	res.setHeader('Content-Type', 'image/svg+xml');
@@ -67,7 +65,11 @@ export function userCanAccessAvatar({ headers = {}, query = {} }) {
 	return isAuthenticated;
 }
 
-const getFirstLetter = (name) => name.replace(/[^A-Za-z0-9]/g, '').substr(0, 1).toUpperCase();
+const getFirstLetter = (name) =>
+	name
+		.replace(/[^A-Za-z0-9]/g, '')
+		.substr(0, 1)
+		.toUpperCase();
 
 export const renderSVGLetters = (username, viewSize = 200) => {
 	let color = '';
@@ -83,13 +85,13 @@ export const renderSVGLetters = (username, viewSize = 200) => {
 
 	const fontSize = viewSize / 1.6;
 
-	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${ viewSize } ${ viewSize }\">\n<rect width=\"100%\" height=\"100%\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'\" font-size="${ fontSize }">\n${ initials }\n</text>\n</svg>`;
+	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${viewSize} ${viewSize}\">\n<rect width=\"100%\" height=\"100%\" fill=\"${color}\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'\" font-size="${fontSize}">\n${initials}\n</text>\n</svg>`;
 };
 
 const getCacheTime = (cacheTime) => cacheTime || settings.get('Accounts_AvatarCacheTime');
 
 export function setCacheAndDispositionHeaders(req, res) {
 	const cacheTime = getCacheTime(req.query.cacheTime);
-	res.setHeader('Cache-Control', `public, max-age=${ cacheTime }`);
+	res.setHeader('Cache-Control', `public, max-age=${cacheTime}`);
 	res.setHeader('Content-Disposition', 'inline');
 }

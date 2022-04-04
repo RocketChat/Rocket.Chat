@@ -36,15 +36,19 @@ export function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string):
 }
 
 export function getAvailableMethodNames(user: IUser): string[] | [] {
-	return Array.from(checkMethods).filter(([, method]) => method.isEnabled(user)).map(([name]) => name) || [];
+	return (
+		Array.from(checkMethods)
+			.filter(([, method]) => method.isEnabled(user))
+			.map(([name]) => name) || []
+	);
 }
 
 export function getUserForCheck(userId: string): IUser {
 	return Users.findOneById(userId, {
 		fields: {
-			emails: 1,
-			language: 1,
-			createdAt: 1,
+			'emails': 1,
+			'language': 1,
+			'createdAt': 1,
 			'services.totp': 1,
 			'services.email2fa': 1,
 			'services.emailCode': 1,
@@ -183,17 +187,24 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		return true;
 	}
 
+	const data = selectedMethod.processInvalidCode(user);
+
 	if (!code) {
-		const data = selectedMethod.processInvalidCode(user);
 		const availableMethods = getAvailableMethodNames(user);
 
-		throw new Meteor.Error('totp-required', 'TOTP Required', { method: selectedMethod.name, ...data, availableMethods });
+		throw new Meteor.Error('totp-required', 'TOTP Required', {
+			method: selectedMethod.name,
+			...data,
+			availableMethods,
+		});
 	}
 
 	const valid = selectedMethod.verify(user, code, options.requireSecondFactor);
-
 	if (!valid) {
-		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', { method: selectedMethod.name });
+		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', {
+			method: selectedMethod.name,
+			...data,
+		});
 	}
 
 	if (options.disableRememberMe !== true && connection) {

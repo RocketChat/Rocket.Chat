@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/f
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
-import type { IInstance } from '../../../../definition/IInstance';
+import type { IInstanceStatus } from '../../../../definition/IInstanceStatus';
 import type { IServerInfo } from '../../../../definition/IServerInfo';
 import type { IStats } from '../../../../definition/IStats';
 import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
@@ -18,7 +18,7 @@ type InformationPageProps = {
 	canViewStatistics: boolean;
 	info: IServerInfo;
 	statistics: IStats;
-	instances: Array<IInstance>;
+	instances: Array<IInstanceStatus>;
 	onClickRefreshButton: () => void;
 	onClickDownloadInfo: () => void;
 };
@@ -33,8 +33,7 @@ const InformationPage = memo(function InformationPage({
 }: InformationPageProps) {
 	const t = useTranslation();
 
-	const { ref, contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {} } =
-		useResizeObserver();
+	const { ref, contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {} } = useResizeObserver();
 
 	const isSmall = inlineSize < DOUBLE_COLUMN_CARD_WIDTH;
 
@@ -42,8 +41,7 @@ const InformationPage = memo(function InformationPage({
 		return null;
 	}
 
-	const alertOplogForMultipleInstances =
-		statistics && statistics.instanceCount > 1 && !statistics.oplogEnabled;
+	const alertOplogForMultipleInstances = statistics && statistics.instanceCount > 1 && !statistics.oplogEnabled;
 
 	return (
 		<Page data-qa='admin-info'>
@@ -65,17 +63,11 @@ const InformationPage = memo(function InformationPage({
 					{alertOplogForMultipleInstances && (
 						<Callout
 							type='danger'
-							title={t(
-								'Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances',
-							)}
+							title={t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances')}
 							marginBlockEnd='x16'
 						>
 							<Box withRichContent>
-								<p>
-									{t(
-										'Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details',
-									)}
-								</p>
+								<p>{t('Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details')}</p>
 								<p>
 									<a
 										rel='noopener noreferrer'
@@ -92,14 +84,7 @@ const InformationPage = memo(function InformationPage({
 						</Callout>
 					)}
 
-					<Box
-						display='flex'
-						flexDirection='row'
-						w='full'
-						flexWrap='wrap'
-						justifyContent={isSmall ? 'center' : 'flex-start'}
-						ref={ref}
-					>
+					<Box display='flex' flexDirection='row' w='full' flexWrap='wrap' justifyContent={isSmall ? 'center' : 'flex-start'} ref={ref}>
 						<Margins all='x8'>
 							<DeploymentCard info={info} statistics={statistics} instances={instances} />
 							<LicenseCard />

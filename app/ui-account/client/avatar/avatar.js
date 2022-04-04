@@ -38,7 +38,7 @@ Template.avatar.helpers({
 		}
 
 		if (this.roomIcon && this.username) {
-			return getUserAvatarURL(`@${ this.username }`);
+			return getUserAvatarURL(`@${this.username}`);
 		}
 
 		const { username, avatarETag } = getUsername(this);

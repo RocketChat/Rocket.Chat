@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Subscriptions, Rooms } from '../../app/models/server';
-import { canAccessRoom, hasPermission } from '../../app/authorization/server';
+import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../app/authorization/server';
 import { findUsersOfRoom } from '../lib/findUsersOfRoom';
 
 Meteor.methods({
@@ -15,7 +15,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		const room = Rooms.findOneById(rid, { fields: { broadcast: 1 } });
+		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, broadcast: 1 } });
 		if (!room) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
@@ -30,7 +30,13 @@ Meteor.methods({
 
 		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
 
-		const users = findUsersOfRoom({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter }).fetch();
+		const users = findUsersOfRoom({
+			rid,
+			status: !showAll ? { $ne: 'offline' } : undefined,
+			limit,
+			skip,
+			filter,
+		}).fetch();
 
 		return {
 			total,

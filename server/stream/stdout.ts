@@ -4,7 +4,7 @@ import { Log } from 'meteor/logging';
 import notifications from '../../app/notifications/server/lib/Notifications';
 import { getQueuedLogs, logEntries } from '../lib/logger/logQueue';
 
-const processString = function(string: string, date: Date): string {
+const processString = function (string: string, date: Date): string {
 	let obj;
 	try {
 		if (string[0] === '{') {
@@ -22,7 +22,7 @@ const processString = function(string: string, date: Date): string {
 	}
 };
 
-const transformLog = function(item: any): { id: string; string: string; ts: Date } {
+const transformLog = function (item: any): { id: string; string: string; ts: Date } {
 	return {
 		id: item.id,
 		string: processString(item.data, item.ts),

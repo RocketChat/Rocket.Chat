@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Messages, Subscriptions } from '../../../models/server';
 import { Integrations } from '../../../models/server/raw';
-import { roomTypes, getValidRoomName } from '../../../utils/server';
-import { callbacks } from '../../../callbacks/server';
+import { getValidRoomName } from '../../../utils/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../../../lib/server/functions';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 const updateRoomName = (rid, displayName, isDiscussion) => {
 	if (isDiscussion) {
@@ -14,15 +15,20 @@ const updateRoomName = (rid, displayName, isDiscussion) => {
 
 	// Check if the username is available
 	if (!checkUsernameAvailability(slugifiedRoomName)) {
-		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${ slugifiedRoomName }' already exists`, { function: 'RocketChat.updateRoomName', handle: slugifiedRoomName });
+		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${slugifiedRoomName}' already exists`, {
+			function: 'RocketChat.updateRoomName',
+			handle: slugifiedRoomName,
+		});
 	}
 
-	return Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
+	return (
+		Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName)
+	);
 };
 
 export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	const room = Rooms.findOneById(rid);
-	if (roomTypes.getConfig(room.t).preventRenaming()) {
+	if (roomCoordinator.getRoomDirectives(room.t)?.preventRenaming()) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			function: 'RocketChat.saveRoomdisplayName',
 		});

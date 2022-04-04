@@ -3,8 +3,8 @@ import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks
 import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useEffect } from 'react';
 
-import { callbacks } from '../../../../app/callbacks/lib/callbacks';
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
+import { callbacks } from '../../../../lib/callbacks';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -30,10 +30,7 @@ const EndToEnd = (props) => {
 	const keysExist = publicKey && privateKey;
 
 	const hasTypedPassword = password.trim().length > 0;
-	const passwordError =
-		password !== passwordConfirm && passwordConfirm.length > 0
-			? t('Passwords_do_not_match')
-			: undefined;
+	const passwordError = password !== passwordConfirm && passwordConfirm.length > 0 ? t('Passwords_do_not_match') : undefined;
 	const canSave = keysExist && !passwordError && passwordConfirm.length > 0;
 
 	const handleLogout = useMutableCallback(() => {
@@ -75,18 +72,13 @@ const EndToEnd = (props) => {
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs='x16' {...props}>
 			<Margins blockEnd='x8'>
-				<Box fontScale='s2'>{t('E2E_Encryption_Password_Change')}</Box>
+				<Box fontScale='h4'>{t('E2E_Encryption_Password_Change')}</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }} />
 				<FieldGroup w='full'>
 					<Field>
 						<Field.Label>{t('New_encryption_password')}</Field.Label>
 						<Field.Row>
-							<PasswordInput
-								value={password}
-								onChange={handlePassword}
-								placeholder={t('New_Password_Placeholder')}
-								disabled={!keysExist}
-							/>
+							<PasswordInput value={password} onChange={handlePassword} placeholder={t('New_Password_Placeholder')} disabled={!keysExist} />
 						</Field.Row>
 						{!keysExist && <Field.Hint>{t('EncryptionKey_Change_Disabled')}</Field.Hint>}
 					</Field>
@@ -106,7 +98,7 @@ const EndToEnd = (props) => {
 				<Button primary disabled={!canSave} onClick={saveNewPassword}>
 					{t('Save_changes')}
 				</Button>
-				<Box fontScale='s2' mbs='x16'>
+				<Box fontScale='h4' mbs='x16'>
 					{t('Reset_E2E_Key')}
 				</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />

@@ -6,14 +6,13 @@ import { IframeLogin } from '../../ui-utils';
 const iframeLogin = new IframeLogin();
 
 const { _unstoreLoginToken } = Accounts;
-Accounts._unstoreLoginToken = function(...args) {
+Accounts._unstoreLoginToken = function (...args) {
 	iframeLogin.tryLogin();
 	_unstoreLoginToken.apply(Accounts, args);
 };
 
-
 window.addEventListener('message', (e) => {
-	if (! _.isObject(e.data)) {
+	if (!_.isObject(e.data)) {
 		return;
 	}
 
@@ -21,10 +20,13 @@ window.addEventListener('message', (e) => {
 		case 'try-iframe-login':
 			iframeLogin.tryLogin((error) => {
 				if (error) {
-					e.source.postMessage({
-						event: 'login-error',
-						response: error.message,
-					}, e.origin);
+					e.source.postMessage(
+						{
+							event: 'login-error',
+							response: error.message,
+						},
+						e.origin,
+					);
 				}
 			});
 			break;
@@ -32,10 +34,13 @@ window.addEventListener('message', (e) => {
 		case 'login-with-token':
 			iframeLogin.loginWithToken(e.data, (error) => {
 				if (error) {
-					e.source.postMessage({
-						event: 'login-error',
-						response: error.message,
-					}, e.origin);
+					e.source.postMessage(
+						{
+							event: 'login-error',
+							response: error.message,
+						},
+						e.origin,
+					);
 				}
 			});
 			break;

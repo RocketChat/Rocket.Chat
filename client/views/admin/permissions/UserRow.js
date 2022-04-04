@@ -19,11 +19,11 @@ const UserRow = ({ _id, username, name, avatarETag, emails, onRemove }) => {
 					<UserAvatar size='x40' title={username} username={username} etag={avatarETag} />
 					<Box display='flex' withTruncatedText mi='x8'>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-							<Box fontScale='p2' withTruncatedText color='default'>
+							<Box fontScale='p2m' withTruncatedText color='default'>
 								{name || username}
 							</Box>
 							{name && (
-								<Box fontScale='p1' color='hint' withTruncatedText>
+								<Box fontScale='p2' color='hint' withTruncatedText>
 									{' '}
 									{`@${username}`}{' '}
 								</Box>

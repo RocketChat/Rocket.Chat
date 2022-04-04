@@ -5,8 +5,7 @@ import { baseURI } from '../../../../client/lib/baseURI';
 
 import './icon.html';
 
-
-const baseUrlFix = () => `${ baseURI }${ FlowRouter.current().path.substring(1) }`;
+const baseUrlFix = () => `${baseURI}${FlowRouter.current().path.substring(1)}`;
 
 const isMozillaFirefoxBelowVersion = (upperVersion) => {
 	const [, version] = navigator.userAgent.match(/Firefox\/(\d+)\.\d/) || [];

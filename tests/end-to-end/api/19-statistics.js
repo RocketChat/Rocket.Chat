@@ -1,14 +1,9 @@
 import { expect } from 'chai';
 
-import {
-	getCredentials,
-	api,
-	request,
-	credentials,
-} from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper.js';
 
-describe('[Statistics]', function() {
+describe('[Statistics]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -17,7 +12,8 @@ describe('[Statistics]', function() {
 		let lastUptime;
 		it('should return an error when the user does not have the necessary permission', (done) => {
 			updatePermission('view-statistics', []).then(() => {
-				request.get(api('statistics'))
+				request
+					.get(api('statistics'))
 					.set(credentials)
 					.expect(400)
 					.expect((res) => {
@@ -29,7 +25,8 @@ describe('[Statistics]', function() {
 		});
 		it('should return an object with the statistics', (done) => {
 			updatePermission('view-statistics', ['admin']).then(() => {
-				request.get(api('statistics'))
+				request
+					.get(api('statistics'))
 					.set(credentials)
 					.expect(200)
 					.expect((res) => {
@@ -42,7 +39,8 @@ describe('[Statistics]', function() {
 			});
 		});
 		it('should update the statistics when is provided the "refresh:true" query parameter', (done) => {
-			request.get(api('statistics?refresh=true'))
+			request
+				.get(api('statistics?refresh=true'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -58,7 +56,8 @@ describe('[Statistics]', function() {
 	describe('[/statistics.list]', () => {
 		it('should return an error when the user does not have the necessary permission', (done) => {
 			updatePermission('view-statistics', []).then(() => {
-				request.get(api('statistics.list'))
+				request
+					.get(api('statistics.list'))
 					.set(credentials)
 					.expect(400)
 					.expect((res) => {
@@ -70,7 +69,8 @@ describe('[Statistics]', function() {
 		});
 		it('should return an array with the statistics', (done) => {
 			updatePermission('view-statistics', ['admin']).then(() => {
-				request.get(api('statistics.list'))
+				request
+					.get(api('statistics.list'))
 					.set(credentials)
 					.expect(200)
 					.expect((res) => {

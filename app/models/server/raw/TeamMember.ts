@@ -1,20 +1,24 @@
-import { Collection, WithoutProjection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
+import {
+	Collection,
+	WithoutProjection,
+	FindOneOptions,
+	Cursor,
+	InsertOneWriteOpResult,
+	UpdateWriteOpResult,
+	DeleteWriteOpResultObject,
+	FilterQuery,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser, IRole } from '../../../../definition/IUser';
 
 type T = ITeamMember;
 export class TeamMemberRaw extends BaseRaw<T> {
-	constructor(
-		public readonly col: Collection<T>,
-		public readonly trash?: Collection<T>,
-	) {
+	constructor(public readonly col: Collection<T>, trash?: Collection<T>) {
 		super(col, trash);
 
-		this.col.createIndexes([
-			{ key: { teamId: 1 } },
-		]);
+		this.col.createIndexes([{ key: { teamId: 1 } }]);
 
 		// teamId => userId should be unique
 		this.col.createIndex({ teamId: 1, userId: 1 }, { unique: true });
@@ -26,20 +30,30 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 	findByUserId<P>(userId: string, options: FindOneOptions<P>): Cursor<P>;
 
-	findByUserId<P>(userId: string, options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>): Cursor<P> | Cursor<ITeamMember> {
+	findByUserId<P>(
+		userId: string,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+	): Cursor<P> | Cursor<ITeamMember> {
 		return options ? this.col.find({ userId }, options) : this.col.find({ userId }, options);
 	}
 
-	findOneByUserIdAndTeamId(userId: string, teamId: string): Promise<ITeamMember| null>;
+	findOneByUserIdAndTeamId(userId: string, teamId: string): Promise<ITeamMember | null>;
 
-	findOneByUserIdAndTeamId(userId: string, teamId: string, options: WithoutProjection<FindOneOptions<ITeamMember>>): Promise<ITeamMember| null>;
+	findOneByUserIdAndTeamId(
+		userId: string,
+		teamId: string,
+		options: WithoutProjection<FindOneOptions<ITeamMember>>,
+	): Promise<ITeamMember | null>;
 
-	findOneByUserIdAndTeamId<P>(userId: string, teamId: string, options: FindOneOptions<P>): Promise<P| null>;
+	findOneByUserIdAndTeamId<P>(userId: string, teamId: string, options: FindOneOptions<P>): Promise<P | null>;
 
-	findOneByUserIdAndTeamId<P>(userId: string, teamId: string, options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>): Promise<P| null | ITeamMember> {
+	findOneByUserIdAndTeamId<P>(
+		userId: string,
+		teamId: string,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+	): Promise<P | null | ITeamMember> {
 		return options ? this.col.findOne({ userId, teamId }, options) : this.col.findOne({ userId, teamId }, options);
 	}
-
 
 	findByTeamId(teamId: string): Cursor<ITeamMember>;
 
@@ -47,10 +61,12 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 	findByTeamId<P>(teamId: string, options: FindOneOptions<P>): Cursor<P>;
 
-	findByTeamId<P>(teamId: string, options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>): Cursor<P> | Cursor<ITeamMember> {
+	findByTeamId<P>(
+		teamId: string,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+	): Cursor<P> | Cursor<ITeamMember> {
 		return options ? this.col.find({ teamId }, options) : this.col.find({ teamId }, options);
 	}
-
 
 	findByTeamIds(teamIds: Array<string>): Cursor<ITeamMember>;
 
@@ -58,17 +74,24 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 	findByTeamIds<P>(teamIds: Array<string>, options: FindOneOptions<P>): Cursor<P>;
 
-	findByTeamIds<P>(teamIds: Array<string>, options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>): Cursor<P> | Cursor<ITeamMember> {
+	findByTeamIds<P>(
+		teamIds: Array<string>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+	): Cursor<P> | Cursor<ITeamMember> {
 		return options ? this.col.find({ teamId: { $in: teamIds } }, options) : this.col.find({ teamId: { $in: teamIds } }, options);
 	}
 
-	findByTeamIdAndRole(teamId: string, role: string): Cursor<ITeamMember>;
+	findByTeamIdAndRole(teamId: string, role: IRole['_id']): Cursor<ITeamMember>;
 
-	findByTeamIdAndRole(teamId: string, role: string, options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
+	findByTeamIdAndRole(teamId: string, role: IRole['_id'], options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
 
-	findByTeamIdAndRole<P>(teamId: string, role: string, options: FindOneOptions<P>): Cursor<P>;
+	findByTeamIdAndRole<P>(teamId: string, role: IRole['_id'], options: FindOneOptions<P>): Cursor<P>;
 
-	findByTeamIdAndRole<P>(teamId: string, role: string, options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>): Cursor<P> | Cursor<ITeamMember> {
+	findByTeamIdAndRole<P>(
+		teamId: string,
+		role: IRole['_id'],
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+	): Cursor<P> | Cursor<ITeamMember> {
 		return options ? this.col.find({ teamId, roles: role }, options) : this.col.find({ teamId, roles: role });
 	}
 
@@ -100,7 +123,11 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		return this.updateOne({ userId, teamId }, { $set: update });
 	}
 
-	createOneByTeamIdAndUserId(teamId: string, userId: string, createdBy: Pick<IUser, '_id' | 'username'>): Promise<InsertOneWriteOpResult<T>> {
+	createOneByTeamIdAndUserId(
+		teamId: string,
+		userId: string,
+		createdBy: Pick<IUser, '_id' | 'username'>,
+	): Promise<InsertOneWriteOpResult<T>> {
 		return this.insertOne({
 			teamId,
 			userId,
@@ -109,26 +136,32 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		});
 	}
 
-	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
-		return this.updateOne({
-			teamId,
-			userId,
-		}, {
-			$addToSet: {
-				roles: { $each: roles },
+	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<UpdateWriteOpResult> {
+		return this.updateOne(
+			{
+				teamId,
+				userId,
 			},
-		});
+			{
+				$addToSet: {
+					roles: { $each: roles },
+				},
+			},
+		);
 	}
 
-	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
-		return this.updateOne({
-			teamId,
-			userId,
-		}, {
-			$pull: {
-				roles: { $in: roles },
+	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<UpdateWriteOpResult> {
+		return this.updateOne(
+			{
+				teamId,
+				userId,
 			},
-		});
+			{
+				$pull: {
+					roles: { $in: roles },
+				},
+			},
+		);
 	}
 
 	deleteByUserIdAndTeamId(userId: string, teamId: string): Promise<DeleteWriteOpResultObject> {

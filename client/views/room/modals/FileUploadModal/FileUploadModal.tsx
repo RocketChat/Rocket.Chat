@@ -1,47 +1,34 @@
-import {
-	Modal,
-	Box,
-	Field,
-	FieldGroup,
-	TextInput,
-	ButtonGroup,
-	Button,
-} from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, {
-	ReactElement,
-	memo,
-	useState,
-	ChangeEvent,
-	FormEventHandler,
-	useEffect,
-} from 'react';
+import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect } from 'react';
 
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import FilePreview from './FilePreview';
 
-type FilePreviewModalProps = {
+type FileUploadModalProps = {
 	onClose: () => void;
 	onSubmit: (name: string, description?: string) => void;
 	file: File;
 	fileName: string;
+	fileDescription?: string;
 	invalidContentType: boolean;
 };
 
-const FilePreviewModal = ({
+const FileUploadModal = ({
 	onClose,
 	file,
 	fileName,
+	fileDescription,
 	onSubmit,
 	invalidContentType,
-}: FilePreviewModalProps): ReactElement => {
+}: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
-	const [description, setDescription] = useState<string>('');
+	const [description, setDescription] = useState<string>(fileDescription || '');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const ref = useAutoFocus();
+	const ref = useAutoFocus<HTMLInputElement>();
 
 	const handleName = (e: ChangeEvent<HTMLInputElement>): void => {
 		setName(e.currentTarget.value);
@@ -89,14 +76,7 @@ const FilePreviewModal = ({
 					<Modal.Close onClick={onClose} />
 				</Modal.Header>
 				<Modal.Content overflow='hidden'>
-					<Box
-						display='flex'
-						maxHeight='x360'
-						w='full'
-						justifyContent='center'
-						alignContent='center'
-						mbe='x16'
-					>
+					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe='x16'>
 						<FilePreview file={file} />
 					</Box>
 					<FieldGroup>
@@ -105,19 +85,12 @@ const FilePreviewModal = ({
 							<Field.Row>
 								<TextInput value={name} onChange={handleName} />
 							</Field.Row>
-							{!name && (
-								<Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>
-							)}
+							{!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
 						</Field>
 						<Field>
 							<Field.Label>{t('Upload_file_description')}</Field.Label>
 							<Field.Row>
-								<TextInput
-									value={description}
-									onChange={handleDescription}
-									placeholder={t('Description')}
-									ref={ref}
-								/>
+								<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
 							</Field.Row>
 						</Field>
 					</FieldGroup>
@@ -137,4 +110,4 @@ const FilePreviewModal = ({
 	);
 };
 
-export default memo(FilePreviewModal);
+export default memo(FileUploadModal);

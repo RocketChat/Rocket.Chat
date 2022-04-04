@@ -1,13 +1,19 @@
-import { addUserRoles, removeUserFromRoles } from '../../../../app/authorization/server';
 import { Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
 import { Roles } from '../../../../app/models/server/raw';
+import { syncUserRoles } from '../syncUserRoles';
 
 export const logger = new Logger('OAuth');
 
 export class OAuthEEManager {
-	static mapSSOGroupsToChannels(user: Record<string, any>, identity: Record<string, any>, groupClaimName: string, channelsMap: Record<string, any> | undefined, channelsAdmin: string): void {
+	static mapSSOGroupsToChannels(
+		user: Record<string, any>,
+		identity: Record<string, any>,
+		groupClaimName: string,
+		channelsMap: Record<string, any> | undefined,
+		channelsAdmin: string,
+	): void {
 		if (user && identity && groupClaimName) {
 			const groupsFromSSO = identity[groupClaimName] || [];
 
@@ -22,12 +28,12 @@ export class OAuthEEManager {
 						if (!room) {
 							room = createRoom('c', channel, channelsAdmin, [], false);
 							if (!room || !room.rid) {
-								logger.error(`could not create channel ${ channel }`);
+								logger.error(`could not create channel ${channel}`);
 								return;
 							}
 						}
 						if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
-							addUserToRoom(room._id, user);
+							addUserToRoom(room._id, user.username);
 						}
 					}
 				}
@@ -35,7 +41,7 @@ export class OAuthEEManager {
 		}
 	}
 
-	static updateRolesFromSSO(user: Record<string, any>, identity: Record<string, any>, roleClaimName: string): void {
+	static updateRolesFromSSO(user: Record<string, any>, identity: Record<string, any>, roleClaimName: string, rolesToSync: string[]): void {
 		if (user && identity && roleClaimName) {
 			const rolesFromSSO = this.mapRolesFromSSO(identity, roleClaimName);
 
@@ -43,19 +49,11 @@ export class OAuthEEManager {
 				user.roles = [];
 			}
 
-			const toRemove = user.roles.filter((val: any) => !rolesFromSSO.includes(val));
-
-			// loop through roles that user has that sso doesnt have and remove each one
-			toRemove.forEach(function(role: any) {
-				removeUserFromRoles(user._id, role);
-			});
-
-			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val));
-
-			// loop through sso roles and add the new ones
-			toAdd.forEach(function(role: any) {
-				addUserRoles(user._id, role);
-			});
+			Promise.await(
+				syncUserRoles(user._id, rolesFromSSO, {
+					allowedRoles: rolesToSync,
+				}),
+			);
 		}
 	}
 
@@ -65,7 +63,9 @@ export class OAuthEEManager {
 		if (identity && roleClaimName) {
 			// Adding roles
 			if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-				roles = identity[roleClaimName].filter((val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Promise.await(Roles.findOneByIdOrName(val)));
+				roles = identity[roleClaimName].filter(
+					(val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Promise.await(Roles.findOneByIdOrName(val)),
+				);
 			}
 		}
 

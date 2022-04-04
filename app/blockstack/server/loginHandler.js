@@ -37,7 +37,9 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 
 	if (result.isNew) {
 		try {
-			const user = Users.findOneById(result.userId, { fields: { 'services.blockstack.image': 1, username: 1 } });
+			const user = Users.findOneById(result.userId, {
+				fields: { 'services.blockstack.image': 1, 'username': 1 },
+			});
 			if (user && user.services && user.services.blockstack && user.services.blockstack.image) {
 				Meteor.runAsUser(user._id, () => {
 					setUserAvatar(user, user.services.blockstack.image, undefined, 'url');

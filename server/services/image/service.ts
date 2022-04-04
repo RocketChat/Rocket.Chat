@@ -4,15 +4,14 @@ import fileType from 'file-type';
 import sharp from 'sharp';
 import isSvg from 'is-svg';
 
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IMediaService, ResizeResult } from '../../sdk/types/IMediaService';
 
 /* eslint-disable  @typescript-eslint/no-var-requires */
 const ExifTransformer = require('exif-be-gone');
 /* eslint-enable  @typescript-eslint/no-var-requires */
 
-
-export class MediaService extends ServiceClass implements IMediaService {
+export class MediaService extends ServiceClassInternal implements IMediaService {
 	protected name = 'media';
 
 	private imageExts = new Set([
@@ -36,14 +35,29 @@ export class MediaService extends ServiceClass implements IMediaService {
 		'dcm',
 	]);
 
-	async resizeFromBuffer(input: Buffer, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
+	async resizeFromBuffer(
+		input: Buffer,
+		width: number,
+		height: number,
+		keepType: boolean,
+		blur: boolean,
+		enlarge: boolean,
+		fit?: keyof sharp.FitEnum | undefined,
+	): Promise<ResizeResult> {
 		const stream = this.bufferToStream(input);
 		return this.resizeFromStream(stream, width, height, keepType, blur, enlarge, fit);
 	}
 
-	async resizeFromStream(input: stream.Stream, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
-		const transformer = sharp()
-			.resize({ width, height, fit, withoutEnlargement: !enlarge });
+	async resizeFromStream(
+		input: stream.Stream,
+		width: number,
+		height: number,
+		keepType: boolean,
+		blur: boolean,
+		enlarge: boolean,
+		fit?: keyof sharp.FitEnum | undefined,
+	): Promise<ResizeResult> {
+		const transformer = sharp().resize({ width, height, fit, withoutEnlargement: !enlarge });
 
 		if (!keepType) {
 			transformer.jpeg();
@@ -56,7 +70,10 @@ export class MediaService extends ServiceClass implements IMediaService {
 		const result = transformer.toBuffer({ resolveWithObject: true });
 		input.pipe(transformer);
 
-		const { data, info: { width: widthInfo, height: heightInfo } } = await result;
+		const {
+			data,
+			info: { width: widthInfo, height: heightInfo },
+		} = await result;
 		return {
 			data,
 			width: widthInfo,
@@ -93,9 +110,7 @@ export class MediaService extends ServiceClass implements IMediaService {
 	private streamToBuffer(stream: stream.Stream): Promise<Buffer> {
 		return new Promise((resolve) => {
 			const chunks: Array<Buffer> = [];
-			stream
-				.on('data', (data) => chunks.push(data))
-				.on('end', () => resolve(Buffer.concat(chunks)));
+			stream.on('data', (data) => chunks.push(data)).on('end', () => resolve(Buffer.concat(chunks)));
 		});
 	}
 }

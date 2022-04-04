@@ -1,18 +1,10 @@
-import {
-	Box,
-	Field,
-	TextInput,
-	ButtonGroup,
-	Button,
-	Margins,
-	Tabs,
-	Flex,
-} from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, ButtonGroup, Button, Margins, Tabs, Flex } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import Page from '../../../client/components/Page';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
+import { useEndpointAction } from '../../../client/hooks/useEndpointAction';
 import DateRangePicker from './DateRangePicker';
 import Result from './Result';
 import ChannelTab from './Tabs/ChannelTab';
@@ -50,6 +42,10 @@ export const AuditPageBase = ({
 			handleUsers([]);
 			handleType(type);
 		});
+
+	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+		params: [{ eventName: 'updateCounter', settingsId: 'Message_Auditing_Apply_Count', timestamp: Date.now() }],
+	});
 
 	return (
 		<Page>
@@ -91,23 +87,13 @@ export const AuditPageBase = ({
 					<Box display='flex' flexDirection='row' alignItems='flex-end'>
 						<Flex.Item shrink={1}>
 							{type === '' && <ChannelTab errors={errors} rid={rid} handleRid={handleRid} />}
-							{type === 'u' && (
-								<UsersTab errors={errors} users={users} onChangeUsers={onChangeUsers} />
-							)}
-							{type === 'd' && (
-								<DirectTab errors={errors} users={users} onChangeUsers={onChangeUsers} />
-							)}
+							{type === 'u' && <UsersTab errors={errors} users={users} onChangeUsers={onChangeUsers} />}
+							{type === 'd' && <DirectTab errors={errors} users={users} onChangeUsers={onChangeUsers} />}
 							{type === 'l' && (
-								<VisitorsTab
-									errors={errors}
-									visitor={visitor}
-									handleVisitor={handleVisitor}
-									agent={agent}
-									handleAgent={handleAgent}
-								/>
+								<VisitorsTab errors={errors} visitor={visitor} handleVisitor={handleVisitor} agent={agent} handleAgent={handleAgent} />
 							)}
 							<ButtonGroup mis='x8' align='end'>
-								<Button primary onClick={apply}>
+								<Button primary onClick={() => apply(eventStats)}>
 									{t('Apply')}
 								</Button>
 							</ButtonGroup>

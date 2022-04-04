@@ -6,12 +6,19 @@ import { Settings } from '../../../models/server/raw';
 
 Meteor.methods({
 	async refreshOAuthService() {
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'refreshOAuthService' });
+		const userId = Meteor.userId();
+
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'refreshOAuthService',
+			});
 		}
 
-		if (hasPermission(Meteor.userId(), 'add-oauth-service') !== true) {
-			throw new Meteor.Error('error-action-not-allowed', 'Refresh OAuth Services is not allowed', { method: 'refreshOAuthService', action: 'Refreshing_OAuth_Services' });
+		if (hasPermission(userId, 'add-oauth-service') !== true) {
+			throw new Meteor.Error('error-action-not-allowed', 'Refresh OAuth Services is not allowed', {
+				method: 'refreshOAuthService',
+				action: 'Refreshing_OAuth_Services',
+			});
 		}
 
 		ServiceConfiguration.configurations.remove({});

@@ -8,6 +8,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import AuditLog from './auditLog';
 import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
 import { hasPermission } from '../../../../app/authorization/server';
+import { updateCounter } from '../../../../app/statistics/server';
 
 const getValue = (room) => room && { rids: [room._id], name: room.name };
 
@@ -27,7 +28,9 @@ const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 
 	if (type === 'l') {
 		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
-		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, { fields: { _id: 1 } }).fetch();
+		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
+			fields: { _id: 1 },
+		}).fetch();
 		return rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 	}
 };
@@ -42,7 +45,9 @@ Meteor.methods({
 			throw new Meteor.Error('Not allowed');
 		}
 
-		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent !== 'all' && agent, { fields: { _id: 1 } }).fetch();
+		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent !== 'all' && agent, {
+			fields: { _id: 1 },
+		}).fetch();
 		const roomsData = rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 
 		const { rids, name } = roomsData;
@@ -63,7 +68,12 @@ Meteor.methods({
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
-		AuditLog.insert({ ts: new Date(), results: messages.length, u: user, fields: { msg, users, rids, room: name, startDate, endDate, type, visitor, agent } });
+		AuditLog.insert({
+			ts: new Date(),
+			results: messages.length,
+			u: user,
+			fields: { msg, users, rids, room: name, startDate, endDate, type, visitor, agent },
+		});
 
 		return messages;
 	},
@@ -109,7 +119,13 @@ Meteor.methods({
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
-		AuditLog.insert({ ts: new Date(), results: messages.length, u: user, fields: { msg, users, rids, room: name, startDate, endDate, type, visitor, agent } });
+		AuditLog.insert({
+			ts: new Date(),
+			results: messages.length,
+			u: user,
+			fields: { msg, users, rids, room: name, startDate, endDate, type, visitor, agent },
+		});
+		updateCounter('Message_Auditing_Panel_Load_Count');
 
 		return messages;
 	},
@@ -129,18 +145,26 @@ Meteor.methods({
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'auditGetAuditions',
-	userId(/* userId*/) {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'auditGetAuditions',
+		userId(/* userId*/) {
+			return true;
+		},
 	},
-}, 10, 60000);
+	10,
+	60000,
+);
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'auditGetMessages',
-	userId(/* userId*/) {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'auditGetMessages',
+		userId(/* userId*/) {
+			return true;
+		},
 	},
-}, 10, 60000);
+	10,
+	60000,
+);

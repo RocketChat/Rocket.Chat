@@ -43,17 +43,14 @@ export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 				>
 					<Attachment.Author>
 						<Attachment.AuthorAvatar url={url} />
-						<Attachment.AuthorName
-							{...(authorLink && { is: 'a', href: authorLink, target: '_blank', color: undefined })}
-						>
+						<Attachment.AuthorName {...(authorLink && { is: 'a', href: authorLink, target: '_blank', color: undefined })}>
 							{name}
 						</Attachment.AuthorName>
-						<Box
-							fontScale='c1'
-							{...(messageLink ? { is: 'a', href: messageLink } : { color: 'hint' })}
-						>
-							{format(ts)}
-						</Box>
+						{ts && (
+							<Box fontScale='c1' {...(messageLink ? { is: 'a', href: messageLink } : { color: 'hint' })}>
+								{format(ts)}
+							</Box>
+						)}
 					</Attachment.Author>
 					<MarkdownText parseEmoji variant='inline' content={text} />
 					{attachments && (

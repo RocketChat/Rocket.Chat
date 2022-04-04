@@ -1,6 +1,5 @@
-import { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
-import { IDailyActiveUsers } from '../../../../definition/IUser';
-import { Serialized } from '../../../../definition/Serialized';
+import type { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
+import type { IUser } from '../../../../definition/IUser';
 
 export type EngagementDashboardEndpoints = {
 	'/v1/engagement-dashboard/channels/list': {
@@ -23,7 +22,7 @@ export type EngagementDashboardEndpoints = {
 			total: number;
 		};
 	};
-	'engagement-dashboard/messages/origin': {
+	'/v1/engagement-dashboard/messages/origin': {
 		GET: (params: { start: Date; end: Date }) => {
 			origins: {
 				t: IRoom['t'];
@@ -31,7 +30,7 @@ export type EngagementDashboardEndpoints = {
 			}[];
 		};
 	};
-	'engagement-dashboard/messages/top-five-popular-channels': {
+	'/v1/engagement-dashboard/messages/top-five-popular-channels': {
 		GET: (params: { start: Date; end: Date }) => {
 			channels: {
 				t: IRoom['t'];
@@ -41,7 +40,7 @@ export type EngagementDashboardEndpoints = {
 			}[];
 		};
 	};
-	'engagement-dashboard/messages/messages-sent': {
+	'/v1/engagement-dashboard/messages/messages-sent': {
 		GET: (params: { start: Date; end: Date }) => {
 			days: { day: Date; messages: number }[];
 			period: {
@@ -54,9 +53,57 @@ export type EngagementDashboardEndpoints = {
 			};
 		};
 	};
-	'engagement-dashboard/users/active-users': {
-		GET: (params: { start: string; end: string }) => {
-			month: Serialized<IDailyActiveUsers>[];
+	'/v1/engagement-dashboard/users/active-users': {
+		GET: (params: { start: Date; end: Date }) => {
+			month: {
+				day: number;
+				month: number;
+				year: number;
+				usersList: IUser['_id'][];
+				users: number;
+			}[];
+		};
+	};
+	'/v1/engagement-dashboard/users/chat-busier/weekly-data': {
+		GET: (params: { start: Date }) => {
+			month: {
+				users: number;
+				day: number;
+				month: number;
+				year: number;
+			}[];
+		};
+	};
+	'/v1/engagement-dashboard/users/chat-busier/hourly-data': {
+		GET: (params: { start: Date }) => {
+			hours: {
+				users: number;
+				hour: number;
+			}[];
+		};
+	};
+	'/v1/engagement-dashboard/users/users-by-time-of-the-day-in-a-week': {
+		GET: (params: { start: Date; end: Date }) => {
+			week: {
+				users: number;
+				hour: number;
+				day: number;
+				month: number;
+				year: number;
+			}[];
+		};
+	};
+	'/v1/engagement-dashboard/users/new-users': {
+		GET: (params: { start: Date; end: Date }) => {
+			days: { day: Date; users: number }[];
+			period: {
+				count: number;
+				variation: number;
+			};
+			yesterday: {
+				count: number;
+				variation: number;
+			};
 		};
 	};
 };

@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../settings/server';
 
-settingsRegistry.addGroup('Video Conference', function() {
-	this.section('BigBlueButton', function() {
+settingsRegistry.addGroup('Video Conference', function () {
+	this.section('BigBlueButton', function () {
 		this.add('bigbluebutton_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
@@ -27,7 +27,6 @@ settingsRegistry.addGroup('Video Conference', function() {
 			},
 		});
 
-
 		this.add('bigbluebutton_Open_New_Window', false, {
 			type: 'boolean',
 			enableQuery: {
@@ -37,7 +36,6 @@ settingsRegistry.addGroup('Video Conference', function() {
 			i18nLabel: 'Always_open_in_new_window',
 			public: true,
 		});
-
 
 		this.add('bigbluebutton_enable_d', true, {
 			type: 'boolean',
@@ -80,7 +78,7 @@ settingsRegistry.addGroup('Video Conference', function() {
 		});
 	});
 
-	this.section('Jitsi', function() {
+	this.section('Jitsi', function () {
 		this.add('Jitsi_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
@@ -139,7 +137,7 @@ settingsRegistry.addGroup('Video Conference', function() {
 			public: true,
 		});
 
-		this.add('Jitsi_Open_New_Window', false, {
+		this.add('Jitsi_Open_New_Window', true, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',
@@ -215,6 +213,14 @@ settingsRegistry.addGroup('Video Conference', function() {
 			],
 			i18nLabel: 'Jitsi_Limit_Token_To_Room',
 			public: true,
+		});
+		this.add('Jitsi_Click_To_Join_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Jitsi_Start_SlashCommands_Count', 0, {
+			type: 'int',
+			hidden: true,
 		});
 	});
 });

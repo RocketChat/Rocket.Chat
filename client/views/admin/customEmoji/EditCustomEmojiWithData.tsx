@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox, Callout } from '@rocket.chat/fuselage';
 import React, { useMemo, FC } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -12,7 +12,7 @@ type EditCustomEmojiWithDataProps = {
 	onChange: () => void;
 };
 
-const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChange, ...props }) => {
+const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChange, close, ...props }) => {
 	const t = useTranslation();
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
@@ -52,19 +52,15 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 	}
 
 	if (error || !data || !data.emojis || data.emojis.update.length < 1) {
-		return (
-			<Box fontScale='h1' pb='x20'>
-				{t('Custom_User_Status_Error_Invalid_User_Status')}
-			</Box>
-		);
+		return <Callout title={t('Custom_Emoji_Error_Invalid_Emoji')} type='danger' />;
 	}
 
 	const handleChange = (): void => {
-		onChange && onChange();
-		reload && reload();
+		onChange?.();
+		reload?.();
 	};
 
-	return <EditCustomEmoji data={data.emojis.update[0]} onChange={handleChange} {...props} />;
+	return <EditCustomEmoji data={data.emojis.update[0]} close={close} onChange={handleChange} {...props} />;
 };
 
 export default EditCustomEmojiWithData;

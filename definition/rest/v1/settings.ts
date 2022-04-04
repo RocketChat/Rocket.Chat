@@ -5,59 +5,61 @@ type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsAction
 
 type SettingsUpdatePropsActions = {
 	execute: boolean;
-}
+};
 
 export type OauthCustomConfiguration = {
 	_id: string;
 	clientId?: string;
-	custom: unknown;
+	custom: boolean;
 	service?: string;
-	serverURL: unknown;
-	tokenPath: unknown;
-	identityPath: unknown;
-	authorizePath: unknown;
-	scope: unknown;
-	loginStyle: unknown;
-	tokenSentVia: unknown;
-	identityTokenSentVia: unknown;
-	keyField: unknown;
-	usernameField: unknown;
-	emailField: unknown;
-	nameField: unknown;
-	avatarField: unknown;
-	rolesClaim: unknown;
-	groupsClaim: unknown;
-	mapChannels: unknown;
-	channelsMap: unknown;
-	channelsAdmin: unknown;
-	mergeUsers: unknown;
-	mergeRoles: unknown;
-	accessTokenParam: unknown;
-	showButton: unknown;
+	serverURL: string;
+	tokenPath: string;
+	identityPath: string;
+	authorizePath: string;
+	scope: string;
+	loginStyle: 'popup' | 'redirect';
+	tokenSentVia: 'header' | 'payload';
+	identityTokenSentVia: 'default' | 'header' | 'payload';
+	keyField: 'username' | 'email';
+	usernameField: string;
+	emailField: string;
+	nameField: string;
+	avatarField: string;
+	rolesClaim: string;
+	groupsClaim: string;
+	mapChannels: string;
+	channelsMap: string;
+	channelsAdmin: string;
+	mergeUsers: boolean;
+	mergeRoles: boolean;
+	accessTokenParam: string;
+	showButton: boolean;
 
-	appId: unknown;
+	appId: string;
 	consumerKey?: string;
 
 	clientConfig: unknown;
-	buttonLabelText: unknown;
-	buttonLabelColor: unknown;
-	buttonColor: unknown;
-}
+	buttonLabelText: string;
+	buttonLabelColor: string;
+	buttonColor: string;
+};
 
 export const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => Boolean(config);
 
-export const isSettingsUpdatePropsActions = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropsActions => 'execute' in props;
+export const isSettingsUpdatePropsActions = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropsActions =>
+	'execute' in props;
 
 type SettingsUpdatePropsColor = {
 	editor: ISettingColor['editor'];
 	value: ISetting['value'];
-}
+};
 
-export const isSettingsUpdatePropsColor = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropsColor => 'editor' in props && 'value' in props;
+export const isSettingsUpdatePropsColor = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropsColor =>
+	'editor' in props && 'value' in props;
 
 type SettingsUpdatePropDefault = {
 	value: ISetting['value'];
-}
+};
 
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
@@ -69,9 +71,9 @@ export type SettingsEndpoints = {
 	};
 
 	'settings.oauth': {
-		GET: () => ({
+		GET: () => {
 			services: Partial<OauthCustomConfiguration>[];
-		});
+		};
 	};
 
 	'settings.addCustomOAuth': {
@@ -79,9 +81,9 @@ export type SettingsEndpoints = {
 	};
 
 	'settings': {
-		GET: () => ({
+		GET: () => {
 			settings: ISetting[];
-		});
+		};
 	};
 
 	'settings/:_id': {

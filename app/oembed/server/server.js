@@ -1,8 +1,7 @@
 import URL from 'url';
 import querystring from 'querystring';
 
-import { Meteor } from 'meteor/meteor';
-import { HTTPInternals } from 'meteor/http';
+import { fetch } from 'meteor/fetch';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
 import iconv from 'iconv-lite';
@@ -12,19 +11,20 @@ import jschardet from 'jschardet';
 
 import { Messages } from '../../models/server';
 import { OEmbedCache } from '../../models/server/raw';
-import { callbacks } from '../../callbacks';
-import { settings } from '../../settings';
+import { callbacks } from '../../../lib/callbacks';
+import { settings } from '../../settings/server';
 import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
+import { Info } from '../../utils/server';
+import { getUnsafeAgent } from '../../../server/lib/getUnsafeAgent';
 
-const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
 
 //  Detect encoding
 //  Priority:
 //  Detected == HTTP Header > Detected == HTML meta > HTTP Header > HTML meta > Detected > Default (utf-8)
 //  See also: https://www.w3.org/International/questions/qa-html-encoding-declarations.en#quickanswer
-const getCharset = function(contentType, body) {
+const getCharset = function (contentType, body) {
 	let detectedCharset;
 	let httpHeaderCharset;
 	let htmlMetaCharset;
@@ -58,11 +58,11 @@ const getCharset = function(contentType, body) {
 	return result || 'utf-8';
 };
 
-const toUtf8 = function(contentType, body) {
+const toUtf8 = function (contentType, body) {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callback) {
+const getUrlContent = async function (urlObj, redirectCount = 5) {
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
@@ -76,17 +76,17 @@ const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callb
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
 	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
-		return callback();
+		throw new Error('invalid host');
 	}
 
 	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
 
 	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
-		return callback();
+		throw new Error('invalid/unsafe port');
 	}
 
 	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
-		return callback();
+		throw new Error('invalid/unsafe port');
 	}
 
 	const data = callbacks.run('oembed:beforeGetUrlContent', {
@@ -94,60 +94,49 @@ const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callb
 		parsedUrl,
 	});
 	if (data.attachments != null) {
-		return callback(null, data);
+		return data;
 	}
+
 	const url = URL.format(data.urlObj);
-	const opts = {
-		url,
-		strictSSL: !settings.get('Allow_Invalid_SelfSigned_Certs'),
-		gzip: true,
-		maxRedirects: redirectCount,
+
+	const sizeLimit = 250000;
+
+	const response = await fetch(url, {
+		compress: true,
+		follow: redirectCount,
 		headers: {
-			'User-Agent': settings.get('API_Embed_UserAgent'),
+			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
 			'Accept-Language': settings.get('Language') || 'en',
 		},
-	};
-	let headers = null;
-	let statusCode = null;
-	let error = null;
-	const chunks = [];
-	let chunksTotalLength = 0;
-	const stream = request(opts);
-	stream.on('response', function(response) {
-		statusCode = response.statusCode;
-		headers = response.headers;
-		if (response.statusCode !== 200) {
-			return stream.abort();
-		}
+		size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
+		...(settings.get('Allow_Invalid_SelfSigned_Certs') && {
+			agent: getUnsafeAgent(parsedUrl.protocol),
+		}),
 	});
-	stream.on('data', function(chunk) {
-		chunks.push(chunk);
-		chunksTotalLength += chunk.length;
-		if (chunksTotalLength > 250000) {
-			return stream.abort();
-		}
-	});
-	stream.on('end', Meteor.bindEnvironment(function() {
-		if (error != null) {
-			return callback(null, {
-				error,
-				parsedUrl,
-			});
-		}
-		const buffer = Buffer.concat(chunks);
-		return callback(null, {
-			headers,
-			body: toUtf8(headers['content-type'], buffer),
-			parsedUrl,
-			statusCode,
-		});
-	}));
-	return stream.on('error', function(err) {
-		error = err;
-	});
-});
 
-OEmbed.getUrlMeta = function(url, withFragment) {
+	let totalSize = 0;
+	const chunks = [];
+	for await (const chunk of response.body) {
+		totalSize += chunk.length;
+		chunks.push(chunk);
+
+		if (totalSize > sizeLimit) {
+			SystemLogger.info({ msg: 'OEmbed request size exceeded', url });
+			break;
+		}
+	}
+
+	const buffer = Buffer.concat(chunks);
+
+	return {
+		headers: Object.fromEntries(response.headers),
+		body: toUtf8(response.headers.get('content-type'), buffer),
+		parsedUrl,
+		statusCode: response.status,
+	};
+};
+
+OEmbed.getUrlMeta = function (url, withFragment) {
 	const urlObj = URL.parse(url);
 	if (withFragment != null) {
 		const queryStringObj = querystring.parse(urlObj.query);
@@ -155,18 +144,21 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		urlObj.query = querystring.stringify(queryStringObj);
 		let path = urlObj.pathname;
 		if (urlObj.query != null) {
-			path += `?${ urlObj.query }`;
-			urlObj.search = `?${ urlObj.query }`;
+			path += `?${urlObj.query}`;
+			urlObj.search = `?${urlObj.query}`;
 		}
 		urlObj.path = path;
 	}
-	const content = getUrlContent(urlObj, 5);
+	const content = Promise.await(getUrlContent(urlObj, 5));
+
 	if (!content) {
 		return;
 	}
+
 	if (content.attachments != null) {
 		return content;
 	}
+
 	let metas = undefined;
 	if (content && content.body) {
 		metas = {};
@@ -174,22 +166,22 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 			metas[name] = metas[name] || he.unescape(value);
 			return metas[name];
 		};
-		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gmi, function(meta, title) {
+		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gim, function (meta, title) {
 			return escapeMeta('pageTitle', title);
 		});
-		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gmi, function(meta, name, value) {
+		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gim, function (meta, name, value) {
 			return escapeMeta(camelCase(name), value);
 		});
-		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gmi, function(meta, name, value) {
+		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gim, function (meta, name, value) {
 			return escapeMeta(camelCase(name), value);
 		});
-		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, function(meta, value, name) {
+		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gim, function (meta, value, name) {
 			return escapeMeta(camelCase(name), value);
 		});
-		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, function(meta, value, name) {
+		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gim, function (meta, value, name) {
 			return escapeMeta(camelCase(name), value);
 		});
-		if (metas.fragment === '!' && (withFragment == null)) {
+		if (metas.fragment === '!' && withFragment == null) {
 			return OEmbed.getUrlMeta(url, true);
 		}
 		delete metas.oembedHtml;
@@ -215,7 +207,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 	});
 };
 
-OEmbed.getUrlMetaWithCache = async function(url, withFragment) {
+OEmbed.getUrlMetaWithCache = async function (url, withFragment) {
 	const cache = await OEmbedCache.findOneById(url);
 
 	if (cache != null) {
@@ -226,18 +218,18 @@ OEmbed.getUrlMetaWithCache = async function(url, withFragment) {
 		try {
 			await OEmbedCache.createWithIdAndData(url, data);
 		} catch (_error) {
-			SystemLogger.error('OEmbed duplicated record', url);
+			SystemLogger.error({ msg: 'OEmbed duplicated record', url });
 		}
 		return data;
 	}
 };
 
-const getRelevantHeaders = function(headersObj) {
+const getRelevantHeaders = function (headersObj) {
 	const headers = {};
 	Object.keys(headersObj).forEach((key) => {
 		const value = headersObj[key];
 		const lowerCaseKey = key.toLowerCase();
-		if ((lowerCaseKey === 'contenttype' || lowerCaseKey === 'contentlength') && (value && value.trim() !== '')) {
+		if ((lowerCaseKey === 'contenttype' || lowerCaseKey === 'contentlength') && value && value.trim() !== '') {
 			headers[key] = value;
 		}
 	});
@@ -247,11 +239,11 @@ const getRelevantHeaders = function(headersObj) {
 	}
 };
 
-const getRelevantMetaTags = function(metaObj) {
+const getRelevantMetaTags = function (metaObj) {
 	const tags = {};
 	Object.keys(metaObj).forEach((key) => {
 		const value = metaObj[key];
-		if (/^(og|fb|twitter|oembed|msapplication).+|description|title|pageTitle$/.test(key.toLowerCase()) && (value && value.trim() !== '')) {
+		if (/^(og|fb|twitter|oembed|msapplication).+|description|title|pageTitle$/.test(key.toLowerCase()) && value && value.trim() !== '') {
 			tags[key] = value;
 		}
 	});
@@ -261,9 +253,9 @@ const getRelevantMetaTags = function(metaObj) {
 	}
 };
 
-const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%;width:400px;height:225px\"');
+const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style="max-width: 100%;width:400px;height:225px"');
 
-OEmbed.rocketUrlParser = async function(message) {
+OEmbed.rocketUrlParser = async function (message) {
 	if (Array.isArray(message.urls)) {
 		const attachments = [];
 		let changed = false;
@@ -303,9 +295,14 @@ OEmbed.rocketUrlParser = async function(message) {
 	return message;
 };
 
-settings.watch('API_Embed', function(value) {
+settings.watch('API_Embed', function (value) {
 	if (value) {
-		return callbacks.add('afterSaveMessage', (message) => Promise.await(OEmbed.rocketUrlParser(message)), callbacks.priority.LOW, 'API_Embed');
+		return callbacks.add(
+			'afterSaveMessage',
+			(message) => Promise.await(OEmbed.rocketUrlParser(message)),
+			callbacks.priority.LOW,
+			'API_Embed',
+		);
 	}
 	return callbacks.remove('afterSaveMessage', 'API_Embed');
 });

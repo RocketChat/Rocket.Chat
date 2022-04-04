@@ -1,24 +1,20 @@
 import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuselage';
 import React, { useState, useCallback } from 'react';
 
+import { useSetting } from '../../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 
-function UserAvatarEditor({
-	currentUsername,
-	username,
-	setAvatarObj,
-	suggestions,
-	disabled,
-	etag,
-}) {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled, etag }) {
 	const t = useTranslation();
+	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
 	const [urlEmpty, setUrlEmpty] = useState(true);
-
+	const dispatchToastMessage = useToastMessageDispatch();
 	const toDataURL = (file, callback) => {
 		const reader = new FileReader();
 		reader.onload = function (e) {
@@ -29,12 +25,14 @@ function UserAvatarEditor({
 
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
-			setAvatarObj(avatarObj);
-			toDataURL(file, (dataurl) => {
-				setNewAvatarSource(dataurl);
-			});
+			if (file.type.startsWith('image/')) {
+				setAvatarObj(avatarObj);
+				toDataURL(file, (dataurl) => {
+					setNewAvatarSource(dataurl);
+				});
+			} else dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
 		},
-		[setAvatarObj],
+		[setAvatarObj, t, dispatchToastMessage],
 	);
 
 	const [clickUpload] = useFileInput(setUploadedPreview);
@@ -59,7 +57,7 @@ function UserAvatarEditor({
 	};
 
 	return (
-		<Box display='flex' flexDirection='column' fontScale='p2'>
+		<Box display='flex' flexDirection='column' fontScale='p2m'>
 			{t('Profile_picture')}
 			<Box display='flex' flexDirection='row' mbs='x4'>
 				<UserAvatar
@@ -67,38 +65,22 @@ function UserAvatarEditor({
 					url={url}
 					username={currentUsername}
 					etag={etag}
-					style={{ objectFit: 'contain' }}
+					style={{
+						objectFit: 'contain',
+						imageOrientation: rotateImages ? 'from-image' : 'none',
+					}}
 					mie='x4'
 				/>
-				<Box
-					display='flex'
-					flexDirection='column'
-					flexGrow='1'
-					justifyContent='space-between'
-					mis='x4'
-				>
+				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Margins inline='x4'>
-							<Button
-								square
-								mis='none'
-								onClick={clickReset}
-								disabled={disabled}
-								mie='x4'
-								title={t('Accounts_SetDefaultAvatar')}
-							>
+							<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4' title={t('Accounts_SetDefaultAvatar')}>
 								<Avatar url={`/avatar/%40${username}`} />
 							</Button>
 							<Button square onClick={clickUpload} disabled={disabled} title={t('Upload')}>
 								<Icon name='upload' size='x20' />
 							</Button>
-							<Button
-								square
-								mie='none'
-								onClick={clickUrl}
-								disabled={disabled || urlEmpty}
-								title={t('Add URL')}
-							>
+							<Button square mie='none' onClick={clickUrl} disabled={disabled || urlEmpty} title={t('Add URL')}>
 								<Icon name='permalink' size='x20' />
 							</Button>
 							{suggestions && (
@@ -113,12 +95,7 @@ function UserAvatarEditor({
 					</Box>
 					<Margins inlineStart='x4'>
 						<Box>{t('Use_url_for_avatar')}</Box>
-						<TextInput
-							flexGrow={0}
-							placeholder={t('Use_url_for_avatar')}
-							value={avatarFromUrl}
-							onChange={handleAvatarFromUrlChange}
-						/>
+						<TextInput flexGrow={0} placeholder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={handleAvatarFromUrlChange} />
 					</Margins>
 				</Box>
 			</Box>

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { CustomSounds } from '../../../models/server/raw';
-import { hasPermission } from '../../../authorization';
-import { Notifications } from '../../../notifications';
+import { hasPermission } from '../../../authorization/server';
+import { api } from '../../../../server/sdk/api';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({
@@ -16,12 +16,14 @@ Meteor.methods({
 		}
 
 		if (sound == null) {
-			throw new Meteor.Error('Custom_Sound_Error_Invalid_Sound', 'Invalid sound', { method: 'deleteCustomSound' });
+			throw new Meteor.Error('Custom_Sound_Error_Invalid_Sound', 'Invalid sound', {
+				method: 'deleteCustomSound',
+			});
 		}
 
-		RocketChatFileCustomSoundsInstance.deleteFile(`${ sound._id }.${ sound.extension }`);
+		RocketChatFileCustomSoundsInstance.deleteFile(`${sound._id}.${sound.extension}`);
 		await CustomSounds.removeById(_id);
-		Notifications.notifyAll('deleteCustomSound', { soundData: sound });
+		api.broadcast('notify.deleteCustomSound', { soundData: sound });
 
 		return true;
 	},

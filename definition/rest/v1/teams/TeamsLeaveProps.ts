@@ -1,6 +1,5 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 
-
 const ajv = new Ajv();
 
 export type TeamsLeaveProps = ({ teamId: string } | { teamName: string }) & { rooms?: string[] };

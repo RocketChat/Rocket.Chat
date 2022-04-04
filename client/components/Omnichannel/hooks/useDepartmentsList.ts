@@ -12,6 +12,9 @@ type DepartmentsListOptions = {
 	departmentId?: string;
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
+	haveNone?: boolean;
+	excludeDepartmentId?: string;
+	enabled?: boolean;
 };
 
 export const useDepartmentsList = (
@@ -25,7 +28,7 @@ export const useDepartmentsList = (
 	const t = useTranslation();
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
-	const endpoint = 'livechat/department' as 'livechat/department';
+	const endpoint = 'livechat/department';
 
 	const getDepartments = useEndpoint('GET', endpoint);
 
@@ -36,11 +39,13 @@ export const useDepartmentsList = (
 	const fetchData = useCallback(
 		async (start, end) => {
 			const { departments, total } = await getDepartments({
-				onlyMyDepartments: options.onlyMyDepartments,
+				onlyMyDepartments: `${!!options.onlyMyDepartments}`,
 				text: options.filter,
 				offset: start,
 				count: end + start,
-				sort: JSON.stringify({ name: 1 }),
+				sort: `{ "name": 1 }`,
+				excludeDepartmentId: options.excludeDepartmentId,
+				enabled: options.enabled,
 			});
 
 			const items = departments
@@ -64,6 +69,13 @@ export const useDepartmentsList = (
 					_updatedAt: new Date(),
 				});
 
+			options.haveNone &&
+				items.unshift({
+					label: t('None'),
+					value: { value: '', label: t('None') },
+					_updatedAt: new Date(),
+				});
+
 			return {
 				items,
 				itemCount: options.departmentId ? total - 1 : total,
@@ -75,6 +87,9 @@ export const useDepartmentsList = (
 			options.filter,
 			options.haveAll,
 			options.onlyMyDepartments,
+			options.haveNone,
+			options.excludeDepartmentId,
+			options.enabled,
 			t,
 		],
 	);

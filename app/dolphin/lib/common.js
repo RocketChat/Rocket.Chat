@@ -4,7 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../settings';
 import { CustomOAuth } from '../../custom-oauth';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 
 const config = {
 	serverURL: '',
@@ -30,7 +30,7 @@ function DolphinOnCreateUser(options, user) {
 
 if (Meteor.isServer) {
 	Meteor.startup(() =>
-		settings.get('Accounts_OAuth_Dolphin_URL', (key, value) => {
+		settings.watch('Accounts_OAuth_Dolphin_URL', (value) => {
 			config.serverURL = value;
 			return Dolphin.configure(config);
 		}),
@@ -53,7 +53,7 @@ if (Meteor.isServer) {
 	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
 } else {
 	Meteor.startup(() =>
-		Tracker.autorun(function() {
+		Tracker.autorun(function () {
 			if (settings.get('Accounts_OAuth_Dolphin_URL')) {
 				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);

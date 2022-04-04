@@ -4,17 +4,9 @@ import React, { useMemo } from 'react';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import TimeRangeFieldsAssembler from './TimeRangeFieldsAssembler';
 
-export const DAYS_OF_WEEK = [
-	'Monday',
-	'Tuesday',
-	'Wednesday',
-	'Thursday',
-	'Friday',
-	'Saturday',
-	'Sunday',
-];
+export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const BusinessHoursForm = ({ values, handlers, className }) => {
+const BusinessHoursForm = ({ values, handlers, className = undefined }) => {
 	const t = useTranslation();
 
 	const daysOptions = useMemo(() => DAYS_OF_WEEK.map((day) => [day, t(day)]), [t]);
@@ -28,21 +20,10 @@ const BusinessHoursForm = ({ values, handlers, className }) => {
 			<Field className={className}>
 				<Field.Label>{t('Open_days_of_the_week')}</Field.Label>
 				<Field.Row>
-					<MultiSelect
-						options={daysOptions}
-						onChange={handleDaysOpen}
-						value={daysOpen}
-						placeholder={t('Select_an_option')}
-						w='full'
-					/>
+					<MultiSelect options={daysOptions} onChange={handleDaysOpen} value={daysOpen} placeholder={t('Select_an_option')} w='full' />
 				</Field.Row>
 			</Field>
-			<TimeRangeFieldsAssembler
-				onChange={handleDaysTime}
-				daysOpen={daysOpen}
-				daysTime={daysTime}
-				className={className}
-			/>
+			<TimeRangeFieldsAssembler onChange={handleDaysTime} daysOpen={daysOpen} daysTime={daysTime} className={className} />
 		</>
 	);
 };

@@ -34,11 +34,7 @@ export default function NewZapier({ ...props }) {
 
 	return (
 		<>
-			<Box
-				pb='x20'
-				fontScale='s1'
-				dangerouslySetInnerHTML={{ __html: t('additional_integrations_Zapier') }}
-			/>
+			<Box pb='x20' fontScale='h4' dangerouslySetInnerHTML={{ __html: t('additional_integrations_Zapier') }} />
 			{!script && (
 				<Box display='flex' flexDirection='column' alignItems='stretch' mbs={10}>
 					<Margins blockEnd={14}>

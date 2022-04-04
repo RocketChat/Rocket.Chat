@@ -2,13 +2,13 @@ import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import React, { useState, useEffect, memo, ReactElement } from 'react';
 
 import { IStats } from '../../../../definition/IStats';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { downloadJsonAs } from '../../../lib/download';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import InformationPage from './InformationPage';
 
 type fetchStatisticsCallback = ((params: { refresh: boolean }) => void) | (() => void);
@@ -21,9 +21,7 @@ const InformationRoute = (): ReactElement => {
 	const [error, setError] = useState(false);
 	const [statistics, setStatistics] = useState<IStats>();
 	const [instances, setInstances] = useState([]);
-	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(
-		() => (): void => undefined,
-	);
+	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
 	const getStatistics = useEndpoint('GET', 'statistics');
 	const getInstances = useMethod('instances/get');
 
@@ -35,10 +33,7 @@ const InformationRoute = (): ReactElement => {
 			setError(false);
 
 			try {
-				const [statistics, instances] = await Promise.all([
-					getStatistics({ refresh }),
-					getInstances(),
-				]);
+				const [statistics, instances] = await Promise.all([getStatistics({ refresh }), getInstances()]);
 
 				if (didCancel) {
 					return;
@@ -46,7 +41,7 @@ const InformationRoute = (): ReactElement => {
 				setStatistics(statistics);
 				setInstances(instances);
 			} catch (error) {
-				setError(error);
+				setError(!!error);
 			} finally {
 				setLoading(false);
 			}

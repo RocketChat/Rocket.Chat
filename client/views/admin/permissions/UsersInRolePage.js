@@ -40,7 +40,7 @@ const UsersInRolePage = ({ data }) => {
 		}
 
 		try {
-			await addUser({ roleName: _id, username: user, roomId: rid });
+			await addUser({ roleId: _id, username: user, roomId: rid });
 			dispatchToastMessage({ type: 'success', message: t('User_added') });
 			setUser();
 			reload.current();
@@ -78,11 +78,7 @@ const UsersInRolePage = ({ data }) => {
 						<Field>
 							<Field.Label>{t('Add_user')}</Field.Label>
 							<Field.Row>
-								<UserAutoComplete
-									value={user}
-									onChange={handleUserChange}
-									placeholder={t('User')}
-								/>
+								<UserAutoComplete value={user} onChange={handleUserChange} placeholder={t('User')} />
 
 								<ButtonGroup mis='x8' align='end'>
 									<Button primary onClick={handleAdd}>

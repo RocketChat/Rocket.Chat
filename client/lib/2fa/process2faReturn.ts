@@ -9,12 +9,11 @@ const twoFactorMethods = ['totp', 'email', 'password'] as const;
 
 type TwoFactorMethod = typeof twoFactorMethods[number];
 
-const isTwoFactorMethod = (method: string): method is TwoFactorMethod =>
-	twoFactorMethods.includes(method as TwoFactorMethod);
+const isTwoFactorMethod = (method: string): method is TwoFactorMethod => twoFactorMethods.includes(method as TwoFactorMethod);
 
 const hasRequiredTwoFactorMethod = (
 	error: Meteor.Error,
-): error is Meteor.Error & { details: { method: TwoFactorMethod } } => {
+): error is Meteor.Error & { details: { method: TwoFactorMethod; emailOrUsername?: string } } => {
 	const details = error.details as unknown;
 
 	return (
@@ -28,10 +27,7 @@ const hasRequiredTwoFactorMethod = (
 function assertModalProps(props: {
 	method: TwoFactorMethod;
 	emailOrUsername?: string;
-}): asserts props is
-	| { method: 'totp' }
-	| { method: 'password' }
-	| { method: 'email'; emailOrUsername: string } {
+}): asserts props is { method: 'totp' } | { method: 'password' } | { method: 'email'; emailOrUsername: string } {
 	if (props.method === 'email' && typeof props.emailOrUsername !== 'string') {
 		throw new Error('Invalid Two Factor method');
 	}
@@ -60,7 +56,7 @@ export function process2faReturn({
 
 	const props = {
 		method: error.details.method,
-		emailOrUsername: emailOrUsername ?? Meteor.user()?.username,
+		emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
 	};
 
 	assertModalProps(props);

@@ -45,7 +45,9 @@ export const ReactiveVar = (val) => {
 	let currentVal = val;
 	return {
 		get: () => currentVal,
-		set: (val) => { currentVal = val; },
+		set: (val) => {
+			currentVal = val;
+		},
 	};
 };
 
@@ -55,20 +57,24 @@ export const ReactiveDict = () => ({
 	all: () => {},
 });
 
-export const Template = Object.assign(() => ({
-	onCreated: () => {},
-	onRendered: () => {},
-	onDestroyed: () => {},
-	helpers: () => {},
-	events: () => {},
-}), {
-	registerHelper: () => {},
-	__checkName: () => {},
-});
+export const Template = Object.assign(
+	() => ({
+		onCreated: () => {},
+		onRendered: () => {},
+		onDestroyed: () => {},
+		helpers: () => {},
+		events: () => {},
+	}),
+	{
+		registerHelper: () => {},
+		__checkName: () => {},
+	},
+);
 
 export const Blaze = {
 	Template,
 	registerHelper: () => {},
+	renderWithData: () => {},
 };
 
 window.Blaze = Blaze;

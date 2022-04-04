@@ -1,10 +1,11 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 
+import { RocketChatRecordDeleted } from '../../IRocketChatRecord';
 import { IRole, IUser } from '../../IUser';
 
 const ajv = new Ajv();
 
-type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' |'mandatory2fa' >>;
+type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
 
 const roleCreatePropsSchema: JSONSchemaType<RoleCreateProps> = {
 	type: 'object',
@@ -80,9 +81,11 @@ export const isRoleDeleteProps = ajv.compile(roleDeletePropsSchema);
 
 type RoleAddUserToRoleProps = {
 	username: string;
-	roleName: string;
+	// #ToDo: Make it non-optional on the next major release
+	roleId?: string;
+	roleName?: string;
 	roomId?: string;
-}
+};
 
 const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
 	type: 'object',
@@ -90,27 +93,33 @@ const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
 		username: {
 			type: 'string',
 		},
+		roleId: {
+			type: 'string',
+			nullable: true,
+		},
 		roleName: {
 			type: 'string',
+			nullable: true,
 		},
 		roomId: {
 			type: 'string',
 			nullable: true,
 		},
 	},
-	required: ['username', 'roleName'],
+	required: ['username'],
 	additionalProperties: false,
 };
-
 
 export const isRoleAddUserToRoleProps = ajv.compile(roleAddUserToRolePropsSchema);
 
 type RoleRemoveUserFromRoleProps = {
 	username: string;
-	roleName: string;
+	// #ToDo: Make it non-optional on the next major release
+	roleId?: string;
+	roleName?: string;
 	roomId?: string;
 	scope?: string;
-}
+};
 
 const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRoleProps> = {
 	type: 'object',
@@ -118,8 +127,13 @@ const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRolePr
 		username: {
 			type: 'string',
 		},
+		roleId: {
+			type: 'string',
+			nullable: true,
+		},
 		roleName: {
 			type: 'string',
+			nullable: true,
 		},
 		roomId: {
 			type: 'string',
@@ -130,7 +144,7 @@ const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRolePr
 			nullable: true,
 		},
 	},
-	required: ['username', 'roleName'],
+	required: ['username'],
 	additionalProperties: false,
 };
 
@@ -138,45 +152,45 @@ export const isRoleRemoveUserFromRoleProps = ajv.compile(roleRemoveUserFromRoleP
 
 type RoleSyncProps = {
 	updatedSince?: string;
-}
+};
 
 export type RolesEndpoints = {
 	'roles.list': {
-		GET: () => ({
+		GET: () => {
 			roles: IRole[];
-		});
+		};
 	};
 	'roles.sync': {
-		GET: (params: RoleSyncProps) => ({
+		GET: (params: RoleSyncProps) => {
 			roles: {
 				update: IRole[];
-				remove: IRole[];
+				remove: RocketChatRecordDeleted<IRole>[];
 			};
-		});
+		};
 	};
 	'roles.create': {
-		POST: (params: RoleCreateProps) => ({
+		POST: (params: RoleCreateProps) => {
 			role: IRole;
-		});
+		};
 	};
 
 	'roles.addUserToRole': {
-		POST: (params: RoleAddUserToRoleProps) => ({
+		POST: (params: RoleAddUserToRoleProps) => {
 			role: IRole;
-		});
+		};
 	};
 
 	'roles.getUsersInRole': {
-		GET: (params: { roomId: string; role: string; offset: number; count: number }) => ({
+		GET: (params: { roomId: string; role: string; offset: number; count: number }) => {
 			users: IUser[];
 			total: number;
-		});
+		};
 	};
 
 	'roles.update': {
-		POST: (role: RoleUpdateProps) => ({
+		POST: (role: RoleUpdateProps) => {
 			role: IRole;
-		});
+		};
 	};
 
 	'roles.delete': {
@@ -184,8 +198,8 @@ export type RolesEndpoints = {
 	};
 
 	'roles.removeUserFromRole': {
-		POST: (props: RoleRemoveUserFromRoleProps) => ({
+		POST: (props: RoleRemoveUserFromRoleProps) => {
 			role: IRole;
-		});
+		};
 	};
 };

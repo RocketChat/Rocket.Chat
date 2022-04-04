@@ -2,13 +2,13 @@ import { Button, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomSound from './AddCustomSound';
 import AdminSounds from './AdminSounds';
 import EditCustomSound from './EditCustomSound';
@@ -78,8 +78,8 @@ function CustomSoundsRoute() {
 		<Page flexDirection='row'>
 			<Page name='admin-custom-sounds'>
 				<Page.Header title={t('Custom_Sounds')}>
-					<Button small onClick={handleNewButtonClick} aria-label={t('New')}>
-						<Icon name='plus' />
+					<Button primary onClick={handleNewButtonClick} aria-label={t('New')}>
+						<Icon name='plus' /> {t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>
@@ -100,12 +100,8 @@ function CustomSoundsRoute() {
 						{context === 'new' && t('Custom_Sound_Add')}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
-					{context === 'edit' && (
-						<EditCustomSound _id={id} close={handleClose} onChange={handleChange} />
-					)}
-					{context === 'new' && (
-						<AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleChange} />
-					)}
+					{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleChange} />}
+					{context === 'new' && <AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleChange} />}
 				</VerticalBar>
 			)}
 		</Page>

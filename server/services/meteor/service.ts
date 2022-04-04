@@ -4,8 +4,8 @@ import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence'
 import { MongoInternals } from 'meteor/mongo';
 
 import { metrics } from '../../../app/metrics';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
+import { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
 import { Users } from '../../../app/models/server/raw/index';
 import { Livechat } from '../../../app/livechat/server';
@@ -23,29 +23,11 @@ import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 import { use } from '../../../app/settings/server/Middleware';
 
-const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
-
-Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
-	added(_collection: string, id: string, version: AutoUpdateRecord) {
-		autoUpdateRecords.set(id, version);
-	},
-	changed(_collection: string, id: string, version: AutoUpdateRecord) {
-		autoUpdateRecords.set(id, version);
-		api.broadcast('meteor.autoUpdateClientVersionChanged', { record: version });
-	},
-	onStop() {
-		//
-	},
-	ready() {
-		//
-	},
-});
-
 type Callbacks = {
 	added(id: string, record: object): void;
 	changed(id: string, record: object): void;
 	removed(id: string): void;
-}
+};
 
 let processOnChange: (diff: Record<string, any>, id: string) => void;
 // eslint-disable-next-line no-undef
@@ -59,10 +41,22 @@ if (disableOplog) {
 	// Overrides the native observe changes to prevent database polling and stores the callbacks
 	// for the users' tokens to re-implement the reactivity based on our database listeners
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-	MongoInternals.Connection.prototype._observeChanges = function({ collectionName, selector, options = {} }: {collectionName: string; selector: Record<string, any>; options?: {fields?: Record<string, number>}}, _ordered: boolean, callbacks: Callbacks): any {
+	MongoInternals.Connection.prototype._observeChanges = function (
+		{
+			collectionName,
+			selector,
+			options = {},
+		}: {
+			collectionName: string;
+			selector: Record<string, any>;
+			options?: { fields?: Record<string, number> };
+		},
+		_ordered: boolean,
+		callbacks: Callbacks,
+	): any {
 		// console.error('Connection.Collection.prototype._observeChanges', collectionName, selector, options);
-		let cbs: Set<{hashedToken: string; callbacks: Callbacks}>;
-		let data: {hashedToken: string; callbacks: Callbacks};
+		let cbs: Set<{ hashedToken: string; callbacks: Callbacks }>;
+		let data: { hashedToken: string; callbacks: Callbacks };
 		if (callbacks?.added) {
 			const records = Promise.await(mongo.rawCollection(collectionName).find(selector, { projection: options.fields }).toArray());
 			for (const { _id, ...fields } of records) {
@@ -98,16 +92,18 @@ if (disableOplog) {
 	// Re-implement meteor's reactivity that uses observe to disconnect sessions when the token
 	// associated was removed
 	processOnChange = (diff: Record<string, any>, id: string): void => {
-		const loginTokens: undefined | {hashedToken: string}[] = diff['services.resume.loginTokens'];
+		const loginTokens: undefined | { hashedToken: string }[] = diff['services.resume.loginTokens'];
 		if (loginTokens) {
 			const tokens = loginTokens.map(({ hashedToken }) => hashedToken);
 
 			const cbs = userCallbacks.get(id);
 			if (cbs) {
-				[...cbs].filter(({ hashedToken }) => !tokens.includes(hashedToken)).forEach((item) => {
-					item.callbacks.removed(id);
-					cbs.delete(item);
-				});
+				[...cbs]
+					.filter(({ hashedToken }) => !tokens.includes(hashedToken))
+					.forEach((item) => {
+						item.callbacks.removed(id);
+						cbs.delete(item);
+					});
 			}
 		}
 	};
@@ -119,10 +115,10 @@ settings.set = use(settings.set, (context, next) => {
 	updateValue(record._id, record);
 });
 
-export class MeteorService extends ServiceClass implements IMeteor {
-	protected name = 'meteor';
+const clientVersionsStore = new Map<string, AutoUpdateRecord>();
 
-	protected internal = true;
+export class MeteorService extends ServiceClassInternal implements IMeteor {
+	protected name = 'meteor';
 
 	constructor() {
 		super();
@@ -143,12 +139,17 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		if (isPresenceMonitorEnabled()) {
 			this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
 				if (clientAction === 'removed') {
-					UserPresenceMonitor.processUserSession({
-						_id: userSession._id,
-						connections: [{
-							fake: true,
-						}],
-					}, 'removed');
+					UserPresenceMonitor.processUserSession(
+						{
+							_id: userSession._id,
+							connections: [
+								{
+									fake: true,
+								},
+							],
+						},
+						'removed',
+					);
 				}
 
 				UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
@@ -255,8 +256,31 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		}
 	}
 
-	async getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]> {
-		return [...autoUpdateRecords.values()];
+	async started(): Promise<void> {
+		// Even after server startup, client versions might not be updated yet, the only way
+		// to make sure we can send the most up to date versions is using the publication below.
+		// Since it receives each document one at a time, we have to store them to be able to send
+		// them all when needed (i.e.: on ddp-streamer startup).
+		Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
+			added(_collection: string, _id: string, version: AutoUpdateRecord) {
+				clientVersionsStore.set(_id, version);
+				api.broadcast('meteor.clientVersionUpdated', version);
+			},
+			changed(_collection: string, _id: string, version: AutoUpdateRecord) {
+				clientVersionsStore.set(_id, version);
+				api.broadcast('meteor.clientVersionUpdated', version);
+			},
+			onStop() {
+				//
+			},
+			ready() {
+				//
+			},
+		});
+	}
+
+	async getAutoUpdateClientVersions(): Promise<Record<string, AutoUpdateRecord>> {
+		return Object.fromEntries(clientVersionsStore);
 	}
 
 	async getLoginServiceConfiguration(): Promise<any[]> {
@@ -264,7 +288,9 @@ export class MeteorService extends ServiceClass implements IMeteor {
 	}
 
 	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {
-		const user = await Users.findOneByIdAndLoginHashedToken(userId, token, { projection: { _id: 1 } });
+		const user = await Users.findOneByIdAndLoginHashedToken(userId, token, {
+			projection: { _id: 1 },
+		});
 		if (!user) {
 			return {
 				result: Meteor.call(method, ...args),

@@ -3,11 +3,11 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
-import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import RemoveTagButton from './RemoveTagButton';
 import TagEditWithData from './TagEditWithData';
 import TagsPage from './TagsPage';
@@ -66,13 +66,7 @@ function TagsRoute() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -93,14 +87,7 @@ function TagsRoute() {
 
 	const renderRow = useCallback(
 		({ _id, name, description }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{name}</Table.Cell>
 				<Table.Cell withTruncatedText>{description}</Table.Cell>
 				<RemoveTagButton _id={_id} reload={reload} />
@@ -110,13 +97,7 @@ function TagsRoute() {
 	);
 
 	if (context === 'edit' || context === 'new') {
-		return (
-			<TagEditWithData
-				reload={reload}
-				tagId={id}
-				title={context === 'edit' ? t('Edit_Tag') : t('New_Tag')}
-			/>
-		);
+		return <TagEditWithData reload={reload} tagId={id} title={context === 'edit' ? t('Edit_Tag') : t('New_Tag')} />;
 	}
 
 	if (!canViewTags) {
