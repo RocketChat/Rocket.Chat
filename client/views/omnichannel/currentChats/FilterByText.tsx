@@ -28,6 +28,34 @@ type FilterByTextType = FC<{
 
 type CustomFieldsData = Record<string, Pick<ILivechatCustomField, 'label' | 'type' | 'required' | 'defaultValue'> & { options?: string[] }>;
 
+const convertCustomFieldsToValidJSONFormat = (
+	customFields: Omit<ILivechatCustomField, '_updatedAt'>[],
+	defaultOptionValue: string,
+): CustomFieldsData => {
+	const jsonObj: CustomFieldsData = {};
+	customFields.forEach(({ _id, label, visibility, options, scope, required }) => {
+		if (visibility === 'visible' && scope === 'room') {
+			const optionsArrayWithClearFilterOption = options
+				? options
+						.split(',')
+						.map((item) => item.trim())
+						.filter((item) => item)
+				: [];
+			optionsArrayWithClearFilterOption.length && optionsArrayWithClearFilterOption.unshift(defaultOptionValue);
+			jsonObj[_id] = {
+				label,
+				type: options ? 'select' : 'text',
+				required,
+				defaultValue: options ? defaultOptionValue : '',
+				...(optionsArrayWithClearFilterOption.length && {
+					options: optionsArrayWithClearFilterOption,
+				}),
+			};
+		}
+	});
+	return jsonObj;
+};
+
 const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -81,35 +109,12 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 
 	const { value: allCustomFieldsDefinition, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
 
-	const jsonConverterToValidFormat = (customFields: Omit<ILivechatCustomField, '_updatedAt'>[]): CustomFieldsData => {
-		const jsonObj: CustomFieldsData = {};
-		customFields.forEach(({ _id, label, visibility, options, scope, required }) => {
-			if (visibility === 'visible' && scope === 'room') {
-				const optionsArrayWithClearFilterOption = options
-					? options
-							.split(',')
-							.map((item) => item.trim())
-							.filter((item) => item)
-					: [];
-				optionsArrayWithClearFilterOption.length && optionsArrayWithClearFilterOption.unshift(t('None_no_option_selected'));
-				jsonObj[_id] = {
-					label,
-					type: options ? 'select' : 'text',
-					required,
-					defaultValue: options ? t('None_no_option_selected') : '',
-					...(optionsArrayWithClearFilterOption.length && {
-						options: optionsArrayWithClearFilterOption,
-					}),
-				};
-			}
-		});
-		return jsonObj;
-	};
-
 	const jsonCustomField = useMemo(
-		() => (allCustomFieldsDefinition?.customFields ? jsonConverterToValidFormat(allCustomFieldsDefinition.customFields) : {}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[allCustomFieldsDefinition],
+		() =>
+			allCustomFieldsDefinition?.customFields
+				? convertCustomFieldsToValidJSONFormat(allCustomFieldsDefinition.customFields, t('None_no_option_selected'))
+				: {},
+		[allCustomFieldsDefinition, t],
 	);
 
 	const handleCustomFields = useMutableCallback((newCustomFields: Record<string, string>) => {
