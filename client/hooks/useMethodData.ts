@@ -1,19 +1,18 @@
 import { useCallback, useEffect } from 'react';
 
-import { ServerMethods, useMethod } from '../contexts/ServerContext';
+import type { Awaited } from '../../definition/utils';
+import { ServerMethodFunction, ServerMethodParameters, ServerMethods, useMethod } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { AsyncState, useAsyncState } from './useAsyncState';
 
-const defaultArgs: unknown[] = [];
-
-export const useMethodData = <T>(
-	methodName: keyof ServerMethods,
-	args: any[] = defaultArgs,
-	initialValue?: T | (() => T),
-): AsyncState<T> & { reload: () => void } => {
-	const { resolve, reject, reset, ...state } = useAsyncState<T>(initialValue);
+export const useMethodData = <MethodName extends keyof ServerMethods, Result = Awaited<ReturnType<ServerMethodFunction<MethodName>>>>(
+	methodName: MethodName,
+	args: ServerMethodParameters<MethodName>,
+	initialValue?: Result | (() => Result),
+): AsyncState<Result> & { reload: () => void } => {
+	const { resolve, reject, reset, ...state } = useAsyncState<Result>(initialValue);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const getData: (...args: unknown[]) => Promise<T> = useMethod(methodName);
+	const getData: ServerMethodFunction<MethodName> = useMethod(methodName);
 
 	const fetchData = useCallback(() => {
 		reset();
@@ -30,6 +29,7 @@ export const useMethodData = <T>(
 	}, [reset, getData, args, resolve, dispatchToastMessage, reject]);
 
 	useEffect(() => {
+		console.log('as');
 		fetchData();
 	}, [fetchData]);
 
