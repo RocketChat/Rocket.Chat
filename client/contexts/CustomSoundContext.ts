@@ -8,5 +8,4 @@ export const CustomSoundContext = createContext<CustomSoundContextValue>({
 	play: () => undefined,
 });
 
-export const useCustomSound = (): CustomSoundContextValue =>
-	useContext(CustomSoundContext);
+export const useCustomSound = (): CustomSoundContextValue => useContext(CustomSoundContext);

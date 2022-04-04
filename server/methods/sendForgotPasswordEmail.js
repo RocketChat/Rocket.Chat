@@ -4,12 +4,13 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { Users } from '../../app/models';
 import { settings } from '../../app/settings/server';
+import { SystemLogger } from '../lib/logger/system';
 
 Meteor.methods({
 	sendForgotPasswordEmail(to) {
 		check(to, String);
 
-		const email = to.trim();
+		const email = to.trim().toLowerCase();
 
 		const user = Users.findOneByEmailAddress(email, { fields: { _id: 1 } });
 
@@ -27,7 +28,7 @@ Meteor.methods({
 			Accounts.sendResetPasswordEmail(user._id, email);
 			return true;
 		} catch (error) {
-			console.error(error);
+			SystemLogger.error(error);
 		}
 	},
 });

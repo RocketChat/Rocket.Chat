@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 
-import Chart from './Chart';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { useUpdateChartData } from './useUpdateChartData';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
+import Chart from './Chart';
+import { useUpdateChartData } from './useUpdateChartData';
 
 const labels = ['Available', 'Away', 'Busy', 'Offline'];
 
@@ -16,13 +16,14 @@ const initialData = {
 	offline: 0,
 };
 
-const init = (canvas, context, t) => drawDoughnutChart(
-	canvas,
-	t('Agents'),
-	context,
-	labels,
-	Object.values(initialData),
-);
+const init = (canvas, context, t) =>
+	drawDoughnutChart(
+		canvas,
+		t('Agents'),
+		context,
+		labels.map((l) => t(l)),
+		Object.values(initialData),
+	);
 
 const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 	const t = useTranslation();
@@ -37,19 +38,11 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/charts/agents-status',
-		params,
-	);
+	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/agents-status', params);
 
 	reloadRef.current.agentStatusChart = reload;
 
-	const {
-		offline = 0,
-		available = 0,
-		away = 0,
-		busy = 0,
-	} = data ?? initialData;
+	const { offline = 0, available = 0, away = 0, busy = 0 } = data ?? initialData;
 
 	useEffect(() => {
 		const initChart = async () => {
@@ -60,14 +53,14 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
-			updateChartData('Offline', [offline]);
-			updateChartData('Available', [available]);
-			updateChartData('Away', [away]);
-			updateChartData('Busy', [busy]);
+			updateChartData(t('Offline'), [offline]);
+			updateChartData(t('Available'), [available]);
+			updateChartData(t('Away'), [away]);
+			updateChartData(t('Busy'), [busy]);
 		}
 	}, [available, away, busy, offline, state, t, updateChartData]);
 
-	return <Chart ref={canvas} {...props}/>;
+	return <Chart ref={canvas} {...props} />;
 };
 
 export default AgentStatusChart;

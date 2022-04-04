@@ -1,24 +1,56 @@
-import React, { CSSProperties, FC } from 'react';
-import SimpleBar from 'simplebar-react';
-import 'simplebar/src/simplebar.css';
-
-import { useDir } from '../hooks/useDir';
-
+import { Scrollbars, ScrollValues } from 'rc-scrollbars';
+import React, { MutableRefObject, CSSProperties, useMemo, memo, forwardRef, ReactNode, ReactElement } from 'react';
 
 const styleDefault = {
-	maxHeight: '100%', flexGrow: 1,
+	width: '100%',
+	height: '100%',
+	flexGrow: 1,
+	willChange: 'transform',
+	overflowY: 'hidden',
 };
 
-
-type CustomScrollbarsProps = {
-	onScroll?: Function;
-	ref: React.Ref<unknown>;
+export type CustomScrollbarsProps = {
+	overflowX?: boolean;
 	style?: CSSProperties;
-}
+	children?: ReactNode;
+	onScroll?: (values: ScrollValues) => void;
+	renderView?: typeof Scrollbars.defaultProps.renderView;
+	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
+};
 
-const ScrollableContentWrapper: FC<CustomScrollbarsProps> = React.memo(React.forwardRef(({ onScroll, children, style = styleDefault }, ref) => {
-	const dir = useDir();
-	return <SimpleBar data-simplebar-direction={dir} direction={dir} style={style} scrollableNodeProps={{ ref, onScroll }} children={children}/>;
-}));
+const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(function WrappedComponent(
+	{ children, style, onScroll, overflowX, renderView },
+	ref,
+) {
+	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]) as CSSProperties;
 
-export default ScrollableContentWrapper;
+	return (
+		<Scrollbars
+			autoHide
+			autoHideTimeout={2000}
+			autoHideDuration={500}
+			style={scrollbarsStyle}
+			onScrollFrame={onScroll}
+			renderView={renderView}
+			renderTrackHorizontal={
+				overflowX ? undefined : (props): ReactElement => <div {...props} className='track-horizontal' style={{ display: 'none' }} />
+			}
+			renderThumbVertical={({ style, ...props }): JSX.Element => (
+				<div {...props} style={{ ...style, backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '7px' }} />
+			)}
+			children={children}
+			ref={(sRef): void => {
+				if (ref && sRef) {
+					if (typeof ref === 'function') {
+						ref(sRef.view ?? null);
+						return;
+					}
+
+					(ref as MutableRefObject<HTMLElement | undefined>).current = sRef.view;
+				}
+			}}
+		/>
+	);
+});
+
+export default memo(ScrollableContentWrapper);

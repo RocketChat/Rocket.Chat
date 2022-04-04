@@ -2,177 +2,354 @@ import Page from './Page';
 import Global from './global';
 
 class FlexTab extends Page {
-	get moreActions() { return browser.element('.rc-room-actions__button.js-more'); }
+	get headerMoreActions() {
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
+	}
+
+	get moreActions() {
+		return browser.element('.rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
+	}
+
+	get sendBtn() {
+		return browser.element('.rcx-vertical-bar .rc-message-box__icon.js-send');
+	}
+
+	get messageInput() {
+		return browser.element('.rcx-vertical-bar .js-input-message');
+	}
+
+	get threadTab() {
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-thread');
+	}
 
 	// Channel Info Tab
-	get channelTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--info-circled'); }
+	get channelTab() {
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-info-circled');
+	}
 
-	get channelSettings() { return browser.element('.channel-settings'); }
+	get channelSettings() {
+		return browser.element('aside > h3 > div > i.rcx-box--full.rcx-icon--name-info-circled');
+	}
 
-	get channelSettingName() { return browser.element('.channel-settings .rc-user-info__name'); }
+	get channelSettingName() {
+		return browser.element('.channel-settings .rc-user-info__name');
+	}
 
-	get archiveBtn() { return browser.element('.clearfix:last-child .icon-pencil'); }
+	get archiveBtn() {
+		return browser.element('.clearfix:last-child .icon-pencil');
+	}
 
-	get archiveRadio() { return browser.element('.editing'); }
+	get archiveRadio() {
+		return browser.element('.editing');
+	}
 
-	get archiveSave() { return browser.element('.save'); }
+	get archiveSave() {
+		return browser.element('.save');
+	}
 
-	get editNameBtn() { return browser.element('[data-edit="name"]'); }
+	get editNameBtn() {
+		return browser.element('[data-edit="name"]');
+	}
 
-	get editTopicBtn() { return browser.element('[data-edit="topic"]'); }
+	get editTopicBtn() {
+		return browser.element('[data-edit="topic"]');
+	}
 
-	get editAnnouncementBtn() { return browser.element('[data-edit="announcement"]'); }
+	get editAnnouncementBtn() {
+		return browser.element('[data-edit="announcement"]');
+	}
 
-	get editDescriptionBtn() { return browser.element('[data-edit="description"]'); }
+	get editDescriptionBtn() {
+		return browser.element('[data-edit="description"]');
+	}
 
-	get editNotificationBtn() { return browser.element('[data-edit="desktopNotifications"]'); }
+	get editNotificationBtn() {
+		return browser.element('[data-edit="desktopNotifications"]');
+	}
 
-	get editMobilePushBtn() { return browser.element('[data-edit="mobilePushNotifications"]'); }
+	get editMobilePushBtn() {
+		return browser.element('[data-edit="mobilePushNotifications"]');
+	}
 
-	get editEmailNotificationBtn() { return browser.element('[data-edit="emailNotifications"]'); }
+	get editEmailNotificationBtn() {
+		return browser.element('[data-edit="emailNotifications"]');
+	}
 
-	get editUnreadAlertBtn() { return browser.element('[data-edit="unreadAlert"]'); }
+	get editUnreadAlertBtn() {
+		return browser.element('[data-edit="unreadAlert"]');
+	}
 
-	get editNameTextInput() { return browser.element('.channel-settings input[name="name"]'); }
+	get editNameTextInput() {
+		return browser.element('.channel-settings input[name="name"]');
+	}
 
-	get editTopicTextInput() { return browser.element('.channel-settings input[name="topic"]'); }
+	get editTopicTextInput() {
+		return browser.element('.channel-settings input[name="topic"]');
+	}
 
-	get editAnnouncementTextInput() { return browser.element('.channel-settings input[name="announcement"]'); }
+	get editAnnouncementTextInput() {
+		return browser.element('.channel-settings input[name="announcement"]');
+	}
 
-	get editDescriptionTextInput() { return browser.element('.channel-settings input[name="description"]'); }
+	get editDescriptionTextInput() {
+		return browser.element('.channel-settings input[name="description"]');
+	}
 
-	get editNameSave() { return browser.element('.channel-settings .save'); }
+	get editNameSave() {
+		return browser.element('.channel-settings .save');
+	}
 
-	get deleteBtn() { return browser.element('.channel-settings .js-delete'); }
+	get deleteBtn() {
+		return browser.element('.channel-settings .js-delete');
+	}
 
 	// Members Tab
-	get membersTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--team'); }
+	get membersTab() {
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-members');
+	}
 
-	get membersTabContent() { return browser.element('.animated'); }
+	get membersTabContent() {
+		return browser.element('aside > h3 > div > i.rcx-box--full.rcx-icon--name-members');
+	}
 
-	get userSearchBar() { return browser.element('#user-add-search'); }
+	get userSearchBar() {
+		return browser.element('#user-add-search');
+	}
 
-	get removeUserBtn() { return browser.element('.remove-user'); }
+	get removeUserBtn() {
+		return browser.element('.remove-user');
+	}
 
-	get setOwnerBtn() { return browser.element('.set-owner'); }
+	get setOwnerBtn() {
+		return browser.element('.set-owner');
+	}
 
-	get setModeratorBtn() { return browser.element('.set-moderator'); }
+	get setModeratorBtn() {
+		return browser.element('.set-moderator');
+	}
 
-	get muteUserBtn() { return browser.element('.mute-user'); }
+	get muteUserBtn() {
+		return browser.element('.mute-user');
+	}
 
-	get viewAllBtn() { return browser.element('.button.back'); }
+	get viewAllBtn() {
+		return browser.element('.button.back');
+	}
 
-	get startVideoCall() { return browser.element('.start-video-call'); }
+	get startVideoCall() {
+		return browser.element('.start-video-call');
+	}
 
-	get startAudioCall() { return browser.element('.start-audio-call'); }
+	get startAudioCall() {
+		return browser.element('.start-audio-call');
+	}
 
-	get showAll() { return browser.element('.see-all'); }
+	get showAll() {
+		return browser.element('.see-all');
+	}
 
-	get membersUserInfo() { return browser.element('.flex-tab-container .info'); }
+	get membersUserInfo() {
+		return browser.element('.flex-tab-container .info');
+	}
 
-	get avatarImage() { return browser.element('.flex-tab-container .avatar-image'); }
+	get avatarImage() {
+		return browser.element('aside.rcx-vertical-bar .rcx-avatar');
+	}
 
-	get memberUserName() { return browser.element('.info h3'); }
+	get memberUserName() {
+		return browser.element('.info h3');
+	}
 
-	get memberRealName() { return browser.element('.info p'); }
-
+	get memberRealName() {
+		return browser.element('.info p');
+	}
 
 	// Search Tab
-	get searchTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--magnifier'); }
+	get searchTab() {
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-magnifier');
+	}
 
-	get searchTabContent() { return browser.element('.rocket-search-result'); }
+	get searchTabContent() {
+		return browser.element('.rocket-search-result');
+	}
 
-	get messageSearchBar() { return browser.element('#message-search'); }
+	get messageSearchBar() {
+		return browser.element('#message-search');
+	}
 
-	get searchResult() { return browser.element('.new-day'); }
+	get searchResult() {
+		return browser.element('.new-day');
+	}
 
 	// Notifications Tab
-	get notificationsTab() { return browser.element('.rc-popover__item[data-id=push-notifications]'); }
+	get notificationsTab() {
+		return browser.element('.rcx-option__content:contains("Notifications Preferences")');
+	}
 
-	get notificationsSettings() { return browser.element('.push-notifications'); }
+	get notificationsSettings() {
+		return browser.element('aside > h3 > div > i.rcx-box--full.rcx-icon--name-bell');
+	}
 
 	// Files Tab
-	get filesTab() { return browser.element('.rc-popover__item[data-id=uploaded-files-list], .tab-button[data-id=uploaded-files-list]'); }
+	get filesTab() {
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-clip');
+	}
 
-	get fileItem() { return browser.element('.uploaded-files-list ul:first-child'); }
+	get fileItem() {
+		return browser.element('.uploaded-files-list ul:first-child');
+	}
 
-	get filesTabContent() { return browser.element('.uploaded-files-list'); }
+	get filesTabContent() {
+		return browser.element('aside > h3 > div > i.rcx-icon--name-attachment');
+	}
 
-	get fileDelete() { return browser.element('.uploaded-files-list ul:first-child .file-delete'); }
+	get fileDelete() {
+		return browser.element('.uploaded-files-list ul:first-child .file-delete');
+	}
 
-	get fileDownload() { return browser.element('.uploaded-files-list ul:first-child .file-download'); }
+	get fileDownload() {
+		return browser.element('.uploaded-files-list ul:first-child .file-download');
+	}
 
-	get fileName() { return browser.element('.uploaded-files-list ul:first-child .room-file-item'); }
+	get fileName() {
+		return browser.element('.uploaded-files-list ul:first-child .room-file-item');
+	}
 
 	// Mentions Tab
-	get mentionsTab() { return browser.element('.rc-popover__item[data-id=mentions], .tab-button[data-id=mentions]'); }
+	get mentionsTab() {
+		return browser.element('.rcx-option__content:contains("Mentions")');
+	}
 
-	get mentionsTabContent() { return browser.element('.mentioned-messages-list'); }
+	get mentionsTabContent() {
+		return browser.element('aside > h3 > div > i.rcx-icon--name-at');
+	}
 
 	// Starred Tab
-	get starredTab() { return browser.element('.rc-popover__item[data-id=starred-messages], .tab-button[data-id=starred-messages]'); }
+	get starredTab() {
+		return browser.element('.rcx-option__content:contains("Starred Messages")');
+	}
 
-	get starredTabContent() { return browser.element('.starred-messages-list'); }
+	get starredTabContent() {
+		return browser.element('aside > h3 > div > i.rcx-icon--name-star');
+	}
 
 	// Pinned Tab
-	get pinnedTab() { return browser.element('.rc-popover__item[data-id=pinned-messages], .tab-button[data-id=pinned-messages]'); }
+	get pinnedTab() {
+		return browser.element('.rcx-option__content:contains("Pinned Messages")');
+	}
 
-	get pinnedTabContent() { return browser.element('.pinned-messages-list'); }
+	get pinnedTabContent() {
+		return browser.element('aside > h3 > div > i.rcx-icon--name-pin');
+	}
 
-	get firstSetting() { return browser.element('.clearfix li:nth-child(1) .current-setting'); }
+	get firstSetting() {
+		return browser.element('.clearfix li:nth-child(1) .current-setting');
+	}
 
-	get secondSetting() { return browser.element('.clearfix li:nth-child(2) .current-setting'); }
+	get secondSetting() {
+		return browser.element('.clearfix li:nth-child(2) .current-setting');
+	}
 
-	get thirdSetting() { return browser.element('.clearfix li:nth-child(3) .current-setting'); }
+	get thirdSetting() {
+		return browser.element('.clearfix li:nth-child(3) .current-setting');
+	}
 
-	get fourthSetting() { return browser.element('.clearfix li:nth-child(4) .current-setting'); }
+	get fourthSetting() {
+		return browser.element('.clearfix li:nth-child(4) .current-setting');
+	}
 
 	// admin view flextab items
-	get usersSendInvitationTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--send'); }
+	get usersSendInvitationTab() {
+		return browser.element('.tab-button:not(.hidden) .tab-button-icon--send');
+	}
 
-	get usersAddUserTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--plus'); }
+	get usersAddUserTab() {
+		return browser.element('.tab-button:not(.hidden) .tab-button-icon--plus');
+	}
 
-	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
+	get usersSendInvitationTextArea() {
+		return browser.element('#inviteEmails');
+	}
 
-	get usersButtonCancel() { return browser.element('.button.cancel'); }
+	get usersButtonCancel() {
+		return browser.element('.button.cancel');
+	}
 
-	get usersSendInvitationSend() { return browser.element('.button.send'); }
+	get usersSendInvitationSend() {
+		return browser.element('.button.send');
+	}
 
-	get usersButtonSave() { return browser.element('.button.save'); }
+	get usersButtonSave() {
+		return browser.element('.button.save');
+	}
 
-	get usersAddUserName() { return browser.element('#name'); }
+	get usersAddUserName() {
+		return browser.element('#name');
+	}
 
-	get usersAddUserUsername() { return browser.element('#username'); }
+	get usersAddUserUsername() {
+		return browser.element('#username');
+	}
 
-	get usersAddUserEmail() { return browser.element('#email'); }
+	get usersAddUserEmail() {
+		return browser.element('#email');
+	}
 
-	get usersAddUserRoleList() { return browser.element('#roleSelect'); }
+	get usersAddUserRoleList() {
+		return browser.element('#roleSelect');
+	}
 
-	get usersAddUserPassword() { return browser.element('#password'); }
+	get usersAddUserPassword() {
+		return browser.element('#password');
+	}
 
-	get usersAddUserRoleButton() { return browser.element('#addRole'); }
+	get usersAddUserRoleButton() {
+		return browser.element('#addRole');
+	}
 
-	get usersAddUserVerifiedCheckbox() { return browser.element('#verified'); }
+	get usersAddUserVerifiedCheckbox() {
+		return browser.element('#verified');
+	}
 
-	get usersAddUserChangePasswordCheckbox() { return browser.element('#changePassword'); }
+	get usersAddUserChangePasswordCheckbox() {
+		return browser.element('#changePassword');
+	}
 
-	get usersAddUserDefaultChannelCheckbox() { return browser.element('#joinDefaultChannels'); }
+	get usersAddUserDefaultChannelCheckbox() {
+		return browser.element('#joinDefaultChannels');
+	}
 
-	get usersAddUserWelcomeEmailCheckbox() { return browser.element('#sendWelcomeEmail'); }
+	get usersAddUserWelcomeEmailCheckbox() {
+		return browser.element('#sendWelcomeEmail');
+	}
 
-	get usersAddUserRandomPassword() { return browser.element('#randomPassword'); }
+	get usersAddUserRandomPassword() {
+		return browser.element('#randomPassword');
+	}
 
-	get emojiNewAliases() { return browser.element('#aliases'); }
+	get emojiNewAliases() {
+		return browser.element('#aliases');
+	}
 
-	get emojiNewImageInput() { return browser.element('#image'); }
+	get emojiNewImageInput() {
+		return browser.element('#image');
+	}
 
-	get usersView() { return browser.element('.rc-user-info-action'); }
+	get usersView() {
+		return browser.element('.rcx-vertical-bar:contains("User Info")');
+	}
 
-	get usersActivate() { return browser.element('.rc-popover__item[data-id=activate]'); }
+	get usersActivate() {
+		return browser.element('.rcx-option__content:contains("Activate")');
+	}
 
-	get usersDeactivate() { return browser.element('.rc-popover__item[data-id=deactivate]'); }
+	get usersDeactivate() {
+		return browser.element('.rcx-option__content:contains("Deactivate")');
+	}
 
-	getUserEl(username) { return browser.element(`.flex-tab button[title="${ username }"] > p`); }
+	getUserEl(username) {
+		return browser.element(`.flex-tab button[title="${username}"] > p`);
+	}
 
 	archiveChannel() {
 		this.archiveBtn.waitForVisible();
@@ -198,26 +375,33 @@ class FlexTab extends Page {
 	addRole(role) {
 		this.usersAddUserRoleList.waitForVisible(5000);
 		this.usersAddUserRoleList.click();
-		browser.waitForVisible(`option[value=${ role }]`, 5000);
-		browser.click(`option[value=${ role }]`);
+		browser.waitForVisible(`option[value=${role}]`, 5000);
+		browser.click(`option[value=${role}]`);
 		this.usersAddUserRoleButton.waitForVisible(5000);
 		this.usersAddUserRoleButton.click();
-		browser.waitForVisible(`.remove-role=${ role }`);
+		browser.waitForVisible(`.remove-role=${role}`);
 	}
 
 	operateFlexTab(desiredTab, desiredState) {
 		// desiredState true=open false=closed
 
 		const operate = (tab, panel, more) => {
-			this[panel].should(!desiredState ? 'be.visible' : 'not.be.visible');
+			this[panel].should(!desiredState ? 'be.visible' : 'not.exist');
 
 			if (more) {
-				this.moreActions.click();
+				this.headerMoreActions.click();
 			}
 
 			this[tab].click();
 
-			this[panel].should(desiredState ? 'be.visible' : 'not.be.visible');
+			// The button "more" keeps the focus when popover is closed from a click
+			// on an item, need to click again to change the status to unselected and
+			// allow the next click to open the popover again
+			if (more) {
+				this.headerMoreActions.click();
+			}
+
+			this[panel].should(desiredState ? 'be.visible' : 'not.exist');
 		};
 
 		const tabs = {
@@ -238,7 +422,7 @@ class FlexTab extends Page {
 			},
 
 			files() {
-				operate('filesTab', 'filesTabContent', true);
+				operate('filesTab', 'filesTabContent');
 			},
 
 			mentions() {
@@ -256,7 +440,6 @@ class FlexTab extends Page {
 
 		tabs[desiredTab].call(this);
 	}
-
 
 	setUserOwner(user) {
 		this.enterUserView(user);
@@ -292,4 +475,4 @@ class FlexTab extends Page {
 	}
 }
 
-module.exports = new FlexTab();
+export default new FlexTab();

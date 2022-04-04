@@ -2,8 +2,8 @@ import React from 'react';
 
 import { useRouteParameter } from '../../../contexts/RouterContext';
 import { useIsPrivilegedSettingsContext } from '../../../contexts/SettingsContext';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import EditableSettingsProvider from '../../../providers/EditableSettingsProvider';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import GroupSelector from './GroupSelector';
 
 export function SettingsRoute() {
@@ -15,9 +15,11 @@ export function SettingsRoute() {
 		return <NotAuthorizedPage />;
 	}
 
-	return <EditableSettingsProvider>
-		<GroupSelector groupId={groupId} />
-	</EditableSettingsProvider>;
+	return (
+		<EditableSettingsProvider>
+			<GroupSelector groupId={groupId} />
+		</EditableSettingsProvider>
+	);
 }
 
 export default SettingsRoute;

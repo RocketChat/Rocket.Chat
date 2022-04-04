@@ -2,14 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { alerts } from '../../ui-utils';
+import * as banners from '../../../client/lib/banners';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		const user = Meteor.user();
 
 		if (user && Object.keys(user.banners || {}).length > 0) {
-			const firstBanner = Object.values(user.banners).filter((b) => b.read !== true).sort((a, b) => b.priority - a.priority)[0];
+			const firstBanner = Object.values(user.banners)
+				.filter((b) => b.read !== true)
+				.sort((a, b) => b.priority - a.priority)[0];
 
 			if (!firstBanner) {
 				return;
@@ -17,7 +19,8 @@ Meteor.startup(function() {
 
 			firstBanner.textArguments = firstBanner.textArguments || [];
 
-			alerts.open({
+			banners.open({
+				id: firstBanner.id,
 				title: TAPi18n.__(firstBanner.title),
 				text: TAPi18n.__(firstBanner.text, ...firstBanner.textArguments),
 				modifiers: firstBanner.modifiers,

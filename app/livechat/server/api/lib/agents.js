@@ -2,7 +2,7 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { LivechatDepartmentAgents } from '../../../../models/server/raw';
 
 export async function findAgentDepartments({ userId, enabledDepartmentsOnly, agentId }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 	if (enabledDepartmentsOnly) {

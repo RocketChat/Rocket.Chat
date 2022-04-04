@@ -3,26 +3,27 @@ import moment from 'moment';
 import { AbstractBusinessHourType, IBusinessHourType } from './AbstractBusinessHour';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 
-interface IExtraProperties extends ILivechatBusinessHour {
+interface IExtraProperties {
 	timezoneName?: string;
 }
 
 export class DefaultBusinessHour extends AbstractBusinessHourType implements IBusinessHourType {
 	name = LivechatBusinessHourTypes.DEFAULT;
 
-	getBusinessHour(): Promise<ILivechatBusinessHour | undefined> {
+	getBusinessHour(): Promise<ILivechatBusinessHour | null> {
 		return this.BusinessHourRepository.findOneDefaultBusinessHour();
 	}
 
-	async saveBusinessHour(businessHourData: IExtraProperties): Promise<ILivechatBusinessHour> {
+	async saveBusinessHour(businessHour: ILivechatBusinessHour & IExtraProperties): Promise<ILivechatBusinessHour> {
+		const { timezoneName, ...businessHourData } = businessHour;
+
 		if (!businessHourData._id) {
 			return businessHourData;
 		}
 		businessHourData.timezone = {
-			name: businessHourData.timezoneName || moment.tz.guess(),
-			utc: this.getUTCFromTimezone(businessHourData.timezoneName),
+			name: timezoneName || moment.tz.guess(),
+			utc: this.getUTCFromTimezone(timezoneName),
 		};
-		delete businessHourData.timezoneName;
 		await this.baseSaveBusinessHour(businessHourData);
 		return businessHourData;
 	}

@@ -6,19 +6,19 @@ import { useTranslation } from '../contexts/TranslationContext';
 type FilterByTextProps = {
 	placeholder?: string;
 	onChange: (filter: { text: string }) => void;
-	displayButton: boolean;
+	inputRef?: () => void;
+};
+
+type FilterByTextPropsWithButton = FilterByTextProps & {
+	displayButton: true;
 	textButton: string;
 	onButtonClick: () => void;
 };
 
-const FilterByText: FC<FilterByTextProps> = ({
-	placeholder,
-	onChange: setFilter,
-	displayButton: display = false,
-	textButton = '',
-	onButtonClick,
-	...props
-}) => {
+const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
+	'displayButton' in props && props.displayButton === true;
+
+const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children, ...props }) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -35,10 +35,28 @@ const FilterByText: FC<FilterByTextProps> = ({
 		event.preventDefault();
 	}, []);
 
-	return <Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
-		<TextInput placeholder={placeholder ?? t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleInputChange} value={text} />
-		<Button onClick={onButtonClick} display={display ? 'block' : 'none'} mis='x8' primary>{textButton}</Button>
-	</Box>;
+	return (
+		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
+			<TextInput
+				placeholder={placeholder ?? t('Search')}
+				ref={inputRef}
+				addon={<Icon name='magnifier' size='x20' />}
+				onChange={handleInputChange}
+				value={text}
+			/>
+			{isFilterByTextPropsWithButton(props) ? (
+				<Button onClick={props.onButtonClick} mis='x8' primary>
+					{props.textButton}
+				</Button>
+			) : (
+				children && (
+					<Box mis='x8' display='flex' flexDirection='row'>
+						{children}
+					</Box>
+				)
+			)}
+		</Box>
+	);
 };
 
-export default memo(FilterByText);
+export default memo<FC<FilterByTextProps>>(FilterByText);

@@ -8,10 +8,6 @@
 	display: block;
 }
 
-.message.sequential[data-tmid] > .message-body-wrapper > .title {
-	display: none;
-}
-
 .message.thread-message {
 	padding-top: 16px;
 	padding-bottom: 8px;
@@ -59,7 +55,6 @@
 
 .message {
 	& .thread-replied {
-
 		display: inline-flex;
 
 		display: flex;
@@ -135,7 +130,6 @@
 	}
 
 	.thread-quote__message {
-
 		display: flex;
 
 		overflow: hidden;

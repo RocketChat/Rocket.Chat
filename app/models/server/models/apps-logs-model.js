@@ -11,4 +11,9 @@ export class AppsLogsModel extends Base {
 	remove(query) {
 		return this._db.originals.remove(query);
 	}
+
+	resetTTLIndex(expireAfterSeconds) {
+		this.tryDropIndex({ _updatedAt: 1 });
+		this.tryEnsureIndex({ _updatedAt: 1 }, { expireAfterSeconds });
+	}
 }

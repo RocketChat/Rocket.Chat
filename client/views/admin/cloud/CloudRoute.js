@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CloudPage from './CloudPage';
 
 function CloudRoute() {

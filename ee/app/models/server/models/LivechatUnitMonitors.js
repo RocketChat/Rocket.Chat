@@ -5,6 +5,9 @@ import { Base } from '../../../../../app/models';
 export class LivechatUnitMonitors extends Base {
 	constructor() {
 		super('livechat_unit_monitors');
+
+		this.tryEnsureIndex({ monitorId: 1 });
+		this.tryEnsureIndex({ unitId: 1 });
 	}
 
 	findByUnitId(unitId) {
@@ -16,14 +19,17 @@ export class LivechatUnitMonitors extends Base {
 	}
 
 	saveMonitor(monitor) {
-		return this.upsert({
-			monitorId: monitor.monitorId,
-			unitId: monitor.unitId,
-		}, {
-			$set: {
-				username: monitor.username,
+		return this.upsert(
+			{
+				monitorId: monitor.monitorId,
+				unitId: monitor.unitId,
 			},
-		});
+			{
+				$set: {
+					username: monitor.username,
+				},
+			},
+		);
 	}
 
 	removeByUnitIdAndMonitorId(unitId, monitorId) {

@@ -1,8 +1,8 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Messages, Rooms } from '../../../app/models/server';
 import { trash } from '../../../app/models/server/models/_BaseDb';
 
-Migrations.add({
+addMigration({
 	version: 192,
 	up() {
 		try {

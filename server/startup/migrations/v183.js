@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { Migrations } from '../../../app/migrations';
-import { Rooms, Messages, Subscriptions, Uploads, Settings, Users } from '../../../app/models/server';
+import { addMigration } from '../../lib/migrations';
+import { Rooms, Messages, Subscriptions, Users } from '../../../app/models/server';
+import { Settings, Uploads } from '../../../app/models/server/raw';
 
 const unifyRooms = (room) => {
 	// verify if other DM already exists
@@ -25,11 +26,15 @@ const unifyRooms = (room) => {
 		});
 
 		// update subscription to point to new room _id
-		Subscriptions.update({ rid: room._id }, {
-			$set: {
-				rid: newId,
+		Subscriptions.update(
+			{ rid: room._id },
+			{
+				$set: {
+					rid: newId,
+				},
 			},
-		}, { multi: true });
+			{ multi: true },
+		);
 
 		return newId;
 	}
@@ -52,19 +57,27 @@ const fixSelfDMs = () => {
 		const correctId = unifyRooms(room);
 
 		// move things to correct room
-		Messages.update({ rid: room._id }, {
-			$set: {
-				rid: correctId,
-			},
-		}, { multi: true });
-
-		// Fix error of upload permission check using Meteor.userId()
-		Meteor.runAsUser(room.uids[0], () => {
-			Uploads.update({ rid: room._id }, {
+		Messages.update(
+			{ rid: room._id },
+			{
 				$set: {
 					rid: correctId,
 				},
-			}, { multi: true });
+			},
+			{ multi: true },
+		);
+
+		// Fix error of upload permission check using Meteor.userId()
+		Meteor.runAsUser(room.uids[0], async () => {
+			await Uploads.update(
+				{ rid: room._id },
+				{
+					$set: {
+						rid: correctId,
+					},
+				},
+				{ multi: true },
+			);
 		});
 	});
 };
@@ -73,38 +86,41 @@ const fixDiscussions = () => {
 	Rooms.find({ t: 'd', prid: { $exists: true } }, { fields: { _id: 1 } }).forEach(({ _id }) => {
 		const { u } = Messages.findOne({ drid: _id }, { fields: { u: 1 } }) || {};
 
-		Rooms.update({ _id }, {
-			$set: {
-				t: 'p',
-				name: Random.id(),
-				u,
-				ro: false,
-				default: false,
-				sysMes: true,
+		Rooms.update(
+			{ _id },
+			{
+				$set: {
+					t: 'p',
+					name: Random.id(),
+					u,
+					ro: false,
+					default: false,
+					sysMes: true,
+				},
+				$unset: {
+					usernames: 1,
+					uids: 1,
+				},
 			},
-			$unset: {
-				usernames: 1,
-				uids: 1,
-			},
-		});
+		);
 	});
 };
 
-const fixUserSearch = () => {
-	const setting = Settings.findOneById('Accounts_SearchFields', { fields: { value: 1 } });
+const fixUserSearch = async () => {
+	const setting = await Settings.findOneById('Accounts_SearchFields', { projection: { value: 1 } });
 	const value = setting?.value?.trim();
 	if (value === '' || value === 'username, name') {
-		Settings.updateValueById('Accounts_SearchFields', 'username, name, bio');
+		await Settings.updateValueById('Accounts_SearchFields', 'username, name, bio');
 	}
 
 	Users.tryDropIndex('name_text_username_text_bio_text');
 };
 
-Migrations.add({
+addMigration({
 	version: 183,
 	up() {
 		fixDiscussions();
 		fixSelfDMs();
-		fixUserSearch();
+		return fixUserSearch();
 	},
 });

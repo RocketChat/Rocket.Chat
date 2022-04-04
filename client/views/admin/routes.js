@@ -1,14 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
+import { appLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
 export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
-
-registerAdminRoute('/', {
-	triggersEnter: [(context, redirect) => {
-		redirect('admin-info');
-	}],
-});
 
 registerAdminRoute('/custom-sounds/:context?/:id?', {
 	name: 'custom-sounds',
@@ -22,6 +17,11 @@ registerAdminRoute('/apps/what-is-it', {
 
 registerAdminRoute('/marketplace/:context?/:id?/:version?', {
 	name: 'admin-marketplace',
+	lazyRouteComponent: () => import('./apps/AppsRoute'),
+});
+
+registerAdminRoute('/apps/:context?/:id?/:version?', {
+	name: 'admin-apps',
 	lazyRouteComponent: () => import('./apps/AppsRoute'),
 });
 
@@ -119,9 +119,26 @@ registerAdminRoute('/permissions/:context?/:_id?', {
 	lazyRouteComponent: () => import('./permissions/PermissionsRouter'),
 });
 
+registerAdminRoute('/email-inboxes/:context?/:_id?', {
+	name: 'admin-email-inboxes',
+	lazyRouteComponent: () => import('./emailInbox/EmailInboxRoute'),
+});
+
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
 		name: 'admin',
 		lazyRouteComponent: () => import('./settings/SettingsRoute'),
 	});
+});
+
+registerAdminRoute('/chatpal', {
+	name: 'chatpal-admin',
+	action() {
+		appLayout.renderMainLayout({ center: 'ChatpalAdmin' });
+	},
+});
+
+registerAdminRoute('/upgrade/:type?', {
+	name: 'upgrade',
+	lazyRouteComponent: () => import('./upgrade/UpgradePage'),
 });

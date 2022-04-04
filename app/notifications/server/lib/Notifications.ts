@@ -1,29 +1,19 @@
 import { Meteor } from 'meteor/meteor';
-import { Promise } from 'meteor/promise';
 import { DDPCommon } from 'meteor/ddp-common';
 
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { Streamer } from '../../../../server/modules/streamer/streamer.module';
-import { api } from '../../../../server/sdk/api';
 import {
 	Subscriptions as SubscriptionsRaw,
 	Rooms as RoomsRaw,
 	Users as UsersRaw,
 	Settings as SettingsRaw,
 } from '../../../models/server/raw';
-
-// TODO: Replace this in favor of the api.broadcast
-// StreamerCentral.on('broadcast', (name, eventName, args) => {
-// 	api.broadcast('stream', [
-// 		name,
-// 		eventName,
-// 		args,
-// 	]);
-// });
+import './Presence';
 
 export class Stream extends Streamer {
-	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
-		Meteor.publish(name, function(eventName, options) {
+	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
+		Meteor.publish(name, function (eventName, options) {
 			return Promise.await(fn.call(this, eventName, options));
 		});
 	}
@@ -49,10 +39,6 @@ notifications.configure({
 	Subscriptions: SubscriptionsRaw,
 	Users: UsersRaw,
 	Settings: SettingsRaw,
-});
-
-notifications.streamLocal.on('broadcast', ({ eventName, args }) => {
-	api.broadcastLocal(eventName, ...args);
 });
 
 export default notifications;

@@ -1,5 +1,3 @@
-import './startup/messageTypes';
-import './startup/tabBar';
-import './views/Multiselect';
+import './tabBar';
 
 export { ChannelSettings } from './lib/ChannelSettings';

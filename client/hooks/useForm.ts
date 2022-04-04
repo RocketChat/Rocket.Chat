@@ -1,6 +1,5 @@
+import { capitalize } from '@rocket.chat/string-helpers';
 import { useCallback, useReducer, useMemo, ChangeEvent } from 'react';
-
-import { capitalize } from '../lib/capitalize';
 
 type Field = {
 	name: string;
@@ -9,28 +8,20 @@ type Field = {
 	changed: boolean;
 };
 
-type FormState = {
+type FormState<Values extends Record<string, unknown>> = {
 	fields: Field[];
-	values: Record<string, unknown>;
+	values: Values;
 	hasUnsavedChanges: boolean;
 };
 
-type FormAction = {
-	(prevState: FormState): FormState;
+type FormAction<Values extends Record<string, unknown>> = {
+	(prevState: FormState<Values>): FormState<Values>;
 };
 
-type UseFormReturnType = {
-	values: Record<string, unknown>;
-	handlers: Record<string, (eventOrValue: ChangeEvent | unknown) => void>;
-	hasUnsavedChanges: boolean;
-	commit: () => void;
-	reset: () => void;
-};
-
-const reduceForm = (state: FormState, action: FormAction): FormState =>
+const reduceForm = <Values extends Record<string, unknown>>(state: FormState<Values>, action: FormAction<Values>): FormState<Values> =>
 	action(state);
 
-const initForm = (initialValues: Record<string, unknown>): FormState => {
+const initForm = <Values extends Record<string, unknown>>(initialValues: Values): FormState<Values> => {
 	const fields = [];
 
 	for (const [fieldName, initialValue] of Object.entries(initialValues)) {
@@ -49,8 +40,9 @@ const initForm = (initialValues: Record<string, unknown>): FormState => {
 	};
 };
 
-const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
-	(state: FormState): FormState => {
+const valueChanged =
+	<Values extends Record<string, unknown>>(fieldName: string, newValue: unknown): FormAction<Values> =>
+	(state: FormState<Values>): FormState<Values> => {
 		let { fields } = state;
 		const field = fields.find(({ name }) => name === fieldName);
 
@@ -83,8 +75,9 @@ const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
 		};
 	};
 
-const formCommitted = (): FormAction =>
-	(state: FormState): FormState => ({
+const formCommitted =
+	<Values extends Record<string, unknown>>(): FormAction<Values> =>
+	(state: FormState<Values>): FormState<Values> => ({
 		...state,
 		fields: state.fields.map((field) => ({
 			...field,
@@ -94,18 +87,22 @@ const formCommitted = (): FormAction =>
 		hasUnsavedChanges: false,
 	});
 
-const formReset = (): FormAction =>
-	(state: FormState): FormState => ({
+const formReset =
+	<Values extends Record<string, unknown>>(): FormAction<Values> =>
+	(state: FormState<Values>): FormState<Values> => ({
 		...state,
 		fields: state.fields.map((field) => ({
 			...field,
 			currentValue: field.initialValue,
 			changed: false,
 		})),
-		values: state.fields.reduce((values, field) => ({
-			...values,
-			[field.name]: field.initialValue,
-		}), {}),
+		values: state.fields.reduce(
+			(values, field) => ({
+				...values,
+				[field.name]: field.initialValue,
+			}),
+			{} as Values,
+		),
 		hasUnsavedChanges: false,
 	});
 
@@ -138,10 +135,24 @@ const getValue = (eventOrValue: ChangeEvent | unknown): unknown => {
 	return target.value;
 };
 
-export const useForm = (
-	initialValues: Record<string, unknown>,
-	onChange: ((...args: unknown[]) => void) = (): void => undefined,
-): UseFormReturnType => {
+/**
+ * @deprecated prefer react-hook-form's `useForm`
+ */
+export const useForm = <
+	Reducer extends (
+		state: FormState<Record<string, unknown>>,
+		action: FormAction<Record<string, unknown>>,
+	) => FormState<Record<string, unknown>>,
+>(
+	initialValues: Parameters<Reducer>[0]['values'],
+	onChange: (...args: unknown[]) => void = (): void => undefined,
+): {
+	values: Parameters<Reducer>[0]['values'];
+	handlers: Record<string, (eventOrValue: ChangeEvent | unknown) => void>;
+	hasUnsavedChanges: boolean;
+	commit: () => void;
+	reset: () => void;
+} => {
 	const [state, dispatch] = useReducer(reduceForm, initialValues, initForm);
 
 	const commit = useCallback(() => {
@@ -153,18 +164,25 @@ export const useForm = (
 	}, []);
 
 	const handlers = useMemo<Record<string, (eventOrValue: ChangeEvent | unknown) => void>>(
-		() => state.fields.reduce((handlers, { name, initialValue }) => ({
-			...handlers,
-			[`handle${ capitalize(name) }`]: (eventOrValue: ChangeEvent | unknown): void => {
-				const newValue = getValue(eventOrValue);
-				dispatch(valueChanged(name, newValue));
-				onChange({
-					initialValue,
-					value: newValue,
-					key: name,
-				});
-			},
-		}), {}), [onChange, state.fields]);
+		() =>
+			state.fields.reduce(
+				(handlers, { name, initialValue }) => ({
+					...handlers,
+					[`handle${capitalize(name)}`]: (eventOrValue: ChangeEvent | unknown): void => {
+						const newValue = getValue(eventOrValue);
+						dispatch(valueChanged(name, newValue));
+						onChange({
+							initialValue,
+							value: newValue,
+							key: name,
+							values: state.values,
+						});
+					},
+				}),
+				{},
+			),
+		[onChange, state.fields, state.values],
+	);
 
 	return {
 		handlers,

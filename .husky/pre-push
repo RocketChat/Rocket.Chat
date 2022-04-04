@@ -1,0 +1,3 @@
+meteor npm run lint && \
+meteor npm run testunit && \
+meteor npm run testunit-client

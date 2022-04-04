@@ -1,18 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../../authorization';
-import { OAuthApps } from '../../../../models';
+import { OAuthApps } from '../../../../models/server/raw';
 
 Meteor.methods({
-	deleteOAuthApp(applicationId) {
+	async deleteOAuthApp(applicationId) {
 		if (!hasPermission(this.userId, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'deleteOAuthApp' });
 		}
-		const application = OAuthApps.findOne(applicationId);
+		const application = await OAuthApps.findOneById(applicationId);
 		if (application == null) {
-			throw new Meteor.Error('error-application-not-found', 'Application not found', { method: 'deleteOAuthApp' });
+			throw new Meteor.Error('error-application-not-found', 'Application not found', {
+				method: 'deleteOAuthApp',
+			});
 		}
-		OAuthApps.remove({ _id: applicationId });
+		await OAuthApps.deleteOne({ _id: applicationId });
 		return true;
 	},
 });

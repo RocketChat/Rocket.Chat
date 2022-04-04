@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 
 import * as federationErrors from './errors';
-import { FederationServers, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
+import { FederationServers } from '../../../models/server/raw';
 import { getUserByUsername } from '../handler';
 
-export function addUser(query) {
+export async function addUser(query) {
 	if (!Meteor.userId()) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addUser' });
 	}
 
-	const user = getUserByUsername(query);
+	const user = await getUserByUsername(query);
 
 	if (!user) {
 		throw federationErrors.userNotFound(query);
@@ -22,7 +23,7 @@ export function addUser(query) {
 		userId = Users.create(user);
 
 		// Refresh the servers list
-		FederationServers.refreshServers();
+		await FederationServers.refreshServers();
 	} catch (err) {
 		// This might get called twice by the createDirectMessage method
 		// so we need to handle the situation accordingly

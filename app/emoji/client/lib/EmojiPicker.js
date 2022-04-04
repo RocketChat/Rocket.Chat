@@ -44,12 +44,14 @@ export const EmojiPicker = {
 			}
 		});
 
-		$(window).resize(_.debounce(() => {
-			if (!this.opened) {
-				return;
-			}
-			this.setPosition();
-		}, 300));
+		$(window).resize(
+			_.debounce(() => {
+				if (!this.opened) {
+					return;
+				}
+				this.setPosition();
+			}, 300),
+		);
 	},
 	isOpened() {
 		return this.opened;
@@ -130,6 +132,9 @@ export const EmojiPicker = {
 
 		this.recent.unshift(_emoji);
 
+		// limit recent emojis to 27 (3 rows of 9)
+		this.recent.splice(27);
+
 		updatePositions = true;
 
 		Meteor._localStorage.setItem('emoji.recent', this.recent);
@@ -171,23 +176,26 @@ export const EmojiPicker = {
 	showCategory(category, animate = true) {
 		this.scrollingToCategory = animate;
 
-		$('.emoji-picker .js-emojipicker-search')
-			.val('')
-			.change()
-			.focus();
+		$('.emoji-picker .js-emojipicker-search').val('').change().focus();
 
 		this.currentCategory.set(category);
 
 		Tracker.afterFlush(() => {
-			const header = $(`#emoji-list-category-${ category }`);
+			const header = $(`#emoji-list-category-${category}`);
 			const container = $('.emoji-picker .emojis');
 
-			const scrollTop = header.position().top + container.scrollTop();// - container.position().top;
+			const scrollTop = header.position().top + container.scrollTop(); // - container.position().top;
 
 			if (animate) {
-				return container.animate({
-					scrollTop,
-				}, 300, () => { this.scrollingToCategory = false; });
+				return container.animate(
+					{
+						scrollTop,
+					},
+					300,
+					() => {
+						this.scrollingToCategory = false;
+					},
+				);
 			}
 
 			container.scrollTop(scrollTop);
