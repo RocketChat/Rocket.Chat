@@ -39,7 +39,7 @@ export type ServerMethods = {
 	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
 	'clearIntegrationHistory': (...args: any[]) => any;
-	'cloud:checkRegisterStatus': (...args: any[]) => {
+	'cloud:checkRegisterStatus': () => {
 		connectToCloud: string;
 		workspaceRegistered: string;
 		workspaceId: string;

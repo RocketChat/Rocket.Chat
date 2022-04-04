@@ -7,15 +7,15 @@ import BaseAvatar from './BaseAvatar';
 
 type RoomAvatarProps = {
 	/* @deprecated */
-	size: 'x40' | 'x124';
+	size?: 'x16' | 'x20' | 'x28' | 'x36' | 'x40' | 'x124';
 	/* @deprecated */
 	url?: string;
 
 	room: {
 		_id: string;
-		type: string;
+		type?: string;
 		t: string;
-		avatarETag: string;
+		avatarETag?: string;
 	};
 };
 

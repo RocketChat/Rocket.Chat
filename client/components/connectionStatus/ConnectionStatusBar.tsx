@@ -1,5 +1,5 @@
 import { Icon } from '@rocket.chat/fuselage';
-import React, { useEffect, useRef, useState, ReactNode, MouseEventHandler } from 'react';
+import React, { useEffect, useRef, useState, MouseEventHandler, FC } from 'react';
 
 import { useConnectionStatus } from '../../contexts/ConnectionStatusContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -45,7 +45,7 @@ const useReconnectCountdown = (
 	return reconnectCountdown;
 };
 
-const ConnectionStatusBar = function ConnectionStatusBar(): ReactNode {
+const ConnectionStatusBar: FC = function ConnectionStatusBar() {
 	const { connected, retryTime, status, reconnect } = useConnectionStatus();
 	const reconnectCountdown = useReconnectCountdown(retryTime, status);
 	const t = useTranslation();

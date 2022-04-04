@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
-import React, { useEffect, ReactNode } from 'react';
+import React, { useEffect, ReactNode, useMemo } from 'react';
 
 import Page from '../../../components/Page';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -32,7 +32,10 @@ const CloudPage = function CloudPage(): ReactNode {
 	const finishOAuthAuthorization = useMethod('cloud:finishOAuthAuthorization');
 	// const checkRegisterStatus = useMethod('cloud:checkRegisterStatus');
 
-	const checkRegisterStatus = useMethodData('cloud:checkRegisterStatus');
+	const checkRegisterStatus = useMethodData(
+		'cloud:checkRegisterStatus',
+		useMemo(() => [], []),
+	);
 
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
 
@@ -73,7 +76,7 @@ const CloudPage = function CloudPage(): ReactNode {
 					const isConnected = await connectWorkspace(token);
 
 					if (!isConnected) {
-						throw Error(t('An error occured connecting'));
+						throw Error(t('An error occured connecting' as Parameters<typeof t>[0]));
 					}
 
 					dispatchToastMessage({ type: 'success', message: t('Connected') });
