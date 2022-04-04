@@ -31,6 +31,7 @@ export interface ISession {
 	ip: string;
 	loginAt: Date;
 	closedAt?: Date;
+	loginToken?: string;
 }
 
 type SessionAggregationResult = {
