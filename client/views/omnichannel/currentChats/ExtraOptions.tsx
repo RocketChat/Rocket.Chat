@@ -1,18 +1,17 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const RemoveAllClosed: FC<{
+const ExtraOptions: FC<{
 	handleClearFilters: any;
 	handleRemoveClosed: any;
-	handleCustomFieldsFilterToggle: any;
-}> = ({ handleClearFilters, handleRemoveClosed, handleCustomFieldsFilterToggle, ...props }) => {
+	handleCustomFieldsFilterToggle: () => void;
+	canViewCustomFields: boolean;
+}> = ({ handleClearFilters, handleRemoveClosed, handleCustomFieldsFilterToggle, canViewCustomFields, ...props }) => {
 	const t = useTranslation();
 	const canRemove = usePermission('remove-closed-livechat-rooms');
-	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const menuOptions = {
 		...(canViewCustomFields && {
@@ -50,4 +49,4 @@ const RemoveAllClosed: FC<{
 	return <Menu alignSelf='flex-end' small={false} square options={menuOptions} placement='bottom-start' {...props} />;
 };
 
-export default RemoveAllClosed;
+export default ExtraOptions;

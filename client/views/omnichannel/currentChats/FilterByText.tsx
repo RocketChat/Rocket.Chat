@@ -18,8 +18,8 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { formsSubscription } from '../additionalForms';
+import ExtraOptions from './ExtraOptions';
 import Label from './Label';
-import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;
@@ -186,10 +186,11 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 					<InputBox type='date' flexShrink={0} placeholder={t('To')} onChange={handleTo} value={to} />
 				</Box>
 
-				<RemoveAllClosed
+				<ExtraOptions
 					handleClearFilters={handleClearFilters}
 					handleRemoveClosed={handleRemoveClosed}
 					handleCustomFieldsFilterToggle={handleCustomFieldsFilterToggle}
+					canViewCustomFields={canViewCustomFields}
 				/>
 			</Box>
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>

@@ -36,22 +36,20 @@ const CurrentChatsPage: FC<{
 	renderRow: (props: { _id?: Key }) => ReactElement;
 	reload: () => void;
 }> = ({ data, header, setParams, params, title, renderRow, reload }) => (
-	<Page flexDirection='row'>
-		<Page>
-			<Page.Header title={title} />
-			<Page.Content>
-				<GenericTable
-					header={header}
-					renderRow={renderRow}
-					results={data?.rooms}
-					total={data?.total}
-					params={params}
-					setParams={setParams}
-					reload={reload}
-					renderFilter={({ onChange, ...props }: any): any => <FilterByText setFilter={onChange} {...props} />}
-				/>
-			</Page.Content>
-		</Page>
+	<Page>
+		<Page.Header title={title} />
+		<Page.Content>
+			<GenericTable
+				header={header}
+				renderRow={renderRow}
+				results={data?.rooms}
+				total={data?.total}
+				params={params}
+				setParams={setParams}
+				reload={reload}
+				renderFilter={({ onChange, ...props }: any): any => <FilterByText setFilter={onChange} {...props} />}
+			/>
+		</Page.Content>
 	</Page>
 );
 

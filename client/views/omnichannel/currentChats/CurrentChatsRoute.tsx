@@ -88,14 +88,14 @@ const useQuery: useQueryType = (
 		}
 
 		if (customFields && Object.keys(customFields).length > 0) {
-			const newCF: Record<string, string> = {};
+			const nonNullCustomFields: Record<string, string> = {};
 			Object.entries(customFields).forEach(([key, value]) => {
 				if (value?.trim().length && value !== t('None_no_option_selected')) {
-					newCF[key] = value;
+					nonNullCustomFields[key] = value;
 				}
 			});
-			if (Object.keys(newCF).length > 0) {
-				query.customFields = JSON.stringify(newCF);
+			if (Object.keys(nonNullCustomFields).length > 0) {
+				query.customFields = JSON.stringify(nonNullCustomFields);
 			}
 		}
 
