@@ -29,7 +29,7 @@
 		"@rocket.chat/ui-kit": "~0.31.9",
 		"ajv": "^8.7.1",
 		"bcrypt": "^5.0.1",
-		"body-parser": "^1.19.2",
+		"body-parser": "^1.20.0",
 		"colorette": "^1.3.0",
 		"cookie": "^0.4.2",
 		"cookie-parser": "^1.4.6",
