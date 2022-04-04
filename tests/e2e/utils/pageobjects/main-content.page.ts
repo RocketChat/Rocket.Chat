@@ -238,6 +238,10 @@ class MainContent extends BasePage {
 		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
 
+	public async waitForLastMessageEqualsText(text: string): Promise<void> {
+		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
+	}
+
 	// Sends a message and wait for the message to equal the text sent
 	public async sendMessage(text: any): Promise<void> {
 		await this.setTextToInput(text);
@@ -257,7 +261,7 @@ class MainContent extends BasePage {
 		// cy.wait(200);
 		await this.messageInput().fill('');
 		if (text) {
-			this.messageInput().type(text);
+			await this.messageInput().type(text);
 		}
 	}
 }

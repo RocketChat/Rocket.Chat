@@ -4,7 +4,7 @@ import MainContent from './utils/pageobjects/main-content.page';
 import SideNav from './utils/pageobjects/side-nav.page';
 import LoginPage from './utils/pageobjects/login.page';
 import PreferencesMainContent from './utils/pageobjects/preferences-main-content.page';
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
+import { adminLogin, adminRegister } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 
 test.describe('[User Preferences]', function () {
@@ -26,138 +26,141 @@ test.describe('[User Preferences]', function () {
 			mainContent = new MainContent(page);
 			preferencesMainContent = new PreferencesMainContent(page);
 
-			await sideNav.openChannel('general');
+			await sideNav.sidebarUserMenu().click();
+			await sideNav.account().click();
 		});
 
 		test.describe('render:', () => {
-			test('it should show the preferences link', () => {
-				sideNav.preferences.should('be.visible');
+			test('expect show the preferences link', async () => {
+				await expect(sideNav.preferences()).toBeVisible();
 			});
 
-			test('it should show the profile link', () => {
-				sideNav.profile.should('be.visible');
+			test('expect show the profile link', async () => {
+				await expect(sideNav.profile()).toBeVisible();
 			});
 
-			test('it should click on the profile link', () => {
-				sideNav.profile.click();
+			test('expect click on the profile link', async () => {
+				await sideNav.profile().click();
 			});
 
-			test('it should show the username input', () => {
-				preferencesMainContent.userNameTextInput.should('be.visible');
+			test('expect show the username input', async () => {
+				await expect(preferencesMainContent.userNameTextInput()).toBeVisible();
 			});
 
-			test('it should show the real name input', () => {
-				preferencesMainContent.realNameTextInput.should('be.visible');
+			test('expect show the real name input', async () => {
+				await expect(preferencesMainContent.realNameTextInput()).toBeVisible();
 			});
 
-			test('it should show the email input', () => {
-				preferencesMainContent.emailTextInput.scrollIntoView().should('be.visible');
+			test('expect show the email input', async () => {
+				await expect(preferencesMainContent.emailTextInput()).toBeVisible(); // .scrollIntoView()
 			});
 
-			test('it should show the password input', () => {
-				preferencesMainContent.passwordTextInput.scrollIntoView().should('be.visible');
+			test('expect show the password input', async () => {
+				await expect(preferencesMainContent.passwordTextInput()).toBeVisible(); // .scrollIntoView()
 			});
 
-			test('it should show the submit button', () => {
-				preferencesMainContent.submitBtn.should('be.visible').should('be.disabled');
+			test('expect show the submit button', async () => {
+				await expect(preferencesMainContent.submitBtn()).toBeVisible();
+				await expect(preferencesMainContent.submitBtn()).toBeDisabled();
 			});
 		});
 
 		test.describe('user info change:', () => {
-			test('it should click on the profile link', () => {
-				sideNav.profile.click();
+			test('expect click on the profile link', async () => {
+				await sideNav.profile().click();
 			});
 
-			test('it should change the name field', () => {
-				preferencesMainContent.changeRealName(`EditedRealName${username}`);
+			test('expect change the name field', async () => {
+				await preferencesMainContent.changeRealName(`Edited${adminRegister.name}${Date.now()}`);
 			});
 
-			test('it should change the Username field', () => {
-				preferencesMainContent.changeUsername(`EditedUserName${username}`);
+			test('expect change the Username field', async () => {
+				await preferencesMainContent.changeUsername(`Edited${adminRegister.name}${Date.now()}`);
 			});
 
-			it.skip('it should change the email field', () => {
-				preferencesMainContent.changeEmail(`EditedUserEmail${username}@gmail.com`);
+			// test.skip('expect change the email field', async () => {
+			// 	preferencesMainContent.changeEmail(`EditedUserEmail${adminRegister.name}@gmail.com`);
+			// });
+			//
+			// test.skip('expect put the password in the modal input', async () => {
+			// 	preferencesMainContent.acceptPasswordOverlay(adminLogin.password);
+			// });
+
+			test('expect save the settings', async () => {
+				await preferencesMainContent.saveChanges();
 			});
 
-			it.skip('it should put the password in the modal input', () => {
-				preferencesMainContent.acceptPasswordOverlay(password);
+			// test.skip('expect put the password in the modal input', async () => {
+			// 	preferencesMainContent.acceptPasswordOverlay(adminLogin.password);
+			// });
+
+			test('expect close the preferences menu', async () => {
+				await sideNav.preferencesClose().click();
+				await sideNav.getChannelFromList('general').scrollIntoViewIfNeeded();
+				await sideNav.getChannelFromList('general').click();
 			});
 
-			test('it should save the settings', () => {
-				preferencesMainContent.saveChanges();
+			test('expect send a message to be tested', async () => {
+				await mainContent.sendMessage('HI');
+				await mainContent.waitForLastMessageEqualsText('HI');
 			});
 
-			it.skip('it should put the password in the modal input', () => {
-				preferencesMainContent.acceptPasswordOverlay(password);
-			});
-
-			test('it should close the preferences menu', () => {
-				sideNav.preferencesClose.click();
-				sideNav.getChannelFromList('general').scrollIntoView().click();
-			});
-
-			test('it should send a message to be tested', () => {
-				mainContent.sendMessage('HI');
-				mainContent.waitForLastMessageEqualsText('HI');
-			});
-
-			it.skip('it should be that the name on the last message is the edited one', () => {
-				mainContent.waitForLastMessageUserEqualsText(`EditedUserName${username}`);
-				mainContent.lastMessageUser.getText().should.equal(`EditedUserName${username}`);
-			});
-
-			it.skip('it should be that the user name on the members flex tab is the edited one', () => {
-				mainContent.lastMessageUser.click();
-				flexTab.memberUserName.getText().should.equal(`EditedUserName${username}`);
-			});
-
-			it.skip('it should that the real name on the members flex tab is the edited one', () => {
-				flexTab.memberRealName.getText().should.equal(`EditedRealName${username}`);
-			});
+			// test.skip('expect be that the name on the last message is the edited one', async () => {
+			// 	mainContent.waitForLastMessageUserEqualsText(`EditedUserName${adminRegister.name}`);
+			// 	mainContent.lastMessageUser().getText().should.equal(`EditedUserName${adminRegister.name}`);
+			// });
+			//
+			// test.skip('expect be that the user name on the members flex tab is the edited one', async () => {
+			// 	mainContent.lastMessageUser().click();
+			// 	flexTab.memberUserName.getText().should.equal(`EditedUserName${adminRegister.name}`);
+			// });
+			//
+			// test.skip('expect that the real name on the members flex tab is the edited one', async () => {
+			// 	flexTab.memberRealName.getText().should.equal(`EditedRealName${adminRegister.name}`);
+			// });
 		});
 	});
 
-	test.describe('admin', () => {
-		test.describe.skip('user info change forbidden:', () => {
-			test.beforeAll(() => {
-				checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
-				admin.open('admin/Accounts');
-				admin.accountsRealNameChangeFalse.click();
-				admin.adminSaveChanges();
-				admin.accountsUsernameChangeFalse.click();
-				admin.adminSaveChanges();
-				admin.settingsSearch.type('');
-				sideNav.preferencesClose.click();
-			});
-
-			test.afterAll(() => {
-				admin.open('admin/Accounts');
-				admin.accountsRealNameChangeTrue.click();
-				admin.adminSaveChanges();
-				admin.accountsUsernameChangeTrue.click();
-				admin.adminSaveChanges();
-				admin.settingsSearch.type('');
-				sideNav.preferencesClose.click();
-			});
-
-			test('it should open profile', () => {
-				sideNav.accountMenu.click();
-				sideNav.account.click();
-				sideNav.profile.click();
-			});
-
-			test('it should be that the name field is disabled', () => {
-				preferencesMainContent.realNameTextInputEnabled().should.be.false;
-			});
-
-			test('it should be that the Username field is disabled', () => {
-				preferencesMainContent.userNameTextInputEnabled().should.be.false;
-			});
-
-			test('it should close profile', () => {
-				sideNav.preferencesClose.click();
-			});
-		});
-	});
+	// test.describe('admin', () => {
+	// 	test.describe.skip('user info change forbidden:', () => {
+	// 		test.beforeAll(() => {
+	// 			checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
+	// 			admin.open('admin/Accounts');
+	// 			admin.accountsRealNameChangeFalse.click();
+	// 			admin.adminSaveChanges();
+	// 			admin.accountsUsernameChangeFalse.click();
+	// 			admin.adminSaveChanges();
+	// 			admin.settingsSearch.type('');
+	// 			sideNav.preferencesClose.click();
+	// 		});
+	//
+	// 		test.afterAll(() => {
+	// 			admin.open('admin/Accounts');
+	// 			admin.accountsRealNameChangeTrue.click();
+	// 			admin.adminSaveChanges();
+	// 			admin.accountsUsernameChangeTrue.click();
+	// 			admin.adminSaveChanges();
+	// 			admin.settingsSearch.type('');
+	// 			sideNav.preferencesClose.click();
+	// 		});
+	//
+	// 		test('expect open profile', () => {
+	// 			sideNav.accountMenu.click();
+	// 			sideNav.account.click();
+	// 			sideNav.profile.click();
+	// 		});
+	//
+	// 		test('expect be that the name field is disabled', () => {
+	// 			preferencesMainContent.realNameTextInputEnabled().should.be.false;
+	// 		});
+	//
+	// 		test('expect be that the Username field is disabled', () => {
+	// 			preferencesMainContent.userNameTextInputEnabled().should.be.false;
+	// 		});
+	//
+	// 		test('expect close profile', () => {
+	// 			sideNav.preferencesClose.click();
+	// 		});
+	// 	});
+	// });
 });

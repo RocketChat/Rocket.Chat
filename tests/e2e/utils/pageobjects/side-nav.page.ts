@@ -146,7 +146,7 @@ class SideNav extends BasePage {
 	}
 
 	public preferencesClose(): Locator {
-		return this.getPage().locator('.flex-nav i.rcx-icon--name-cross');
+		return this.getPage().locator('//*[contains(@class,"flex-nav")]//i[contains(@class, "rcx-icon--name-cross")]');
 	}
 
 	public burgerBtn(): Locator {
