@@ -22,7 +22,7 @@ class Discussion extends Page {
 
 	// Action Menu
 	get startDiscussionContextItem() {
-		return browser.element('[data-id="start-discussion"][data-type="message-action"]');
+		return browser.element('[data-qa-id="start-discussion"][data-qa-type="message-action"]');
 	}
 
 	// Modal

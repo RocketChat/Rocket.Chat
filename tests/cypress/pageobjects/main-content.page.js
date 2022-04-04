@@ -157,11 +157,9 @@ class MainContent extends Page {
 		return browser.element('[data-qa-id="reply-directly"][data-qa-type="message-action"]');
 	}
 
-	// get messageReaction() { return browser.element('.message-actions__button[data-message-action="reaction-message"]'); }
 	get messagePin() {
 		return browser.element('[data-qa-id="pin-message"][data-qa-type="message-action"]');
 	}
-	// get messageClose() { return browser.element('[data-id="rc-popover-close"][data-type="message-action"]'); }
 
 	// Emojis
 	get emojiPickerMainScreen() {
@@ -241,6 +239,7 @@ class MainContent extends Page {
 	sendMessage(text) {
 		this.setTextToInput(text);
 		this.sendBtn.click();
+		cy.wait(200);
 		cy.get('[data-qa-type="message"]:last-child [data-qa-type="message-body"]').should('be.visible');
 		cy.get('[data-qa-type="message"]:last-child [data-qa-type="message-body"]').should('contain', text);
 	}
