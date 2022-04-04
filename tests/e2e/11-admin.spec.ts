@@ -6,13 +6,14 @@ import { adminLogin, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
 import Administration from './utils/pageobjects/administration';
 import FlexTab from './utils/pageobjects/flex-tab.page';
 import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';
+import { Checkbox } from './utils/enums/Checkbox';
 
 test.describe.parallel('[Administration]', () => {
 	let loginPage: LoginPage;
 	let sideNav: SideNav;
 	let admin: Administration;
 	let flexTab: FlexTab;
-	const checkBoxes = ['Direct', 'Public', 'Omnichannel', 'Discussions', 'Teams'];
+	const checkBoxesSelectors = ['Direct', 'Public', 'Private', 'Omnichannel', 'Discussions', 'Teams'];
 	test.beforeAll(async ({ browser, baseURL }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
@@ -50,7 +51,7 @@ test.describe.parallel('[Administration]', () => {
 
 			test.describe('[Render]', () => {
 				test('expect rom page is rendered is rendered', async () => {
-					await admin.verifyCheckBoxRendered(checkBoxes);
+					await admin.verifyCheckBoxRendered(checkBoxesSelectors);
 					await expect(admin.roomsSearchForm()).toBeVisible();
 				});
 			});
@@ -76,44 +77,49 @@ test.describe.parallel('[Administration]', () => {
 				});
 			});
 			test.describe('[Filter checkbox]', () => {
-				console.log('aqui');
-				let checkbox = 0;
-
 				test.beforeAll(async () => {
 					await admin.roomsSearchForm().click({ clickCount: 3 });
 					await admin.keyboardPress('Backspace');
 				});
-				test.beforeEach(async () => {
-					await admin.adminCheckBox(checkBoxes[checkbox]).click();
-				});
-
-				test.afterEach(async () => {
-					console.log(checkbox);
-					await admin.adminCheckBox(checkBoxes[checkbox]).click();
-					checkbox++;
-					console.log(checkbox);
-				});
 
 				test('expect not show the general channel with direct', async () => {
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Direct]).click();
+					await admin.roomsGeneralChannel().waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel()).not.toBeVisible();
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Direct]).click();
 				});
 
 				test('expect show the general channel with public ', async () => {
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Public]).click();
+					await admin.roomsGeneralChannel().waitFor({ state: 'visible' });
 					await expect(admin.roomsGeneralChannel()).toBeVisible();
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Public]).click();
 				});
 
-				test('it should not show the general channel with private', async () => {
+				test('expect not show the general channel with private ', async () => {
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Private]).click();
+					await admin.roomsGeneralChannel().waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel()).not.toBeVisible();
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Private]).click();
 				});
 
 				test('expect not show the general channel with omnichannel', async () => {
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Omnichannel]).click();
+					await admin.roomsGeneralChannel().waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel()).not.toBeVisible();
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Omnichannel]).click();
 				});
 				test('expect not show the general channel with discussion', async () => {
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Discussions]).click();
+					await admin.roomsGeneralChannel().waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel()).not.toBeVisible();
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Discussions]).click();
 				});
 				test('expect not show the general channel with teams', async () => {
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Teams]).click();
+					await admin.roomsGeneralChannel().waitFor({ state: 'detached' });
 					await expect(admin.roomsGeneralChannel()).not.toBeVisible();
+					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Teams]).click();
 				});
 			});
 			test.describe('[Users]', () => {
@@ -334,8 +340,8 @@ test.describe.parallel('[Administration]', () => {
 			});
 
 			test.describe('utf8:', () => {
-				test.beforeAll(() => {
-					admin.generalSectionUTF8().click();
+				test.beforeAll(async () => {
+					await admin.generalSectionUTF8().click();
 				});
 
 				test('it should show the usernames utf8 regex field', async () => {
@@ -354,8 +360,10 @@ test.describe.parallel('[Administration]', () => {
 
 		test.describe('[Accounts]', () => {
 			test.beforeAll(async () => {
-				admin.settingsSearch().type('accounts');
-				admin.accountsLink().click();
+				await admin.settingsSearch().type('accounts');
+				await admin.accountsLink().click();
+				await admin.settingsSearch().click({ clickCount: 3 });
+				await admin.keyboardPress('Backspace');
 			});
 
 			test.describe('default user preferences', () => {
@@ -372,9 +380,9 @@ test.describe.parallel('[Administration]', () => {
 				});
 
 				test('expect show the idle timeout limit field', async () => {
-					await admin.accountsidleTimeLimit().click();
 					await expect(admin.accountsidleTimeLimit()).toBeVisible();
-					await expect(admin.accountsidleTimeLimit().inputValue()).toEqual('300');
+					const inputValue = await admin.accountsidleTimeLimit().inputValue();
+					expect(inputValue).toEqual('300');
 				});
 
 				test('expect show desktop audio notifications to be visible', async () => {
@@ -382,10 +390,6 @@ test.describe.parallel('[Administration]', () => {
 					await expect(admin.accountsDesktopNotifications().locator('.rcx-select__item')).toHaveText('All messages');
 				});
 
-				test('expect show mobile notifications tobe visible and option have value', async () => {
-					await expect(admin.accountsMobileNotifications()).toBeVisible();
-					await expect(admin.accountsMobileNotifications().locator('.rcx-select__item')).toHaveText('All messages');
-				});
 				test('expect show mobile notifications tobe visible and option have value', async () => {
 					await expect(admin.accountsMobileNotifications()).toBeVisible();
 					await expect(admin.accountsMobileNotifications().locator('.rcx-select__item')).toHaveText('All messages');
@@ -431,19 +435,56 @@ test.describe.parallel('[Administration]', () => {
 					await expect(admin.accountsHideRoles()).not.toBeChecked();
 				});
 
-				test('expect ', async () => {
+				test('expect show the hide right sidebar with click field and not checked', async () => {
 					await expect(admin.accountsHideFlexTab()).toBeVisible();
 					await expect(admin.accountsHideFlexTab().locator('input')).not.toBeChecked();
 				});
 
-				test('expect', async () => {
+				test('expect show display avatars and is checked', async () => {
 					await expect(admin.accountsDisplayAvatars().locator('input')).toBeVisible();
 					await expect(admin.accountsDisplayAvatars().locator('input')).toBeChecked();
 				});
 
-				it('it should show the enter key behavior field', () => {
-					admin.accountsSendOnEnter.scrollIntoView();
-					admin.accountsSendOnEnter.should('be.visible');
+				test('expect show the enter key behavior field', async () => {
+					await expect(admin.accountsSendOnEnter()).toBeVisible();
+
+					await expect(admin.accountsSendOnEnter().locator('.rcx-select__item')).toHaveText('Normal mode (send with Enter)');
+				});
+
+				test('the view mode field value should be ""', async () => {
+					await expect(admin.accountsMessageViewMode()).toHaveText('');
+				});
+
+				test('expect show the offline email notification field and field value to be all', async () => {
+					await expect(admin.accountsEmailNotificationMode()).toBeVisible();
+				});
+
+				test('the offline email notification field value should be all', async () => {
+					await expect(admin.accountsEmailNotificationMode().locator('.rcx-select__item')).toHaveText('Every Mention/DM');
+				});
+
+				test('it should show the new room notification field', async () => {
+					await expect(admin.accountsNewRoomNotification()).toBeVisible();
+				});
+
+				test('the new room notification field value should be door', async () => {
+					await expect(admin.accountsNewRoomNotification().locator('.rcx-select__item')).toHaveText('Default');
+				});
+
+				test('it should show the new message notification field', async () => {
+					await expect(admin.accountsNewMessageNotification()).toBeVisible();
+				});
+
+				test('the new message notification field value should be chime', async () => {
+					await expect(admin.accountsNewMessageNotification().locator('.rcx-select__item')).toHaveText('Default');
+				});
+
+				test('it should show the notification sound volume field', async () => {
+					await expect(admin.accountsNotificationsSoundVolume()).toBeVisible();
+				});
+
+				test('the notification sound volume field value should be 100', async () => {
+					await expect(admin.accountsNotificationsSoundVolume()).toHaveValue('100');
 				});
 			});
 		});

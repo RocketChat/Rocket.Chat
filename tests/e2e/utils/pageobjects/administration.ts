@@ -415,7 +415,7 @@ export default class Administration extends BasePage {
 	}
 
 	public generalReportingReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="Statistics_reporting"]');
+		return this.getPage().locator('[data-qa-setting-id="Statistics_reporting"]');
 	}
 
 	public generalStreamCastAdress(): Locator {
@@ -588,7 +588,7 @@ export default class Administration extends BasePage {
 	}
 
 	public accountsMessageViewMode(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_messageViewMode"]');
+		return this.getPage().locator('//div[@data-qa-setting-id="Accounts_Default_User_Preferences_messageViewMode"]//div//span');
 	}
 
 	public accountsMessageViewModeReset(): Locator {
@@ -674,7 +674,7 @@ export default class Administration extends BasePage {
 	}
 
 	public adminCheckBox(checkBox: string): Locator {
-		return this.getPage().locator(`//label[contains(text(), "${checkBox}")]/preceding-sibling::label/i`);
+		return this.getPage().locator(`//label[text()="${checkBox}"]/preceding-sibling::label/i`);
 	}
 
 	public async adminSaveChanges(): Promise<void> {
