@@ -7,8 +7,6 @@ import LoginPage from './utils/pageobjects/login.page';
 import { adminLogin, adminRegister } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 
-const username = adminRegister.name;
-
 test.describe('[Main Elements Render]', function () {
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
