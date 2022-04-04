@@ -108,7 +108,6 @@ function grantCreateDPermission() {
 }
 
 function revokeCreateDPermission() {
-	console.log('vou revokar');
 	return new Promise((resolve) => {
 		getCredentials(() => {
 			updatePermission('create-d', []).then(resolve);
@@ -122,10 +121,8 @@ function toggleOpenMessageActionMenu() {
 }
 
 function createDMUserAndPost(testChannel, done) {
-	console.log('vou criar usuario');
 	getCredentials(() => {
 		createUser().then((createdUser) => {
-			console.log('criando usuario', createdUser);
 			testDMUsername = createdUser.username;
 
 			request
