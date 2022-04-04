@@ -4,7 +4,7 @@ import MainContent from './utils/pageobjects/main-content.page';
 import SideNav from './utils/pageobjects/side-nav.page';
 import FlexTab from './utils/pageobjects/flex-tab.page';
 import LoginPage from './utils/pageobjects/login.page';
-import { adminLogin, adminRegister } from './utils/mocks/userAndPasswordMock';
+import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 
 test.describe('[Main Elements Render]', function () {
