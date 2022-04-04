@@ -3,6 +3,7 @@ import { MatrixProfileInfo } from 'matrix-bot-sdk';
 import { IUser } from '../../../../definition/IUser';
 import { matrixBridge } from '../bridge';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '../../../models/server';
+import { addUserToRoom } from '../../../lib/server/functions';
 import { config } from '../config';
 import { matrixClient } from '.';
 import { dataInterface } from '../data-interface';
@@ -15,6 +16,21 @@ interface ICreateUserResult {
 
 export const invite = async (inviterId: string, roomId: string, invitedId: string): Promise<void> => {
 	console.log(`[${inviterId}-${invitedId}-${roomId}] Inviting user ${invitedId} to ${roomId}...`);
+
+	// Find the inviter user
+	let inviterUser = MatrixBridgedUser.getById(inviterId);
+	// Get the user
+	const user = await dataInterface.user(inviterId);
+
+	// The inviters user doesn't yet exist in matrix
+	if (!inviterUser) {
+		console.log(`[${inviterId}-${invitedId}-${roomId}] Creating remote inviter user...`);
+
+		// Create the missing user
+		inviterUser = await matrixClient.user.createRemote(user);
+
+		console.log(`[${inviterId}-${invitedId}-${roomId}] Inviter user created as ${inviterUser.mui}...`);
+	}
 
 	// Find the bridged room id
 	let matrixRoomId = await MatrixBridgedRoom.getMatrixId(roomId);
@@ -33,21 +49,6 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 		console.log(`[${inviterId}-${invitedId}-${roomId}] Remote room created as ${matrixRoomId}...`);
 	}
 
-	// Find the inviter user
-	let inviterUser = MatrixBridgedUser.getById(inviterId);
-
-	if (!inviterUser) {
-		console.log(`[${inviterId}-${invitedId}-${roomId}] Creating remote inviter user...`);
-
-		// Get the user
-		const user = await dataInterface.user(inviterId);
-
-		// Create the missing user
-		inviterUser = await matrixClient.user.createRemote(user);
-
-		console.log(`[${inviterId}-${invitedId}-${roomId}] Inviter user created as ${inviterUser.mui}...`);
-	}
-
 	// Determine if the user is local or remote
 	let invitedUserMatrixId = invitedId;
 	const invitedUserDomain = invitedId.includes(':') ? invitedId.split(':').pop() : '';
@@ -55,15 +56,22 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 
 	console.log(invitedUserMatrixId, invitedUserDomain, invitedUserIsRemote);
 
+	// Find the invited user in Rocket.Chats users
+	let invitedUser = Users.findOneByUsername(invitedId.replace('@', ''));
+
+	if (!invitedUser) {
+		// Create the invited user
+		invitedUser = await matrixClient.user.createLocal(invitedUserMatrixId);
+	}
+
 	// If the invited user is not remote, let's ensure it exists remotely
 	if (!invitedUserIsRemote) {
 		console.log(`[${inviterId}-${invitedId}-${roomId}] Creating remote invited user...`);
 
-		// Find the invited user
-		const invitedUser = Users.findOneByUsername(invitedId.replace('@', ''));
+		let existingMatrixId = false;
 
 		// Check if we already have a matrix id for that user
-		const existingMatrixId = MatrixBridgedUser.getMatrixId(invitedUser._id);
+		existingMatrixId = MatrixBridgedUser.getMatrixId(invitedUser._id);
 
 		if (!existingMatrixId) {
 			const { mui } = await matrixClient.user.createRemote(invitedUser);
@@ -76,17 +84,25 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 		console.log(`[${inviterId}-${invitedId}-${roomId}] Invited user created as ${invitedUserMatrixId}...`);
 	}
 
-	console.log(`[${inviterId}-${invitedId}-${roomId}] Inviting the user...`);
+	console.log(`[${inviterId}-${invitedId}-${roomId}] Inviting the user to the room...`);
 
-	// Invite the user
-	await matrixBridge.getIntent(inviterUser.mui).invite(matrixRoomId, invitedUserMatrixId);
-
-	// Auto-join if the user is Rocket.Chat controlled
+	// Invite && Auto-join if the user is Rocket.Chat controlled
 	if (!invitedUserIsRemote) {
+
+		// Invite the user to the room
+		await matrixBridge.getIntent(inviterUser.mui).invite(matrixRoomId, invitedUserMatrixId);
+
 		console.log(`[${inviterId}-${invitedId}-${roomId}] Auto-join room...`);
 
 		await matrixBridge.getIntent(invitedUserMatrixId).join(matrixRoomId);
+	} else {
+		// Invite the user to the room
+		matrixBridge.getIntent(inviterUser.mui).invite(matrixRoomId, invitedUserMatrixId);
 	}
+
+	// Add the matrix user to the invited room
+	addUserToRoom(roomId, invitedUser, user, false);
+	
 };
 
 export const createRemote = async (u: IUser): Promise<ICreateUserResult> => {

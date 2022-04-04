@@ -42,7 +42,7 @@ export const create = async (user: IUser, room: IRoom): Promise<ICreateRoomResul
 	MatrixBridgedRoom.insert({ rid: room._id, mri: matrixRoom.room_id });
 
 	// Add our user
-	await intent.invite(matrixRoom.room_id, userMatrixId);
+	//await intent.invite(matrixRoom.room_id, userMatrixId);
 
 	return { rid: room._id, mri: matrixRoom.room_id };
 };
