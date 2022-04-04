@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState, MouseEventHandler, FC } from 'react
 
 import { useConnectionStatus } from '../../contexts/ConnectionStatusContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import './ConnectionStatusBar.css';
+import './ConnectionStatusBar.styles.css';
 
 // TODO: frontend chapter day - fix unknown translation keys
 
