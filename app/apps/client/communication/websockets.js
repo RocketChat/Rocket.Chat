@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { slashCommands, APIClient } from '../../../utils';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { loadButtons } from '../../../ui-message/client/ActionButtonSyncer';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -14,9 +15,10 @@ export const AppEvents = Object.freeze({
 	COMMAND_DISABLED: 'command/disabled',
 	COMMAND_UPDATED: 'command/updated',
 	COMMAND_REMOVED: 'command/removed',
+	ACTIONS_CHANGED: 'actions/changed',
 });
 
-export class AppWebsocketReceiver extends EventEmitter {
+export class AppWebsocketReceiver extends Emitter {
 	constructor() {
 		super();
 
@@ -36,6 +38,7 @@ export class AppWebsocketReceiver extends EventEmitter {
 		this.streamer.on(AppEvents.COMMAND_UPDATED, this.onCommandAddedOrUpdated);
 		this.streamer.on(AppEvents.COMMAND_REMOVED, this.onCommandRemovedOrDisabled);
 		this.streamer.on(AppEvents.COMMAND_DISABLED, this.onCommandRemovedOrDisabled);
+		this.streamer.on(AppEvents.ACTIONS_CHANGED, this.onActionsChanged);
 	}
 
 	registerListener(event, listener) {
@@ -50,9 +53,11 @@ export class AppWebsocketReceiver extends EventEmitter {
 		APIClient.v1.get('commands.get', { command }).then((result) => {
 			slashCommands.commands[command] = result.command;
 		});
-	}
+	};
 
 	onCommandRemovedOrDisabled = (command) => {
 		delete slashCommands.commands[command];
-	}
+	};
+
+	onActionsChanged = () => loadButtons();
 }

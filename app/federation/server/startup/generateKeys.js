@@ -1,6 +1,8 @@
-import { FederationKeys } from '../../../models/server';
+import { FederationKeys } from '../../../models/server/raw';
 
 // Create key pair if needed
-if (!FederationKeys.getPublicKey()) {
-	FederationKeys.generateKeys();
-}
+(async () => {
+	if (!(await FederationKeys.getPublicKey())) {
+		await FederationKeys.generateKeys();
+	}
+})();

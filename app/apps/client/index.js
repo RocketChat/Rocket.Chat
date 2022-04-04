@@ -1,5 +1,3 @@
-import './routes';
-
 import './gameCenter/tabBar';
 import './gameCenter/gameContainer';
 import './gameCenter/gameCenter';

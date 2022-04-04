@@ -1,7 +1,8 @@
-import { metrics } from '../../../../metrics';
-import { settings } from '../../../../settings';
-import { Notifications } from '../../../../notifications';
-import { roomTypes } from '../../../../utils';
+import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
+import { api } from '../../../../../server/sdk/api';
+import { metrics } from '../../../../metrics/server';
+import { settings } from '../../../../settings/server';
+
 /**
  * Send notification to user
  *
@@ -12,24 +13,17 @@ import { roomTypes } from '../../../../utils';
  * @param {number} duration Duration of notification
  * @param {string} notificationMessage The message text to send on notification body
  */
-export function notifyDesktopUser({
-	userId,
-	user,
-	message,
-	room,
-	duration,
-	notificationMessage,
-}) {
-	const { title, text } = roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
+export function notifyDesktopUser({ userId, user, message, room, duration, notificationMessage }) {
+	const { title, text } = roomCoordinator.getRoomDirectives(room.t)?.getNotificationDetails(room, user, notificationMessage, userId);
 
-	metrics.notificationsSent.inc({ notification_type: 'desktop' });
-	Notifications.notifyUser(userId, 'notification', {
+	const payload = {
 		title,
 		text,
 		duration,
 		payload: {
 			_id: message._id,
 			rid: message.rid,
+			tmid: message.tmid,
 			sender: message.u,
 			type: room.t,
 			name: room.name,
@@ -38,7 +32,11 @@ export function notifyDesktopUser({
 				t: message.t,
 			},
 		},
-	});
+	};
+
+	metrics.notificationsSent.inc({ notification_type: 'desktop' });
+
+	api.broadcast('notify.desktop', userId, payload);
 }
 
 export function shouldNotifyDesktop({
@@ -52,6 +50,7 @@ export function shouldNotifyDesktop({
 	hasMentionToUser,
 	hasReplyToThread,
 	roomType,
+	isThread,
 }) {
 	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
@@ -62,7 +61,7 @@ export function shouldNotifyDesktop({
 	}
 
 	if (!desktopNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all') {
+		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all' && (!isThread || hasReplyToThread)) {
 			return true;
 		}
 		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
@@ -70,5 +69,12 @@ export function shouldNotifyDesktop({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser || hasReplyToThread;
+	return (
+		(roomType === 'd' ||
+			(!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) ||
+			isHighlighted ||
+			desktopNotifications === 'all' ||
+			hasMentionToUser) &&
+		(!isThread || hasReplyToThread)
+	);
 }

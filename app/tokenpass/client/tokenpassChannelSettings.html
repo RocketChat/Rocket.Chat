@@ -21,7 +21,7 @@
 			{{#if list}}
 				<ul class="chip-container">
 					{{#each list}}
-					<li class="js-remove rc-tooltip" aria-label="balance: {{balance}}" title="{{token}} {{balance}}">{{#if editing}}<i class="icon-cancel-circled"></i>{{/if}}{{token}}</li>
+					<li class="js-remove" title="balance: {{balance}}" aria-label="{{token}} {{balance}}">{{#if editing}}<i class="icon-cancel-circled"></i>{{/if}}{{token}}</li>
 					{{/each}}
 				</ul>
 			{{/if}}

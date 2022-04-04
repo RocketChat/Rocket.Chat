@@ -1,5 +1,10 @@
 function registerUser(parameters) {
-	const { name, profile: { irc: { nick, username } } } = parameters;
+	const {
+		name,
+		profile: {
+			irc: { nick, username },
+		},
+	} = parameters;
 
 	this.write({
 		prefix: this.config.server.name,
@@ -12,61 +17,89 @@ function registerUser(parameters) {
 function joinChannel(parameters) {
 	const {
 		room: { name: roomName },
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 	} = parameters;
 
 	this.write({
 		prefix: this.config.server.name,
 		command: 'NJOIN',
-		parameters: [`#${ roomName }`],
+		parameters: [`#${roomName}`],
 		trailer: nick,
 	});
 }
 
-function joinedChannel(parameters) {
-	const {
-		room: { name: roomName },
-		user: { profile: { irc: { nick } } },
-	} = parameters;
+function joinedChannel(parameters, handler) {
+	const roomName = parameters.room?.name;
+	const nick = parameters.user?.profile?.irc?.nick;
+
+	if (!roomName) {
+		handler.log('Skipping room with no name.');
+		return;
+	}
+
+	if (!nick) {
+		handler.log('Skipping user with no irc nick.');
+		return;
+	}
 
 	this.write({
 		prefix: nick,
 		command: 'JOIN',
-		parameters: [`#${ roomName }`],
+		parameters: [`#${roomName}`],
 	});
 }
 
 function leftChannel(parameters) {
 	const {
 		room: { name: roomName },
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 	} = parameters;
 
 	this.write({
 		prefix: nick,
 		command: 'PART',
-		parameters: [`#${ roomName }`],
+		parameters: [`#${roomName}`],
 	});
 }
 
 function sentMessage(parameters) {
 	const {
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 		to,
 		message,
 	} = parameters;
 
-	this.write({
-		prefix: nick,
-		command: 'PRIVMSG',
-		parameters: [to],
-		trailer: message,
-	});
+	// eslint-disable-next-line no-control-regex
+	const lines = message.toString().split(/\r\n|\r|\n|\u0007/);
+	for (const line of lines) {
+		this.write({
+			prefix: nick,
+			command: 'PRIVMSG',
+			parameters: [to],
+			trailer: line,
+		});
+	}
 }
 
 function disconnected(parameters) {
 	const {
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 	} = parameters;
 
 	this.write({

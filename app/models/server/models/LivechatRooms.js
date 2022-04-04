@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import _ from 'underscore';
 
@@ -16,21 +15,31 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
+		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
+		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v.token': 1, 'email.thread': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ t: 1, departmentId: 1, closedAt: 1 }, { partialFilterExpression: { closedAt: { $exists: true } } });
+		this.tryEnsureIndex({ source: 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
 		const query = Object.assign(filter, { t: 'l' });
-		return this.find(query, { sort: { ts: - 1 }, offset, limit });
+		return this.find(query, { sort: { ts: -1 }, offset, limit });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
 			t: 'l',
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 
 		return this.findOne(query, options);
@@ -53,7 +62,7 @@ export class LivechatRooms extends Base {
 	updateDataByToken(token, key, value, overwrite = true) {
 		const query = {
 			'v.token': token,
-			open: true,
+			'open': true,
 		};
 
 		if (!overwrite) {
@@ -65,7 +74,7 @@ export class LivechatRooms extends Base {
 
 		const update = {
 			$set: {
-				[`livechatData.${ key }`]: value,
+				[`livechatData.${key}`]: value,
 			},
 		};
 
@@ -94,9 +103,9 @@ export class LivechatRooms extends Base {
 			Object.keys(livechatData).forEach((key) => {
 				const value = s.trim(livechatData[key]);
 				if (value) {
-					setData[`livechatData.${ key }`] = value;
+					setData[`livechatData.${key}`] = value;
 				} else {
-					unsetData[`livechatData.${ key }`] = 1;
+					unsetData[`livechatData.${key}`] = 1;
 				}
 			});
 		}
@@ -133,7 +142,22 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
-	findOneById(_id, fields) {
+	findByIds(ids, fields) {
+		const options = {};
+
+		if (fields) {
+			options.fields = fields;
+		}
+
+		const query = {
+			t: 'l',
+			_id: { $in: ids },
+		};
+
+		return this.find(query, options);
+	}
+
+	findOneById(_id, fields = {}) {
 		const options = {};
 
 		if (fields) {
@@ -156,11 +180,55 @@ export class LivechatRooms extends Base {
 		}
 
 		const query = {
-			t: 'l',
+			't': 'l',
 			_id,
 			'v.token': visitorToken,
 		};
 
+		return this.findOne(query, options);
+	}
+
+	findOneByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			't': 'l',
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByVisitorTokenAndEmailThreadAndDepartment(visitorToken, emailThread, departmentId, options) {
+		const query = {
+			't': 'l',
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+			...(departmentId && { departmentId }),
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneOpenByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
+		const query = {
+			't': 'l',
+			'v.token': visitorToken,
+			'closedAt': { $exists: true },
+			'servedBy': { $exists: true },
+		};
+
+		options.sort = { closedAt: -1 };
 		return this.findOne(query, options);
 	}
 
@@ -172,17 +240,14 @@ export class LivechatRooms extends Base {
 		}
 
 		const query = {
-			t: 'l',
+			't': 'l',
 			'v.token': visitorToken,
 		};
 
 		return this.findOne(query, options);
 	}
 
-	updateRoomCount = function() {
-		const settingsRaw = Settings.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
-
+	updateRoomCount = function () {
 		const query = {
 			_id: 'Livechat_Room_Count',
 		};
@@ -193,15 +258,15 @@ export class LivechatRooms extends Base {
 			},
 		};
 
-		const livechatCount = findAndModify(query, null, update);
+		const livechatCount = Settings.findAndModify(query, null, update);
 
 		return livechatCount.value.value;
-	}
+	};
 
 	findOpenByVisitorToken(visitorToken, options) {
 		const query = {
-			t: 'l',
-			open: true,
+			't': 'l',
+			'open': true,
 			'v.token': visitorToken,
 		};
 
@@ -210,9 +275,20 @@ export class LivechatRooms extends Base {
 
 	findOneOpenByVisitorToken(visitorToken, options) {
 		const query = {
-			t: 'l',
-			open: true,
+			't': 'l',
+			'open': true,
 			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+			departmentId,
 		};
 
 		return this.findOne(query, options);
@@ -220,8 +296,8 @@ export class LivechatRooms extends Base {
 
 	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
 		const query = {
-			t: 'l',
-			open: true,
+			't': 'l',
+			'open': true,
 			'v.token': visitorToken,
 			departmentId,
 		};
@@ -231,16 +307,26 @@ export class LivechatRooms extends Base {
 
 	findByVisitorToken(visitorToken) {
 		const query = {
-			t: 'l',
+			't': 'l',
 			'v.token': visitorToken,
 		};
 
 		return this.find(query);
 	}
 
-	findByVisitorId(visitorId) {
+	findByVisitorIdAndAgentId(visitorId, agentId, options) {
 		const query = {
 			t: 'l',
+			...(visitorId && { 'v._id': visitorId }),
+			...(agentId && { 'servedBy._id': agentId }),
+		};
+
+		return this.find(query, options);
+	}
+
+	findByVisitorId(visitorId) {
+		const query = {
+			't': 'l',
 			'v._id': visitorId,
 		};
 
@@ -249,9 +335,9 @@ export class LivechatRooms extends Base {
 
 	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
 		const query = {
-			t: 'l',
-			_id: roomId,
-			open: true,
+			't': 'l',
+			'_id': roomId,
+			'open': true,
 			'v.token': visitorToken,
 		};
 
@@ -263,53 +349,62 @@ export class LivechatRooms extends Base {
 			t: 'l',
 			open: { $exists: false },
 			closedAt: { $exists: true },
-			...Array.isArray(departmentIds) && departmentIds.length > 0 && { departmentId: { $in: departmentIds } },
+			...(Array.isArray(departmentIds) && departmentIds.length > 0 && { departmentId: { $in: departmentIds } }),
 		};
 
 		return this.find(query, options);
 	}
 
 	setResponseByRoomId(roomId, response) {
-		return this.update({
-			_id: roomId,
-			t: 'l',
-		}, {
-			$set: {
-				responseBy: {
-					_id: response.user._id,
-					username: response.user.username,
-					lastMessageTs: new Date(),
+		return this.update(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$set: {
+					responseBy: {
+						_id: response.user._id,
+						username: response.user.username,
+						lastMessageTs: new Date(),
+					},
+				},
+				$unset: {
+					waitingResponse: 1,
 				},
 			},
-			$unset: {
-				waitingResponse: 1,
-			},
-		});
+		);
 	}
 
 	setNotResponseByRoomId(roomId) {
-		return this.update({
-			_id: roomId,
-			t: 'l',
-		}, {
-			$set: {
-				waitingResponse: true,
+		return this.update(
+			{
+				_id: roomId,
+				t: 'l',
 			},
-			$unset: {
-				responseBy: 1,
+			{
+				$set: {
+					waitingResponse: true,
+				},
+				$unset: {
+					responseBy: 1,
+				},
 			},
-		});
+		);
 	}
 
 	setAgentLastMessageTs(roomId) {
-		return this.update({
-			_id: roomId,
-			t: 'l',
-		}, {
-			$set: {
-				'responseBy.lastMessageTs': new Date(),
+		return this.update(
+			{
+				_id: roomId,
+				t: 'l',
 			},
-		});
+			{
+				$set: {
+					'responseBy.lastMessageTs': new Date(),
+				},
+			},
+		);
 	}
 
 	saveAnalyticsDataByRoomId(room, message, analyticsData) {
@@ -337,28 +432,34 @@ export class LivechatRooms extends Base {
 		const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
 		const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
 
-		if (message.token) {	// update visitor timestamp, only if its new inquiry and not continuing message
-			if (agentLastReply >= visitorLastQuery) {		// if first query, not continuing query from visitor
+		if (message.token) {
+			// update visitor timestamp, only if its new inquiry and not continuing message
+			if (agentLastReply >= visitorLastQuery) {
+				// if first query, not continuing query from visitor
 				update.$set['metrics.v.lq'] = message.ts;
 			}
-		} else if (visitorLastQuery > agentLastReply) {		// update agent timestamp, if first response, not continuing
+		} else if (visitorLastQuery > agentLastReply) {
+			// update agent timestamp, if first response, not continuing
 			update.$set['metrics.servedBy.lr'] = message.ts;
 		}
 
-		return this.update({
-			_id: room._id,
-			t: 'l',
-		}, update);
+		return this.update(
+			{
+				_id: room._id,
+				t: 'l',
+			},
+			update,
+		);
 	}
 
 	getTotalConversationsBetweenDate(t, date, { departmentId } = {}) {
 		const query = {
 			t,
 			ts: {
-				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
-				$lt: new Date(date.lt),	// ISODate, ts < date.lt
+				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+				$lt: new Date(date.lt), // ISODate, ts < date.lt
 			},
-			...departmentId && departmentId !== 'undefined' && { departmentId },
+			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 		};
 
 		return this.find(query).count();
@@ -368,32 +469,53 @@ export class LivechatRooms extends Base {
 		const query = {
 			t,
 			ts: {
-				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
-				$lt: new Date(date.lt),	// ISODate, ts < date.lt
+				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+				$lt: new Date(date.lt), // ISODate, ts < date.lt
 			},
-			...departmentId && departmentId !== 'undefined' && { departmentId },
+			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 		};
 
-		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
+		return this.find(query, {
+			fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 },
+		});
 	}
 
-	getAnalyticsBetweenDate(date, { departmentId } = {}) {
+	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery) {
 		return this.model.rawCollection().aggregate([
 			{
 				$match: {
-					t: 'l',
+					t,
 					ts: {
-						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
-						$lt: new Date(date.lt),	// ISODate, ts < date.lt
+						$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+						$lt: new Date(date.lt), // ISODate, ts < date.lt
 					},
-					...departmentId && departmentId !== 'undefined' && { departmentId },
+					...(departmentId && departmentId !== 'undefined' && { departmentId }),
 				},
 			},
+			{ $addFields: { roomId: '$_id' } },
 			{
 				$lookup: {
 					from: 'rocketchat_message',
-					localField: '_id',
-					foreignField: 'rid',
+					// mongo doesn't like _id as variable name here :(
+					let: { roomId: '$roomId' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [
+										{
+											$eq: ['$$roomId', '$rid'],
+										},
+										{
+											// this is similar to do { $exists: false }
+											$lte: ['$t', null],
+										},
+										...(extraQuery ? [extraQuery] : []),
+									],
+								},
+							},
+						},
+					],
 					as: 'messages',
 				},
 			},
@@ -412,16 +534,9 @@ export class LivechatRooms extends Base {
 						open: '$open',
 						servedBy: '$servedBy',
 						metrics: '$metrics',
-						msgs: '$msgs',
 					},
-					messages: {
-						$sum: {
-							$cond: [{
-								$and: [
-									{ $ifNull: ['$messages.t', false] },
-								],
-							}, 1, 0],
-						},
+					messagesCount: {
+						$sum: 1,
 					},
 				},
 			},
@@ -433,40 +548,151 @@ export class LivechatRooms extends Base {
 					open: '$_id.open',
 					servedBy: '$_id.servedBy',
 					metrics: '$_id.metrics',
-					msgs: { $subtract: ['$_id.msgs', '$messages'] },
+					msgs: '$messagesCount',
 				},
 			},
-
 		]);
 	}
 
+	getAnalyticsBetweenDate(date, { departmentId } = {}) {
+		return this.model.rawCollection().aggregate([
+			{
+				$match: {
+					t: 'l',
+					ts: {
+						$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+						$lt: new Date(date.lt), // ISODate, ts < date.lt
+					},
+					...(departmentId && departmentId !== 'undefined' && { departmentId }),
+				},
+			},
+			{ $addFields: { roomId: '$_id' } },
+			{
+				$lookup: {
+					from: 'rocketchat_message',
+					// mongo doesn't like _id as variable name here :(
+					let: { roomId: '$roomId' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [
+										{
+											$eq: ['$$roomId', '$rid'],
+										},
+										{
+											// this is similar to do { $exists: false }
+											$lte: ['$t', null],
+										},
+									],
+								},
+							},
+						},
+					],
+					as: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$messages',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: {
+						_id: '$_id',
+						ts: '$ts',
+						departmentId: '$departmentId',
+						open: '$open',
+						servedBy: '$servedBy',
+						metrics: '$metrics',
+						onHold: '$onHold',
+					},
+					messagesCount: {
+						$sum: 1,
+					},
+				},
+			},
+			{
+				$project: {
+					_id: '$_id._id',
+					ts: '$_id.ts',
+					departmentId: '$_id.departmentId',
+					open: '$_id.open',
+					servedBy: '$_id.servedBy',
+					metrics: '$_id.metrics',
+					msgs: '$messagesCount',
+					onHold: '$_id.onHold',
+				},
+			},
+		]);
+	}
 
 	closeByRoomId(roomId, closeInfo) {
 		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, ...extraData } = closeInfo;
 
-		return this.update({
-			_id: roomId,
-			t: 'l',
-		}, {
-			$set: {
-				closer,
-				closedBy,
-				closedAt,
-				'metrics.chatDuration': chatDuration,
-				'metrics.serviceTimeDuration': serviceTimeDuration,
-				'v.status': 'offline',
-				...extraData,
+		return this.update(
+			{
+				_id: roomId,
+				t: 'l',
 			},
-			$unset: {
-				open: 1,
+			{
+				$set: {
+					closer,
+					closedBy,
+					closedAt,
+					'metrics.chatDuration': chatDuration,
+					'metrics.serviceTimeDuration': serviceTimeDuration,
+					'v.status': 'offline',
+					...extraData,
+				},
+				$unset: {
+					open: 1,
+				},
 			},
-		});
+		);
+	}
+
+	requestTranscriptByRoomId(roomId, transcriptInfo = {}) {
+		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
+
+		return this.update(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$set: {
+					transcriptRequest: {
+						requestedAt,
+						requestedBy,
+						email,
+						subject,
+					},
+				},
+			},
+		);
+	}
+
+	removeTranscriptRequestByRoomId(roomId) {
+		return this.update(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$unset: {
+					transcriptRequest: 1,
+				},
+			},
+		);
 	}
 
 	findOpenByAgent(userId) {
 		const query = {
-			t: 'l',
-			open: true,
+			't': 'l',
+			'open': true,
 			'servedBy._id': userId,
 		};
 
@@ -526,8 +752,8 @@ export class LivechatRooms extends Base {
 	updateVisitorStatus(token, status) {
 		const query = {
 			'v.token': token,
-			open: true,
-			t: 'l',
+			'open': true,
+			't': 'l',
 		};
 
 		const update = {
@@ -545,9 +771,8 @@ export class LivechatRooms extends Base {
 			t: 'l',
 		};
 		const update = {
-			$unset: {
-				servedBy: 1,
-			},
+			$set: { queuedAt: new Date() },
+			$unset: { servedBy: 1 },
 		};
 
 		this.update(query, update);
@@ -555,7 +780,7 @@ export class LivechatRooms extends Base {
 
 	removeByVisitorToken(token) {
 		const query = {
-			t: 'l',
+			't': 'l',
 			'v.token': token,
 		};
 
@@ -591,6 +816,81 @@ export class LivechatRooms extends Base {
 		const update = {
 			$set: {
 				'metrics.visitorInactivity': visitorInactivity,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setAutoTransferredAtById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferredAt: new Date(),
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferOngoing: true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	unsetAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$unset: {
+				autoTransferOngoing: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	changeVisitorByRoomId(roomId, { _id, username, token }) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				'v._id': _id,
+				'v.username': username,
+				'v.token': token,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	unarchiveOneById(roomId) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				open: true,
+			},
+			$unset: {
+				servedBy: 1,
+				closedAt: 1,
+				closedBy: 1,
+				closer: 1,
 			},
 		};
 

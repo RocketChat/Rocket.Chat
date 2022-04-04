@@ -3,22 +3,26 @@ import { check } from 'meteor/check';
 
 import { hasPermission } from '../../../../../app/authorization';
 import CannedResponse from '../../../models/server/models/CannedResponse';
-import { cannedResponsesStreamer } from '../streamer';
+import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 Meteor.methods({
-	'removeCannedResponse'(_id) {
+	removeCannedResponse(_id) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'remove-canned-responses')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'removeCannedResponse' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'removeCannedResponse',
+			});
 		}
 
 		check(_id, String);
 
 		const cannedResponse = CannedResponse.findOneById(_id);
 		if (!cannedResponse) {
-			throw new Meteor.Error('error-canned-response-not-found', 'Canned Response not found', { method: 'removeCannedResponse' });
+			throw new Meteor.Error('error-canned-response-not-found', 'Canned Response not found', {
+				method: 'removeCannedResponse',
+			});
 		}
 
-		cannedResponsesStreamer.emit('canned-responses', { type: 'removed', _id });
+		notifications.streamCannedResponses.emit('canned-responses', { type: 'removed', _id });
 
 		return CannedResponse.removeById(_id);
 	},

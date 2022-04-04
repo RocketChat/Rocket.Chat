@@ -1,5 +1,5 @@
 import './v1/config.js';
-import './v1/visitor.js';
+import './v1/visitor';
 import './v1/transcript.js';
 import './v1/offlineMessage.js';
 import './v1/pageVisited.js';
@@ -9,3 +9,4 @@ import './v1/customField.js';
 import './v1/room.js';
 import './v1/videoCall.js';
 import './v1/transfer.js';
+import './v1/contact.js';

@@ -10,7 +10,4 @@ export const workspaceScopes = [
 ];
 
 // These are the scopes we use for the user
-export const userScopes = [
-	'openid',
-	'offline_access',
-];
+export const userScopes = ['openid', 'offline_access'];

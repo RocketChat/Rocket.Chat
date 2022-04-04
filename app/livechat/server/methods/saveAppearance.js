@@ -1,17 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { settings as rcSettings } from '../../../settings';
+import { Settings } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAppearance' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:saveAppearance',
+			});
 		}
 
 		const validSettings = [
 			'Livechat_title',
 			'Livechat_title_color',
+			'Livechat_enable_message_character_limit',
+			'Livechat_message_character_limit',
 			'Livechat_show_agent_info',
 			'Livechat_show_agent_email',
 			'Livechat_display_offline_form',
@@ -36,7 +40,7 @@ Meteor.methods({
 		}
 
 		settings.forEach((setting) => {
-			rcSettings.updateById(setting._id, setting.value);
+			Settings.updateValueById(setting._id, setting.value);
 		});
 	},
 });

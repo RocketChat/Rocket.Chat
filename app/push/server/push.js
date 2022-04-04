@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { EJSON } from 'meteor/ejson';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { HTTP } from 'meteor/http';
@@ -7,7 +6,8 @@ import _ from 'underscore';
 
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
-import { logger, LoggerManager } from './logger';
+import { logger } from './logger';
+import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
@@ -15,14 +15,17 @@ export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens')
 appTokensCollection._ensureIndex({ userId: 1 });
 
 export class PushClass {
-	options = {}
+	options = {};
 
-	isConfigured = false
+	isConfigured = false;
 
 	configure(options) {
-		this.options = Object.assign({
-			sendTimeout: 60000, // Timeout period for notification send
-		}, options);
+		this.options = Object.assign(
+			{
+				sendTimeout: 60000, // Timeout period for notification send
+			},
+			options,
+		);
 		// https://npmjs.org/package/apn
 
 		// After requesting the certificate from Apple, export your private key as
@@ -51,13 +54,13 @@ export class PushClass {
 	}
 
 	sendWorker(task, interval) {
-		logger.debug(`Send worker started, using interval: ${ interval }`);
+		logger.debug(`Send worker started, using interval: ${interval}`);
 
 		return Meteor.setInterval(() => {
 			try {
 				task();
 			} catch (error) {
-				logger.debug(`Error while sending: ${ error.message }`);
+				logger.debug(`Error while sending: ${error.message}`);
 			}
 		}, interval);
 	}
@@ -70,10 +73,12 @@ export class PushClass {
 		appTokensCollection.rawCollection().deleteOne({ token });
 	}
 
+	_shouldUseGateway() {
+		return !!this.options.gateways && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms');
+	}
+
 	sendNotificationNative(app, notification, countApn, countGcm) {
 		logger.debug('send to token', app.token);
-
-		notification.payload = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
 		if (app.token.apn) {
 			countApn.push(app._id);
@@ -89,7 +94,13 @@ export class PushClass {
 			// We do support multiple here - so we should construct an array
 			// and send it bulk - Investigate limit count of id's
 			if (this.options.gcm && this.options.gcm.apiKey) {
-				sendGCM({ userTokens: app.token.gcm, notification, _replaceToken: this._replaceToken, _removeToken: this._removeToken, options: this.options });
+				sendGCM({
+					userTokens: app.token.gcm,
+					notification,
+					_replaceToken: this._replaceToken,
+					_removeToken: this._removeToken,
+					options: this.options,
+				});
 			}
 		} else {
 			throw new Error('send got a faulty query');
@@ -111,16 +122,29 @@ export class PushClass {
 			data.headers.Authorization = this.options.getAuthorization();
 		}
 
-		return HTTP.post(`${ gateway }/push/${ service }/send`, data, (error, response) => {
-			if (response && response.statusCode === 406) {
+		return HTTP.post(`${gateway}/push/${service}/send`, data, (error, response) => {
+			if (response?.statusCode === 406) {
 				logger.info('removing push token', token);
 				appTokensCollection.remove({
-					$or: [{
-						'token.apn': token,
-					}, {
-						'token.gcm': token,
-					}],
+					$or: [
+						{
+							'token.apn': token,
+						},
+						{
+							'token.gcm': token,
+						},
+					],
 				});
+				return;
+			}
+
+			if (response?.statusCode === 422) {
+				logger.info('gateway rejected push notification. not retrying.', response);
+				return;
+			}
+
+			if (response?.statusCode === 401) {
+				logger.warn('Error sending push to gateway (not authorized)', response);
 				return;
 			}
 
@@ -128,10 +152,11 @@ export class PushClass {
 				return;
 			}
 
-			logger.error(`Error sending push to gateway (${ tries } try) ->`, error);
+			logger.error(`Error sending push to gateway (${tries} try) ->`, error);
 
-			if (tries <= 6) {
-				const ms = Math.pow(10, tries + 2);
+			if (tries <= 4) {
+				// [1, 2, 4, 8, 16] minutes (total 31)
+				const ms = 60000 * Math.pow(2, tries);
 
 				logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
 
@@ -173,28 +198,25 @@ export class PushClass {
 			throw new Error('Push.send: option "text" not a string');
 		}
 
-		logger.debug(`send message "${ notification.title }" to userId`, notification.userId);
+		logger.debug(`send message "${notification.title}" to userId`, notification.userId);
 
 		const query = {
 			userId: notification.userId,
-			$or: [
-				{ 'token.apn': { $exists: true } },
-				{ 'token.gcm': { $exists: true } },
-			],
+			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
 		};
 
 		appTokensCollection.find(query).forEach((app) => {
 			logger.debug('send to token', app.token);
 
-			if (this.options.gateways) {
+			if (this._shouldUseGateway()) {
 				return this.sendNotificationGateway(app, notification, countApn, countGcm);
 			}
 
 			return this.sendNotificationNative(app, notification, countApn, countGcm);
 		});
 
-		if (LoggerManager.logLevel === 2) {
-			logger.debug(`Sent message "${ notification.title }" to ${ countApn.length } ios apps ${ countGcm.length } android apps`);
+		if (settings.get('Log_Level') === '2') {
+			logger.debug(`Sent message "${notification.title}" to ${countApn.length} ios apps ${countGcm.length} android apps`);
 
 			// Add some verbosity about the send result, making sure the developer
 			// understands what just happened.
@@ -277,12 +299,15 @@ export class PushClass {
 		const currentUser = options.createdBy || '<SERVER>';
 
 		// Rig the notification object
-		const notification = Object.assign({
-			createdAt: new Date(),
-			createdBy: currentUser,
-			sent: false,
-			sending: 0,
-		}, _.pick(options, 'from', 'title', 'text', 'userId'));
+		const notification = Object.assign(
+			{
+				createdAt: new Date(),
+				createdBy: currentUser,
+				sent: false,
+				sending: 0,
+			},
+			_.pick(options, 'from', 'title', 'text', 'userId'),
+		);
 
 		// Add extra
 		Object.assign(notification, _.pick(options, 'payload', 'badge', 'sound', 'notId', 'delayUntil', 'android_channel_id'));
@@ -292,7 +317,21 @@ export class PushClass {
 		}
 
 		if (Match.test(options.gcm, Object)) {
-			notification.gcm = _.pick(options.gcm, 'image', 'style', 'summaryText', 'picture', 'from', 'title', 'text', 'badge', 'sound', 'notId', 'actions', 'android_channel_id');
+			notification.gcm = _.pick(
+				options.gcm,
+				'image',
+				'style',
+				'summaryText',
+				'picture',
+				'from',
+				'title',
+				'text',
+				'badge',
+				'sound',
+				'notId',
+				'actions',
+				'android_channel_id',
+			);
 		}
 
 		if (options.contentAvailable != null) {
@@ -309,7 +348,7 @@ export class PushClass {
 		try {
 			this.sendNotification(notification);
 		} catch (error) {
-			logger.debug(`Could not send notification id: "${ notification._id }", Error: ${ error.message }`);
+			logger.debug(`Could not send notification id: "${notification._id}", Error: ${error.message}`);
 			logger.debug(error.stack);
 		}
 	}

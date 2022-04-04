@@ -4,7 +4,7 @@ import { getCredentials, request, credentials } from '../../data/api-data.js';
 import { apps } from '../../data/apps/apps-data.js';
 import { installTestApp, cleanupApps } from '../../data/apps/helper.js';
 
-describe('Apps - Uninstall', function() {
+describe('Apps - Uninstall', function () {
 	this.retries(0);
 	let app;
 
@@ -15,10 +15,10 @@ describe('Apps - Uninstall', function() {
 		app = await installTestApp();
 	});
 
-
 	describe('[Uninstall]', () => {
 		it('should throw an error when trying to uninstall an invalid app', (done) => {
-			request.delete(apps('/invalid-id'))
+			request
+				.delete(apps('/invalid-id'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(404)
@@ -29,7 +29,8 @@ describe('Apps - Uninstall', function() {
 				.end(done);
 		});
 		it('should remove the app successfully', (done) => {
-			request.delete(apps(`/${ app.id }`))
+			request
+				.delete(apps(`/${app.id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

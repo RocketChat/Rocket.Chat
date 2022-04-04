@@ -9,7 +9,6 @@
 	}
 
 	&-container {
-
 		display: flex;
 
 		width: 100%;
@@ -30,7 +29,6 @@
 		padding: 25px;
 
 		&__photo {
-
 			flex: 0 0 auto;
 
 			width: 95px;
@@ -44,7 +42,6 @@
 		}
 
 		&__content {
-
 			display: flex;
 			overflow: hidden;
 			flex-direction: column;
@@ -65,7 +62,6 @@
 			}
 
 			h2 {
-
 				padding: 5px 0;
 
 				font-size: 18px;
@@ -144,7 +140,6 @@
 @media (width <= 500px) {
 	.rc-apps {
 		&-container {
-
 			flex-direction: column;
 
 			padding: 25px;

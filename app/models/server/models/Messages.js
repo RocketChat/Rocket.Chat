@@ -4,17 +4,18 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
+import { otrSystemMessages } from '../../../otr/lib/constants';
 
 export class Messages extends Base {
 	constructor() {
 		super('message');
 
-		this.tryEnsureIndex({ rid: 1, ts: 1 });
+		this.tryEnsureIndex({ rid: 1, ts: 1, _updatedAt: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ editedAt: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'editedBy._id': 1 }, { sparse: true });
-		this.tryEnsureIndex({ rid: 1, t: 1, 'u._id': 1 });
+		this.tryEnsureIndex({ 'rid': 1, 't': 1, 'u._id': 1 });
 		this.tryEnsureIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
 		this.tryEnsureIndex({ msg: 'text' });
 		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: true });
@@ -22,7 +23,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ pinned: 1 }, { sparse: true });
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ location: '2dsphere' });
-		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: true });
+		this.tryEnsureIndex({ slackTs: 1, slackBotId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 
 		// discussions
@@ -30,6 +31,8 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
+		this.tryEnsureIndex({ rid: 1, tlm: -1 }, { partialFilterExpression: { tcount: { $exists: true } } }); // used for the List Threads
+		this.tryEnsureIndex({ rid: 1, tcount: 1 }); // used for the List Threads Count
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
@@ -39,31 +42,39 @@ export class Messages extends Base {
 	}
 
 	keepHistoryForToken(token) {
-		return this.update({
-			'navigation.token': token,
-			expireAt: {
-				$exists: true,
+		return this.update(
+			{
+				'navigation.token': token,
+				'expireAt': {
+					$exists: true,
+				},
 			},
-		}, {
-			$unset: {
-				expireAt: 1,
+			{
+				$unset: {
+					expireAt: 1,
+				},
 			},
-		}, {
-			multi: true,
-		});
+			{
+				multi: true,
+			},
+		);
 	}
 
 	setRoomIdByToken(token, rid) {
-		return this.update({
-			'navigation.token': token,
-			rid: null,
-		}, {
-			$set: {
-				rid,
+		return this.update(
+			{
+				'navigation.token': token,
+				'rid': null,
 			},
-		}, {
-			multi: true,
-		});
+			{
+				$set: {
+					rid,
+				},
+			},
+			{
+				multi: true,
+			},
+		);
 	}
 
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
@@ -74,12 +85,39 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
 	}
 
+	createRoomSetReadOnlyByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user);
+	}
+
+	createRoomRemovedReadOnlyByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user);
+	}
+
+	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
+	}
+
+	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
+	}
+
 	unsetReactions(messageId) {
 		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
 	deleteOldOTRMessages(roomId, ts) {
-		const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
+		const query = {
+			rid: roomId,
+			t: {
+				$in: [
+					'otr',
+					otrSystemMessages.USER_JOINED_OTR,
+					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+				],
+			},
+			ts: { $lte: ts },
+		};
 		return this.remove(query);
 	}
 
@@ -87,17 +125,6 @@ export class Messages extends Base {
 		const query = { _id };
 		const update = { $set: { otrAck } };
 		return this.update(query, update);
-	}
-
-	setGoogleVisionData(messageId, visionData) {
-		const updateObj = {};
-		for (const index in visionData) {
-			if (visionData.hasOwnProperty(index)) {
-				updateObj[`attachments.0.${ index }`] = visionData[index];
-			}
-		}
-
-		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
 	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
@@ -112,34 +139,38 @@ export class Messages extends Base {
 		const updateObj = { translationProvider: providerName };
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
-			updateObj[`translations.${ key }`] = translation;
+			updateObj[`translations.${key}`] = translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
-	addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
+	addAttachmentTranslations = function (messageId, attachmentIndex, translations) {
 		const updateObj = {};
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
-			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
+			updateObj[`attachments.${attachmentIndex}.translations.${key}`] = translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
-	}
+	};
 
 	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
 		const query = {
 			'_importFile.id': importFileId,
 		};
 
-		return this.update(query, {
-			$set: {
-				'_importFile.rocketChatUrl': rocketChatUrl,
-				'_importFile.downloaded': true,
+		return this.update(
+			query,
+			{
+				$set: {
+					'_importFile.rocketChatUrl': rocketChatUrl,
+					'_importFile.downloaded': true,
+				},
+				$addToSet: {
+					attachments: attachment,
+				},
 			},
-			$addToSet: {
-				attachments: attachment,
-			},
-		}, { multi: true });
+			{ multi: true },
+		);
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
@@ -172,7 +203,15 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(
+		rid,
+		excludePinned,
+		ignoreDiscussion = true,
+		ts,
+		users = [],
+		ignoreThreads = true,
+		options = {},
+	) {
 		const query = {
 			rid,
 			ts,
@@ -181,6 +220,11 @@ export class Messages extends Base {
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
 		}
 
 		if (ignoreDiscussion) {
@@ -214,7 +258,7 @@ export class Messages extends Base {
 
 	findVisibleByMentionAndRoomId(username, rid, options) {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'mentions.username': username,
 			rid,
 		};
@@ -234,6 +278,17 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
+	findVisibleByIds(ids, options) {
+		const query = {
+			_id: { $in: ids },
+			_hidden: {
+				$ne: true,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findVisibleThreadByThreadId(tmid, options) {
 		const query = {
 			_hidden: {
@@ -246,16 +301,25 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdNotContainingTypes(roomId, types, options) {
+	findVisibleByRoomIdNotContainingTypes(roomId, types, options, showThreadMessages = true) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
-
 			rid: roomId,
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
 		};
 
-		if (Match.test(types, [String]) && (types.length > 0)) {
+		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
 
@@ -312,81 +376,65 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBeforeTimestampInclusive(roomId, timestamp, options) {
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$lte: timestamp,
+				[inclusive ? '$lte' : '$lt']: timestamp,
 			},
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
 		};
 
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBetweenTimestamps(roomId, afterTimestamp, beforeTimestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gt: afterTimestamp,
-				$lt: beforeTimestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gte: afterTimestamp,
-				$lte: beforeTimestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$lt: timestamp,
-			},
-		};
-
-		if (Match.test(types, [String]) && (types.length > 0)) {
+		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, afterTimestamp, beforeTimestamp, types, options) {
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+		roomId,
+		afterTimestamp,
+		beforeTimestamp,
+		types,
+		options,
+		showThreadMessages = true,
+		inclusive = false,
+	) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$gt: afterTimestamp,
-				$lt: beforeTimestamp,
+				[inclusive ? '$gte' : '$gt']: afterTimestamp,
+				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
 			},
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
 		};
 
-		if (Match.test(types, [String]) && (types.length > 0)) {
+		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
 
@@ -396,16 +444,17 @@ export class Messages extends Base {
 	findVisibleCreatedOrEditedAfterTimestamp(timestamp, options) {
 		const query = {
 			_hidden: { $ne: true },
-			$or: [{
-				ts: {
-					$gt: timestamp,
+			$or: [
+				{
+					ts: {
+						$gt: timestamp,
+					},
 				},
-			},
-			{
-				editedAt: {
-					$gt: timestamp,
+				{
+					editedAt: {
+						$gt: timestamp,
+					},
 				},
-			},
 			],
 		};
 
@@ -414,9 +463,9 @@ export class Messages extends Base {
 
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'starred._id': userId,
-			rid: roomId,
+			'rid': roomId,
 		};
 
 		return this.find(query, options);
@@ -443,13 +492,11 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	getLastTimestamp(options) {
-		if (options == null) { options = {}; }
-		const query = { ts: { $exists: 1 } };
+	getLastTimestamp(options = { fields: { _id: 0, ts: 1 } }) {
 		options.sort = { ts: -1 };
 		options.limit = 1;
-		const [message] = this.find(query, options).fetch();
-		return message && message.ts;
+		const [message] = this.find({}, options).fetch();
+		return message?.ts;
 	}
 
 	findByRoomIdAndMessageIds(rid, messageIds, options) {
@@ -478,13 +525,24 @@ export class Messages extends Base {
 		return this.findOne(query);
 	}
 
+	findOneByRoomIdAndMessageId(rid, messageId, options) {
+		const query = {
+			rid,
+			_id: messageId,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByRoomIdAndType(roomId, type, options) {
 		const query = {
 			rid: roomId,
 			t: type,
 		};
 
-		if (options == null) { options = {}; }
+		if (options == null) {
+			options = {};
+		}
 
 		return this.find(query, options);
 	}
@@ -502,6 +560,7 @@ export class Messages extends Base {
 			rid,
 			_hidden: { $ne: true },
 			t: { $exists: false },
+			$or: [{ tmid: { $exists: false } }, { tshow: true }],
 		};
 
 		if (messageId) {
@@ -532,7 +591,9 @@ export class Messages extends Base {
 
 	// UPDATE
 	setHiddenById(_id, hidden) {
-		if (hidden == null) { hidden = true; }
+		if (hidden == null) {
+			hidden = true;
+		}
 		const query = { _id };
 
 		const update = {
@@ -562,7 +623,9 @@ export class Messages extends Base {
 				},
 			},
 			$unset: {
+				md: 1,
 				blocks: 1,
+				tshow: 1,
 			},
 		};
 
@@ -570,8 +633,12 @@ export class Messages extends Base {
 	}
 
 	setPinnedByIdAndUserId(_id, pinnedBy, pinned, pinnedAt) {
-		if (pinned == null) { pinned = true; }
-		if (pinnedAt == null) { pinnedAt = 0; }
+		if (pinned == null) {
+			pinned = true;
+		}
+		if (pinnedAt == null) {
+			pinnedAt = 0;
+		}
 		const query = { _id };
 
 		const update = {
@@ -586,11 +653,15 @@ export class Messages extends Base {
 	}
 
 	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		if (snippeted == null) { snippeted = true; }
-		if (snippetedAt == null) { snippetedAt = 0; }
+		if (snippeted == null) {
+			snippeted = true;
+		}
+		if (snippetedAt == null) {
+			snippetedAt = 0;
+		}
 		const query = { _id: message._id };
 
-		const msg = `\`\`\`${ message.msg }\`\`\``;
+		const msg = `\`\`\`${message.msg}\`\`\``;
 
 		const update = {
 			$set: {
@@ -650,7 +721,7 @@ export class Messages extends Base {
 		const update = {
 			$set: {
 				'mentions.$.username': newUsername,
-				msg: newMessage,
+				'msg': newMessage,
 			},
 		};
 
@@ -722,7 +793,7 @@ export class Messages extends Base {
 
 		const update = {
 			$set: {
-				alias: newNameAlias,
+				'alias': newNameAlias,
 				'u._id': newUserId,
 				'u.username': newUsername,
 				'u.name': undefined,
@@ -804,9 +875,37 @@ export class Messages extends Base {
 		return record;
 	}
 
+	createTranscriptHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+		const type = 'livechat_transcript_history';
+		const record = {
+			t: type,
+			rid: roomId,
+			ts: new Date(),
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username,
+			},
+			groupable: false,
+		};
+
+		if (settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+		Object.assign(record, extraData);
+
+		record._id = this.insertOrUpsert(record);
+		return record;
+	}
+
 	createUserJoinWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
+	}
+
+	createUserJoinTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('ujt', roomId, message, user, extraData);
 	}
 
 	createUserJoinWithRoomIdAndUserDiscussion(roomId, user, extraData) {
@@ -819,14 +918,49 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('ul', roomId, message, user, extraData);
 	}
 
+	createUserLeaveTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('ult', roomId, message, user, extraData);
+	}
+
+	createUserConvertChannelToTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-converted-to-team', roomId, roomName, user, extraData);
+	}
+
+	createUserConvertTeamToChannelWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-converted-to-channel', roomId, roomName, user, extraData);
+	}
+
+	createUserRemoveRoomFromTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-removed-room-from-team', roomId, roomName, user, extraData);
+	}
+
+	createUserDeleteRoomFromTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-deleted-room-from-team', roomId, roomName, user, extraData);
+	}
+
+	createUserAddRoomToTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('user-added-room-to-team', roomId, roomName, user, extraData);
+	}
+
 	createUserRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ru', roomId, message, user, extraData);
 	}
 
+	createUserRemovedFromTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('removed-user-from-team', roomId, message, user, extraData);
+	}
+
 	createUserAddedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('au', roomId, message, user, extraData);
+	}
+
+	createUserAddedToTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('added-user-to-team', roomId, message, user, extraData);
 	}
 
 	createCommandWithRoomIdAndUser(command, roomId, user, extraData) {
@@ -883,6 +1017,11 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
 	}
 
+	createOtrSystemMessagesWithRoomIdAndUser(roomId, user, id, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, extraData);
+	}
+
 	// REMOVE
 	removeById(_id) {
 		const query = { _id };
@@ -900,7 +1039,30 @@ export class Messages extends Base {
 		return this.remove({ rid: { $in: rids } });
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = []) {
+	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
+		const query = {
+			rid,
+			ts,
+			tlm: { $exists: 1 },
+			tcount: { $exists: 1 },
+		};
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
+		}
+
+		if (users.length > 0) {
+			query['u.username'] = { $in: users };
+		}
+
+		return this.find(query, options);
+	}
+
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {
 		const query = {
 			rid,
 			ts,
@@ -912,6 +1074,11 @@ export class Messages extends Base {
 
 		if (ignoreDiscussion) {
 			query.drid = { $exists: 0 };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
 		}
 
 		if (users.length) {
@@ -975,27 +1142,34 @@ export class Messages extends Base {
 	}
 
 	setAsRead(rid, until) {
-		return this.update({
-			rid,
-			unread: true,
-			ts: { $lt: until },
-		}, {
-			$unset: {
-				unread: 1,
+		return this.update(
+			{
+				rid,
+				unread: true,
+				ts: { $lt: until },
 			},
-		}, {
-			multi: true,
-		});
+			{
+				$unset: {
+					unread: 1,
+				},
+			},
+			{
+				multi: true,
+			},
+		);
 	}
 
 	setAsReadById(_id) {
-		return this.update({
-			_id,
-		}, {
-			$unset: {
-				unread: 1,
+		return this.update(
+			{
+				_id,
 			},
-		});
+			{
+				$unset: {
+					unread: 1,
+				},
+			},
+		);
 	}
 
 	findUnreadMessagesByRoomAndDate(rid, after) {
@@ -1037,12 +1211,16 @@ export class Messages extends Base {
 			drid: rid,
 		};
 
-		return this.update(query, {
-			$set: {
-				dcount,
-				dlm,
+		return this.update(
+			query,
+			{
+				$set: {
+					dcount,
+					dlm,
+				},
 			},
-		}, { multi: 1 });
+			{ multi: 1 },
+		);
 	}
 
 	// //////////////////////////////////////////////////////////////////
@@ -1185,6 +1363,16 @@ export class Messages extends Base {
 		};
 
 		return this.find(query);
+	}
+
+	decreaseReplyCountById(_id, inc = -1) {
+		const query = { _id };
+		const update = {
+			$inc: {
+				tcount: inc,
+			},
+		};
+		return this.update(query, update);
 	}
 }
 

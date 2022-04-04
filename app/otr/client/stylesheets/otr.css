@@ -1,29 +1,16 @@
-.flex-tab {
-	& .otr {
-		& ul {
-			& li {
-				margin-bottom: 20px;
-			}
-		}
-	}
-}
-
 .message {
-	&.otr,
 	&.otr-ack {
-		& .info::before {
-			display: inline-block;
-			visibility: visible;
+		.info {
+			color: lightgreen;
 
-			content: "\e952";
+			&::before {
+				display: inline-block;
+				visibility: visible;
 
-			font-family: 'fontello';
-		}
-	}
+				content: "\e952";
 
-	&.otr-ack {
-		& .info::before {
-			color: green;
+				font-family: 'fontello';
+			}
 		}
 	}
 }

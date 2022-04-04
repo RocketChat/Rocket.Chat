@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
-import { Notifications } from '../../../notifications';
+import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {
@@ -26,12 +25,14 @@ Meteor.methods({
 		// Get user and room details
 		const room = Rooms.findOneById(data.rid);
 		const userId = Meteor.userId();
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {
+			fields: { _id: 1 },
+		});
 		const userInRoom = subscription != null;
 
 		// Can't add to direct room ever
 		if (room.t === 'd') {
-			throw new Meteor.Error('error-cant-invite-for-direct-room', 'Can\'t invite user to direct rooms', {
+			throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
 				method: 'addUsersToRoom',
 			});
 		}
@@ -73,14 +74,15 @@ Meteor.methods({
 			if (!subscription) {
 				addUserToRoom(data.rid, newUser, user);
 			} else {
-				Notifications.notifyUser(userId, 'message', {
-					_id: Random.id(),
-					rid: data.rid,
-					ts: new Date(),
-					msg: TAPi18n.__('Username_is_already_in_here', {
-						postProcess: 'sprintf',
-						sprintf: [newUser.username],
-					}, user.language),
+				api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+					msg: TAPi18n.__(
+						'Username_is_already_in_here',
+						{
+							postProcess: 'sprintf',
+							sprintf: [newUser.username],
+						},
+						user.language,
+					),
 				});
 			}
 		});

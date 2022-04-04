@@ -1,6 +1,6 @@
 import { FederationRoomEvents } from '../../../models/server';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
@@ -13,13 +13,13 @@ async function afterLeaveRoom(user, room) {
 		return user;
 	}
 
-	logger.client.debug(() => `afterLeaveRoom => user=${ JSON.stringify(user, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterLeaveRoom', user, room });
 
 	const { users } = getFederatedRoomData(room);
 
 	try {
 		// Get the domains after leave
-		const domainsAfterLeave = users.map((u) => u.federation.origin);
+		const domainsAfterLeave = [...new Set(users.map((u) => u.federation.origin))];
 
 		//
 		// Normalize the room's federation status
@@ -28,7 +28,7 @@ async function afterLeaveRoom(user, room) {
 		usersBeforeLeave.push(user);
 
 		// Get the users domains
-		const domainsBeforeLeft = usersBeforeLeave.map((u) => u.federation.origin);
+		const domainsBeforeLeft = [...new Set(usersBeforeLeave.map((u) => u.federation.origin))];
 
 		//
 		// Create the user left event
@@ -40,7 +40,7 @@ async function afterLeaveRoom(user, room) {
 		// Dispatch the events
 		dispatchEvent(domainsBeforeLeft, userLeftEvent);
 	} catch (err) {
-		logger.client.error('afterLeaveRoom => Could not make user leave:', err);
+		clientLogger.error({ msg: 'afterLeaveRoom => Could not make user leave:', err });
 	}
 
 	return user;

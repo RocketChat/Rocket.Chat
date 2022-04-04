@@ -1,15 +1,16 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
+import { unescapeHTML } from '@rocket.chat/string-helpers';
 
-const getTitle = function(self) {
+const getTitle = function (self) {
 	if (self.meta == null) {
 		return;
 	}
 	return self.meta.ogTitle || self.meta.twitterTitle || self.meta.title || self.meta.pageTitle;
 };
 
-const getDescription = function(self) {
+const getDescription = function (self) {
 	if (self.meta == null) {
 		return;
 	}
@@ -17,14 +18,14 @@ const getDescription = function(self) {
 	if (description == null) {
 		return;
 	}
-	return _.unescape(description.replace(/(^[“\s]*)|([”\s]*$)/g, ''));
+	return unescapeHTML(description.replace(/(^[“\s]*)|([”\s]*$)/g, ''));
 };
 
 Template.oembedUrlWidget.helpers({
 	description() {
 		const description = getDescription(this);
 		if (_.isString(description)) {
-			return Blaze._escape(description);
+			return description;
 		}
 	},
 	title() {
@@ -34,7 +35,11 @@ Template.oembedUrlWidget.helpers({
 		}
 	},
 	target() {
-		if (!(this.parsedUrl && this.parsedUrl.host) || !(document && document.location && document.location.host) || (this.parsedUrl && this.parsedUrl.host !== document.location.host)) {
+		if (
+			!(this.parsedUrl && this.parsedUrl.host) ||
+			!(document && document.location && document.location.host) ||
+			(this.parsedUrl && this.parsedUrl.host !== document.location.host)
+		) {
 			return '_blank';
 		}
 	},
@@ -50,10 +55,10 @@ Template.oembedUrlWidget.helpers({
 		if (url == null) {
 			return;
 		}
-		url = new URL(url, `${ this.parsedUrl.protocol }//${ this.parsedUrl.host }`).href;
+		url = new URL(url, `${this.parsedUrl.protocol}//${this.parsedUrl.host}`).href;
 		return url;
 	},
 	show() {
-		return (getDescription(this) != null) || (getTitle(this) != null);
+		return getDescription(this) != null || getTitle(this) != null;
 	},
 });

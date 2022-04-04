@@ -1,6 +1,4 @@
-import { actionLinks } from '../both/lib/actionLinks';
+import { actionLinks } from './lib/actionLinks';
 import './actionLinkHandler';
 
-export {
-	actionLinks,
-};
+export { actionLinks };

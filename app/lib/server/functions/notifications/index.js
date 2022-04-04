@@ -1,25 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { callbacks } from '../../../../callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../settings';
 
 /**
-* This function returns a string ready to be shown in the notification
-*
-* @param {object} message the message to be parsed
-*/
+ * This function returns a string ready to be shown in the notification
+ *
+ * @param {object} message the message to be parsed
+ */
 export function parseMessageTextPerUser(messageText, message, receiver) {
-	if (!message.msg && message.attachments && message.attachments[0]) {
-		const lng = receiver.language || settings.get('Language') || 'en';
+	const lng = receiver.language || settings.get('Language') || 'en';
 
+	if (!message.msg && message.attachments && message.attachments[0]) {
 		return message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', { lng }) : TAPi18n.__('User_uploaded_file', { lng });
 	}
 
 	if (message.msg && message.t === 'e2e') {
-		const lng = receiver.language || settings.get('Language') || 'en';
-
 		return TAPi18n.__('Encrypted_message', { lng });
 	}
 
@@ -41,7 +39,7 @@ export function replaceMentionedUsernamesWithFullNames(message, mentions) {
 	}
 	mentions.forEach((mention) => {
 		if (mention.name) {
-			message = message.replace(new RegExp(s.escapeRegExp(`@${ mention.username }`), 'g'), mention.name);
+			message = message.replace(new RegExp(escapeRegExp(`@${mention.username}`), 'g'), mention.name);
 		}
 	});
 	return message;
@@ -56,21 +54,25 @@ export function replaceMentionedUsernamesWithFullNames(message, mentions) {
  * @returns {boolean}
  */
 export function messageContainsHighlight(message, highlights) {
-	if (! highlights || highlights.length === 0) { return false; }
+	if (!highlights || highlights.length === 0) {
+		return false;
+	}
 
-	return highlights.some(function(highlight) {
-		const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+	return highlights.some(function (highlight) {
+		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});
 }
 
 export function callJoinRoom(userId, rid) {
 	return new Promise((resolve, reject) => {
-		Meteor.runAsUser(userId, () => Meteor.call('joinRoom', rid, (error, result) => {
-			if (error) {
-				return reject(error);
-			}
-			return resolve(result);
-		}));
+		Meteor.runAsUser(userId, () =>
+			Meteor.call('joinRoom', rid, (error, result) => {
+				if (error) {
+					return reject(error);
+				}
+				return resolve(result);
+			}),
+		);
 	});
 }

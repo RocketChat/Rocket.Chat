@@ -1,31 +1,11 @@
-import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../settings';
-import { Subscriptions } from '../../../../models';
-import { roomTypes } from '../../../../utils';
+import { Subscriptions } from '../../../../models/server/raw';
+import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
-
-let SubscriptionRaw;
-Meteor.startup(() => {
-	SubscriptionRaw = Subscriptions.model.rawCollection();
-});
-
-async function getBadgeCount(userId) {
-	const [result = {}] = await SubscriptionRaw.aggregate([
-		{ $match: { 'u._id': userId } },
-		{
-			$group: {
-				_id: 'total',
-				total: { $sum: '$unread' },
-			},
-		},
-	]).toArray();
-
-	const { total } = result;
-	return total;
-}
 
 function enableNotificationReplyButton(room, username) {
 	// Some users may have permission to send messages even on readonly rooms, but we're ok with false negatives here in exchange of better perfomance
@@ -40,24 +20,47 @@ function enableNotificationReplyButton(room, username) {
 	return !room.muted.includes(username);
 }
 
-export async function getPushData({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
-	let username = '';
-	if (settings.get('Push_show_username_room')) {
-		username = settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
+export async function getPushData({
+	room,
+	message,
+	userId,
+	senderUsername,
+	senderName,
+	notificationMessage,
+	receiver,
+	shouldOmitMessage = true,
+}) {
+	const username = settings.get('Push_show_username_room') ? (settings.get('UI_Use_Real_Name') && senderName) || senderUsername : '';
+
+	const lng = receiver.language || settings.get('Language') || 'en';
+
+	let messageText;
+	if (shouldOmitMessage && settings.get('Push_request_content_from_server')) {
+		messageText = TAPi18n.__('You_have_a_new_message', { lng });
+	} else if (!settings.get('Push_show_message')) {
+		messageText = TAPi18n.__('You_have_a_new_message', { lng });
+	} else {
+		messageText = notificationMessage;
 	}
 
 	return {
 		payload: {
 			sender: message.u,
+			senderName: username,
 			type: room.t,
-			name: room.name,
+			name: settings.get('Push_show_username_room') ? room.name : '',
 			messageType: message.t,
+			tmid: message.tmid,
+			...(message.t === 'e2e' && { msg: message.msg }),
 		},
-		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
+		roomName:
+			settings.get('Push_show_username_room') && roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)
+				? `#${roomCoordinator.getRoomName(room.t, room, userId)}`
+				: '',
 		username,
-		message: settings.get('Push_show_message') ? notificationMessage : ' ',
-		badge: await getBadgeCount(userId),
-		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
+		message: messageText,
+		badge: await Subscriptions.getBadgeCount(userId),
+		category: enableNotificationReplyButton(room, receiver.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	};
 }
 
@@ -69,7 +72,12 @@ export function shouldNotifyMobile({
 	hasMentionToUser,
 	hasReplyToThread,
 	roomType,
+	isThread,
 }) {
+	if (settings.get('Push_enable') !== true) {
+		return false;
+	}
+
 	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
@@ -79,13 +87,20 @@ export function shouldNotifyMobile({
 	}
 
 	if (!mobilePushNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all') {
+		if (settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'all' && (!isThread || hasReplyToThread)) {
 			return true;
 		}
-		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing') {
+		if (settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'nothing') {
 			return false;
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser || hasReplyToThread;
+	return (
+		(roomType === 'd' ||
+			(!disableAllMessageNotifications && hasMentionToAll) ||
+			isHighlighted ||
+			mobilePushNotifications === 'all' ||
+			hasMentionToUser) &&
+		(!isThread || hasReplyToThread)
+	);
 }

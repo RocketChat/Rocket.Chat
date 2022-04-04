@@ -1,21 +1,12 @@
 import _ from 'underscore';
 import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../../app/settings/server';
 import { Users } from '../../app/models';
 
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 
-Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceData = {}, ...args /* , options*/) {
-	const services = [
-		'facebook',
-		'github',
-		'gitlab',
-		'google',
-		'meteor-developer',
-		'linkedin',
-		'twitter',
-	];
+Accounts.updateOrCreateUserFromExternalService = function (serviceName, serviceData = {}, ...args /* , options*/) {
+	const services = ['facebook', 'github', 'gitlab', 'google', 'meteor-developer', 'linkedin', 'twitter', 'apple'];
 
 	if (services.includes(serviceName) === false && serviceData._OAuthCustom !== true) {
 		return orig_updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, ...args]);
@@ -37,11 +28,15 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		if (user != null) {
 			const findQuery = {
 				address: serviceData.email,
-				verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
+				verified: true,
 			};
 
-			if (!_.findWhere(user.emails, findQuery)) {
-				Users.resetPasswordAndSetRequirePasswordChange(user._id, true, 'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password');
+			if (user.services?.password && !_.findWhere(user.emails, findQuery)) {
+				Users.resetPasswordAndSetRequirePasswordChange(
+					user._id,
+					true,
+					'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password',
+				);
 			}
 
 			Users.setServiceId(user._id, serviceName, serviceData.id);

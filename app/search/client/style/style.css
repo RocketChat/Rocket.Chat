@@ -1,13 +1,8 @@
 .rocket-search {
-
 	display: flex;
 	flex: 1;
 
 	padding: 0 !important;
-}
-
-.defaultProvider {
-	padding: 24px;
 }
 
 .rocket-search-tab {
@@ -23,7 +18,7 @@
 
 .rocket-search-result {
 	display: flex;
-	overflow: hidden;
+	overflow-x: hidden;
 	flex-direction: column;
 	flex: 1 1 0;
 }

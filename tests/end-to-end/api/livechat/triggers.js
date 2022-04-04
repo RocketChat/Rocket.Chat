@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - triggers', function() {
+describe('LIVECHAT - triggers', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -15,7 +15,8 @@ describe('LIVECHAT - triggers', function() {
 	describe('livechat/triggers', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
-				request.get(api('livechat/triggers'))
+				request
+					.get(api('livechat/triggers'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -27,28 +28,29 @@ describe('LIVECHAT - triggers', function() {
 			});
 		});
 		it('should return an array of triggers', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => {
-					request.get(api('livechat/triggers'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body.triggers).to.be.an('array');
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('total');
-							expect(res.body).to.have.property('count');
-						})
-						.end(done);
-				});
+			updatePermission('view-livechat-manager', ['admin']).then(() => {
+				request
+					.get(api('livechat/triggers'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.triggers).to.be.an('array');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
 		});
 	});
 
 	describe('livechat/triggers/:id', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
-				request.get(api('livechat/triggers/invalid-id'))
+				request
+					.get(api('livechat/triggers/invalid-id'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)

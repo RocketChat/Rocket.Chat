@@ -3,18 +3,19 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { RoomManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils';
 import { ChatSubscription } from '../../models';
+import { handleError } from '../../../client/lib/utils/handleError';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
 		id: 'mark-message-as-unread',
 		icon: 'flag',
 		label: 'Mark_unread',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			return Meteor.call('unreadMessages', message, function(error) {
+			return Meteor.call('unreadMessages', message, function (error) {
 				if (error) {
 					return handleError(error);
 				}
@@ -28,7 +29,11 @@ Meteor.startup(() => {
 				return FlowRouter.go('home');
 			});
 		},
-		condition({ msg, u }) {
+		condition({ msg, u, room }) {
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 			return msg.u._id !== u._id;
 		},
 		order: 10,

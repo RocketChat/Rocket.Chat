@@ -1,6 +1,6 @@
 import { FederationRoomEvents } from '../../../models/server';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
@@ -15,13 +15,13 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		return involvedUsers;
 	}
 
-	logger.client.debug(() => `afterRemoveFromRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterRemoveFromRoom', involvedUsers, room });
 
 	const { users } = getFederatedRoomData(room);
 
 	try {
 		// Get the domains after removal
-		const domainsAfterRemoval = users.map((u) => u.federation.origin);
+		const domainsAfterRemoval = [...new Set(users.map((u) => u.federation.origin))];
 
 		//
 		// Normalize the room's federation status
@@ -30,19 +30,24 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		usersBeforeRemoval.push(removedUser);
 
 		// Get the users domains
-		const domainsBeforeRemoval = usersBeforeRemoval.map((u) => u.federation.origin);
+		const domainsBeforeRemoval = [...new Set(usersBeforeRemoval.map((u) => u.federation.origin))];
 
 		//
 		// Create the user remove event
 		//
 		const normalizedSourceUser = normalizers.normalizeUser(removedUser);
 
-		const removeUserEvent = await FederationRoomEvents.createRemoveUserEvent(localDomain, room._id, normalizedSourceUser, domainsAfterRemoval);
+		const removeUserEvent = await FederationRoomEvents.createRemoveUserEvent(
+			localDomain,
+			room._id,
+			normalizedSourceUser,
+			domainsAfterRemoval,
+		);
 
 		// Dispatch the events
 		dispatchEvent(domainsBeforeRemoval, removeUserEvent);
 	} catch (err) {
-		logger.client.error('afterRemoveFromRoom => Could not remove user:', err);
+		clientLogger.error({ msg: 'afterRemoveFromRoom => Could not remove user:', err });
 	}
 
 	return involvedUsers;

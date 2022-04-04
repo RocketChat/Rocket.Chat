@@ -113,7 +113,9 @@ export class SlackAPI {
 	}
 
 	getHistory(family, options) {
-		const response = HTTP.get(`https://slack.com/api/${ family }.history`, { params: Object.assign({ token: this.apiToken }, options) });
+		const response = HTTP.get(`https://slack.com/api/${family}.history`, {
+			params: Object.assign({ token: this.apiToken }, options),
+		});
 		return response && response.data;
 	}
 

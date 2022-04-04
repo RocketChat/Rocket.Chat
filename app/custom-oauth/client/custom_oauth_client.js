@@ -1,11 +1,12 @@
+import { capitalize } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { OAuth } from 'meteor/oauth';
-import s from 'underscore.string';
 
+import './swapSessionStorage';
 import { isURL } from '../../utils/lib/isURL';
 
 // Request custom OAuth credentials for the user
@@ -48,6 +49,7 @@ export class CustomOAuth {
 		this.serverURL = options.serverURL;
 		this.authorizePath = options.authorizePath;
 		this.scope = options.scope;
+		this.responseType = options.responseType || 'code';
 
 		if (!isURL(this.authorizePath)) {
 			this.authorizePath = this.serverURL + this.authorizePath;
@@ -55,7 +57,7 @@ export class CustomOAuth {
 	}
 
 	configureLogin() {
-		const loginWithService = `loginWith${ s.capitalize(this.name) }`;
+		const loginWithService = `loginWith${capitalize(String(this.name || ''))}`;
 
 		Meteor[loginWithService] = (options, callback) => {
 			// support a callback without options
@@ -89,12 +91,13 @@ export class CustomOAuth {
 
 		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
 
-		const loginUrl = `${ this.authorizePath
-		}${ separator }client_id=${ config.clientId
-		}&redirect_uri=${ encodeURIComponent(OAuth._redirectUri(this.name, config))
-		}&response_type=code`
-			+ `&state=${ OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)
-			}&scope=${ this.scope }`;
+		const loginUrl =
+			`${this.authorizePath}${separator}client_id=${config.clientId}&redirect_uri=${encodeURIComponent(
+				OAuth._redirectUri(this.name, config),
+			)}&response_type=${encodeURIComponent(this.responseType)}` +
+			`&state=${encodeURIComponent(OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl))}&scope=${encodeURIComponent(
+				this.scope,
+			)}`;
 
 		OAuth.launchLogin({
 			loginService: this.name,

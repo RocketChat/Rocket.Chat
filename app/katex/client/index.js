@@ -1,10 +1,9 @@
 import { Random } from 'meteor/random';
-import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
-import s from 'underscore.string';
+import katex from 'katex';
+import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 
-import { callbacks } from '../../callbacks';
-import { settings } from '../../settings';
+import 'katex/dist/katex.min.css';
+import './style.css';
 
 class Boundary {
 	length() {
@@ -17,38 +16,43 @@ class Boundary {
 }
 
 class Katex {
-	constructor(katex) {
+	constructor(katex, { dollarSyntax, parenthesisSyntax }) {
 		this.katex = katex;
 		this.delimitersMap = [
 			{
 				opener: '\\[',
 				closer: '\\]',
 				displayMode: true,
-				enabled: () => this.isParenthesisSyntaxEnabled(),
-			}, {
+				enabled: () => parenthesisSyntax,
+			},
+			{
 				opener: '\\(',
 				closer: '\\)',
 				displayMode: false,
-				enabled: () => this.isParenthesisSyntaxEnabled(),
-			}, {
+				enabled: () => parenthesisSyntax,
+			},
+			{
 				opener: '$$',
 				closer: '$$',
 				displayMode: true,
-				enabled: () => this.isDollarSyntaxEnabled(),
-			}, {
+				enabled: () => dollarSyntax,
+			},
+			{
 				opener: '$',
 				closer: '$',
 				displayMode: false,
-				enabled: () => this.isDollarSyntaxEnabled(),
+				enabled: () => dollarSyntax,
 			},
 		];
 	}
 
 	findOpeningDelimiter(str, start) {
-		const matches = this.delimitersMap.filter((options) => options.enabled()).map((options) => ({
-			options,
-			pos: str.indexOf(options.opener, start),
-		}));
+		const matches = this.delimitersMap
+			.filter((options) => options.enabled())
+			.map((options) => ({
+				options,
+				pos: str.indexOf(options.opener, start),
+			}));
 
 		const positions = matches.filter(({ pos }) => pos >= 0).map(({ pos }) => pos);
 
@@ -58,7 +62,7 @@ class Katex {
 		}
 
 		// Take the first delimiter found
-		const minPos = Math.min.apply(Math, positions);
+		const minPos = Math.min(...positions);
 
 		const matchIndex = matches.findIndex(({ pos }) => pos === minPos);
 
@@ -109,7 +113,7 @@ class Katex {
 		const before = str.substr(0, match.outer.start);
 		const after = str.substr(match.outer.end);
 		let latex = match.inner.extract(str);
-		latex = s.unescapeHTML(latex);
+		latex = unescapeHTML(latex);
 		return {
 			before,
 			latex,
@@ -128,10 +132,9 @@ class Katex {
 				},
 			});
 		} catch ({ message }) {
-			return `<div class="katex-error katex-${ displayMode ? 'block' : 'inline' }-error">`
-				+ `${ s.escapeHTML(message) }</div>`;
+			return `<div class="katex-error katex-${displayMode ? 'block' : 'inline'}-error">${escapeHTML(message)}</div>`;
 		}
-	}
+	};
 
 	// Takes a string and renders all latex blocks inside it
 	render(str, renderFunction) {
@@ -153,20 +156,20 @@ class Katex {
 	}
 
 	renderMessage = (message) => {
-		if (_.isString(message)) {
+		if (typeof message === 'string') {
 			return this.render(message, this.renderLatex);
 		}
 
-		if (!s.trim(message.html)) {
+		if (!message.html?.trim()) {
 			return message;
 		}
 
-		if (message.tokens == null) {
+		if (!message.tokens) {
 			message.tokens = [];
 		}
 
 		message.html = this.render(message.html, (latex, displayMode) => {
-			const token = `=!=${ Random.id() }=!=`;
+			const token = `=!=${Random.id()}=!=`;
 			message.tokens.push({
 				token,
 				text: this.renderLatex(latex, displayMode),
@@ -175,32 +178,10 @@ class Katex {
 		});
 
 		return message;
-	}
-
-	isEnabled = () => settings.get('Katex_Enabled')
-
-	isDollarSyntaxEnabled = () => settings.get('Katex_Dollar_Syntax')
-
-	isParenthesisSyntaxEnabled = () => settings.get('Katex_Parenthesis_Syntax')
+	};
 }
 
-
-Tracker.autorun(async () => {
-	if (!settings.get('Katex_Enabled')) {
-		return callbacks.remove('renderMessage', 'katex');
-	}
-
-
-	const [katex] = await Promise.all([import('katex'), import('./style.css'), import('../katex.min.css')]);
-	const instance = new Katex(katex);
-
-	callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH + 1, 'katex');
-});
-
-export default {
-	isEnabled: () => settings.get('Katex_Enabled'),
-
-	isDollarSyntaxEnabled: () => settings.get('Katex_Dollar_Syntax'),
-
-	isParenthesisSyntaxEnabled: () => settings.get('Katex_Parenthesis_Syntax'),
+export const createKatexMessageRendering = (options) => {
+	const instance = new Katex(katex, options);
+	return (message) => instance.renderMessage(message);
 };

@@ -2,7 +2,7 @@ import _ from 'underscore';
 
 import LivechatDepartmentInstance, { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
 import { getUnitsFromUser } from '../../../livechat-enterprise/server/lib/units';
-import { logger } from '../../../livechat-enterprise/server/lib/logger';
+import { queriesLogger } from '../../../livechat-enterprise/server/lib/logger';
 import LivechatUnitMonitors from './LivechatUnitMonitors';
 
 const addQueryRestrictions = (originalQuery = {}) => {
@@ -19,17 +19,16 @@ const addQueryRestrictions = (originalQuery = {}) => {
 	return query;
 };
 
-
 export class LivechatUnit extends LivechatDepartment {
 	find(originalQuery, ...args) {
 		const query = addQueryRestrictions(originalQuery);
-		logger.queries.debug('LivechatUnit.find', JSON.stringify(query));
+		queriesLogger.debug({ msg: 'LivechatUnit.find', query });
 		return this.unfilteredFind(query, ...args);
 	}
 
 	findOne(originalQuery, ...args) {
 		const query = addQueryRestrictions(originalQuery);
-		logger.queries.debug('LivechatUnit.findOne', JSON.stringify(query));
+		queriesLogger.debug({ msg: 'LivechatUnit.findOne', query });
 		return super.unfilteredFindOne(query, ...args);
 	}
 
@@ -83,17 +82,27 @@ export class LivechatUnit extends LivechatDepartment {
 
 		// remove other departments
 		_.difference(savedDepartments, departmentsToSave).forEach((departmentId) => {
-			LivechatDepartmentInstance.update({ _id: departmentId }, { $set: {
-				parentId: null,
-				ancestors: null,
-			} });
+			LivechatDepartmentInstance.update(
+				{ _id: departmentId },
+				{
+					$set: {
+						parentId: null,
+						ancestors: null,
+					},
+				},
+			);
 		});
 
 		departmentsToSave.forEach((departmentId) => {
-			LivechatDepartmentInstance.update({ _id: departmentId }, { $set: {
-				parentId: _id,
-				ancestors,
-			} });
+			LivechatDepartmentInstance.update(
+				{ _id: departmentId },
+				{
+					$set: {
+						parentId: _id,
+						ancestors,
+					},
+				},
+			);
 		});
 
 		return _.extend(record, { _id });
@@ -127,11 +136,14 @@ export class LivechatUnit extends LivechatDepartment {
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 
 		return this.findOne(query, options);
@@ -144,6 +156,11 @@ export class LivechatUnit extends LivechatDepartment {
 		}
 
 		return monitoredUnits.map((u) => u.unitId);
+	}
+
+	findMonitoredDepartmentsByMonitorId(monitorId) {
+		const monitoredUnits = this.findByMonitorId(monitorId);
+		return LivechatDepartmentInstance.findByUnitIds(monitoredUnits);
 	}
 }
 

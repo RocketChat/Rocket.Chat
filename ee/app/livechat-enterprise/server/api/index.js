@@ -5,3 +5,5 @@ import './monitors';
 import './priorities';
 import './tags';
 import './units';
+import './business-hours';
+import './rooms';

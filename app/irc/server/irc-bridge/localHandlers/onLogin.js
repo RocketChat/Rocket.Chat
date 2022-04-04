@@ -15,22 +15,30 @@ export default function handleOnLogin(login) {
 
 	this.loggedInUsers.push(login.user._id);
 
-	Meteor.users.update({ _id: login.user._id }, {
-		$set: {
-			'profile.irc.fromIRC': false,
-			'profile.irc.username': `${ login.user.username }-rkt`,
-			'profile.irc.nick': `${ login.user.username }-rkt`,
-			'profile.irc.hostname': 'rocket.chat',
+	Meteor.users.update(
+		{ _id: login.user._id },
+		{
+			$set: {
+				'profile.irc.fromIRC': false,
+				'profile.irc.username': `${login.user.username}-rkt`,
+				'profile.irc.nick': `${login.user.username}-rkt`,
+				'profile.irc.hostname': 'rocket.chat',
+			},
 		},
-	});
+	);
 
 	const user = Users.findOne({
 		_id: login.user._id,
 	});
 
 	this.sendCommand('registerUser', user);
-
 	const rooms = Rooms.findBySubscriptionUserId(user._id).fetch();
 
-	rooms.forEach((room) => this.sendCommand('joinedChannel', { room, user }));
+	rooms.forEach((room) => {
+		if (room.t === 'd') {
+			return;
+		}
+
+		this.sendCommand('joinedChannel', { room, user });
+	});
 }

@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Settings from './Settings';
@@ -8,6 +8,9 @@ import Settings from './Settings';
 export class LivechatVisitors extends Base {
 	constructor() {
 		super('livechat_visitor');
+
+		this.tryEnsureIndex({ token: 1 });
+		this.tryEnsureIndex({ 'phone.phoneNumber': 1 }, { sparse: true });
 	}
 
 	/**
@@ -71,7 +74,21 @@ export class LivechatVisitors extends Base {
 
 		const update = {
 			$set: {
-				[`livechatData.${ key }`]: value,
+				[`livechatData.${key}`]: value,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateLastAgentByToken(token, lastAgent) {
+		const query = {
+			token,
+		};
+
+		const update = {
+			$set: {
+				lastAgent,
 			},
 		};
 
@@ -93,8 +110,8 @@ export class LivechatVisitors extends Base {
 	getVisitorsBetweenDate(date) {
 		const query = {
 			_updatedAt: {
-				$gte: date.gte,	// ISO Date, ts >= date.gte
-				$lt: date.lt,	// ISODate, ts < date.lt
+				$gte: date.gte, // ISO Date, ts >= date.gte
+				$lt: date.lt, // ISODate, ts < date.lt
 			},
 		};
 
@@ -106,9 +123,6 @@ export class LivechatVisitors extends Base {
 	 * @return {string} The next visitor name
 	 */
 	getNextVisitorUsername() {
-		const settingsRaw = Settings.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
-
 		const query = {
 			_id: 'Livechat_guest_count',
 		};
@@ -119,9 +133,9 @@ export class LivechatVisitors extends Base {
 			},
 		};
 
-		const livechatCount = findAndModify(query, null, update);
+		const livechatCount = Settings.findAndModify(query, null, update);
 
-		return `guest-${ livechatCount.value.value + 1 }`;
+		return `guest-${livechatCount.value.value + 1}`;
 	}
 
 	updateById(_id, update) {
@@ -142,9 +156,7 @@ export class LivechatVisitors extends Base {
 
 		if (data.email) {
 			if (!_.isEmpty(s.trim(data.email))) {
-				setData.visitorEmails = [
-					{ address: s.trim(data.email) },
-				];
+				setData.visitorEmails = [{ address: s.trim(data.email) }];
 			} else {
 				unsetData.visitorEmails = 1;
 			}
@@ -152,9 +164,7 @@ export class LivechatVisitors extends Base {
 
 		if (data.phone) {
 			if (!_.isEmpty(s.trim(data.phone))) {
-				setData.phone = [
-					{ phoneNumber: s.trim(data.phone) },
-				];
+				setData.phone = [{ phoneNumber: s.trim(data.phone) }];
 			} else {
 				unsetData.phone = 1;
 			}
@@ -164,9 +174,9 @@ export class LivechatVisitors extends Base {
 			Object.keys(data.livechatData).forEach((key) => {
 				const value = s.trim(data.livechatData[key]);
 				if (value) {
-					setData[`livechatData.${ key }`] = value;
+					setData[`livechatData.${key}`] = value;
 				} else {
-					unsetData[`livechatData.${ key }`] = 1;
+					unsetData[`livechatData.${key}`] = 1;
 				}
 			});
 		}
@@ -190,7 +200,7 @@ export class LivechatVisitors extends Base {
 
 	findOneGuestByEmailAddress(emailAddress) {
 		const query = {
-			'visitorEmails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i'),
+			'visitorEmails.address': new RegExp(`^${escapeRegExp(emailAddress)}$`, 'i'),
 		};
 
 		return this.findOne(query);
@@ -201,7 +211,8 @@ export class LivechatVisitors extends Base {
 			$addToSet: {},
 		};
 
-		const saveEmail = [].concat(emails)
+		const saveEmail = []
+			.concat(emails)
 			.filter((email) => email && email.trim())
 			.map((email) => ({ address: email }));
 
@@ -209,7 +220,8 @@ export class LivechatVisitors extends Base {
 			update.$addToSet.visitorEmails = { $each: saveEmail };
 		}
 
-		const savePhone = [].concat(phones)
+		const savePhone = []
+			.concat(phones)
 			.filter((phone) => phone && phone.trim().replace(/[^\d]/g, ''))
 			.map((phone) => ({ phoneNumber: phone }));
 
@@ -225,6 +237,10 @@ export class LivechatVisitors extends Base {
 	}
 
 	// REMOVE
+	removeDepartmentById(_id) {
+		return this.update({ _id }, { $unset: { department: 1 } });
+	}
+
 	removeById(_id) {
 		const query = { _id };
 		return this.remove(query);

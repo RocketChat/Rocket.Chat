@@ -84,7 +84,6 @@ textarea.rc-input__element {
 		}
 
 		&::placeholder {
-
 			text-align: start;
 			text-overflow: ellipsis;
 
@@ -200,7 +199,6 @@ textarea.rc-input__element {
 	}
 
 	&__name {
-
 		overflow: hidden;
 
 		flex: 0 1 auto;
@@ -221,7 +219,6 @@ textarea.rc-input__element {
 	}
 
 	&__description {
-
 		color: var(--color-gray);
 
 		font-size: 0.875rem;
@@ -229,7 +226,6 @@ textarea.rc-input__element {
 }
 
 select.rc-input {
-
 	width: 100%;
 	padding: 0.782rem;
 

@@ -6,12 +6,14 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { Messages, Subscriptions, Users } from '../../../models';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { Messages, Subscriptions } from '../../../models/client';
+import { settings } from '../../../settings/client';
+import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization/client';
 import { EmojiPicker, emoji } from '../../../emoji';
-import { call } from '../../../ui-utils';
-import { t, getUserPreference, slashCommands } from '../../../utils';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { t, getUserPreference, slashCommands } from '../../../utils/client';
 import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
@@ -27,56 +29,62 @@ const reloadUsersFromRoomMessages = (rid, template) => {
 
 	const uniqueMessageUsersControl = {};
 
-	Messages
-		.find({
+	Messages.find(
+		{
 			rid,
 			'u.username': { $ne: user.username },
-			t: { $exists: false },
+			't': { $exists: false },
 		},
 		{
 			fields: {
 				'u.username': 1,
 				'u.name': 1,
-				ts: 1,
+				'ts': 1,
 			},
 			sort: { ts: -1 },
-		})
+		},
+	)
 		.fetch()
 		.filter(({ u: { username } }) => {
 			const notMapped = !uniqueMessageUsersControl[username];
 			uniqueMessageUsersControl[username] = true;
 			return notMapped;
 		})
-		.forEach(({ u: { username, name }, ts }) => template.usersFromRoomMessages.upsert(username, {
-			_id: username,
-			username,
-			name,
-			status: Tracker.nonreactive(() => Session.get(`user_${ username }_status`) || 'offline'),
-			ts,
-		}));
+		.forEach(({ u: { username, name }, ts }) =>
+			template.usersFromRoomMessages.upsert(username, {
+				_id: username,
+				username,
+				name,
+				status: Tracker.nonreactive(() => Session.get(`user_${username}_status`) || 'offline'),
+				ts,
+			}),
+		);
 };
 
 const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => {
 	const usernames = records.map(({ username }) => username);
 
-	const { users } = await call('spotlight', filterText, usernames, { users: true }, rid);
+	const { users } = await callWithErrorHandling('spotlight', filterText, usernames, { users: true, mentions: true }, rid);
 
 	if (!users || users.length <= 0) {
 		return;
 	}
 
 	users
-		.slice(0, 5)
-		.forEach(({ username, name, status }) => {
-			if (records.length < 5) {
-				records.push({
-					_id: username,
-					username,
-					name,
-					status,
-					sort: 3,
-				});
-			}
+		// .slice(0, 5)
+		.forEach(({ username, nickname, name, status, avatarETag, outside }) => {
+			// if (records.length < 5) {
+			records.push({
+				_id: username,
+				username,
+				nickname,
+				name,
+				status,
+				avatarETag,
+				outside,
+				sort: 3,
+			});
+			// }
 		});
 
 	records.sort(({ sort: sortA }, { sort: sortB }) => sortA - sortB);
@@ -90,7 +98,7 @@ const fetchRoomsFromServer = _.throttle(async (filterText, records, rid, cb) => 
 		return;
 	}
 
-	const { rooms } = await call('spotlight', filterText, null, { rooms: true }, rid);
+	const { rooms } = await callWithErrorHandling('spotlight', filterText, null, { rooms: true, mentions: true }, rid);
 
 	if (!rooms || rooms.length <= 0) {
 		return;
@@ -128,9 +136,9 @@ const emojiSort = (recents) => (a, b) => {
 };
 const exactFinalTone = new RegExp('^tone[1-5]:*$');
 const colorBlind = new RegExp('tone[1-5]:*$');
-const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?:\:|$)$');
+const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?::|$)$');
 const getEmojis = (collection, filter) => {
-	const key = `:${ filter }`;
+	const key = `:${filter}`;
 
 	if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
 		return [];
@@ -140,15 +148,17 @@ const getEmojis = (collection, filter) => {
 		return [];
 	}
 
-	const regExp = new RegExp(RegExp.escape(filter), 'i');
-	const recents = EmojiPicker.getRecent().map((item) => `:${ item }:`);
+	const regExp = new RegExp(escapeRegExp(filter), 'i');
+	const recents = EmojiPicker.getRecent().map((item) => `:${item}:`);
 
 	return Object.keys(collection)
 		.map((_id) => {
 			const data = collection[key];
 			return { _id, data };
 		})
-		.filter(({ _id }) => regExp.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)))
+		.filter(
+			({ _id }) => regExp.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
+		)
 		.sort(emojiSort(recents))
 		.slice(0, 10);
 };
@@ -169,7 +179,7 @@ const addEmojiToRecents = (emoji) => {
 	});
 };
 
-Template.messagePopupConfig.onCreated(function() {
+Template.messagePopupConfig.onCreated(function () {
 	this.usersFromRoomMessages = new Mongo.Collection(null);
 
 	this.autorun(() => {
@@ -190,6 +200,8 @@ Template.messagePopupConfig.helpers({
 
 	popupUserConfig() {
 		const template = Template.instance();
+		const suggestionsCount = settings.get('Number_of_users_autocomplete_suggestions');
+
 		return {
 			title: t('People'),
 			collection: template.usersFromRoomMessages,
@@ -202,124 +214,129 @@ Template.messagePopupConfig.helpers({
 			getFilter: (collection, filter = '', cb) => {
 				const { rid } = this;
 				const filterText = filter.trim();
-				const filterRegex = filterText !== '' && new RegExp(`${ RegExp.escape(filterText) }`, 'i');
+				const filterRegex = filterText !== '' && new RegExp(`${escapeRegExp(filterText)}`, 'i');
 
 				const items = template.usersFromRoomMessages
 					.find(
 						{
 							ts: { $exists: true },
-							...filterRegex && {
-								$or: [
-									{ username: filterRegex },
-									{ name: filterRegex },
-								],
-							},
+							...(filterText && {
+								$or: [{ username: filterRegex }, { name: filterRegex }],
+							}),
 						},
 						{
-							limit: 5,
+							limit: filterText ? 2 : suggestionsCount,
 							sort: { ts: -1 },
 						},
 					)
-					.fetch();
+					.fetch()
+					.map((u) => {
+						u.suggestion = true;
+						return u;
+					});
 
-				// If needed, add to list the online users
-				if (items.length < 5 && filterRegex) {
-					const usernamesAlreadyFetched = items.map(({ username }) => username);
-					if (!hasAllPermission('view-outside-room')) {
-						const usernamesFromDMs = Subscriptions
-							.find(
-								{
-									t: 'd',
-									$and: [
-										{
-											...filterRegex && {
-												$or: [
-													{ name: filterRegex },
-													{ fname: filterRegex },
-												],
-											},
-										},
-										{
-											name: { $nin: usernamesAlreadyFetched },
-										},
-									],
-								},
-								{
-									fields: { name: 1 },
-								},
-							)
-							.map(({ name }) => name);
-						const newItems = Users
-							.find(
-								{
-									username: {
-										$in: usernamesFromDMs,
-									},
-								},
-								{
-									fields: {
-										username: 1,
-										name: 1,
-										status: 1,
-									},
-									limit: 5 - usernamesAlreadyFetched.length,
-								},
-							)
-							.fetch()
-							.map(({ username, name, status }) => ({
-								_id: username,
-								username,
-								name,
-								status,
-								sort: 1,
-							}));
+				// // If needed, add to list the online users
+				// if (items.length < 5 && filterRegex) {
+				// 	const usernamesAlreadyFetched = items.map(({ username }) => username);
+				// 	if (!hasAllPermission('view-outside-room')) {
+				// 		const usernamesFromDMs = Subscriptions
+				// 			.find(
+				// 				{
+				// 					t: 'd',
+				// 					$and: [
+				// 						{
+				// 							...filterRegex && {
+				// 								$or: [
+				// 									{ name: filterRegex },
+				// 									{ fname: filterRegex },
+				// 								],
+				// 							},
+				// 						},
+				// 						{
+				// 							name: { $nin: usernamesAlreadyFetched },
+				// 						},
+				// 					],
+				// 				},
+				// 				{
+				// 					fields: { name: 1 },
+				// 				},
+				// 			)
+				// 			.map(({ name }) => name);
+				// 		const newItems = Users
+				// 			.find(
+				// 				{
+				// 					username: {
+				// 						$in: usernamesFromDMs,
+				// 					},
+				// 				},
+				// 				{
+				// 					fields: {
+				// 						username: 1,
+				// 						nickname: 1,
+				// 						name: 1,
+				// 						status: 1,
+				// 					},
+				// 					limit: 5 - usernamesAlreadyFetched.length,
+				// 				},
+				// 			)
+				// 			.fetch()
+				// 			.map(({ username, name, status, nickname }) => ({
+				// 				_id: username,
+				// 				username,
+				// 				nickname,
+				// 				name,
+				// 				status,
+				// 				sort: 1,
+				// 			}));
 
-						items.push(...newItems);
-					} else {
-						const user = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
-						const newItems = Meteor.users.find({
-							$and: [
-								{
-									...filterRegex && {
-										$or: [
-											{ username: filterRegex },
-											{ name: filterRegex },
-										],
-									},
-								},
-								{
-									username: {
-										$nin: [
-											user && user.username,
-											...usernamesAlreadyFetched,
-										],
-									},
-								},
-							],
-						},
-						{
-							fields: {
-								username: 1,
-								name: 1,
-								status: 1,
-							},
-							limit: 5 - usernamesAlreadyFetched.length,
-						})
-							.fetch()
-							.map(({ username, name, status }) => ({
-								_id: username,
-								username,
-								name,
-								status,
-								sort: 1,
-							}));
+				// 		items.push(...newItems);
+				// 	} else {
+				// 		const user = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
+				// 		const newItems = Meteor.users.find({
+				// 			$and: [
+				// 				{
+				// 					...filterRegex && {
+				// 						$or: [
+				// 							{ username: filterRegex },
+				// 							{ name: filterRegex },
+				// 						],
+				// 					},
+				// 				},
+				// 				{
+				// 					username: {
+				// 						$nin: [
+				// 							user && user.username,
+				// 							...usernamesAlreadyFetched,
+				// 						],
+				// 					},
+				// 				},
+				// 			],
+				// 		},
+				// 		{
+				// 			fields: {
+				// 				username: 1,
+				// 				nickname: 1,
+				// 				name: 1,
+				// 				status: 1,
+				// 			},
+				// 			limit: 5 - usernamesAlreadyFetched.length,
+				// 		})
+				// 			.fetch()
+				// 			.map(({ username, name, status, nickname }) => ({
+				// 				_id: username,
+				// 				username,
+				// 				nickname,
+				// 				name,
+				// 				status,
+				// 				sort: 1,
+				// 			}));
 
-						items.push(...newItems);
-					}
-				}
+				// 		items.push(...newItems);
+				// 	}
+				// }
 
 				// Get users from Server
-				if (items.length < 5 && filterText !== '') {
+				if (items.length < suggestionsCount && filterText !== '') {
 					fetchUsersFromServer(filterText, items, rid, cb);
 				}
 
@@ -361,18 +378,23 @@ Template.messagePopupConfig.helpers({
 			getFilter: (collection, filter, cb) => {
 				const { rid } = this;
 				const exp = new RegExp(filter, 'i');
-				const records = collection.find({
-					name: exp,
-					t: {
-						$in: ['c', 'p'],
-					},
-				}, {
-					reactive: 1,
-					limit: 5,
-					sort: {
-						ls: -1,
-					},
-				}).fetch();
+				const records = collection
+					.find(
+						{
+							name: exp,
+							t: {
+								$in: ['c', 'p'],
+							},
+						},
+						{
+							reactive: 1,
+							limit: 5,
+							sort: {
+								ls: -1,
+							},
+						},
+					)
+					.fetch();
 
 				if (records.length < 5 && filter && filter.trim() !== '') {
 					fetchRoomsFromServer(filter, records, rid, cb);
@@ -408,7 +430,8 @@ Template.messagePopupConfig.helpers({
 							description: TAPi18n.__(item.description),
 							permission: item.permission,
 						};
-					}).filter((command) => {
+					})
+					.filter((command) => {
 						const isMatch = command._id.indexOf(filter) > -1;
 
 						if (!isMatch) {

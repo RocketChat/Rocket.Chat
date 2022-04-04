@@ -1,8 +1,3 @@
-import { actionLinks } from '../both/lib/actionLinks';
-import './lib/actionLinks';
-import './init';
-import './stylesheets/actionLinks.css';
+import { actionLinks } from './lib/actionLinks';
 
-export {
-	actionLinks,
-};
+export { actionLinks };

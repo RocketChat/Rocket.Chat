@@ -5,7 +5,6 @@ import { Template } from 'meteor/templating';
 
 import { slashCommands } from '../../../utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { toolbarSearch } from '../../../ui-sidenav';
 import './messagePopupSlashCommandPreview.html';
 
 const keys = {
@@ -25,7 +24,8 @@ function getCursorPosition(input) {
 
 	if (input.selectionStart) {
 		return input.selectionStart;
-	} if (document.selection) {
+	}
+	if (document.selection) {
 		input.focus();
 		const sel = document.selection.createRange();
 		const selLen = document.selection.createRange().text.length;
@@ -34,7 +34,7 @@ function getCursorPosition(input) {
 	}
 }
 
-Template.messagePopupSlashCommandPreview.onCreated(function() {
+Template.messagePopupSlashCommandPreview.onCreated(function () {
 	this.open = new ReactiveVar(false);
 	this.isLoading = new ReactiveVar(true);
 	this.preview = new ReactiveVar();
@@ -55,7 +55,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 		const command = cmd;
 		const params = args;
 		const { rid, tmid } = template.data;
-		Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid, tmid } }, function(err, preview) {
+		Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid, tmid } }, function (err, preview) {
 			if (err) {
 				return;
 			}
@@ -73,7 +73,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 			template.commandArgs.set(params);
 			template.isLoading.set(false);
 
-			Meteor.defer(function() {
+			Meteor.defer(function () {
 				template.verifySelection();
 			});
 		});
@@ -106,7 +106,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 		}
 
 		const { rid, tmid } = template.data;
-		Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid, tmid } }, item, function(err) {
+		Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid, tmid } }, item, function (err) {
 			if (err) {
 				console.warn(err);
 			}
@@ -179,7 +179,6 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -199,7 +198,8 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 			return;
 		}
 
-		if (event.which === keys.ENTER) { // || event.which === keys.TAB) { <-- does using tab to select make sense?
+		if (event.which === keys.ENTER) {
+			// || event.which === keys.TAB) { <-- does using tab to select make sense?
 			template.enterKeyAction();
 			event.preventDefault();
 			event.stopPropagation();
@@ -275,7 +275,7 @@ Template.messagePopupSlashCommandPreview.onRendered(function _messagePopupSlashC
 	});
 });
 
-Template.messagePopupSlashCommandPreview.onDestroyed(function() {
+Template.messagePopupSlashCommandPreview.onDestroyed(function () {
 	$(this.inputBox).off('keyup', this.onInputKeyup);
 	$(this.inputBox).off('keydown', this.onInputKeydown);
 	$(this.inputBox).off('focus', this.onFocus);

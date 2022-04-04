@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
-import { chatMessages } from '../../../ui/client';
-import { addMessageToList } from '../../../ui-utils/client/lib/MessageAction';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Threads_enabled')) {
 			return MessageAction.removeButton('reply-in-thread');
@@ -17,20 +17,19 @@ Meteor.startup(function() {
 			icon: 'thread',
 			label: 'Reply_in_thread',
 			context: ['message', 'message-mobile'],
-			action() {
+			action(e) {
 				const { msg: message } = messageArgs(this);
-				const { input } = chatMessages[message.rid];
-				const $input = $(input);
-
-				const messages = addMessageToList($input.data('reply') || [], message, input);
-
-				$(input)
-					.focus()
-					.data('mention-user', true)
-					.data('reply', messages)
-					.trigger('dataChange');
+				e.stopPropagation();
+				FlowRouter.setParams({
+					tab: 'thread',
+					context: message.tmid || message._id,
+				});
 			},
-			condition({ subscription }) {
+			condition({ subscription, room }) {
+				const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
+				if (isLivechatRoom) {
+					return false;
+				}
 				return Boolean(subscription);
 			},
 			order: -1,

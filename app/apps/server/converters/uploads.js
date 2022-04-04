@@ -1,5 +1,5 @@
 import { transformMappedData } from '../../lib/misc/transformMappedData';
-import Uploads from '../../../models/server/models/Uploads';
+import { Uploads } from '../../../models/server/raw';
 
 export class AppUploadsConverter {
 	constructor(orch) {
@@ -7,7 +7,7 @@ export class AppUploadsConverter {
 	}
 
 	convertById(id) {
-		const upload = Uploads.findOneById(id);
+		const upload = Promise.await(Uploads.findOneById(id));
 
 		return this.convertToApp(upload);
 	}
@@ -53,7 +53,7 @@ export class AppUploadsConverter {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters().get('users').convertByToken(upload.visitorToken);
+				const result = this.orch.getConverters().get('visitors').convertByToken(upload.visitorToken);
 				delete upload.visitorToken;
 				return result;
 			},

@@ -1,4 +1,4 @@
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { FederationRoomEvents } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { hasExternalDomain } from '../functions/helpers';
@@ -7,9 +7,11 @@ import { dispatchEvent } from '../handler';
 
 async function afterSaveMessage(message, room) {
 	// If there are not federated users on this room, ignore it
-	if (!hasExternalDomain(room)) { return message; }
+	if (!hasExternalDomain(room)) {
+		return message;
+	}
 
-	logger.client.debug(() => `afterSaveMessage => message=${ JSON.stringify(message, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterSaveMessage', message, room });
 
 	let event;
 

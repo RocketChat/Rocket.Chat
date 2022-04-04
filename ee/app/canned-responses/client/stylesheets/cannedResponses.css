@@ -74,10 +74,6 @@ section.canned-responses {
 	border-top: 1px solid var(--color-gray-light);
 }
 
-.rc-old .flex-tab-container .flex-tab .content > .canned-response-buttons {
-	overflow-y: hidden;
-}
-
 .canned-response-form {
 	padding: 24px;
 }

@@ -1,25 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { fireGlobalEvent } from './fireGlobalEvent';
+import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
-import { menu } from './menu';
-import { roomTypes } from '../../../utils';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
-import { getConfig } from '../config';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
-
-import { call } from '..';
-
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
@@ -43,12 +41,39 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 	ChatMessage.remove(query);
 };
 
-export const RoomManager = new function() {
+export const RoomManager = new (function () {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
 	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
+
+	const handleTrackSettingsChange = (msg) => {
+		const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
+		if (openedRoom !== msg.rid) {
+			return;
+		}
+
+		Tracker.nonreactive(() => {
+			if (msg.t === 'room_changed_privacy') {
+				const type = FlowRouter.current().route.name === 'channel' ? 'c' : 'p';
+				RoomManager.close(type + FlowRouter.getParam('name'));
+
+				const subscription = ChatSubscription.findOne({ rid: msg.rid });
+				const route = subscription.t === 'c' ? 'channel' : 'group';
+				FlowRouter.go(route, { name: subscription.name }, FlowRouter.current().queryParams);
+			}
+
+			if (msg.t === 'r') {
+				const room = ChatRoom.findOne(msg.rid);
+				if (room.name !== FlowRouter.getParam('name')) {
+					RoomManager.close(room.t + FlowRouter.getParam('name'));
+					roomCoordinator.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+				}
+			}
+		});
+	};
+
 	const Cls = class {
 		static initClass() {
 			this.prototype.openedRooms = openedRooms;
@@ -56,80 +81,70 @@ export const RoomManager = new function() {
 			this.prototype.roomStream = roomStream;
 			this.prototype.computation = Tracker.autorun(() => {
 				const ready = CachedChatRoom.ready.get() && mainReady.get();
-				if (ready !== true) { return; }
-				const user = Meteor.user();
-				Tracker.nonreactive(() => Object.entries(openedRooms).forEach(([typeName, record]) => {
-					if (record.active !== true || record.ready === true) { return; }
-
-					const type = typeName.substr(0, 1);
-					const name = typeName.substr(1);
-
-					const room = roomTypes.findRoom(type, name, user);
-
-					if (room != null) {
-						record.rid = room._id;
-						RoomHistoryManager.getMoreIfIsEmpty(room._id);
-						if (record.streamActive !== true) {
-							record.streamActive = true;
-							msgStream.on(record.rid, async (msg) => {
-								// Should not send message to room if room has not loaded all the current messages
-								if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
-									return;
-								}
-								// Do not load command messages into channel
-								if (msg.t !== 'command') {
-									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-									const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
-									upsertMessage({ msg, subscription });
-
-									msg.room = {
-										type,
-										name,
-									};
-									if (isNew) {
-										menu.updateUnreadBars();
-										callbacks.run('streamNewMessage', msg);
-									}
-								}
-
-								msg.name = room.name;
-								Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
-
-								callbacks.run('streamMessage', msg);
-
-								return fireGlobalEvent('new-message', msg);
-							});
-							Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
-							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
+				if (ready !== true) {
+					return;
+				}
+				Tracker.nonreactive(() =>
+					Object.entries(openedRooms).forEach(([typeName, record]) => {
+						if (record.active !== true || record.ready === true) {
+							return;
 						}
-					}
 
-					record.ready = true;
-				}));
+						const type = typeName.substr(0, 1);
+						const name = typeName.substr(1);
+
+						const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name);
+
+						RoomHistoryManager.getMoreIfIsEmpty(record.rid);
+
+						if (room != null) {
+							if (record.streamActive !== true) {
+								record.streamActive = true;
+								msgStream.on(record.rid, async (msg) => {
+									// Should not send message to room if room has not loaded all the current messages
+									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+										return;
+									}
+									// Do not load command messages into channel
+									if (msg.t !== 'command') {
+										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
+										upsertMessage({ msg, subscription });
+
+										msg.room = {
+											type,
+											name,
+										};
+										if (isNew) {
+											callbacks.run('streamNewMessage', msg);
+										}
+									}
+
+									msg.name = room.name;
+									Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+
+									handleTrackSettingsChange(msg);
+
+									callbacks.run('streamMessage', msg);
+
+									return fireGlobalEvent('new-message', msg);
+								});
+								Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
+								Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
+							}
+						}
+
+						record.ready = true;
+					}),
+				);
 				Dep.changed();
 			});
 		}
 
 		getOpenedRoomByRid(rid) {
-			return Object.keys(openedRooms).map((typeName) => openedRooms[typeName]).find((openedRoom) => openedRoom.rid === rid);
-		}
-
-		getDomOfRoom(typeName, rid) {
-			const room = openedRooms[typeName];
-			if (room == null) {
-				return;
-			}
-
-			if ((room.dom == null) && (rid != null)) {
-				room.dom = document.createElement('div');
-				room.dom.classList.add('room-container');
-				const contentAsFunc = (content) => () => content;
-
-				room.template = Blaze._TemplateWith({ _id: rid }, contentAsFunc(Template.room));
-				Blaze.render(room.template, room.dom); // , nextNode, parentView
-			}
-
-			return room.dom;
+			return Object.keys(openedRooms)
+				.map((typeName) => openedRooms[typeName])
+				.find((openedRoom) => openedRoom.rid === rid);
 		}
 
 		close(typeName) {
@@ -156,11 +171,11 @@ export const RoomManager = new function() {
 				delete openedRooms[typeName];
 
 				if (rid != null) {
+					NewRoomManager.close(rid);
 					return RoomHistoryManager.clear(rid);
 				}
 			}
 		}
-
 
 		closeOlderRooms() {
 			if (Object.keys(openedRooms).length <= maxRoomsOpen) {
@@ -168,23 +183,22 @@ export const RoomManager = new function() {
 			}
 
 			const roomsToClose = _.sortBy(_.values(openedRooms), 'lastSeen').reverse().slice(maxRoomsOpen);
-			return Array.from(roomsToClose).map((roomToClose) =>
-				this.close(roomToClose.typeName));
+			return Array.from(roomsToClose).map((roomToClose) => this.close(roomToClose.typeName));
 		}
-
 
 		closeAllRooms() {
 			Object.keys(openedRooms).forEach((key) => {
 				const openedRoom = openedRooms[key];
 				this.close(openedRoom.typeName);
 			});
+			Session.set('openedRoom');
 		}
 
-
-		open(typeName) {
+		open({ typeName, rid }) {
 			if (openedRooms[typeName] == null) {
 				openedRooms[typeName] = {
 					typeName,
+					rid,
 					active: false,
 					ready: false,
 					unreadSince: new ReactiveVar(undefined),
@@ -235,47 +249,43 @@ export const RoomManager = new function() {
 			return onlineUsers.set(onlineUsersValue);
 		}
 
-		updateMentionsMarksOfRoom(typeName) {
-			const dom = this.getDomOfRoom(typeName);
-			if (!dom) {
-				return;
-			}
-
-			const [ticksBar] = dom.getElementsByClassName('ticks-bar');
-			const [messagesBox] = dom.getElementsByClassName('messages-box');
-			const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
-			const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
-
-			// TODO: thread quotes should NOT have mention links at all
-			const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
-			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll(mentionsSelector))
-				.map((mentionLink) => {
-					const topOffset = $(mentionLink).offset().top + scrollTop;
-					const percent = (100 / totalHeight) * topOffset;
-					const className = [
-						'tick',
-						mentionLink.classList.contains('mention-link--me') && 'tick--me',
-						mentionLink.classList.contains('mention-link--group') && 'tick--group',
-					].filter(Boolean).join(' ');
-					return `<div class="${ className }" style="top: ${ percent }%;"></div>`;
-				})
-				.join('');
+		updateMentionsMarksOfRoom(/* typeName */) {
+			// const [ticksBar] = dom.getElementsByClassName('ticks-bar');
+			// const [messagesBox] = dom.getElementsByClassName('messages-box');
+			// const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
+			// const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
+			// if (!ticksBar) {
+			// 	return;
+			// }
+			// // TODO: thread quotes should NOT have mention links at all
+			// const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
+			// ticksBar.innerHTML = Array.from(messagesBox?.querySelectorAll(mentionsSelector) || [])
+			// 	.map((mentionLink) => {
+			// 		const topOffset = $(mentionLink).offset().top + scrollTop;
+			// 		const percent = (100 / totalHeight) * topOffset;
+			// 		const className = [
+			// 			'tick',
+			// 			mentionLink.classList.contains('mention-link--me') && 'tick--me',
+			// 			mentionLink.classList.contains('mention-link--group') && 'tick--group',
+			// 		].filter(Boolean).join(' ');
+			// 		return `<div class="${ className }" style="top: ${ percent }%;"></div>`;
+			// 	})
+			// 	.join('');
 		}
 	};
 	Cls.initClass();
 	return new Cls();
-}();
+})();
 
-const loadMissedMessages = async function(rid) {
+const loadMissedMessages = async function (rid) {
 	const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true }, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
 
 	if (lastMessage == null) {
 		return;
 	}
 
-
 	try {
-		const result = await call('loadMissedMessages', rid, lastMessage.ts);
+		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
 			const subscription = ChatSubscription.findOne({ rid });
 			return Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
@@ -287,7 +297,7 @@ const loadMissedMessages = async function(rid) {
 };
 
 let connectionWasOnline = true;
-Tracker.autorun(function() {
+Tracker.autorun(function () {
 	const { connected } = Meteor.connection.status();
 
 	if (connected === true && connectionWasOnline === false && RoomManager.openedRooms != null) {
@@ -306,13 +316,11 @@ Meteor.startup(() => {
 	let currentUsername = undefined;
 	Tracker.autorun(() => {
 		const user = Meteor.user();
-		if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
+		if (currentUsername === undefined && (user != null ? user.username : undefined) != null) {
 			currentUsername = user.username;
 			RoomManager.closeAllRooms();
-			const { roomTypes: types } = roomTypes;
-
 			// Reload only if the current route is a channel route
-			const roomType = Object.keys(types).find((key) => types[key].route && types[key].route.name === FlowRouter.current().route.name);
+			const roomType = roomCoordinator.getRouteNameIdentifier(FlowRouter.current().route.name);
 			if (roomType) {
 				FlowRouter.reload();
 			}
@@ -336,9 +344,9 @@ Meteor.startup(() => {
 	});
 });
 
-Tracker.autorun(function() {
+Tracker.autorun(function () {
 	if (Meteor.userId()) {
-		return Notifications.onUser('message', function(msg) {
+		return Notifications.onUser('message', function (msg) {
 			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 
@@ -355,7 +363,11 @@ CachedCollectionManager.onLogin(() => {
 
 		ChatMessage.update({ rid: sub.rid, ignored }, { $unset: { ignored: true } }, { multi: true });
 		if (sub && sub.ignored) {
-			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in: sub.ignored } }, { $set: { ignored: true } }, { multi: true });
+			ChatMessage.update(
+				{ 'rid': sub.rid, 't': { $ne: 'command' }, 'u._id': { $in: sub.ignored } },
+				{ $set: { ignored: true } },
+				{ multi: true },
+			);
 		}
 	});
 });

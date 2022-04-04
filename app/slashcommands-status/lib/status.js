@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Random } from 'meteor/random';
 
-import { handleError, slashCommands } from '../../utils';
-import { Notifications } from '../../notifications';
+import { slashCommands } from '../../utils';
+import { api } from '../../../server/sdk/api';
 
 function Status(command, params, item) {
 	if (command === 'status') {
@@ -12,24 +11,19 @@ function Status(command, params, item) {
 		Meteor.call('setUserStatus', null, params, (err) => {
 			if (err) {
 				if (Meteor.isClient) {
+					const { handleError } = require('../../../client/lib/utils/handleError');
 					return handleError(err);
 				}
 
 				if (err.error === 'error-not-allowed') {
-					Notifications.notifyUser(Meteor.userId(), 'message', {
-						_id: Random.id(),
-						rid: item.rid,
-						ts: new Date(),
+					api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 						msg: TAPi18n.__('StatusMessage_Change_Disabled', null, user.language),
 					});
 				}
 
 				throw err;
 			} else {
-				Notifications.notifyUser(Meteor.userId(), 'message', {
-					_id: Random.id(),
-					rid: item.rid,
-					ts: new Date(),
+				api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 					msg: TAPi18n.__('StatusMessage_Changed_Successfully', null, user.language),
 				});
 			}

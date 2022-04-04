@@ -1,34 +1,31 @@
 import moment from 'moment';
-import toastr from 'toastr';
 import _ from 'underscore';
-import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { KonchatNotification } from './notification';
-import { MsgTyping } from './msgTyping';
+import { UserAction, USER_ACTIVITIES } from '../index';
 import { fileUpload } from './fileUpload';
-import { t, slashCommands, handleError } from '../../../utils/client';
-import {
-	messageProperties,
-	MessageTypes,
-	readMessage,
-	modal,
-	call,
-	keyCodes,
-	prependReplies,
-} from '../../../ui-utils/client';
+import { t, slashCommands, APIClient } from '../../../utils/client';
+import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
-import { callbacks } from '../../../callbacks/client';
-import { promises } from '../../../promises/client';
+import { callbacks } from '../../../../lib/callbacks';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
-
+import { imperativeModal } from '../../../../client/lib/imperativeModal';
+import GenericModal from '../../../../client/components/GenericModal';
+import { keyCodes } from '../../../../client/lib/utils/keyCodes';
+import { prependReplies } from '../../../../client/lib/utils/prependReplies';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { handleError } from '../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -66,12 +63,14 @@ const messageBoxState = {
 
 callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
 
-const showModal = (config) => new Promise((resolve, reject) => modal.open(config, resolve, reject));
-
 export class ChatMessages {
-	editing = {}
+	constructor(collection = ChatMessage) {
+		this.collection = collection;
+	}
 
-	records = {}
+	editing = {};
+
+	records = {};
 
 	initializeWrapper(wrapper) {
 		this.wrapper = wrapper;
@@ -96,7 +95,7 @@ export class ChatMessages {
 			return;
 		}
 
-		const message = Messages.findOne(mid) || await call('getSingleMessage', mid);
+		const message = Messages.findOne(mid) || (await callWithErrorHandling('getSingleMessage', mid));
 		if (!message) {
 			return;
 		}
@@ -113,7 +112,7 @@ export class ChatMessages {
 	}
 
 	recordInputAsDraft() {
-		const message = ChatMessage.findOne(this.editing.id);
+		const message = this.collection.findOne(this.editing.id);
 		const record = this.records[this.editing.id] || {};
 		const draft = this.input.value;
 
@@ -127,11 +126,13 @@ export class ChatMessages {
 	}
 
 	clearCurrentDraft() {
+		const hasValue = this.records[this.editing.id];
 		delete this.records[this.editing.id];
+		return !!hasValue;
 	}
 
 	resetToDraft(id) {
-		const message = ChatMessage.findOne(id);
+		const message = this.collection.findOne(id);
 		const oldValue = this.input.value;
 		messageBoxState.set(this.input, message.msg);
 		return oldValue !== message.msg;
@@ -145,11 +146,7 @@ export class ChatMessages {
 			return message && this.edit(message, false);
 		}
 
-		for (
-			let previous = element.previousElementSibling;
-			previous;
-			previous = previous.previousElementSibling
-		) {
+		for (let previous = element.previousElementSibling; previous; previous = previous.previousElementSibling) {
 			if (previous.matches('.own:not(.system)')) {
 				return this.edit(previous, false);
 			}
@@ -174,7 +171,7 @@ export class ChatMessages {
 	}
 
 	edit(element, isEditingTheNextOne) {
-		const message = ChatMessage.findOne(element.dataset.id);
+		const message = this.collection.findOne(element.dataset.id);
 
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
@@ -243,13 +240,13 @@ export class ChatMessages {
 		this.$input.setCursorPosition(cursorPosition);
 	}
 
-	async send(event, { rid, tmid, value }, done = () => {}) {
+	async send(event, { rid, tmid, value, tshow }, done = () => {}) {
 		const threadsEnabled = settings.get('Threads_enabled');
 
-		MsgTyping.stop(rid);
+		UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 
 		if (!ChatSubscription.findOne({ rid })) {
-			await call('joinRoom', rid);
+			await callWithErrorHandling('joinRoom', rid);
 		}
 
 		messageBoxState.save({ rid, tmid }, this.input);
@@ -267,13 +264,21 @@ export class ChatMessages {
 			}
 		}
 
+		// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
+		const originalMessage = this.collection.findOne({ _id: this.editing.id }, { fields: { tmid: 1 }, reactive: false });
+		if (originalMessage && tmid && !originalMessage.tmid) {
+			tmid = undefined;
+			tshow = undefined;
+		}
+
 		if (msg) {
 			readMessage.readNow(rid);
 			readMessage.refreshUnreadMark(rid);
 
-			const message = await promises.run('onClientBeforeSendMessage', {
+			const message = await onClientBeforeSendMessage({
 				_id: Random.id(),
 				rid,
+				tshow,
 				tmid,
 				msg,
 			});
@@ -288,7 +293,7 @@ export class ChatMessages {
 		}
 
 		if (this.editing.id) {
-			const message = ChatMessage.findOne(this.editing.id);
+			const message = this.collection.findOne(this.editing.id);
 			const isDescription = message.attachments && message.attachments[0] && message.attachments[0].description;
 
 			try {
@@ -329,7 +334,7 @@ export class ChatMessages {
 			return;
 		}
 
-		await call('sendMessage', message);
+		await callWithErrorHandling('sendMessage', message);
 	}
 
 	async processSetReaction({ rid, tmid, msg }) {
@@ -342,8 +347,8 @@ export class ChatMessages {
 			return false;
 		}
 
-		const lastMessage = ChatMessage.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
-		await call('setReaction', reaction, lastMessage._id);
+		const lastMessage = this.collection.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
+		await callWithErrorHandling('setReaction', reaction, lastMessage._id);
 		return true;
 	}
 
@@ -357,25 +362,35 @@ export class ChatMessages {
 			throw new Error({ error: 'Message_too_long' });
 		}
 
-		try {
-			await showModal({
-				text: t('Message_too_long_as_an_attachment_question'),
-				title: '',
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonText: t('Yes'),
-				cancelButtonText: t('No'),
-				closeOnConfirm: true,
-			});
-
+		const onConfirm = () => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
-			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
+			const fileName = `${Meteor.user().username} - ${new Date()}.txt`;
+			const file = new File([messageBlob], fileName, {
+				type: contentType,
+				lastModified: Date.now(),
+			});
 			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
-		} catch (e) {
-			return true;
-		}
+			imperativeModal.close();
+		};
+
+		const onClose = () => {
+			messageBoxState.set(this.input, msg);
+			imperativeModal.close();
+		};
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				title: t('Message_too_long'),
+				children: t('Send_it_as_attachment_instead_question'),
+				onConfirm,
+				onClose,
+				onCancel: onClose,
+				variant: 'warning',
+			},
+		});
+
 		return true;
 	}
 
@@ -389,7 +404,7 @@ export class ChatMessages {
 		}
 
 		this.clearEditing();
-		await call('updateMessage', message);
+		await callWithErrorHandling('updateMessage', message);
 		return true;
 	}
 
@@ -407,9 +422,15 @@ export class ChatMessages {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
+							APIClient.v1.post('statistics.telemetry', { params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command }] });
 							const triggerId = generateTriggerId(slashCommands.commands[command].appId);
 							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err, result) => {
-								typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject });
+								typeof commandOptions.result === 'function' &&
+									commandOptions.result(err, result, {
+										cmd: command,
+										params: param,
+										msg: msgObject,
+									});
 							});
 						}
 
@@ -422,14 +443,14 @@ export class ChatMessages {
 						_id: Random.id(),
 						rid: msgObject.rid,
 						ts: new Date(),
-						msg: TAPi18n.__('No_such_command', { command: s.escapeHTML(match[1]) }),
+						msg: TAPi18n.__('No_such_command', { command: escapeHTML(match[1]) }),
 						u: {
 							username: settings.get('InternalHubot_Username') || 'rocket.cat',
 						},
 						private: true,
 					};
 
-					ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
+					this.collection.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
 					return true;
 				}
 			}
@@ -443,29 +464,14 @@ export class ChatMessages {
 			return done();
 		}
 
-		const room = message.drid && Rooms.findOne({
-			_id: message.drid,
-			prid: { $exists: true },
-		});
-
-		modal.open({
-			title: t('Are_you_sure'),
-			text: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes_delete_it'),
-			cancelButtonText: t('Cancel'),
-			html: false,
-		}, () => {
-			modal.open({
-				title: t('Deleted'),
-				text: t('Your_entry_has_been_deleted'),
-				type: 'success',
-				timer: 1000,
-				showConfirmButton: false,
+		const room =
+			message.drid &&
+			Rooms.findOne({
+				_id: message.drid,
+				prid: { $exists: true },
 			});
 
+		const onConfirm = () => {
 			if (this.editing.id === message._id) {
 				this.clearEditing();
 			}
@@ -474,12 +480,31 @@ export class ChatMessages {
 
 			this.$input.focus();
 			done();
-		}, () => {
+
+			imperativeModal.close();
+			dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
+		};
+
+		const onCloseModal = () => {
+			imperativeModal.close();
 			if (this.editing.id === message._id) {
 				this.clearEditing();
 			}
 			this.$input.focus();
 			done();
+		};
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				title: t('Are_you_sure'),
+				children: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
+				variant: 'danger',
+				confirmText: t('Yes_delete_it'),
+				onConfirm,
+				onClose: onCloseModal,
+				onCancel: onCloseModal,
+			},
 		});
 	}
 
@@ -496,26 +521,27 @@ export class ChatMessages {
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
 			if (currentTsDiff > blockDeleteInMinutes) {
-				toastr.error(t('Message_deleting_blocked'));
+				dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
 				return;
 			}
 		}
 
-
-		await call('deleteMessage', { _id });
+		await callWithErrorHandling('deleteMessage', { _id });
 	}
 
 	keydown(event) {
 		const { currentTarget: input, which: keyCode } = event;
 
 		if (keyCode === keyCodes.ESCAPE && this.editing.element) {
+			event.preventDefault();
+			event.stopPropagation();
+
 			if (!this.resetToDraft(this.editing.id)) {
 				this.clearCurrentDraft();
 				this.clearEditing();
+				return true;
 			}
 
-			event.preventDefault();
-			event.stopPropagation();
 			return;
 		}
 
@@ -558,16 +584,25 @@ export class ChatMessages {
 
 		if (!Object.values(keyCodes).includes(keyCode)) {
 			if (input.value.trim()) {
-				MsgTyping.start(rid);
+				UserAction.start(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 			} else {
-				MsgTyping.stop(rid);
+				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 			}
 		}
 
 		messageBoxState.save({ rid, tmid }, input);
 	}
 
-	onDestroyed(rid) {
-		MsgTyping.cancel(rid);
+	onDestroyed(rid, tmid) {
+		UserAction.cancel(rid);
+		// TODO: check why we need too many ?. here :(
+		if (this.input?.parentElement?.classList.contains('editing') === true) {
+			if (!tmid) {
+				this.clearCurrentDraft();
+				this.clearEditing();
+			}
+			messageBoxState.set(this.input, '');
+			messageBoxState.save({ rid, tmid }, this.$input);
+		}
 	}
 }

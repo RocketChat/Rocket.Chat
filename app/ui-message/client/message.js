@@ -1,24 +1,30 @@
 import _ from 'underscore';
-import s from 'underscore.string';
+import dompurify from 'dompurify';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
-import { DateFormat } from '../../lib/client';
-import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
-import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
-import { callbacks } from '../../callbacks/client';
+import { timeAgo } from '../../../client/lib/utils/timeAgo';
+import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
+import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
+import { MessageTypes, MessageAction } from '../../ui-utils/client';
+import { RoomRoles, UserRoles, Roles } from '../../models/client';
 import { Markdown } from '../../markdown/client';
-import { t, roomTypes } from '../../utils';
-import { upsertMessage } from '../../ui-utils/client/lib/RoomHistoryManager';
-import './message.html';
-import './messageThread.html';
+import { t } from '../../utils';
 import { AutoTranslate } from '../../autotranslate/client';
+import { renderMentions } from '../../mentions/client/client';
+import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
+import { settings } from '../../settings/client';
+import { formatTime } from '../../../client/lib/utils/formatTime';
+import { formatDate } from '../../../client/lib/utils/formatDate';
+import './messageThread';
+import './message.html';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 const renderBody = (msg, settings) => {
+	const searchedText = msg.searchedText ? msg.searchedText : '';
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
 
@@ -27,11 +33,12 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
-		msg.msg = s.escapeHTML(msg.msg);
-		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
+		msg.msg = escapeHTML(msg.msg);
+		msg = TAPi18n.__(messageType.message, { ...(typeof messageType.data === 'function' && messageType.data(msg)) });
+		msg = dompurify.sanitize(msg);
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
+		msg = renderMentions(msg);
 		msg = msg.html;
 	} else {
 		msg = renderMessageBody(msg);
@@ -40,21 +47,53 @@ const renderBody = (msg, settings) => {
 	if (isSystemMessage) {
 		msg.html = Markdown.parse(msg.html);
 	}
+
+	if (searchedText) {
+		msg = msg.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${str}</mark>`);
+	}
+
 	return msg;
 };
 
 Template.message.helpers({
+	enableMessageParserEarlyAdoption() {
+		const {
+			settings: { enableMessageParserEarlyAdoption },
+			msg,
+		} = this;
+		return enableMessageParserEarlyAdoption && msg.md;
+	},
+	unread() {
+		const { msg, subscription } = this;
+		return subscription?.tunread?.includes(msg._id);
+	},
+	mention() {
+		const { msg, subscription } = this;
+		return subscription?.tunreadUser?.includes(msg._id);
+	},
+
+	all() {
+		const { msg, subscription } = this;
+		return subscription?.tunreadGroup?.includes(msg._id);
+	},
+	following() {
+		const { msg, u } = this;
+		return msg.replies && msg.replies.indexOf(u._id) > -1;
+	},
 	body() {
 		const { msg, settings } = this;
 		return Tracker.nonreactive(() => renderBody(msg, settings));
 	},
 	i18nReplyCounter() {
 		const { msg } = this;
-		return `<span class='reply-counter'>${ msg.tcount }</span>`;
+		if (msg.tcount === 1) {
+			return 'reply_counter';
+		}
+		return 'reply_counter_plural';
 	},
 	i18nDiscussionCounter() {
 		const { msg } = this;
-		return `<span class='reply-counter'>${ msg.dcount }</span>`;
+		return `<span class='reply-counter'>${msg.dcount}</span>`;
 	},
 	formatDateAndTime,
 	encodeURI(text) {
@@ -82,6 +121,10 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.bot && 'bot';
 	},
+	hasAttachments() {
+		const { msg } = this;
+		return msg.attachments?.length;
+	},
 	roleTags() {
 		const { msg, hideRoles, settings } = this;
 		if (settings.hideRoles || hideRoles) {
@@ -94,26 +137,35 @@ Template.message.helpers({
 		const userRoles = UserRoles.findOne(msg.u._id);
 		const roomRoles = RoomRoles.findOne({
 			'u._id': msg.u._id,
-			rid: msg.rid,
+			'rid': msg.rid,
 		});
-		const roles = [...(userRoles && userRoles.roles) || [], ...(roomRoles && roomRoles.roles) || []];
-		return Roles.find({
-			_id: {
-				$in: roles,
+		const roles = [...((userRoles && userRoles.roles) || []), ...((roomRoles && roomRoles.roles) || [])];
+		return Roles.find(
+			{
+				_id: {
+					$in: roles,
+				},
+				description: {
+					$exists: 1,
+					$ne: '',
+				},
 			},
-			description: {
-				$exists: 1,
-				$ne: '',
+			{
+				fields: {
+					description: 1,
+				},
 			},
-		}, {
-			fields: {
-				description: 1,
-			},
-		});
+		);
 	},
 	isGroupable() {
 		const { msg, room = {}, settings, groupable } = this;
-		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || (MessageTypes.isSystemMessage(msg) && !msg.tmid)) {
+		if (
+			groupable === false ||
+			settings.allowGroup === false ||
+			room.broadcast ||
+			msg.groupable === false ||
+			(MessageTypes.isSystemMessage(msg) && !msg.tmid)
+		) {
 			return 'false';
 		}
 	},
@@ -124,9 +176,12 @@ Template.message.helpers({
 			return msg.avatar.replace(/^@/, '');
 		}
 	},
-	getStatus() {
+	avatarFromMessage() {
 		const { msg } = this;
-		return Session.get(`user_${ msg.u.username }_status_text`);
+		if (msg && msg.avatar) {
+			return encodeURI(msg.avatar);
+		}
+		return '';
 	},
 	getName() {
 		const { msg, settings } = this;
@@ -143,7 +198,7 @@ Template.message.helpers({
 		return msg.alias || (settings.UI_Use_Real_Name && msg.u && msg.u.name);
 	},
 	own() {
-		const { msg, u } = this;
+		const { msg, u = {} } = this;
 		if (msg.u && msg.u._id === u._id) {
 			return 'own';
 		}
@@ -165,11 +220,11 @@ Template.message.helpers({
 	time() {
 		const { msg, timeAgo: useTimeAgo } = this;
 
-		return useTimeAgo ? timeAgo(msg.ts) : DateFormat.formatTime(msg.ts);
+		return useTimeAgo ? timeAgo(msg.ts) : formatTime(msg.ts);
 	},
 	date() {
 		const { msg } = this;
-		return DateFormat.formatDate(msg.ts);
+		return formatDate(msg.ts);
 	},
 	isTemp() {
 		const { msg } = this;
@@ -179,7 +234,7 @@ Template.message.helpers({
 	},
 	threadMessage() {
 		const { msg } = this;
-		return normalizeThreadMessage(msg);
+		return normalizeThreadTitle(msg);
 	},
 	bodyClass() {
 		const { msg } = this;
@@ -198,13 +253,16 @@ Template.message.helpers({
 		const { msg, subscription, settings, u } = this;
 		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== u._id && !MessageTypes.isSystemMessage(msg)) {
 			const autoTranslate = subscription && subscription.autoTranslate;
-			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]);
+			return (
+				msg.autoTranslateFetching ||
+				(!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage])
+			);
 		}
 	},
 	translationProvider() {
 		const instance = Template.instance();
 		const { translationProvider } = instance.data.msg;
-		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider]?.displayName;
 	},
 	edited() {
 		const { msg } = this;
@@ -212,7 +270,7 @@ Template.message.helpers({
 	},
 	editTime() {
 		const { msg } = this;
-		return msg.editedAt ? DateFormat.formatDateAndTime(msg.editedAt) : '';
+		return msg.editedAt ? formatDateAndTime(msg.editedAt) : '';
 	},
 	editedBy() {
 		const { msg } = this;
@@ -229,7 +287,8 @@ Template.message.helpers({
 
 		if (msg.i18nLabel) {
 			return t(msg.i18nLabel);
-		} if (msg.label) {
+		}
+		if (msg.label) {
 			return msg.label;
 		}
 	},
@@ -241,42 +300,51 @@ Template.message.helpers({
 		}
 
 		// check if oembed is disabled for message's sender
-		if ((settings.API_EmbedDisabledFor || '').split(',').map((username) => username.trim()).includes(msg.u && msg.u.username)) {
+		if (
+			(settings.API_EmbedDisabledFor || '')
+				.split(',')
+				.map((username) => username.trim())
+				.includes(msg.u && msg.u.username)
+		) {
 			return false;
 		}
 		return true;
 	},
 	reactions() {
-		const { msg: { reactions = {} }, u: { username: myUsername, name: myName } } = this;
+		const {
+			msg: { reactions = {} },
+			u: { username: myUsername, name: myName },
+		} = this;
 
-		return Object.entries(reactions)
-			.map(([emoji, reaction]) => {
-				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
-				const displayNames = reaction.names || reaction.usernames.map((username) => `@${ username }`);
-				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
+		return Object.entries(reactions).map(([emoji, reaction]) => {
+			const myDisplayName = reaction.names ? myName : `@${myUsername}`;
+			const displayNames = reaction.names || reaction.usernames.map((username) => `@${username}`);
+			const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
 
-				if (displayNames.some((displayName) => displayName === myDisplayName)) {
-					selectedDisplayNames.unshift(t('You'));
-				}
+			if (displayNames.some((displayName) => displayName === myDisplayName)) {
+				selectedDisplayNames.unshift(t('You'));
+			}
 
-				let usernames;
+			let usernames;
 
-				if (displayNames.length > 15) {
-					usernames = `${ selectedDisplayNames.join(', ') } ${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
-				} else if (displayNames.length > 1) {
-					usernames = `${ selectedDisplayNames.slice(0, -1).join(', ') } ${ t('and') } ${ selectedDisplayNames[selectedDisplayNames.length - 1] }`;
-				} else {
-					usernames = selectedDisplayNames[0];
-				}
+			if (displayNames.length > 15) {
+				usernames = `${selectedDisplayNames.join(', ')} ${t('And_more', {
+					length: displayNames.length - 15,
+				}).toLowerCase()}`;
+			} else if (displayNames.length > 1) {
+				usernames = `${selectedDisplayNames.slice(0, -1).join(', ')} ${t('and')} ${selectedDisplayNames[selectedDisplayNames.length - 1]}`;
+			} else {
+				usernames = selectedDisplayNames[0];
+			}
 
-				return {
-					emoji,
-					count: displayNames.length,
-					usernames,
-					reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
-					userReacted: displayNames.indexOf(myDisplayName) > -1,
-				};
-			});
+			return {
+				emoji,
+				count: displayNames.length,
+				usernames,
+				reaction: ` ${t('Reacted_with').toLowerCase()} ${emoji}`,
+				userReacted: displayNames.indexOf(myDisplayName) > -1,
+			};
+		});
 	},
 	markUserReaction(reaction) {
 		if (reaction.userReacted) {
@@ -291,6 +359,25 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	hideAddReaction() {
+		const { room, u, msg, subscription } = this;
+
+		if (!room) {
+			return true;
+		}
+
+		if (!subscription) {
+			return true;
+		}
+
+		if (msg.private) {
+			return true;
+		}
+
+		if (roomCoordinator.readOnly(room._id, u) && !room.reactWhenReadOnly) {
+			return true;
+		}
+	},
 	hideMessageActions() {
 		const { msg } = this;
 
@@ -299,10 +386,13 @@ Template.message.helpers({
 	actionLinks() {
 		const { msg } = this;
 		// remove 'method_id' and 'params' properties
-		return _.map(msg.actionLinks, function(actionLink, key) {
-			return _.extend({
-				id: key,
-			}, _.omit(actionLink, 'method_id', 'params'));
+		return _.map(msg.actionLinks, function (actionLink, key) {
+			return _.extend(
+				{
+					id: key,
+				},
+				_.omit(actionLink, 'method_id', 'params'),
+			);
 		});
 	},
 	hideActionLinks() {
@@ -320,6 +410,9 @@ Template.message.helpers({
 	injectSettings(data, settings) {
 		data.settings = settings;
 	},
+	className() {
+		return this.msg.className;
+	},
 	channelName() {
 		const { subscription } = this;
 		// const subscription = Subscriptions.findOne({ rid: this.rid });
@@ -330,15 +423,15 @@ Template.message.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(room);
+		return roomCoordinator.getIcon(room);
 	},
 	customClass() {
-		const { customClass, msg } = this;
-		return customClass || msg.customClass;
+		const { customClass } = this;
+		return customClass;
 	},
 	fromSearch() {
-		const { customClass, msg } = this;
-		return [msg.customClass, customClass].includes('search');
+		const { customClass } = this;
+		return customClass === 'search';
 	},
 	actionContext() {
 		const { msg } = this;
@@ -364,69 +457,62 @@ Template.message.helpers({
 		return msg.actionContext === 'snippeted';
 	},
 	isThreadReply() {
-		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
+		const {
+			groupable,
+			msg: { tmid, t, groupable: _groupable },
+			settings: { showreply },
+		} = this;
 		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
+	shouldHideBody() {
+		const {
+			msg: { tmid, actionContext },
+			settings: { showreply },
+			context,
+		} = this;
+		return showreply && tmid && !(actionContext || context);
+	},
 	collapsed() {
-		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
+		const {
+			msg: { tmid, collapsed },
+			settings: { showreply },
+			shouldCollapseReplies,
+		} = this;
 		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;
 		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
 	},
 	collapseSwitchClass() {
-		const { msg: { collapsed = true } } = this;
+		const {
+			msg: { collapsed = true },
+		} = this;
 		return collapsed ? 'icon-right-dir' : 'icon-down-dir';
 	},
 	parentMessage() {
-		const { msg: { threadMsg } } = this;
+		const {
+			msg: { threadMsg },
+		} = this;
 		return threadMsg;
 	},
 	showStar() {
 		const { msg } = this;
-		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+		return (
+			msg.starred &&
+			msg.starred.length > 0 &&
+			msg.starred.find((star) => star._id === Meteor.userId()) &&
+			!(msg.actionContext === 'starred' || this.context === 'starred')
+		);
 	},
-});
-
-
-const findParentMessage = (() => {
-	const waiting = [];
-	const uid = Tracker.nonreactive(() => Meteor.userId());
-	const getMessages = _.debounce(async function() {
-		const _tmp = [...waiting];
-		waiting.length = 0;
-		(await call('getMessages', _tmp)).map((msg) => Messages.findOne({ _id: msg._id }) || upsertMessage({ msg: { ...msg, _hidden: true }, uid }));
-	}, 500);
-
-
-	return (tmid) => {
-		if (waiting.indexOf(tmid) > -1) {
+	readReceipt() {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
-		const message = Messages.findOne({ _id: tmid });
-		if (!message) {
-			waiting.push(tmid);
-			return getMessages();
-		}
-		return Messages.update(
-			{ tmid, repliesCount: { $exists: 0 } },
-			{
-				$set: {
-					following: message.replies && message.replies.indexOf(uid) > -1,
-					threadMsg: normalizeThreadMessage(message),
-					repliesCount: message.tcount,
-				},
-			},
-			{ multi: true },
-		);
-	};
-})();
 
-Template.message.onCreated(function() {
-	const { msg, shouldCollapseReplies } = Template.currentData();
-	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
-		findParentMessage(msg.tmid);
-	}
+		return {
+			readByEveryone: (!this.msg.unread && 'read') || 'color-component-color',
+		};
+	},
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
@@ -483,7 +569,7 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 		return false;
 	}
 
-	if (shouldCollapseReplies && currentDataset.tmid) {
+	if (!shouldCollapseReplies && currentDataset.tmid) {
 		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
 	}
 
@@ -518,6 +604,11 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
 
+	if (!previousNode) {
+		setTimeout(() => {
+			currentNode.dispatchEvent(new CustomEvent('MessageGroup', { bubbles: true }));
+		}, 100);
+	}
 	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
 		currentNode.classList.add('sequential');
 	} else {
@@ -545,7 +636,7 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 	}
 };
 
-Template.message.onRendered(function() {
+Template.message.onRendered(function () {
 	const currentNode = this.firstNode;
 	this.autorun(() => processSequentials({ currentNode, ...Template.currentData() }));
 });

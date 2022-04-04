@@ -148,36 +148,41 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		return attachments.map((attachment) => Object.assign({
-			collapsed: attachment.collapsed,
-			color: attachment.color,
-			text: attachment.text,
-			ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
-			message_link: attachment.timestampLink,
-			thumb_url: attachment.thumbnailUrl,
-			author_name: attachment.author ? attachment.author.name : undefined,
-			author_link: attachment.author ? attachment.author.link : undefined,
-			author_icon: attachment.author ? attachment.author.icon : undefined,
-			title: attachment.title ? attachment.title.value : undefined,
-			title_link: attachment.title ? attachment.title.link : undefined,
-			title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
-			image_dimensions: attachment.imageDimensions,
-			image_preview: attachment.imagePreview,
-			image_url: attachment.imageUrl,
-			image_type: attachment.imageType,
-			image_size: attachment.imageSize,
-			audio_url: attachment.audioUrl,
-			audio_type: attachment.audioType,
-			audio_size: attachment.audioSize,
-			video_url: attachment.videoUrl,
-			video_type: attachment.videoType,
-			video_size: attachment.videoSize,
-			fields: attachment.fields,
-			button_alignment: attachment.actionButtonsAlignment,
-			actions: attachment.actions,
-			type: attachment.type,
-			description: attachment.description,
-		}, attachment._unmappedProperties_));
+		return attachments.map((attachment) =>
+			Object.assign(
+				{
+					collapsed: attachment.collapsed,
+					color: attachment.color,
+					text: attachment.text,
+					ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
+					message_link: attachment.timestampLink,
+					thumb_url: attachment.thumbnailUrl,
+					author_name: attachment.author ? attachment.author.name : undefined,
+					author_link: attachment.author ? attachment.author.link : undefined,
+					author_icon: attachment.author ? attachment.author.icon : undefined,
+					title: attachment.title ? attachment.title.value : undefined,
+					title_link: attachment.title ? attachment.title.link : undefined,
+					title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
+					image_dimensions: attachment.imageDimensions,
+					image_preview: attachment.imagePreview,
+					image_url: attachment.imageUrl,
+					image_type: attachment.imageType,
+					image_size: attachment.imageSize,
+					audio_url: attachment.audioUrl,
+					audio_type: attachment.audioType,
+					audio_size: attachment.audioSize,
+					video_url: attachment.videoUrl,
+					video_type: attachment.videoType,
+					video_size: attachment.videoSize,
+					fields: attachment.fields,
+					button_alignment: attachment.actionButtonsAlignment,
+					actions: attachment.actions,
+					type: attachment.type,
+					description: attachment.description,
+				},
+				attachment._unmappedProperties_,
+			),
+		);
 	}
 
 	_convertAttachmentsToApp(attachments) {
@@ -208,11 +213,7 @@ export class AppMessagesConverter {
 			type: 'type',
 			description: 'description',
 			author: (attachment) => {
-				const {
-					author_name: name,
-					author_link: link,
-					author_icon: icon,
-				} = attachment;
+				const { author_name: name, author_link: link, author_icon: icon } = attachment;
 
 				delete attachment.author_name;
 				delete attachment.author_link;
@@ -221,11 +222,7 @@ export class AppMessagesConverter {
 				return { name, link, icon };
 			},
 			title: (attachment) => {
-				const {
-					title: value,
-					title_link: link,
-					title_link_download: displayDownloadLink,
-				} = attachment;
+				const { title: value, title_link: link, title_link_download: displayDownloadLink } = attachment;
 
 				delete attachment.title;
 				delete attachment.title_link;

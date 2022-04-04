@@ -8,37 +8,54 @@ if (Meteor.isClient) {
 	settings = require('../../settings/server').settings;
 }
 
-const fileUploadMediaWhiteList = function(customWhiteList) {
+const fileUploadMediaWhiteList = function (customWhiteList) {
 	const mediaTypeWhiteList = customWhiteList || settings.get('FileUpload_MediaTypeWhiteList');
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;
 	}
-	return _.map(mediaTypeWhiteList.split(','), function(item) {
+	return _.map(mediaTypeWhiteList.split(','), function (item) {
 		return item.trim();
 	});
 };
 
-export const fileUploadIsValidContentType = function(type, customWhiteList) {
-	const list = fileUploadMediaWhiteList(customWhiteList);
-	if (!list) {
-		return true;
+const fileUploadMediaBlackList = function () {
+	const blacklist = settings.get('FileUpload_MediaTypeBlackList');
+	if (!blacklist) {
+		return;
 	}
 
-	if (!type) {
-		return false;
-	}
+	return _.map(blacklist.split(','), (item) => item.trim());
+};
 
+const isTypeOnList = function (type, list) {
 	if (_.contains(list, type)) {
 		return true;
 	}
 	const wildCardGlob = '/*';
-	const wildcards = _.filter(list, function(item) {
+	const wildcards = _.filter(list, function (item) {
 		return item.indexOf(wildCardGlob) > 0;
 	});
 	if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {
 		return true;
 	}
+};
 
-	return false;
+export const fileUploadIsValidContentType = function (type, customWhiteList) {
+	const blackList = fileUploadMediaBlackList();
+	const whiteList = fileUploadMediaWhiteList(customWhiteList);
+
+	if (!type && blackList) {
+		return false;
+	}
+
+	if (blackList && isTypeOnList(type, blackList)) {
+		return false;
+	}
+
+	if (!whiteList) {
+		return true;
+	}
+
+	return isTypeOnList(type, whiteList);
 };

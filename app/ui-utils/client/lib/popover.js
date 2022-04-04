@@ -1,23 +1,18 @@
 import './popover.html';
-import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { hide, leave } from './ChannelActions';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
-import { RoomManager } from './RoomManager';
-import { ChatSubscription } from '../../../models/client';
-import { isRtl, handleError } from '../../../utils/client';
+import { isRtl } from '../../../utils/client';
 
 export const popover = {
 	renderedPopover: null,
 	open({ currentTarget, ...config }) {
 		// Popover position must be computed as soon as possible, avoiding DOM changes over currentTarget
 		const data = {
-			targetRect: currentTarget && currentTarget.getBoundingClientRect && currentTarget.getBoundingClientRect(),
+			targetRect: currentTarget?.getBoundingClientRect(),
 			...config,
 		};
 		this.renderedPopover = Blaze.renderWithData(Template.popover, data, document.body);
@@ -42,18 +37,19 @@ Template.popover.helpers({
 	},
 });
 
-Template.popover.onRendered(function() {
+Template.popover.onRendered(function () {
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
 
-	$('.rc-popover').click(function(e) {
+	$('.rc-popover').click(function (e) {
 		if (e.currentTarget === e.target) {
 			popover.close();
 		}
 	});
 	const { offsetVertical = 0, offsetHorizontal = 0 } = this.data;
 	const { activeElement } = this.data;
+	const originalWidth = window.innerWidth;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
@@ -64,18 +60,24 @@ Template.popover.onRendered(function() {
 		const horizontalDirection = /left/.test(direction) ? 'left' : rightDirection;
 
 		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
-		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
+		const customCSSProperties =
+			typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
 
-		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition || {
-			x: this.data.targetRect[horizontalDirection === 'left' ? 'right' : 'left'],
-			y: this.data.targetRect[verticalDirection],
-		};
+		const mousePosition =
+			typeof this.data.mousePosition === 'function'
+				? this.data.mousePosition()
+				: this.data.mousePosition || {
+						x: this.data.targetRect[horizontalDirection === 'left' ? 'right' : 'left'],
+						y: this.data.targetRect[verticalDirection],
+				  };
 		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
 		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
 
+		const leftDiff = window.innerWidth - originalWidth;
+
 		if (position) {
-			popoverContent.style.top = `${ position.top }px`;
-			popoverContent.style.left = `${ position.left }px`;
+			popoverContent.style.top = `${position.top}px`;
+			popoverContent.style.left = `${position.left + leftDiff}px`;
 		} else {
 			const clientHeight = this.data.targetRect.height;
 			const popoverWidth = popoverContent.offsetWidth;
@@ -111,12 +113,12 @@ Template.popover.onRendered(function() {
 				left = mousePosition.x + offsetWidth;
 			}
 
-			popoverContent.style.top = `${ top }px`;
-			popoverContent.style.left = `${ left }px`;
+			popoverContent.style.top = `${top}px`;
+			popoverContent.style.left = `${left + leftDiff}px`;
 		}
 
 		if (customCSSProperties) {
-			Object.keys(customCSSProperties).forEach(function(property) {
+			Object.keys(customCSSProperties).forEach(function (property) {
 				popoverContent.style[property] = customCSSProperties[property];
 			});
 		}
@@ -131,21 +133,26 @@ Template.popover.onRendered(function() {
 		if (activeElement) {
 			$(activeElement).addClass('active');
 		}
-
 		popoverContent.style.opacity = 1;
 	}, 50);
+
+	const observer = new MutationObserver(position);
+	observer.observe(popoverContent, { childList: true, subtree: true });
+
 	$(window).on('resize', position);
 	position();
 	this.position = position;
+	this.observer = observer;
 
 	this.firstNode.style.visibility = 'visible';
 });
 
-Template.popover.onDestroyed(function() {
+Template.popover.onDestroyed(function () {
 	if (this.data.onDestroyed) {
 		this.data.onDestroyed();
 	}
 	$(window).off('resize', this.position);
+	this.observer?.disconnect();
 });
 
 Template.popover.events({
@@ -172,55 +179,11 @@ Template.popover.events({
 	'click [data-type="message-action"]'(e, t) {
 		const button = MessageAction.getButtonById(e.currentTarget.dataset.id);
 		if ((button != null ? button.action : undefined) != null) {
-			button.action.call(t.data.data, e, t.data.instance);
+			e.stopPropagation();
+			e.preventDefault();
+			const { tabBar, rid } = t.data.instance;
+			button.action.call(t.data.data, e, { tabBar, rid });
 			popover.close();
-			return false;
-		}
-	},
-	'click [data-type="sidebar-item"]'(e, instance) {
-		popover.close();
-		const { rid, name, template } = instance.data.data;
-		const action = e.currentTarget.dataset.id;
-
-		if (action === 'hide') {
-			hide(template, rid, name);
-		}
-
-		if (action === 'leave') {
-			leave(template, rid, name);
-		}
-
-		if (action === 'read') {
-			Meteor.call('readMessages', rid);
-			return false;
-		}
-
-		if (action === 'unread') {
-			Meteor.call('unreadMessages', null, rid, function(error) {
-				if (error) {
-					return handleError(error);
-				}
-
-				const subscription = ChatSubscription.findOne({ rid });
-				if (subscription == null) {
-					return;
-				}
-				RoomManager.close(subscription.t + subscription.name);
-
-				FlowRouter.go('home');
-			});
-
-			return false;
-		}
-
-		if (action === 'favorite') {
-			Meteor.call('toggleFavorite', rid, !$(e.currentTarget).hasClass('rc-popover__item--star-filled'), function(err) {
-				popover.close();
-				if (err) {
-					handleError(err);
-				}
-			});
-
 			return false;
 		}
 	},

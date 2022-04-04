@@ -1,16 +1,17 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { DateFormat } from '../../../lib';
-import { roomTypes, getURL } from '../../../utils';
+import { getURL } from '../../../utils';
 import { Subscriptions } from '../../../models';
+import { getUserAvatarURL as getAvatarUrl } from '../../../utils/lib/getUserAvatarURL';
+import { formatTime } from '../../../../client/lib/utils/formatTime';
+import { formatDate } from '../../../../client/lib/utils/formatDate';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
-const getAvatarUrl = (username) => getURL(`/avatar/${ username }?_dc=undefined`);
-const getDMUrl = (username) => getURL(`/direct/${ username }`);
+const getDMUrl = (username) => getURL(`/direct/${username}`);
 
-Template.ChatpalSearchResultTemplate.onCreated(function() {
+Template.ChatpalSearchResultTemplate.onCreated(function () {
 	this.badRequest = new ReactiveVar(false);
 	this.resultType = new ReactiveVar(this.data.settings.DefaultResultType);
 	this.data.parentPayload.resultType = this.resultType.get();
@@ -56,7 +57,9 @@ Template.ChatpalSearchResultTemplate.helpers({
 	resultsFoundForAllSearch() {
 		const result = Template.instance().data.result.get();
 
-		if (!result) { return true; }
+		if (!result) {
+			return true;
+		}
 
 		return result.message.numFound > 0 || result.user.numFound > 0 || result.room.numFound > 0;
 	},
@@ -78,6 +81,9 @@ Template.ChatpalSearchResultTemplate.helpers({
 			}
 		}
 	},
+	resultMessagesOnly() {
+		return Template.instance().resultType.get() === 'Messages' || Template.instance().resultType.get() === 'Room';
+	},
 	resultPaging() {
 		const result = Template.instance().data.result.get();
 		const pageSize = Template.instance().data.settings.PageSize;
@@ -92,49 +98,55 @@ Template.ChatpalSearchResultTemplate.helpers({
 
 Template.ChatpalSearchSingleMessage.helpers({
 	roomIcon() {
-		const room = Session.get(`roomData${ this.rid }`);
+		const room = this.r;
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(room);
+		return roomCoordinator.getIcon(room);
 	},
 
 	roomLink() {
-		const subscription = Subscriptions.findOne({ rid: this.rid });
-		return roomTypes.getRouteLink(subscription.t, subscription);
+		return roomCoordinator.getRouteLink(this.r.t, this.r);
 	},
 
 	roomName() {
-		const room = Session.get(`roomData${ this.rid }`);
-		return roomTypes.getRoomName(room.t, room);
+		return roomCoordinator.getRoomName(this.r.t, this.r);
+	},
+
+	roomNotSubscribed() {
+		const subscription = Subscriptions.findOne({ rid: this.rid });
+		return typeof subscription === 'undefined';
 	},
 
 	time() {
-		return DateFormat.formatTime(this.created);
+		return formatTime(this.created);
 	},
 	date() {
-		return DateFormat.formatDate(this.created);
+		return formatDate(this.created);
 	},
 	getAvatarUrl,
 });
 
 Template.ChatpalSearchSingleRoom.helpers({
 	roomIcon() {
-		const room = Session.get(`roomData${ this._id }`);
-		if (room && room.t === 'd') {
+		if (this.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(room);
+		return roomCoordinator.getIcon(this);
 	},
 	roomLink() {
-		const subscription = Subscriptions.findOne({ rid: this._id });
-		return roomTypes.getRouteLink(subscription.t, subscription);
+		return roomCoordinator.getRouteLink(this.t, this);
+	},
+	roomNotSubscribed() {
+		const subscription = Subscriptions.findOne({ rid: this.rid });
+		return typeof subscription === 'undefined';
 	},
 });
 
 Template.ChatpalSearchSingleUser.helpers({
 	cleanUsername() {
-		return this.user_username.replace(/<\/?em>/ig, '');
+		const username = this.user_username || this.username; // varies whether users or messages of users are displayed
+		return username.replace(/<\/?em>/gi, '');
 	},
 	getAvatarUrl,
 	getDMUrl,

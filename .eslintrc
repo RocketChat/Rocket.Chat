@@ -1,6 +1,7 @@
 {
   "extends": [
-    "@rocket.chat/eslint-config"
+    "@rocket.chat/eslint-config",
+    "plugin:prettier/recommended"
   ],
   "parser": "babel-eslint",
   "globals": {
@@ -11,7 +12,8 @@
     "jscolor": false
   },
   "plugins": [
-    "react"
+    "react",
+    "react-hooks"
   ],
   "rules": {
     "jsx-quotes": [
@@ -24,7 +26,11 @@
     "react/jsx-fragments": [
       "error",
       "syntax"
-    ]
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": ["warn", {
+      "additionalHooks": "(useComponentDidUpdate)"
+    }]
   },
   "settings": {
     "import/resolver": {
@@ -49,7 +55,8 @@
       "extends": [
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
-        "@rocket.chat/eslint-config"
+        "@rocket.chat/eslint-config",
+        "plugin:prettier/recommended"
       ],
       "globals": {
         "Atomics": "readonly",
@@ -67,13 +74,21 @@
       },
       "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "anti-trojan-source"
       ],
       "rules": {
+        "func-call-spacing": "off",
         "jsx-quotes": [
           "error",
           "prefer-single"
         ],
+        "indent": "off",
+        "no-dupe-class-members": "off",
+        "no-spaced-func": "off",
+        "no-unused-vars": "off",
+        "no-useless-constructor": "off",
+        "no-use-before-define": "off",
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
         "react/jsx-no-undef": "error",
@@ -82,15 +97,18 @@
           "syntax"
         ],
         "@typescript-eslint/ban-ts-ignore": "off",
-        "@typescript-eslint/indent": [
-          "error",
-          "tab"
-        ],
-        "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/interface-name-prefix": [
           "error",
           "always"
-        ]
+        ],
+        "@typescript-eslint/no-dupe-class-members": "error",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": ["error", {
+          "argsIgnorePattern": "^_",
+          "ignoreRestSiblings": true
+        }],
+        "@typescript-eslint/prefer-optional-chain": "warn",
+        "anti-trojan-source/no-bidi": "error"
       },
       "env": {
         "browser": true,
@@ -111,6 +129,16 @@
         "react": {
           "version": "detect"
         }
+      }
+    },
+    {
+      "files": [
+        "**/*.tests.js",
+        "**/*.tests.ts",
+        "**/*.spec.ts"
+      ],
+      "env": {
+        "mocha": true
       }
     }
   ]
