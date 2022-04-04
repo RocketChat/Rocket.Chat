@@ -147,4 +147,9 @@ export interface IStats {
 	joinJitsiButton: number;
 	totalRoomsWithStarred: number;
 	totalRoomsWithPinned: number;
+	totalUserEmail2fa: number;
+	totalUserTOTP: number;
+	totalStarred: number;
+	totalPinned: number;
+	totalEmailInvitation: number;
 }

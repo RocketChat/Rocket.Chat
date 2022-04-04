@@ -204,4 +204,23 @@ export class MessagesRaw extends BaseRaw {
 
 		return queryResult[0].total;
 	}
+
+	findPinned(options) {
+		const query = {
+			t: { $ne: 'rm' },
+			_hidden: { $ne: true },
+			pinned: true,
+		};
+
+		return this.find(query, options);
+	}
+
+	findStarred(options) {
+		const query = {
+			_hidden: { $ne: true },
+			starred: { $exists: true },
+		};
+
+		return this.find(query, options);
+	}
 }

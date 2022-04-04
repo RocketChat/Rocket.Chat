@@ -459,6 +459,12 @@ export const statistics = {
 		statistics.totalOTRRooms = Rooms.findByCreatedOTR().count();
 		statistics.totalOTR = settings.get('OTR_Count');
 		statistics.totalRoomsWithStarred = await MessagesRaw.countRoomsWithStarredMessages();
+		statistics.totalRoomsWithPinned = await MessagesRaw.countRoomsWithPinnedMessages();
+		statistics.totalUserTOTP = await UsersRaw.findActiveUsersTOTPEnable().count();
+		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable().count();
+		statistics.totalPinned = await MessagesRaw.findPinned().count();
+		statistics.totalStarred = await MessagesRaw.findStarred().count();
+		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 
 		await Promise.all(statsPms).catch(log);
 
