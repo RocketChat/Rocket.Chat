@@ -234,6 +234,9 @@ jobs:
       - name: Unit Test (client)
         run: npm run testunit-client
 
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
       - name: E2E Test API
         env:
           TEST_MODE: 'true'
@@ -252,7 +255,7 @@ jobs:
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
-          for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
+          for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=test:playwright && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
 
       - name: Store cypress test screenshots
         uses: actions/upload-artifact@v2
@@ -341,7 +344,8 @@ jobs:
         run: |
           cd ./ee/server/services
           npm run build
-
+      - name: Install Playwright
+        run: npx playwright install --with-deps
       - name: E2E Test API
         env:
           TEST_MODE: 'true'
@@ -371,7 +375,7 @@ jobs:
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
 
-          for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=test:playwright && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
+          for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
 
       - name: Store cypress test screenshots
         uses: actions/upload-artifact@v2
