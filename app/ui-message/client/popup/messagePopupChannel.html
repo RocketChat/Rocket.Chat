@@ -1,4 +1,4 @@
 <template name="messagePopupChannel">
 	{{> icon icon=channelIcon }}
-	{{name}}
+	{{fname}}{{#if topic}} - [{{> icon icon=roomIcon }}{{topic}}]{{/if}}
 </template>

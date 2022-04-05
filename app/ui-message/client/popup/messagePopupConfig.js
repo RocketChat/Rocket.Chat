@@ -405,7 +405,7 @@ Template.messagePopupConfig.helpers({
 				const record = _.findWhere(records, {
 					_id,
 				});
-				return record && record.name;
+				return record && `${ record.name } ${ record.topic ? `(${ record.fname })` : '' }`;
 			},
 		};
 	},
