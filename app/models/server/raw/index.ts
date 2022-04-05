@@ -1,5 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
 
+import { AppsPersistenceModelRaw } from './apps-persistence-model';
 import { AvatarsRaw } from './Avatars';
 import { AnalyticsRaw } from './Analytics';
 import { api } from '../../../../server/sdk/api';
@@ -73,7 +74,6 @@ import { PbxEventsRaw } from './PbxEvents';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
 const trashCollection = trash.rawCollection();
-
 export const Users = new UsersRaw(UsersModel.model.rawCollection(), trashCollection);
 export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCollection(), { Users }, trashCollection);
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection(), trashCollection);
@@ -103,6 +103,7 @@ export const Analytics = new AnalyticsRaw(
 	db.collection(`${prefix}analytics`, { readPreference: readSecondaryPreferred(db) }),
 	trashCollection,
 );
+export const AppsPersistence = new AppsPersistenceModelRaw(db.collection(`${prefix}apps_persistence`), trashCollection);
 export const CustomSounds = new CustomSoundsRaw(db.collection(`${prefix}custom_sounds`), trashCollection);
 export const CustomUserStatus = new CustomUserStatusRaw(db.collection(`${prefix}custom_user_status`), trashCollection);
 export const CredentialTokens = new CredentialTokensRaw(db.collection(`${prefix}credential_tokens`), trashCollection);

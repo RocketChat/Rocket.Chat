@@ -2,9 +2,10 @@ import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definiti
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
+import { AppsLogsModel, AppsModel } from '../../models/server';
 import { settings, settingsRegistry } from '../../settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
@@ -13,10 +14,12 @@ import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
+import { AppsPersistenceModelRaw } from '../../models/server/raw/apps-persistence-model';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
+const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 let appsSourceStorageType;
 let appsSourceStorageFilesystemPath;
@@ -41,7 +44,7 @@ export class AppServerOrchestrator {
 
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();
-		this._persistModel = new AppsPersistenceModel();
+		this._persistModel = new AppsPersistenceModelRaw(db.collection('rocketchat_apps_persistence'));
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
@@ -78,7 +81,7 @@ export class AppServerOrchestrator {
 	}
 
 	/**
-	 * @returns {AppsPersistenceModel}
+	 * @returns {AppsPersistenceModelRaw}
 	 */
 	getPersistenceModel() {
 		return this._persistModel;
