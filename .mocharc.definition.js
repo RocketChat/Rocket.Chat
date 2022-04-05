@@ -25,5 +25,5 @@ module.exports = {
 	require: [...base.require],
 	exit: false,
 	slow: 200,
-	spec: ['definition/**/*.spec.ts'],
+	spec: ['tests/unit/definition/**/*.spec.ts'],
 };
