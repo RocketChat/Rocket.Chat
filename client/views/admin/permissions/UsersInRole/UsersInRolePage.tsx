@@ -1,30 +1,27 @@
 import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, ReactElement } from 'react';
 
-import Page from '../../../components/Page';
-import RoomAutoComplete from '../../../components/RoomAutoComplete';
-import UserAutoComplete from '../../../components/UserAutoComplete';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import UsersInRoleTableContainer from './UsersInRoleTableContainer';
+import { IRole } from '../../../../../definition/IRole';
+import Page from '../../../../components/Page';
+import RoomAutoComplete from '../../../../components/RoomAutoComplete';
+import UserAutoComplete from '../../../../components/UserAutoComplete';
+import { useRoute } from '../../../../contexts/RouterContext';
+import { useEndpoint } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import UsersInRoleTable from './UsersInRoleTable';
 
-const UsersInRolePage = ({ data }) => {
+const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
+	const reload = useRef<() => void>(() => undefined);
+	const [user, setUser] = useState<string | undefined>('');
+	const [rid, setRid] = useState<string>();
+	const [userError, setUserError] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const reload = useRef();
-
-	const [user, setUser] = useState('');
-	const [rid, setRid] = useState();
-	const [userError, setUserError] = useState();
-
-	const { _id, name, description } = data;
-
+	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
-
 	const addUser = useEndpoint('POST', 'roles.addUserToRole');
 
 	const handleReturn = useMutableCallback(() => {
@@ -42,8 +39,8 @@ const UsersInRolePage = ({ data }) => {
 		try {
 			await addUser({ roleId: _id, username: user, roomId: rid });
 			dispatchToastMessage({ type: 'success', message: t('User_added') });
-			setUser();
-			reload.current();
+			setUser(undefined);
+			reload.current?.();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -51,7 +48,7 @@ const UsersInRolePage = ({ data }) => {
 
 	const handleUserChange = useMutableCallback((user) => {
 		if (user !== '') {
-			setUserError();
+			setUserError(undefined);
 		}
 
 		return setUser(user);
@@ -67,7 +64,7 @@ const UsersInRolePage = ({ data }) => {
 			<Page.Content>
 				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
 					<Margins inline='x4'>
-						{data.scope !== 'Users' && (
+						{role.scope !== 'Users' && (
 							<Field mbe='x4'>
 								<Field.Label>{t('Choose_a_room')}</Field.Label>
 								<Field.Row>
@@ -91,17 +88,10 @@ const UsersInRolePage = ({ data }) => {
 					</Margins>
 				</Box>
 				<Margins blockStart='x8'>
-					{(data.scope === 'Users' || rid) && (
-						<UsersInRoleTableContainer
-							reloadRef={reload}
-							scope={data.scope}
-							rid={rid}
-							roleId={_id}
-							roleName={name}
-							description={description}
-						/>
+					{(role.scope === 'Users' || rid) && (
+						<UsersInRoleTable reloadRef={reload} rid={rid} roleId={_id} roleName={name} description={description} />
 					)}
-					{data.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
+					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
 				</Margins>
 			</Page.Content>
 		</Page>

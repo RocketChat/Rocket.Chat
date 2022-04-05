@@ -1,7 +1,9 @@
 import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { ReactElement } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
+import { IRole } from '../../../../definition/IRole';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -9,37 +11,47 @@ import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useForm } from '../../../hooks/useForm';
 import RoleForm from './RoleForm';
 
-const EditRolePage = ({ data }) => {
+const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const usersInRoleRouter = useRoute('admin-permissions');
 	const router = useRoute('admin-permissions');
 
-	const { values, handlers, hasUnsavedChanges } = useForm({
-		roleId: data._id,
-		name: data.name,
-		description: data.description || '',
-		scope: data.scope || 'Users',
-		mandatory2fa: !!data.mandatory2fa,
-	});
-
-	const saveRole = useEndpoint('POST', 'roles.update');
+	const createRole = useEndpoint('POST', 'roles.create');
+	const updateRole = useEndpoint('POST', 'roles.update');
 	const deleteRole = useEndpoint('POST', 'roles.delete');
 
-	const handleManageUsers = useMutableCallback(() => {
-		usersInRoleRouter.push({
-			context: 'users-in-role',
-			_id: data._id,
-		});
+	const methods = useForm({
+		defaultValues: {
+			roleId: role?._id,
+			name: role?.name,
+			description: role?.description,
+			scope: role?.scope || 'Users',
+			mandatory2fa: !!role?.mandatory2fa,
+		},
 	});
 
-	const handleSave = useMutableCallback(async () => {
+	const handleManageUsers = useMutableCallback(() => {
+		if (role?._id) {
+			usersInRoleRouter.push({
+				context: 'users-in-role',
+				_id: role._id,
+			});
+		}
+	});
+
+	const handleSave = useMutableCallback(async (data) => {
 		try {
-			await saveRole(values);
+			if (data.roleId) {
+				await updateRole(data);
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				return router.push({});
+			}
+
+			await createRole(data);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			router.push({});
 		} catch (error) {
@@ -48,11 +60,16 @@ const EditRolePage = ({ data }) => {
 	});
 
 	const handleDelete = useMutableCallback(async () => {
-		const deleteRoleAction = async () => {
+		if (!role?._id) {
+			return;
+		}
+
+		const deleteRoleAction = async (): Promise<void> => {
 			try {
-				await deleteRole({ roleId: data._id });
+				await deleteRole({ roleId: role._id });
 				dispatchToastMessage({ type: 'success', message: t('Role_removed') });
 				setModal();
+
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -64,8 +81,8 @@ const EditRolePage = ({ data }) => {
 			<GenericModal
 				variant='danger'
 				onConfirm={deleteRoleAction}
-				onClose={() => setModal()}
-				onCancel={() => setModal()}
+				onClose={(): void => setModal()}
+				onCancel={(): void => setModal()}
 				confirmText={t('Delete')}
 			>
 				{t('Delete_Role_Warning')}
@@ -78,21 +95,23 @@ const EditRolePage = ({ data }) => {
 			<VerticalBar.ScrollableContent>
 				<Box w='full' alignSelf='center' mb='neg-x8'>
 					<Margins block='x8'>
-						<RoleForm values={values} handlers={handlers} editing isProtected={data.protected} />
+						<FormProvider {...methods}>
+							<RoleForm editing={Boolean(role?._id)} isProtected={role?.protected} />
+						</FormProvider>
 					</Margins>
 				</Box>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup vertical stretch>
-					<Button primary disabled={!hasUnsavedChanges} onClick={handleSave}>
+					<Button primary disabled={!methods.formState.isDirty} onClick={methods.handleSubmit(handleSave)}>
 						{t('Save')}
 					</Button>
-					{!data.protected && (
+					{!role?.protected && role?._id && (
 						<Button danger onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}
-					<Button onClick={handleManageUsers}>{t('Users_in_role')}</Button>
+					{role?._id && <Button onClick={handleManageUsers}>{t('Users_in_role')}</Button>}
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>

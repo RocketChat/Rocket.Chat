@@ -1,12 +1,22 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Margins, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo } from 'react';
+import React, { memo, ReactElement } from 'react';
 
-import GenericTable from '../../../components/GenericTable';
+import { IRole } from '../../../../../definition/IRole';
+import GenericTable from '../../../../components/GenericTable';
+import { useRoute } from '../../../../contexts/RouterContext';
 
-const RoleHeader = ({ router, _id, name, description, ...props }) => {
-	const onClick = useMutableCallback(() => {
+type RoleHeaderProps = {
+	_id: IRole['_id'];
+	name: IRole['name'];
+	description: IRole['description'];
+};
+
+const RoleHeader = ({ _id, name, description }: RoleHeaderProps): ReactElement => {
+	const router = useRoute('admin-permissions');
+
+	const handleEditRole = useMutableCallback(() => {
 		router.push({
 			context: 'edit',
 			_id,
@@ -14,7 +24,7 @@ const RoleHeader = ({ router, _id, name, description, ...props }) => {
 	});
 
 	return (
-		<GenericTable.HeaderCell clickable pi='x4' p='x8' {...props}>
+		<GenericTable.HeaderCell clickable pi='x4' p='x8'>
 			<Box
 				className={css`
 					white-space: nowrap;
@@ -26,7 +36,7 @@ const RoleHeader = ({ router, _id, name, description, ...props }) => {
 				borderWidth='x2'
 				borderRadius='x2'
 				borderColor='neutral-300'
-				onClick={onClick}
+				onClick={handleEditRole}
 			>
 				<Margins inline='x2'>
 					<span>{description || name}</span>

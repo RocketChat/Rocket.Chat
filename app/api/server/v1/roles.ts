@@ -150,6 +150,8 @@ API.v1.addRoute(
 				username: 1,
 				emails: 1,
 				avatarETag: 1,
+				createdAt: 1,
+				_updatedAt: 1,
 			};
 
 			if (!role) {

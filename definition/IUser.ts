@@ -170,3 +170,8 @@ export type IUserDataEvent = {
 			unset: Record<keyof IUser, boolean | 0 | 1>;
 	  }
 );
+
+export type IUserInRole = Pick<
+	IUser,
+	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
+>;

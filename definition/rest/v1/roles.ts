@@ -1,7 +1,7 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 
 import { RocketChatRecordDeleted } from '../../IRocketChatRecord';
-import { IRole, IUser } from '../../IUser';
+import { IRole, IUserInRole } from '../../IUser';
 
 const ajv = new Ajv();
 
@@ -181,8 +181,8 @@ export type RolesEndpoints = {
 	};
 
 	'roles.getUsersInRole': {
-		GET: (params: { roomId: string; role: string; offset: number; count: number }) => {
-			users: IUser[];
+		GET: (params: { roomId?: string; role: string; offset?: number; count?: number }) => {
+			users: IUserInRole[];
 			total: number;
 		};
 	};
