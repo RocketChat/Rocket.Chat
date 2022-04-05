@@ -226,7 +226,7 @@
 		"csv-parse": "^4.16.3",
 		"date-fns": "^2.28.0",
 		"dompurify": "^2.2.9",
-		"ejson": "^2.2.1",
+		"ejson": "^2.2.2",
 		"emailreplyparser": "^0.0.5",
 		"emojione": "^4.5.0",
 		"eslint-plugin-anti-trojan-source": "^1.0.6",
