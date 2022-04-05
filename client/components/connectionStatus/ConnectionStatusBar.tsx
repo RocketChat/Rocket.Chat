@@ -1,18 +1,23 @@
 import { Icon } from '@rocket.chat/fuselage';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, MouseEventHandler, FC } from 'react';
 
 import { useConnectionStatus } from '../../contexts/ConnectionStatusContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import './ConnectionStatusBar.css';
+import './ConnectionStatusBar.styles.css';
 
-const getReconnectCountdown = (retryTime) => {
+// TODO: frontend chapter day - fix unknown translation keys
+
+const getReconnectCountdown = (retryTime: number): number => {
 	const timeDiff = retryTime - Date.now();
 	return (timeDiff > 0 && Math.round(timeDiff / 1000)) || 0;
 };
 
-const useReconnectCountdown = (retryTime, status) => {
-	const reconnectionTimerRef = useRef();
-	const [reconnectCountdown, setReconnectCountdown] = useState(() => getReconnectCountdown(retryTime));
+const useReconnectCountdown = (
+	retryTime: number | undefined,
+	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline',
+): number => {
+	const reconnectionTimerRef = useRef<ReturnType<typeof setInterval>>();
+	const [reconnectCountdown, setReconnectCountdown] = useState(() => (retryTime ? getReconnectCountdown(retryTime) : 0));
 
 	useEffect(() => {
 		if (status === 'waiting') {
@@ -21,18 +26,18 @@ const useReconnectCountdown = (retryTime, status) => {
 			}
 
 			reconnectionTimerRef.current = setInterval(() => {
-				setReconnectCountdown(getReconnectCountdown(retryTime));
+				retryTime && setReconnectCountdown(getReconnectCountdown(retryTime));
 			}, 500);
 			return;
 		}
 
-		clearInterval(reconnectionTimerRef.current);
-		reconnectionTimerRef.current = null;
+		reconnectionTimerRef.current && clearInterval(reconnectionTimerRef.current);
+		reconnectionTimerRef.current = undefined;
 	}, [retryTime, status]);
 
 	useEffect(
-		() => () => {
-			clearInterval(reconnectionTimerRef.current);
+		() => (): void => {
+			reconnectionTimerRef.current && clearInterval(reconnectionTimerRef.current);
 		},
 		[],
 	);
@@ -40,7 +45,7 @@ const useReconnectCountdown = (retryTime, status) => {
 	return reconnectCountdown;
 };
 
-function ConnectionStatusBar() {
+const ConnectionStatusBar: FC = function ConnectionStatusBar() {
 	const { connected, retryTime, status, reconnect } = useConnectionStatus();
 	const reconnectCountdown = useReconnectCountdown(retryTime, status);
 	const t = useTranslation();
@@ -49,15 +54,15 @@ function ConnectionStatusBar() {
 		return null;
 	}
 
-	const handleRetryClick = (event) => {
+	const handleRetryClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
 		event.preventDefault();
-		reconnect && reconnect();
+		reconnect?.();
 	};
 
 	return (
 		<div className='ConnectionStatusBar' role='alert'>
 			<strong>
-				<Icon name='warning' /> {t('meteor_status', { context: status })}
+				<Icon name='warning' /> {t('meteor_status' as Parameters<typeof t>[0], { context: status })}
 			</strong>
 
 			{status === 'waiting' && <> {t('meteor_status_reconnect_in', { count: reconnectCountdown })}</>}
@@ -66,12 +71,12 @@ function ConnectionStatusBar() {
 				<>
 					{' '}
 					<a className='ConnectionStatusBar__retry-link' href='#' onClick={handleRetryClick}>
-						{t('meteor_status_try_now', { context: status })}
+						{t('meteor_status_try_now' as Parameters<typeof t>[0], { context: status })}
 					</a>
 				</>
 			)}
 		</div>
 	);
-}
+};
 
 export default ConnectionStatusBar;

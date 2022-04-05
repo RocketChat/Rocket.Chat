@@ -475,6 +475,13 @@ export const statistics = {
 				statistics.teams = statisticsTeam;
 			}),
 		);
+		statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
+		statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count');
+		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
+		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
+		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
+		statistics.totalOTRRooms = Rooms.findByCreatedOTR().count();
+		statistics.totalOTR = settings.get('OTR_Count');
 
 		await Promise.all(statsPms).catch(log);
 
