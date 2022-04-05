@@ -14,6 +14,7 @@ test.describe.parallel('[Administration]', () => {
 	let admin: Administration;
 	let flexTab: FlexTab;
 	const checkBoxesSelectors = ['Direct', 'Public', 'Private', 'Omnichannel', 'Discussions', 'Teams'];
+
 	test.beforeAll(async ({ browser, baseURL }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();

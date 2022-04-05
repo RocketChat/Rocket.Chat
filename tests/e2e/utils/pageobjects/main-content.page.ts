@@ -243,7 +243,7 @@ class MainContent extends BasePage {
 	}
 
 	// Sends a message and wait for the message to equal the text sent
-	public async sendMessage(text: any): Promise<void> {
+	public async sendMessage(text: string): Promise<void> {
 		await this.setTextToInput(text);
 		await this.sendBtn().click();
 		await expect(

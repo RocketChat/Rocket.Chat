@@ -3,7 +3,7 @@ import { PlaywrightTestConfig } from '@playwright/test';
 const config: PlaywrightTestConfig = {
 	outputDir: 'tests/e2e/test-failures',
 	reporter: [['list']],
-	workers: 3,
+	workers: 1,
 	use: {
 		baseURL: process.env.BASE_URL || 'http://localhost:3000',
 		headless: true,
