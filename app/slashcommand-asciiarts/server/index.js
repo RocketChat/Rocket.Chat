@@ -1,3 +1,4 @@
+import '../lib/disapprove';
 import '../lib/gimme';
 import '../lib/lenny';
 import '../lib/shrug';
