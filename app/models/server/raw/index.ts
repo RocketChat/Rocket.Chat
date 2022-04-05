@@ -30,6 +30,7 @@ import { LivechatRoomsRaw } from './LivechatRooms';
 import { LivechatTriggerRaw } from './LivechatTrigger';
 import { LivechatVisitorsRaw } from './LivechatVisitors';
 import { LoginServiceConfigurationRaw } from './LoginServiceConfiguration';
+import { MentionsRaw } from './Mentions';
 import { MessagesRaw } from './Messages';
 import { NotificationQueueRaw } from './NotificationQueue';
 import { OAuthAppsRaw } from './OAuthApps';
@@ -125,6 +126,7 @@ export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(
 	{ preventSetUpdatedAt: true },
 );
 
+export const Mentions = new MentionsRaw(db.collection(`${prefix}mentions`), trashCollection);
 export const NotificationQueue = new NotificationQueueRaw(db.collection(`${prefix}notification_queue`), trashCollection);
 export const OAuthApps = new OAuthAppsRaw(db.collection(`${prefix}oauth_apps`), trashCollection);
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${prefix}oembed_cache`), trashCollection);
@@ -177,6 +179,7 @@ if (!isRunningMs()) {
 		Integrations,
 		EmailInbox,
 		PbxEvent,
+		Mentions,
 	};
 
 	initWatchers(models, api.broadcastLocal.bind(api), (model, fn) => {

@@ -17,6 +17,7 @@ import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notificatio
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { storeMentionRecord } from './storeMentionRecord';
 
 let TroubleshootDisableNotifications;
 
@@ -76,6 +77,10 @@ export const sendNotification = async ({
 	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
+
+	if (hasMentionToUser || isHighlighted || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere))) {
+		storeMentionRecord(subscription, message, { hasMentionToHere, hasMentionToAll, hasMentionToUser, isHighlighted });
+	}
 
 	const { desktopNotifications, mobilePushNotifications, emailNotifications } = subscription;
 
