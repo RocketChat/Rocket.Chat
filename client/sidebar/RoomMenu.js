@@ -179,6 +179,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	return (
 		<Menu
 			rcx-sidebar-item__menu
+			title={t('Options')}
 			mini
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
