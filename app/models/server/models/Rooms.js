@@ -34,6 +34,9 @@ export class Rooms extends Base {
 			},
 			{ sparse: true },
 		);
+
+		// for statistics
+		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -1477,6 +1480,10 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	countOTRstarted() {
+		return this.find({ createdOTR: true }).count();
 	}
 }
 

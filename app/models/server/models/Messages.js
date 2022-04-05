@@ -35,6 +35,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ rid: 1, tcount: 1 }); // used for the List Threads Count
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ t: 1 });
 	}
 
 	setReactions(messageId, reactions) {
