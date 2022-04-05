@@ -3218,7 +3218,6 @@ __metadata:
     gridfs-stream: ^1.1.1
     he: ^1.2.0
     highlight.js: ^9.18.5
-    husky: ^7.0.1
     i18next: ^20.3.2
     i18next-http-backend: ^1.3.1
     iconv-lite: ^0.6.3
@@ -21739,6 +21738,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocket.chat@workspace:."
   dependencies:
+    husky: ^7.0.1
     turbo: latest
   languageName: unknown
   linkType: soft
