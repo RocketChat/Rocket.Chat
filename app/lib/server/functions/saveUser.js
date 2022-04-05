@@ -243,7 +243,7 @@ const handleBio = (updateUser, bio) => {
 
 const handleNickname = (updateUser, nickname) => {
 	if (nickname && nickname.trim()) {
-		if (typeof nickname !== 'string' || nickname.length > 120) {
+		if (typeof nickname !== 'string' || nickname.length > settings.get('Accounts_MaxNicknameLength')) {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
 			});

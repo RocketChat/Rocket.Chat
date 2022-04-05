@@ -138,6 +138,10 @@ settingsRegistry.addGroup('Accounts', function () {
 			type: 'int',
 			public: true,
 		});
+		this.add('Accounts_MaxNicknameLength', 120, {
+			type: 'int',
+			public: true,
+		});
 		this.add('Accounts_RequireNameForSignUp', true, {
 			// TODO rename to Accounts_RequireFullName
 			type: 'boolean',
