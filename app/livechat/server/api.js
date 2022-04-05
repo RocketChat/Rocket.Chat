@@ -1,7 +1,7 @@
 import '../imports/server/rest/agent.js';
 import '../imports/server/rest/departments';
 import '../imports/server/rest/facebook.js';
-import '../imports/server/rest/sms.js';
+import '../imports/server/rest/sms';
 import '../imports/server/rest/users.js';
 import '../imports/server/rest/upload.js';
 import '../imports/server/rest/inquiries.js';

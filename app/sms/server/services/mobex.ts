@@ -4,8 +4,19 @@ import { Base64 } from 'meteor/base64';
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { SettingValue } from '../../../../definition/ISetting';
 
 class Mobex {
+	address: SettingValue;
+
+	restAddress: SettingValue;
+
+	username: SettingValue;
+
+	password: SettingValue;
+
+	from: SettingValue;
+
 	constructor() {
 		this.address = settings.get('SMS_Mobex_gateway_address');
 		this.restAddress = settings.get('SMS_Mobex_restful_address');
@@ -15,6 +26,7 @@ class Mobex {
 	}
 
 	parse(data) {
+		
 		let numMedia = 0;
 
 		const returnData = {

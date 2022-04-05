@@ -1,13 +1,15 @@
+import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
-import twilio from 'twilio';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+import { mime } from '../../../utils/lib/mimeTypes';
 import { api } from '../../../../server/sdk/api';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { SettingValue } from '../../../../definition/ISetting';
 
 const MAX_FILE_SIZE = 5242880;
 
@@ -16,55 +18,46 @@ const notifyAgent = (userId, rid, msg) =>
 		msg,
 	});
 
-class Twilio {
+class Voxtelesys {
+	authToken: SettingValue;
+
+	URL: SettingValue;
+
+	fileUploadEnabled: SettingValue;
+
+	mediaTypeWhiteList: SettingValue;
+
 	constructor() {
-		this.accountSid = settings.get('SMS_Twilio_Account_SID');
-		this.authToken = settings.get('SMS_Twilio_authToken');
-		this.fileUploadEnabled = settings.get('SMS_Twilio_FileUpload_Enabled');
-		this.mediaTypeWhiteList = settings.get('SMS_Twilio_FileUpload_MediaTypeWhiteList');
+		this.authToken = settings.get('SMS_Voxtelesys_authToken');
+		this.URL = settings.get('SMS_Voxtelesys_URL');
+		this.fileUploadEnabled = settings.get('SMS_Voxtelesys_FileUpload_Enabled');
+		this.mediaTypeWhiteList = settings.get('SMS_Voxtelesys_FileUpload_MediaTypeWhiteList');
 	}
 
 	parse(data) {
-		let numMedia = 0;
-
 		const returnData = {
-			from: data.From,
-			to: data.To,
-			body: data.Body,
+			from: data.from,
+			to: data.to,
+			body: data.body,
+			media: [],
 
 			extra: {
-				toCountry: data.ToCountry,
-				toState: data.ToState,
-				toCity: data.ToCity,
-				toZip: data.ToZip,
-				fromCountry: data.FromCountry,
-				fromState: data.FromState,
-				fromCity: data.FromCity,
-				fromZip: data.FromZip,
-				fromLatitude: data.Latitude,
-				fromLongitude: data.Longitude,
+				received_at: data.received_at,
 			},
 		};
 
-		if (data.NumMedia) {
-			numMedia = parseInt(data.NumMedia, 10);
-		}
-
-		if (isNaN(numMedia)) {
-			SystemLogger.error(`Error parsing NumMedia ${data.NumMedia}`);
+		if (!data.media) {
 			return returnData;
 		}
 
-		returnData.media = [];
-
-		for (let mediaIndex = 0; mediaIndex < numMedia; mediaIndex++) {
+		for (let mediaIndex = 0; mediaIndex < data.media.length; mediaIndex++) {
 			const media = {
 				url: '',
 				contentType: '',
 			};
 
-			const mediaUrl = data[`MediaUrl${mediaIndex}`];
-			const contentType = data[`MediaContentType${mediaIndex}`];
+			const mediaUrl = data.media[mediaIndex];
+			const contentType = mime.lookup(new URL(data.media[mediaIndex]).pathname);
 
 			media.url = mediaUrl;
 			media.contentType = contentType;
@@ -76,10 +69,7 @@ class Twilio {
 	}
 
 	send(fromNumber, toNumber, message, extraData) {
-		const client = twilio(this.accountSid, this.authToken);
-		let body = message;
-
-		let mediaUrl;
+		let media;
 		const defaultLanguage = settings.get('Language') || 'en';
 		if (extraData && extraData.fileUpload) {
 			const {
@@ -104,49 +94,57 @@ class Twilio {
 
 			if (reason) {
 				rid && userId && notifyAgent(userId, rid, reason);
-				return SystemLogger.error(`(Twilio) -> ${reason}`);
+				return SystemLogger.error(`(Voxtelesys) -> ${reason}`);
 			}
 
-			mediaUrl = [publicFilePath];
+			media = [publicFilePath];
 		}
 
-		let persistentAction;
-		if (extraData && extraData.location) {
-			const [longitude, latitude] = extraData.location.coordinates;
-			persistentAction = `geo:${latitude},${longitude}`;
-			body = TAPi18n.__('Location', { lng: defaultLanguage });
-		}
+		const options = {
+			headers: {
+				Authorization: `Bearer ${this.authToken}`,
+			},
+			data: {
+				to: [toNumber],
+				from: fromNumber,
+				body: message,
+				...(media && { media }),
+			},
+		};
 
-		client.messages.create({
-			to: toNumber,
-			from: fromNumber,
-			body,
-			...(mediaUrl && { mediaUrl }),
-			...(persistentAction && { persistentAction }),
-		});
+		try {
+			HTTP.call('POST', this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
+		} catch (error) {
+			SystemLogger.error(`Error connecting to Voxtelesys SMS API: ${error}`);
+		}
 	}
 
 	response(/* message */) {
 		return {
 			headers: {
-				'Content-Type': 'text/xml',
+				'Content-Type': 'application/json',
 			},
-			body: '<Response></Response>',
+			body: {
+				success: true,
+			},
 		};
 	}
 
 	error(error) {
 		let message = '';
 		if (error.reason) {
-			message = `<Message>${error.reason}</Message>`;
+			message = error.reason;
 		}
 		return {
 			headers: {
-				'Content-Type': 'text/xml',
+				'Content-Type': 'application/json',
 			},
-			body: `<Response>${message}</Response>`,
+			body: {
+				success: false,
+				error: message,
+			},
 		};
 	}
 }
 
-SMS.registerService('twilio', Twilio);
+SMS.registerService('voxtelesys', Voxtelesys);
