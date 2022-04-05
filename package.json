@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "testunit": "turbo run testunit",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint"
   },
