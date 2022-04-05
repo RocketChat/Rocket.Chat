@@ -50,7 +50,7 @@ const ContactsContextualBar: FC<{ rid: IOmnichannelRoom['_id'] }> = ({ rid }) =>
 			{context === 'edit' ? (
 				<ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} />
 			) : (
-				<ContactInfo id={_id} rid={rid} route={PATH} />
+				<ContactInfo id={_id} rid={rid} route={PATH} reload={null} />
 			)}
 		</>
 	);
