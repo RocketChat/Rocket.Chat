@@ -15,7 +15,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	const t = useTranslation();
 	const [name, setName] = useState('');
 	const [aliases, setAliases] = useState('');
-	const [emojiFile, setEmojiFile] = useState<Blob>();
+	const [emojiFile, setEmojiFile] = useState('');
 	const [newEmojiPreview, setNewEmojiPreview] = useState('');
 	const [errors, setErrors] = useState({ name: false, emoji: false, aliases: false });
 
@@ -31,16 +31,8 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	const saveAction = useEndpointUpload('emoji-custom.create', {}, t('Custom_Emoji_Added_Successfully'));
 
 	const handleSave = useCallback(async () => {
-		if (!name) {
-			return setErrors((prevState) => ({ ...prevState, name: true }));
-		}
-
 		if (name === aliases) {
 			return setErrors((prevState) => ({ ...prevState, aliases: true }));
-		}
-
-		if (!emojiFile) {
-			return setErrors((prevState) => ({ ...prevState, emoji: true }));
 		}
 
 		const formData = new FormData();
@@ -72,7 +64,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 
 		return setAliases(e.currentTarget.value);
 	};
-
+	const shouldSave = Boolean(name) && Boolean(emojiFile);
 	return (
 		<VerticalBar.ScrollableContent {...props}>
 			<Field>
@@ -80,7 +72,6 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 				<Field.Row>
 					<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
 				</Field.Row>
-				{errors.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
 			</Field>
 			<Field>
 				<Field.Label>{t('Aliases')}</Field.Label>
@@ -96,7 +87,6 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 						<Icon name='upload' size='x20' />
 					</Button>
 				</Field.Label>
-				{errors.emoji && <Field.Error>{t('error-the-field-is-required', { field: t('Custom_Emoji') })}</Field.Error>}
 				{newEmojiPreview && (
 					<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
 						<Margins inline='x4'>
@@ -109,7 +99,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 				<Field.Row>
 					<ButtonGroup stretch w='full'>
 						<Button onClick={close}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSave}>
+						<Button primary onClick={handleSave} disabled={!shouldSave}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
