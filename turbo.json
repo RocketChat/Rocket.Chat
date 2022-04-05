@@ -3,9 +3,18 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".meteor/local/build/**"]
+      "outputs": ["dist/**"]
+    },
+    "testunit": {
+      "outputs": []
     },
     "lint": {
+      "outputs": []
+    },
+    "translation-check": {
+      "outputs": []
+    },
+    "typecheck": {
       "outputs": []
     },
     "dev": {
