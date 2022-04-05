@@ -32,7 +32,7 @@ function removeUsersFromTokenChannels() {
 				const valid = Tokenpass.validateAccess(rooms[roomId], balances);
 
 				if (!valid) {
-					removeUserFromRoom(roomId, userInfo);
+					Promise.await(removeUserFromRoom(roomId, userInfo));
 				}
 			});
 		}

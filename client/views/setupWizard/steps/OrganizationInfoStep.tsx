@@ -2,6 +2,7 @@ import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
 import React, { ComponentProps, ReactElement } from 'react';
 
 import { ISetting } from '../../../../definition/ISetting';
+import { useRole } from '../../../contexts/AuthorizationContext';
 import { useTranslation, TranslationKey } from '../../../contexts/TranslationContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -25,6 +26,7 @@ const getSettingOptions = (
 
 const OrganizationInfoStep = (): ReactElement => {
 	const t = useTranslation();
+	const hasAdminRole = useRole('admin');
 
 	const {
 		setupWizardData: { organizationData },
@@ -32,7 +34,10 @@ const OrganizationInfoStep = (): ReactElement => {
 		settings,
 		goToPreviousStep,
 		goToNextStep,
+		completeSetupWizard,
 		currentStep,
+		skipCloudRegistration,
+		maxSteps,
 	} = useSetupWizardContext();
 
 	const countryOptions = getSettingOptions(settings, 'Country', t);
@@ -41,6 +46,9 @@ const OrganizationInfoStep = (): ReactElement => {
 	const organizationSizeOptions = getSettingOptions(settings, 'Size', t);
 
 	const handleSubmit: ComponentProps<typeof OrganizationInfoPage>['onSubmit'] = async (data) => {
+		if (skipCloudRegistration) {
+			return completeSetupWizard();
+		}
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));
 		goToNextStep();
 	};
@@ -49,13 +57,14 @@ const OrganizationInfoStep = (): ReactElement => {
 		<OrganizationInfoPage
 			initialValues={organizationData}
 			onSubmit={handleSubmit}
-			onBackButtonClick={goToPreviousStep}
+			onBackButtonClick={!hasAdminRole ? goToPreviousStep : undefined}
 			currentStep={currentStep}
-			stepCount={4}
+			stepCount={maxSteps}
 			organizationTypeOptions={organizationTypeOptions}
 			organizationIndustryOptions={organizationIndustryOptions}
 			organizationSizeOptions={organizationSizeOptions}
 			countryOptions={countryOptions}
+			nextStep={skipCloudRegistration ? t('Register') : undefined}
 		/>
 	);
 };

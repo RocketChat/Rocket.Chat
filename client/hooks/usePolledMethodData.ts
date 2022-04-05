@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
 
-import { ServerMethods } from '../contexts/ServerContext';
+import { Awaited } from '../../definition/utils';
+import { ServerMethodFunction, ServerMethodParameters, ServerMethods } from '../contexts/ServerContext';
 import { AsyncState } from './useAsyncState';
 import { useMethodData } from './useMethodData';
 
-export const usePolledMethodData = <T>(
+export const usePolledMethodData = <MethodName extends keyof ServerMethods, Result = Awaited<ReturnType<ServerMethodFunction<MethodName>>>>(
 	methodName: keyof ServerMethods,
-	args: any[] = [],
+	args: ServerMethodParameters<MethodName>,
 	intervalMs: number,
-): AsyncState<T> & { reload: () => void } => {
-	const { reload, ...state } = useMethodData<T>(methodName, args);
+): AsyncState<Result> & { reload: () => void } => {
+	const { reload, ...state } = useMethodData(methodName, args);
 
 	useEffect(() => {
 		const timer = setInterval(() => {

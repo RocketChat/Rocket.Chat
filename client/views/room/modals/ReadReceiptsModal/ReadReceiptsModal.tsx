@@ -2,7 +2,6 @@ import { Skeleton } from '@rocket.chat/fuselage';
 import React, { ReactElement, useMemo, useEffect } from 'react';
 
 import type { IMessage } from '../../../../../definition/IMessage/IMessage';
-import type { ReadReceipt } from '../../../../../definition/ReadReceipt';
 import GenericModal from '../../../../components/GenericModal';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -19,7 +18,7 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { phase, value, error } = useMethodData<Array<ReadReceipt>>(
+	const { phase, value, error } = useMethodData(
 		'getReadReceipts',
 		useMemo(() => [{ messageId }], [messageId]),
 	);

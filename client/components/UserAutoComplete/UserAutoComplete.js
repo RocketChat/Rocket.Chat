@@ -1,10 +1,9 @@
-import { AutoComplete, Option, Box, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Option, Box, Chip, Options } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
-import Avatar from './Avatar';
 
 const query = (term = '', conditions = {}) => ({ selector: JSON.stringify({ term, conditions }) });
 
@@ -39,7 +38,9 @@ const UserAutoComplete = (props) => {
 					</Chip>
 				);
 			}}
-			renderItem={({ value, ...props }) => <Option key={value} {...props} avatar={<Avatar value={value} />} />}
+			renderItem={({ value, ...props }) => (
+				<Option key={value} avatar={<UserAvatar size={Options.AvatarSize} username={value} />} {...props} />
+			)}
 			options={options}
 		/>
 	);

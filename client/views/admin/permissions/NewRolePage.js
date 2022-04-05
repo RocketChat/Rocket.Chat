@@ -1,6 +1,6 @@
 import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -14,6 +14,7 @@ const NewRolePage = () => {
 	const t = useTranslation();
 	const router = useRoute('admin-permissions');
 	const dispatchToastMessage = useToastMessageDispatch();
+	const [errors, setErrors] = useState();
 
 	const { values, handlers } = useForm({
 		name: '',
@@ -25,6 +26,10 @@ const NewRolePage = () => {
 	const saveRole = useEndpoint('POST', 'roles.create');
 
 	const handleSave = useMutableCallback(async () => {
+		if (values.name === '') {
+			return setErrors({ name: t('error-the-field-is-required', { field: t('Role') }) });
+		}
+
 		try {
 			await saveRole(values);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
@@ -39,7 +44,7 @@ const NewRolePage = () => {
 			<VerticalBar.ScrollableContent>
 				<Box w='full' alignSelf='center' mb='neg-x8'>
 					<Margins block='x8'>
-						<RoleForm values={values} handlers={handlers} />
+						<RoleForm values={values} handlers={handlers} errors={errors} />
 					</Margins>
 				</Box>
 			</VerticalBar.ScrollableContent>

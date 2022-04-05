@@ -81,7 +81,7 @@ export interface IUserServices {
 
 export interface IUserEmail {
 	address: string;
-	verified: boolean;
+	verified?: boolean;
 }
 
 export interface IUserSettings {
@@ -96,15 +96,24 @@ export interface IRole {
 	mandatory2fa?: boolean;
 	name: string;
 	protected: boolean;
-	// scope?: string;
 	scope: 'Users' | 'Subscriptions';
 	_id: string;
+}
+
+export interface IGetRoomRoles {
+	_id: string;
+	rid: string;
+	u: {
+		_id: string;
+		username: string;
+	};
+	roles: string[];
 }
 
 export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
-	roles: string[];
+	roles: IRole['_id'][];
 	type: string;
 	active: boolean;
 	username?: string;
@@ -136,6 +145,8 @@ export interface IUser extends IRocketChatRecord {
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
+	extension?: string;
+	inviteToken?: string;
 }
 
 export interface IRegisterUser extends IUser {

@@ -3,15 +3,8 @@ const { resolve, relative, join } = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-	stories: [
-		'../app/**/*.stories.{js,tsx}',
-		'../client/**/*.stories.{js,tsx}',
-		...(process.env.EE === 'true' ? ['../ee/**/*.stories.{js,tsx}'] : []),
-	],
-	addons: ['@storybook/addon-essentials', '@storybook/addon-postcss'],
-	typescript: {
-		reactDocgen: 'none',
-	},
+	stories: ['../app/**/*.stories.{js,tsx}', '../client/**/*.stories.{js,tsx}', '../ee/**/*.stories.{js,tsx}'],
+	addons: ['@storybook/addon-essentials', '@storybook/addon-interactions', '@storybook/addon-postcss'],
 	webpackFinal: async (config) => {
 		const cssRule = config.module.rules.find(({ test }) => test.test('index.css'));
 
@@ -46,18 +39,6 @@ module.exports = {
 		config.module.rules.push({
 			test: /\.html$/,
 			use: '@settlin/spacebars-loader',
-		});
-
-		config.module.rules.push({
-			test: /\.(ts|tsx)$/,
-			use: [
-				{
-					loader: 'ts-loader',
-					options: {
-						configFile: join(__dirname, '../tsconfig.webpack.json'),
-					},
-				},
-			],
 		});
 
 		config.plugins.push(

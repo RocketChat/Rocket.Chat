@@ -2,12 +2,10 @@
 
 const path = require('path');
 const fs = require('fs');
-const extend = require('util')._extend;
 const { spawn } = require('child_process');
 const net = require('net');
 
 const processes = [];
-let exitCode;
 
 const baseDir = path.resolve(__dirname, '..');
 const srcDir = path.resolve(baseDir);
@@ -30,7 +28,7 @@ const waitPortRelease = (port, count = 0) =>
 			if (count > 60) {
 				return reject();
 			}
-			console.log('Port', port, 'not release, waiting 1s...');
+			console.log('Port', port, 'not released, waiting 1s...');
 			setTimeout(() => {
 				waitPortRelease(port, ++count)
 					.then(resolve)
@@ -43,22 +41,39 @@ const appOptions = {
 	env: {
 		PORT: 3000,
 		ROOT_URL: 'http://localhost:3000',
-		// MONGO_URL: 'mongodb://localhost:27017/test',
-		// MONGO_OPLOG_URL: 'mongodb://localhost:27017/local',
 	},
 };
 
-function startProcess(opts, callback) {
-	const proc = spawn(opts.command, opts.params, opts.options);
+let killingAllProcess = false;
+function killAllProcesses(mainExitCode) {
+	if (killingAllProcess) {
+		return;
+	}
+	killingAllProcess = true;
 
-	if (opts.waitForMessage) {
-		proc.stdout.on('data', function waitForMessage(data) {
-			if (data.toString().match(opts.waitForMessage)) {
-				if (callback) {
-					callback();
-				}
-			}
+	processes.forEach((p) => {
+		console.log('Killing process', p.pid);
+		p.kill();
+	});
+
+	waitPortRelease(appOptions.env.PORT)
+		.then(() => {
+			console.log(`Port ${appOptions.env.PORT} was released, exiting with code ${mainExitCode}`);
+			process.exit(mainExitCode);
+		})
+		.catch((error) => {
+			console.error(`Error waiting port ${appOptions.env.PORT} to be released, exiting with code ${mainExitCode}`);
+			console.error(error);
+			process.exit(mainExitCode);
 		});
+}
+
+function startProcess(opts) {
+	const proc = spawn(opts.command, opts.params, opts.options);
+	processes.push(proc);
+
+	if (opts.onData) {
+		proc.stdout.on('data', opts.onData);
 	}
 
 	if (!opts.silent) {
@@ -73,74 +88,103 @@ function startProcess(opts, callback) {
 	}
 
 	proc.on('exit', function (code, signal) {
+		processes.splice(processes.indexOf(proc), 1);
+
 		if (code != null) {
-			exitCode = code;
 			console.log(opts.name, `exited with code ${code}`);
 		} else {
 			console.log(opts.name, `exited with signal ${signal}`);
 		}
 
-		processes.splice(processes.indexOf(proc), 1);
-
-		processes.forEach((p) => {
-			console.log('Killing process', p.pid);
-			p.kill();
-		});
-
-		if (processes.length === 0) {
-			waitPortRelease(appOptions.env.PORT)
-				.then(() => {
-					console.log(`Port ${appOptions.env.PORT} was released, exiting with code ${exitCode}`);
-					process.exit(exitCode);
-				})
-				.catch((error) => {
-					console.error(`Error waiting port ${appOptions.env.PORT} to be released, exiting with code ${exitCode}`);
-					console.error(error);
-					process.exit(exitCode);
-				});
-		}
+		killAllProcesses(code);
 	});
-	processes.push(proc);
 }
 
-function startApp(callback) {
-	startProcess(
-		{
+function startRocketChat() {
+	return new Promise((resolve) => {
+		const waitServerRunning = (message) => {
+			if (message.toString().match('SERVER RUNNING')) {
+				return resolve();
+			}
+		};
+
+		startProcess({
 			name: 'Meteor App',
 			command: 'node',
 			params: ['/tmp/build-test/bundle/main.js'],
-			// command: 'node',
-			// params: ['.meteor/local/build/main.js'],
-			waitForMessage: appOptions.waitForMessage,
+			onData: waitServerRunning,
 			options: {
 				cwd: srcDir,
-				env: extend(appOptions.env, process.env),
+				env: {
+					...appOptions.env,
+					...process.env,
+				},
+			},
+		});
+	});
+}
+
+async function startMicroservices() {
+	const startService = (name) => {
+		return new Promise((resolve) => {
+			const waitStart = (message) => {
+				if (message.toString().match('NetworkBroker started successfully')) {
+					return resolve();
+				}
+			};
+			startProcess({
+				name: `${name} service`,
+				command: 'node',
+				params: ['service.js'],
+				onData: waitStart,
+				options: {
+					cwd: path.resolve(srcDir, 'ee', 'server', 'services', 'dist', 'ee', 'server', 'services', name),
+					env: {
+						...appOptions.env,
+						...process.env,
+						PORT: 4000,
+					},
+				},
+			});
+		});
+	};
+
+	await Promise.all([
+		startService('account'),
+		startService('authorization'),
+		startService('ddp-streamer'),
+		startService('presence'),
+		startService('stream-hub'),
+	]);
+}
+
+function startTests(options = []) {
+	const testOption = options.find((i) => i.startsWith('--test='));
+	const testParam = testOption ? testOption.replace('--test=', '') : 'test';
+
+	console.log(`Running test "npm run ${testParam}"`);
+
+	startProcess({
+		name: 'Tests',
+		command: 'npm',
+		params: ['run', testParam],
+		options: {
+			env: {
+				...process.env,
+				NODE_PATH: `${process.env.NODE_PATH + path.delimiter + srcDir + path.delimiter + srcDir}/node_modules`,
 			},
 		},
-		callback,
-	);
-}
-
-function startChimp() {
-	startProcess({
-		name: 'Chimp',
-		command: 'npm',
-		params: ['test'],
-		// command: 'exit',
-		// params: ['2'],
-		options: {
-			env: Object.assign({}, process.env, {
-				NODE_PATH: `${process.env.NODE_PATH + path.delimiter + srcDir + path.delimiter + srcDir}/node_modules`,
-			}),
-		},
 	});
 }
 
-function chimpNoMirror() {
-	appOptions.waitForMessage = 'SERVER RUNNING';
-	startApp(function () {
-		startChimp();
-	});
-}
+(async () => {
+	const [, , ...options] = process.argv;
 
-chimpNoMirror();
+	await startRocketChat();
+
+	if (options.includes('--enterprise')) {
+		await startMicroservices();
+	}
+
+	startTests(options);
+})();

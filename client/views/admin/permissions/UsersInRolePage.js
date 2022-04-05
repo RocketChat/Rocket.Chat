@@ -40,7 +40,7 @@ const UsersInRolePage = ({ data }) => {
 		}
 
 		try {
-			await addUser({ roleName: _id, username: user, roomId: rid });
+			await addUser({ roleId: _id, username: user, roomId: rid });
 			dispatchToastMessage({ type: 'success', message: t('User_added') });
 			setUser();
 			reload.current();

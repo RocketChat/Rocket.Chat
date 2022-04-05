@@ -60,7 +60,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const t = useTranslation();
-	const inputRef = useAutoFocus(true);
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
 	const [name] = useCurrentRoute();
 
 	if (!name) {

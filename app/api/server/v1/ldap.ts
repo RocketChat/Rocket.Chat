@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 
-import { hasRole } from '../../../authorization/server';
+import { hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -15,7 +15,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-user');
 			}
 
-			if (!hasRole(this.userId, 'admin')) {
+			if (!hasPermission(this.userId, 'test-admin-options')) {
 				throw new Error('error-not-authorized');
 			}
 
@@ -53,7 +53,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-user');
 			}
 
-			if (!hasRole(this.userId, 'admin')) {
+			if (!hasPermission(this.userId, 'test-admin-options')) {
 				throw new Error('error-not-authorized');
 			}
 

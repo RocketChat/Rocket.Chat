@@ -16,6 +16,7 @@ const AdminInfoStep = (): ReactElement => {
 		goToNextStep,
 		currentStep,
 		validateEmail,
+		maxSteps,
 	} = useSetupWizardContext();
 
 	// TODO: check if username exists
@@ -40,7 +41,7 @@ const AdminInfoStep = (): ReactElement => {
 			validateEmail={validateEmail}
 			currentStep={currentStep}
 			initialValues={adminData}
-			stepCount={4}
+			stepCount={maxSteps}
 			onSubmit={handleSubmit}
 		/>
 	);

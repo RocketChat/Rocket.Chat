@@ -1,9 +1,10 @@
 /* eslint no-multi-spaces: 0 */
 import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
-import { Permissions, Roles, Settings } from '../../../models/server/raw';
+import { Permissions, Settings } from '../../../models/server/raw';
 import { IPermission } from '../../../../definition/IPermission';
 import { ISetting } from '../../../../definition/ISetting';
+import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 export const upsertPermissions = async (): Promise<void> => {
 	// Note:
@@ -174,7 +175,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		},
 		{ _id: 'send-omnichannel-chat-transcript', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'mail-messages', roles: ['admin'] },
-		{ _id: 'toggle-room-e2e-encryption', roles: ['owner'] },
+		{ _id: 'toggle-room-e2e-encryption', roles: ['owner', 'admin'] },
 		{ _id: 'message-impersonate', roles: ['bot', 'app'] },
 		{ _id: 'create-team', roles: ['admin', 'user'] },
 		{ _id: 'delete-team', roles: ['admin', 'owner'] },
@@ -189,6 +190,18 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'view-all-teams', roles: ['admin'] },
 		{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
+
+		// VOIP Permissions
+		// allows to manage voip calls configuration
+		{ _id: 'manage-voip-call-settings', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-voip-contact-center-settings', roles: ['livechat-manager', 'admin'] },
+		// allows agent-extension association.
+		{ _id: 'manage-agent-extension-association', roles: ['admin'] },
+		{ _id: 'view-agent-extension-association', roles: ['livechat-manager', 'admin', 'livechat-agent'] },
+		// allows to receive a voip call
+		{ _id: 'inbound-voip-calls', roles: ['livechat-agent'] },
+
+		{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-apps', roles: ['admin'] },
 		{ _id: 'post-readonly', roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'set-readonly', roles: ['admin', 'owner'] },
@@ -199,6 +212,18 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'pin-message', roles: ['owner', 'moderator', 'admin'] },
 		{ _id: 'snippet-message', roles: ['owner', 'moderator', 'admin'] },
 		{ _id: 'mobile-upload-file', roles: ['user', 'admin'] },
+		{ _id: 'send-mail', roles: ['admin'] },
+		{ _id: 'view-federation-data', roles: ['admin'] },
+		{ _id: 'add-all-to-room', roles: ['admin'] },
+		{ _id: 'get-server-info', roles: ['admin'] },
+		{ _id: 'register-on-cloud', roles: ['admin'] },
+		{ _id: 'test-admin-options', roles: ['admin'] },
+		{ _id: 'sync-auth-services-users', roles: ['admin'] },
+		{ _id: 'manage-chatpal', roles: ['admin'] },
+		{ _id: 'restart-server', roles: ['admin'] },
+		{ _id: 'remove-slackbridge-links', roles: ['admin'] },
+		{ _id: 'view-import-operations', roles: ['admin'] },
+		{ _id: 'clear-oembed-cache', roles: ['admin'] },
 	];
 
 	for await (const permission of permissions) {
@@ -217,10 +242,10 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'anonymous', scope: 'Users', description: '' },
 		{ name: 'livechat-agent', scope: 'Users', description: 'Livechat Agent' },
 		{ name: 'livechat-manager', scope: 'Users', description: 'Livechat Manager' },
-	];
+	] as const;
 
 	for await (const role of defaultRoles) {
-		await Roles.createOrUpdate(role.name, role.scope as 'Users' | 'Subscriptions', role.description, true, false);
+		await createOrUpdateProtectedRoleAsync(role.name, role);
 	}
 
 	const getPreviousPermissions = async function (settingId?: string): Promise<Record<string, IPermission>> {
@@ -275,7 +300,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			try {
 				await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });
 			} catch (e) {
-				if (!e.message.includes('E11000')) {
+				if (!(e as Error).message.includes('E11000')) {
 					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
 					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
 					await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });

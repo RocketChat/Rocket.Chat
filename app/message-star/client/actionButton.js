@@ -7,9 +7,9 @@ import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { Rooms } from '../../models/client';
-import { roomTypes } from '../../utils/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Meteor.startup(function () {
 	MessageAction.addButton({
@@ -30,7 +30,7 @@ Meteor.startup(function () {
 			if (subscription == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
-			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}
@@ -70,7 +70,7 @@ Meteor.startup(function () {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['starred', 'threads', 'message-mobile'],
+		context: ['starred', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {

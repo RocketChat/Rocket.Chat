@@ -22,7 +22,7 @@ const ConvertToChannelModal: FC<ConvertToChannelModalProps> = ({ onClose, onCanc
 
 	const { value, phase } = useEndpointData(
 		'teams.listRoomsOfUser',
-		useMemo(() => ({ teamId, userId, canUserDelete: true }), [teamId, userId]),
+		useMemo(() => ({ teamId, userId, canUserDelete: 'true' }), [teamId, userId]),
 	);
 
 	if (phase === AsyncStatePhase.LOADING) {
