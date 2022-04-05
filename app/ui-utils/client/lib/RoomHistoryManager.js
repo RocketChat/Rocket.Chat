@@ -198,18 +198,9 @@ export const RoomHistoryManager = new (class extends Emitter {
 
 		this.unqueue();
 
-		let previousHeight;
-		let scroll;
 		const { messages = [] } = result;
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
-
-		const wrapper = await waitUntilWrapperExists();
-
-		if (wrapper) {
-			previousHeight = wrapper.scrollHeight;
-			scroll = wrapper.scrollTop;
-		}
 
 		upsertMessageBulk({
 			msgs: messages.filter((msg) => msg.t !== 'command'),
@@ -233,8 +224,12 @@ export const RoomHistoryManager = new (class extends Emitter {
 		}
 
 		waitAfterFlush(() => {
-			const heightDiff = wrapper.scrollHeight - previousHeight;
-			wrapper.scrollTop = scroll + heightDiff;
+			if (!lastMessage) {
+				return;
+			}
+			const wrapper = $(`#${lastMessage._id}`);
+			wrapper.addClass('highlight');
+			wrapper[0].scrollIntoView({ block: 'end', inline: 'nearest' });
 		});
 
 		room.isLoading.set(false);
