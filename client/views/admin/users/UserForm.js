@@ -10,7 +10,7 @@ import {
 	Divider,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
@@ -56,6 +56,10 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 	} = formHandlers;
 
 	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
+
+	const roleKeys = Array.from(new Map(availableRoles).keys());
+	const rolesToShow = roles.filter((r) => roleKeys.indexOf(r) >= 0);
+	useEffect(() => handleRoles(rolesToShow), []);
 
 	return (
 		<VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
@@ -216,7 +220,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							<Field.Row>
 								<MultiSelectFiltered
 									options={availableRoles}
-									value={roles}
+									value={rolesToShow}
 									onChange={handleRoles}
 									placeholder={t('Select_role')}
 									flexShrink={1}
@@ -224,7 +228,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							</Field.Row>
 						</Field>
 					),
-					[availableRoles, handleRoles, roles, t],
+					[availableRoles, handleRoles, t, rolesToShow],
 				)}
 				{useMemo(
 					() =>
