@@ -53,7 +53,7 @@ describe('[Resolution]', () => {
 
 			it('it should close the sidenav when open general channel', () => {
 				sideNav.openChannel('general');
-				cy.wait(500);
+				cy.wait(800);
 				sideNav.sideNavBar.should('not.have.attr', 'data-qa-opened');
 			});
 

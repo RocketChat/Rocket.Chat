@@ -27,6 +27,7 @@ describe('[Discussion]', function () {
 
 	describe('from context menu', function () {
 		before(() => {
+			cy.wait(400);
 			mainContent.sendMessage(message);
 		});
 
