@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Browser } from '@playwright/test';
 
 import MainContent from './utils/pageobjects/main-content.page';
 import SideNav from './utils/pageobjects/side-nav.page';
@@ -6,34 +6,35 @@ import LoginPage from './utils/pageobjects/login.page';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 
+let loginPage: LoginPage;
+let mainContent: MainContent;
+let sideNav: SideNav;
+
+async function initConfig(
+	browser: Browser,
+	baseURL: string | undefined,
+	options = { viewport: { width: 650, height: 800 } },
+): Promise<any> {
+	const context = await browser.newContext(options);
+	const page = await context.newPage();
+	const URL = baseURL || LOCALHOST;
+	loginPage = new LoginPage(page);
+	await loginPage.goto(URL);
+
+	await loginPage.login(adminLogin);
+	sideNav = new SideNav(page);
+	mainContent = new MainContent(page);
+	return { loginPage, sideNav, mainContent };
+}
+
 test.describe('[Resolution]', function () {
 	test.describe('[Mobile Render]', async () => {
-		let loginPage: LoginPage;
-		let mainContent: MainContent;
-		let sideNav: SideNav;
-
 		test.beforeAll(async ({ browser, baseURL }) => {
-			const context = await browser.newContext({ viewport: { width: 650, height: 800 } });
-			const page = await context.newPage();
-			const URL = baseURL || LOCALHOST;
-			loginPage = new LoginPage(page);
-			await loginPage.goto(URL);
-
-			await loginPage.login(adminLogin);
-			sideNav = new SideNav(page);
-			mainContent = new MainContent(page);
+			await initConfig(browser, baseURL);
 		});
 
 		test.afterAll(async ({ browser, baseURL }) => {
-			const context = await browser.newContext({ viewport: { width: 1600, height: 1600 } });
-			const page = await context.newPage();
-			const URL = baseURL || LOCALHOST;
-			loginPage = new LoginPage(page);
-			await loginPage.goto(URL);
-
-			await loginPage.login(adminLogin);
-			sideNav = new SideNav(page);
-			mainContent = new MainContent(page);
+			await initConfig(browser, baseURL, { viewport: { width: 1600, height: 1600 } });
 
 			await expect(sideNav.spotlightSearchIcon()).toBeVisible();
 		});
