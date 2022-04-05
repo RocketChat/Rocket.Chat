@@ -270,7 +270,11 @@ class FlexTab extends BasePage {
 	}
 
 	public usersAddUserTab(): Locator {
-		return this.getPage().locator('.tab-button:not(.hidden) .tab-button-icon--plus');
+		return this.getPage().locator('//button[text()="New"]');
+	}
+
+	public usersAddUserTabClose(): Locator {
+		return this.getPage().locator('//div[text()="Add User"]//button');
 	}
 
 	public usersSendInvitationTextArea(): Locator {
@@ -278,7 +282,7 @@ class FlexTab extends BasePage {
 	}
 
 	public usersButtonCancel(): Locator {
-		return this.getPage().locator('.button.cancel');
+		return this.getPage().locator('//button[text()="Cancel"]');
 	}
 
 	public usersSendInvitationSend(): Locator {
@@ -286,51 +290,47 @@ class FlexTab extends BasePage {
 	}
 
 	public usersButtonSave(): Locator {
-		return this.getPage().locator('.button.save');
+		return this.getPage().locator('//button[text()="Save"]');
 	}
 
 	public usersAddUserName(): Locator {
-		return this.getPage().locator('#name');
+		return this.getPage().locator('//label[text()="Name"]/following-sibling::span//input');
 	}
 
 	public usersAddUserUsername(): Locator {
-		return this.getPage().locator('#username');
+		return this.getPage().locator('//label[text()="Username"]/following-sibling::span//input');
 	}
 
 	public usersAddUserEmail(): Locator {
-		return this.getPage().locator('#email');
+		return this.getPage().locator('//label[text()="Email"]/following-sibling::span//input/following-sibling::span//i');
 	}
 
 	public usersAddUserRoleList(): Locator {
-		return this.getPage().locator('#roleSelect');
+		return this.getPage().locator('//label[text()="Roles"]/following-sibling::span//input');
 	}
 
 	public usersAddUserPassword(): Locator {
-		return this.getPage().locator('#password');
-	}
-
-	public usersAddUserRoleButton(): Locator {
-		return this.getPage().locator('#addRole');
+		return this.getPage().locator('//label[text()="Password"]/following-sibling::span//input');
 	}
 
 	public usersAddUserVerifiedCheckbox(): Locator {
-		return this.getPage().locator('#verified');
+		return this.getPage().locator('//label[text()="Email"]/following-sibling::span//input/following-sibling::i');
 	}
 
 	public usersAddUserChangePasswordCheckbox(): Locator {
-		return this.getPage().locator('#changePassword');
+		return this.getPage().locator('//div[text()="Require password change"]/following-sibling::label//input');
 	}
 
 	public usersAddUserDefaultChannelCheckbox(): Locator {
-		return this.getPage().locator('#joinDefaultChannels');
+		return this.getPage().locator('//div[text()="Join default channels"]/following-sibling::label//input');
 	}
 
 	public usersAddUserWelcomeEmailCheckbox(): Locator {
-		return this.getPage().locator('#sendWelcomeEmail');
+		return this.getPage().locator('//div[text()="Send welcome email"]/following-sibling::label//input');
 	}
 
 	public usersAddUserRandomPassword(): Locator {
-		return this.getPage().locator('#randomPassword');
+		return this.getPage().locator('//div[text()="Set random password and send by email"]/following-sibling::label//input');
 	}
 
 	public emojiNewAliases(): Locator {
@@ -357,6 +357,10 @@ class FlexTab extends BasePage {
 		return this.getPage().locator(`.flex-tab button[title="${username}"] > p`);
 	}
 
+	public addUserTable(): Locator {
+		return this.getPage().locator('//div[text()="Add User"]');
+	}
+
 	public async archiveChannel(): Promise<void> {
 		await this.archiveBtn().waitFor();
 		await this.archiveBtn().click();
@@ -368,8 +372,8 @@ class FlexTab extends BasePage {
 	public async addPeopleToChannel(user: any): Promise<void> {
 		await this.userSearchBar().waitFor();
 		await this.userSearchBar().type(user);
-		this.getPage().waitForSelector('.-autocomplete-item');
-		this.getPage().click('.-autocomplete-item');
+		await this.getPage().waitForSelector('.-autocomplete-item');
+		await this.getPage().click('.-autocomplete-item');
 	}
 
 	public async operateFlexTab(desiredTab: string, desiredState: boolean): Promise<void> {

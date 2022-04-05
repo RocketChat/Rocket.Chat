@@ -75,11 +75,11 @@ class SideNav extends BasePage {
 	}
 
 	public account(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "My Account")]');
+		return this.getPage().locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]');
 	}
 
 	public admin(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Administration")]');
+		return this.getPage().locator('//li[@class="rcx-option"]//div[contains(text(), "Administration")]');
 	}
 
 	public logout(): Locator {

@@ -6,7 +6,7 @@ const config: PlaywrightTestConfig = {
 	workers: 3,
 	use: {
 		baseURL: process.env.BASE_URL || 'http://localhost:3000',
-		headless: false,
+		headless: true,
 		viewport: { width: 1368, height: 768 },
 		ignoreHTTPSErrors: true,
 		video: 'retain-on-failure',

@@ -4,10 +4,8 @@ import MainContent from './utils/pageobjects/main-content.page';
 import SideNav from './utils/pageobjects/side-nav.page';
 import FlexTab from './utils/pageobjects/flex-tab.page';
 import LoginPage from './utils/pageobjects/login.page';
-import { adminLogin, adminRegister } from './utils/mocks/userAndPasswordMock';
+import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
-
-const username = adminRegister.name;
 
 test.describe('[Main Elements Render]', function () {
 	let loginPage: LoginPage;
@@ -146,7 +144,7 @@ test.describe('[Main Elements Render]', function () {
 			});
 
 			test('expect be that the last message is from the logged user', async () => {
-				await expect(mainContent.lastMessageUser()).toContainText(username);
+				await expect(mainContent.lastMessageUser()).toContainText(adminLogin.password);
 			});
 
 			test('expect not show the Admin tag', async () => {
