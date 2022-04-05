@@ -134,6 +134,10 @@ settingsRegistry.addGroup('Accounts', function () {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
+		this.add('Accounts_MaxBioLength', 260, {
+			type: 'int',
+			public: true,
+		});
 		this.add('Accounts_RequireNameForSignUp', true, {
 			// TODO rename to Accounts_RequireFullName
 			type: 'boolean',
