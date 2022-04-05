@@ -1,43 +1,42 @@
 import { test, expect } from '@playwright/test';
 
+import LoginPage from './utils/pageobjects/login.page';
 import SetupWizard from './utils/pageobjects/wizard.page';
-import { adminRegister, VALID_EMAIL } from './utils/mocks/userAndPasswordMock';
-import { LOCALHOST, setupWizardStepRegex } from './utils/mocks/urlMock';
+import { VALID_EMAIL, adminLogin } from './utils/mocks/userAndPasswordMock';
+import { setupWizardStepRegex } from './utils/mocks/urlMock';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
 
-test.describe('[Wizard]', () => {
+test.describe.serial('[Wizard]', () => {
 	let setupWizard: SetupWizard;
-	test.beforeEach(async ({ page }) => {
+	let loginPage: LoginPage;
+	test.beforeEach(async ({ page, baseURL }) => {
 		setupWizard = new SetupWizard(page);
+		loginPage = new LoginPage(page);
+		await setupWizard.goto(baseURL as string);
+		await loginPage.login(adminLogin);
 	});
-	test.describe('[Step 1]', () => {
-		test.beforeEach(async ({ baseURL }) => {
-			const baseUrl = baseURL || LOCALHOST;
-			await setupWizard.goto(baseUrl);
-		});
+	// test.describe('[Step 1]', () => {
+	// 	test.beforeEach(async ({ baseURL }) => {
+	// 		const baseUrl = baseURL || LOCALHOST;
+	// 		await setupWizard.goto(baseUrl);
+	// 	});
 
-		test('expect required field alert showed when user dont inform data', async () => {
-			await setupWizard.stepOneFailedBlankFields();
-		});
+	// 	test('expect required field alert showed when user dont inform data', async () => {
+	// 		await setupWizard.stepOneFailedBlankFields();
+	// 	});
 
-		test('expect alert showed when email provided is invalid', async () => {
-			await setupWizard.stepOneFailedWithInvalidEmail(adminRegister);
-		});
+	// 	test('expect alert showed when email provided is invalid', async () => {
+	// 		await setupWizard.stepOneFailedWithInvalidEmail(adminRegister);
+	// 	});
 
-		test('expect go to Step 2 successfully', async () => {
-			await setupWizard.stepOneSucess(adminRegister);
+	// 	test('expect go to Step 2 successfully', async () => {
+	// 		await setupWizard.stepOneSucess(adminRegister);
 
-			await expect(setupWizard.getPage()).toHaveURL(setupWizardStepRegex._2);
-		});
-	});
+	// 		await expect(setupWizard.getPage()).toHaveURL(setupWizardStepRegex._2);
+	// 	});
+	// });
 
 	test.describe('[Step 2]', async () => {
-		test.beforeEach(async ({ baseURL }) => {
-			const baseUrl = baseURL || LOCALHOST;
-			await setupWizard.goto(baseUrl);
-			await setupWizard.stepOneSucess(adminRegister);
-		});
-
 		test('expect required field alert showed when user dont inform data', async () => {
 			await setupWizard.stepTwoFailedWithBlankFields();
 		});
@@ -50,8 +49,6 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.goto('');
-			await setupWizard.stepOneSucess(adminRegister);
 			await setupWizard.stepTwoSucess();
 		});
 
@@ -80,8 +77,6 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.goto('');
-			await setupWizard.stepOneSucess(adminRegister);
 			await setupWizard.stepTwoSucess();
 			await setupWizard.stepThreeSucess();
 		});
