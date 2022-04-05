@@ -169,6 +169,15 @@ class SideNav extends BasePage {
 		return this.getPage().locator('.rc-popover.rc-popover--sidebar-item');
 	}
 
+	public returnToMenuInLowResolution(): Locator {
+		return this.getPage().locator('//button[@aria-label="Close menu"]');
+	}
+
+	// Check if navbar is open
+	public async isSideBarOpen(): Promise<boolean> {
+		return !!(await this.sideNavBar().getAttribute('style'));
+	}
+
 	// Opens a channel via rooms list
 	public async openChannel(channelName: any): Promise<void> {
 		await this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();

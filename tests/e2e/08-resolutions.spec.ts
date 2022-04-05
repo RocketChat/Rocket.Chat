@@ -41,14 +41,12 @@ test.describe('[Resolution]', function () {
 		test('expect close the sidenav', async () => {
 			const position = await mainContent.mainContent().boundingBox();
 			await expect(position?.x).toEqual(0);
-			await expect(sideNav.sideNavBar()).not.toHaveAttribute('data-qa-opened', 'false');
+			await expect(await sideNav.isSideBarOpen()).toBeFalsy;
 		});
 
 		test.describe('moving elements:', async () => {
 			test.beforeEach(async () => {
-				const isDataQaOpened = (await sideNav.sideNavBar().getAttribute('data-qa-opened')) === 'true';
-
-				if (!isDataQaOpened) {
+				if (!(await sideNav.isSideBarOpen())) {
 					await sideNav.burgerBtn().click({ force: true });
 				}
 			});
@@ -56,7 +54,7 @@ test.describe('[Resolution]', function () {
 			test('expect open the sidenav', async () => {
 				const position = await mainContent.mainContent().boundingBox();
 				await expect(position?.x).toEqual(0);
-				await expect(sideNav.sideNavBar()).not.toHaveAttribute('data-qa-opened', 'true');
+				await expect(await sideNav.isSideBarOpen()).toBeTruthy;
 			});
 
 			test('expect not close sidebar on pressing the sidebar item menu', async () => {
@@ -65,41 +63,46 @@ test.describe('[Resolution]', function () {
 				const position = await mainContent.mainContent().boundingBox();
 				await expect(position?.x).toEqual(0);
 
-				await expect(sideNav.sideNavBar()).not.toHaveAttribute('data-qa-opened', 'true');
+				await expect(await sideNav.isSideBarOpen()).toBeTruthy;
+
+				await sideNav.firstSidebarItemMenu().click();
 			});
 
 			test('expect close the sidenav when open general channel', async () => {
 				await sideNav.openChannel('general');
-				await expect(sideNav.sideNavBar()).not.toHaveAttribute('data-qa-opened', 'false');
+				await expect(await sideNav.isSideBarOpen()).toBeFalsy;
 			});
 
-			// Skipped because it's not closing sidebar after opening an item
 			test.describe('Preferences', async () => {
-				// test.beforeEach(async () => {
-				// 	const isDataQaOpened = (await sideNav.sideNavBar().getAttribute('data-qa-opened')) === 'true';
-				//
-				// 	if (!isDataQaOpened) {
-				// 		await sideNav.burgerBtn().click({ force: true });
-				// 	}
-				// });
+				test.beforeAll(async () => {
+					if (!(await sideNav.isSideBarOpen())) {
+						await sideNav.burgerBtn().click({ force: true });
+					}
 
-				test.skip('expect open the user preferences screen', async () => {
 					await sideNav.sidebarUserMenu().click();
 					await sideNav.account().click();
 				});
 
-				test.skip('expect close the sidenav when press the preferences link', async () => {
+				test.afterEach(async () => {
+					await sideNav.returnToMenuInLowResolution().click();
+				});
+
+				test('expect close the sidenav when press the preferences link', async () => {
 					await sideNav.preferences().click();
-					await expect(sideNav.sideNavBar()).not.toHaveAttribute('data-qa-opened', 'true');
+					await sideNav.getPage().mouse.click(640, 30);
+					await expect(await sideNav.isSideBarOpen()).toBeTruthy;
 				});
 
-				test.skip('expect close the sidenav when press the profile link', async () => {
+				test('expect close the sidenav when press the profile link', async () => {
 					await sideNav.profile().click();
-					await expect(sideNav.sideNavBar()).not.toHaveAttribute('data-qa-opened', 'true');
+					await sideNav.getPage().mouse.click(640, 30);
+					await expect(await sideNav.isSideBarOpen()).toBeTruthy;
 				});
 
-				test.skip('expect close the preferences nav', async () => {
+				test('expect close the preferences nav', async () => {
 					await sideNav.preferencesClose().click();
+					await sideNav.getPage().mouse.click(640, 30);
+					await expect(await sideNav.isSideBarOpen()).toBeFalsy;
 				});
 			});
 		});
