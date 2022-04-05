@@ -8,6 +8,6 @@ export interface ILivechatCustomField extends IRocketChatRecord {
 	regexp?: string;
 	required?: boolean;
 	defaultValue?: string;
-	options?: string;
+	options?: string[];
 	public?: boolean;
 }
