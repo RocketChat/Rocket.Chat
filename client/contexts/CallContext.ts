@@ -28,7 +28,7 @@ type CallContextReady = {
 	openWrapUpModal: () => void;
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
-	closeRoom: (data: { comment?: string; tags?: string[] }) => void;
+	closeRoom: (data?: { comment?: string; tags?: string[] }) => void;
 };
 type CallContextError = {
 	enabled: true;

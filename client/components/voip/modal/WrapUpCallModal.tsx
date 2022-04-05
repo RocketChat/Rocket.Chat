@@ -37,9 +37,11 @@ export const WrapUpCallModal = (): ReactElement => {
 	};
 
 	const onCancel = (): void => {
-		closeRoom({});
+		closeRoom();
 		closeModal();
 	};
+
+	useEffect(() => closeRoom, [closeRoom]);
 
 	return (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
