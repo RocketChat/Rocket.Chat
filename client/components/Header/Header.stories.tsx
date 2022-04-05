@@ -78,7 +78,7 @@ const room: IRoom = {
 
 export const ChatHeader = () => {
 	const icon = useRoomIcon(room);
-	const avatar = <RoomAvatar room={room} />;
+	const avatar = <RoomAvatar size='x40' room={room} />;
 
 	return (
 		<Header>
@@ -169,7 +169,7 @@ addAction('render-action-example-badge-danger', {
 
 export const WithToolboxContext: ComponentStory<typeof Header> = () => {
 	const icon = useRoomIcon(room);
-	const avatar = <RoomAvatar room={room} />;
+	const avatar = <RoomAvatar size='x40' room={room} />;
 	return (
 		<Header>
 			<Header.Avatar>{avatar}</Header.Avatar>
@@ -196,7 +196,7 @@ export const WithToolboxContext: ComponentStory<typeof Header> = () => {
 
 export const Omnichannel = () => {
 	const icon = useRoomIcon(room);
-	const avatar = <RoomAvatar room={room} />;
+	const avatar = <RoomAvatar size='x40' room={room} />;
 	return (
 		<Header>
 			<Header.Avatar>{avatar}</Header.Avatar>
