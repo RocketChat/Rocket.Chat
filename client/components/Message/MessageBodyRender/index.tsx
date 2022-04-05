@@ -69,7 +69,7 @@ const MessageBodyRender: FC<BodyProps> = ({
 				}
 
 				if (block.type === 'HEADING') {
-					return <Heading value={block.value} key={index} />;
+					return <Heading value={block.value} level={block.level} key={index} />;
 				}
 
 				return null;
