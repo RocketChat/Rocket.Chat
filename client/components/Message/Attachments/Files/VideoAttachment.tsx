@@ -18,8 +18,8 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 	title_link_download: hasDownload,
 }) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
-	// useTranslation();
 	const getURL = useMediaUrl();
+
 	return (
 		<Attachment>
 			<Attachment.Row>
@@ -30,7 +30,7 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 			</Attachment.Row>
 			{!collapsed && (
 				<Attachment.Content width='full'>
-					<Box is='video' width='full' controls>
+					<Box is='video' width='full' controls preload='metadata'>
 						<source src={getURL(url)} type={type} />
 					</Box>
 					{description && (
