@@ -2,8 +2,9 @@ import { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
 	outputDir: 'tests/e2e/test-failures',
-	reporter: [['github']],
-	workers: 2,
+	reporter: [['list']],
+	workers: 1,
+	globalSetup: './tests/e2e/globalSetup',
 	use: {
 		baseURL: process.env.CYPRESS_BASE_URL || 'http://localhost:3000',
 		headless: true,

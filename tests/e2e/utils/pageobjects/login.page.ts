@@ -124,7 +124,7 @@ class LoginPage extends BasePage {
 		await expect(this.passwordInvalidText()).toBeVisible();
 	}
 
-	public async registerFailWithDifentPassword({ name, email, password }: IRegister, invalidPassword: string): Promise<void> {
+	public async registerFailWithDifferentPassword({ name, email, password }: IRegister, invalidPassword: string): Promise<void> {
 		await this.gotToRegister();
 		await this.passwordField().type(password);
 		await this.emailField().type(email);

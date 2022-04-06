@@ -8,7 +8,7 @@ import FlexTab from './utils/pageobjects/flex-tab.page';
 import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';
 import { Checkbox } from './utils/enums/Checkbox';
 
-test.describe.parallel('[Administration]', () => {
+test.describe('[Administration]', () => {
 	let loginPage: LoginPage;
 	let sideNav: SideNav;
 	let admin: Administration;
@@ -231,7 +231,7 @@ test.describe.parallel('[Administration]', () => {
 					await expect(admin.generalLanguage()).toBeVisible();
 				});
 
-				test('expect aloow invalid self-signed certs reset button is showed', async () => {
+				test('expect allow invalid self-signed certs reset button is showed', async () => {
 					await admin.generalSelfSignedCerts().click();
 					await expect(admin.generalSelfSignedCertsReset()).toBeVisible();
 					await admin.generalSelfSignedCerts().click();

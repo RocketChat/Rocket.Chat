@@ -15,26 +15,6 @@ test.describe.serial('[Wizard]', () => {
 		await setupWizard.goto(baseURL as string);
 		await loginPage.login(adminLogin);
 	});
-	// test.describe('[Step 1]', () => {
-	// 	test.beforeEach(async ({ baseURL }) => {
-	// 		const baseUrl = baseURL || LOCALHOST;
-	// 		await setupWizard.goto(baseUrl);
-	// 	});
-
-	// 	test('expect required field alert showed when user dont inform data', async () => {
-	// 		await setupWizard.stepOneFailedBlankFields();
-	// 	});
-
-	// 	test('expect alert showed when email provided is invalid', async () => {
-	// 		await setupWizard.stepOneFailedWithInvalidEmail(adminRegister);
-	// 	});
-
-	// 	test('expect go to Step 2 successfully', async () => {
-	// 		await setupWizard.stepOneSucess(adminRegister);
-
-	// 		await expect(setupWizard.getPage()).toHaveURL(setupWizardStepRegex._2);
-	// 	});
-	// });
 
 	test.describe('[Step 2]', async () => {
 		test('expect required field alert showed when user dont inform data', async () => {
@@ -42,14 +22,14 @@ test.describe.serial('[Wizard]', () => {
 		});
 
 		test('expect go to Step 3 successfully', async () => {
-			await setupWizard.stepTwoSucess();
+			await setupWizard.stepTwoSuccess();
 			await expect(setupWizard.getPage()).toHaveURL(setupWizardStepRegex._3);
 		});
 	});
 
 	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.stepTwoSucess();
+			await setupWizard.stepTwoSuccess();
 		});
 
 		test('expect have email field to register the server', async () => {
@@ -77,8 +57,8 @@ test.describe.serial('[Wizard]', () => {
 
 	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
-			await setupWizard.stepTwoSucess();
-			await setupWizard.stepThreeSucess();
+			await setupWizard.stepTwoSuccess();
+			await setupWizard.stepThreeSuccess();
 		});
 
 		test('expect confirm the standalone option', async () => {

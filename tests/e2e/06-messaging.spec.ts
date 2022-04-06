@@ -14,13 +14,14 @@ test.describe('[Messaging]', () => {
 	// let flexTab: FlexTab;
 
 	const message = 'any_message';
-	test.beforeAll(async ({ browser }) => {
+	test.beforeAll(async ({ browser, baseURL }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
 		loginPage = new LoginPage(page);
 		// mainContent = new MainContent(page);
 		// sideNav = new SideNav(page);
 		// flexTab = new FlexTab(page);
+		await loginPage.goto(baseURL as string);
 		await loginPage.login(adminLogin);
 	});
 	test('1 to be 1', () => {

@@ -18,7 +18,7 @@ export const adminLogin: ILogin = {
 export const registerUser: IRegister = {
 	email: `any_user@email.com`,
 	password: 'any_password',
-	name: `any_name${v4()}`,
+	name: 'any_name',
 };
 
 export const validUser: ILogin = {
@@ -29,6 +29,11 @@ export const validUser: ILogin = {
 export const incorrectUser: ILogin = {
 	email: `${v4()}@email.com`,
 	password: 'any_password',
+};
+
+export const normalUser: ILogin = {
+	email: 'normal_user@rocket.chat',
+	password: 'normal_user',
 };
 
 export const VALID_EMAIL = 'email@email.com';

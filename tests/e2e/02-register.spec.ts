@@ -18,7 +18,7 @@ test.describe('[Register]', () => {
 	});
 
 	test('expect user click in register button with different password', async () => {
-		await loginPage.registerFailWithDifentPassword(registerUser, WRONG_PASSWORD);
+		await loginPage.registerFailWithDifferentPassword(registerUser, WRONG_PASSWORD);
 	});
 
 	test('expect new user is created', async () => {
