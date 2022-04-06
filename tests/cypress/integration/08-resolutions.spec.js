@@ -37,7 +37,10 @@ describe('[Resolution]', () => {
 							sideNav.burgerBtn.click({ force: true });
 						}
 					});
-				cy.wait(1000);
+
+				cy.waitUntil(() => {
+					return browser.element('.menu-opened').then((el) => el.length);
+				});
 			});
 
 			it('it should open the sidenav', () => {
