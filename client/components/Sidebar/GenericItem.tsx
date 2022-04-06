@@ -28,7 +28,7 @@ const GenericItem = ({ href, active, children, customColors, textColor = 'defaul
 				${customColors ? `background-color: ${customColors.default} !important;` : ''}
 				&:hover,
 				&:focus,
-				&.active:focus,
+				
 				&.active:hover {
 					background-color: ${customColors?.hover || 'var(--sidebar-background-light-hover)'} !important;
 				}
