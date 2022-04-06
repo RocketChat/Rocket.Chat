@@ -325,5 +325,8 @@ export class ListenersModule {
 		service.onEvent('notify.updateCustomSound', (data): void => {
 			notifications.notifyAllInThisInstance('updateCustomSound', data);
 		});
+		service.onEvent('agent.voipextensionstatechange', (userId, extension: string, state: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'voipextensionstatechange', { userId, extension, state });
+		});
 	}
 }

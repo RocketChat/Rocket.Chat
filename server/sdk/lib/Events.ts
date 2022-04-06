@@ -127,5 +127,6 @@ export type EventSignatures = {
 	'queue.queuememberadded'(userid: string, queuename: string, queuedcalls: string): void;
 	'queue.queuememberremoved'(userid: string, queuename: string, queuedcalls: string): void;
 	'queue.callabandoned'(userid: string, queuename: string, queuedcallafterabandon: string): void;
+	'agent.voipextensionstatechange'(userid: string, extension: string, state: string): void;
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 };
