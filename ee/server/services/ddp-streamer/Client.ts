@@ -93,6 +93,11 @@ export class Client extends EventEmitter {
 			clearTimeout(this.timeout);
 		});
 
+		this.ws.on('error', (err) => {
+			console.error('Unexpected error:', err);
+			this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
+		});
+
 		this.setMaxListeners(50);
 
 		this.greeting();
@@ -184,9 +189,9 @@ export class Client extends EventEmitter {
 		this.timeout = setTimeout(this.handleIdle, timeout);
 	}
 
-	handler = async (payload: string): Promise<void> => {
+	handler = async (payload: WebSocket.Data, isBinary: boolean): Promise<void> => {
 		try {
-			const packet = server.parse(payload);
+			const packet = server.parse(payload, isBinary);
 			this.emit('message', packet);
 			if (this.wait) {
 				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));

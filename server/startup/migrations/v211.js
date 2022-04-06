@@ -1,6 +1,6 @@
 import { addMigration } from '../../lib/migrations';
 import { Sessions } from '../../../app/models/server/raw';
-import { getMostImportantRole } from '../../../app/statistics/server/lib/getMostImportantRole';
+import { getMostImportantRole } from '../../../lib/roles/getMostImportantRole';
 
 async function migrateSessions() {
 	const cursor = Sessions.col.aggregate([

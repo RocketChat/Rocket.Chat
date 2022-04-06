@@ -11,6 +11,10 @@ export class UsersRaw extends BaseRaw {
 		};
 	}
 
+	/**
+	 * @param {string} uid
+	 * @param {IRole['_id'][]} roles list of role ids
+	 */
 	addRolesByUserId(uid, roles) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
@@ -29,6 +33,11 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
+	/**
+	 * @param {IRole['_id'][]} roles list of role ids
+	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
+	 * @param {any} options
+	 */
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -54,6 +63,11 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	/**
+	 * @param {IRole['_id'][] | IRole['_id']} roles the list of role ids
+	 * @param {any} query
+	 * @param {any} options
+	 */
 	findUsersInRolesWithQuery(roles, query, options) {
 		roles = [].concat(roles);
 
@@ -190,10 +204,10 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	isUserInRole(userId, roleName) {
+	isUserInRole(userId, roleId) {
 		const query = {
 			_id: userId,
-			roles: roleName,
+			roles: roleId,
 		};
 
 		return this.findOne(query, { projection: { roles: 1 } });
@@ -866,6 +880,10 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	/**
+	 * @param {string} uid
+	 * @param {IRole['_id']} roles the list of role ids to remove
+	 */
 	removeRolesByUserId(uid, roles) {
 		const query = {
 			_id: uid,
@@ -908,5 +926,81 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	// Voip functions
+	findOneByAgentUsername(username, options) {
+		const query = { username, roles: 'livechat-agent' };
+
+		return this.findOne(query, options);
+	}
+
+	findOneByExtension(extension, options) {
+		const query = {
+			extension,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByExtensions(extensions, options) {
+		const query = {
+			extension: {
+				$in: extensions,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	getVoipExtensionByUserId(userId, options) {
+		const query = {
+			_id: userId,
+			extension: { $exists: true },
+		};
+		return this.findOne(query, options);
+	}
+
+	setExtension(userId, extension) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				extension,
+			},
+		};
+		return this.update(query, update);
+	}
+
+	unsetExtension(userId) {
+		const query = {
+			_id: userId,
+		};
+		const update = {
+			$unset: {
+				extension: true,
+			},
+		};
+		return this.update(query, update);
+	}
+
+	getAvailableAgentsIncludingExt(includeExt, text, options) {
+		const query = {
+			roles: { $in: ['livechat-agent', 'livechat-manager', 'livechat-monitor'] },
+			$and: [
+				{ $or: [...(includeExt ? [{ extension: includeExt }] : []), { extension: { $exists: false } }] },
+				...(text && text.trim()
+					? [
+							{
+								$or: [{ username: escapeRegExp(text) }, { name: escapeRegExp(text) }],
+							},
+					  ]
+					: []),
+			],
+		};
+
+		return this.find(query, options);
 	}
 }

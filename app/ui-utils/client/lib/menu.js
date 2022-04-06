@@ -1,6 +1,5 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { isRtl } from '../../../utils';
@@ -12,104 +11,12 @@ export const menu = new (class extends Emitter {
 	constructor() {
 		super();
 		this._open = false;
-		this.updateUnreadBars = _.throttle(() => {
-			if (this.list == null) {
-				return;
-			}
-			const listOffset = this.list.offset();
-			const listHeight = this.list.height();
-			let showTop = false;
-			let showBottom = false;
-			$('li.sidebar-item--unread').each(function () {
-				if ($(this).offset().top < listOffset.top - $(this).height()) {
-					showTop = true;
-				}
-				if ($(this).offset().top > listOffset.top + listHeight) {
-					showBottom = true;
-				}
-			});
-			if (showTop === true) {
-				$('.top-unread-rooms').removeClass('hidden');
-			} else {
-				$('.top-unread-rooms').addClass('hidden');
-			}
-			if (showBottom === true) {
-				return $('.bottom-unread-rooms').removeClass('hidden');
-			}
-			return $('.bottom-unread-rooms').addClass('hidden');
-		}, 200);
+
 		this.sideNavW = sideNavW;
 	}
 
 	get isRtl() {
 		return isRtl(Meteor._localStorage.getItem('userLanguage'));
-	}
-
-	touchstart(e) {
-		this.movestarted = false;
-		this.blockmove = false;
-		this.touchstartX = undefined;
-		this.touchstartY = undefined;
-		this.diff = 0;
-		if (e.target === this.sidebarWrap[0] || $(e.target).closest('.main-content').length > 0) {
-			this.closePopover();
-			this.touchstartX = e.touches[0].clientX;
-			this.touchstartY = e.touches[0].clientY;
-			this.mainContent = $('.main-content');
-		}
-	}
-
-	touchmove(e) {
-		if (this.touchstartX == null) {
-			return;
-		}
-		const [touch] = e.touches;
-		const diffX = touch.clientX - this.touchstartX;
-		const diffY = touch.clientY - this.touchstartY;
-		const absX = Math.abs(diffX);
-		const absY = Math.abs(diffY);
-
-		if (!this.movestarted && absY > 5) {
-			this.blockmove = true;
-		}
-		if (this.blockmove) {
-			return;
-		}
-		this.sidebar.css('transition', 'none');
-		this.sidebarWrap.css('transition', 'none');
-		if (this.movestarted === true || absX > 5) {
-			this.movestarted = true;
-			if (this.isRtl) {
-				if (this.isOpen()) {
-					this.diff = -sideNavW + diffX;
-				} else {
-					this.diff = diffX;
-				}
-				if (this.diff < -sideNavW) {
-					this.diff = -sideNavW;
-				}
-				if (this.diff > 0) {
-					this.diff = 0;
-				}
-			} else {
-				if (this.isOpen()) {
-					this.diff = sideNavW + diffX;
-				} else {
-					this.diff = diffX;
-				}
-				if (this.diff > sideNavW) {
-					this.diff = sideNavW;
-				}
-				if (this.diff < 0) {
-					this.diff = 0;
-				}
-			}
-			// if (map((this.diff / sideNavW), 0, 1, -.1, .8) > 0) {
-			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
-			// this.sidebarWrap.css('z-index', '9998');
-			this.translate(this.diff);
-			// }
-		}
 	}
 
 	translate(diff, width = sideNavW) {
@@ -125,33 +32,6 @@ export const menu = new (class extends Emitter {
 			: this.sidebar.css('transform', `translate3d(${(diff - sideNavW).toFixed(3)}px, 0 , 0)`);
 	}
 
-	touchend() {
-		const [max, min] = [sideNavW * 0.76, sideNavW * 0.24];
-		if (this.movestarted !== true) {
-			return;
-		}
-		this.movestarted = false;
-		if (this.isRtl) {
-			if (this.isOpen()) {
-				return this.diff >= -max ? this.close() : this.open();
-			}
-			if (this.diff <= -min) {
-				return this.open();
-			}
-			return this.close();
-		}
-		if (this.isOpen()) {
-			if (this.diff >= max) {
-				return this.open();
-			}
-			return this.close();
-		}
-		if (this.diff >= min) {
-			return this.open();
-		}
-		return this.close();
-	}
-
 	init() {
 		this.menu = $('.sidebar');
 		this.sidebar = this.menu;
@@ -159,18 +39,6 @@ export const menu = new (class extends Emitter {
 		this.wrapper = $('.messages-box > .wrapper');
 		const ignore = (fn) => (event) => document.body.clientWidth <= 780 && fn(event);
 
-		document.body.addEventListener(
-			'touchstart',
-			ignore((e) => this.touchstart(e)),
-		);
-		document.body.addEventListener(
-			'touchmove',
-			ignore((e) => this.touchmove(e)),
-		);
-		document.body.addEventListener(
-			'touchend',
-			ignore((e) => this.touchend(e)),
-		);
 		this.sidebarWrap.on(
 			'click',
 			ignore((e) => {
@@ -213,12 +81,14 @@ export const menu = new (class extends Emitter {
 	open() {
 		this._open = true;
 		Session.set('isMenuOpen', this._open);
+		this.emit('change');
 		this.emit('open');
 	}
 
 	close() {
 		this._open = false;
 		Session.set('isMenuOpen', this._open);
+		this.emit('change');
 		this.emit('close');
 	}
 

@@ -3,6 +3,11 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server/raw';
 
+/**
+ * @param {IRole['_id']} role the role id
+ * @param {string} text
+ * @param {any} pagination
+ */
 async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 	const query = {};
 	if (text) {

@@ -6,10 +6,15 @@ import { Template } from 'meteor/templating';
 
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
-import { roomTypes, getUserPreference } from '../../utils';
+import { getUserPreference } from '../../utils';
 import { Users } from '../../models';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Template.sideNav.helpers({
+	dataQa() {
+		return Template.instance().menuState.get() === 'opened';
+	},
+
 	flexTemplate() {
 		return SideNav.getFlex().template;
 	},
@@ -19,13 +24,12 @@ Template.sideNav.helpers({
 	},
 
 	roomType() {
-		return roomTypes.getTypes().map((roomType) => ({
-			template: roomType.customTemplate || 'roomList',
+		return roomCoordinator.getSortedTypes().map(({ config }) => ({
+			template: config.customTemplate || 'roomList',
 			data: {
-				header: roomType.header,
-				identifier: roomType.identifier,
-				isCombined: roomType.isCombined,
-				label: roomType.label,
+				header: config.header,
+				identifier: config.identifier,
+				label: config.label,
 			},
 		}));
 	},
@@ -47,14 +51,6 @@ Template.sideNav.helpers({
 Template.sideNav.events({
 	'click .close-flex'() {
 		return SideNav.closeFlex();
-	},
-
-	'click .arrow'() {
-		return SideNav.toggleCurrent();
-	},
-
-	'scroll .rooms-list'() {
-		return menu.updateUnreadBars();
 	},
 
 	'dropped .sidebar'(e) {
@@ -89,7 +85,7 @@ const redirectToDefaultChannelIfNeeded = () => {
 			return c.stop();
 		}
 
-		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+		const room = roomCoordinator.getRoomDirectives('c')?.findRoom(firstChannelAfterLogin);
 
 		if (!room) {
 			return;
@@ -103,13 +99,20 @@ const redirectToDefaultChannelIfNeeded = () => {
 Template.sideNav.onRendered(function () {
 	SideNav.init();
 	menu.init();
-	redirectToDefaultChannelIfNeeded();
 
-	return Meteor.defer(() => menu.updateUnreadBars());
+	this.stopMenuListener = menu.on('change', () => {
+		this.menuState.set(menu.isOpen() ? 'opened' : 'closed');
+	});
+	redirectToDefaultChannelIfNeeded();
 });
 
+Template.sideNav.onDestroyed(function () {
+	this.stopMenuListener();
+});
 Template.sideNav.onCreated(function () {
 	this.groupedByType = new ReactiveVar(false);
+
+	this.menuState = new ReactiveVar(menu.isOpen() ? 'opened' : 'closed');
 
 	this.autorun(() => {
 		const user = Users.findOne(Meteor.userId(), {

@@ -49,7 +49,9 @@
 					{{#if isBot}}
 						<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
 					{{/if}}
+					{{#unless system}}
 					<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
+					{{/unless}}
 					{{#if showTranslated}}
 						<span class="translated">
 							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" title="{{_ "Translated"}}"></i>
@@ -104,13 +106,22 @@
 						{{# if enableMessageParserEarlyAdoption }}
 							{{> MessageBody tokens=msg.md mentions=msg.mentions }}
 						{{else}}
-							{{{body}}}
+							{{# if isDecrypting}}
+								{{_ "E2E_message_encrypted_placeholder"}}
+							{{else}}
+								{{{body}}}
+							{{/if}}
 						{{/if}}
 					{{/if}}
 					{{#if msg.location}}
 						{{> messageLocation location=msg.location}}
 					{{/if}}
 				</div>
+				{{#if system}}
+					<div class='title border-component-color color-info-font-color'>
+						<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
+					</div>
+				{{/if}}
 			</div>
 
 			{{#if hasOembed}}
@@ -141,7 +152,7 @@
 							</button>
 						{{/each}}
 					</div>
-					<div class="message-actions__menu" aria-haspopup="true">
+					<div class="message-actions__menu" aria-haspopup="true" title="{{_ "More_options"}}">
 						{{> icon block="message-actions__menu-icon" icon="menu"}}
 					</div>
 				</div>

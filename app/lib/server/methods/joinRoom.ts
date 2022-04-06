@@ -5,7 +5,8 @@ import { hasPermission, canAccessRoom } from '../../../authorization/server';
 import { Rooms } from '../../../models/server';
 import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';
 import { addUserToRoom } from '../functions';
-import { roomTypes, RoomMemberActions } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 Meteor.methods({
 	joinRoom(rid, code) {
@@ -23,7 +24,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
 		}
 
-		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.JOIN)) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.JOIN)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 

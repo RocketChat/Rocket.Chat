@@ -8,9 +8,9 @@ import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { Rooms } from '../../models/client';
-import { roomTypes } from '../../utils/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Meteor.startup(function () {
 	MessageAction.addButton({
@@ -31,7 +31,7 @@ Meteor.startup(function () {
 			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
 				return false;
 			}
-			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}

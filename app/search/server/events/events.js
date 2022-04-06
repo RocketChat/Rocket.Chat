@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { searchProviderService } from '../service/providerService';
@@ -32,16 +30,12 @@ function afterDeleteMessage(m) {
 	searchEventService.promoteEvent('message.delete', m._id);
 	return m;
 }
-
-settings.get(
-	'Search.Provider',
-	_.debounce(() => {
-		if (searchProviderService.activeProvider?.on) {
-			callbacks.add('afterSaveMessage', afterSaveMessage, callbacks.priority.MEDIUM, 'search-events');
-			callbacks.add('afterDeleteMessage', afterDeleteMessage, callbacks.priority.MEDIUM, 'search-events-delete');
-		} else {
-			callbacks.remove('afterSaveMessage', 'search-events');
-			callbacks.remove('afterDeleteMessage', 'search-events-delete');
-		}
-	}, 1000),
-);
+settings.watch('Search.Provider', () => {
+	if (searchProviderService.activeProvider?.on) {
+		callbacks.add('afterSaveMessage', afterSaveMessage, callbacks.priority.MEDIUM, 'search-events');
+		callbacks.add('afterDeleteMessage', afterDeleteMessage, callbacks.priority.MEDIUM, 'search-events-delete');
+	} else {
+		callbacks.remove('afterSaveMessage', 'search-events');
+		callbacks.remove('afterDeleteMessage', 'search-events-delete');
+	}
+});

@@ -29,17 +29,26 @@ export class Base {
 		return this.find(query, { fields: { roles: 1 } });
 	}
 
-	isUserInRole(userId, roleName, scope) {
+	/**
+	 * @param {string} userId
+	 * @param {IRole['_id']} roleId
+	 * @param {string} scope the value for the role scope (room id)
+	 */
+	isUserInRole(userId, roleId, scope) {
 		const query = this.roleBaseQuery(userId, scope);
 
 		if (query == null) {
 			return false;
 		}
 
-		query.roles = roleName;
+		query.roles = roleId;
 		return !_.isUndefined(this.findOne(query, { fields: { roles: 1 } }));
 	}
 
+	/**
+	 * @param {string} uid
+	 * @param {string} scope the value for the role scope (room id)
+	 */
 	isUserInRoleScope(uid, scope) {
 		const query = this.roleBaseQuery(uid, scope);
 		if (!query) {
@@ -54,6 +63,11 @@ export class Base {
 		return !!found;
 	}
 
+	/**
+	 * @param {string} userId
+	 * @param {IRole['_id'][]} roles the list of role ids
+	 * @param {string} scope the value for the role scope (room id)
+	 */
 	addRolesByUserId(userId, roles, scope) {
 		roles = [].concat(roles);
 		const query = this.roleBaseQuery(userId, scope);
@@ -65,6 +79,11 @@ export class Base {
 		return this.update(query, update);
 	}
 
+	/**
+	 * @param {string} userId
+	 * @param {IRole['_id'][]} roles the list of role ids
+	 * @param {string} scope the value for the role scope (room id)
+	 */
 	removeRolesByUserId(userId, roles, scope) {
 		roles = [].concat(roles);
 		const query = this.roleBaseQuery(userId, scope);

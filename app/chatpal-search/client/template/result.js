@@ -2,11 +2,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { roomTypes, getURL } from '../../../utils';
+import { getURL } from '../../../utils';
 import { Subscriptions } from '../../../models';
 import { getUserAvatarURL as getAvatarUrl } from '../../../utils/lib/getUserAvatarURL';
 import { formatTime } from '../../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../../client/lib/utils/formatDate';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 const getDMUrl = (username) => getURL(`/direct/${username}`);
 
@@ -101,15 +102,15 @@ Template.ChatpalSearchSingleMessage.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(room);
+		return roomCoordinator.getIcon(room);
 	},
 
 	roomLink() {
-		return roomTypes.getRouteLink(this.r.t, this.r);
+		return roomCoordinator.getRouteLink(this.r.t, this.r);
 	},
 
 	roomName() {
-		return roomTypes.getRoomName(this.r.t, this.r);
+		return roomCoordinator.getRoomName(this.r.t, this.r);
 	},
 
 	roomNotSubscribed() {
@@ -131,10 +132,10 @@ Template.ChatpalSearchSingleRoom.helpers({
 		if (this.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(this);
+		return roomCoordinator.getIcon(this);
 	},
 	roomLink() {
-		return roomTypes.getRouteLink(this.t, this);
+		return roomCoordinator.getRouteLink(this.t, this);
 	},
 	roomNotSubscribed() {
 		const subscription = Subscriptions.findOne({ rid: this.rid });

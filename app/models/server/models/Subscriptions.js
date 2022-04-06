@@ -108,6 +108,10 @@ export class Subscriptions extends Base {
 		return this.distinct('autoTranslateLanguage', query);
 	}
 
+	/**
+	 * @param {string} userId
+	 * @param {string} scope the value for the role scope (room id)
+	 */
 	roleBaseQuery(userId, scope) {
 		if (scope == null) {
 			return;
@@ -329,6 +333,11 @@ export class Subscriptions extends Base {
 		return this.findOne({ _id });
 	}
 
+	/**
+	 * @param {IRole['_id'][]} roles
+	 * @param {string} scope the value for the role scope (room id)
+	 * @param {any} options
+	 */
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -428,6 +437,11 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
+	/**
+	 * @param {IUser['_id']} userId
+	 * @param {IRole['_id'][]} roles
+	 * @param {any} options
+	 */
 	findByUserIdAndRoles(userId, roles, options) {
 		const query = {
 			'u._id': userId,
@@ -448,7 +462,12 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	findByRoomIdAndRoles(roomId, roles, options) {
+	/**
+	 * @param {string} roomId
+	 * @param {IRole['_id'][]} roles the list of roles
+	 * @param {any} options
+	 */
+	findByRoomIdAndRoles(roomId, roles, options = undefined) {
 		roles = [].concat(roles);
 		const query = {
 			rid: roomId,
@@ -556,9 +575,6 @@ export class Subscriptions extends Base {
 		return this.db.findOne(
 			{
 				rid,
-				ls: {
-					$exists: true,
-				},
 			},
 			{
 				sort: {
@@ -1028,6 +1044,10 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	/**
+	 * @param {string} _id the subscription id
+	 * @param {IRole['_id']} role the id of the role
+	 */
 	addRoleById(_id, role) {
 		const query = { _id };
 
@@ -1040,6 +1060,10 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
+	/**
+	 * @param {string} _id the subscription id
+	 * @param {IRole['_id']} role the id of the role
+	 */
 	removeRoleById(_id, role) {
 		const query = { _id };
 

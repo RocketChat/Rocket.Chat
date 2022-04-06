@@ -1,4 +1,5 @@
 import Page from './Page';
+import flexTab from './flex-tab.page';
 
 class MainContent extends Page {
 	get mainContent() {
@@ -7,15 +8,15 @@ class MainContent extends Page {
 
 	// Main Content Header (Channel Title Area)
 	get emptyFavoriteStar() {
-		return browser.element('.js-favorite .rc-header__icon--star');
+		return browser.element('.rcx-room-header .rcx-icon--name-star');
 	}
 
 	get favoriteStar() {
-		return browser.element('.js-favorite .rc-header__icon--star-filled');
+		return browser.element('.rcx-room-header .rcx-icon--name-star-filled');
 	}
 
 	get channelTitle() {
-		return browser.element('.rc-header__name');
+		return browser.element('.rcx-room-header');
 	}
 
 	// Main Content Footer (Message Input Area)
@@ -247,6 +248,7 @@ class MainContent extends Page {
 
 	// Clear and sets the text to the input
 	setTextToInput(text) {
+		cy.wait(200);
 		this.messageInput.clear(text);
 		if (text) {
 			this.messageInput.type(text);
@@ -264,7 +266,7 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageQuoteEqualsText(text) {
-		cy.get('.message:last-child .attachment-text').should('contain', text);
+		cy.get('.message:last-child .rcx-attachment__details').should('contain', text);
 	}
 
 	waitForLastMessageEqualsHtml(text) {
@@ -272,7 +274,7 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
-		return cy.get('.message:last-child .attachment-text').should('contain', text);
+		return cy.get('.message:last-child .rcx-attachment__details .rcx-box--with-inline-elements').should('contain', text);
 	}
 
 	// Wait for the last message author username to equal the provided text
@@ -305,12 +307,12 @@ class MainContent extends Page {
 	selectAction(action) {
 		switch (action) {
 			case 'edit':
-				this.messageEdit.click();
+				this.messageEdit.click().wait(100);
 				this.messageInput.type('this message was edited');
 				break;
 			case 'reply':
-				this.messageReply.click();
-				this.messageInput.type(' this is a reply message');
+				this.messageReply.click().wait(100);
+				flexTab.messageInput.type('this is a reply message');
 				break;
 			case 'delete':
 				this.messageDelete.click();
@@ -322,8 +324,8 @@ class MainContent extends Page {
 				this.messageCopy.click();
 				break;
 			case 'quote':
-				this.messageQuote.click();
-				this.messageInput.type(' this is a quote message');
+				this.messageQuote.click().wait(100);
+				this.messageInput.type('this is a quote message');
 				break;
 			case 'star':
 				this.messageStar.click();
@@ -343,4 +345,4 @@ class MainContent extends Page {
 	}
 }
 
-module.exports = new MainContent();
+export default new MainContent();

@@ -58,6 +58,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
+		this.tryEnsureIndex({ extension: 1 }, { sparse: true, unique: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 
 		const collectionObj = this.model.rawCollection();
@@ -637,6 +638,11 @@ export class Users extends Base {
 		);
 	}
 
+	/**
+	 * @param {IRole['_id'][]} roles the list of role ids
+	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
+	 * @param {any} options
+	 */
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -647,7 +653,11 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findActiveUsersInRoles(roles, scope, options) {
+	/**
+	 * @param {IRole['_id'][]} roles the list of role ids
+	 * @param {any} options
+	 */
+	findActiveUsersInRoles(roles, options = undefined) {
 		roles = [].concat(roles);
 
 		const query = {
@@ -763,6 +773,12 @@ export class Users extends Base {
 				},
 			],
 		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByRolesAndType(roles, type, options) {
+		const query = { roles, type };
 
 		return this.findOne(query, options);
 	}
@@ -1303,6 +1319,11 @@ export class Users extends Base {
 		return this.update({}, update, { multi: true });
 	}
 
+	/**
+	 * @param latestLastLoginDate
+	 * @param {IRole['_id']} role the role id
+	 * @param {boolean} active
+	 */
 	setActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', active = false) {
 		const neverActive = { lastLogin: { $exists: 0 }, createdAt: { $lte: latestLastLoginDate } };
 		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };

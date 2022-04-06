@@ -2,7 +2,7 @@ import { FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
 
 import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
+import { IUser, IRole } from '../../../definition/IUser';
 import { ICreateRoomParams } from './IRoomService';
 
 export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
@@ -18,19 +18,20 @@ export interface ITeamCreateParams {
 
 export interface ITeamMemberParams {
 	userId: string;
-	roles?: Array<string> | null;
+	roles?: Array<IRole['_id']> | null;
 }
 
 export interface IUserInfo {
 	_id: string;
-	username?: string | null;
+	username?: string;
 	name: string;
 	status: string;
+	settings?: Record<string, any>;
 }
 
 export interface ITeamMemberInfo {
 	user: IUserInfo;
-	roles?: string[] | null;
+	roles?: IRole['_id'][] | null;
 	createdBy: Omit<IUserInfo, 'name' | 'status'>;
 	createdAt: Date;
 }
@@ -86,6 +87,7 @@ export interface ITeamService {
 		options?: IPaginationOptions,
 		queryOptions?: FilterQuery<IUser>,
 	): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
+	addMember(inviter: Pick<IUser, '_id' | 'username'>, userId: string, teamId: string): Promise<boolean>;
 	addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, members: ITeamMemberParams): Promise<void>;
 	removeMember(teamId: string, userId: string): Promise<void>;
@@ -94,7 +96,7 @@ export interface ITeamService {
 	getInfoById(teamId: string): Promise<Partial<ITeam> | null>;
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
-	unsetTeamIdOfRooms(teamId: string): void;
+	unsetTeamIdOfRooms(uid: string, teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getOneById<P>(teamId: string, options?: FindOneOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
@@ -109,5 +111,5 @@ export interface ITeamService {
 	insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeAllMembersFromTeam(teamId: string): Promise<void>;
-	removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
+	removeRolesFromMember(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<boolean>;
 }

@@ -28,8 +28,8 @@ const createPermissionValidator =
 			});
 			const roles = permission?.roles ?? [];
 
-			return roles.some((roleName) => {
-				const role = Models.Roles.findOne(roleName, { fields: { scope: 1 } });
+			return roles.some((roleId) => {
+				const role = Models.Roles.findOne(roleId, { fields: { scope: 1 } });
 				const roleScope = role?.scope;
 
 				if (!isValidScope(roleScope)) {
@@ -37,7 +37,7 @@ const createPermissionValidator =
 				}
 
 				const model = Models[roleScope as keyof typeof Models];
-				return model.isUserInRole && model.isUserInRole(userId, roleName, scope);
+				return model.isUserInRole && model.isUserInRole(userId, roleId, scope);
 			});
 		});
 	};

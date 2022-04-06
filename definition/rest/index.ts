@@ -9,6 +9,7 @@ import type { CloudEndpoints } from './v1/cloud';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DmEndpoints } from './v1/dm';
 import type { DnsEndpoints } from './v1/dns';
+import { E2eEndpoints } from './v1/e2e';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { GroupsEndpoints } from './v1/groups';
 import type { ImEndpoints } from './v1/im';
@@ -25,6 +26,7 @@ import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
+import type { VoipEndpoints } from './v1/voip';
 
 type CommunityEndpoints = BannersEndpoints &
 	ChatEndpoints &
@@ -49,7 +51,9 @@ type CommunityEndpoints = BannersEndpoints &
 	MiscEndpoints &
 	PermissionsEndpoints &
 	InstancesEndpoints &
-	InvitesEndpoints;
+	VoipEndpoints &
+	InvitesEndpoints &
+	E2eEndpoints;
 
 type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
 

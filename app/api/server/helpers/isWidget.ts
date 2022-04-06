@@ -2,7 +2,7 @@ import { parse } from 'cookie';
 
 import { API } from '../api';
 
-(API as any).helperMethods.set('isWidget', function _isWidget() {
+API.helperMethods.set('isWidget', function _isWidget() {
 	// @ts-expect-error
 	const { headers } = this.request;
 
