@@ -25,6 +25,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
+		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
 
 		this.tryEnsureIndex(
 			{
@@ -881,6 +882,10 @@ export class Rooms extends Base {
 		);
 	}
 
+	findByCreatedOTR() {
+		return this.find({ createdOTR: true });
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -1344,15 +1349,6 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	findByE2E(options) {
-		return this.find(
-			{
-				encrypted: true,
-			},
-			options,
-		);
-	}
-
 	updateGroupDMsRemovingUsernamesByUsername(username, userId) {
 		const query = {
 			t: 'd',
@@ -1469,6 +1465,18 @@ export class Rooms extends Base {
 
 	countDiscussions() {
 		return this.find({ prid: { $exists: true } }).count();
+	}
+
+	setOTRForDMByRoomID(rid) {
+		const query = { _id: rid, t: 'd' };
+
+		const update = {
+			$set: {
+				createdOTR: true,
+			},
+		};
+
+		return this.update(query, update);
 	}
 }
 

@@ -29,7 +29,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 			</Attachment.Row>
 			{!collapsed && (
 				<Attachment.Content border='none'>
-					<audio controls>
+					<audio controls preload='metadata'>
 						<source src={getURL(url)} type={type} />
 					</audio>
 				</Attachment.Content>
