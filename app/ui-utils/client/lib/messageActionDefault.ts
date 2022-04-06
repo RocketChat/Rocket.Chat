@@ -12,6 +12,7 @@ import { modal } from './modal';
 import { MessageAction } from './MessageAction';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
+import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { IMessage } from '../../../../definition/IMessage';
@@ -278,6 +279,51 @@ Meteor.startup(async function () {
 			return !!reactions;
 		},
 		order: 18,
+		group: 'menu',
+	});
+
+	MessageAction.addButton({
+		id: 'start-discussion',
+		icon: 'discussion',
+		label: 'Discussion_start',
+		context: ['message', 'message-mobile'],
+		async action(_, props) {
+			const { message = messageArgs(this).msg, room } = props;
+
+			imperativeModal.open({
+				component: CreateDiscussion,
+				props: {
+					defaultParentRoom: room.prid || room._id,
+					onClose: imperativeModal.close,
+					parentMessageId: message._id,
+					nameSuggestion: message?.msg?.substr(0, 140),
+				},
+			});
+		},
+		condition({
+			message: {
+				u: { _id: uid },
+				drid,
+				dcount,
+			},
+			room,
+			subscription,
+			user,
+		}) {
+			if (drid || (!Number.isNaN(dcount) && dcount !== undefined)) {
+				return false;
+			}
+			if (!subscription) {
+				return false;
+			}
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
+
+			return uid !== user._id ? hasPermission('start-discussion-other-user') : hasPermission('start-discussion');
+		},
+		order: 1,
 		group: 'menu',
 	});
 });

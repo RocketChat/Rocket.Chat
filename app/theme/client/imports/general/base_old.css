@@ -1732,6 +1732,8 @@
 		line-height: 24px;
 
 		&.not {
+			z-index: 1;
+
 			transform: translateY(150%);
 		}
 

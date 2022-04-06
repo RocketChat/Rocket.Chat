@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
 
+import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 import { IMessage } from '../../../../../definition/IMessage';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import { isOwnUserMessage } from './isOwnUserMessage';
@@ -20,6 +21,13 @@ const baseMessage = {
 	_updatedAt: date,
 	urls: [],
 };
+
+// Register a system message
+MessageTypes.registerType({
+	id: 'au',
+	system: true,
+	message: 'User_added_by',
+});
 
 describe('isUserMessage', () => {
 	it('should return true if the message is from user', () => {

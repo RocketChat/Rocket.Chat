@@ -49,7 +49,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 
 				{!isMessageIgnored && <MessageContent id={message._id} message={message} subscription={subscription} sequential={sequential} />}
 				{isMessageIgnored && (
-					<MessageBody>
+					<MessageBody data-qa-type='message-body'>
 						<MessageContentIgnored onShowMessageIgnored={toggleMessageIgnored} />
 					</MessageBody>
 				)}

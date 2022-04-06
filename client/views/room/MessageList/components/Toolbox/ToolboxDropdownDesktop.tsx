@@ -8,14 +8,14 @@ export const ToolboxDropdownDesktop = forwardRef<
 		reference: RefObject<HTMLElement>;
 		children: ReactNode;
 	}
->(({ reference, children }, ref) => {
+>(({ reference, children, ...rest }, ref) => {
 	const { style: s } = usePosition(reference, ref as RefObject<HTMLElement>, {
 		watch: true,
 		placement: 'bottom-start',
 	});
 
 	return (
-		<Tile is='ul' padding={0} paddingBlock={'x12'} paddingInline={0} elevation='2' ref={ref} style={s}>
+		<Tile is='ul' padding={0} paddingBlock={'x12'} paddingInline={0} elevation='2' ref={ref} style={s} {...rest}>
 			{children}
 		</Tile>
 	);

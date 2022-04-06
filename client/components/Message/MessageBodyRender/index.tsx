@@ -55,7 +55,7 @@ const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [], channels = []
 				}
 
 				if (block.type === 'HEADING') {
-					return <Heading value={block.value} key={index} />;
+					return <Heading value={block.value} level={block.level} key={index} />;
 				}
 
 				return null;

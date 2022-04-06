@@ -9,7 +9,7 @@ type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'contex
 
 export const MessageActionMenu: FC<{
 	options: MessageActionConfig[];
-}> = ({ options }) => {
+}> = ({ options, ...rest }) => {
 	const ref = useRef(null);
 
 	const t = useTranslation();
@@ -30,9 +30,15 @@ export const MessageActionMenu: FC<{
 	};
 
 	return (
-		<MessageToolboxItem ref={ref} icon='kebab' onClick={(): void => setVisible(!visible)}>
+		<MessageToolboxItem
+			ref={ref}
+			icon='kebab'
+			onClick={(): void => setVisible(!visible)}
+			data-qa-id='menu'
+			data-qa-type='message-action-menu'
+		>
 			{visible && (
-				<ToolboxDropdown reference={ref}>
+				<ToolboxDropdown reference={ref} {...rest}>
 					{Object.entries(groupOptions).map(([, options], index, arr) => (
 						<Fragment key={index}>
 							{options.map((option) => (
@@ -43,6 +49,8 @@ export const MessageActionMenu: FC<{
 									icon={option.icon as ComponentProps<typeof Option>['icon']}
 									label={t(option.label)}
 									onClick={option.action as any}
+									data-qa-type='message-action'
+									data-qa-id={option.id}
 								/>
 							))}
 							{index !== arr.length - 1 && <Option.Divider />}

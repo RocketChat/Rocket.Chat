@@ -17,7 +17,7 @@ export const ToolboxDropdownMobile = forwardRef<
 	{
 		children: ReactNode;
 	}
->(function ToolboxDropdownMobile({ children }, ref) {
+>(function ToolboxDropdownMobile({ children, ...rest }, ref) {
 	return (
 		<Tile
 			position='fixed'
@@ -30,6 +30,7 @@ export const ToolboxDropdownMobile = forwardRef<
 			className={dropdownStyle}
 			maxHeight='50%'
 			h='full'
+			{...rest}
 		>
 			<ScrollableContentWrapper autoHide={false}>{children}</ScrollableContentWrapper>
 		</Tile>

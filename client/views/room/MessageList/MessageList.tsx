@@ -66,6 +66,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 											data-unread={isFirstUnread}
 											data-sequential={isSequential}
 											data-own={isUserOwnMessage}
+											data-qa-type='message'
 											sequential={shouldShowAsSequential}
 											message={message}
 											subscription={subscription}
@@ -76,6 +77,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 										<ThreadMessagePreview
 											data-system-message={Boolean(message.t)}
 											data-mid={message._id}
+											data-tmid={message.tmid}
 											data-unread={isFirstUnread}
 											data-sequential={isSequential}
 											sequential={shouldShowAsSequential}
