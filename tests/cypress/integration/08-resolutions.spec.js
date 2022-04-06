@@ -44,7 +44,9 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should open the sidenav', () => {
-				cy.wait(1000);
+				cy.waitUntil(() => {
+					return browser.element('.menu-opened').then((el) => el.length);
+				});
 				mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
 				sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'true');
 			});
