@@ -33,6 +33,7 @@ describe('[Discussion]', function () {
 		});
 
 		it('it should show a dialog for starting a discussion', () => {
+			cy.wait(1000);
 			mainContent.openMessageActionMenu();
 			cy.waitUntil(() => {
 				return discussion.startDiscussionContextItem.then((el) => el.length);
