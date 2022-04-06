@@ -8,7 +8,7 @@ import { SystemLogger } from '../../lib/logger/system';
 
 type NPSResultPayload = {
 	total: number;
-	votes: INpsVote[];
+	votes: Pick<INpsVote, 'identifier' | 'roles' | 'score' | 'comment'>[];
 };
 
 export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(npsId: string, data: NPSResultPayload) {
