@@ -109,7 +109,6 @@ export class NPSService extends ServiceClass implements INPSService {
 					},
 					{
 						projection: {
-							_id: 0,
 							identifier: 1,
 							roles: 1,
 							score: 1,
@@ -121,17 +120,24 @@ export class NPSService extends ServiceClass implements INPSService {
 			}),
 		);
 
-		const votes = sending.filter(Boolean) as INpsVote[];
+		const votes = sending.filter(Boolean) as Pick<INpsVote, '_id' | 'identifier' | 'roles' | 'score' | 'comment'>[];
 		if (votes.length > 0) {
 			const voteIds = votes.map(({ _id }) => _id);
 
+			const votesWithoutIds = votes.map(({ identifier, roles, score, comment }) => ({
+				identifier,
+				roles,
+				score,
+				comment,
+			}));
+
 			const payload = {
 				total,
-				votes,
+				votes: votesWithoutIds,
 			};
 			sendNpsResults(nps._id, payload);
 
-			this.NpsVote.updateVotesToSent(voteIds);
+			await this.NpsVote.updateVotesToSent(voteIds);
 		}
 
 		const totalSent = await this.NpsVote.findByNpsIdAndStatus(nps._id, INpsVoteStatus.SENT).count();
