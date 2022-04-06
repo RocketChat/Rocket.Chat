@@ -13,7 +13,7 @@ import {
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
-} from '../../../../definition/rest/v1/settings';
+} from '@rocket.chat/rest-typings';
 
 const fetchSettings = async (
 	query: Parameters<typeof Settings.find>[0],

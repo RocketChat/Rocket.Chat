@@ -20,7 +20,7 @@ import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { Team } from '../../../../server/sdk';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { RoomSettingsEnum } from '@rocket.chat/core-typings';
+import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
 const fields = [
 	'roomAvatar',

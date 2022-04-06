@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { Serialized } from '@rocket.chat/core-typings';
-import { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '@rocket.chat/core-typings';
+import type { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 

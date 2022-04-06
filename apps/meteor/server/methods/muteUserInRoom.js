@@ -4,8 +4,8 @@ import { Match, check } from 'meteor/check';
 import { Rooms, Subscriptions, Users, Messages } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { callbacks } from '../../lib/callbacks';
-import { RoomMemberActions } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
+import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
 Meteor.methods({
 	muteUserInRoom(data) {

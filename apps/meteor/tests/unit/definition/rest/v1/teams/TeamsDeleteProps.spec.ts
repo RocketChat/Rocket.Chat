@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import { isTeamsDeleteProps } from '../../../../../../definition/rest/v1/teams/TeamsDeleteProps';
+import { isTeamsDeleteProps } from '@rocket.chat/rest-typings';
 
 describe('TeamsDeleteProps (definition/rest/v1)', () => {
 	describe('isTeamsDeleteProps', () => {

@@ -9,14 +9,14 @@ import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/s
 import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import type { IUser } from '@rocket.chat/core-typings';
-import { isTeamsConvertToChannelProps } from '../../../../definition/rest/v1/teams/TeamsConvertToChannelProps';
-import { isTeamsRemoveRoomProps } from '../../../../definition/rest/v1/teams/TeamsRemoveRoomProps';
-import { isTeamsUpdateMemberProps } from '../../../../definition/rest/v1/teams/TeamsUpdateMemberProps';
-import { isTeamsRemoveMemberProps } from '../../../../definition/rest/v1/teams/TeamsRemoveMemberProps';
-import { isTeamsAddMembersProps } from '../../../../definition/rest/v1/teams/TeamsAddMembersProps';
-import { isTeamsDeleteProps } from '../../../../definition/rest/v1/teams/TeamsDeleteProps';
-import { isTeamsLeaveProps } from '../../../../definition/rest/v1/teams/TeamsLeaveProps';
-import { isTeamsUpdateProps } from '../../../../definition/rest/v1/teams/TeamsUpdateProps';
+import { isTeamsConvertToChannelProps } from '@rocket.chat/rest-typings';
+import { isTeamsRemoveRoomProps } from '@rocket.chat/rest-typings';
+import { isTeamsUpdateMemberProps } from '@rocket.chat/rest-typings';
+import { isTeamsRemoveMemberProps } from '@rocket.chat/rest-typings';
+import { isTeamsAddMembersProps } from '@rocket.chat/rest-typings';
+import { isTeamsDeleteProps } from '@rocket.chat/rest-typings';
+import { isTeamsLeaveProps } from '@rocket.chat/rest-typings';
+import { isTeamsUpdateProps } from '@rocket.chat/rest-typings';
 import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
 API.v1.addRoute(

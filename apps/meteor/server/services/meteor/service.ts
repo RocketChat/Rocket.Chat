@@ -11,7 +11,7 @@ import { Users } from '../../../app/models/server/raw/index';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server/functions/settings';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
-import type { IRoutingManagerConfig } from '@rocket.chat/core-typings';
+
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import type { IUser } from '@rocket.chat/core-typings';
@@ -22,6 +22,7 @@ import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 import { use } from '../../../app/settings/server/Middleware';
+import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
 type Callbacks = {
 	added(id: string, record: object): void;

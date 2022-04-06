@@ -10,7 +10,7 @@ import { SystemLogger } from '../../../server/lib/logger/system';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
 import { ISAMLAction } from './definition/ISAMLAction';
-import { IIncomingMessage } from '../../../definition/IIncomingMessage';
+import { IIncomingMessage } from '@rocket.chat/core-typings';
 
 RoutePolicy.declare('/_saml/', 'network');
 

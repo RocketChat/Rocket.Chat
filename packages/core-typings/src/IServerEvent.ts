@@ -1,13 +1,13 @@
 import type { IUser } from "./IUser";
 
-export enum IServerEventType {
+export enum ServerEventType {
   FAILED_LOGIN_ATTEMPT = "failed-login-attempt",
   LOGIN = "login",
 }
 
 export interface IServerEvent {
   _id: string;
-  t: IServerEventType;
+  t: ServerEventType;
   ts: Date;
   ip: string;
   u?: Partial<Pick<IUser, "_id" | "username">>;

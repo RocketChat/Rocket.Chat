@@ -4,7 +4,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
 import { callbacks } from '../../../../../lib/callbacks';
-import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 

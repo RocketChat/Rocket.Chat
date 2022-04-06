@@ -28,7 +28,7 @@ import { log, logError } from './logger';
 import { E2ERoomState } from './E2ERoomState';
 import { call } from '../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { RoomSettingsEnum } from '@rocket.chat/core-typings';
+import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');

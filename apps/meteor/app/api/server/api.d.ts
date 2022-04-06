@@ -1,4 +1,12 @@
-import type { JoinPathPattern, Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '../../../definition/rest';
+import type {
+	JoinPathPattern,
+	Method,
+	MethodOf,
+	OperationParams,
+	OperationResult,
+	PathPattern,
+	UrlParams,
+} from '@rocket.chat/rest-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { IMethodConnection } from '@rocket.chat/core-typings';
 import { ITwoFactorOptions } from '../../2fa/server/code';

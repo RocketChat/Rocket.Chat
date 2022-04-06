@@ -15,7 +15,7 @@ import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isVoipRoom } from '
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
-import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { FindVoipRoomsParams } from './internalTypes';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { Notifications } from '../../../app/notifications/server';

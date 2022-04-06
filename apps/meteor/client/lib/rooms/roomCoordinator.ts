@@ -6,12 +6,13 @@ import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
-import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '@rocket.chat/core-typings';
-import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '@rocket.chat/core-typings';
+
+import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { roomExit } from './roomExit';
+import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
 
 class RoomCoordinatorClient extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeClientDirectives>): void {

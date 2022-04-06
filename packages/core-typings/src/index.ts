@@ -1,4 +1,3 @@
-export * from "./IUser";
 export * from "./IRoom";
 export * from "./UIKit";
 export * from "./IMessage";
@@ -10,6 +9,7 @@ export * from "./RoomType";
 export * from "./IInvite";
 export * from "./IRocketChatRecord";
 export * from "./UserStatus";
+export * from "./IUserAction";
 export * from "./IBanner";
 export * from "./IStats";
 export * from "./IServerInfo";
@@ -24,6 +24,13 @@ export * from "./ICustomSound";
 export * from "./ICloud";
 export * from "./IServerEvent";
 export * from "./ICronJobs";
+
+export * from "./IUserDataFile";
+export * from "./IUserSession";
+export * from "./IUserStatus";
+export * from "./IUser";
+
+export * from "./ee/ILicense/ILicense";
 
 export * from "./IImportUser";
 export * from "./IImportRecord";
@@ -65,6 +72,12 @@ export * from "./IReport";
 
 export * from "./ldap";
 // TODO: move to separated package
+
+export * from "./IOmnichannelBusinessUnit";
+export * from "./IOmnichannelCustomAgent";
+export * from "./IOmnichannelBusinessUnit";
+export * from "./IOmnichannelCustomAgent";
+
 export * from "./ILivechatTag";
 export * from "./IPbxEvent";
 export * from "./ILivechatMonitor";

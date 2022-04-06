@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 
 import { Info as info, APIClient } from '../../app/utils/client';
 import { Serialized } from '@rocket.chat/core-typings';
-import { Method, PathFor, MatchPathPattern, OperationParams, OperationResult } from '@rocket.chat/core-typings';
+import type { Method, PathFor, MatchPathPattern, OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '../contexts/ServerContext';
 
 const absoluteUrl = (path: string): string => Meteor.absoluteUrl(path);

@@ -1,5 +1,5 @@
+import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { IServiceClass } from './ServiceClass';
-import type { IRoutingManagerConfig } from '@rocket.chat/core-typings';
 
 export type AutoUpdateRecord = {
 	_id: string;

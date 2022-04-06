@@ -1,4 +1,4 @@
-import type { IRoomTypeConfig } from '@rocket.chat/core-typings';
+import { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
 import type { RoomCoordinator } from '../coordinator';
 
 export function getUnreadRoomType(_coordinator: RoomCoordinator): IRoomTypeConfig {

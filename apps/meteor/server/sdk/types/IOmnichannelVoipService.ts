@@ -7,7 +7,7 @@ import { VoipClientEvents } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
 import { FindVoipRoomsParams } from '../../services/omnichannel-voip/internalTypes';
-import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 export interface IOmnichannelVoipService {

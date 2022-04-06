@@ -1,7 +1,8 @@
 import { RoutingManager } from '../../../../../../app/livechat/server/lib/RoutingManager';
 import { Users } from '../../../../../../app/models/server/raw';
-import type { IRoutingManagerConfig } from '@rocket.chat/core-typings';
+
 import type { IOmnichannelCustomAgent } from '@rocket.chat/core-typings';
+import { IRoutingManagerConfig } from '../../../../../../definition/IRoutingManagerConfig';
 
 /* Load Rotation Queuing method:
  * Routing method where the agent with the oldest routing time is the next agent to serve incoming chats

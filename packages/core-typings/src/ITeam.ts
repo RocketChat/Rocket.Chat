@@ -59,3 +59,9 @@ export interface ITeamStats {
   totalTeams: number;
   teamStats: Array<ITeamStatData>;
 }
+
+// TODO: move to service sdk package
+export interface ITeamMemberParams {
+  userId: string;
+  roles?: Array<IRole["_id"]> | null;
+}

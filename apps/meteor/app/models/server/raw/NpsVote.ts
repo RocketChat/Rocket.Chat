@@ -1,6 +1,6 @@
 import { ObjectId, Collection, Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
 
-import type { INpsVote, INpsVoteStatus } from '@rocket.chat/core-typings';
+import { INpsVote, INpsVoteStatus } from '@rocket.chat/core-typings';
 import { BaseRaw } from './BaseRaw';
 
 type T = INpsVote;

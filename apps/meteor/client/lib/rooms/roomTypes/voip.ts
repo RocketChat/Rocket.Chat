@@ -2,10 +2,11 @@ import { hasPermission } from '../../../../app/authorization/client';
 import { ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
-import type { IRoomTypeClientDirectives } from '@rocket.chat/core-typings';
+
 import type { AtLeast } from '@rocket.chat/core-typings';
 import { getVoipRoomType } from '../../../../lib/rooms/roomTypes/voip';
 import { roomCoordinator } from '../roomCoordinator';
+import { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 
 export const VoipRoomType = getVoipRoomType(roomCoordinator);
 
