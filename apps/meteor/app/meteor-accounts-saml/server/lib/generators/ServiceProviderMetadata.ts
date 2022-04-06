@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { defaultIdentifierFormat, defaultMetadataCertificateTemplate, defaultMetadataTemplate } from '../constants';
 import { SAMLUtils } from '../Utils';
-import type { IServiceProviderOptions } from '@rocket.chat/core-typings';
-import type { IMetadataVariables } from '@rocket.chat/core-typings';
+import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import { IMetadataVariables } from '../../definition/IMetadataVariables';
 
 /*
 	The metadata will be available at the following url:
