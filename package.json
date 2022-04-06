@@ -366,11 +366,11 @@
 			"**/*.ts"
 		],
 		"exclude": [
-		  	".houston",
-		  	".meteor",
-		  	".scripts",
-		  	".snapcraft",
-		  	".storybook",
+			".houston",
+			".meteor",
+			".scripts",
+			".snapcraft",
+			".storybook",
 			"node_modules",
 			"**/.mocharc.js",
 			"**/.mocharc.api.js",
