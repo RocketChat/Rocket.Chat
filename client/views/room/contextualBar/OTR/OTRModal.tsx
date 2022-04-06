@@ -1,9 +1,15 @@
 import { Button, Box, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
-const OTRModal = ({ onCancel, onConfirm, confirmLabel = 'Ok', ...props }) => {
+type OTRModalProps = {
+	onCancel: () => void;
+	onConfirm: () => void;
+	confirmLabel: string;
+};
+
+const OTRModal = ({ onCancel, onConfirm, confirmLabel = 'Ok', ...props }: OTRModalProps): ReactElement => {
 	const t = useTranslation();
 	return (
 		<Modal {...props}>

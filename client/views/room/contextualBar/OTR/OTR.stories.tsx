@@ -18,6 +18,7 @@ export const Establishing = () => (
 			onClickRefresh={alert}
 			isOnline={true}
 			otrState={OtrRoomState.ESTABLISHING}
+			peerUsername='username'
 		/>
 	</VerticalBar>
 );
@@ -31,6 +32,7 @@ export const Established = () => (
 			onClickRefresh={alert}
 			isOnline={true}
 			otrState={OtrRoomState.ESTABLISHED}
+			peerUsername='username'
 		/>
 	</VerticalBar>
 );
@@ -44,6 +46,7 @@ export const Timeout = () => (
 			onClickRefresh={alert}
 			isOnline={true}
 			otrState={OtrRoomState.TIMEOUT}
+			peerUsername='username'
 		/>
 	</VerticalBar>
 );
@@ -57,12 +60,21 @@ export const Declined = () => (
 			onClickRefresh={alert}
 			isOnline={true}
 			otrState={OtrRoomState.DECLINED}
+			peerUsername='username'
 		/>
 	</VerticalBar>
 );
 
 export const Unavailable = () => (
 	<VerticalBar>
-		<OTR onClickClose={alert} onClickStart={alert} onClickEnd={alert} onClickRefresh={alert} isOnline={false} />
+		<OTR
+			onClickClose={alert}
+			onClickStart={alert}
+			onClickEnd={alert}
+			onClickRefresh={alert}
+			isOnline={false}
+			otrState={OtrRoomState.NOT_STARTED}
+			peerUsername='username'
+		/>
 	</VerticalBar>
 );

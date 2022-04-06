@@ -1,14 +1,14 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback, FC } from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/client/OtrRoomState';
 import { OTR as ORTInstance } from '../../../../../app/otr/client/rocketchat.otr';
 import { usePresence } from '../../../../hooks/usePresence';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useTabBarClose } from '../../providers/ToolboxProvider';
 import OTR from './OTR';
 
-const OTRWithData = ({ rid, tabBar }) => {
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+const OTRWithData: FC<{ rid: string }> = ({ rid }) => {
+	const closeTabBar = useTabBarClose();
 
 	const otr = useMemo(() => ORTInstance.getInstanceByRoomId(rid), [rid]);
 
@@ -20,15 +20,17 @@ const OTRWithData = ({ rid, tabBar }) => {
 
 	const peerUsername = peerUserPresence?.username;
 
-	const isOnline = !['offline', 'loading'].includes(userStatus);
+	const isOnline = !['offline', 'loading'].includes(userStatus || '');
 
-	const handleStart = () => {
+	const handleStart = (): void => {
 		otr.handshake();
 	};
 
-	const handleEnd = () => otr?.end();
+	const handleEnd = (): void => {
+		otr?.end();
+	};
 
-	const handleReset = () => {
+	const handleReset = (): void => {
 		otr.reset();
 		otr.handshake(true);
 	};
@@ -42,13 +44,15 @@ const OTRWithData = ({ rid, tabBar }) => {
 			otr.state.set(OtrRoomState.TIMEOUT);
 		}, 10000);
 
-		return () => clearTimeout(timeout);
+		return (): void => {
+			clearTimeout(timeout);
+		};
 	}, [otr, otrState]);
 
 	return (
 		<OTR
 			isOnline={isOnline}
-			onClickClose={onClickClose}
+			onClickClose={closeTabBar}
 			onClickStart={handleStart}
 			onClickEnd={handleEnd}
 			onClickRefresh={handleReset}

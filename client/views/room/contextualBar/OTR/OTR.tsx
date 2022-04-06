@@ -1,16 +1,27 @@
 import { Box, Button, Throbber } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { MouseEventHandler, FC, ReactElement } from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/client/OtrRoomState';
+import { IUser } from '../../../../../definition/IUser';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import OTREstablished from './components/OTREstablished';
 import OTRStates from './components/OTRStates';
 
-const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh, otrState, peerUsername }) => {
+type OTRProps = {
+	isOnline: boolean;
+	onClickClose: MouseEventHandler<HTMLOrSVGElement>;
+	onClickStart: () => void;
+	onClickEnd: () => void;
+	onClickRefresh: () => void;
+	otrState: string;
+	peerUsername: IUser['username'];
+};
+
+const OTR: FC<OTRProps> = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh, otrState, peerUsername }) => {
 	const t = useTranslation();
 
-	const renderOTRState = () => {
+	const renderOTRState = (): ReactElement => {
 		switch (otrState) {
 			case OtrRoomState.NOT_STARTED:
 				return (
