@@ -13,7 +13,8 @@ import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { UserPresence } from '../../../../lib/presence';
 import { useMessageActions } from '../../contexts/MessageContext';
-import { useMessageListShowRoles, useMessageListShowUsername, useMessageListShowRealName } from '../contexts/MessageListContext';
+import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from '../contexts/MessageListContext';
+import { useMessageRoles } from '../hooks/useMessageRoles';
 import { MessageIndicators } from './MessageIndicators';
 import RolesList from './MessageRolesList';
 
@@ -30,7 +31,8 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 
 	const showRoles = useMessageListShowRoles();
-	const shouldShowRolesList = !showRoles || !user.roles || !Array.isArray(user.roles) || user.roles.length < 1;
+	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
+	const shouldShowRolesList = roles.length > 0;
 
 	return (
 		<MessageHeaderTemplate>
@@ -47,7 +49,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 				</MessageUsername>
 			)}
 
-			{shouldShowRolesList && <RolesList user={user} isBot={message.bot} />}
+			{shouldShowRolesList && <RolesList roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>
 			{message.private && (
 				// The MessageStatusPrivateIndicator component should not have name prop, it should be fixed on fuselage
