@@ -15,24 +15,26 @@ const message = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 describe('[Discussion]', function () {
 	before(function () {
 		checkIfUserIsValid(username, email, password);
-
 		sideNav.createChannel(parentChannelName, true, false);
+		cy.wait(1000);
 	});
 
 	describe('via creation screen', function () {
 		it('Create a discussion', function () {
 			discussion.createDiscussion(parentChannelName, discussionName, message);
+			cy.wait(1000);
 		});
 	});
 
 	describe('from context menu', function () {
 		before(() => {
-			cy.wait(400);
 			mainContent.sendMessage(message);
+			cy.wait(1000);
 		});
 
 		it('it should show a dialog for starting a discussion', () => {
 			mainContent.openMessageActionMenu();
+			cy.wait(400);
 			discussion.startDiscussionContextItem.click();
 			discussion.saveDiscussionButton.should('be.enabled');
 			discussion.saveDiscussionButton.click();
@@ -43,6 +45,7 @@ describe('[Discussion]', function () {
 		});
 
 		it('The message should be copied', function () {
+			cy.wait(1200);
 			mainContent.waitForLastMessageQuoteEqualsText(message);
 		});
 	});

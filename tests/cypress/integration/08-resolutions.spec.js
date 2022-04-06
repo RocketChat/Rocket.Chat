@@ -37,6 +37,7 @@ describe('[Resolution]', () => {
 							sideNav.burgerBtn.click({ force: true });
 						}
 					});
+				cy.wait(400);
 			});
 
 			it('it should open the sidenav', () => {
@@ -53,7 +54,7 @@ describe('[Resolution]', () => {
 
 			it('it should close the sidenav when open general channel', () => {
 				sideNav.openChannel('general');
-				cy.wait(800);
+				cy.wait(1200);
 				sideNav.sideNavBar.should('not.have.attr', 'data-qa-opened');
 			});
 
