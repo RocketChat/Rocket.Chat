@@ -1,6 +1,7 @@
 import { matrixBridge } from './bridge';
 import { bridgeUrlTuple, config } from './config';
 import { bridgeLogger } from './logger';
+import './settings';
 
 ((): void => {
 	if (!matrixBridge) return;
