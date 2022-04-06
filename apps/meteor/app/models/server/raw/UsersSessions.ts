@@ -1,5 +1,5 @@
 import { BaseRaw } from './BaseRaw';
-import { IUserSession } from '../../../../definition/IUserSession';
+import type { IUserSession } from '@rocket.chat/core-typings';
 
 export class UsersSessionsRaw extends BaseRaw<IUserSession> {
 	clearConnectionsFromInstanceId(instanceId: string[]): ReturnType<BaseRaw<IUserSession>['updateMany']> {

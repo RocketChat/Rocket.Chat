@@ -6,9 +6,9 @@ import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
 import { Roles } from '../../../models/server/raw';
-import type { IRole } from '../../../../definition/IRole';
-import type { IUser } from '../../../../definition/IUser';
-import type { IRoom } from '../../../../definition/IRoom';
+import type { IRole } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({

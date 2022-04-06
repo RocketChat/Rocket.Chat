@@ -1,8 +1,8 @@
 import xmldom from 'xmldom';
 
 import { SAMLUtils } from '../Utils';
-import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
-import { ILogoutRequestValidateCallback } from '../../definition/callbacks';
+import type { IServiceProviderOptions } from '@rocket.chat/core-typings';
+import type { ILogoutRequestValidateCallback } from '@rocket.chat/core-typings';
 
 export class LogoutRequestParser {
 	serviceProviderOptions: IServiceProviderOptions;

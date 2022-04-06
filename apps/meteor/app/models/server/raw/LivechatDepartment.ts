@@ -2,7 +2,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { FindOneOptions, Cursor, FilterQuery, WriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ILivechatDepartmentRecord } from '../../../../definition/ILivechatDepartmentRecord';
+import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 	findInIds(departmentsIds: string[], options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {

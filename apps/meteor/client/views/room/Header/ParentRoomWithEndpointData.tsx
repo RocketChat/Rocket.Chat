@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import Header from '../../../components/Header';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';

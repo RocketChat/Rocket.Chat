@@ -2,7 +2,7 @@ import { Modal, Field, FieldGroup, TextInput, PasswordInput, ButtonGroup, Button
 import React, { useState, ReactElement } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { IWebdavAccountPayload } from '../../../../definition/IWebdavAccount';
+import type { IWebdavAccountPayload } from '@rocket.chat/core-typings';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';

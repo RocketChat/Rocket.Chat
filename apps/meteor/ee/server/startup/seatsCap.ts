@@ -12,7 +12,7 @@ import {
 } from '../../app/license/server/maxSeatsBanners';
 import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
 import { Users } from '../../../app/models/server';
-import type { IUser } from '../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 callbacks.add(
 	'onCreateUser',

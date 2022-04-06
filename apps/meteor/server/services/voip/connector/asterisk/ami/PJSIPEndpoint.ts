@@ -36,7 +36,7 @@ import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
 import { EndpointState, IExtensionDetails } from '../../../../../../definition/IVoipExtension';
-import { IVoipConnectorResult } from '../../../../../../definition/IVoipConnectorResult';
+import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
 
 export class PJSIPEndpoint extends Command {
 	private logger: Logger;

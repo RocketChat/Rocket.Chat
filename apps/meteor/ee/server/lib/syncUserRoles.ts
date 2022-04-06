@@ -1,5 +1,5 @@
-import type { IUser } from '../../../definition/IUser';
-import type { IRole } from '../../../definition/IRole';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { IRole } from '@rocket.chat/core-typings';
 import type { AtLeast } from '../../../definition/utils';
 import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';

@@ -19,7 +19,7 @@ import type {
 	OSSessionAggregationResult,
 } from '../../../../definition/ISession';
 import { BaseRaw, ModelOptionalId } from './BaseRaw';
-import type { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {

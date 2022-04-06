@@ -1,6 +1,6 @@
 import { IRoom, isDirectMessageRoom } from '../../../../definition/IRoom';
-import { ISubscription } from '../../../../definition/ISubscription';
-import { IRegisterUser, IUser } from '../../../../definition/IUser';
+import type { ISubscription } from '@rocket.chat/core-typings';
+import type { IRegisterUser, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '../../../models/server';
 import { Settings } from '../../../models/server/raw';
 import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';

@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { IUser } from '../../definition/IUser';
-import { IPassword } from '../../definition/IPassword';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { IPassword } from '@rocket.chat/core-typings';
 import { settings } from '../../app/settings/server';
 
 /**

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
-import type { IRoom } from '../../../../definition/IRoom';
-import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoomTypeServerDirectives } from '@rocket.chat/core-typings';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import type { AtLeast } from '../../../../definition/utils';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';

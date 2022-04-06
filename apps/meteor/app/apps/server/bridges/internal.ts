@@ -3,7 +3,7 @@ import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 
 import { AppServerOrchestrator } from '../orchestrator';
 import { Subscriptions } from '../../../models/server';
-import { ISubscription } from '../../../../definition/ISubscription';
+import type { ISubscription } from '@rocket.chat/core-typings';
 import { Settings } from '../../../models/server/raw';
 
 export class AppInternalBridge extends InternalBridge {

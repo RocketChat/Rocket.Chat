@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { IVoipRoom } from '../../definition/IRoom';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo } from '../../definition/voip/ICallerInfo';
 import { VoIpCallerInfo } from '../../definition/voip/VoIpCallerInfo';
 import { VoIPUser } from '../lib/voip/VoIPUser';

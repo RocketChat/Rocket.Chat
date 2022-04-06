@@ -7,10 +7,10 @@ import { settings } from '../../../settings/server';
 import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { ICodeCheck } from './ICodeCheck';
 import { Users } from '../../../models/server';
-import { IMethodConnection } from '../../../../definition/IMethodThisType';
+import type { IMethodConnection } from '@rocket.chat/core-typings';
 
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;

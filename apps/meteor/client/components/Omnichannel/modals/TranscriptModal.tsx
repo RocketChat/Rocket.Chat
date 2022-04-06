@@ -2,7 +2,7 @@ import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useCallback, useEffect, useState, useMemo } from 'react';
 
-import { IOmnichannelRoom } from '../../../../definition/IRoom';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';

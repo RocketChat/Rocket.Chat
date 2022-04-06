@@ -6,7 +6,7 @@ import { Favico } from '../../app/favico/client';
 import { ChatSubscription, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { getUserPreference } from '../../app/utils/client';
-import { ISubscription } from '../../definition/ISubscription';
+import type { ISubscription } from '@rocket.chat/core-typings';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 const fetchSubscriptions = (): ISubscription[] =>

@@ -4,7 +4,7 @@ import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorizati
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { SettingsEvents } from '../../../app/settings/server';
 import { Settings } from '../../../app/models/server/raw';
-import { ISetting } from '../../../definition/ISetting';
+import type { ISetting } from '@rocket.chat/core-typings';
 
 Meteor.methods({
 	async 'public-settings/get'(updatedAt) {

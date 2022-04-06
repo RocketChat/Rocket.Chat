@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { INpsVote } from '../../../definition/INps';
+import type { INpsVote } from '@rocket.chat/core-typings';
 import { SystemLogger } from '../../lib/logger/system';
 
 type NPSResultPayload = {

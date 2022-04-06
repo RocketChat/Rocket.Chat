@@ -6,7 +6,7 @@ import { Rooms, Messages, Subscriptions } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Team } from '../../../../server/sdk';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export const removeUserFromRoom = async function (
 	rid: string,

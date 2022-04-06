@@ -1,8 +1,8 @@
 import { SAMLUtils } from '../Utils';
 import { defaultLogoutResponseTemplate, defaultIdentifierFormat } from '../constants';
-import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
-import { ILogoutResponse } from '../../definition/ILogoutResponse';
-import { ILogoutResponseVariables } from '../../definition/ILogoutResponseVariables';
+import type { IServiceProviderOptions } from '@rocket.chat/core-typings';
+import type { ILogoutResponse } from '@rocket.chat/core-typings';
+import type { ILogoutResponseVariables } from '@rocket.chat/core-typings';
 
 /*
 	A Logout Response is used when the Identity Provider (IdP) sends us a Logout Request.

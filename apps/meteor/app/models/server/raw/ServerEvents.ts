@@ -1,5 +1,5 @@
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IServerEvent, IServerEventType } from '../../../../definition/IServerEvent';
+import type { IServerEvent, IServerEventType } from '@rocket.chat/core-typings';
 
 export class ServerEventsRaw extends BaseRaw<IServerEvent> {
 	protected indexes: IndexSpecification[] = [{ key: { t: 1, ip: 1, ts: -1 } }, { key: { 't': 1, 'u.username': 1, 'ts': -1 } }];

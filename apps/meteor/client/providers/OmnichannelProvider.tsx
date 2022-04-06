@@ -4,8 +4,8 @@ import React, { useState, useEffect, FC, useMemo, useCallback, memo, useRef } fr
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { Notifications } from '../../app/notifications/client';
-import { IOmnichannelAgent } from '../../definition/IOmnichannelAgent';
-import { IRoom } from '../../definition/IRoom';
+import type { IOmnichannelAgent } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
 import { ClientLogger } from '../../lib/ClientLogger';
 import { usePermission } from '../contexts/AuthorizationContext';

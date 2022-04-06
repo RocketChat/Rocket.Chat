@@ -1,7 +1,7 @@
 import type { AdminInfoPage, OrganizationInfoPage, RegisteredServerPage } from '@rocket.chat/onboarding-ui';
 import { ComponentProps, createContext, useContext, Dispatch, SetStateAction } from 'react';
 
-import { ISetting } from '../../../../definition/ISetting';
+import type { ISetting } from '@rocket.chat/core-typings';
 
 type SetupWizardData = {
 	adminData: Omit<Parameters<ComponentProps<typeof AdminInfoPage>['onSubmit']>[0], 'keepPosted'>;

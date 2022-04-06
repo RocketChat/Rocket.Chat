@@ -1,5 +1,5 @@
-import { IRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export type RoomAccessValidator = (
 	room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'tokenpass'>,

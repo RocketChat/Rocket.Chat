@@ -4,7 +4,7 @@ import { useEndpoint } from '../../../client/contexts/ServerContext';
 import { useScrollableRecordList } from '../../../client/hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../client/hooks/useComponentDidUpdate';
 import { RecordList } from '../../../client/lib/lists/RecordList';
-import { ILivechatTagRecord } from '../../../definition/ILivechatTagRecord';
+import type { ILivechatTagRecord } from '@rocket.chat/core-typings';
 
 type TagsListOptions = {
 	filter: string;

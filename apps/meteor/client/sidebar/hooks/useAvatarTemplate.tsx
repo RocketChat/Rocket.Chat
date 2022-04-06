@@ -1,6 +1,6 @@
 import React, { ReactNode, useMemo } from 'react';
 
-import { IRoom } from '../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import RoomAvatar from '../../components/avatar/RoomAvatar';
 import { useUserPreference } from '../../contexts/UserContext';
 

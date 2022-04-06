@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute } from '../../../contexts/RouterContext';

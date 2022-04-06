@@ -1,6 +1,6 @@
 import { IBusinessHourBehavior } from './IBusinessHourBehavior';
 import { SingleBusinessHourBehavior } from './Single';
-import { ILivechatBusinessHour } from '../../../../../../definition/ILivechatBusinessHour';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 
 class BusinessHoursManager {
 	private behavior: IBusinessHourBehavior;

@@ -3,8 +3,8 @@ import React, { FC, memo, MouseEventHandler } from 'react';
 
 import VerticalBar from '../../../../../../client/components/VerticalBar';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
-import { IOmnichannelCannedResponse } from '../../../../../../definition/IOmnichannelCannedResponse';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
 const CannedResponse: FC<{

@@ -9,8 +9,8 @@ import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
-import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
-import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Serialized } from '../../../../definition/Serialized';
 import CannedResponseForm from './components/cannedResponseForm';
 

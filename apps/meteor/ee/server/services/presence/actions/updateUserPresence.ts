@@ -1,8 +1,8 @@
 // import { afterAll } from '../hooks';
 import { processPresenceAndStatus } from '../lib/processConnectionStatus';
 import { getCollection, Collections } from '../../mongo';
-import { IUserSession } from '../../../../../definition/IUserSession';
-import { IUser } from '../../../../../definition/IUser';
+import type { IUserSession } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '../../../../../server/sdk/api';
 
 const projection = {

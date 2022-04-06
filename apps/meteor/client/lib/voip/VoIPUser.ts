@@ -23,7 +23,7 @@ import {
 import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
-import { IQueueMembershipSubscription } from '../../../definition/IVoipExtension';
+import type { IQueueMembershipSubscription } from '@rocket.chat/core-typings';
 import { CallStates } from '../../../definition/voip/CallStates';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
 import { Operation } from '../../../definition/voip/Operations';

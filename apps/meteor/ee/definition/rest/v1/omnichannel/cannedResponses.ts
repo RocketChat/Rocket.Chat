@@ -1,6 +1,6 @@
-import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
-import { IOmnichannelCannedResponse } from '../../../../../definition/IOmnichannelCannedResponse';
-import { IUser } from '../../../../../definition/IUser';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export type OmnichannelCannedResponsesEndpoints = {
 	'canned-responses': {

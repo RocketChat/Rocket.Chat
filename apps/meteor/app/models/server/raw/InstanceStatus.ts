@@ -1,4 +1,4 @@
 import { BaseRaw } from './BaseRaw';
-import { IInstanceStatus } from '../../../../definition/IInstanceStatus';
+import type { IInstanceStatus } from '@rocket.chat/core-typings';
 
 export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> {}

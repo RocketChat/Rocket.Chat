@@ -4,7 +4,7 @@ import Filter from 'bad-words';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { IMessage } from '../../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 const Dep = new Tracker.Dependency();
 Meteor.startup(() => {

@@ -9,7 +9,7 @@ import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { MessageAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachment';
 import { FileAttachmentProps } from '../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 Meteor.methods({

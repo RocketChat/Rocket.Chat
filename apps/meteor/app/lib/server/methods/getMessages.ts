@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { canAccessRoomId } from '../../../authorization/server';
 import { Messages } from '../../../models/server';
-import { IMessage } from '../../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 Meteor.methods({
 	getMessages(messages) {

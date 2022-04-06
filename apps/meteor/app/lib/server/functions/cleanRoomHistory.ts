@@ -5,7 +5,7 @@ import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
 import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { api } from '../../../../server/sdk/api';
-import { IMessage, IMessageDiscussion } from '../../../../definition/IMessage';
+import type { IMessage, IMessageDiscussion } from '@rocket.chat/core-typings';
 
 export const cleanRoomHistory = function ({
 	rid = '',

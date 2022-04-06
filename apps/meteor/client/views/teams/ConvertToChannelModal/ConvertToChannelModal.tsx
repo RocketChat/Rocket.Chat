@@ -1,7 +1,7 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import React, { FC, useMemo } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Serialized } from '../../../../definition/Serialized';
 import GenericModal from '../../../components/GenericModal';
 import { useTranslation } from '../../../contexts/TranslationContext';

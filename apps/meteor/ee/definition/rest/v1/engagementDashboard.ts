@@ -1,5 +1,5 @@
-import type { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
-import type { IUser } from '../../../../definition/IUser';
+import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export type EngagementDashboardEndpoints = {
 	'/v1/engagement-dashboard/channels/list': {

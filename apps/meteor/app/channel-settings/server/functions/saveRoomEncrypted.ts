@@ -3,7 +3,7 @@ import { Match } from 'meteor/check';
 import type { WriteOpResult } from 'mongodb';
 
 import { Rooms, Messages } from '../../../models/server';
-import type { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export const saveRoomEncrypted = function (rid: string, encrypted: boolean, user: IUser, sendMessage = true): Promise<WriteOpResult> {
 	if (!Match.test(rid, String)) {

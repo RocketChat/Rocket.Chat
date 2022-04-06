@@ -9,7 +9,7 @@ import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
-import { IUser } from '../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 import { dispatchToastMessage } from '../lib/toast';

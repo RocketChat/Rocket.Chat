@@ -5,7 +5,7 @@ import { LivechatRooms } from '../../../../models/server';
 import { Messages } from '../../../../models/server/raw';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import { canAccessRoom } from '../../../../authorization/server';
-import { IMessage } from '../../../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 API.v1.addRoute(
 	'livechat/:rid/messages',

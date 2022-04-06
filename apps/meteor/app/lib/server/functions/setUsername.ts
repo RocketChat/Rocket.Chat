@@ -12,7 +12,7 @@ import { api } from '../../../../server/sdk/api';
 import { checkUsernameAvailability, setUserAvatar } from '.';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export const _setUsername = function (userId: string, u: string, fullUser: IUser): unknown {
 	const username = s.trim(u);

@@ -1,7 +1,7 @@
 import { Box, Option } from '@rocket.chat/fuselage';
 import { FC, LazyExoticComponent, ReactNode, MouseEvent, ComponentProps } from 'react';
 
-import { IRoom } from '../../../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { TranslationKey } from '../../../../contexts/TranslationContext';
 import { generator, Events as GeneratorEvents } from './generator';
 

@@ -4,7 +4,7 @@
 import type { Collection, FindOneOptions, Cursor, DeleteWriteOpResultObject } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { IWebdavAccount } from '../../../../definition/IWebdavAccount';
+import type { IWebdavAccount } from '@rocket.chat/core-typings';
 
 type T = IWebdavAccount;
 

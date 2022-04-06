@@ -1,6 +1,6 @@
 import { Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
 
-import { IRole, IUser } from '../../../../definition/IUser';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Roles } from '../../../models/server/raw';
 
 export function getUsersInRole(roleId: IRole['_id'], scope?: string): Promise<Cursor<IUser>>;

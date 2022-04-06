@@ -2,8 +2,8 @@ import { Cursor } from 'mongodb';
 
 import { subscriptionHasRole } from '../../../authorization/server';
 import { Users, Subscriptions } from '../../../models/server';
-import { IUser } from '../../../../definition/IUser';
-import { ISubscription } from '../../../../definition/ISubscription';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
 
 export type SubscribedRoomsForUserWithDetails = {
 	rid: string;

@@ -1,4 +1,4 @@
 import { BaseRaw } from './BaseRaw';
-import { ILoginServiceConfiguration } from '../../../../definition/ILoginServiceConfiguration';
+import type { ILoginServiceConfiguration } from '@rocket.chat/core-typings';
 
 export class LoginServiceConfigurationRaw extends BaseRaw<ILoginServiceConfiguration> {}

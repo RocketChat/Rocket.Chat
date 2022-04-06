@@ -1,5 +1,5 @@
 import { BaseRaw } from './BaseRaw';
-import { IIntegrationHistory } from '../../../../definition/IIntegrationHistory';
+import type { IIntegrationHistory } from '@rocket.chat/core-typings';
 
 export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> {
 	removeByIntegrationId(integrationId: string): ReturnType<BaseRaw<IIntegrationHistory>['deleteMany']> {

@@ -1,4 +1,4 @@
-import type { IRole } from '../../../definition/IRole';
+import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '../../../app/models/server/raw';
 import { MeteorError } from '../../sdk/errors';
 import { isValidRoleScope } from '../../../lib/roles/isValidRoleScope';

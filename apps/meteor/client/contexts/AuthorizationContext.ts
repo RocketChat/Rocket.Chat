@@ -2,7 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { createContext, useContext, useMemo, useCallback } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { IRole } from '../../definition/IUser';
+import type { IRole } from '@rocket.chat/core-typings';
 
 type IRoles = { [_id: string]: IRole };
 

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { IUser } from '../../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import Emoji from '../../../../components/Emoji';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import ReactionUserTag from './ReactionUserTag';

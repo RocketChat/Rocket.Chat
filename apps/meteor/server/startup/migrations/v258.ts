@@ -1,6 +1,6 @@
 import { Roles, Users, Subscriptions } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
-import type { IRole } from '../../../definition/IUser';
+import type { IRole } from '@rocket.chat/core-typings';
 
 addMigration({
 	version: 258,

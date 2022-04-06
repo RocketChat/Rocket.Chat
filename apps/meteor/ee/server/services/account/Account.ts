@@ -7,7 +7,7 @@ import {
 	IHashedStampedToken,
 } from './lib/utils';
 import { getCollection, Collections } from '../mongo';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { IAccount, ILoginResult } from '../../../../server/sdk/types/IAccount';
 import { MeteorError } from '../../../../server/sdk/errors';

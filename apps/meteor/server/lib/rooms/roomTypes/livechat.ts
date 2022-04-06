@@ -1,6 +1,6 @@
 import { LivechatRooms, LivechatVisitors } from '../../../../app/models/server';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
+import type { IRoomTypeServerDirectives } from '@rocket.chat/core-typings';
 import type { AtLeast, ValueOf } from '../../../../definition/utils';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
 import { roomCoordinator } from '../roomCoordinator';

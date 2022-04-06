@@ -7,8 +7,8 @@ import { callbacks } from '../../../../lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Apps } from '../../../apps/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-import { IMessage, IMessageEdited } from '../../../../definition/IMessage';
-import { IUser } from '../../../../definition/IUser';
+import type { IMessage, IMessageEdited } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 

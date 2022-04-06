@@ -3,8 +3,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import LivechatUnit from '../../../../models/server/models/LivechatUnit';
 import LivechatUnitMonitors from '../../../../models/server/raw/LivechatUnitMonitors';
-import { IOmnichannelBusinessUnit } from '../../../../../../definition/IOmnichannelBusinessUnit';
-import { ILivechatMonitor } from '../../../../../../definition/ILivechatMonitor';
+import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 
 export async function findUnits({
 	userId,

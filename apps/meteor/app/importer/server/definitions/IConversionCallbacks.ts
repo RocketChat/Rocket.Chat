@@ -1,6 +1,6 @@
-import { IImportUser } from '../../../../definition/IImportUser';
-import { IImportMessage } from '../../../../definition/IImportMessage';
-import { IImportChannel } from '../../../../definition/IImportChannel';
+import type { IImportUser } from '@rocket.chat/core-typings';
+import type { IImportMessage } from '@rocket.chat/core-typings';
+import type { IImportChannel } from '@rocket.chat/core-typings';
 
 export type ImporterBeforeImportCallback = {
 	(data: IImportUser | IImportChannel | IImportMessage, type: string): boolean;

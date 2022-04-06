@@ -2,7 +2,7 @@ import { Box, Select, SelectOption, Field, Button } from '@rocket.chat/fuselage'
 import React, { useMemo, useCallback, ReactElement } from 'react';
 
 import { WebdavAccounts } from '../../../app/models/client';
-import { IWebdavAccount } from '../../../definition/IWebdavAccount';
+import type { IWebdavAccount } from '@rocket.chat/core-typings';
 import Page from '../../components/Page';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';

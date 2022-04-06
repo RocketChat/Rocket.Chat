@@ -1,6 +1,6 @@
 import { Roles } from '../../models/client';
-import type { IUser, IRole } from '../../../definition/IUser';
-import type { IRoom } from '../../../definition/IRoom';
+import type { IUser, IRole } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 export const hasRole = (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id']): boolean => {
 	if (Array.isArray(roleId)) {

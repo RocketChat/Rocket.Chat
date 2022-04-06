@@ -6,8 +6,8 @@ import { MentionQueries } from '../../../../app/mentions/server/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { MentionQueriesEnterprise } from './EEMentionQueries';
 import { Team } from '../../../../server/sdk';
-import { ITeamMember } from '../../../../definition/ITeam';
-import { IMessage } from '../../../../definition/IMessage';
+import type { ITeamMember } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 interface IExtraDataForNotification {
 	userMentions: any[];

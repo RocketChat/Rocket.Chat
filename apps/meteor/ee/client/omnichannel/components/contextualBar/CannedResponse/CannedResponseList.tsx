@@ -7,8 +7,8 @@ import ScrollableContentWrapper from '../../../../../../client/components/Scroll
 import VerticalBar from '../../../../../../client/components/VerticalBar';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useTabContext } from '../../../../../../client/views/room/providers/ToolboxProvider';
-import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
-import { IOmnichannelCannedResponse } from '../../../../../../definition/IOmnichannelCannedResponse';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 

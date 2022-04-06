@@ -2,7 +2,7 @@ import { Box, Icon, Chip } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import { IVoipRoom } from '../../../../../../definition/IRoom';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import UserCard from '../../../../../components/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';

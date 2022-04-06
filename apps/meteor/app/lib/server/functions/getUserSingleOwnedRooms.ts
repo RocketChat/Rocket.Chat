@@ -1,4 +1,4 @@
-import { IRoom } from '../../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '../../../models/server';
 import { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 

@@ -1,8 +1,8 @@
 import { Template } from 'meteor/templating';
 
 import { userHasAllPermission } from '../../app/authorization/client';
-import { IPermission } from '../../definition/IPermission';
-import { IRole, IUser } from '../../definition/IUser';
+import type { IPermission } from '@rocket.chat/core-typings';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 
 Template.registerHelper(
 	'userHasAllPermission',

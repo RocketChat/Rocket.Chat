@@ -3,7 +3,7 @@ import type { Db } from 'mongodb';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IAnalyticsService } from '../../sdk/types/IAnalyticsService';
 import { AnalyticsRaw } from '../../../app/models/server/raw/Analytics';
-import { IAnalyticsSeatRequest } from '../../../definition/IAnalytic';
+import type { IAnalyticsSeatRequest } from '@rocket.chat/core-typings';
 
 export class AnalyticsService extends ServiceClassInternal implements IAnalyticsService {
 	protected name = 'analytics';

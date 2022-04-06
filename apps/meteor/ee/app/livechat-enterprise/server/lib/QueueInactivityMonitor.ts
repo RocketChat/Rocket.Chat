@@ -8,8 +8,8 @@ import { settings } from '../../../../../app/settings/server';
 import { Logger } from '../../../../../app/logger/server';
 import { LivechatRooms, Users, LivechatInquiry } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
-import { IUser } from '../../../../../definition/IUser';
-import { IOmnichannelRoom } from '../../../../../definition/IRoom';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 

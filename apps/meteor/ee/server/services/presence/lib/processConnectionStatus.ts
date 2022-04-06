@@ -1,4 +1,4 @@
-import { IUserSessionConnection } from '../../../../../definition/IUserSession';
+import type { IUserSessionConnection } from '@rocket.chat/core-typings';
 import { UserStatus } from '../../../../../definition/UserStatus';
 
 /**

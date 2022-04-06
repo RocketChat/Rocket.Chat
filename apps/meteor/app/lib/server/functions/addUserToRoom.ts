@@ -7,8 +7,8 @@ import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { Team } from '../../../../server/sdk';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { IUser } from '../../../../definition/IUser';
-import { IRoom } from '../../../../definition/IRoom';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 export const addUserToRoom = function (
 	rid: string,

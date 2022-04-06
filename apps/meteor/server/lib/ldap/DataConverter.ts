@@ -1,6 +1,6 @@
 import { VirtualDataConverter } from '../../../app/importer/server/classes/VirtualDataConverter';
-import { IImportUser } from '../../../definition/IImportUser';
-import type { IUser } from '../../../definition/IUser';
+import type { IImportUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
 import { Logger } from '../logger/Logger';
 import { Users } from '../../../app/models/server/raw';

@@ -7,8 +7,8 @@ import { Uploads } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../apps/server';
-import { IMessage } from '../../../../definition/IMessage';
-import { IUser } from '../../../../definition/IUser';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export const deleteMessage = async function (message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);

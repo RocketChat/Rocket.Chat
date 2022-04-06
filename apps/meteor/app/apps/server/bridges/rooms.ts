@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { AppServerOrchestrator } from '../orchestrator';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
-import { ISubscription } from '../../../../definition/ISubscription';
+import type { ISubscription } from '@rocket.chat/core-typings';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function

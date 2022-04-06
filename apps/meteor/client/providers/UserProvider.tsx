@@ -3,9 +3,9 @@ import React, { useMemo, FC } from 'react';
 
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
-import { IRoom } from '../../definition/IRoom';
-import { ISubscription } from '../../definition/ISubscription';
-import { IUser } from '../../definition/IUser';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { callbacks } from '../../lib/callbacks';
 import { UserContext } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';

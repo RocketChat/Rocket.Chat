@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { ILivechatMonitorRecord } from '../../../definition/ILivechatMonitorRecord';
+import type { ILivechatMonitorRecord } from '@rocket.chat/core-typings';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';

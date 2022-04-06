@@ -1,7 +1,7 @@
 import { Tabs, Box, Accordion } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
-import type { ISetting } from '../../../../../definition/ISetting';
+import type { ISetting } from '@rocket.chat/core-typings';
 import NoResults from '../../../../components/GenericTable/NoResults';
 import Page from '../../../../components/Page';
 import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';

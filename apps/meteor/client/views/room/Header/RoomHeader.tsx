@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import Header from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';

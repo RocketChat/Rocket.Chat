@@ -1,7 +1,7 @@
 import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
 import React, { memo, FC, useCallback } from 'react';
 
-import { IRoom } from '../../../../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Serialized } from '../../../../../../definition/Serialized';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';

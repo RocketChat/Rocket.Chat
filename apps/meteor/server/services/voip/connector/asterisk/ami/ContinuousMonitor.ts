@@ -23,7 +23,7 @@ import { PbxEventsRaw } from '../../../../../../app/models/server/raw/PbxEvents'
 import { api } from '../../../../../sdk/api';
 import { ACDQueue } from './ACDQueue';
 import { Commands } from '../Commands';
-import { IQueueDetails } from '../../../../../../definition/ACDQueues';
+import type { IQueueDetails } from '@rocket.chat/core-typings';
 import {
 	IAgentCalledEvent,
 	IAgentConnectEvent,

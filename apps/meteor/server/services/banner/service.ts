@@ -8,7 +8,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IBannerService } from '../../sdk/types/IBannerService';
 import { BannerPlatform, IBanner, IBannerDismiss } from '../../../definition/IBanner';
 import { api } from '../../sdk/api';
-import { IUser } from '../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Optional } from '../../../definition/utils';
 
 export class BannerService extends ServiceClassInternal implements IBannerService {

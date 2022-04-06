@@ -2,7 +2,7 @@ import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC } from 'react';
 
-import { ISetting } from '../../../../definition/ISetting';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Serialized } from '../../../../definition/Serialized';
 import Page from '../../../components/Page';
 import { useMethod } from '../../../contexts/ServerContext';

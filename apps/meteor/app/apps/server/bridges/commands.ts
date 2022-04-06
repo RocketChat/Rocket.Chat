@@ -5,7 +5,7 @@ import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBr
 import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../lib/misc/Utilities';
 import { AppServerOrchestrator } from '../orchestrator';
-import { IMessage } from '../../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, object>;

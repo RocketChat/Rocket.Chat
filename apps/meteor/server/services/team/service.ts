@@ -12,9 +12,9 @@ import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
-import { IRoom } from '../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '../../../definition/ITeam';
-import { IUser } from '../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Messages } from '../../../app/models/server';
 import { Room, Authorization } from '../../sdk';
 import {
@@ -30,7 +30,7 @@ import {
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
-import { ISubscription } from '../../../definition/ISubscription';
+import type { ISubscription } from '@rocket.chat/core-typings';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';

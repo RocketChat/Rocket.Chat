@@ -4,9 +4,9 @@ import xmlCrypto from 'xml-crypto';
 
 import { SAMLUtils } from '../Utils';
 import { StatusCode } from '../constants';
-import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
-import { IResponseValidateCallback } from '../../definition/callbacks';
-import { ISAMLAssertion } from '../../definition/ISAMLAssertion';
+import type { IServiceProviderOptions } from '@rocket.chat/core-typings';
+import type { IResponseValidateCallback } from '@rocket.chat/core-typings';
+import type { ISAMLAssertion } from '@rocket.chat/core-typings';
 
 type XmlParent = Element | Document;
 

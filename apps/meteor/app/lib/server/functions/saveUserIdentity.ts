@@ -5,7 +5,7 @@ import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from 
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
-import { IMessage } from '../../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 /**
  *

@@ -10,8 +10,8 @@ import {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ITeamMember } from '../../../../definition/ITeam';
-import type { IUser, IRole } from '../../../../definition/IUser';
+import type { ITeamMember } from '@rocket.chat/core-typings';
+import type { IUser, IRole } from '@rocket.chat/core-typings';
 
 type T = ITeamMember;
 export class TeamMemberRaw extends BaseRaw<T> {

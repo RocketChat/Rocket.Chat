@@ -2,7 +2,7 @@ import { Field, TextInput, FieldGroup, Modal, Icon, ButtonGroup, Button } from '
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
 
-import { IUser } from '../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';
 import { useMethod } from '../../contexts/ServerContext';

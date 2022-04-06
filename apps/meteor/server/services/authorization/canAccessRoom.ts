@@ -5,7 +5,7 @@ import { canAccessRoomVoip } from './canAccessRoomVoip';
 import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
 import { Subscriptions, Rooms, Settings, TeamMembers, Team } from './service';
 import { TEAM_TYPE, ITeam } from '../../../definition/ITeam';
-import { IUser } from '../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {

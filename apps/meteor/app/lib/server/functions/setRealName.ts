@@ -6,7 +6,7 @@ import { settings } from '../../../settings/server';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export const _setRealName = function (userId: string, name: string, fullUser: IUser): unknown {
 	name = s.trim(name);

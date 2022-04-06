@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { IRocketChatRecord } from '../../../definition/IRocketChatRecord';
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import { AsyncStatePhase } from '../asyncState';
 
 export type RecordListBatchChanges<T> = {

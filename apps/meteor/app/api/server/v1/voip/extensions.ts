@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../api';
 import { Users } from '../../../../models/server/raw/index';
 import { Voip } from '../../../../../server/sdk';
-import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
+import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
 import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
 import { settings } from '../../../../settings/server';
 import { logger } from './logger';

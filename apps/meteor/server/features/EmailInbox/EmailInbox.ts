@@ -4,7 +4,7 @@ import Mail from 'nodemailer/lib/mailer';
 
 import { EmailInbox, EmailMessageHistory } from '../../../app/models/server/raw';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
-import { IEmailInbox } from '../../../definition/IEmailInbox';
+import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { onEmailReceived } from './EmailInbox_Incoming';
 import { logger } from './logger';
 import { settings } from '../../../app/settings/server';

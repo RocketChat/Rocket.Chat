@@ -10,8 +10,8 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { IUser, IUserEmail } from '../../../../definition/IUser';
-import { IDirectMessageRoom } from '../../../../definition/IRoom';
+import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom } from '@rocket.chat/core-typings';
 
 function reactivateDirectConversations(userId: string): void {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active

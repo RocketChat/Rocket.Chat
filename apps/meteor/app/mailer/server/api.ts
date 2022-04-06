@@ -8,7 +8,7 @@ import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings/server';
-import { ISetting } from '../../../definition/ISetting';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { replaceVariables } from './replaceVariables';
 import { Apps } from '../../apps/server';
 import { validateEmail } from '../../../lib/emailValidator';

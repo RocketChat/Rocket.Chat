@@ -9,7 +9,7 @@
  * Currently the data is stored locally but may sent back to server if such need exists.
  */
 
-import { IQueueMembershipSubscription } from '../../../definition/IVoipExtension';
+import type { IQueueMembershipSubscription } from '@rocket.chat/core-typings';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
 import { IQueueInfo } from '../../../definition/voip/IQueueInfo';
 

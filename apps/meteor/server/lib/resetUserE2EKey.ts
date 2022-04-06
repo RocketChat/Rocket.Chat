@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Users, Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import * as Mailer from '../../app/mailer';
-import { IUser } from '../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 const sendResetNotitification = function (uid: string): void {
 	const user: IUser = Users.findOneById(uid, {});

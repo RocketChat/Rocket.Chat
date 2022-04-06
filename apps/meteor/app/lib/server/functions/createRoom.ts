@@ -10,7 +10,7 @@ import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { ICreateRoomParams, ISubscriptionExtraData } from '../../../../server/sdk/types/IRoomService';
 import { IRoom, RoomType } from '../../../../definition/IRoom';
 

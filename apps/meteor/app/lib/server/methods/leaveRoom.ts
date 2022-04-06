@@ -7,7 +7,7 @@ import { removeUserFromRoom } from '../functions';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { Roles } from '../../../models/server/raw';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 Meteor.methods({
 	async leaveRoom(rid) {

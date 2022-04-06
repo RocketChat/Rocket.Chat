@@ -1,7 +1,7 @@
 import { UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { INotification } from '../../../../definition/INotification';
+import type { INotification } from '@rocket.chat/core-typings';
 
 export class NotificationQueueRaw extends BaseRaw<INotification> {
 	protected indexes: IndexSpecification[] = [

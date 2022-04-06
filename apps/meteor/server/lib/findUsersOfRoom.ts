@@ -2,7 +2,7 @@ import type { Mongo } from 'meteor/mongo';
 
 import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
-import { IUser } from '../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 type FindUsersParam = {
 	rid: string;

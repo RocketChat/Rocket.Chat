@@ -1,7 +1,7 @@
 import { FilterQuery, WithoutProjection, FindOneOptions, WriteOpResult, Cursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { IVoipRoom, IRoomClosingInfo } from '../../../../definition/IRoom';
+import type { IVoipRoom, IRoomClosingInfo } from '@rocket.chat/core-typings';
 import { Logger } from '../../../../server/lib/logger/Logger';
 
 export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {

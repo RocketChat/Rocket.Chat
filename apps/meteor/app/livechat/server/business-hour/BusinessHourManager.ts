@@ -5,7 +5,7 @@ import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Users } from '../../../models/server/raw';
-import { ICronJobs } from '../../../../definition/ICronJobs';
+import type { ICronJobs } from '@rocket.chat/core-typings';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,

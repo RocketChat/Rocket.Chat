@@ -1,6 +1,6 @@
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
-import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 
 export const useScopeDict = (scope: IOmnichannelCannedResponse['scope'], departmentName: ILivechatDepartment['name']): string => {
 	const t = useTranslation();

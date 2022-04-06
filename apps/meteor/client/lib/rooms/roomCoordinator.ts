@@ -8,7 +8,7 @@ import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import type { IRoom, RoomType } from '../../../definition/IRoom';
 import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
-import type { IUser } from '../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import type { AtLeast, ValueOf } from '../../../definition/utils';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { roomExit } from './roomExit';

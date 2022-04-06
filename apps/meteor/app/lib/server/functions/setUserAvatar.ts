@@ -6,7 +6,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { Users } from '../../../models/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export const setUserAvatar = function (
 	user: Pick<IUser, '_id' | 'username'>,

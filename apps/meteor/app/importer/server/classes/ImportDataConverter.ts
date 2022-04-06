@@ -4,15 +4,15 @@ import _ from 'underscore';
 import { ObjectId } from 'mongodb';
 
 import { ImportData as ImportDataRaw } from '../../../models/server/raw';
-import { IImportUser } from '../../../../definition/IImportUser';
-import { IImportMessage, IImportMessageReaction } from '../../../../definition/IImportMessage';
-import { IImportChannel } from '../../../../definition/IImportChannel';
+import type { IImportUser } from '@rocket.chat/core-typings';
+import type { IImportMessage, IImportMessageReaction } from '@rocket.chat/core-typings';
+import type { IImportChannel } from '@rocket.chat/core-typings';
 import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../../../../definition/IImportRecord';
+import type { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '@rocket.chat/core-typings';
 import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import { IUser, IUserEmail } from '../../../../definition/IUser';
+import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import type { Logger } from '../../../../server/lib/logger/Logger';
 
 type IRoom = Record<string, any>;

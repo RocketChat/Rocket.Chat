@@ -5,7 +5,7 @@ import { Users } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings/server';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';
 import { isOmnichannelRoom, IRoom } from '../../../../../definition/IRoom';
-import { IUser } from '../../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 callbacks.add(
 	'beforeJoinRoom',

@@ -1,6 +1,6 @@
 import React, { memo, ReactElement, useMemo } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import BurgerMenu from '../../../components/BurgerMenu';
 import TemplateHeader from '../../../components/Header';
 import { useLayout } from '../../../contexts/LayoutContext';

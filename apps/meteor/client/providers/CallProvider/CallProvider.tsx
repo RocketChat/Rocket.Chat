@@ -5,8 +5,8 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { IVoipRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';

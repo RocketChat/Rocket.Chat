@@ -5,7 +5,7 @@ import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Serialized } from '../../../../definition/Serialized';
 import CannedResponseEdit from './CannedResponseEdit';
 

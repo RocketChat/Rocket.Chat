@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { ILoginAttempt } from '../ILoginAttempt';
 import { ServerEvents, Users, Rooms, Sessions } from '../../../models/server/raw';
-import { IServerEventType, IServerEvent } from '../../../../definition/IServerEvent';
+import type { IServerEventType, IServerEvent } from '@rocket.chat/core-typings';
 import { settings } from '../../../settings/server';
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';

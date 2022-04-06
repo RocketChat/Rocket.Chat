@@ -2,9 +2,9 @@ import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, 
 import { compact } from 'lodash';
 
 import { BaseRaw } from './BaseRaw';
-import { ISubscription } from '../../../../definition/ISubscription';
-import { IRole, IUser } from '../../../../definition/IUser';
-import { IRoom } from '../../../../definition/IRoom';
+import type { ISubscription } from '@rocket.chat/core-typings';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { UsersRaw } from './Users';
 
 type T = ISubscription;

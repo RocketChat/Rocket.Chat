@@ -1,5 +1,5 @@
 import { TOTP } from '../lib/totp';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { settings } from '../../../settings/server';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 

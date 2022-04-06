@@ -2,8 +2,8 @@ import { Random } from 'meteor/random';
 import { AggregationCursor, Cursor, SortOptionObject, UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IAnalytic } from '../../../../definition/IAnalytic';
-import { IRoom } from '../../../../definition/IRoom';
+import type { IAnalytic } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 type T = IAnalytic;
 

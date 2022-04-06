@@ -1,5 +1,5 @@
-import type { IOmnichannelRoom } from '../../../definition/IRoom';
-import type { IUser } from '../../../definition/IUser';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export interface IAuthorizationLivechat {
 	canAccessRoom: (room: IOmnichannelRoom, user: Pick<IUser, '_id'>, extraData?: Record<string, any>) => Promise<boolean>;

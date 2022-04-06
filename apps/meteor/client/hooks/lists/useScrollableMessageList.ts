@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { IMessage } from '../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Serialized } from '../../../definition/Serialized';
 import { MessageList } from '../../lib/lists/MessageList';
 import { RecordListBatchChanges } from '../../lib/lists/RecordList';

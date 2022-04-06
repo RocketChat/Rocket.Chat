@@ -1,11 +1,11 @@
 import { callbacks } from '../../../../../lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
-import { IRoom } from '../../../../../definition/IRoom';
-import { ILivechatVisitor } from '../../../../../definition/ILivechatVisitor';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '../../../../../app/models/server/raw';
 import { Messages } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
-import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 
 callbacks.add(
 	'livechat:onTransferFailure',

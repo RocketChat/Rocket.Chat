@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 import { IConnection } from './IConnection';
-import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
+import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
 
 /**
  * This class serves as a a base class for the different kind of call server objects

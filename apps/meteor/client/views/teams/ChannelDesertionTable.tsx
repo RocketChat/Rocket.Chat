@@ -1,7 +1,7 @@
 import { Box, CheckBox } from '@rocket.chat/fuselage';
 import React, { FC, ReactElement } from 'react';
 
-import { IRoom } from '../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Serialized } from '../../../definition/Serialized';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';

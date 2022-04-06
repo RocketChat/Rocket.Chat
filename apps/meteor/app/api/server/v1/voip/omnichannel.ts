@@ -5,7 +5,7 @@ import { Users } from '../../../../models/server/raw/index';
 import { hasPermission } from '../../../../authorization/server/index';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { logger } from './logger';
-import { IUser } from '../../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 function paginate<T>(array: T[], count = 10, offset = 0): T[] {
 	return array.slice(offset, offset + count);

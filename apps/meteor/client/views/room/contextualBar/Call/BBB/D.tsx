@@ -2,7 +2,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useEffect } from 'react';
 
 import { popout } from '../../../../../../app/ui-utils/client';
-import { IRoom } from '../../../../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';

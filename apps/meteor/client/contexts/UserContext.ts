@@ -3,9 +3,9 @@ import { FilterQuery } from 'mongodb';
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { IRoom } from '../../definition/IRoom';
-import { ISubscription } from '../../definition/ISubscription';
-import { IUser } from '../../definition/IUser';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { useRoute } from './RouterContext';
 
 type SubscriptionQuery =

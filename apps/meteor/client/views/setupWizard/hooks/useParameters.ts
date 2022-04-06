@@ -1,6 +1,6 @@
 import { useQuery, UseQueryResult } from 'react-query';
 
-import { ISetting } from '../../../../definition/ISetting';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { useMethod } from '../../../contexts/ServerContext';
 
 type SetupWizardParameters = {

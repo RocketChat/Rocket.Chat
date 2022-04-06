@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { IMessage } from '../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 import MapView from './MapView';
 
 type MessageLocationProps = {

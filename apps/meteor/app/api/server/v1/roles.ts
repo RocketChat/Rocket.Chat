@@ -19,7 +19,7 @@ import {
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { updateRole } from '../../../../server/lib/roles/updateRole';
 import { insertRole } from '../../../../server/lib/roles/insertRole';
-import type { IRole } from '../../../../definition/IRole';
+import type { IRole } from '@rocket.chat/core-typings';
 
 API.v1.addRoute(
 	'roles.list',

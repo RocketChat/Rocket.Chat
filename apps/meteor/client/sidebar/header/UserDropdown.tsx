@@ -5,7 +5,7 @@ import React, { ReactElement } from 'react';
 
 import { AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
-import { IUser } from '../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum } from '../../../definition/UserStatus';
 import { ValueOf } from '../../../definition/utils';
 import { callbacks } from '../../../lib/callbacks';

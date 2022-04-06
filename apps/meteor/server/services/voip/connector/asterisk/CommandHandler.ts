@@ -21,9 +21,9 @@ import { Logger } from '../../../../lib/logger/Logger';
 import { Command, CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
-import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
+import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
 import { IManagementConfigData, ServerType } from '../../../../../definition/IVoipServerConfig';
-import { IManagementServerConnectionStatus } from '../../../../../definition/IVoipServerConnectivityStatus';
+import type { IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
 import { WebsocketConnection } from '../websocket/WebsocketConnection';
 import { getServerConfigDataFromSettings } from '../../lib/Helper';
 

@@ -1,6 +1,6 @@
 import { useLayoutEffect, memo } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { RoomType } from '../../../../definition/RoomType';
 import { Store } from '../lib/Toolbox/generator';
 import { ToolboxAction } from '../lib/Toolbox/index';

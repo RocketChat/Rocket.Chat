@@ -8,7 +8,7 @@ import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { isTeamsConvertToChannelProps } from '../../../../definition/rest/v1/teams/TeamsConvertToChannelProps';
 import { isTeamsRemoveRoomProps } from '../../../../definition/rest/v1/teams/TeamsRemoveRoomProps';
 import { isTeamsUpdateMemberProps } from '../../../../definition/rest/v1/teams/TeamsUpdateMemberProps';

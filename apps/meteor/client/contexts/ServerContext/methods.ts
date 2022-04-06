@@ -1,8 +1,8 @@
 import type { DeleteWriteOpResultObject } from 'mongodb';
 
-import { IRoom } from '../../../definition/IRoom';
-import { ISetting } from '../../../definition/ISetting';
-import { IUser } from '../../../definition/IUser';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import { FollowMessageMethod } from './methods/followMessage';
 import { GetReadReceiptsMethod } from './methods/getReadReceipts';

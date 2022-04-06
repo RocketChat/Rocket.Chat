@@ -5,7 +5,7 @@ import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import { ILivechatTag } from '../../../../definition/ILivechatTag';
+import type { ILivechatTag } from '@rocket.chat/core-typings';
 import TagEdit from './TagEdit';
 
 type TagEditWithDepartmentDataPropsType = {

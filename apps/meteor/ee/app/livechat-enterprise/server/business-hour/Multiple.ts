@@ -7,7 +7,7 @@ import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/ra
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
-import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { bhLogger } from '../lib/logger';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {

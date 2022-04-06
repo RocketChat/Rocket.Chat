@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { IVoipRoom } from '../../../../definition/IRoom';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo } from '../../../../definition/voip/ICallerInfo';
 import { VoIpCallerInfo } from '../../../../definition/voip/VoIpCallerInfo';
 import { VoipClientEvents } from '../../../../definition/voip/VoipClientEvents';

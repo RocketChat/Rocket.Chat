@@ -8,9 +8,9 @@ import { Notifications } from '../../../app/notifications/client';
 import { readMessage } from '../../../app/ui-utils/client';
 import { KonchatNotification } from '../../../app/ui/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { IMessage } from '../../../definition/IMessage';
-import { IRoom } from '../../../definition/IRoom';
-import { ISubscription } from '../../../definition/ISubscription';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 

@@ -1,7 +1,7 @@
 import { DeleteWriteOpResultObject } from 'mongodb';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IOEmbedCache } from '../../../../definition/IOEmbedCache';
+import type { IOEmbedCache } from '@rocket.chat/core-typings';
 
 type T = IOEmbedCache;
 

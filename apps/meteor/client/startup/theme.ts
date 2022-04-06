@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../app/settings/client';
-import { ISetting, ISettingColor } from '../../definition/ISetting';
+import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 
 const variables = new Map();
 const lessExpressions = new Map([

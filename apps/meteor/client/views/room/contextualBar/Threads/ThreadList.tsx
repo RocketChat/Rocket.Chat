@@ -3,9 +3,9 @@ import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.cha
 import React, { FC, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { IMessage } from '../../../../../definition/IMessage';
-import { IRoom } from '../../../../../definition/IRoom';
-import { IUser } from '../../../../../definition/IUser';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useRoute, useCurrentRoute, useQueryStringParameter } from '../../../../contexts/RouterContext';

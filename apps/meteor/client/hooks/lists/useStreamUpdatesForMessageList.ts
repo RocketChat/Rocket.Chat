@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
-import { IMessage } from '../../../definition/IMessage';
-import { IRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { useStream } from '../../contexts/ServerContext';
 import { MessageList } from '../../lib/lists/MessageList';
 import { createFilterFromQuery, FieldExpression, Query } from '../../lib/minimongo';

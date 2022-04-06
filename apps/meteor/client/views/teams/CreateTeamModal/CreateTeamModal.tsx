@@ -2,7 +2,7 @@ import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch, FieldG
 import { useMutableCallback, useDebouncedCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';

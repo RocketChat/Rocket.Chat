@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../app/settings/server';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export type ModalParams = {
 	id: string;

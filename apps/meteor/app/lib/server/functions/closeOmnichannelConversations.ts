@@ -1,7 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { LivechatRooms } from '../../../models/server';
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 import { settings } from '../../../settings/server';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 

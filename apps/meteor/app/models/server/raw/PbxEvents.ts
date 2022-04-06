@@ -1,7 +1,7 @@
 import { Cursor } from 'mongodb';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IPbxEvent } from '../../../../definition/IPbxEvent';
+import type { IPbxEvent } from '@rocket.chat/core-typings';
 
 export class PbxEventsRaw extends BaseRaw<IPbxEvent> {
 	protected indexes: IndexSpecification[] = [{ key: { uniqueId: 1 }, unique: true }];

@@ -2,9 +2,9 @@ import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Butto
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
-import { IMessage } from '../../../definition/IMessage';
-import { IRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';

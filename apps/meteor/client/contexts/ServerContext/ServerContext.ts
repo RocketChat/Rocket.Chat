@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
-import type { IServerInfo } from '../../../definition/IServerInfo';
+import type { IServerInfo } from '@rocket.chat/core-typings';
 import type { Serialized } from '../../../definition/Serialized';
 import type { Method, PathFor, OperationParams, MatchPathPattern, OperationResult, PathPattern } from '../../../definition/rest';
 import { ServerMethodFunction, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethods } from './methods';

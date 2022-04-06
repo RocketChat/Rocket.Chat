@@ -9,9 +9,9 @@ import { aggregates } from '../../../models/server/raw/Sessions';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
-import { ISession, ISessionDevice } from '../../../../definition/ISession';
-import { ISocketConnection } from '../../../../definition/ISocketConnection';
-import { IUser } from '../../../../definition/IUser';
+import type { ISession, ISessionDevice } from '@rocket.chat/core-typings';
+import type { ISocketConnection } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 type DateObj = { day: number; month: number; year: number };
 

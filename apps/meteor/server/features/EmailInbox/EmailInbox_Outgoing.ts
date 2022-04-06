@@ -4,8 +4,8 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../lib/callbacks';
-import { IEmailInbox } from '../../../definition/IEmailInbox';
-import { IUser } from '../../../definition/IUser';
+import type { IEmailInbox } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
 import { Messages, Rooms, Users } from '../../../app/models/server';
@@ -13,7 +13,7 @@ import { Uploads } from '../../../app/models/server/raw';
 import { Inbox, inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
-import { IMessage } from '../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 

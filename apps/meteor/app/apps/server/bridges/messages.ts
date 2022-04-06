@@ -8,7 +8,7 @@ import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { api } from '../../../../server/sdk/api';
 import notifications from '../../../notifications/server/lib/Notifications';
-import { ISubscription } from '../../../../definition/ISubscription';
+import type { ISubscription } from '@rocket.chat/core-typings';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppMessageBridge extends MessageBridge {
