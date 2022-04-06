@@ -90,18 +90,24 @@ const updateRegistrationFile = async function (): Promise<void> {
 		url: bridgeUrl,
 		sender_localpart: await Settings.getValueById('FederationV2_bridge_localpart'),
 		namespaces: {
-			users: {
-				exclusive: false,
-				regex: '.*',
-			},
-			rooms: {
-				exclusive: false,
-				regex: '.*',
-			},
-			aliases: {
-				exclusive: false,
-				regex: '.*',
-			},
+			users: [
+				{
+					exclusive: false,
+					regex: '.*',
+				},
+			],
+			rooms: [
+				{
+					exclusive: false,
+					regex: '.*',
+				},
+			],
+			aliases: [
+				{
+					exclusive: false,
+					regex: '.*',
+				},
+			],
 		},
 	};
 	/* eslint-enable @typescript-eslint/camelcase */
