@@ -2,7 +2,7 @@ import { Box, CheckBox } from '@rocket.chat/fuselage';
 import React, { FC, ReactElement } from 'react';
 
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '../../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';

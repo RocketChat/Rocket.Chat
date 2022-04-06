@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import { callbacks } from '../../../lib/callbacks';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { getUserPreference } from '../../utils';
-import { UiTextContext } from '../../../definition/IRoomTypeConfig';
+import { UiTextContext } from '@rocket.chat/core-typings';
 import { settings } from '../../settings';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 

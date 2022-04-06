@@ -23,7 +23,7 @@ import {
 	WriteOpResult,
 } from 'mongodb';
 
-import { IRocketChatRecord, RocketChatRecordDeleted } from '../../../../definition/IRocketChatRecord';
+import { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 
 export { IndexSpecification } from 'mongodb';

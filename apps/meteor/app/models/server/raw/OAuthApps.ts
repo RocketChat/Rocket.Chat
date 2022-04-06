@@ -1,4 +1,4 @@
-import { IOAuthApps as T } from '../../../../definition/IOAuthApps';
+import { IOAuthApps as T } from '@rocket.chat/core-typings';
 import { BaseRaw } from './BaseRaw';
 
 export class OAuthAppsRaw extends BaseRaw<T> {

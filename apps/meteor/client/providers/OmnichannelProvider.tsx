@@ -6,7 +6,7 @@ import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/s
 import { Notifications } from '../../app/notifications/client';
 import type { IOmnichannelAgent } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
+import { OmichannelRoutingConfig } from '@rocket.chat/core-typings';
 import { ClientLogger } from '../../lib/ClientLogger';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';

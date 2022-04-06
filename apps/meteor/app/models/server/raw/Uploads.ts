@@ -14,7 +14,7 @@ import {
 } from 'mongodb';
 
 import { BaseRaw, IndexSpecification, InsertionModel } from './BaseRaw';
-import { IUpload as T } from '../../../../definition/IUpload';
+import { IUpload as T } from '@rocket.chat/core-typings';
 
 const fillTypeGroup = (fileData: Partial<T>): void => {
 	if (!fileData.type) {

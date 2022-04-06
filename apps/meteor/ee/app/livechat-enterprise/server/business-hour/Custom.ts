@@ -1,5 +1,5 @@
 import { AbstractBusinessHourType, IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
 import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';

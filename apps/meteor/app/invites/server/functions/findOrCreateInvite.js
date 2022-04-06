@@ -7,7 +7,7 @@ import { Subscriptions, Rooms } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/lib/getURL';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 function getInviteUrl(invite) {

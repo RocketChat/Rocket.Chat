@@ -24,7 +24,7 @@ import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
-import { OmnichannelSourceType } from '../../../../definition/IRoom';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 
 const logger = new Logger('LivechatHelper');

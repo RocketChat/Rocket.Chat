@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Serialized } from '../../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 import { MessageList } from '../../lib/lists/MessageList';
 import { RecordListBatchChanges } from '../../lib/lists/RecordList';
 import { mapMessageFromApi } from '../../lib/utils/mapMessageFromApi';

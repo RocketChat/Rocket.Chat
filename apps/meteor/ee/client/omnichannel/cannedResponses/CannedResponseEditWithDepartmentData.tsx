@@ -6,7 +6,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Serialized } from '../../../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 import CannedResponseEdit from './CannedResponseEdit';
 
 const CannedResponseEditWithData: FC<{

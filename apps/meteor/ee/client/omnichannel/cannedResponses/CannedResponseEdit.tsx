@@ -11,7 +11,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Serialized } from '../../../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 import CannedResponseForm from './components/cannedResponseForm';
 
 const CannedResponseEdit: FC<{

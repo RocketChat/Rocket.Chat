@@ -1,7 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
 import React, { ComponentProps, FC } from 'react';
 
-import { IRoom, isDirectMessageRoom, isOmnichannelRoom } from '../../../definition/IRoom';
+import { IRoom, isDirectMessageRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { ReactiveUserStatus } from '../UserStatus';
 import { OmnichannelRoomIcon } from './OmnichannelRoomIcon';
 

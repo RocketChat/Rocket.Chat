@@ -2,7 +2,7 @@ import { Match, check } from 'meteor/check';
 
 import { API } from '../api';
 import { Banner } from '../../../../server/sdk';
-import { BannerPlatform } from '../../../../definition/IBanner';
+import { BannerPlatform } from '@rocket.chat/core-typings';
 
 /**
  * @deprecated

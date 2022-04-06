@@ -8,7 +8,7 @@ import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '@rocket.chat/core-typings';
-import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
+import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '@rocket.chat/core-typings';
 import type { AtLeast } from '../../../../definition/utils';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';

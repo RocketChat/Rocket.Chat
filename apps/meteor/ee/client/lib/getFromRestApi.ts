@@ -1,6 +1,6 @@
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
-import { Serialized } from '../../../definition/Serialized';
-import { MatchPathPattern, OperationParams, OperationResult, PathFor } from '../../../definition/rest';
+import { Serialized } from '@rocket.chat/core-typings';
+import { MatchPathPattern, OperationParams, OperationResult, PathFor } from '@rocket.chat/core-typings';
 
 export const getFromRestApi =
 	<TPath extends PathFor<'GET'>>(endpoint: TPath) =>

@@ -2,7 +2,7 @@ import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
 import React, { memo, FC, useCallback } from 'react';
 
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '../../../../../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';

@@ -10,7 +10,7 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
 import { logger } from './logger';
-import { OmnichannelSourceType } from '../../../definition/IRoom';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 type FileAttachment = {
 	title: string;

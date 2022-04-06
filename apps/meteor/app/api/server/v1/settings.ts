@@ -7,7 +7,7 @@ import { hasPermission } from '../../../authorization/server';
 import { API, ResultFor } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
-import { ISetting, ISettingColor, isSettingAction, isSettingColor } from '../../../../definition/ISetting';
+import { ISetting, ISettingColor, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import {
 	isOauthCustomConfiguration,
 	isSettingsUpdatePropDefault,

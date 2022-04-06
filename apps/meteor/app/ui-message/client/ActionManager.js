@@ -8,7 +8,7 @@ import Notifications from '../../notifications/client/lib/Notifications';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient } from '../../utils';
-import { UIKitInteractionTypes } from '../../../definition/UIKit';
+import { UIKitInteractionTypes } from '@rocket.chat/core-typings';
 import * as banners from '../../../client/lib/banners';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { t } from '../../utils/client';

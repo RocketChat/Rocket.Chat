@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Serialized } from '../../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 
 export const mapMessageFromApi = ({ attachments = [], tlm, ts, _updatedAt, ...message }: Serialized<IMessage>): IMessage => ({
 	...message,

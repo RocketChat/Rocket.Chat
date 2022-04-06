@@ -1,5 +1,5 @@
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { ICredentialToken as T } from '../../../../definition/ICredentialToken';
+import { ICredentialToken as T } from '@rocket.chat/core-typings';
 
 export class CredentialTokensRaw extends BaseRaw<T> {
 	protected indexes: IndexSpecification[] = [{ key: { expireAt: 1 }, sparse: true, expireAfterSeconds: 0 }];

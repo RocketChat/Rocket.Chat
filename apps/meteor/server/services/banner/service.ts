@@ -6,10 +6,10 @@ import { BannersRaw } from '../../../app/models/server/raw/Banners';
 import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IBannerService } from '../../sdk/types/IBannerService';
-import { BannerPlatform, IBanner, IBannerDismiss } from '../../../definition/IBanner';
+import { BannerPlatform, IBanner, IBannerDismiss } from '@rocket.chat/core-typings';
 import { api } from '../../sdk/api';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Optional } from '../../../definition/utils';
+import { Optional } from '@rocket.chat/core-typings';
 
 export class BannerService extends ServiceClassInternal implements IBannerService {
 	protected name = 'banner';

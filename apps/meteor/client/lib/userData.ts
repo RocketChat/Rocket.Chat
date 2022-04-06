@@ -5,7 +5,7 @@ import { Users } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
 import type { IUser, IUserDataEvent } from '@rocket.chat/core-typings';
-import { Serialized } from '../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 
 export const isSyncReady = new ReactiveVar(false);
 

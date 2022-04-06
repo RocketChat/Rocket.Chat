@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { OmnichannelSourceType } from '../../../../definition/IRoom';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 Meteor.methods({
 	'livechat:startFileUploadRoom'(roomId, token) {

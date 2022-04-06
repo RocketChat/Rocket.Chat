@@ -8,7 +8,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 // import { useEndpoint } from '../../contexts/ServerContext';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-import { UiKitPayload, UIKitActionEvent } from '../../../definition/UIKit';
+import { UiKitPayload, UIKitActionEvent } from '@rocket.chat/core-typings';
 
 const useUIKitHandleAction = <S extends UiKitPayload>(state: S): ((event: UIKitActionEvent) => Promise<void>) =>
 	useMutableCallback(async ({ blockId, value, appId, actionId }) => {

@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions, Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
+import { RoomSettingsEnum } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const saveRoomType = function (rid, roomType, user, sendMessage = true) {

@@ -10,8 +10,8 @@ import type { IAgentExtensionMap, IRoomCreationResponse } from '@rocket.chat/cor
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
 import type { IUser } from '@rocket.chat/core-typings';
-import { ILivechatVisitor, isILivechatVisitor } from '../../../definition/ILivechatVisitor';
-import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isVoipRoom } from '../../../definition/IRoom';
+import { ILivechatVisitor, isILivechatVisitor } from '@rocket.chat/core-typings';
+import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isVoipRoom } from '@rocket.chat/core-typings';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';

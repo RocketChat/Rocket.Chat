@@ -3,7 +3,7 @@ import { Users } from '../../../models/server';
 import { Statistics } from '../../../models/server/raw';
 import { statistics } from '../../../statistics/server';
 import { LICENSE_VERSION } from '../license';
-import { SettingValue } from '../../../../definition/ISetting';
+import { SettingValue } from '@rocket.chat/core-typings';
 
 type WorkspaceRegistrationData = {
 	uniqueId: string;

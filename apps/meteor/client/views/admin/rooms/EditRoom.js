@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAre
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
-import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
+import { RoomSettingsEnum } from '@rocket.chat/core-typings';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';

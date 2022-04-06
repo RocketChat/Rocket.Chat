@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import { Rooms } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
 import { archiveRoom } from '../functions';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 Meteor.methods({

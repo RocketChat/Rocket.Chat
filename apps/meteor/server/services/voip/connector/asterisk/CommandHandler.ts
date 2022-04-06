@@ -22,7 +22,7 @@ import { Command, CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
 import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
-import { IManagementConfigData, ServerType } from '../../../../../definition/IVoipServerConfig';
+import { IManagementConfigData, ServerType } from '@rocket.chat/core-typings';
 import type { IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
 import { WebsocketConnection } from '../websocket/WebsocketConnection';
 import { getServerConfigDataFromSettings } from '../../lib/Helper';

@@ -1,6 +1,6 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import { ICronJobs, ScheduleType } from '../../../../../definition/ICronJobs';
+import { ICronJobs, ScheduleType } from '@rocket.chat/core-typings';
 
 class SyncedCronJobs implements ICronJobs {
 	add(name: string, schedule: string, callback: Function, scheduleType: ScheduleType = 'cron'): void {

@@ -4,7 +4,7 @@ import { Users, Subscriptions } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const useInviteToken = async (userId, token) => {

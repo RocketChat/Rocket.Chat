@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
-import { OmnichannelSourceType } from '../../../../definition/IRoom';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { settings } from '../../../settings/server';
 
 Meteor.methods({

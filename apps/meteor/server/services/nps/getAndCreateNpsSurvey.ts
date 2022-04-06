@@ -3,9 +3,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { UiKitBannerPayload } from '../../../definition/UIKit';
+import { UiKitBannerPayload } from '@rocket.chat/core-typings';
 import { Banner } from '../../sdk';
-import { IBanner, BannerPlatform } from '../../../definition/IBanner';
+import { IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { SystemLogger } from '../../lib/logger/system';
 
 type NpsSurveyData = {

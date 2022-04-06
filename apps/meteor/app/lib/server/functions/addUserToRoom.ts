@@ -5,7 +5,7 @@ import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { Team } from '../../../../server/sdk';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';

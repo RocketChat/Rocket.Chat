@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { expect } from 'chai';
 
-import { UserStatus } from '../../../../../../../definition/UserStatus';
+import { UserStatus } from '@rocket.chat/core-typings';
 import {
 	processConnectionStatus,
 	processStatus,

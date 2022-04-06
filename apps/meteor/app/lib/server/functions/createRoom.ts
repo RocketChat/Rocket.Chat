@@ -12,7 +12,7 @@ import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
 import type { IUser } from '@rocket.chat/core-typings';
 import { ICreateRoomParams, ISubscriptionExtraData } from '../../../../server/sdk/types/IRoomService';
-import { IRoom, RoomType } from '../../../../definition/IRoom';
+import { IRoom, RoomType } from '@rocket.chat/core-typings';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && s.trim(name).length > 0;

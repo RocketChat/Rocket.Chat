@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { ISettingBase, SectionName, SettingId, GroupId, TabId } from '../../definition/ISetting';
+import { ISettingBase, SectionName, SettingId, GroupId, TabId } from '@rocket.chat/core-typings';
 import { SettingsContextQuery } from './SettingsContext';
 
 export interface IEditableSetting extends ISettingBase {

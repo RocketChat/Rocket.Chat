@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback } from 'react';
 
-import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
+import { UiTextContext } from '@rocket.chat/core-typings';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import MarkdownText from '../../../../components/MarkdownText';
 import { usePermission } from '../../../../contexts/AuthorizationContext';

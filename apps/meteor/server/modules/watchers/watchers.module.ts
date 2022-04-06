@@ -15,7 +15,7 @@ import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
 import type { IBaseData } from '@rocket.chat/core-typings';
 import type { IPermission } from '@rocket.chat/core-typings';
-import { ISetting, SettingValue } from '../../../definition/ISetting';
+import { ISetting, SettingValue } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import type { IUserSession } from '@rocket.chat/core-typings';

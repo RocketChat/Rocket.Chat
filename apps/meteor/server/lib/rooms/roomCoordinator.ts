@@ -6,7 +6,7 @@ import type { ReadReceipt } from '../../../definition/ReadReceipt';
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { ValueOf, AtLeast } from '../../../definition/utils';
 import { Users } from '../../../app/models/server';
-import { RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { RoomSettingsEnum, RoomMemberActions } from '@rocket.chat/core-typings';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { settings } from '../../../app/settings/server';
 

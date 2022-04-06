@@ -5,7 +5,7 @@ import { hasPermission, canAccessRoom } from '../../../authorization/server';
 import { Rooms } from '../../../models/server';
 import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';
 import { addUserToRoom } from '../functions';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { RoomMemberActions } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 Meteor.methods({

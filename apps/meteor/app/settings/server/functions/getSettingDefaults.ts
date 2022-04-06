@@ -1,4 +1,4 @@
-import { ISetting, ISettingColor, isSettingColor } from '../../../../definition/ISetting';
+import { ISetting, ISettingColor, isSettingColor } from '@rocket.chat/core-typings';
 
 export const getSettingDefaults = (
 	setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>,

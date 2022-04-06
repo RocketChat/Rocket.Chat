@@ -3,7 +3,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '../../../../../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';

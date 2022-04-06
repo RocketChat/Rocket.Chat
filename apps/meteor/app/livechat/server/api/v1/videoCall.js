@@ -7,7 +7,7 @@ import { Messages, Rooms } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { findGuest, getRoom, settings } from '../lib/livechat';
-import { OmnichannelSourceType } from '../../../../../definition/IRoom';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { hasPermission, canSendMessage } from '../../../../authorization';
 import { Livechat } from '../../lib/Livechat';
 import { Logger } from '../../../../logger';

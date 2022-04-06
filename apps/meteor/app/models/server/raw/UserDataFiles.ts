@@ -1,7 +1,7 @@
 import { FindOneOptions, InsertOneWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IUserDataFile as T } from '../../../../definition/IUserDataFile';
+import { IUserDataFile as T } from '@rocket.chat/core-typings';
 
 export class UserDataFilesRaw extends BaseRaw<T> {
 	protected indexes: IndexSpecification[] = [{ key: { userId: 1 } }];

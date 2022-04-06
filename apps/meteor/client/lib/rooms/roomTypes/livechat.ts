@@ -7,7 +7,7 @@ import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IRoomTypeClientDirectives } from '@rocket.chat/core-typings';
-import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
+import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '@rocket.chat/core-typings';
 import type { AtLeast, ValueOf } from '../../../../definition/utils';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
 import { roomCoordinator } from '../roomCoordinator';

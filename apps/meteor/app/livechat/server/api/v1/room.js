@@ -10,7 +10,7 @@ import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } 
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { OmnichannelSourceType } from '../../../../../definition/IRoom';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { canAccessRoom } from '../../../../authorization/server';
 import { addUserToRoom } from '../../../../lib/server/functions';
 

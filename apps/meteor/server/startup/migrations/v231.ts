@@ -2,7 +2,7 @@ import { ISectionBlock, BlockType } from '@rocket.chat/apps-engine/definition/ui
 import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
 
 import { addMigration } from '../../lib/migrations';
-import { BannerPlatform } from '../../../definition/IBanner';
+import { BannerPlatform } from '@rocket.chat/core-typings';
 import { Banner } from '../../sdk';
 import { settings } from '../../../app/settings/server';
 import { isEnterprise } from '../../../ee/app/license/server';

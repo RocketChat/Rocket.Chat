@@ -3,8 +3,8 @@ import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
-import { IBanner, BannerPlatform } from '../../definition/IBanner';
-import { Serialized } from '../../definition/Serialized';
+import { IBanner, BannerPlatform } from '@rocket.chat/core-typings';
+import { Serialized } from '@rocket.chat/core-typings';
 import * as banners from '../lib/banners';
 
 const fetchInitialBanners = async (): Promise<void> => {

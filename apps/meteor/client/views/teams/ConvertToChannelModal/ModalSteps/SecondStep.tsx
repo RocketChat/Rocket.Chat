@@ -2,7 +2,7 @@ import { Icon } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '../../../../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 import GenericModal from '../../../../components/GenericModal';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 

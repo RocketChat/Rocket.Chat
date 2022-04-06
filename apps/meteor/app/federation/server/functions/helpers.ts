@@ -1,4 +1,4 @@
-import { IRoom, isDirectMessageRoom } from '../../../../definition/IRoom';
+import { IRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import type { IRegisterUser, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '../../../models/server';

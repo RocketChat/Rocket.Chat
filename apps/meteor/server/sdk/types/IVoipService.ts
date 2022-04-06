@@ -1,4 +1,4 @@
-import { IVoipCallServerConfig, IVoipManagementServerConfig, ServerType } from '../../../definition/IVoipServerConfig';
+import { IVoipCallServerConfig, IVoipManagementServerConfig, ServerType } from '@rocket.chat/core-typings';
 import { CommandHandler } from '../../services/voip/connector/asterisk/CommandHandler';
 import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
 import { IRegistrationInfo } from '../../../definition/voip/IRegistrationInfo';

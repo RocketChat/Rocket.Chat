@@ -15,7 +15,7 @@ import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import { Users, LivechatDepartment, LivechatVisitors, LivechatRooms } from '../../../models/server';
 import { AppServerOrchestrator } from '../orchestrator';
-import { OmnichannelSourceType } from '../../../../definition/IRoom';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function

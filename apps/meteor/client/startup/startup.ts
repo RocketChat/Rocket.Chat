@@ -11,7 +11,7 @@ import { register } from '../../app/markdown/lib/hljs';
 import { settings } from '../../app/settings/client';
 import { getUserPreference, t } from '../../app/utils/client';
 import 'highlight.js/styles/github.css';
-import { UserStatus } from '../../definition/UserStatus';
+import { UserStatus } from '@rocket.chat/core-typings';
 import * as banners from '../lib/banners';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';

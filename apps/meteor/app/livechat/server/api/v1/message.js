@@ -10,7 +10,7 @@ import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { settings } from '../../../../settings/server';
-import { OmnichannelSourceType } from '../../../../../definition/IRoom';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 API.v1.addRoute('livechat/message', {
 	post() {

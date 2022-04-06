@@ -1,7 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
 import React, { ComponentProps, ReactElement } from 'react';
 
-import { IOmnichannelRoom, isOmnichannelRoomFromAppSource } from '../../../../definition/IRoom';
+import { IOmnichannelRoom, isOmnichannelRoomFromAppSource } from '@rocket.chat/core-typings';
 import { OmnichannelAppSourceRoomIcon } from './OmnichannelAppSourceRoomIcon';
 import { OmnichannelCoreSourceRoomIcon } from './OmnichannelCoreSourceRoomIcon';
 

@@ -1,5 +1,5 @@
-import { BannerPlatform, IBanner } from '../../../definition/IBanner';
-import { Optional } from '../../../definition/utils';
+import { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
+import { Optional } from '@rocket.chat/core-typings';
 
 export interface IBannerService {
 	getBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]>;

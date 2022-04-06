@@ -3,7 +3,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { PublicSettingsCachedCollection } from '../../../../client/lib/settings/PublicSettingsCachedCollection';
 import { SettingsBase } from '../../lib/settings';
-import { SettingValue } from '../../../../definition/ISetting';
+import { SettingValue } from '@rocket.chat/core-typings';
 
 class Settings extends SettingsBase {
 	cachedCollection = PublicSettingsCachedCollection.get();

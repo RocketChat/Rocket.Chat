@@ -8,7 +8,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 // import { useEndpoint } from '../../contexts/ServerContext';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-import { UiKitPayload } from '../../../definition/UIKit';
+import { UiKitPayload } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
