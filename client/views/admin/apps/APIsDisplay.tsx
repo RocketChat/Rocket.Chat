@@ -1,6 +1,6 @@
 import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import { Box, Divider } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 
 import { useAbsoluteUrl } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -12,9 +12,7 @@ type APIsDisplayProps = {
 
 const APIsDisplay: FC<APIsDisplayProps> = ({ apis }) => {
 	const t = useTranslation();
-
 	const absoluteUrl = useAbsoluteUrl();
-
 	const getApiCurl = apiCurlGetter(absoluteUrl);
 
 	return (
@@ -29,16 +27,16 @@ const APIsDisplay: FC<APIsDisplayProps> = ({ apis }) => {
 						<Box fontScale='p2m'>
 							{api.methods.join(' | ').toUpperCase()} {api.path}
 						</Box>
-						{api.methods.map((method) => (
-							<Box>
+						{api.methods.map((method, index) => (
+							<Box key={index}>
 								<Box withRichContent>
 									<pre>
 										<code>
-											{getApiCurl(method, api).map((curlAddress) => (
-												<>
+											{getApiCurl(method, api).map((curlAddress, index) => (
+												<Fragment key={index}>
 													{curlAddress}
 													<br />
-												</>
+												</Fragment>
 											))}
 										</code>
 									</pre>

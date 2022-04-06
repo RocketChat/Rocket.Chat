@@ -155,7 +155,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 				</Field.Row>
 			</Field>
 
-			{errorMessage && <Callout type={'danger'} title={errorMessage} />}
+			{errorMessage && <Callout type={'danger'}>{errorMessage}</Callout>}
 
 			<ButtonGroup stretch mb='x12'>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
