@@ -152,4 +152,6 @@ export interface IStats {
 	totalStarred: number;
 	totalPinned: number;
 	totalEmailInvitation: number;
+	roomsWithPinnedMessages: number;
+	roomsWithStarredMessages: number;
 }

@@ -465,6 +465,8 @@ export const statistics = {
 		statistics.totalPinned = await MessagesRaw.findPinned().count();
 		statistics.totalStarred = await MessagesRaw.findStarred().count();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
+		statistics.roomsWithStarredMessages = await MessagesRaw.countRoomsWithStarredMessages();
+		statistics.roomsWithPinnedMessages = await MessagesRaw.countRoomsWithPinnedMessages();
 
 		await Promise.all(statsPms).catch(log);
 
