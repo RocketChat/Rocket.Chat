@@ -13,7 +13,7 @@ describe('[Resolution]', () => {
 
 		beforeEach(() => {
 			Global.setWindowSize(650, 800);
-			cy.wait(50);
+			cy.wait(500);
 		});
 
 		after(() => {
@@ -37,10 +37,11 @@ describe('[Resolution]', () => {
 							sideNav.burgerBtn.click({ force: true });
 						}
 					});
-				cy.wait(400);
+				cy.wait(1000);
 			});
 
 			it('it should open the sidenav', () => {
+				cy.wait(1000);
 				mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
 				sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'true');
 			});
