@@ -1,7 +1,6 @@
-import type { IDirectMessageRoom } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
+
 import { Rooms, Subscriptions, Users } from '../../../models/server';
-import type { ISubscription } from '@rocket.chat/core-typings';
 
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(',');

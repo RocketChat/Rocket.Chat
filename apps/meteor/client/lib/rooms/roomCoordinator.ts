@@ -1,3 +1,4 @@
+import type { IRoom, RoomType, IUser, AtLeast, ValueOf } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
@@ -5,14 +6,10 @@ import _ from 'underscore';
 import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
-import type { IRoom, RoomType } from '@rocket.chat/core-typings';
-
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
-import type { IUser } from '@rocket.chat/core-typings';
-import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
+import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { roomExit } from './roomExit';
-import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
 
 class RoomCoordinatorClient extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeClientDirectives>): void {

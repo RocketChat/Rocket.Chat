@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { BaseRaw } from './BaseRaw';
 import type { IOmnichannelQueueStatus } from '@rocket.chat/core-typings';
+
+import { BaseRaw } from './BaseRaw';
 
 const UNIQUE_QUEUE_ID = 'queue';
 export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> {

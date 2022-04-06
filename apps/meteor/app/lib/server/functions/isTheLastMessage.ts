@@ -1,5 +1,5 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../settings/server';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

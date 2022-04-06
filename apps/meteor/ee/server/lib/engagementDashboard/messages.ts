@@ -1,9 +1,8 @@
 import moment from 'moment';
+import type { IDirectMessageRoom, IRoom, IMessage } from '@rocket.chat/core-typings';
 
 import { Messages, Analytics } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
-import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
-import type { IMessage } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const handleMessagesSent = (message: IMessage, room?: IRoom): IMessage => {

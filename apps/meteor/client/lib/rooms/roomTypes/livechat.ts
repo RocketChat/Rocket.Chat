@@ -1,3 +1,4 @@
+import type { IOmnichannelRoom, AtLeast, ValueOf } from '@rocket.chat/core-typings';
 import { Session } from 'meteor/session';
 
 import { hasPermission } from '../../../../app/authorization/client';
@@ -5,10 +6,8 @@ import { LivechatInquiry } from '../../../../app/livechat/client/collections/Liv
 import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
 import { roomCoordinator } from '../roomCoordinator';
 

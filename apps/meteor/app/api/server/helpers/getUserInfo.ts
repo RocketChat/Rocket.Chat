@@ -1,4 +1,5 @@
 import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../settings/server';
 import { getUserPreference, getURL } from '../../../utils/server';
 import { API } from '../api';

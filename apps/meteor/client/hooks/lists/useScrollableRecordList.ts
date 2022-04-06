@@ -1,6 +1,6 @@
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import { useCallback, useEffect } from 'react';
 
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { RecordList, RecordListBatchChanges } from '../../lib/lists/RecordList';
 

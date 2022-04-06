@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermission } from '../../../../../app/authorization/server';
 import { Subscriptions, LivechatRooms } from '../../../../../app/models/server';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 API.v1.addRoute(
 	'livechat/room.onHold',

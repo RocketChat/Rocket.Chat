@@ -1,7 +1,7 @@
 import { Cursor, UpdateWriteOpResult } from 'mongodb';
+import type { IExportOperation } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import type { IExportOperation } from '@rocket.chat/core-typings';
 
 type T = IExportOperation;
 

@@ -2,17 +2,23 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import { ObjectId } from 'mongodb';
+import type {
+	IImportUser,
+	IImportMessage,
+	IImportMessageReaction,
+	IImportChannel,
+	IImportUserRecord,
+	IImportChannelRecord,
+	IImportMessageRecord,
+	IUser,
+	IUserEmail,
+} from '@rocket.chat/core-typings';
 
 import { ImportData as ImportDataRaw } from '../../../models/server/raw';
-import type { IImportUser } from '@rocket.chat/core-typings';
-import type { IImportMessage, IImportMessageReaction } from '@rocket.chat/core-typings';
-import type { IImportChannel } from '@rocket.chat/core-typings';
 import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import type { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '@rocket.chat/core-typings';
 import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import type { Logger } from '../../../../server/lib/logger/Logger';
 
 type IRoom = Record<string, any>;

@@ -1,8 +1,8 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Avatar, Box, Tag } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
 import { getUserAvatarURL } from '../../../../app/utils/client';
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 export const VoipRoomForeword = ({ room }: { room: IRoom }): ReactElement => {

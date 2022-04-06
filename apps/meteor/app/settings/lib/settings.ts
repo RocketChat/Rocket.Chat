@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-
 import { SettingValue } from '@rocket.chat/core-typings';
 
 export type SettingComposedValue<T extends SettingValue = SettingValue> = { key: string; value: T };

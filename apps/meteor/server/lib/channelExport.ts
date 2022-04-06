@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import mkdirp from 'mkdirp';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import * as Mailer from '../../app/mailer';
 import { Messages, Users } from '../../app/models/server';
@@ -17,7 +18,6 @@ import {
 	sendEmail,
 	uploadZipFile,
 } from '../../app/user-data-download/server/cronProcessDownloads';
-import type { IUser } from '@rocket.chat/core-typings';
 import { getMomentLocale } from './getMomentLocale';
 import { getURL } from '../../app/utils/lib/getURL';
 import { DataExport } from '../../app/user-data-download/server/DataExport';

@@ -1,9 +1,8 @@
+import { UiKitBannerPayload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Icon } from '@rocket.chat/fuselage';
 import { ComponentProps } from 'react';
 import { Subscription } from 'use-subscription';
-
-import { UiKitBannerPayload } from '@rocket.chat/core-typings';
 
 export type LegacyBannerPayload = {
 	id: string;

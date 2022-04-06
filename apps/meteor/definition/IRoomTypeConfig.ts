@@ -1,11 +1,5 @@
 import type { RouteOptions } from 'meteor/kadira:flow-router';
-
-import type { IRoom, RoomType } from '@rocket.chat/core-typings';
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
-import type { IMessage } from '@rocket.chat/core-typings';
-import type { ReadReceipt } from '@rocket.chat/core-typings';
-import type { ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IRocketChatRecord, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
 export interface IRoomTypeRouteConfig {

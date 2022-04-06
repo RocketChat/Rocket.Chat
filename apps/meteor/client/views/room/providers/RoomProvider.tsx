@@ -1,7 +1,7 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import React, { ReactNode, useMemo, memo, useEffect } from 'react';
 
 import { UserAction } from '../../../../app/ui';
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserSubscription } from '../../../contexts/UserContext';
 import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';

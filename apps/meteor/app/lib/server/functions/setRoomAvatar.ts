@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload/server';
 import { Rooms, Messages } from '../../../models/server';
 import { Avatars } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
-import type { IUser } from '@rocket.chat/core-typings';
 
 export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<unknown> {
 	const fileStore = FileUpload.getStore('Avatars');

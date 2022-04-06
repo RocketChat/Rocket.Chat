@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { Users, Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import * as Mailer from '../../app/mailer';
-import type { IUser } from '@rocket.chat/core-typings';
 
 const sendResetNotitification = function (uid: string): void {
 	const user: IUser = Users.findOneById(uid, {});

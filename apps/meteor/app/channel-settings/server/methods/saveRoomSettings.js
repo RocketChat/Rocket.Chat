@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';
@@ -18,7 +19,6 @@ import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { Team } from '../../../../server/sdk';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 

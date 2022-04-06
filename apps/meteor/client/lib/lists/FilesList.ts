@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+
 import { MessageList } from './MessageList';
 
 type FilesMessage = Omit<IMessage, 'rid'> & Required<Pick<IMessage, 'rid'>>;

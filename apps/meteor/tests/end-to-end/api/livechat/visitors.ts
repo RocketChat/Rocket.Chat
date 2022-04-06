@@ -1,9 +1,9 @@
 import { expect } from 'chai';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createVisitor } from '../../../data/livechat/rooms.js';
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
 describe('LIVECHAT - visitors', function () {
 	this.retries(0);

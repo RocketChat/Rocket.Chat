@@ -1,3 +1,5 @@
+import type { IVoipRoom, IUser } from '@rocket.chat/core-typings';
+import { ICallerInfo } from '@rocket.chat/core-typings';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -5,9 +7,6 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
-import type { IVoipRoom } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
-import { ICallerInfo } from '@rocket.chat/core-typings';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';

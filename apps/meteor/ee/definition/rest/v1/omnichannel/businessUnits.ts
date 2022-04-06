@@ -1,8 +1,8 @@
-import type { ILivechatMonitor } from '@rocket.chat/core-typings';
-import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import type { ILivechatMonitor, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface Endpoints {
 		'livechat/units.list': {
 			GET: (params: { text: string }) => PaginatedResult & {

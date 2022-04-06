@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-
 import { SettingEditor } from '@rocket.chat/core-typings';
+
 import { settingsRegistry } from '../../settings/server';
 
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };

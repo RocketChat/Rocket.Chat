@@ -1,7 +1,7 @@
 import { FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
 export interface IWorkHoursCronJobsItem {
 	day: string;

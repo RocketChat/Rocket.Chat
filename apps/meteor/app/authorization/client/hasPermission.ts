@@ -1,11 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import type { IUser, IRole, IPermission } from '@rocket.chat/core-typings';
 
 import { ChatPermissions } from './lib/ChatPermissions';
 import * as Models from '../../models/client';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
-import type { IUser } from '@rocket.chat/core-typings';
-import type { IRole } from '@rocket.chat/core-typings';
-import type { IPermission } from '@rocket.chat/core-typings';
 
 const isValidScope = (scope: IRole['scope']): boolean => typeof scope === 'string' && scope in Models;
 

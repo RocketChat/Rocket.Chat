@@ -1,11 +1,9 @@
+import type { IVoipRoom } from '@rocket.chat/core-typings';
+import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { ICallerInfo } from '@rocket.chat/core-typings';
-import { VoIpCallerInfo } from '@rocket.chat/core-typings';
-import { VoipClientEvents } from '@rocket.chat/core-typings';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {

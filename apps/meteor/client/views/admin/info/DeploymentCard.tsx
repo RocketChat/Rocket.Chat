@@ -1,10 +1,8 @@
+import type { IInstanceStatus, IServerInfo, IStats } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, ReactElement } from 'react';
 
-import type { IInstanceStatus } from '@rocket.chat/core-typings';
-import type { IServerInfo } from '@rocket.chat/core-typings';
-import type { IStats } from '@rocket.chat/core-typings';
 import Card from '../../../components/Card';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';

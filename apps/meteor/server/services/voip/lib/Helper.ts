@@ -1,4 +1,5 @@
 import { ServerType, IVoipManagementServerConfig, IVoipCallServerConfig } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../../app/settings/server';
 
 export function getServerConfigDataFromSettings(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {

@@ -1,9 +1,9 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Menu, Option, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, ReactNode, useRef, ComponentProps, ReactElement } from 'react';
 
 // used to open the menu option by keyboard
-import type { IRoom } from '@rocket.chat/core-typings';
 import Header from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';

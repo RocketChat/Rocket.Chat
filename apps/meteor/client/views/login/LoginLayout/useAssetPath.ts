@@ -1,4 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
+
 import { useSetting } from '../../../contexts/SettingsContext';
 
 type Asset = { url?: string; defaultUrl?: string };

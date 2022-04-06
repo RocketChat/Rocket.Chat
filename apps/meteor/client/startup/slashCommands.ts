@@ -1,8 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { slashCommands, APIClient } from '../../app/utils/client';
-import type { IUser } from '@rocket.chat/core-typings';
 
 let oldUserId: IUser['_id'] | null = null;
 

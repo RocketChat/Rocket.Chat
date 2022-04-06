@@ -1,7 +1,7 @@
+import type { ISetting } from '@rocket.chat/core-typings';
 import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
 import React, { ComponentProps, ReactElement } from 'react';
 
-import type { ISetting } from '@rocket.chat/core-typings';
 import { useRole } from '../../../contexts/AuthorizationContext';
 import { useTranslation, TranslationKey } from '../../../contexts/TranslationContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';

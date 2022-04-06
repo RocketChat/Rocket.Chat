@@ -1,8 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
 import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
-import type { IUser } from '@rocket.chat/core-typings';
 import GenericModal from '../../../../components/GenericModal';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import Reactions from './Reactions';

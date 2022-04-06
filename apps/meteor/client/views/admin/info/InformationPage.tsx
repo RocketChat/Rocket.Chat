@@ -1,10 +1,8 @@
+import type { IInstanceStatus, IServerInfo, IStats } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
-import type { IInstanceStatus } from '@rocket.chat/core-typings';
-import type { IServerInfo } from '@rocket.chat/core-typings';
-import type { IStats } from '@rocket.chat/core-typings';
 import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
 import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card';
 import Page from '../../../components/Page';

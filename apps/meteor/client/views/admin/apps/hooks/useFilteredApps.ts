@@ -1,6 +1,6 @@
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { useMemo, ContextType } from 'react';
 
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import type { AppsContext } from '../AppsContext';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';

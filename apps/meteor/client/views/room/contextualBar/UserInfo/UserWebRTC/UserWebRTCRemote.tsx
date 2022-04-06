@@ -1,8 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import type { IUser } from '@rocket.chat/core-typings';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import UserWebRTCVideo from './UserWebRTCVideo';
 

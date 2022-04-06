@@ -1,7 +1,7 @@
 import type { UpdateWriteOpResult } from 'mongodb';
+import type { IInvite } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import type { IInvite } from '@rocket.chat/core-typings';
 
 type T = IInvite;
 

@@ -2,6 +2,7 @@ import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAre
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
+import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
@@ -15,7 +16,6 @@ import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionE
 import { useForm } from '../../../hooks/useForm';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import DeleteTeamModal from '../../teams/contextualBar/info/Delete/DeleteTeamModal';
-import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
 const getInitialValues = (room) => ({
 	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomCoordinator.getRoomName(room.t, { type: room.t, ...room }),

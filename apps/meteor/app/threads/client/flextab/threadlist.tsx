@@ -1,10 +1,10 @@
 import React, { useMemo, lazy, LazyExoticComponent, FC, ReactNode } from 'react';
 import { BadgeProps } from '@rocket.chat/fuselage';
+import type { ISubscription } from '@rocket.chat/core-typings';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
 import Header from '../../../../client/components/Header';
-import type { ISubscription } from '@rocket.chat/core-typings';
 
 const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['variant'] => {
 	if (tunreadUser > 0) {

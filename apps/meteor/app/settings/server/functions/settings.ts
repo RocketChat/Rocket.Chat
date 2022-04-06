@@ -1,7 +1,8 @@
+import type { ISetting } from '@rocket.chat/core-typings';
+
 import SettingsModel from '../../../models/server/models/Settings';
 import { CachedSettings } from '../CachedSettings';
 import { SettingsRegistry } from '../SettingsRegistry';
-import type { ISetting } from '@rocket.chat/core-typings';
 
 export const settings = new CachedSettings();
 SettingsModel.find().forEach((record: ISetting) => {

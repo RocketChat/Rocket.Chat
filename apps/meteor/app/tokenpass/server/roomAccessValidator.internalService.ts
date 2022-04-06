@@ -1,8 +1,8 @@
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+
 import { ServiceClassInternal } from '../../../server/sdk/types/ServiceClass';
 import { validators } from './roomAccessValidator.compatibility';
 import { IAuthorizationTokenpass } from '../../../server/sdk/types/IAuthorizationTokenpass';
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
 
 export class AuthorizationTokenpass extends ServiceClassInternal implements IAuthorizationTokenpass {
 	protected name = 'authorization-tokenpass';

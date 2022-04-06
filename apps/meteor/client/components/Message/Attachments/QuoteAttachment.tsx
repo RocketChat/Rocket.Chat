@@ -1,10 +1,10 @@
+import { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { FC } from 'react';
 
 import Attachments from '.';
-import { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import MarkdownText from '../../MarkdownText';
 import Attachment from './Attachment';

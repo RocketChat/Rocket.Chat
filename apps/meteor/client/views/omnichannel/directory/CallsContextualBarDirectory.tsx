@@ -1,7 +1,7 @@
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC, useMemo } from 'react';
 
-import type { IVoipRoom } from '@rocket.chat/core-typings';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useRouteParameter, useQueryStringParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';

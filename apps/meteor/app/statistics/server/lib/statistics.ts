@@ -4,6 +4,7 @@ import { log } from 'console';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
+import type { IRoom, IStats } from '@rocket.chat/core-typings';
 
 import { Settings, Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -30,8 +31,6 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { IStats } from '@rocket.chat/core-typings';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 

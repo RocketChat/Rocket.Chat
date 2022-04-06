@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { debounce } from 'lodash';
+import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/client';
 import { Notifications } from '../../../notifications/client';
-import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
 
 const TIMEOUT = 15000;
 const RENEW = TIMEOUT / 3;

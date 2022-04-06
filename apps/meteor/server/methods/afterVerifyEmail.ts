@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import type { IUser, IRole } from '@rocket.chat/core-typings';
 
 import { Users } from '../../app/models/server';
 import { Roles } from '../../app/models/server/raw';
-import type { IUser, IRole } from '@rocket.chat/core-typings';
 
 const rolesToChangeTo: Map<IRole['_id'], [IRole['_id']]> = new Map([['anonymous', ['user']]]);
 

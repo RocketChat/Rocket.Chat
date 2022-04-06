@@ -1,10 +1,10 @@
 import { MongoInternals } from 'meteor/mongo';
 import Future from 'fibers/future';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { addMigration } from '../../lib/migrations';
 import { Rooms } from '../../../app/models/server/raw';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 async function migrateTeamNames(fut) {
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
 import { Roles } from '../../../models/server/raw';
-import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({

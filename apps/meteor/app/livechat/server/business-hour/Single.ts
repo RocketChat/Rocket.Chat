@@ -1,4 +1,5 @@
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+
 import { AbstractBusinessHourBehavior, IBusinessHourBehavior } from './AbstractBusinessHour';
 import { openBusinessHourDefault } from './Helper';
 

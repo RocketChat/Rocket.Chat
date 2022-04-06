@@ -1,5 +1,6 @@
-import { BaseRaw, IndexSpecification } from './BaseRaw';
 import type { IStatistic } from '@rocket.chat/core-typings';
+
+import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class StatisticsRaw extends BaseRaw<IStatistic> {
 	protected indexes: IndexSpecification[] = [{ key: { createdAt: -1 } }];

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { canDeleteMessage } from '../../../authorization/server/functions/canDeleteMessage';
 import { Messages } from '../../../models/server';
 import { deleteMessage } from '../functions';
-import type { IUser } from '@rocket.chat/core-typings';
 
 Meteor.methods({
 	async deleteMessage(message) {

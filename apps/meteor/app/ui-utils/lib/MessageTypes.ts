@@ -1,4 +1,5 @@
 import { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
+
 import type keys from '../../../packages/rocketchat-i18n/i18n/en.i18n.json';
 
 export interface IMessageType {

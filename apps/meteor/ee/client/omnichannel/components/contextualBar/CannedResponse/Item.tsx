@@ -1,10 +1,9 @@
+import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import React, { FC, memo, MouseEvent, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
 const Item: FC<{

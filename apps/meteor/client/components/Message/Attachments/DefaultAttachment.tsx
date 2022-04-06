@@ -1,7 +1,6 @@
+import { isActionAttachment, MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import React, { FC, ReactNode } from 'react';
 
-import { isActionAttachment } from '@rocket.chat/core-typings';
-import { MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment } from './ActionAttachtment';
 import Attachment from './Attachment';

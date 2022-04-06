@@ -1,8 +1,8 @@
+import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, memo, FC, ReactNode, FormEvent, MouseEvent } from 'react';
 
-import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import Page from '../../../components/Page';
 import { useEditableSettingsDispatch, useEditableSettings, IEditableSetting } from '../../../contexts/EditableSettingsContext';
 import { useSettingsDispatch, useSettings } from '../../../contexts/SettingsContext';

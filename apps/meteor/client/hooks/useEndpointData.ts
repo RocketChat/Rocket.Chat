@@ -1,8 +1,7 @@
-import { useCallback, useEffect } from 'react';
 import { Serialized } from '@rocket.chat/core-typings';
-
-import '../../ee/definition/rest';
 import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
+import { useCallback, useEffect } from 'react';
+
 import { useEndpoint } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { AsyncState, useAsyncState } from './useAsyncState';

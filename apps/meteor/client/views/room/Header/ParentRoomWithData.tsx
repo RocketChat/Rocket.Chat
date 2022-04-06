@@ -1,6 +1,6 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import React, { ReactElement } from 'react';
 
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserSubscription } from '../../../contexts/UserContext';
 import ParentRoom from './ParentRoom';
 import ParentRoomWithEndpointData from './ParentRoomWithEndpointData';

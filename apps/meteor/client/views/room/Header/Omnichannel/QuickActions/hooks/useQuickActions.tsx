@@ -1,10 +1,10 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
 
 import { RoomManager } from '../../../../../../../app/ui-utils/client';
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';

@@ -1,8 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { isEqual } from 'underscore';
+import { ISetting, ISettingGroup, isSettingEnterprise, SettingValue } from '@rocket.chat/core-typings';
 
 import type SettingsModel from '../../models/server/models/Settings';
-import { ISetting, ISettingGroup, isSettingEnterprise, SettingValue } from '@rocket.chat/core-typings';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { overwriteSetting } from './functions/overwriteSetting';
 import { overrideSetting } from './functions/overrideSetting';

@@ -12,9 +12,9 @@ import {
 	WithId,
 	WriteOpResult,
 } from 'mongodb';
+import { IUpload as T } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification, InsertionModel } from './BaseRaw';
-import { IUpload as T } from '@rocket.chat/core-typings';
 
 const fillTypeGroup = (fileData: Partial<T>): void => {
 	if (!fileData.type) {

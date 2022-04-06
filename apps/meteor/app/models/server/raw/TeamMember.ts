@@ -8,10 +8,9 @@ import {
 	DeleteWriteOpResultObject,
 	FilterQuery,
 } from 'mongodb';
+import type { ITeamMember, IUser, IRole } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import type { ITeamMember } from '@rocket.chat/core-typings';
-import type { IUser, IRole } from '@rocket.chat/core-typings';
 
 type T = ITeamMember;
 export class TeamMemberRaw extends BaseRaw<T> {

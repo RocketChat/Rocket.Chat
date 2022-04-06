@@ -1,6 +1,6 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { useCallback, useMemo } from 'react';
 
-import type { IUser } from '@rocket.chat/core-typings';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';

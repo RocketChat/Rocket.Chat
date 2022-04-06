@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
+
 import { businessHourManager } from '../business-hour';
 
 Meteor.methods({

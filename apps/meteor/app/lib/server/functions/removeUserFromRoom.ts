@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { Rooms, Messages, Subscriptions } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Team } from '../../../../server/sdk';
-import type { IUser } from '@rocket.chat/core-typings';
 
 export const removeUserFromRoom = async function (
 	rid: string,

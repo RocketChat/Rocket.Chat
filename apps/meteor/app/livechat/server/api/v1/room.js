@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, LivechatRooms } from '../../../../models';
@@ -10,7 +11,6 @@ import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } 
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { canAccessRoom } from '../../../../authorization/server';
 import { addUserToRoom } from '../../../../lib/server/functions';
 

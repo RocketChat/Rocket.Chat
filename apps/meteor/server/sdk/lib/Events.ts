@@ -1,28 +1,30 @@
 import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type {
+	IEmailInbox,
+	IEmoji,
+	IInquiry,
+	IInstanceStatus,
+	IIntegration,
+	IIntegrationHistory,
+	ILivechatDepartmentAgents,
+	ILoginServiceConfiguration,
+	IMessage,
+	INotificationDesktop,
+	IPbxEvent,
+	IRole,
+	IRoom,
+	ISetting,
+	ISocketConnection,
+	ISubscription,
+	IUser,
+	IUserSession,
+	IUserStatus,
+	IInvite,
+	IWebdavAccount,
+	ICustomSound,
+} from '@rocket.chat/core-typings';
 
-import type { IEmailInbox } from '@rocket.chat/core-typings';
-import type { IEmoji } from '@rocket.chat/core-typings';
-import type { IInquiry } from '@rocket.chat/core-typings';
-import type { IInstanceStatus } from '@rocket.chat/core-typings';
-import type { IIntegration } from '@rocket.chat/core-typings';
-import type { IIntegrationHistory } from '@rocket.chat/core-typings';
-import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import type { ILoginServiceConfiguration } from '@rocket.chat/core-typings';
-import type { IMessage } from '@rocket.chat/core-typings';
-import type { INotificationDesktop } from '@rocket.chat/core-typings';
-import type { IPbxEvent } from '@rocket.chat/core-typings';
-import type { IRole } from '@rocket.chat/core-typings';
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { ISetting } from '@rocket.chat/core-typings';
-import type { ISocketConnection } from '@rocket.chat/core-typings';
-import type { ISubscription } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
-import type { IUserSession } from '@rocket.chat/core-typings';
-import type { IUserStatus } from '@rocket.chat/core-typings';
 import { AutoUpdateRecord } from '../types/IMeteor';
-import type { IInvite } from '@rocket.chat/core-typings';
-import type { IWebdavAccount } from '@rocket.chat/core-typings';
-import type { ICustomSound } from '@rocket.chat/core-typings';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 

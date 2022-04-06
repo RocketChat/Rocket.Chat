@@ -5,12 +5,9 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import ldapEscape from 'ldap-escape';
 import _ from 'underscore';
-
-import { ILDAPEntry } from '@rocket.chat/core-typings';
-import { LDAPLoginResult } from '@rocket.chat/core-typings';
-import { ILDAPUniqueIdentifierField } from '@rocket.chat/core-typings';
-import { IUser, LoginUsername } from '@rocket.chat/core-typings';
+import { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername } from '@rocket.chat/core-typings';
 import type { IImportUser } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../app/settings/server';
 import { Users as UsersRaw } from '../../../app/models/server/raw';
 import { LDAPConnection } from './Connection';

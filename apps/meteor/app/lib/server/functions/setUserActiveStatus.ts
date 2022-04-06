@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import type { IUser, IUserEmail, IDirectMessageRoom } from '@rocket.chat/core-typings';
 
 import * as Mailer from '../../../mailer';
 import { Users, Subscriptions, Rooms } from '../../../models/server';
@@ -10,8 +11,6 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
-import type { IDirectMessageRoom } from '@rocket.chat/core-typings';
 
 function reactivateDirectConversations(userId: string): void {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active

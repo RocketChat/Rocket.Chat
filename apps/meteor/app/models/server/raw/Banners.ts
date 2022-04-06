@@ -1,6 +1,6 @@
 import { Collection, Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, InsertOneWriteOpResult } from 'mongodb';
-
 import { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
+
 import { BaseRaw } from './BaseRaw';
 
 type T = IBanner;

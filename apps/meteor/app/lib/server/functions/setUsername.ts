@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
@@ -12,7 +13,6 @@ import { api } from '../../../../server/sdk/api';
 import { checkUsernameAvailability, setUserAvatar } from '.';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import type { IUser } from '@rocket.chat/core-typings';
 
 export const _setUsername = function (userId: string, u: string, fullUser: IUser): unknown {
 	const username = s.trim(u);

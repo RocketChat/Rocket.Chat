@@ -1,10 +1,10 @@
 import { Db, Collection } from 'mongodb';
 import mem from 'mem';
+import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
 
 import { IAuthorization, RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
-import type { IUser } from '@rocket.chat/core-typings';
 import { canAccessRoom } from './canAccessRoom';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
@@ -13,9 +13,6 @@ import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
-import type { IRole } from '@rocket.chat/core-typings';
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { ISubscription } from '@rocket.chat/core-typings';
 import { License } from '../../sdk';
 
 import './canAccessRoomLivechat';

@@ -1,16 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { FilterQuery } from 'mongodb';
+import type {
+	IMessage,
+	IRoom,
+	IUser,
+	ILivechatDepartmentRecord,
+	ILivechatAgent,
+	OmnichannelAgentStatus,
+	ILivechatInquiryRecord,
+	ILivechatVisitor,
+} from '@rocket.chat/core-typings';
 
-import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { Logger } from '../app/logger/server';
-import type { IMessage } from '@rocket.chat/core-typings';
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
-import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
-import type { OmnichannelAgentStatus } from '@rocket.chat/core-typings';
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import { getRandomId } from './random';
 
 enum CallbackPriority {

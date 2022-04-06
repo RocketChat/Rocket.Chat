@@ -1,9 +1,7 @@
-import { Stream } from '../Streamer';
+import type { ISubscription, IRoom, IUser, ISetting } from '@rocket.chat/core-typings';
+
 import { NotificationsModule } from '../../../../../server/modules/notifications/notifications.module';
-import type { ISubscription } from '@rocket.chat/core-typings';
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
-import type { ISetting } from '@rocket.chat/core-typings';
+import { Stream } from '../Streamer';
 import { Collections, getConnection } from '../../mongo';
 import { RoomsRaw } from '../../../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../../../app/models/server/raw/Subscriptions';

@@ -1,7 +1,7 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import Field from '../../../components/Field';

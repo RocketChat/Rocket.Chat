@@ -3,13 +3,12 @@ import Agenda from 'agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../../app/settings/server';
 import { Logger } from '../../../../../app/logger/server';
 import { LivechatRooms, Users, LivechatInquiry } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
-import type { IUser } from '@rocket.chat/core-typings';
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 

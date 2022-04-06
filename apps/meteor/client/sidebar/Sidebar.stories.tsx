@@ -1,8 +1,7 @@
+import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
 import { Meta, Story } from '@storybook/react';
 import React, { ContextType } from 'react';
 
-import type { ISetting } from '@rocket.chat/core-typings';
-import type { ISubscription } from '@rocket.chat/core-typings';
 import { SettingsContext } from '../contexts/SettingsContext';
 import { UserContext } from '../contexts/UserContext';
 import RoomList from './RoomList/index';

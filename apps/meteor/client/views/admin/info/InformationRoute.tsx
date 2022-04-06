@@ -1,7 +1,7 @@
+import type { IStats } from '@rocket.chat/core-typings';
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import React, { useState, useEffect, memo, ReactElement } from 'react';
 
-import type { IStats } from '@rocket.chat/core-typings';
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { usePermission } from '../../../contexts/AuthorizationContext';

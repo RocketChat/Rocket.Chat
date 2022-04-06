@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { hasPermission, hasRole } from '../../../authorization/server';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
 import { Roles } from '../../../models/server/raw';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import type { IUser } from '@rocket.chat/core-typings';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
 Meteor.methods({

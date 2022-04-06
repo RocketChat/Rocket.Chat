@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import { isOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { Users } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings/server';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';
-import { isOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
 
 callbacks.add(
 	'beforeJoinRoom',

@@ -1,4 +1,23 @@
 import mem from 'mem';
+import type {
+	IMessage,
+	ISubscription,
+	IRole,
+	IRoom,
+	IBaseData,
+	IPermission,
+	ILivechatInquiryRecord,
+	IUserSession,
+	IUser,
+	ILoginServiceConfiguration,
+	IInstanceStatus,
+	IIntegrationHistory,
+	ILivechatDepartmentAgents,
+	IIntegration,
+	IEmailInbox,
+	IPbxEvent,
+} from '@rocket.chat/core-typings';
+import { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
@@ -7,36 +26,19 @@ import { PermissionsRaw } from '../../../app/models/server/raw/Permissions';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
-import type { IMessage } from '@rocket.chat/core-typings';
-import type { ISubscription } from '@rocket.chat/core-typings';
-import type { IRole } from '@rocket.chat/core-typings';
-import type { IRoom } from '@rocket.chat/core-typings';
 import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
-import type { IBaseData } from '@rocket.chat/core-typings';
-import type { IPermission } from '@rocket.chat/core-typings';
-import { ISetting, SettingValue } from '@rocket.chat/core-typings';
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
-import type { IUserSession } from '@rocket.chat/core-typings';
 import { subscriptionFields, roomFields } from './publishFields';
-import type { IUser } from '@rocket.chat/core-typings';
 import { LoginServiceConfigurationRaw } from '../../../app/models/server/raw/LoginServiceConfiguration';
-import type { ILoginServiceConfiguration } from '@rocket.chat/core-typings';
-import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatusRaw } from '../../../app/models/server/raw/InstanceStatus';
 import { IntegrationHistoryRaw } from '../../../app/models/server/raw/IntegrationHistory';
-import type { IIntegrationHistory } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/LivechatDepartmentAgents';
-import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import type { IIntegration } from '@rocket.chat/core-typings';
 import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
-import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
-import type { IPbxEvent } from '@rocket.chat/core-typings';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;

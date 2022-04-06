@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 
 import { LDAPEE } from '../sdk';
 import { settings } from '../../../app/settings/server';
@@ -7,9 +8,6 @@ import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../lib/callbacks';
-import type { IImportUser } from '@rocket.chat/core-typings';
-import type { ILDAPEntry } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
 import { onLicense } from '../../app/license/server';
 import { addSettings } from '../settings/ldap';
 

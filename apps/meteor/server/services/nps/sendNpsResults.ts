@@ -1,9 +1,9 @@
 import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
+import type { INpsVote } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import type { INpsVote } from '@rocket.chat/core-typings';
 import { SystemLogger } from '../../lib/logger/system';
 
 type NPSResultPayload = {

@@ -1,3 +1,4 @@
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
@@ -7,7 +8,6 @@ import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast } from '@rocket.chat/core-typings';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { roomCoordinator } from '../roomCoordinator';
 

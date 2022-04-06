@@ -1,8 +1,8 @@
 import moment from 'moment';
 import { AggregationCursor } from 'mongodb';
+import type { ILivechatAgentActivity } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import type { ILivechatAgentActivity } from '@rocket.chat/core-typings';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 	findAllAverageAvailableServiceTime({ date, departmentId }: { date: Date; departmentId: string }): Promise<ILivechatAgentActivity[]> {

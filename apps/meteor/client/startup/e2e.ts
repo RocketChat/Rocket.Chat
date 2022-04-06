@@ -1,3 +1,4 @@
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -6,9 +7,6 @@ import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
 import { settings } from '../../app/settings/client';
-import type { IMessage } from '@rocket.chat/core-typings';
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { ISubscription } from '@rocket.chat/core-typings';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';

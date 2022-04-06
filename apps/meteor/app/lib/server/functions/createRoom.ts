@@ -2,6 +2,8 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
+import type { IUser } from '@rocket.chat/core-typings';
+import { IRoom, RoomType } from '@rocket.chat/core-typings';
 
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
@@ -10,9 +12,7 @@ import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
-import type { IUser } from '@rocket.chat/core-typings';
 import { ICreateRoomParams, ISubscriptionExtraData } from '../../../../server/sdk/types/IRoomService';
-import { IRoom, RoomType } from '@rocket.chat/core-typings';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && s.trim(name).length > 0;

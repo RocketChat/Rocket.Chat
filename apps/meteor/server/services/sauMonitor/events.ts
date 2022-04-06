@@ -1,5 +1,4 @@
 import { Emitter } from '@rocket.chat/emitter';
-
 import type { ISocketConnection } from '@rocket.chat/core-typings';
 
 export const sauEvents = new Emitter<{

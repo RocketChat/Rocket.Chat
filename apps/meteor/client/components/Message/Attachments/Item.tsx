@@ -1,9 +1,6 @@
+import { isFileAttachment, FileProp, MessageAttachmentBase, isQuoteAttachment } from '@rocket.chat/core-typings';
 import React, { FC, memo } from 'react';
 
-import { isFileAttachment } from '@rocket.chat/core-typings';
-import { FileProp } from '@rocket.chat/core-typings';
-import { MessageAttachmentBase } from '@rocket.chat/core-typings';
-import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import DefaultAttachment from './DefaultAttachment';
 import { FileAttachment } from './Files';
 import { QuoteAttachment } from './QuoteAttachment';

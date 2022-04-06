@@ -1,9 +1,9 @@
 import { HTTP } from 'meteor/http';
+import { CloudRegistrationIntentData } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { CloudRegistrationIntentData } from '@rocket.chat/core-typings';
 
 export async function startRegisterWorkspaceSetupWizard(resend = false, email: string): Promise<CloudRegistrationIntentData> {
 	const regInfo = await buildWorkspaceRegistrationData(email);

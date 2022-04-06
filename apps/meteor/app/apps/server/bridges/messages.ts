@@ -2,13 +2,13 @@ import { ITypingDescriptor, MessageBridge } from '@rocket.chat/apps-engine/serve
 import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { ISubscription } from '@rocket.chat/core-typings';
 
 import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { api } from '../../../../server/sdk/api';
 import notifications from '../../../notifications/server/lib/Notifications';
-import type { ISubscription } from '@rocket.chat/core-typings';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppMessageBridge extends MessageBridge {

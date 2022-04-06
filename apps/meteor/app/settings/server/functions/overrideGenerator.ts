@@ -1,4 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
+
 import { convertValue } from './convertValue';
 
 export const overrideGenerator =

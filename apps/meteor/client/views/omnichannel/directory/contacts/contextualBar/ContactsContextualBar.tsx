@@ -1,6 +1,6 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import React, { FC } from 'react';
 
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';

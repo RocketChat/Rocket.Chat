@@ -6,9 +6,9 @@ import s from 'underscore.string';
 import juice from 'juice';
 import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import type { ISetting } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
-import type { ISetting } from '@rocket.chat/core-typings';
 import { replaceVariables } from './replaceVariables';
 import { Apps } from '../../apps/server';
 import { validateEmail } from '../../../lib/emailValidator';

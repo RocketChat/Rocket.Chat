@@ -1,11 +1,10 @@
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import React, { ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { createAnchor } from '../../../../../lib/utils/createAnchor';
 import { useWebRTC } from '../../../hooks/useWebRTC';

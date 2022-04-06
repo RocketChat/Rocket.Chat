@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import { Option } from '@rocket.chat/fuselage';
-
 import type { IUser } from '@rocket.chat/core-typings';
+
 import { TranslationKey } from '../../../../client/contexts/TranslationContext';
 
 export declare const AccountBox: {

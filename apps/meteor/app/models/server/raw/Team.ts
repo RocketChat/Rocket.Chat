@@ -7,9 +7,9 @@ import {
 	DeleteWriteOpResultObject,
 	FilterQuery,
 } from 'mongodb';
+import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
 export class TeamRaw extends BaseRaw<ITeam> {
 	constructor(public readonly col: Collection<ITeam>, trash?: Collection<ITeam>) {

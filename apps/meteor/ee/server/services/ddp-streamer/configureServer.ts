@@ -1,8 +1,9 @@
 import { EventEmitter } from 'events';
 
+import { UserStatus } from '@rocket.chat/core-typings';
+
 import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Account, Presence, MeteorService } from '../../../../server/sdk';
-import { UserStatus } from '@rocket.chat/core-typings';
 import { Server } from './Server';
 import { api } from '../../../../server/sdk/api';
 import { MeteorError } from '../../../../server/sdk/errors';

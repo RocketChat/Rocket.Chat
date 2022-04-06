@@ -1,3 +1,4 @@
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
@@ -9,7 +10,6 @@ import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast } from '@rocket.chat/core-typings';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 

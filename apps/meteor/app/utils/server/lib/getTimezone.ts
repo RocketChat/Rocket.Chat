@@ -1,7 +1,7 @@
 import moment from 'moment-timezone';
+import { SettingValue } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
-import { SettingValue } from '@rocket.chat/core-typings';
 
 const padOffset = (offset: string | number): string => {
 	const numberOffset = Number(offset);

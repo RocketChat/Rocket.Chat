@@ -1,7 +1,7 @@
 import { DeleteWriteOpResultObject, UpdateWriteOpResult } from 'mongodb';
+import { IAvatar as T } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IAvatar as T } from '@rocket.chat/core-typings';
 
 export class AvatarsRaw extends BaseRaw<T> {
 	protected indexes: IndexSpecification[] = [

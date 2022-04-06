@@ -1,7 +1,7 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect, MouseEventHandler } from 'react';
 
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSession } from '../../../contexts/SessionContext';
 import { useSetting } from '../../../contexts/SettingsContext';

@@ -1,14 +1,12 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
 
 import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { Team } from '../../../../server/sdk';
-
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import type { IUser } from '@rocket.chat/core-typings';
-import type { IRoom } from '@rocket.chat/core-typings';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
 export const addUserToRoom = function (

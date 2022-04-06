@@ -1,7 +1,7 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import React, { ReactElement, ReactNode, useCallback } from 'react';
 
 import { Users } from '../../../../app/models/client';
-import type { IUser } from '@rocket.chat/core-typings';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useUserId } from '../../../contexts/UserContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';

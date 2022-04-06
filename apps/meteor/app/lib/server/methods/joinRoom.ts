@@ -5,7 +5,6 @@ import { hasPermission, canAccessRoom } from '../../../authorization/server';
 import { Rooms } from '../../../models/server';
 import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';
 import { addUserToRoom } from '../functions';
-
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { UiTextContext } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { getUserPreference } from '../../utils';
-import { UiTextContext } from '@rocket.chat/core-typings';
 import { settings } from '../../settings';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 

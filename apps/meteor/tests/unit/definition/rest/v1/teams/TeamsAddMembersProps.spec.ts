@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-
 import { isTeamsAddMembersProps } from '@rocket.chat/rest-typings';
 
 describe('TeamsAddMemberProps (definition/rest/v1)', () => {

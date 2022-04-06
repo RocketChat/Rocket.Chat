@@ -1,9 +1,9 @@
+import { UiTextContext } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
-import { UiTextContext } from '@rocket.chat/core-typings';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';

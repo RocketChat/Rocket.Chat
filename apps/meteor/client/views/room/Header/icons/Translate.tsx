@@ -1,7 +1,7 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { FC, memo } from 'react';
 
-import type { IRoom } from '@rocket.chat/core-typings';
 import Header from '../../../../components/Header';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';

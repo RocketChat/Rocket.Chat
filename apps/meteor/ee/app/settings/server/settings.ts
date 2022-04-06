@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server/functions/settings';
 import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
 import SettingsModel from '../../../../app/models/server/models/Settings';
-import { ISetting, SettingValue } from '@rocket.chat/core-typings';
 import { use } from '../../../../app/settings/server/Middleware';
 import { SettingsEvents } from '../../../../app/settings/server';
 

@@ -2,15 +2,14 @@ import crypto from 'crypto';
 
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
-import type { IUser } from '@rocket.chat/core-typings';
 import { ICodeCheck } from './ICodeCheck';
 import { Users } from '../../../models/server';
-import type { IMethodConnection } from '@rocket.chat/core-typings';
 
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;

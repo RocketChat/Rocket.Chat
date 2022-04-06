@@ -1,8 +1,7 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@rocket.chat/core-typings';
 
 declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface Endpoints {
 		'canned-responses': {
 			GET: (params: {

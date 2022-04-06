@@ -10,8 +10,7 @@
  */
 
 import type { IQueueMembershipSubscription } from '@rocket.chat/core-typings';
-import { ICallerInfo } from '@rocket.chat/core-typings';
-import { IQueueInfo } from '@rocket.chat/core-typings';
+import { ICallerInfo, IQueueInfo } from '@rocket.chat/core-typings';
 
 interface IQueueServingRecord {
 	queueInfo: IQueueInfo;

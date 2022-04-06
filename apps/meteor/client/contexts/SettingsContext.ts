@@ -1,7 +1,6 @@
+import { SettingId, ISetting, GroupId, SectionName, TabId } from '@rocket.chat/core-typings';
 import { createContext, useCallback, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
-
-import { SettingId, ISetting, GroupId, SectionName, TabId } from '@rocket.chat/core-typings';
 
 export type SettingsContextQuery = {
 	readonly _id?: SettingId[];
