@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import $ from 'jquery';
 import React, { useState, useEffect } from 'react';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
@@ -154,7 +155,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 				</Field.Row>
 			</Field>
 
-			{errorMessage && <Callout type={'danger'} title={errorMessage} />}
+			{errorMessage && <Callout type={'danger'}>{errorMessage}</Callout>}
 
 			<ButtonGroup stretch mb='x12'>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>

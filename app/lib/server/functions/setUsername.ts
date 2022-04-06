@@ -92,6 +92,7 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
 	0() {
-		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
+		const userId = Meteor.userId();
+		return !userId || !hasPermission(userId, 'edit-other-user-info');
 	},
 });

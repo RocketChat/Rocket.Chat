@@ -1,13 +1,16 @@
 import { useEffect } from 'react';
 
+import { useUserId } from '../../../contexts/UserContext';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 
 export const useCustomScript = (): void => {
+	const uid = useUserId();
 	useEffect(() => {
-		fireGlobalEvent('Custom_Script_Logged_In');
+		if (uid) {
+			fireGlobalEvent('Custom_Script_Logged_In');
+			return;
+		}
 
-		return (): void => {
-			fireGlobalEvent('Custom_Script_Logged_Out');
-		};
-	}, []);
+		fireGlobalEvent('Custom_Script_Logged_Out');
+	}, [uid]);
 };

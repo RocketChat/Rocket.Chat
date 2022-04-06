@@ -11,20 +11,13 @@ import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
 
-type UseVoipClientResult = UseVoipClientResultResolved | UseVoipClientResultError | UseVoipClientResultLoading;
-
-type UseVoipClientResultResolved = {
-	voipClient: VoIPUser;
-	registrationInfo: IRegistrationInfo;
+type UseVoipClientResult = {
+	voipClient?: VoIPUser;
+	registrationInfo?: IRegistrationInfo;
+	error?: Error | unknown;
 };
-type UseVoipClientResultError = { error: Error };
-type UseVoipClientResultLoading = Record<string, never>;
 
-export const isUseVoipClientResultError = (result: UseVoipClientResult): result is UseVoipClientResultError =>
-	!!(result as UseVoipClientResultError).error;
-
-export const isUseVoipClientResultLoading = (result: UseVoipClientResult): result is UseVoipClientResultLoading =>
-	!result || !Object.keys(result).length;
+const empty = {};
 
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
@@ -34,16 +27,18 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
 	const user = useUser();
 	const iceServers = useWebRtcServers();
-
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
 
 	useEffect(() => {
-		if (!user || !user?._id || !user?.extension || !voipEnabled) {
-			setResult({});
+		const uid = user?._id;
+		const userExtension = user?.extension;
+
+		if (!uid || !userExtension || !voipEnabled) {
+			setResult(empty);
 			return;
 		}
-
-		registrationInfo({ id: user._id }).then(
+		let client: VoIPUser;
+		registrationInfo({ id: uid }).then(
 			(data) => {
 				let parsedData: IRegistrationInfo;
 				if (isSignedResponse(data)) {
@@ -59,30 +54,30 @@ export const useVoipClient = (): UseVoipClientResult => {
 					callServerConfig: { websocketPath },
 				} = parsedData;
 
-				let client: VoIPUser;
 				(async (): Promise<void> => {
 					try {
 						const subscription = await membership({ extension });
 						client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, 'video');
 						// Today we are hardcoding workflow mode.
-						// In futue, this should be read from configuration
+						// In future, this should be ready from configuration
 						client.setWorkflowMode(WorkflowTypes.CONTACT_CENTER_USER);
 						client.setMembershipSubscription(subscription);
 						setResult({ voipClient: client, registrationInfo: parsedData });
-					} catch (e) {
-						setResult({ error: e as Error });
+					} catch (error) {
+						setResult({ error });
 					}
 				})();
 			},
-			(error) => {
-				setResult({ error: error as Error });
+			(error: Error) => {
+				setResult({ error });
 			},
 		);
 		return (): void => {
-			// client?.disconnect();
-			// TODO how to close the client? before creating a new one?
+			if (client) {
+				client.clear();
+			}
 		};
-	}, [user, iceServers, registrationInfo, setResult, membership, voipEnabled]);
+	}, [iceServers, registrationInfo, setResult, membership, voipEnabled, user?._id, user?.extension]);
 
 	return result;
 };

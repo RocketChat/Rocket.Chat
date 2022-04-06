@@ -7,6 +7,7 @@ import { useSessionDispatch } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { call } from '../../lib/utils/call';
+import LoginPage from '../root/MainLayout/LoginPage';
 import PageLoading from '../root/PageLoading';
 
 const SecretURLPage = (): ReactElement => {
@@ -16,7 +17,7 @@ const SecretURLPage = (): ReactElement => {
 	const registrationForm = useSetting('Accounts_RegistrationForm');
 	const setLoginDefaultState = useSessionDispatch('loginDefaultState');
 
-	const { isLoading } = useQuery(
+	const { isLoading, data } = useQuery(
 		['secretURL', hash],
 		async () => {
 			if (registrationForm !== 'Secret URL' || !hash) {
@@ -39,6 +40,10 @@ const SecretURLPage = (): ReactElement => {
 
 	if (isLoading) {
 		return <PageLoading />;
+	}
+
+	if (data) {
+		return <LoginPage />;
 	}
 
 	return (

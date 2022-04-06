@@ -6,4 +6,8 @@ settingsRegistry.addGroup('OTR', function () {
 		i18nLabel: 'Enabled',
 		public: true,
 	});
+	this.add('OTR_Count', 0, {
+		type: 'int',
+		hidden: true,
+	});
 });

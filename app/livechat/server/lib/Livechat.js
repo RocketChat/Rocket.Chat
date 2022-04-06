@@ -30,14 +30,7 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import {
-	addUserRoles,
-	hasPermission,
-	hasRole,
-	removeUserFromRoles,
-	canAccessRoom,
-	roomAccessAttributes,
-} from '../../../authorization/server';
+import { hasPermission, hasRole, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -48,6 +41,8 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { Users as UsersRaw } from '../../../models/server/raw';
+import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
+import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
 
 const logger = new Logger('Livechat');
 
@@ -910,7 +905,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addAgent' });
 		}
 
-		if (addUserRoles(user._id, 'livechat-agent')) {
+		if (addUserRoles(user._id, ['livechat-agent'])) {
 			Users.setOperator(user._id, true);
 			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
 			return user;
@@ -930,7 +925,7 @@ export const Livechat = {
 			});
 		}
 
-		if (addUserRoles(user._id, 'livechat-manager')) {
+		if (addUserRoles(user._id, ['livechat-manager'])) {
 			return user;
 		}
 
@@ -950,7 +945,7 @@ export const Livechat = {
 
 		const { _id } = user;
 
-		if (removeUserFromRoles(_id, 'livechat-agent')) {
+		if (removeUserFromRoles(_id, ['livechat-agent'])) {
 			Users.setOperator(_id, false);
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
@@ -972,7 +967,7 @@ export const Livechat = {
 			});
 		}
 
-		return removeUserFromRoles(user._id, 'livechat-manager');
+		return removeUserFromRoles(user._id, ['livechat-manager']);
 	},
 
 	removeGuest(_id) {

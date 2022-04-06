@@ -2,7 +2,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { onLicense } from '../../license/server';
-import { Permissions, Roles } from '../../../../app/models/server/raw';
+import { Permissions } from '../../../../app/models/server/raw';
+import { createOrUpdateProtectedRole } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 onLicense('auditing', () => {
 	require('./methods');
@@ -14,14 +15,14 @@ onLicense('auditing', () => {
 		];
 
 		const defaultRoles = [
-			{ name: 'auditor', scope: 'Users' as const },
-			{ name: 'auditor-log', scope: 'Users' as const },
-		];
+			{ name: 'auditor', scope: 'Users' },
+			{ name: 'auditor-log', scope: 'Users' },
+		] as const;
 
 		permissions.forEach((permission) => {
 			Permissions.create(permission._id, permission.roles);
 		});
 
-		defaultRoles.forEach((role) => Roles.createOrUpdate(role.name, role.scope));
+		defaultRoles.forEach((role) => createOrUpdateProtectedRole(role.name, role));
 	});
 });

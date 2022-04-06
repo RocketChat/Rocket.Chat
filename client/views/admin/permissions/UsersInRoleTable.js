@@ -9,7 +9,7 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import UserRow from './UserRow';
 
-function UsersInRoleTable({ data, reload, roleName, description, total, params, setParams, rid }) {
+function UsersInRoleTable({ data, reload, roleName, roleId, description, total, params, setParams, rid }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -21,7 +21,7 @@ function UsersInRoleTable({ data, reload, roleName, description, total, params, 
 	const onRemove = useMutableCallback((username) => {
 		const remove = async () => {
 			try {
-				await removeUser({ roleName, username, rid });
+				await removeUser({ roleId, username, scope: rid });
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -32,7 +32,7 @@ function UsersInRoleTable({ data, reload, roleName, description, total, params, 
 
 		setModal(
 			<GenericModal variant='danger' onConfirm={remove} onCancel={closeModal} confirmText={t('Delete')}>
-				{t('The_user_s_will_be_removed_from_role_s', username, description || roleName)}
+				{t('The_user_s_will_be_removed_from_role_s', username, description || roleName || roleId)}
 			</GenericModal>,
 		);
 	});
