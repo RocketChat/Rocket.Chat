@@ -34,7 +34,9 @@ describe('[Discussion]', function () {
 
 		it('it should show a dialog for starting a discussion', () => {
 			mainContent.openMessageActionMenu();
-			cy.wait(400);
+			cy.waitUntil(() => {
+				return discussion.startDiscussionContextItem.then((el) => el.length);
+			});
 			discussion.startDiscussionContextItem.click();
 			discussion.saveDiscussionButton.should('be.enabled');
 			discussion.saveDiscussionButton.click();
