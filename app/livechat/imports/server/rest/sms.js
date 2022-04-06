@@ -187,6 +187,9 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					if (sms.extra.fromCity) {
 						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
 					}
+					if (sms.extra.toPhone) {
+						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'phoneNumber', sms.extra.toPhone);
+					}
 				}
 			});
 
