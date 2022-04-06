@@ -30,7 +30,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { values: formValues, handlers: formHandlers, reset } = useForm(getInitialValue(data));
+	const { values: formValues, handlers: formHandlers, hasUnsavedChanges, reset } = useForm(getInitialValue(data));
 	const setModal = useSetModal();
 
 	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [data._id]);
@@ -81,10 +81,10 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 				<Field.Row display='flex' flexDirection='column'>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 						<Margins inlineEnd='x4'>
-							<Button flexGrow={1} type='reset' onClick={reset}>
+							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
 								{t('Reset')}
 							</Button>
-							<Button mie='none' flexGrow={1} onClick={handleSave}>
+							<Button mie='none' flexGrow={1} primary disabled={!hasUnsavedChanges} onClick={handleSave}>
 								{t('Save')}
 							</Button>
 						</Margins>
