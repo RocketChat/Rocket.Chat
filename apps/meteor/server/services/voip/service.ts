@@ -4,22 +4,12 @@ import mem from 'mem';
 import { IVoipService } from '../../sdk/types/IVoipService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
-import {
-	ServerType,
-	isICallServerConfigData,
-	IVoipCallServerConfig,
-	IVoipManagementServerConfig,
-} from '../../../definition/IVoipServerConfig';
+import { ServerType, isICallServerConfigData, IVoipCallServerConfig, IVoipManagementServerConfig } from '@rocket.chat/core-typings';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
 import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
-import {
-	IQueueMembershipDetails,
-	IQueueMembershipSubscription,
-	IRegistrationInfo,
-	isIExtensionDetails,
-} from '../../../definition/IVoipExtension';
+import { IQueueMembershipDetails, IQueueMembershipSubscription, IRegistrationInfo, isIExtensionDetails } from '@rocket.chat/core-typings';
 import type { IQueueDetails, IQueueSummary } from '@rocket.chat/core-typings';
 import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
 import type { IManagementServerConnectionStatus } from '@rocket.chat/core-typings';

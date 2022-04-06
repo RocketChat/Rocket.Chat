@@ -2,8 +2,8 @@ import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { ICallerInfo } from '../../definition/voip/ICallerInfo';
-import { VoIpCallerInfo } from '../../definition/voip/VoIpCallerInfo';
+import { ICallerInfo } from '@rocket.chat/core-typings';
+import { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
 export type CallContextValue = CallContextDisabled | CallContextEnabled | CallContextReady | CallContextError;

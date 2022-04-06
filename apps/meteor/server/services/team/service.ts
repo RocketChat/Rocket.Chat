@@ -13,7 +13,7 @@ import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '../../../definition/ITeam';
+import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Messages } from '../../../app/models/server';
 import { Room, Authorization } from '../../sdk';

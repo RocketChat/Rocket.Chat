@@ -1,7 +1,7 @@
 import { LDAPManager } from '../../lib/ldap/Manager';
 import { ILDAPService } from '../../sdk/types/ILDAPService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { LDAPLoginResult } from '../../../definition/ldap/ILDAPLoginResult';
+import { LDAPLoginResult } from '@rocket.chat/core-typings';
 
 export class LDAPService extends ServiceClassInternal implements ILDAPService {
 	protected name = 'ldap';

@@ -4,7 +4,7 @@ import { API } from '../../api';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { canAccessRoom } from '../../../../authorization/server';
 import { VoipRoom } from '../../../../models/server/raw';
-import { VoipClientEvents } from '../../../../../definition/voip/VoipClientEvents';
+import { VoipClientEvents } from '@rocket.chat/core-typings';
 
 API.v1.addRoute(
 	'voip/events',

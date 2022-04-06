@@ -1,4 +1,4 @@
-import { IMediaStreamRenderer } from '../../../definition/voip/VoIPUserConfiguration';
+import { IMediaStreamRenderer } from '@rocket.chat/core-typings';
 import { VoIPUser } from './VoIPUser';
 
 export class SimpleVoipUser {

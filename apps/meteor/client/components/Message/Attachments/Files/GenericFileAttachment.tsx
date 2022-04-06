@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
-import { FileProp } from '../../../../../definition/IMessage/MessageAttachment/Files/FileProp';
-import { MessageAttachmentBase } from '../../../../../definition/IMessage/MessageAttachment/MessageAttachmentBase';
+import { FileProp } from '@rocket.chat/core-typings';
+import { MessageAttachmentBase } from '@rocket.chat/core-typings';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import { useMediaUrl } from '../context/AttachmentContext';

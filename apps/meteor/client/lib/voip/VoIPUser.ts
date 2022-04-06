@@ -24,14 +24,14 @@ import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/cor
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
 import type { IQueueMembershipSubscription } from '@rocket.chat/core-typings';
-import { CallStates } from '../../../definition/voip/CallStates';
-import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
-import { Operation } from '../../../definition/voip/Operations';
-import { UserState } from '../../../definition/voip/UserState';
-import { IMediaStreamRenderer, VoIPUserConfiguration } from '../../../definition/voip/VoIPUserConfiguration';
-import { VoIpCallerInfo, IState } from '../../../definition/voip/VoIpCallerInfo';
-import { VoipEvents } from '../../../definition/voip/VoipEvents';
-import { WorkflowTypes } from '../../../definition/voip/WorkflowTypes';
+import { CallStates } from '@rocket.chat/core-typings';
+import { ICallerInfo } from '@rocket.chat/core-typings';
+import { Operation } from '@rocket.chat/core-typings';
+import { UserState } from '@rocket.chat/core-typings';
+import { IMediaStreamRenderer, VoIPUserConfiguration } from '@rocket.chat/core-typings';
+import { VoIpCallerInfo, IState } from '@rocket.chat/core-typings';
+import { VoipEvents } from '@rocket.chat/core-typings';
+import { WorkflowTypes } from '@rocket.chat/core-typings';
 import { toggleMediaStreamTracks } from './Helper';
 import { QueueAggregator } from './QueueAggregator';
 import Stream from './Stream';

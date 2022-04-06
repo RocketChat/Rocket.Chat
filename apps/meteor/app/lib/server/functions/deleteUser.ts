@@ -10,7 +10,7 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { api } from '../../../../server/sdk/api';
-import { FileProp } from '../../../../definition/IMessage/MessageAttachment/Files/FileProp';
+import { FileProp } from '@rocket.chat/core-typings';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = Users.findOneById(userId, {

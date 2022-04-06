@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 
-import { isFileAudioAttachment } from '../../../../../definition/IMessage/MessageAttachment/Files/AudioAttachmentProps';
-import { FileAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
-import { isFileImageAttachment } from '../../../../../definition/IMessage/MessageAttachment/Files/ImageAttachmentProps';
-import { isFileVideoAttachment } from '../../../../../definition/IMessage/MessageAttachment/Files/VideoAttachmentProps';
+import { isFileAudioAttachment } from '@rocket.chat/core-typings';
+import { FileAttachmentProps } from '@rocket.chat/core-typings';
+import { isFileImageAttachment } from '@rocket.chat/core-typings';
+import { isFileVideoAttachment } from '@rocket.chat/core-typings';
 import { AudioAttachment } from './AudioAttachment';
 import { GenericFileAttachment } from './GenericFileAttachment';
 import { ImageAttachment } from './ImageAttachment';

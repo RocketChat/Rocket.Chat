@@ -1,9 +1,9 @@
 import ldapjs from 'ldapjs';
 
 import { settings } from '../../../app/settings/server';
-import type { ILDAPConnectionOptions, LDAPEncryptionType, LDAPSearchScope } from '../../../definition/ldap/ILDAPOptions';
-import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
-import type { ILDAPCallback, ILDAPPageCallback } from '../../../definition/ldap/ILDAPCallback';
+import type { ILDAPConnectionOptions, LDAPEncryptionType, LDAPSearchScope } from '@rocket.chat/core-typings';
+import type { ILDAPEntry } from '@rocket.chat/core-typings';
+import type { ILDAPCallback, ILDAPPageCallback } from '@rocket.chat/core-typings';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 

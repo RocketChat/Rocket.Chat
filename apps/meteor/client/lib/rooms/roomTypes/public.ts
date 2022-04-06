@@ -7,7 +7,7 @@ import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '@rocket.chat/core-typings';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '@rocket.chat/core-typings';
-import type { AtLeast } from '../../../../definition/utils';
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { roomCoordinator } from '../roomCoordinator';
 

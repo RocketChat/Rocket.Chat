@@ -14,7 +14,7 @@ import {
 	isPrivateTeamRoom,
 	isPublicDiscussion,
 	isPublicTeamRoom,
-} from '../../../../../definition/IRoom';
+} from '@rocket.chat/core-typings';
 
 export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean => {
 	const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};

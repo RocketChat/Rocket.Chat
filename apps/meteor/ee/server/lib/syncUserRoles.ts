@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { IRole } from '@rocket.chat/core-typings';
-import type { AtLeast } from '../../../definition/utils';
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
 import { addUserRolesAsync } from '../../../server/lib/roles/addUserRoles';

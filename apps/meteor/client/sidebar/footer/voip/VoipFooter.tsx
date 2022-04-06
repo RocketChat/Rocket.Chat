@@ -3,9 +3,9 @@ import { Box, Button, ButtonGroup, Icon, SidebarFooter } from '@rocket.chat/fuse
 import React, { ReactElement } from 'react';
 
 import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { ICallerInfo } from '../../../../definition/voip/ICallerInfo';
-import { VoIpCallerInfo } from '../../../../definition/voip/VoIpCallerInfo';
-import { VoipClientEvents } from '../../../../definition/voip/VoipClientEvents';
+import { ICallerInfo } from '@rocket.chat/core-typings';
+import { VoIpCallerInfo } from '@rocket.chat/core-typings';
+import { VoipClientEvents } from '@rocket.chat/core-typings';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {

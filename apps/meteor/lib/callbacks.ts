@@ -3,14 +3,14 @@ import { FilterQuery } from 'mongodb';
 
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { Logger } from '../app/logger/server';
-import type { IMessage } from '../definition/IMessage';
-import type { IRoom } from '../definition/IRoom';
-import type { IUser } from '../definition/IUser';
-import type { ILivechatDepartmentRecord } from '../definition/ILivechatDepartmentRecord';
-import type { ILivechatAgent } from '../definition/ILivechatAgent';
-import type { OmnichannelAgentStatus } from '../definition/IOmnichannelAgent';
-import type { ILivechatInquiryRecord } from '../definition/IInquiry';
-import type { ILivechatVisitor } from '../definition/ILivechatVisitor';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { OmnichannelAgentStatus } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { getRandomId } from './random';
 
 enum CallbackPriority {

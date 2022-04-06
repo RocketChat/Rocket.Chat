@@ -2,8 +2,8 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
-import { IRegistrationInfo } from '../../../../definition/voip/IRegistrationInfo';
-import { WorkflowTypes } from '../../../../definition/voip/WorkflowTypes';
+import { IRegistrationInfo } from '@rocket.chat/core-typings';
+import { WorkflowTypes } from '@rocket.chat/core-typings';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useUser } from '../../../contexts/UserContext';

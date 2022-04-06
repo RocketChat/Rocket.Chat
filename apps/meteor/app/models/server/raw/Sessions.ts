@@ -17,7 +17,7 @@ import type {
 	UserSessionAggregationResult,
 	DeviceSessionAggregationResult,
 	OSSessionAggregationResult,
-} from '../../../../definition/ISession';
+} from '@rocket.chat/core-typings';
 import { BaseRaw, ModelOptionalId } from './BaseRaw';
 import type { IUser } from '@rocket.chat/core-typings';
 

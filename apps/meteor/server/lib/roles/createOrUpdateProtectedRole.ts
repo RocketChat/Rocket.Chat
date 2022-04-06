@@ -1,6 +1,6 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '../../../app/models/server/raw';
-import type { AtLeast } from '../../../definition/utils';
+import type { AtLeast } from '@rocket.chat/core-typings';
 
 export const createOrUpdateProtectedRoleAsync = async (
 	roleId: string,

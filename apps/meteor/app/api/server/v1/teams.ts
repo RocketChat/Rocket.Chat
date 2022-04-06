@@ -17,7 +17,7 @@ import { isTeamsAddMembersProps } from '../../../../definition/rest/v1/teams/Tea
 import { isTeamsDeleteProps } from '../../../../definition/rest/v1/teams/TeamsDeleteProps';
 import { isTeamsLeaveProps } from '../../../../definition/rest/v1/teams/TeamsLeaveProps';
 import { isTeamsUpdateProps } from '../../../../definition/rest/v1/teams/TeamsUpdateProps';
-import { ITeam, TEAM_TYPE } from '../../../../definition/ITeam';
+import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
 API.v1.addRoute(
 	'teams.list',

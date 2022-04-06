@@ -9,7 +9,7 @@ import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '@rocket.chat/core-typings';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '@rocket.chat/core-typings';
-import type { AtLeast } from '../../../../definition/utils';
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 

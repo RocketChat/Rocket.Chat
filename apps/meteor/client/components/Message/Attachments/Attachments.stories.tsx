@@ -3,9 +3,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import Attachments from '.';
-import { FileAttachmentProps } from '../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
-import { FileProp } from '../../../../definition/IMessage/MessageAttachment/Files/FileProp';
-import { MessageAttachmentDefault } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentDefault';
+import { FileAttachmentProps } from '@rocket.chat/core-typings';
+import { FileProp } from '@rocket.chat/core-typings';
+import { MessageAttachmentDefault } from '@rocket.chat/core-typings';
 
 export default {
 	title: 'Message/Attachments',

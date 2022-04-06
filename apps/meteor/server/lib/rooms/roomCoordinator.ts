@@ -1,12 +1,12 @@
-import type { IRoomTypeConfig, IRoomTypeServerDirectives } from '@rocket.chat/core-typings';
-import type { IRoom, RoomType } from '../../../definition/IRoom';
+import type { IRoomTypeConfig, IRoomTypeServerDirectives } from '../../../definition/IRoomTypeConfig';
+import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ReadReceipt } from '../../../definition/ReadReceipt';
+import type { ReadReceipt } from '@rocket.chat/core-typings';
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
-import type { ValueOf, AtLeast } from '../../../definition/utils';
+import type { ValueOf, AtLeast } from '@rocket.chat/core-typings';
 import { Users } from '../../../app/models/server';
-import { RoomSettingsEnum, RoomMemberActions } from '@rocket.chat/core-typings';
+import { RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { settings } from '../../../app/settings/server';
 

@@ -47,7 +47,7 @@ import {
 	IContactStatus,
 	isICallHangupEvent,
 	ICallHangup,
-} from '../../../../../../definition/voip/IEvents';
+} from '@rocket.chat/core-typings';
 
 export class ContinuousMonitor extends Command {
 	private logger: Logger;

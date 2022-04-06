@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement } from 'react';
 
-import type { ReadReceipt } from '../../../../../definition/ReadReceipt';
+import type { ReadReceipt } from '@rocket.chat/core-typings';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { ImageAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/ImageAttachmentProps';
+import { ImageAttachmentProps } from '@rocket.chat/core-typings';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import Image from '../components/Image';

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { PDFAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/PDFAttachmentProps';
+import { PDFAttachmentProps } from '@rocket.chat/core-typings';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';

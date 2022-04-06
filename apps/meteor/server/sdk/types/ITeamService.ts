@@ -1,6 +1,6 @@
 import { FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
 
-import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
+import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { IUser, IRole } from '@rocket.chat/core-typings';
 import { ICreateRoomParams } from './IRoomService';

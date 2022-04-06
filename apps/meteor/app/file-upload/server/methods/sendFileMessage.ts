@@ -7,8 +7,8 @@ import { Rooms, Uploads } from '../../../models/server/raw';
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
-import { MessageAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachment';
-import { FileAttachmentProps } from '../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
+import { MessageAttachment } from '@rocket.chat/core-typings';
+import { FileAttachmentProps } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 

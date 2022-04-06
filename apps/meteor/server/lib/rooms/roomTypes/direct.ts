@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { IRoomTypeServerDirectives } from '@rocket.chat/core-typings';
-import { RoomSettingsEnum, RoomMemberActions } from '@rocket.chat/core-typings';
-import type { AtLeast } from '../../../../definition/utils';
+import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
+import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 import { Subscriptions } from '../../../../app/models/server';

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { VideoAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/VideoAttachmentProps';
+import { VideoAttachmentProps } from '@rocket.chat/core-typings';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import { useMediaUrl } from '../context/AttachmentContext';

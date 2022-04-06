@@ -14,7 +14,7 @@ import { ILivechatVisitor, isILivechatVisitor } from '@rocket.chat/core-typings'
 import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isVoipRoom } from '@rocket.chat/core-typings';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
+import { VoipClientEvents } from '@rocket.chat/core-typings';
 import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
 import { FindVoipRoomsParams } from './internalTypes';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';

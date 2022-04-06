@@ -1,7 +1,7 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import React, { ReactElement, useMemo, useEffect } from 'react';
 
-import type { IMessage } from '../../../../../definition/IMessage/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 import GenericModal from '../../../../components/GenericModal';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
