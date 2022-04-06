@@ -8,6 +8,8 @@ type Prom<T> = {
 	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any>
 		? T[K]
 		: (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]>>;
+} & {
+	use: <K extends FunctionPropertyNames<T>>(event: K, callback: (...params: Parameters<T[K]>) => void) => void;
 };
 
 type PromOrError<T> = {
@@ -20,8 +22,12 @@ function handler<T extends object>(namespace: string, waitService: boolean): Pro
 	return {
 		get:
 			(_target: T, prop: string): any =>
-			(...params: any): Promise<any> =>
-				api[waitService ? 'waitAndCall' : 'call'](`${namespace}.${prop}`, params),
+			(...params: any): any => {
+				if (prop === 'use') {
+					return async (method: string, callback: any): Promise<any> => api.use(`${namespace}.${method}`, callback);
+				}
+				return api[waitService ? 'waitAndCall' : 'call'](`${namespace}.${prop}`, params);
+			},
 	};
 }
 
