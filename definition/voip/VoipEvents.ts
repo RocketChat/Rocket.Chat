@@ -1,19 +1,21 @@
 import { ICallerInfo } from './ICallerInfo';
 
+type VoipEventKeys =
+	| 'registered'
+	| 'registrationerror'
+	| 'unregistered'
+	| 'unregistrationerror'
+	| 'connected'
+	| 'connectionerror'
+	| 'callestablished'
+	| 'callterminated'
+	| 'hold'
+	| 'holderror'
+	| 'muteerror'
+	| 'unhold'
+	| 'unholderror'
+	| 'stateChanged';
+
 export type VoipEvents = {
-	registered: undefined;
-	registrationerror: unknown;
-	unregistered: undefined;
-	unregistrationerror: unknown;
-	connected: undefined;
-	connectionerror: unknown;
-	callestablished: undefined;
-	incomingcall: ICallerInfo;
-	callterminated: undefined;
-	hold: undefined;
-	holderror: undefined;
-	muteerror: undefined;
-	unhold: undefined;
-	unholderror: undefined;
-	stateChanged: undefined;
-};
+	[key in VoipEventKeys]: undefined;
+} & { incomingcall: ICallerInfo };

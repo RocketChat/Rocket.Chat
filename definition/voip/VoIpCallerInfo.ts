@@ -7,13 +7,15 @@ export interface IState {
 	enableVideo: boolean;
 }
 
+export type CallableStates = 'IN_CALL' | 'OFFER_RECEIVED' | 'ON_HOLD';
+
 export type VoIpCallerInfo =
 	| {
-			state: Exclude<CallStates, 'IN_CALL' | 'OFFER_RECEIVED' | 'ON_HOLD'>;
+			state: Exclude<CallStates, CallableStates>;
 			userState: UserState;
 	  }
 	| {
-			state: 'IN_CALL' | 'ON_HOLD' | 'OFFER_RECEIVED';
+			state: CallableStates;
 			userState: UserState;
 			caller: ICallerInfo;
 	  }; // TODO: Check for additional properties and States (E.g. call on hold, muted, etc)

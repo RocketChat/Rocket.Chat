@@ -5,16 +5,9 @@
  * interested SIP registration events.
  */
 
-export interface ICallServerConfigData {
-	websocketPort: number;
-	websocketPath: string;
-}
-export interface IExtensionDetails {
-	extension: string;
-	password: string;
-	authtype: string;
-	state: string;
-}
+import type { IExtensionDetails } from '../IVoipExtension';
+import type { ICallServerConfigData } from '../IVoipServerConfig';
+
 export interface IRegistrationInfo {
 	host: string;
 	callServerConfig: ICallServerConfigData;
