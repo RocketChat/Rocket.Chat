@@ -1,11 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { fetch, Request } from 'meteor/fetch';
 import { URL, URLSearchParams } from 'meteor/url';
-import createHttpProxyAgent from 'http-proxy-agent';
-import createHttpsProxyAgent from 'https-proxy-agent';
-import { getProxyForUrl } from 'proxy-from-env';
 
 import { truncate } from '../../../lib/utils/stringUtils';
+import { fetch } from './fetch';
 
 // Code extracted from https://github.com/meteor/meteor/blob/master/packages/deprecated/http
 // Modified to:
@@ -136,10 +133,6 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 	// is false if false, otherwise always true
 	const followRedirects = options.followRedirects === false ? 'manual' : 'follow';
 
-	const proxy = getProxyForUrl(newUrl);
-	const agentFn = /^https/.test(newUrl) ? createHttpsProxyAgent : createHttpProxyAgent;
-	const agent = proxy ? agentFn(proxy) : undefined;
-
 	const requestOptions = {
 		method,
 		jar: false,
@@ -149,12 +142,9 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 		referrer: options.referrer,
 		integrity: options.integrity,
 		headers,
-		agent,
 	} as const;
 
-	const request = new Request(newUrl, requestOptions);
-
-	fetch(request)
+	fetch(newUrl, requestOptions)
 		.then(async (res) => {
 			const content = await res.text();
 			const response: Record<string, any> = {};
