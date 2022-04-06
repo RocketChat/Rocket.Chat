@@ -41,6 +41,7 @@ describe('[Discussion]', function () {
 			discussion.startDiscussionContextItem.click();
 			discussion.saveDiscussionButton.should('be.enabled');
 			discussion.saveDiscussionButton.click();
+			cy.wait(1000);
 		});
 
 		it('it should have create a new room', function () {
