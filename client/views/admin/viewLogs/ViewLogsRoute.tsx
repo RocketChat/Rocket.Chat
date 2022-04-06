@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ViewLogsPage from './ViewLogsPage';
 
 const ViewLogsRoute = (): ReactElement => {

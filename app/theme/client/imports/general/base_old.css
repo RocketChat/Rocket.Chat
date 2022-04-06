@@ -2005,10 +2005,6 @@
 
 			width: 60px;
 		}
-
-		&:hover .edited {
-			display: none;
-		}
 	}
 
 	& .body {

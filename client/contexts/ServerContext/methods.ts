@@ -13,6 +13,8 @@ import { SaveSettingsMethod } from './methods/saveSettings';
 import { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
 import { UnfollowMessageMethod } from './methods/unfollowMessage';
 
+// TODO: frontend chapter day - define methods
+
 export type ServerMethods = {
 	'2fa:checkCodesRemaining': (...args: any[]) => any;
 	'2fa:disable': (...args: any[]) => any;
@@ -37,7 +39,14 @@ export type ServerMethods = {
 	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
 	'clearIntegrationHistory': (...args: any[]) => any;
-	'cloud:checkRegisterStatus': (...args: any[]) => any;
+	'cloud:checkRegisterStatus': () => {
+		connectToCloud: string;
+		workspaceRegistered: string;
+		workspaceId: string;
+		uniqueId: string;
+		token: string;
+		email: string;
+	};
 	'cloud:checkUserLoggedIn': (...args: any[]) => any;
 	'cloud:connectWorkspace': (...args: any[]) => any;
 	'cloud:disconnectWorkspace': (...args: any[]) => any;
@@ -76,7 +85,21 @@ export type ServerMethods = {
 	'livechat:changeLivechatStatus': (...args: any[]) => any;
 	'livechat:closeRoom': (...args: any[]) => any;
 	'livechat:discardTranscript': (...args: any[]) => any;
-	'livechat:facebook': (...args: any[]) => any;
+
+	// TODO: chapter day backend - enhance/deprecate
+	'livechat:facebook':
+		| ((...args: [{ action: 'initialState' }]) => {
+				enabled: boolean;
+				hasToken: boolean;
+		  })
+		| ((...args: [{ action: 'list-pages' }]) => {
+				name: string;
+				subscribed: boolean;
+				id: string;
+		  }[])
+		| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => {})
+		| ((...args: [{ action: 'enable' }]) => { url: string } | undefined)
+		| ((...args: [{ action: 'disable' }]) => {});
 	'livechat:getAgentOverviewData': (...args: any[]) => any;
 	'livechat:getAnalyticsChartData': (...args: any[]) => any;
 	'livechat:getAnalyticsOverviewData': (...args: any[]) => any;
