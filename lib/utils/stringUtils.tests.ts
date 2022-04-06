@@ -8,7 +8,7 @@ describe('String utils', () => {
 	});
 
 	it('should truncate a larger string', () => {
-		expect(truncate('this text has a few words', 9)).to.be.equal('this text...');
+		expect(truncate('this text has a few words', 9)).to.be.equal('this t...');
 	});
 
 	it('should not truncate a smaller string', () => {
