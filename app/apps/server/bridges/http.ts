@@ -1,10 +1,9 @@
-import { fetch } from 'meteor/fetch';
 import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
 import { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
 
 import { AppServerOrchestrator } from '../orchestrator';
-import { getUnsafeAgent } from '../../../../server/lib/getUnsafeAgent';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
@@ -70,15 +69,16 @@ export class AppHttpBridge extends HttpBridge {
 		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
 
 		try {
-			const response = await fetch(url.href, {
-				method,
-				body: content,
-				headers,
-				...(((request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
-					(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized)) && {
-					agent: getUnsafeAgent(url.protocol === 'https:' ? 'https:' : 'http:'),
-				}),
-			});
+			const response = await fetch(
+				url.href,
+				{
+					method,
+					body: content,
+					headers,
+				},
+				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
+					(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),
+			);
 
 			const result: IHttpResponse = {
 				url: info.url,
