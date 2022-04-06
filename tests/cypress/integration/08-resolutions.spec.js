@@ -47,9 +47,11 @@ describe('[Resolution]', () => {
 
 			it('it should not close sidebar on pressing the sidebar item menu', () => {
 				sideNav.firstSidebarItemMenu.click();
+				cy.wait(800);
 				mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
 				sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'true');
 				sideNav.firstSidebarItemMenu.click();
+				cy.wait(800);
 			});
 
 			it('it should close the sidenav when open general channel', () => {
