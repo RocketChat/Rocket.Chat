@@ -1,6 +1,6 @@
 import { Component, ReactNode, ErrorInfo } from 'react';
 
-export class ErrorBoundary extends Component<{ fallback: ReactNode }, { hasError: boolean }> {
+export class ErrorBoundary extends Component<{ fallback?: ReactNode }, { hasError: boolean }> {
 	state = { hasError: false };
 
 	static getDerivedStateFromError(): { hasError: boolean } {
