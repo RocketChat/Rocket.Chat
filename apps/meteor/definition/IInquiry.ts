@@ -1,3 +1,4 @@
+import { IMessage } from './IMessage';
 import { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface IInquiry {
@@ -32,4 +33,5 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	estimatedServiceTimeAt: string;
 	department: string;
 	estimatedInactivityCloseTimeAt: Date;
+	lastMessage?: IMessage & { token?: string };
 }
