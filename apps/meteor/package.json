@@ -349,17 +349,6 @@
 			"server": "server/main.ts"
 		}
 	},
-	"houston": {
-		"minTag": "0.55.0-rc.0",
-		"updateFiles": [
-			"package.json",
-			"package-lock.json",
-			".snapcraft/snap/snapcraft.yaml",
-			".snapcraft/resources/prepareRocketChat",
-			".docker/Dockerfile.rhel",
-			"app/utils/rocketchat.info"
-		]
-	},
 	"browserslist": [
 		"last 2 versions",
 		"Firefox ESR"
