@@ -3,6 +3,9 @@ import { createContext, useContext } from 'react';
 
 export type RoomContextValue = {
 	rid: IRoom['_id'];
+	// room: IRoom;
+	// events: any;
+	// tabBar: TabBar;
 	room: IRoom;
 	subscribed: boolean;
 };

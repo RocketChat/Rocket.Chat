@@ -1,7 +1,7 @@
-import type { IRocketChatRecord } from "./IRocketChatRecord";
-import type { IMessage } from "./IMessage";
-import type { IUser, Username } from "./IUser";
-import type { RoomType } from "./RoomType";
+import { IRocketChatRecord } from "./IRocketChatRecord";
+import { IMessage } from "./IMessage";
+import { IUser, Username } from "./IUser";
+import { RoomType } from "./RoomType";
 
 type CallStatus = "ringing" | "ended" | "declined" | "ongoing";
 
@@ -23,10 +23,13 @@ export interface IRoom extends IRocketChatRecord {
   default?: true;
   broadcast?: true;
   featured?: true;
+  announcement?: string;
   encrypted?: boolean;
   topic?: string;
 
   reactWhenReadOnly?: boolean;
+
+  sysMes?: string[];
 
   u: Pick<IUser, "_id" | "username" | "name">;
   uids?: Array<string>;
@@ -67,7 +70,6 @@ export interface IRoom extends IRocketChatRecord {
   alert?: boolean;
   hideUnreadStatus?: boolean;
 
-  sysMes?: string[];
   muted?: string[];
   unmuted?: string[];
 
@@ -78,7 +80,6 @@ export interface IRoom extends IRocketChatRecord {
   ro?: boolean;
   favorite?: boolean;
   archived?: boolean;
-  announcement?: string;
   description?: string;
   createdOTR?: boolean;
   e2eKeyId?: string;
@@ -115,10 +116,10 @@ export interface IDirectMessageRoom
 }
 
 export const isDirectMessageRoom = (
-  room: Partial<IRoom>
+  room: IRoom | IDirectMessageRoom
 ): room is IDirectMessageRoom => room.t === "d";
 export const isMultipleDirectMessageRoom = (
-  room: Partial<IRoom>
+  room: IRoom | IDirectMessageRoom
 ): room is IDirectMessageRoom =>
   isDirectMessageRoom(room) && room.uids.length > 2;
 
@@ -205,8 +206,6 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
   callDuration?: number;
   // The amount of time call was in queue in milliseconds
   callWaitingTime?: number;
-  // The time when call was ended
-  callEndedAt?: Date;
   // The total of hold time for call (calculated at closing time) in seconds
   callTotalHoldTime?: number;
   // The pbx queue the call belongs to

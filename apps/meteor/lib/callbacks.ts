@@ -101,6 +101,7 @@ type ChainedCallbackSignatures = {
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
+	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
 };
 
 type Hook =
@@ -160,7 +161,6 @@ type Hook =
 	| 'onLDAPLogin'
 	| 'onValidateLogin'
 	| 'openBroadcast'
-	| 'renderMessage'
 	| 'renderNotification'
 	| 'roomAnnouncementChanged'
 	| 'roomAvatarChanged'

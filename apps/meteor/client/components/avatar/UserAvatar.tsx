@@ -13,7 +13,7 @@ const UserAvatar: FC<UserAvatarProps> = ({ username, etag, ...rest }) => {
 	const getUserAvatarPath = useUserAvatarPath();
 	const { url = getUserAvatarPath(username, etag), ...props } = rest;
 
-	return <BaseAvatar url={url} title={username} {...props} />;
+	return <BaseAvatar url={url} data-username={username} title={username} {...props} />;
 };
 
 export default memo(UserAvatar);

@@ -1,16 +1,16 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageAttachment } from '@rocket.chat/core-typings';
 
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const attachMessage = function (
 	message: IMessage,
 	room: IRoom,
 ): {
 	text: string;
-	authorName?: string;
-	authorIcon: string;
+	author_name?: string;
+	author_icon: string;
 	message_link: string;
 	attachments?: MessageAttachment[];
 	ts: Date;
@@ -24,9 +24,8 @@ export const attachMessage = function (
 	} = message;
 	return {
 		text: msg,
-		authorName: username,
-		authorIcon: getUserAvatarURL(username),
-		// eslint-disable-next-line @typescript-eslint/camelcase
+		author_name: username,
+		author_icon: getUserAvatarURL(username),
 		message_link: `${roomCoordinator.getRouteLink(room.t, room)}?msg=${_id}`,
 		attachments,
 		ts,

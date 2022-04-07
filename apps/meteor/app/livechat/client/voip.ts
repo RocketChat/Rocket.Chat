@@ -1,11 +1,11 @@
 import moment from 'moment';
 import { IMessage, isVoipMessage } from '@rocket.chat/core-typings';
 
-import { MessageTypes, IMessageType } from '../../ui-utils/client';
+import { MessageTypes, IMessageType } from '../../ui-utils/client/lib/lib/MessageTypes';
 
 type IMessageFuncReturn = { comment: string } | { duration: string } | { reason: string };
 
-const messageTypes: IMessageType[] = [
+const messageTypes: MessageType[] = [
 	{
 		id: 'voip-call-started',
 		system: true,

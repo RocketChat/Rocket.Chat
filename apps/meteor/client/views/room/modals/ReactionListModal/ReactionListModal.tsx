@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
@@ -9,9 +9,9 @@ import Reactions from './Reactions';
 
 type ReactionListProps = {
 	rid: string;
-	reactions: ReactElement;
+	reactions: Required<IMessage>['reactions'];
 	tabBar: {
-		openUserInfo: (username: IUser['username']) => void;
+		openUserInfo: (username: string) => void;
 	};
 	onClose: () => void;
 };

@@ -14,7 +14,7 @@ describe('helper', () => {
 				})),
 			);
 
-			expect(res).to.be.equal('here is some <span class="highlight-text">word</span>');
+			expect(res).to.be.equal('here is some <mark class="highlight-text">word</mark>');
 		});
 
 		describe('handles links', () => {
@@ -55,7 +55,7 @@ describe('helper', () => {
 					})),
 				);
 
-				expect(res).to.be.equal('here we go https://somedomain.com/here-some.foo/pulls more <span class="highlight-text">foo</span> after');
+				expect(res).to.be.equal('here we go https://somedomain.com/here-some.foo/pulls more <mark class="highlight-text">foo</mark> after');
 			});
 		});
 	});

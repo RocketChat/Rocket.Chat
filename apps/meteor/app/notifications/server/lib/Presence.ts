@@ -2,18 +2,18 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from 'meteor/rocketchat:streamer';
 import type { IUser } from '@rocket.chat/core-typings';
 
-export type UserPresenseStreamProps = {
+export type UserPresenceStreamProps = {
 	added: IUser['_id'][];
 	removed: IUser['_id'][];
 };
 
-export type UserPresenseStreamArgs = {
+export type UserPresenceStreamArgs = {
 	uid: string;
 	args: unknown;
 };
 
 const e = new Emitter<{
-	[key: string]: UserPresenseStreamArgs;
+	[key: string]: UserPresenceStreamArgs;
 }>();
 
 const clients = new WeakMap<Connection, UserPresence>();
@@ -44,11 +44,8 @@ export class UserPresence {
 		this.listeners.delete(uid);
 	};
 
-	run = (args: UserPresenseStreamArgs): void => {
-		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, {
-			...args,
-			eventName: args.uid,
-		}); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
+	run = (args: UserPresenceStreamArgs): void => {
+		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...args, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
 		(this.publication as any)._session.socket.send(payload);
 	};
 
@@ -79,7 +76,7 @@ export class StreamPresence {
 				_eventName: string,
 				options: boolean | { useCollection?: boolean; args?: any } = false,
 			): Promise<void> {
-				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenseStreamProps;
+				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenceStreamProps;
 
 				const [client, main] = UserPresence.getClient(publication, this);
 
@@ -95,10 +92,9 @@ export class StreamPresence {
 
 				publication.onStop(() => client.stop());
 			}
-		})(name);
+		} as any)(name);
 	}
 }
-
-export const emit = (uid: string, args: UserPresenseStreamArgs): void => {
+export const emit = (uid: string, args: UserPresenceStreamArgs): void => {
 	e.emit(uid, { uid, args });
 };

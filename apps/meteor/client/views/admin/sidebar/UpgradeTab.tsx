@@ -10,13 +10,13 @@ import { useTranslation, TranslationKey } from '../../../contexts/TranslationCon
 
 const getUpgradeTabLabel = (type: UpgradeTabVariant): TranslationKey => {
 	switch (type) {
-		case 'goFullyFeatured':
-		case 'goFullyFeaturedRegistered':
+		case 'go-fully-featured':
+		case 'go-fully-featured-registered':
 			return 'Upgrade_tab_go_fully_featured';
-		case 'trialGold':
-		case 'trialEnterprise':
+		case 'trial-gold':
+		case 'trial-enterprise':
 			return 'Upgrade_tab_trial_guide';
-		case 'upgradeYourPlan':
+		case 'upgrade-your-plan':
 			return 'Upgrade_tab_upgrade_your_plan';
 	}
 };
@@ -43,7 +43,7 @@ const UpgradeTab = ({ type, currentPath, trialEndDate }: UpgradeTabProps): React
 	const t = useTranslation();
 
 	const label = getUpgradeTabLabel(type);
-	const displayEmoji = type === 'goFullyFeatured';
+	const displayEmoji = type === 'go-fully-featured';
 
 	return (
 		<Sidebar.GenericItem active={currentPath === path} href={String(path)} customColors={customColors} textColor='alternative'>

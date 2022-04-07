@@ -35,18 +35,14 @@
 
 		"outDir": "./dist",
 
+		"skipLibCheck": true
+
 		// "sourceMap": true,
 		// "declaration": true,
 		// "removeComments": false,
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
-	"include": [
-		"./**/*",
-		"../../../definition"
-	],
-	"exclude": [
-		"./dist",
-		"./ecosystem.config.js"
-	]
+	"include": ["./**/*", "../../../definition"],
+	"exclude": ["./dist", "./ecosystem.config.js"]
 }

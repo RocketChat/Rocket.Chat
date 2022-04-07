@@ -139,8 +139,8 @@ describe('[Emoji]', () => {
 			});
 
 			it('should render special characters', () => {
-				mainContent.sendMessage('# * ® © ™');
-				mainContent.waitForLastMessageEqualsHtml('# * ® © ™');
+				mainContent.sendMessage('® * © ™ #');
+				mainContent.waitForLastMessageEqualsHtml('® * © ™ #');
 			});
 		});
 	});

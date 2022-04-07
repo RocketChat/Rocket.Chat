@@ -1,13 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import React, { ReactNode, useMemo, memo, useEffect } from 'react';
+import React, { ReactNode, useContext, useMemo, memo, useEffect, useCallback } from 'react';
 
 import { UserAction } from '../../../../app/ui';
 import { useUserSubscription } from '../../../contexts/UserContext';
 import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import Skeleton from '../Room/Skeleton';
-import { RoomContext } from '../contexts/RoomContext';
+import RoomSkeleton from '../Room/RoomSkeleton';
+import { RoomContext, RoomContextValue } from '../contexts/RoomContext';
 import ToolboxProvider from './ToolboxProvider';
 
 export type Props = {
@@ -20,6 +20,10 @@ const fields = {};
 const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	const { phase, value: room } = useHandleRoom(rid);
 
+	const getMore = useCallback(() => {
+		RoomManager.getMore(rid);
+	}, [rid]);
+
 	const subscribed = Boolean(useUserSubscription(rid, fields));
 	const context = useMemo(() => {
 		if (!room) {
@@ -29,9 +33,10 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 		return {
 			subscribed,
 			rid,
+			getMore,
 			room: { ...room, name: roomCoordinator.getRoomName(room.t, room) },
 		};
-	}, [room, rid, subscribed]);
+	}, [room, rid, subscribed, getMore]);
 
 	useEffect(() => {
 		RoomManager.open(rid);
@@ -52,7 +57,7 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	}, [rid, subscribed]);
 
 	if (phase === AsyncStatePhase.LOADING || !room) {
-		return <Skeleton />;
+		return <RoomSkeleton />;
 	}
 
 	return (
@@ -60,6 +65,22 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 			<ToolboxProvider room={room}>{children}</ToolboxProvider>
 		</RoomContext.Provider>
 	);
+};
+
+export const useRoom = (): IRoom => {
+	const context = useContext(RoomContext);
+	if (!context) {
+		throw Error('useRoom should be used only inside rooms context');
+	}
+	return context.room;
+};
+
+export const useRoomContext = (): RoomContextValue => {
+	const context = useContext(RoomContext);
+	if (!context) {
+		throw Error('useRoom should be used only inside rooms context');
+	}
+	return context;
 };
 
 export default memo(RoomProvider);

@@ -34,7 +34,7 @@ function messagingTest(currentTest) {
 
 		if (currentTest !== 'direct') {
 			it('it should be that the last message is from the logged user', () => {
-				mainContent.lastMessageUser.should('contain', username);
+				mainContent.lastMessage.should('contain', username);
 			});
 		}
 
@@ -116,7 +116,7 @@ function revokeCreateDPermission() {
 }
 
 function toggleOpenMessageActionMenu() {
-	mainContent.popoverWrapper.click();
+	mainContent.closeMessageActionMenu();
 	mainContent.openMessageActionMenu();
 }
 
@@ -150,7 +150,7 @@ function createDMUserAndPost(testChannel, done) {
 
 function leaveTestDM() {
 	// Leave the existing DM
-	const dmElement = sideNav.getChannelFromList(testDMUsername).scrollIntoView().rightclick().wait(200);
+	const dmElement = sideNav.getChannelFromList(testDMUsername).scrollIntoView().rightclick().wait(800);
 	dmElement.closest('.rcx-sidebar-item--clickable').find('.rcx-sidebar-item__menu-wrapper > button').click();
 	sideNav.popOverHideOption.click();
 
@@ -169,35 +169,35 @@ function messageActionsTest(currentTest, testChannel) {
 			});
 
 			after(() => {
-				mainContent.popoverWrapper.click();
+				mainContent.closeMessageActionMenu();
 			});
 
 			it('it should show the message action menu', () => {
-				mainContent.messageActionMenu.scrollIntoView().should('be.visible');
+				mainContent.messageActionMenu.should('be.visible');
 			});
 
 			it('it should show the edit action', () => {
-				mainContent.messageEdit.scrollIntoView().should('be.visible');
+				mainContent.messageEdit.should('be.visible');
 			});
 
 			it('it should show the delete action', () => {
-				mainContent.messageDelete.scrollIntoView().should('be.visible');
+				mainContent.messageDelete.should('be.visible');
 			});
 
 			it('it should show the permalink action', () => {
-				mainContent.messagePermalink.scrollIntoView().should('be.visible');
+				mainContent.messagePermalink.should('be.visible');
 			});
 
 			it('it should show the copy action', () => {
-				mainContent.messageCopy.scrollIntoView().should('be.visible');
+				mainContent.messageCopy.should('be.visible');
 			});
 
 			it('it should show the quote the action', () => {
-				mainContent.messageQuote.scrollIntoView().should('be.visible');
+				mainContent.messageQuote.should('be.visible');
 			});
 
 			it('it should show the star action', () => {
-				mainContent.messageStar.scrollIntoView().should('be.visible');
+				mainContent.messageStar.should('be.visible');
 			});
 
 			if (currentTest === 'general') {
@@ -224,7 +224,6 @@ function messageActionsTest(currentTest, testChannel) {
 
 					it('it should not show the Reply to DM action', () => {
 						toggleOpenMessageActionMenu();
-
 						// We don't have the test DM user in a DM channel or have the `create-d` permission
 						mainContent.messageReplyInDM.should('not.exist');
 					});
@@ -245,8 +244,8 @@ function messageActionsTest(currentTest, testChannel) {
 						before(() => grantCreateDPermission());
 
 						before(() => {
-							mainContent.popoverWrapper.click();
 							sideNav.spotlightSearchIcon.click();
+							mainContent.closeMessageActionMenu();
 							sideNav.searchChannel(testDMUsername);
 						});
 
@@ -258,9 +257,8 @@ function messageActionsTest(currentTest, testChannel) {
 						});
 
 						after(() => {
-							mainContent.popoverWrapper.click();
+							mainContent.closeMessageActionMenu();
 							leaveTestDM();
-							mainContent.openMessageActionMenu();
 						});
 
 						it('it should show the Reply to DM action', () => {
@@ -273,11 +271,9 @@ function messageActionsTest(currentTest, testChannel) {
 
 		describe('[Usage]', () => {
 			describe('Reply:', () => {
-				before(() => {
-					mainContent.messageOptionsBtns.invoke('show');
-				});
-
 				it('it should reply the message', () => {
+					toggleOpenMessageActionMenu();
+
 					mainContent.selectAction('reply');
 					flexTab.sendBtn.click();
 				});

@@ -9,6 +9,7 @@ import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserId } from '../../contexts/UserContext';
+import LoginPage from '../root/MainLayout/LoginPage';
 import PageLoading from '../root/PageLoading';
 
 const InvitePage = (): ReactElement => {
@@ -23,7 +24,7 @@ const InvitePage = (): ReactElement => {
 	const groupRoute = useRoute('/group/:name/:tab?/:context?');
 	const channelRoute = useRoute('/channel/:name/:tab?/:context?');
 
-	const { isLoading } = useQuery(
+	const { isLoading, data } = useQuery(
 		['invite', token],
 		async () => {
 			if (!token) {
@@ -84,6 +85,10 @@ const InvitePage = (): ReactElement => {
 			},
 		},
 	);
+
+	if (data) {
+		return <LoginPage />;
+	}
 
 	if (isLoading) {
 		return <PageLoading />;

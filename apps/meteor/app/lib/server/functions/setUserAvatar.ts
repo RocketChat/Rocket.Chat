@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { fetch } from 'meteor/fetch';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { RocketChatFile } from '../../../file/server';
@@ -7,6 +6,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { Users } from '../../../models/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 export const setUserAvatar = function (
 	user: Pick<IUser, '_id' | 'username'>,

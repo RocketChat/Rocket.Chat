@@ -1,6 +1,6 @@
-import type { IRocketChatRecord } from "./IRocketChatRecord";
-import type { IUser, IRole } from "./IUser";
-import type { RoomType } from "./RoomType";
+import { IRocketChatRecord } from "./IRocketChatRecord";
+import { IUser, IRole } from "./IUser";
+import { RoomType } from "./RoomType";
 
 type RoomID = string;
 
