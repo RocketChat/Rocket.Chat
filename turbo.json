@@ -1,24 +1,29 @@
 {
 	"$schema": "https://turborepo.org/schema.json",
-  "pipeline": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
-    },
-    "testunit": {
-      "outputs": []
-    },
-    "lint": {
-      "outputs": []
-    },
-    "translation-check": {
-      "outputs": []
-    },
-    "typecheck": {
-      "outputs": []
-    },
-    "dev": {
-      "cache": false
-    }
-  }
+	"pipeline": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**"]
+		},
+		"build:ci": {
+			"dependsOn": ["build"],
+			"outputs": ["dist/**"]
+		},
+		"testunit": {
+			"outputs": []
+		},
+		"lint": {
+			"outputs": []
+		},
+		"translation-check": {
+			"outputs": []
+		},
+		"typecheck": {
+			"dependsOn": ["build"],
+			"outputs": []
+		},
+		"dev": {
+			"cache": false
+		}
+	}
 }

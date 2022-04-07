@@ -1,48 +1,49 @@
 {
-  "name": "rocket.chat",
-  "version": "4.7.0-develop",
-  "description": "Rocket.Chat Monorepo",
-  "main": "index.js",
-  "private": true,
-  "scripts": {
-    "postinstall": "husky install",
-    "build": "turbo run build",
-    "testunit": "turbo run testunit",
-    "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint"
-  },
-  "devDependencies": {
-    "husky": "^7.0.1",
-    "turbo": "latest"
-  },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/RocketChat/Rocket.Chat.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/RocketChat/Rocket.Chat/issues"
-  },
-  "homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
-  "engines": {
-    "npm": ">=7.0.0",
-    "node": ">=14.0.0"
-  },
-  "packageManager": "yarn@3.2.0",
-  "houston": {
-    "minTag": "0.55.0-rc.0",
-    "updateFiles": [
-      "apps/meteor/package.json",
-      "apps/meteor/package-lock.json",
-      "apps/meteor/.snapcraft/snap/snapcraft.yaml",
-      "apps/meteor/.snapcraft/resources/prepareRocketChat",
-      "apps/meteor/.docker/Dockerfile.rhel",
-      "apps/meteor/app/utils/rocketchat.info"
-    ]
-  }
+	"name": "rocket.chat",
+	"version": "4.7.0-develop",
+	"description": "Rocket.Chat Monorepo",
+	"main": "index.js",
+	"private": true,
+	"scripts": {
+		"postinstall": "husky install",
+		"build": "turbo run build",
+		"build:ci": "turbo run build:ci",
+		"testunit": "turbo run testunit",
+		"dev": "turbo run dev --parallel",
+		"lint": "turbo run lint"
+	},
+	"devDependencies": {
+		"husky": "^7.0.1",
+		"turbo": "latest"
+	},
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+	},
+	"author": "",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+	"engines": {
+		"npm": ">=7.0.0",
+		"node": ">=14.0.0"
+	},
+	"packageManager": "yarn@3.2.0",
+	"houston": {
+		"minTag": "0.55.0-rc.0",
+		"updateFiles": [
+			"apps/meteor/package.json",
+			"apps/meteor/package-lock.json",
+			"apps/meteor/.snapcraft/snap/snapcraft.yaml",
+			"apps/meteor/.snapcraft/resources/prepareRocketChat",
+			"apps/meteor/.docker/Dockerfile.rhel",
+			"apps/meteor/app/utils/rocketchat.info"
+		]
+	}
 }
