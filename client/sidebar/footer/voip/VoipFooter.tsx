@@ -127,7 +127,7 @@ export const VoipFooter = ({
 					</Box>
 
 					<ButtonGroup medium>
-						{callerState === 'IN_CALL' && (
+						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
 							<Button
 								title={tooltips.endCall}
 								disabled={paused}
