@@ -1,42 +1,37 @@
 import { IMessage, MessageTypesValues } from '../../../definition/IMessage';
-import type keys from '../../../packages/rocketchat-i18n/i18n/en.i18n.json';
+import { TranslationKey } from '../../../client/contexts/TranslationContext';
 
-export interface IMessageType {
+export type MessageType = {
 	id: MessageTypesValues;
-	system: boolean;
-	message: keyof typeof keys;
-	data?: (message: IMessage) => any;
-}
-
-type MessageTypes = {
-	[k in MessageTypesValues]?: IMessageType;
+	system?: boolean;
+	/* deprecated */
+	render?: (message: IMessage) => string;
+	/* deprecated */
+	template?: (message: IMessage) => unknown;
+	message: TranslationKey;
+	data?: (message: IMessage) => Record<string, string>;
 };
+class MessageTypesClass {
+	private types = new Map<MessageTypesValues, MessageType>();
 
-export const MessageTypes = new (class {
-	private types: MessageTypes = {};
-
-	constructor() {
-		this.types = {};
-	}
-
-	registerType(options: IMessageType): IMessageType {
-		this.types[options.id] = options;
+	registerType(options: MessageType): MessageType {
+		if ('render' in options) {
+			console.warn('MessageType.render is deprecated. Use MessageType.message instead.', options.id);
+		}
+		if ('template' in options) {
+			console.warn('MessageType.template is deprecated. Use MessageType.message instead.', options.id);
+		}
+		this.types.set(options.id, options);
 		return options;
 	}
 
-	getType(message: IMessage): IMessageType | undefined {
-		if (!message?.t) {
-			return;
-		}
-		return this.types[message.t];
+	getType(message: IMessage): MessageType | undefined {
+		return message.t && this.types.get(message.t);
 	}
 
 	isSystemMessage(message: IMessage): boolean {
-		if (!message?.t) {
-			return false;
-		}
-
-		const type = this.types[message.t];
-		return type?.system || false;
+		const type = this.getType(message);
+		return Boolean(type?.system);
 	}
-})();
+}
+export const MessageTypes = new MessageTypesClass();

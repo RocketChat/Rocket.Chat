@@ -8,7 +8,7 @@ import { useUser } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { VoipRoomForeword } from './voip/room/VoipRoomForeword';
 
-const RoomForeword = ({ _id: rid }) => {
+const RoomForeword = ({ _id, rid = _id }) => {
 	const t = useTranslation();
 
 	const user = useUser();
@@ -19,7 +19,11 @@ const RoomForeword = ({ _id: rid }) => {
 	}
 
 	if (room?.t !== 'd') {
-		return <>{t('Start_of_conversation')}</>;
+		return (
+			<Box fontScale='c1' color='default' display='flex' justifyContent='center'>
+				{t('Start_of_conversation')}
+			</Box>
+		);
 	}
 
 	const usernames = room.usernames.filter((username) => username !== user.username);
@@ -42,7 +46,7 @@ const RoomForeword = ({ _id: rid }) => {
 					</Avatar.Stack>
 				</Margins>
 			</Flex.Item>
-			<Box color='default' fontScale='h2' flexGrow={1}>
+			<Box display='flex' color='default' fontScale='h2' flexGrow={1} justifyContent='center'>
 				{t('Direct_message_you_have_joined')}
 			</Box>
 			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>

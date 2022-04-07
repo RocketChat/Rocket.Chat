@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { IMessage } from '../../../../definition/IMessage';
@@ -9,8 +10,8 @@ export const attachMessage = function (
 	room: IRoom,
 ): {
 	text: string;
-	authorName?: string;
-	authorIcon: string;
+	author_name?: string;
+	author_icon: string;
 	message_link: string;
 	attachments?: MessageAttachment[];
 	ts: Date;
@@ -24,9 +25,8 @@ export const attachMessage = function (
 	} = message;
 	return {
 		text: msg,
-		authorName: username,
-		authorIcon: getUserAvatarURL(username),
-		// eslint-disable-next-line @typescript-eslint/camelcase
+		author_name: username,
+		author_icon: getUserAvatarURL(username),
 		message_link: `${roomCoordinator.getRouteLink(room.t, room)}?msg=${_id}`,
 		attachments,
 		ts,

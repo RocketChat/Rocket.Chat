@@ -7,14 +7,14 @@ export const useEndpointUpload = (
 	endpoint: string,
 	params = {},
 	successMessage: string,
-): ((...args: any[]) => Promise<{ success: boolean }>) => {
+): ((formData: FormData) => Promise<{ success: boolean }>) => {
 	const sendData = useUpload(endpoint);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useCallback(
-		async (...args) => {
+		async (formData: FormData) => {
 			try {
-				const data = sendData(params, [...args]);
+				const data = sendData(params, formData);
 
 				const promise = data instanceof Promise ? data : data.promise;
 
