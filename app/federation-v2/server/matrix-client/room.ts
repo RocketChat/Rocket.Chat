@@ -42,7 +42,7 @@ export const create = async (user: IUser, room: IRoom): Promise<ICreateRoomResul
 	MatrixBridgedRoom.insert({ rid: room._id, mri: matrixRoom.room_id });
 
 	// Add our user TODO: Doing this I think is un-needed since our user is the creator of the room.  With it in.. there were errors
-	//await intent.invite(matrixRoom.room_id, userMatrixId);
+	// await intent.invite(matrixRoom.room_id, userMatrixId);
 
 	return { rid: room._id, mri: matrixRoom.room_id };
 };

@@ -88,7 +88,6 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 
 	// Invite && Auto-join if the user is Rocket.Chat controlled
 	if (!invitedUserIsRemote) {
-
 		// Invite the user to the room
 		await matrixBridge.getIntent(inviterUser.mui).invite(matrixRoomId, invitedUserMatrixId);
 
@@ -102,7 +101,6 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 
 	// Add the matrix user to the invited room
 	addUserToRoom(roomId, invitedUser, user, false);
-
 };
 
 export const createRemote = async (u: IUser): Promise<ICreateUserResult> => {
