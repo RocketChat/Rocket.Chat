@@ -13,7 +13,7 @@ describe('[Resolution]', () => {
 
 		beforeEach(() => {
 			Global.setWindowSize(650, 800);
-			cy.wait(50);
+			cy.wait(500);
 		});
 
 		after(() => {
@@ -37,23 +37,32 @@ describe('[Resolution]', () => {
 							sideNav.burgerBtn.click({ force: true });
 						}
 					});
+
+				cy.waitUntil(() => {
+					return browser.element('.menu-opened').then((el) => el.length);
+				});
 			});
 
 			it('it should open the sidenav', () => {
+				cy.waitUntil(() => {
+					return browser.element('.menu-opened').then((el) => el.length);
+				});
 				mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
 				sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'true');
 			});
 
 			it('it should not close sidebar on pressing the sidebar item menu', () => {
-				sideNav.firstSidebarItemMenu.click();
+				sideNav.firstSidebarItemMenu.click({ force: true });
+				cy.wait(800);
 				mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
 				sideNav.sideNavBar.should('have.attr', 'data-qa-opened', 'true');
-				sideNav.firstSidebarItemMenu.click();
+				sideNav.firstSidebarItemMenu.click({ force: true });
+				cy.wait(800);
 			});
 
 			it('it should close the sidenav when open general channel', () => {
 				sideNav.openChannel('general');
-				cy.wait(500);
+				cy.wait(1200);
 				sideNav.sideNavBar.should('not.have.attr', 'data-qa-opened');
 			});
 

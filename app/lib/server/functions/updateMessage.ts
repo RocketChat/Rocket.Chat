@@ -7,6 +7,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Apps } from '../../../apps/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
 import { IMessage, IMessageEdited } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';
 
@@ -51,7 +52,7 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 	message = callbacks.run('beforeSaveMessage', message);
 
 	try {
-		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
+		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true' && !isE2EEMessage(message)) {
 			message.md = parser(message.msg);
 		}
 	} catch (e: unknown) {

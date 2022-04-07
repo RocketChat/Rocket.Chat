@@ -2,7 +2,7 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
-createTemplateForComponent('MessageActions', () => import('./components/Message/Actions'));
+createTemplateForComponent('MessageActions', () => import('./components/Message/MessageActions'));
 
 createTemplateForComponent('reactAttachments', () => import('./components/Message/Attachments'));
 
@@ -20,7 +20,8 @@ createTemplateForComponent('DiscussionMetric', () => import('./components/Messag
 		}),
 });
 
-createTemplateForComponent('MessageBody', () => import('./components/Message/Body'));
+createTemplateForComponent('MessageList', () => import('./views/room/MessageList/MessageList'));
+createTemplateForComponent('MessageBody', () => import('./components/Message/MessageBodyRender'));
 
 createTemplateForComponent('BroadCastMetric', () => import('./components/Message/Metrics/Broadcast'));
 

@@ -23,7 +23,6 @@ export const createLazyElement = <Props extends {} = {}>(
 				computation.stop();
 			};
 		}, []);
-
 		return createElement(Suspense, { fallback: null }, createElement(LazyComponent, props));
 	};
 

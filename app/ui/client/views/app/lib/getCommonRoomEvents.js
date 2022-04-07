@@ -13,10 +13,11 @@ import { ChatMessage, Rooms, Messages } from '../../../../../models';
 import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
-import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
+// import { goToRoomById } from '../../../../../../client/lib/goToRoomById';
 import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
 import { onClientBeforeSendMessage } from '../../../../../../client/lib/onClientBeforeSendMessage';
+import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -26,7 +27,7 @@ const mountPopover = (e, i, outerContext) => {
 
 	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
+	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg }, context, 'menu').map((item) => ({
 		icon: item.icon,
 		name: t(item.label),
 		type: 'message-action',
@@ -223,6 +224,55 @@ export const getCommonRoomEvents = () => ({
 			});
 		}
 	},
+	// 'click .js-follow-thread'(e) {
+	// 	e.preventDefault();
+	// 	e.stopPropagation();
+	// 	const { msg } = messageArgs(this);
+	// 	call('followMessage', { mid: msg._id });
+	// },
+	// 'click .js-unfollow-thread'(e) {
+	// 	e.preventDefault();
+	// 	e.stopPropagation();
+	// 	const { msg } = messageArgs(this);
+	// 	call('unfollowMessage', { mid: msg._id });
+	// },
+	// 'click .js-open-thread'(event) {
+	// 	event.preventDefault();
+	// 	event.stopPropagation();
+
+	// 	const { msg: { rid, _id, tmid } } = messageArgs(this);
+	// 	const room = Rooms.findOne({ _id: rid });
+
+	// 	FlowRouter.go(FlowRouter.getRouteName(), {
+	// 		rid,
+	// 		name: room.name,
+	// 		tab: 'thread',
+	// 		context: tmid || _id,
+	// 	}, {
+	// 		jump: tmid && tmid !== _id && _id && _id,
+	// 	});
+	// },
+
+	// 'click .user-card-message'(e, instance) {
+	// 	const { msg } = messageArgs(this);
+	// 	if (!Meteor.userId()) {
+	// 		return;
+	// 	}
+
+	// 	const { username } = msg.u;
+
+	// 	if (username) {
+	// 		openUserCard({
+	// 			username,
+	// 			rid: instance.data.rid,
+	// 			target: e.currentTarget,
+	// 			open: (e) => {
+	// 				e.preventDefault();
+	// 				instance.data.tabBar.openUserInfo(username);
+	// 			},
+	// 		});
+	// 	}
+	// },
 	'click .js-actionButton-respondWithMessage'(event, instance) {
 		const { rid } = instance.data;
 		const msg = event.currentTarget.value;
@@ -269,10 +319,10 @@ export const getCommonRoomEvents = () => ({
 	},
 	'click .message-actions__menu'(e, template) {
 		const messageContext = messageArgs(this);
-		const { msg: message, context: ctx } = messageContext;
+		const { msg: message, u: user, context: ctx } = messageContext;
 		const context = ctx || message.context || message.actionContext || 'message';
 
-		const allItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
+		const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
 			type: 'message-action',

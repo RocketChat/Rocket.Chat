@@ -37,6 +37,7 @@ const renderBody = (msg, settings) => {
 		msg = TAPi18n.__(messageType.message, { ...(typeof messageType.data === 'function' && messageType.data(msg)) });
 		msg = dompurify.sanitize(msg);
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
+		// TODO: remove
 		msg.html = msg.msg;
 		msg = renderMentions(msg);
 		msg = msg.html;
@@ -56,13 +57,6 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.helpers({
-	enableMessageParserEarlyAdoption() {
-		const {
-			settings: { enableMessageParserEarlyAdoption },
-			msg,
-		} = this;
-		return enableMessageParserEarlyAdoption && msg.md;
-	},
 	unread() {
 		const { msg, subscription } = this;
 		return subscription?.tunread?.includes(msg._id);
@@ -211,12 +205,12 @@ Template.message.helpers({
 		const { msg } = this;
 		return +msg.ts;
 	},
-	chatops() {
-		const { msg, settings } = this;
-		if (msg.u && msg.u.username === settings.Chatops_Username) {
-			return 'chatops-message';
-		}
-	},
+	// chatops() {
+	// 	const { msg, settings } = this;
+	// 	if (msg.u && msg.u.username === settings.Chatops_Username) {
+	// 		return 'chatops-message';
+	// 	}
+	// },
 	time() {
 		const { msg, timeAgo: useTimeAgo } = this;
 
@@ -248,6 +242,13 @@ Template.message.helpers({
 			}
 			return 'system';
 		}
+	},
+	isOwnMessageAndNotSystem() {
+		const { msg, u = {} } = this;
+		if (msg.u && msg.u._id === u._id && !MessageTypes.isSystemMessage(msg)) {
+			return 'true';
+		}
+		return 'false';
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
@@ -386,14 +387,10 @@ Template.message.helpers({
 	actionLinks() {
 		const { msg } = this;
 		// remove 'method_id' and 'params' properties
-		return _.map(msg.actionLinks, function (actionLink, key) {
-			return _.extend(
-				{
-					id: key,
-				},
-				_.omit(actionLink, 'method_id', 'params'),
-			);
-		});
+		return msg.actionLinks.map(({ method_id, ...actionLink }) => ({
+			methodId: method_id,
+			...actionLink,
+		}));
 	},
 	hideActionLinks() {
 		const { msg } = this;
@@ -450,7 +447,7 @@ Template.message.helpers({
 			context = 'message';
 		}
 
-		return MessageAction.getButtons(this, context, messageGroup);
+		return MessageAction.getButtons({ ...this, message: this.msg, user: this.u }, context, messageGroup);
 	},
 	isSnippet() {
 		const { msg } = this;

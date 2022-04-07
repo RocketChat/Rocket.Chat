@@ -23,7 +23,9 @@ const emitter = new Emitter<Events>();
 
 const store = new Map<string, UserPresence>();
 
-export type UserPresence = Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag'>;
+export type UserPresence = Readonly<
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+>;
 
 type UsersPresencePayload = {
 	users: UserPresence[];
@@ -37,7 +39,7 @@ const uids = new Set<UserPresence['_id']>();
 
 const update: EventHandlerOf<ExternalEvents, string> = (update) => {
 	if (update?._id) {
-		store.set(update._id, update);
+		store.set(update._id, { ...store.get(update._id), ...update });
 		uids.delete(update._id);
 	}
 };
@@ -45,7 +47,7 @@ const update: EventHandlerOf<ExternalEvents, string> = (update) => {
 const notify = (presence: UserPresence): void => {
 	if (presence._id) {
 		update(presence);
-		emitter.emit(presence._id, presence);
+		emitter.emit(presence._id, store.get(presence._id));
 	}
 };
 
