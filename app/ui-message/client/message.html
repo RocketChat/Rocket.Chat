@@ -103,7 +103,11 @@
 							{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}
 						</div>
 					{{else}}
-						{{{body}}}
+						{{# if isDecrypting}}
+							{{_ "E2E_message_encrypted_placeholder"}}
+						{{else}}
+							{{{body}}}
+						{{/if}}
 					{{/if}}
 					{{#if msg.location}}
 						{{> messageLocation location=msg.location}}
@@ -144,7 +148,7 @@
 							</button>
 						{{/each}}
 					</div>
-					<div class="message-actions__menu" aria-haspopup="true">
+					<div class="message-actions__menu" aria-haspopup="true" title="{{_ "More_options"}}">
 						{{> icon block="message-actions__menu-icon" icon="menu"}}
 					</div>
 				</div>
