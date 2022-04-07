@@ -1,0 +1,26 @@
+{
+  "isopack-2": {
+    "name": "pauli:accounts-linkedin",
+    "summary": "Login service for LinkedIn accounts, use with Meteor 1.6.1 & up",
+    "version": "6.0.0",
+    "isTest": false,
+    "builds": [
+      {
+        "kind": "main",
+        "arch": "os",
+        "path": "os.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser",
+        "path": "web.browser.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser.legacy",
+        "path": "web.browser.legacy.json"
+      }
+    ],
+    "plugins": []
+  }
+}

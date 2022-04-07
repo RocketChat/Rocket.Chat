@@ -1,0 +1,1 @@
+module.exportDefault(x => () => x);

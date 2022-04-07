@@ -1,0 +1,1 @@
+module.export({logger:()=>logger});var logger = console;

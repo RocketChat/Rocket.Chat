@@ -1,0 +1,1 @@
+[{"type":"js","data":"(function () {\n\n\n\n/* Exports */\nPackage._define(\"hot-code-push\");\n\n})();\n","servePath":"/packages/hot-code-push.js"}]

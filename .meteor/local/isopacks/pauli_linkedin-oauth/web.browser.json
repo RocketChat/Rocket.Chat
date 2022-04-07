@@ -1,0 +1,56 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "ecmascript",
+      "constraint": "0.16.0"
+    },
+    {
+      "package": "oauth2",
+      "constraint": "1.3.1"
+    },
+    {
+      "package": "oauth",
+      "constraint": "2.1.0"
+    },
+    {
+      "package": "random",
+      "constraint": "1.2.0"
+    },
+    {
+      "package": "service-configuration",
+      "constraint": "1.3.0"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/linkedin-client.js",
+      "length": 2204,
+      "offset": 0,
+      "path": "linkedin-client.js",
+      "hash": "22af8c6f75ca72dbe8cb7510802417c623754031",
+      "fileOptions": {
+        "mainModule": true,
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/linkedin-server.js",
+      "length": 3918,
+      "offset": 0,
+      "path": "linkedin-server.js",
+      "hash": "1827fa7c181dea7324964ce72627774959a8a736",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ]
+}

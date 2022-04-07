@@ -1,0 +1,1 @@
+[{"type":"js","data":"(function () {\n\n/* Package-scope variables */\nvar LaunchScreen;\n\n\n\n/* Exports */\nPackage._define(\"launch-screen\", {\n  LaunchScreen: LaunchScreen\n});\n\n})();\n","servePath":"/packages/launch-screen.js"}]

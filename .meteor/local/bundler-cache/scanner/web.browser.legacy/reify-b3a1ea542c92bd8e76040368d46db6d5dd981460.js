@@ -1,0 +1,1 @@
+!function(){function e(e,n){n=n||{bubbles:!1,cancelable:!1,composed:!1};var t=document.createEvent("Event");return t.initEvent(e,n.bubbles,n.cancelable,n.detail),t}"function"!=typeof window.Event&&(e.prototype=window.Event.prototype,window.Event=e)}();

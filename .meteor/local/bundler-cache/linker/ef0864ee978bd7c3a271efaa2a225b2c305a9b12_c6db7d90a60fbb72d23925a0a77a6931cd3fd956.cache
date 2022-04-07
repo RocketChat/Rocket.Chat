@@ -1,0 +1,1 @@
+[{"type":"js","data":"(function () {\n\n/* Imports */\nvar DDP = Package['ddp-client'].DDP;\nvar DDPServer = Package['ddp-server'].DDPServer;\n\n\n\n/* Exports */\nPackage._define(\"ddp\", {\n  DDP: DDP,\n  DDPServer: DDPServer\n});\n\n})();\n","servePath":"/packages/ddp.js"}]

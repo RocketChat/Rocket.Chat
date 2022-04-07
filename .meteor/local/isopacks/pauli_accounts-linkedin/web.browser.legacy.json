@@ -1,0 +1,74 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "ecmascript",
+      "constraint": "0.16.0"
+    },
+    {
+      "package": "accounts-base",
+      "constraint": "2.2.0"
+    },
+    {
+      "package": "accounts-oauth",
+      "constraint": "1.4.0"
+    },
+    {
+      "package": "pauli:linkedin-oauth",
+      "constraint": "6.0.0"
+    },
+    {
+      "package": "http"
+    },
+    {
+      "package": "accounts-ui",
+      "constraint": "1.4.1",
+      "weak": true
+    },
+    {
+      "package": "pauli:linkedin-config-ui",
+      "constraint": "5.0.0",
+      "weak": true
+    }
+  ],
+  "implies": [
+    {
+      "package": "accounts-base",
+      "constraint": "2.2.0"
+    },
+    {
+      "package": "pauli:linkedin-oauth",
+      "constraint": ""
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/notice.js",
+      "length": 384,
+      "offset": 0,
+      "path": "notice.js",
+      "hash": "9d208531a2cc40a9eadb781c9a21945301b9be0b",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/linkedin.js",
+      "length": 841,
+      "offset": 0,
+      "path": "linkedin.js",
+      "hash": "bd807e09239defccbefd27cae98456513891764b",
+      "fileOptions": {
+        "lazy": false
+      }
+    }
+  ]
+}

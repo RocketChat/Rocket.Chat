@@ -1,0 +1,1 @@
+{"head":"","body":"","js":"\nTemplate.__checkName(\"liveStreamView\");\nTemplate[\"liveStreamView\"] = new Template(\"Template.liveStreamView\", (function() {\n  var view = this;\n  return HTML.Raw('<div class=\"streaming-popup\">\\n    <div id=\"ytplayer\"></div>\\n  </div>');\n}));\n","bodyAttrs":{}}

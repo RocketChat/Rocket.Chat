@@ -1,0 +1,20 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    }
+  ],
+  "resources": [
+    {
+      "type": "asset",
+      "file": "web.browser/packages/rocketchat_livechat/assets/demo.html",
+      "length": 1384,
+      "offset": 0,
+      "servePath": "/packages/rocketchat_livechat/assets/demo.html",
+      "path": "assets/demo.html",
+      "hash": "b6be481cd61cedfca424ef879f893a2300b44541"
+    }
+  ]
+}

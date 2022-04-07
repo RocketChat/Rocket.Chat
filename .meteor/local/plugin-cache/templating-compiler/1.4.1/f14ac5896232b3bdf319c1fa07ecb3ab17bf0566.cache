@@ -1,0 +1,1 @@
+{"head":"","body":"","js":"\nTemplate.__checkName(\"notAuthorized\");\nTemplate[\"notAuthorized\"] = new Template(\"Template.notAuthorized\", (function() {\n  var view = this;\n  return HTML.H2(Blaze.View(\"lookup:_\", function() {\n    return Spacebars.mustache(view.lookup(\"_\"), \"Access_not_authorized\");\n  }));\n}));\n","bodyAttrs":{}}

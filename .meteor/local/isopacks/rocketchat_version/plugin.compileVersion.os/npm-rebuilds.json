@@ -1,0 +1,5 @@
+[
+  "npm/node_modules/meteor/ecmascript-runtime-client",
+  "npm/node_modules/meteor/ecmascript-runtime-server",
+  "npm/node_modules/meteor/babel-compiler"
+]

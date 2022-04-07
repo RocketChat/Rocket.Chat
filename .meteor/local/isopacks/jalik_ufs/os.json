@@ -1,0 +1,157 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "check",
+      "constraint": "1.3.1"
+    },
+    {
+      "package": "ecmascript",
+      "constraint": "0.14.0"
+    },
+    {
+      "package": "underscore",
+      "constraint": "1.0.10"
+    },
+    {
+      "package": "matb33:collection-hooks",
+      "constraint": "1.0.1"
+    },
+    {
+      "package": "mongo",
+      "constraint": "1.8.0"
+    },
+    {
+      "package": "webapp",
+      "constraint": "1.8.0"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs.js",
+      "length": 6109,
+      "offset": 0,
+      "path": "ufs.js",
+      "hash": "24beda78ee4d6719589774c0aa3b43a21648fba0",
+      "fileOptions": {
+        "mainModule": true,
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs-config.js",
+      "length": 3684,
+      "offset": 0,
+      "path": "ufs-config.js",
+      "hash": "8b9e59e05154e7f59282b2c08edc7e4d6e11df1d",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs-filter.js",
+      "length": 5684,
+      "offset": 0,
+      "path": "ufs-filter.js",
+      "hash": "91c6a55cf707b3a07fc61374d943243555105d62",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs-methods.js",
+      "length": 9184,
+      "offset": 0,
+      "path": "ufs-methods.js",
+      "hash": "908504390622512263dfd0eb8f47126af3f66a82",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs-mime.js",
+      "length": 4185,
+      "offset": 0,
+      "path": "ufs-mime.js",
+      "hash": "b27c5417986198ef8d7633994dc652875b51d1c7",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs-server.js",
+      "length": 11610,
+      "offset": 0,
+      "path": "ufs-server.js",
+      "hash": "f1238c24e260057ef6c165e1b9a546b5b302ba32",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs-store-permissions.js",
+      "length": 2930,
+      "offset": 0,
+      "path": "ufs-store-permissions.js",
+      "hash": "7e59f2033e8f4cf0952f0640fc5ee9c2e7c22c62",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs-store.js",
+      "length": 16995,
+      "offset": 0,
+      "path": "ufs-store.js",
+      "hash": "ea9ec38e7ec62f9a0202bbd8fbd294d671b3466d",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs-tokens.js",
+      "length": 1310,
+      "offset": 0,
+      "path": "ufs-tokens.js",
+      "hash": "22619b0559aaa3a544e90a5f8b107e99521807db",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/ufs-uploader.js",
+      "length": 13408,
+      "offset": 0,
+      "path": "ufs-uploader.js",
+      "hash": "263573526b4d643e7c03ddc6d7a0b58ac9061add",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ],
+  "node_modules": "npm/node_modules"
+}

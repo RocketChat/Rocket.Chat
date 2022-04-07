@@ -1,0 +1,18 @@
+var _ = Package.underscore._,
+    package_name = "project",
+    namespace = "project";
+
+if (package_name != "project") {
+    namespace = TAPi18n.packages[package_name].namespace;
+}
+TAPi18n.languages_names["kg"] = ["kg","kg"];
+if(_.isUndefined(TAPi18n.translations["kg"])) {
+  TAPi18n.translations["kg"] = {};
+}
+
+if(_.isUndefined(TAPi18n.translations["kg"][namespace])) {
+  TAPi18n.translations["kg"][namespace] = {};
+}
+
+_.extend(TAPi18n.translations["kg"][namespace], {});
+TAPi18n._registerServerTranslator("kg", namespace);

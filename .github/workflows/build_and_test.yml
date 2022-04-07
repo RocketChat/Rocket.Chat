@@ -266,6 +266,7 @@ jobs:
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
+          cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
@@ -410,6 +411,8 @@ jobs:
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
+
+          cd ./apps/meteor
 
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright
 
