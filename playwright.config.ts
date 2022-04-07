@@ -5,8 +5,8 @@ const config: PlaywrightTestConfig = {
 	reporter: [['list']],
 	workers: 1,
 	use: {
-		baseURL: process.env.CYPRESS_BASE_URL || 'http://localhost:3000',
-		headless: false,
+		baseURL: 'http://localhost:3000',
+		headless: true,
 		viewport: { width: 1368, height: 768 },
 		ignoreHTTPSErrors: true,
 		video: 'retain-on-failure',
