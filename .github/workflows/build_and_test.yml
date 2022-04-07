@@ -65,7 +65,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ./node_modules
+            ./node_modules/.turbo
           key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
 
       # TODO change to use turbo cache
