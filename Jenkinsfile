@@ -42,9 +42,9 @@ node (label: 'linux') {
                 buildImage(path, tagName, releaseVersion)
             }
             stage ('Docker Publish') {
-                withCredentials([file(credentialsId: 'f30f3138-c4ed-41d1-ac35-b019d16aafe2', variable:'aws_credentials')]) {
-                    env.AWS_SHARED_CREDENTIALS_FILE = aws_credentials
-                    env.AWS_PROFILE = "mgmt"
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: '7577d3a9-5c92-429b-875e-bd228a0d2b73', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    // env.AWS_SHARED_CREDENTIALS_FILE = aws_credentials
+                    // env.AWS_PROFILE = "mgmt"
                     env.AWS_DEFAULT_REGION = "us-east-1"
 
                     def dockerLoginCommand = sh(returnStdout: true, script: 'aws ecr get-login --no-include-email --region us-east-1').trim()
