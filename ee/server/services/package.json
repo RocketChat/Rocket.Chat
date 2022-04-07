@@ -27,7 +27,7 @@
 		"@rocket.chat/message-parser": "~0.31.9",
 		"@rocket.chat/string-helpers": "~0.31.9",
 		"@rocket.chat/ui-kit": "~0.31.9",
-		"ajv": "^8.7.1",
+		"ajv": "^8.11.0",
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.20.0",
 		"colorette": "^1.3.0",
