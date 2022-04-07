@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
 	use: {
 		baseURL: 'http://localhost:3000',
 		headless: true,
-		viewport: { width: 1368, height: 768 },
+		viewport: { width: 1024, height: 768 },
 		ignoreHTTPSErrors: true,
 		video: 'retain-on-failure',
 		screenshot: 'only-on-failure',
