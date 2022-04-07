@@ -1,7 +1,7 @@
 import { settings } from '../../settings/server';
 
-type bridgeUrlString = `${string}:${string}`;
-export type bridgeUrlTuple = [string, number];
+type bridgeUrlString = `${string}://${string}:${string}`;
+export type bridgeUrlTuple = [string, string, number];
 
 interface IBridgeConfig {
 	id: string;

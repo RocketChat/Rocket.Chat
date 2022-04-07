@@ -13,7 +13,7 @@ import './settings';
 	  homeserverDomain: ${config.homeserverDomain}
 	`);
 
-	const [, port] = config.bridgeUrl.split(':') as bridgeUrlTuple;
+	const [, , port] = config.bridgeUrl.split(':') as bridgeUrlTuple;
 
 	matrixBridge?.run(port);
 })();
