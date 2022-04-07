@@ -1,7 +1,6 @@
 import URL from 'url';
 import querystring from 'querystring';
 
-import { fetch } from 'meteor/fetch';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
 import iconv from 'iconv-lite';
@@ -16,7 +15,7 @@ import { settings } from '../../settings/server';
 import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { Info } from '../../utils/server';
-import { getUnsafeAgent } from '../../../server/lib/getUnsafeAgent';
+import { fetch } from '../../../server/lib/http/fetch';
 
 const OEmbed = {};
 
@@ -101,18 +100,19 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 
 	const sizeLimit = 250000;
 
-	const response = await fetch(url, {
-		compress: true,
-		follow: redirectCount,
-		headers: {
-			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
-			'Accept-Language': settings.get('Language') || 'en',
+	const response = await fetch(
+		url,
+		{
+			compress: true,
+			follow: redirectCount,
+			headers: {
+				'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
+				'Accept-Language': settings.get('Language') || 'en',
+			},
+			size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
 		},
-		size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
-		...(settings.get('Allow_Invalid_SelfSigned_Certs') && {
-			agent: getUnsafeAgent(parsedUrl.protocol),
-		}),
-	});
+		settings.get('Allow_Invalid_SelfSigned_Certs'),
+	);
 
 	let totalSize = 0;
 	const chunks = [];
