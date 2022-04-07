@@ -29,7 +29,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 			const text = await navigator.clipboard.readText();
 			setNewLicense(text);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: `${t('Paste_error')}: ${error}` });
+			dispatchToastMessage({ type: 'error', message: `${t('Paste_error')}` });
 		}
 	});
 
