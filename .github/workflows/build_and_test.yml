@@ -360,7 +360,7 @@ jobs:
 
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-      - name: E2E Test UI
+      - name: E2E Test UI (Legacy - Cypress)
         env:
           TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
@@ -376,6 +376,19 @@ jobs:
           Xvfb -screen 0 1024x768x24 :99 &
 
           for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: E2E Test UI
+        env:
+          TEST_MODE: 'true'
+          MONGO_URL: mongodb://localhost:27017/rocketchat
+          MONGO_OPLOG_URL: mongodb://localhost:27017/local
+        run: |
+          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+          Xvfb -screen 0 1024x768x24 :99 &
+          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=test:playwright
 
       - name: Store cypress test screenshots
         uses: actions/upload-artifact@v2
