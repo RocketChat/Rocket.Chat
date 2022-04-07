@@ -19,7 +19,13 @@
 	border-width: 1px;
 	border-radius: var(--border-radius);
 
-	font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+	font-family:
+		Menlo,
+		Monaco,
+		Consolas,
+		"Liberation Mono",
+		"Courier New",
+		monospace;
 	font-size: 13px;
 	font-weight: 600;
 	direction: ltr;
@@ -1726,6 +1732,8 @@
 		line-height: 24px;
 
 		&.not {
+			z-index: 1;
+
 			transform: translateY(150%);
 		}
 
@@ -2927,6 +2935,7 @@
 	padding: 2px;
 
 	border-radius: 15px;
+	background-color: var(--selection-background);
 }
 
 .rc-old .avatar-suggestions {

@@ -33,7 +33,7 @@ Meteor.methods({
 				_id: message._id,
 			},
 			{
-				$set: {
+				$addToSet: {
 					starred: !!message.starred,
 				},
 			},

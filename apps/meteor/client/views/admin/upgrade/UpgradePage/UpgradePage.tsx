@@ -13,11 +13,11 @@ import UpgradePageError from '../UpgradePageError';
 const iframeStyle = { width: '100%', height: '100%' };
 
 const urlMap: Record<UpgradeTabVariant, string> = {
-	goFullyFeatured: 'https://go.rocket.chat/i/upgrade-ce-1-unregistered',
-	goFullyFeaturedRegistered: 'https://go.rocket.chat/i/upgrade-ce-1-registered',
-	trialGold: 'https://go.rocket.chat/i/upgrade-gold-trial',
-	trialEnterprise: 'https://go.rocket.chat/i/upgrade-ee-trial',
-	upgradeYourPlan: 'https://go.rocket.chat/i/upgrade-ce-2',
+	'go-fully-featured': 'https://go.rocket.chat/i/upgrade-ce-1-unregistered',
+	'go-fully-featured-registered': 'https://go.rocket.chat/i/upgrade-ce-1-registered',
+	'trial-gold': 'https://go.rocket.chat/i/upgrade-gold-trial',
+	'trial-enterprise': 'https://go.rocket.chat/i/upgrade-ee-trial',
+	'upgrade-your-plan': 'https://go.rocket.chat/i/upgrade-ce-2',
 };
 
 const getUrl = (type: UpgradeTabVariant, date: string | undefined, language: string): string => {

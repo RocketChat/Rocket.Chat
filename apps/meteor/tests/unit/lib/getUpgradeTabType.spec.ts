@@ -4,7 +4,7 @@ import { describe, it } from 'mocha';
 import { getUpgradeTabType } from '../../../lib/getUpgradeTabType';
 
 describe('getUpgradeTabType()', () => {
-	it("should return 'goFullyFeatured'", () => {
+	it("should return 'go-fully-featured'", () => {
 		expect(
 			getUpgradeTabType({
 				registered: false,
@@ -13,10 +13,10 @@ describe('getUpgradeTabType()', () => {
 				hadExpiredTrials: false,
 				hasGoldLicense: false,
 			}),
-		).to.be.equal('goFullyFeatured');
+		).to.be.equal('go-fully-featured');
 	});
 
-	it("should return 'goFullyFeaturedRegistered'", () => {
+	it("should return 'go-fully-featured-registered'", () => {
 		expect(
 			getUpgradeTabType({
 				registered: true,
@@ -25,10 +25,10 @@ describe('getUpgradeTabType()', () => {
 				hadExpiredTrials: false,
 				hasGoldLicense: false,
 			}),
-		).to.be.equal('goFullyFeaturedRegistered');
+		).to.be.equal('go-fully-featured-registered');
 	});
 
-	it("should return 'upgradeYourPlan'", () => {
+	it("should return 'upgrade-your-plan'", () => {
 		expect(
 			getUpgradeTabType({
 				registered: true,
@@ -37,10 +37,10 @@ describe('getUpgradeTabType()', () => {
 				hadExpiredTrials: true,
 				hasGoldLicense: false,
 			}),
-		).to.be.equal('upgradeYourPlan');
+		).to.be.equal('upgrade-your-plan');
 	});
 
-	it("should return 'trialEnterprise'", () => {
+	it("should return 'trial-enterprise'", () => {
 		expect(
 			getUpgradeTabType({
 				registered: true,
@@ -49,10 +49,10 @@ describe('getUpgradeTabType()', () => {
 				hadExpiredTrials: false,
 				hasGoldLicense: false,
 			}),
-		).to.be.equal('trialEnterprise');
+		).to.be.equal('trial-enterprise');
 	});
 
-	it("should return 'trialGold'", () => {
+	it("should return 'trial-gold'", () => {
 		expect(
 			getUpgradeTabType({
 				registered: true,
@@ -61,7 +61,7 @@ describe('getUpgradeTabType()', () => {
 				hadExpiredTrials: false,
 				hasGoldLicense: true,
 			}),
-		).to.be.equal('trialGold');
+		).to.be.equal('trial-gold');
 	});
 
 	it('should return false', () => {

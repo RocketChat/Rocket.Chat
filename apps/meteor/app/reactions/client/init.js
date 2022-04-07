@@ -69,12 +69,12 @@ Meteor.startup(function () {
 		icon: 'add-reaction',
 		label: 'Add_Reaction',
 		context: ['message', 'message-mobile', 'threads'],
-		action(event) {
+		action(event, props) {
 			event.stopPropagation();
-			const { msg } = messageArgs(this);
-			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${emoji}:`, msg._id));
+			const { message = messageArgs(this).msg } = props;
+			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${emoji}:`, message._id));
 		},
-		condition({ msg: message, u: user, room, subscription }) {
+		condition({ message, user, room, subscription }) {
 			if (!room) {
 				return false;
 			}

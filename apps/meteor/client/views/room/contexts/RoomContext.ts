@@ -4,6 +4,9 @@ import { IRoom, IOmnichannelRoom, isOmnichannelRoom, isVoipRoom, IVoipRoom } fro
 
 export type RoomContextValue = {
 	rid: IRoom['_id'];
+	// room: IRoom;
+	// events: any;
+	// tabBar: TabBar;
 	room: IRoom;
 	subscribed: boolean;
 };

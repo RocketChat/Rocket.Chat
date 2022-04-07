@@ -38,4 +38,21 @@ export type RoomsEndpoints = {
 			discussion: IRoom;
 		};
 	};
+	'rooms.export': {
+		POST: (params: {
+			rid: IRoom['_id'];
+			type: 'email' | 'file';
+			toUsers?: IUser['username'][];
+			toEmails?: string[];
+			additionalEmails?: string;
+			subject?: string;
+			messages?: IMessage['_id'][];
+			dateFrom?: string;
+			dateTo?: string;
+			format?: 'html' | 'json';
+		}) => {
+			missing?: [];
+			success: boolean;
+		};
+	};
 };

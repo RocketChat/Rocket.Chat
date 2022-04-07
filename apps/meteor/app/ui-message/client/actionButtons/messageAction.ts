@@ -8,21 +8,21 @@ import { applyButtonFilters } from './lib/applyButtonFilters';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
+// eslint-disable-next-line no-void
 export const onAdded = (button: IUIActionButton): void =>
-	// eslint-disable-next-line no-void
-	void MessageAction.addButton({
+	MessageAction.addButton({
 		id: getIdForActionButton(button),
-		// icon: button.icon || '',
-		label: t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)),
+		icon: '' as any,
+		label: t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)) as any,
 		context: button.when?.messageActionContext || ['message', 'message-mobile', 'threads', 'starred'],
-		condition({ room }: any) {
+		condition({ room }) {
 			return applyButtonFilters(button, room);
 		},
-		async action() {
-			const { msg } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			triggerActionButtonAction({
-				rid: msg.rid,
-				mid: msg._id,
+				rid: message.rid,
+				mid: message._id,
 				actionId: button.actionId,
 				appId: button.appId,
 				payload: { context: button.context },
