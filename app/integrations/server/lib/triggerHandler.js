@@ -2,7 +2,6 @@ import vm from 'vm';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { fetch } from 'meteor/fetch';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import s from 'underscore.string';
@@ -16,7 +15,7 @@ import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
-import { getUnsafeAgent } from '../../../../server/lib/getUnsafeAgent';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 export class RocketChatIntegrationHandler {
 	constructor() {
@@ -771,14 +770,15 @@ export class RocketChatIntegrationHandler {
 			opts.headers['Content-Type'] = 'application/json';
 		}
 
-		fetch(opts.url, {
-			method: opts.method,
-			headers: opts.headers,
-			...(settings.get('Allow_Invalid_SelfSigned_Certs') && {
-				agent: getUnsafeAgent(opts.url.startsWith('https:') ? 'https:' : 'http:'),
-			}),
-			...(opts.data && { body: JSON.stringify(opts.data) }),
-		})
+		fetch(
+			opts.url,
+			{
+				method: opts.method,
+				headers: opts.headers,
+				...(opts.data && { body: JSON.stringify(opts.data) }),
+			},
+			settings.get('Allow_Invalid_SelfSigned_Certs'),
+		)
 			.then(async (res) => {
 				const content = await res.text();
 				if (!content) {
