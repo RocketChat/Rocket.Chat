@@ -1,8 +1,10 @@
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { IServerEvent, IServerEventType } from '../../../../definition/IServerEvent';
 
 export class ServerEventsRaw extends BaseRaw<IServerEvent> {
-	protected indexes: IndexSpecification[] = [{ key: { t: 1, ip: 1, ts: -1 } }, { key: { 't': 1, 'u.username': 1, 'ts': -1 } }];
+	protected modelIndexes() {
+		return [{ key: { t: 1, ip: 1, ts: -1 } }, { key: { 't': 1, 'u.username': 1, 'ts': -1 } }];
+	}
 
 	async findLastFailedAttemptByIp(ip: string): Promise<IServerEvent | null> {
 		return this.findOne<IServerEvent>(
