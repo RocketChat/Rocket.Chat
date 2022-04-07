@@ -71758,6 +71758,40 @@
           ]
         }
       ]
+    },
+    "4.5.6": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25022",
+          "title": "[FIX] Proxy settings being ignored",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "Modify Meteor's `HTTP.call` to add back proxy support",
+          "milestone": "4.6.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25067",
+          "title": "[FIX] NPS never finishing sending results",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.6.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
