@@ -52,7 +52,7 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 	// Determine if the user is local or remote
 	let invitedUserMatrixId = invitedId;
 	const invitedUserDomain = invitedId.includes(':') ? invitedId.split(':').pop() : '';
-	const invitedUserIsRemote = invitedUserDomain && invitedUserDomain !== getConfig().homeserverDomain;
+	const invitedUserIsRemote = invitedUserDomain && invitedUserDomain !== config.homeserverDomain;
 
 	console.log(invitedUserMatrixId, invitedUserDomain, invitedUserIsRemote);
 
@@ -106,7 +106,7 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 };
 
 export const createRemote = async (u: IUser): Promise<ICreateUserResult> => {
-	const matrixUserId = `@${u.username?.toLowerCase()}:${getConfig().homeserverDomain}`;
+	const matrixUserId = `@${u.username?.toLowerCase()}:${config.homeserverDomain}`;
 
 	console.log(`Creating remote user ${matrixUserId}...`);
 
