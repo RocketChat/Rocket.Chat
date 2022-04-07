@@ -15,7 +15,7 @@ export function npsCron(SyncedCron) {
 	SyncedCron.add({
 		name: 'NPS',
 		schedule(parser) {
-			return parser.cron('9 3 * * *');
+			return parser.cron('21 15 * * *');
 		},
 		job: runNPS,
 	});

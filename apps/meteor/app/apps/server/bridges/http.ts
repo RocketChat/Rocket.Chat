@@ -98,7 +98,7 @@ export class AppHttpBridge extends HttpBridge {
 				 */
 				result.content = body as any;
 			} else {
-				result.content = body.toString(request.encoding);
+				result.content = body.toString(request.encoding as BufferEncoding);
 				result.data = ((): any => {
 					const contentType = (response.headers.get('content-type') || '').split(';')[0];
 					if (!['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
