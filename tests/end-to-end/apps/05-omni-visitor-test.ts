@@ -5,42 +5,7 @@ import type { Response } from 'supertest';
 import { getCredentials, request, credentials } from '../../data/api-data.js';
 import { apps } from '../../data/apps/apps-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
-
-const createUniqueId = (): string => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-const createRandomPhoneNumber = (): string => `+1${Math.floor(Math.random() * 10000000000)}`;
-const createRandomEmail = (): string => `${createUniqueId()}@test.test`;
-
-export type IVisitorWithPhoneNo = Omit<IVisitor, 'phone'> & { phone: Required<IVisitor['phone']> };
-export type IVisitorWithEmail = Omit<IVisitor, 'visitorEmails'> & { visitorEmails: Required<IVisitor['visitorEmails']> };
-
-const generateVisitor = (type: 'visitorWithUsernameAndId' | 'visitorWithPhoneNoAndUsername' | 'visitorWithEmailAndUsername'): IVisitor => {
-	switch (type) {
-		case 'visitorWithUsernameAndId': {
-			const uniqueId = createUniqueId();
-			return {
-				id: uniqueId,
-				token: uniqueId,
-				username: `username-${uniqueId}`,
-			} as IVisitor;
-		}
-		case 'visitorWithPhoneNoAndUsername': {
-			const phoneNumber = createRandomPhoneNumber();
-			return {
-				token: createUniqueId(),
-				phone: [{ phoneNumber }],
-				username: phoneNumber,
-			} as IVisitorWithPhoneNo;
-		}
-		case 'visitorWithEmailAndUsername': {
-			const email = createRandomEmail();
-			return {
-				token: createUniqueId(),
-				visitorEmails: [{ address: email }],
-				username: email,
-			} as IVisitorWithEmail;
-		}
-	}
-};
+import { generateVisitor, IVisitorWithPhoneNo, IVisitorWithEmail } from './mock-data/omni-visitor';
 
 describe('Omnichannel - Visitor Tests', function () {
 	this.retries(0);
