@@ -16,6 +16,7 @@ export type CustomScrollbarsProps = {
 	onScroll?: (values: ScrollValues) => void;
 	renderView?: typeof Scrollbars.defaultProps.renderView;
 	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
+	autoHide?: boolean;
 };
 
 const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(function WrappedComponent(

@@ -9,7 +9,7 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
 
 	const userDontAskAgainList = useUserPreference('dontAskAgainList');
-	const userEnableMessageParserEarlyAdoption = useUserPreference('enableMessageParserEarlyAdoption');
+	const userEnableLegacyMessages = useUserPreference('enableLegacyMessages');
 
 	const options = useMemo(() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]), [userDontAskAgainList]);
 
@@ -18,14 +18,14 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 	const { values, handlers, commit } = useForm(
 		{
 			dontAskAgainList: selectedOptions,
-			enableMessageParserEarlyAdoption: userEnableMessageParserEarlyAdoption,
+			enableLegacyMessages: userEnableLegacyMessages,
 		},
 		onChange,
 	);
 
-	const { dontAskAgainList, enableMessageParserEarlyAdoption } = values;
+	const { dontAskAgainList, enableLegacyMessages } = values;
 
-	const { handleDontAskAgainList, handleEnableMessageParserEarlyAdoption } = handlers;
+	const { handleDontAskAgainList, handleEnableLegacyMessages } = handlers;
 
 	commitRef.current.global = commit;
 
@@ -43,15 +43,13 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 						/>
 					</Field.Row>
 				</Field>
-			</FieldGroup>
-			<FieldGroup>
-				<Field>
-					<Field.Label>{t('Enable_message_parser_early_adoption')}</Field.Label>
+				<Field display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+					<Field.Label>{t('Enable_legacy_messages')}</Field.Label>
 					<Field.Row>
-						<ToggleSwitch checked={enableMessageParserEarlyAdoption} onChange={handleEnableMessageParserEarlyAdoption} />
+						<ToggleSwitch checked={enableLegacyMessages} onChange={handleEnableLegacyMessages} />
 					</Field.Row>
 				</Field>
-				<Callout type='warning'>{t('Enable_message_parser_early_adoption_alert')}</Callout>
+				<Callout type='warning'>{t('Enable_legacy_messages_alert')}</Callout>
 			</FieldGroup>
 		</Accordion.Item>
 	);
