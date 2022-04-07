@@ -8,6 +8,7 @@ import { getUserPreference } from '../../../app/utils/client';
 import { IVoipRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
+import { VoipEventDataSignature } from '../../../definition/voip/IVoipClientEvents';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -67,90 +68,51 @@ export const CallProvider: FC = ({ children }) => {
 			return;
 		}
 
-		const handleAgentCalled = async (queue: {
-			queuename: string;
-			callerId: { id: string; name: string };
-			queuedcalls: string;
-		}): Promise<void> => {
-			queueAggregator.callRinging({ queuename: queue.queuename, callerid: queue.callerId });
-			setQueueName(queueAggregator.getCurrentQueueName());
+		const handleEventReceived = async ({ event, data }: VoipEventDataSignature): Promise<void> => {
+			switch (event) {
+				case 'agentcalled': {
+					queueAggregator.callRinging({ queuename: data.queue, callerid: data.callerId });
+					setQueueName(queueAggregator.getCurrentQueueName());
+					break;
+				}
+				case 'agentconnected': {
+					queueAggregator.callPickedup({ queuename: data.queue, queuedcalls: data.queuedCalls, waittimeinqueue: data.waitTimeInQueue });
+					setQueueName(queueAggregator.getCurrentQueueName());
+					setQueueCounter(queueAggregator.getCallWaitingCount());
+					break;
+				}
+				case 'callerjoined': {
+					queueAggregator.queueJoined({ queuename: data.queue, callerid: data.callerId, queuedcalls: data.queuedCalls });
+					setQueueCounter(queueAggregator.getCallWaitingCount());
+					break;
+				}
+				case 'queuememberadded': {
+					queueAggregator.memberAdded({ queuename: data.queue, queuedcalls: data.queuedCalls });
+					setQueueName(queueAggregator.getCurrentQueueName());
+					setQueueCounter(queueAggregator.getCallWaitingCount());
+					break;
+				}
+				case 'queuememberremoved': {
+					queueAggregator.memberRemoved({ queuename: data.queue, queuedcalls: data.queuedCalls });
+					setQueueCounter(queueAggregator.getCallWaitingCount());
+					break;
+				}
+				case 'callabandoned': {
+					queueAggregator.queueAbandoned({ queuename: data.queue, queuedcallafterabandon: data.queuedCallAfterAbandon });
+					setQueueName(queueAggregator.getCurrentQueueName());
+					setQueueCounter(queueAggregator.getCallWaitingCount());
+					break;
+				}
+				default: {
+					console.warn('Unknown event received', event);
+				}
+			}
 		};
 
-		return subscribeToNotifyUser(`${user._id}/agentcalled`, handleAgentCalled);
-	}, [subscribeToNotifyUser, user, voipEnabled, queueAggregator]);
+		return subscribeToNotifyUser(`${user._id}/voip.events`, handleEventReceived);
+	}, [subscribeToNotifyUser, user, queueAggregator, voipEnabled]);
 
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleQueueJoined = async (joiningDetails: {
-			queuename: string;
-			callerid: { id: string };
-			queuedcalls: string;
-		}): Promise<void> => {
-			queueAggregator.queueJoined(joiningDetails);
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/callerjoined`, handleQueueJoined);
-	}, [subscribeToNotifyUser, user, voipEnabled, queueAggregator]);
-
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleAgentConnected = (queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
-			queueAggregator.callPickedup(queue);
-			setQueueName(queueAggregator.getCurrentQueueName());
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/agentconnected`, handleAgentConnected);
-	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
-
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleMemberAdded = (queue: { queuename: string; queuedcalls: string }): void => {
-			queueAggregator.memberAdded(queue);
-			setQueueName(queueAggregator.getCurrentQueueName());
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/queuememberadded`, handleMemberAdded);
-	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
-
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleMemberRemoved = (queue: { queuename: string; queuedcalls: string }): void => {
-			queueAggregator.memberRemoved(queue);
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/queuememberremoved`, handleMemberRemoved);
-	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
-
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleCallAbandon = (queue: { queuename: string; queuedcallafterabandon: string }): void => {
-			queueAggregator.queueAbandoned(queue);
-			setQueueName(queueAggregator.getCurrentQueueName());
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/callabandoned`, handleCallAbandon);
-	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
-
+	// This was causing event duplication before, so we'll leave this here for now
 	useEffect(() => {
 		if (!voipEnabled || !user || !queueAggregator) {
 			return;
@@ -161,7 +123,7 @@ export const CallProvider: FC = ({ children }) => {
 			openWrapUpModal();
 		};
 
-		return subscribeToNotifyUser(`${user._id}/call.callerhangup`, handleCallHangup);
+		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
 	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {

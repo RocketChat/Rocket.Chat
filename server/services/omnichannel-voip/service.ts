@@ -18,7 +18,7 @@ import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
 import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
 import { FindVoipRoomsParams } from './internalTypes';
 import { ILivechatAgent } from '../../../definition/ILivechatAgent';
-import { Notifications } from '../../../app/notifications/server';
+import { api } from '../../sdk/api';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -70,8 +70,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			return;
 		}
 		this.logger.debug(`Notifying agent ${agent._id} of hangup on room ${currentRoom._id}`);
-		// TODO evalute why this is 'notifyUserInThisInstance'
-		Notifications.notifyUserInThisInstance(agent._id, 'call.callerhangup', { roomId: currentRoom._id });
+		api.broadcast('call.callerhangup', agent._id, { roomId: currentRoom._id });
 	}
 
 	private async processAgentDisconnect(extension: string): Promise<void> {
