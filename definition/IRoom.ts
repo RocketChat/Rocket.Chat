@@ -194,8 +194,6 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	callDuration?: number;
 	// The amount of time call was in queue in milliseconds
 	callWaitingTime?: number;
-	// The time when call was ended
-	callEndedAt?: Date;
 	// The total of hold time for call (calculated at closing time) in seconds
 	callTotalHoldTime?: number;
 	// The pbx queue the call belongs to

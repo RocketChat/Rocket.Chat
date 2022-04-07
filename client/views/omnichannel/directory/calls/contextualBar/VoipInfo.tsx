@@ -22,11 +22,11 @@ type VoipInfoPropsType = {
 export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */ }: VoipInfoPropsType): ReactElement => {
 	const t = useTranslation();
 
-	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, callEndedAt, callWaitingTime, tags, lastMessage } = room;
+	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, closedAt, callWaitingTime, tags, lastMessage } = room;
 	const duration = callDuration && moment.utc(callDuration).format('HH:mm:ss');
 	const waiting = callWaitingTime && moment.utc(callWaitingTime).format('HH:mm:ss');
 	const hold = callTotalHoldTime && moment.utc(callTotalHoldTime).format('HH:mm:ss');
-	const endedAt = callEndedAt && moment(callEndedAt).format('LLL');
+	const endedAt = closedAt && moment(closedAt).format('LLL');
 	const phoneNumber = Array.isArray(v?.phone) ? v?.phone[0]?.phoneNumber : v?.phone;
 	const shouldShowWrapup = useMemo(() => lastMessage?.t === 'voip-call-wrapup' && lastMessage?.msg, [lastMessage]);
 	const shouldShowTags = useMemo(() => tags && tags.length > 0, [tags]);
