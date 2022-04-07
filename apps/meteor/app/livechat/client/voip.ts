@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { IMessage, isVoipMessage } from '@rocket.chat/core-typings';
 
-import { MessageTypes, IMessageType } from '../../ui-utils/client/lib/lib/MessageTypes';
+import { MessageTypes, MessageType } from '../../ui-utils/client';
 
 type IMessageFuncReturn = { comment: string } | { duration: string } | { reason: string };
 

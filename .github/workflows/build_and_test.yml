@@ -144,7 +144,7 @@ jobs:
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
         run: |
-          yarn build:ci --directory /tmp/build-test
+          yarn build:ci -- --directory /tmp/build-test
 
       - name: Prepare build
         run: |

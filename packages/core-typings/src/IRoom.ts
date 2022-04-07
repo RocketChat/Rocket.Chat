@@ -1,7 +1,7 @@
-import { IRocketChatRecord } from "./IRocketChatRecord";
-import { IMessage } from "./IMessage";
-import { IUser, Username } from "./IUser";
-import { RoomType } from "./RoomType";
+import type { IRocketChatRecord } from "./IRocketChatRecord";
+import type { IMessage } from "./IMessage";
+import type { IUser, Username } from "./IUser";
+import type { RoomType } from "./RoomType";
 
 type CallStatus = "ringing" | "ended" | "declined" | "ongoing";
 

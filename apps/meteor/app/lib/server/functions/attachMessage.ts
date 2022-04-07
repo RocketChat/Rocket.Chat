@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageAttachment } from '@rocket.chat/core-typings';
 

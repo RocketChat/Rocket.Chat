@@ -14,7 +14,7 @@
 	"scripts": {
 		"start": "meteor",
 		"build:ci": "meteor build --server-only",
-		"dev": "meteor",
+		"dev": "meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"ha": "meteor npm run ha:start",
 		"ha:start": "ts-node .scripts/run-ha.ts main",
 		"ha:add": "ts-node .scripts/run-ha.ts instance",

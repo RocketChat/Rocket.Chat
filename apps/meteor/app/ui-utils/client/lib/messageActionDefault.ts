@@ -3,6 +3,7 @@ import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { messageArgs } from './messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -15,7 +16,6 @@ import ReactionList from '../../../../client/views/room/modals/ReactionListModal
 import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { IMessage } from '../../../../definition/IMessage';
 import { ChatMessages } from '../../../ui/client';
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {

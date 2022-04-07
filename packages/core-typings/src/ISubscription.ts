@@ -1,6 +1,6 @@
-import { IRocketChatRecord } from "./IRocketChatRecord";
-import { IUser, IRole } from "./IUser";
-import { RoomType } from "./RoomType";
+import type { IRocketChatRecord } from "./IRocketChatRecord";
+import type { IUser, IRole } from "./IUser";
+import type { RoomType } from "./RoomType";
 
 type RoomID = string;
 
@@ -26,6 +26,7 @@ export interface ISubscription extends IRocketChatRecord {
   userMentions: number;
   groupMentions: number;
 
+  broadcast?: boolean;
   tunread?: Array<string>;
   tunreadGroup?: Array<string>;
   tunreadUser?: Array<string>;
