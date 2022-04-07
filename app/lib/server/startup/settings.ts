@@ -509,11 +509,11 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_enableMessageParserEarlyAdoption', false, {
+		this.add('Accounts_Default_User_Preferences_enableLegacyMessages', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Enable_message_parser_early_adoption',
-			alert: 'Enable_message_parser_early_adoption_alert',
+			i18nLabel: 'Enable_legacy_messages',
+			alert: 'Enable_legacy_messages_alert',
 		});
 	});
 
@@ -1247,15 +1247,18 @@ settingsRegistry.addGroup('Message', function () {
 		actionText: 'clear',
 		i18nLabel: 'clear_cache_now',
 	});
+	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedDisabledFor', '', {
 		type: 'string',
 		public: true,
 		i18nDescription: 'API_EmbedDisabledFor_Description',
 	});
+	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
 		type: 'string',
 		i18nDescription: 'API_EmbedIgnoredHosts_Description',
 	});
+	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedSafePorts', '80, 443', {
 		type: 'string',
 	});
@@ -2997,6 +3000,13 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 				_id: 'Register_Server',
 				value: true,
 			},
+			secret: true,
+		});
+
+		this.add('Cloud_Workspace_Had_Trial', false, {
+			type: 'boolean',
+			hidden: true,
+			readonly: true,
 			secret: true,
 		});
 

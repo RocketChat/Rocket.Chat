@@ -49,12 +49,13 @@ export const readMessage = new (class extends Emitter {
 		}
 
 		// Only read messages if user saw the first unread message
-		const unreadMark = $('.message.first-unread');
+		const unreadMark = $('.message.first-unread, .rcx-message-divider--unread');
 		if (unreadMark.length > 0) {
 			const position = unreadMark.position();
 			const visible = (position != null ? position.top : undefined) >= 0;
-			if (!visible && room.unreadSince.get()) {
-				this.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get() != null);
+
+			if (!visible) {
+				this.log('readMessage -> readNow canceled, unread mark visible:', visible);
 				return;
 			}
 			// if unread mark is not visible and there is more more not loaded unread messages

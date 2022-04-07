@@ -4,7 +4,7 @@ import React, { ReactElement } from 'react';
 import EngagementDashboardPage from './EngagementDashboardPage';
 
 export default {
-	title: 'admin/engagementDashboard/EngagementDashboardPage',
+	title: 'Enterprise/Admin/Engagement Dashboard/EngagementDashboardPage',
 	component: EngagementDashboardPage,
 	decorators: [(fn): ReactElement => <div children={fn()} style={{ height: '100vh' }} />],
 } as Meta;

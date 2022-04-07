@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message {{className}} {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}">
+	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-own={{isOwnMessageAndNotSystem}} data-context={{actionContext}} class="message {{className}} {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}" data-qa-type="message">
 		{{#if isThreadReply}}
 			{{> messageThread parentMessage=parentMessage msg=msg tmid=msg.tmid class=bodyClass following=msg.following}}
 			<div class="thread-replied js-open-thread">
@@ -103,8 +103,8 @@
 							{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}
 						</div>
 					{{else}}
-						{{# if enableMessageParserEarlyAdoption }}
-							{{> MessageBody tokens=msg.md mentions=msg.mentions }}
+						{{# if isDecrypting}}
+							{{_ "E2E_message_encrypted_placeholder"}}
 						{{else}}
 							{{{body}}}
 						{{/if}}
@@ -148,7 +148,7 @@
 							</button>
 						{{/each}}
 					</div>
-					<div class="message-actions__menu" aria-haspopup="true">
+					<div class="message-actions__menu" aria-haspopup="true" title="{{_ "More_options"}}">
 						{{> icon block="message-actions__menu-icon" icon="menu"}}
 					</div>
 				</div>

@@ -1,18 +1,19 @@
-import React, { ReactElement } from 'react';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
+import React from 'react';
 
 import { RoomTemplate } from './components/RoomTemplate/RoomTemplate';
 
 export default {
-	title: 'room',
+	title: 'Room/RoomTemplate',
 	component: RoomTemplate,
-};
+} as ComponentMeta<typeof RoomTemplate>;
 
-export const Default = (): ReactElement => (
+export const Default: ComponentStory<typeof RoomTemplate> = () => (
 	<RoomTemplate>
 		<RoomTemplate.Header>header</RoomTemplate.Header>
-		<RoomTemplate.Body>body</RoomTemplate.Body>
 		<RoomTemplate.Body>body</RoomTemplate.Body>
 		<RoomTemplate.Footer>footer</RoomTemplate.Footer>
 		<RoomTemplate.Aside>Aside</RoomTemplate.Aside>
 	</RoomTemplate>
 );
+Default.storyName = 'RoomTemplate';

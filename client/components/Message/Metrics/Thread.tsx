@@ -1,3 +1,4 @@
+import { Message, MessageMetricsItem, MessageBlock } from '@rocket.chat/fuselage';
 import React, { useCallback, FC } from 'react';
 
 import { useEndpoint } from '../../../contexts/ServerContext';
@@ -5,10 +6,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import * as NotificationStatus from '../NotificationStatus';
 import { followStyle, anchor } from '../helpers/followSyle';
-import { useBlockRendered } from '../hooks/useBlockRendered';
-import Content from './Content';
-import Reply from './Reply';
-import Metrics from './index';
 
 type ThreadReplyOptions = {
 	unread: boolean;
@@ -26,8 +23,6 @@ type ThreadReplyOptions = {
 const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, counter, participants, following, lm, openThread }) => {
 	const t = useTranslation();
 
-	const { className, ref } = useBlockRendered();
-
 	const followMessage = useEndpoint('POST', 'chat.followMessage');
 	const unfollowMessage = useEndpoint('POST', 'chat.unfollowMessage');
 	const format = useTimeAgo();
@@ -38,41 +33,42 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, 
 	);
 
 	return (
-		<Content className={followStyle}>
-			<div className={className} ref={ref as any} />
-			<Reply data-rid={rid} data-mid={mid} onClick={openThread}>
-				{t('Reply')}
-			</Reply>
-			<Metrics>
-				<Metrics.Item title={t('Replies')}>
-					<Metrics.Item.Icon name='thread' />
-					<Metrics.Item.Label>{counter}</Metrics.Item.Label>
-				</Metrics.Item>
-				{participants && (
-					<Metrics.Item title={t('Participants')}>
-						<Metrics.Item.Icon name='user' />
-						<Metrics.Item.Label>{participants}</Metrics.Item.Label>
-					</Metrics.Item>
+		<MessageBlock className={followStyle}>
+			<Message.Metrics>
+				<Message.Metrics.Reply data-rid={rid} data-mid={mid} onClick={openThread}>
+					{t('Reply')}
+				</Message.Metrics.Reply>
+				<MessageMetricsItem title={t('Replies')}>
+					<MessageMetricsItem.Icon name='thread' />
+					<MessageMetricsItem.Label>{counter}</MessageMetricsItem.Label>
+				</MessageMetricsItem>
+				{!!participants && (
+					<MessageMetricsItem title={t('Participants')}>
+						<MessageMetricsItem.Icon name='user' />
+						<MessageMetricsItem.Label>{participants}</MessageMetricsItem.Label>
+					</MessageMetricsItem>
 				)}
-				<Metrics.Item title={lm?.toLocaleString()}>
-					<Metrics.Item.Icon name='clock' />
-					<Metrics.Item.Label>{format(lm)}</Metrics.Item.Label>
-				</Metrics.Item>
-				<Metrics.Item
+				<MessageMetricsItem title={lm?.toLocaleString()}>
+					<MessageMetricsItem.Icon name='clock' />
+					<MessageMetricsItem.Label>{format(lm)}</MessageMetricsItem.Label>
+				</MessageMetricsItem>
+				<MessageMetricsItem
 					className={!following ? anchor : undefined}
 					title={t(following ? 'Following' : 'Not_following')}
 					data-rid={rid}
 					onClick={handleFollow}
 				>
-					<Metrics.Following name={following ? 'bell' : 'bell-off'} />
-					<Metrics.Item.Label>
+					<Message.Metrics.Following name={following ? 'bell' : 'bell-off'} />
+				</MessageMetricsItem>
+				<MessageMetricsItem>
+					<MessageMetricsItem.Label>
 						{(mention && <NotificationStatus.Me t={t} />) ||
 							(all && <NotificationStatus.All t={t} />) ||
 							(unread && <NotificationStatus.Unread t={t} />)}
-					</Metrics.Item.Label>
-				</Metrics.Item>
-			</Metrics>
-		</Content>
+					</MessageMetricsItem.Label>
+				</MessageMetricsItem>
+			</Message.Metrics>
+		</MessageBlock>
 	);
 };
 

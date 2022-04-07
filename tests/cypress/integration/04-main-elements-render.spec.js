@@ -140,18 +140,6 @@ describe('[Main Elements Render]', function () {
 			it('it should show the emoji button', () => {
 				mainContent.emojiBtn.should('be.visible');
 			});
-
-			it('it should show the last message', () => {
-				mainContent.lastMessage.should('be.visible');
-			});
-
-			it('it should be that the last message is from the logged user', () => {
-				mainContent.lastMessageUser.should('contain', username);
-			});
-
-			it('it should not show the Admin tag', () => {
-				mainContent.lastMessageUserTag.should('not.exist');
-			});
 		});
 	});
 

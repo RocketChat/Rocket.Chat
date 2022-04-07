@@ -13,6 +13,6 @@ const AvatarUrlContextValueDefault: AvatarContextValue = {
 
 export const AvatarUrlContext = createContext<AvatarContextValue>(AvatarUrlContextValueDefault);
 
-export const useRoomAvatarPath = (): ((uid: string, etag?: string) => string) => useContext(AvatarUrlContext).getRoomPathAvatar;
+export const useRoomAvatarPath = (): ((...args: any) => string) => useContext(AvatarUrlContext).getRoomPathAvatar;
 
-export const useUserAvatarPath = (): ((...args: any) => string) => useContext(AvatarUrlContext).getUserPathAvatar;
+export const useUserAvatarPath = (): ((uid: string, etag?: string) => string) => useContext(AvatarUrlContext).getUserPathAvatar;

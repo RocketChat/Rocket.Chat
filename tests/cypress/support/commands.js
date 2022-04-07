@@ -9,6 +9,8 @@
 // ***********************************************
 //
 //
+import 'cypress-wait-until';
+
 // -- This is a parent command --
 Cypress.Commands.add('login', (email, password) =>
 	cy.window().then(

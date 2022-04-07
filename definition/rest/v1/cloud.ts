@@ -1,4 +1,4 @@
-import { CloudRegistrationIntentData, CloudConfirmationPollData } from '../../ICloud';
+import { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '../../ICloud';
 
 export type CloudEndpoints = {
 	'cloud.manualRegister': {
@@ -9,5 +9,8 @@ export type CloudEndpoints = {
 	};
 	'cloud.confirmationPoll': {
 		GET: (params: { deviceCode: string; resend?: boolean }) => { pollData: CloudConfirmationPollData };
+	};
+	'cloud.registrationStatus': {
+		GET: (params: void) => { registrationStatus: CloudRegistrationStatus };
 	};
 };
