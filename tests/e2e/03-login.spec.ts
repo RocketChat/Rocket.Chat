@@ -1,18 +1,17 @@
 import { test, expect } from '@playwright/test';
 
 import { validUser } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/login.page';
+import LoginPage from './utils/pageobjects/LoginPage';
+import { LOCALHOST } from './utils/mocks/urlMock';
+import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
 
 test.describe('[Login]', () => {
 	let loginPage: LoginPage;
-	test.beforeEach(async ({ browser, baseURL }) => {
-		loginPage = new LoginPage(browser, baseURL as string);
-		await loginPage.open();
-	});
 
-	test('expect user make login', async () => {
-		await loginPage.login(validUser);
-		await expect(loginPage.getHomeMessage()).toContainText('Home');
+	test.beforeEach(async ({ page, baseURL }) => {
+		const baseUrl = baseURL || LOCALHOST;
+		loginPage = new LoginPage(page);
+		await loginPage.goto(baseUrl);
 	});
 
 	test('expect user write a password incorrectly', async () => {
@@ -21,8 +20,11 @@ test.describe('[Login]', () => {
 			password: 'any_password1',
 		};
 		await loginPage.login(invalidUserPassword);
-		const toastError = loginPage.getToastError();
-		await expect(toastError).toBeVisible();
-		await expect(toastError).toHaveText('User not found or incorrect password');
+		await expect(loginPage.getToastError()).toBeVisible();
+	});
+
+	test('expect user make login', async () => {
+		await loginPage.login(validUser);
+		await loginPage.waitForSelector(HOME_SELECTOR);
 	});
 });
