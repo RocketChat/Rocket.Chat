@@ -176,7 +176,7 @@ Template.popover.events({
 			});
 		popover.close();
 	},
-	'click [data-type="message-action"]'(e, t) {
+	'click [data-qa-type="message-action"]'(e, t) {
 		const button = MessageAction.getButtonById(e.currentTarget.dataset.id);
 		if ((button != null ? button.action : undefined) != null) {
 			e.stopPropagation();

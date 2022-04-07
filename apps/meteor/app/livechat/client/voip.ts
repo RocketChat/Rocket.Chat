@@ -1,11 +1,11 @@
 import moment from 'moment';
 
-import { MessageTypes, IMessageType } from '../../ui-utils/client';
+import { MessageTypes, MessageType } from '../../ui-utils/client';
 import { IMessage, isVoipMessage } from '../../../definition/IMessage';
 
 type IMessageFuncReturn = { comment: string } | { duration: string } | { reason: string };
 
-const messageTypes: IMessageType[] = [
+const messageTypes: MessageType[] = [
 	{
 		id: 'voip-call-started',
 		system: true,

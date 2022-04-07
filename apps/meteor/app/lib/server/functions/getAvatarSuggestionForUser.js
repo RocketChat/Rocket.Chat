@@ -1,9 +1,9 @@
 import { check } from 'meteor/check';
-import { fetch } from 'meteor/fetch';
 import { Gravatar } from 'meteor/jparker:gravatar';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 const avatarProviders = {
 	facebook(user) {

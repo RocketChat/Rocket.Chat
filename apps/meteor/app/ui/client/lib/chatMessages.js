@@ -26,6 +26,10 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
+import {
+	setHighlightMessage,
+	clearHighlightMessage,
+} from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -141,13 +145,13 @@ export class ChatMessages {
 	toPrevMessage() {
 		const { element } = this.editing;
 		if (!element) {
-			const messages = Array.from(this.wrapper.querySelectorAll('.own:not(.system)'));
+			const messages = Array.from(this.wrapper.querySelectorAll('[data-own="true"]'));
 			const message = messages.pop();
 			return message && this.edit(message, false);
 		}
 
 		for (let previous = element.previousElementSibling; previous; previous = previous.previousElementSibling) {
-			if (previous.matches('.own:not(.system)')) {
+			if (previous.matches('[data-own="true"]')) {
 				return this.edit(previous, false);
 			}
 		}
@@ -159,7 +163,7 @@ export class ChatMessages {
 		if (element) {
 			let next;
 			for (next = element.nextElementSibling; next; next = next.nextElementSibling) {
-				if (next.matches('.own:not(.system)')) {
+				if (next.matches('[data-own="true"]')) {
 					break;
 				}
 			}
@@ -181,7 +185,7 @@ export class ChatMessages {
 			return;
 		}
 
-		if (element.classList.contains('system')) {
+		if (MessageTypes.isSystemMessage(message)) {
 			return;
 		}
 
@@ -210,6 +214,7 @@ export class ChatMessages {
 		this.editing.id = message._id;
 		this.input.parentElement.classList.add('editing');
 		element.classList.add('editing');
+		setHighlightMessage(message._id);
 
 		if (message.attachments && message.attachments[0].description) {
 			messageBoxState.set(this.input, message.attachments[0].description);
@@ -234,6 +239,7 @@ export class ChatMessages {
 		this.editing.element.classList.remove('editing');
 		delete this.editing.id;
 		delete this.editing.element;
+		clearHighlightMessage();
 
 		messageBoxState.set(this.input, this.editing.saved || '');
 		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : -1;

@@ -1,6 +1,7 @@
 import formatDistance from 'date-fns/formatDistance';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { MessageTypes } from '../../ui-utils';
 
@@ -102,7 +103,7 @@ MessageTypes.registerType({
 		if (message.msg === 'declined' && message.webRtcCallEndTs) {
 			return TAPi18n.__('WebRTC_call_declined_message');
 		}
-		return message.msg;
+		return escapeHTML(message.msg);
 	},
 });
 

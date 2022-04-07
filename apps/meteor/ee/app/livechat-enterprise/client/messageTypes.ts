@@ -8,7 +8,9 @@ MessageTypes.registerType({
 	message: 'New_chat_transfer_fallback',
 	data(message: any) {
 		if (!message.transferData) {
-			return;
+			return {
+				fallback: 'SHOULD_NEVER_HAPPEN',
+			};
 		}
 		const from = message.transferData.prevDepartment;
 		const to = message.transferData.department.name;

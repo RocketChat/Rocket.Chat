@@ -58,6 +58,7 @@
 		"@types/fibers": "^3.1.1",
 		"@types/mongodb": "^3.6.20",
 		"@types/node": "^14.18.12",
+		"@rocket.chat/icons": "^0.31.0",
 		"@types/ws": "^8.5.3",
 		"pino-pretty": "^7.6.0",
 		"pm2": "^5.2.0",
