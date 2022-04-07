@@ -1,41 +1,24 @@
 import { test, expect } from '@playwright/test';
 
-import SetupWizard from './utils/pageobjects/wizard.page';
-import { adminRegister, VALID_EMAIL } from './utils/mocks/userAndPasswordMock';
+import SetupWizard from './utils/pageobjects/SetupWizard';
+import { VALID_EMAIL, adminLogin } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST, setupWizardStepRegex } from './utils/mocks/urlMock';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
+import LoginPage from './utils/pageobjects/LoginPage';
 
 test.describe('[Wizard]', () => {
 	let setupWizard: SetupWizard;
+	let loginPage: LoginPage;
 	test.beforeEach(async ({ page }) => {
 		setupWizard = new SetupWizard(page);
-	});
-	test.describe('[Step 1]', () => {
-		test.beforeEach(async ({ baseURL }) => {
-			const baseUrl = baseURL || LOCALHOST;
-			await setupWizard.goto(baseUrl);
-		});
-
-		test('expect required field alert showed when user dont inform data', async () => {
-			await setupWizard.stepOneFailedBlankFields();
-		});
-
-		test('expect alert showed when email provided is invalid', async () => {
-			await setupWizard.stepOneFailedWithInvalidEmail(adminRegister);
-		});
-
-		test('expect go to Step 2 successfully', async () => {
-			await setupWizard.stepOneSucess(adminRegister);
-
-			await expect(setupWizard.getPage()).toHaveURL(setupWizardStepRegex._2);
-		});
+		loginPage = new LoginPage(page);
 	});
 
 	test.describe('[Step 2]', async () => {
 		test.beforeEach(async ({ baseURL }) => {
 			const baseUrl = baseURL || LOCALHOST;
 			await setupWizard.goto(baseUrl);
-			await setupWizard.stepOneSucess(adminRegister);
+			await loginPage.login(adminLogin);
 		});
 
 		test('expect required field alert showed when user dont inform data', async () => {
@@ -43,7 +26,7 @@ test.describe('[Wizard]', () => {
 		});
 
 		test('expect go to Step 3 successfully', async () => {
-			await setupWizard.stepTwoSucess();
+			await setupWizard.stepTwoSuccess();
 			await expect(setupWizard.getPage()).toHaveURL(setupWizardStepRegex._3);
 		});
 	});
@@ -51,8 +34,8 @@ test.describe('[Wizard]', () => {
 	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
 			await setupWizard.goto('');
-			await setupWizard.stepOneSucess(adminRegister);
-			await setupWizard.stepTwoSucess();
+			await loginPage.login(adminLogin);
+			await setupWizard.stepTwoSuccess();
 		});
 
 		test('expect have email field to register the server', async () => {
@@ -81,9 +64,9 @@ test.describe('[Wizard]', () => {
 	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
 			await setupWizard.goto('');
-			await setupWizard.stepOneSucess(adminRegister);
-			await setupWizard.stepTwoSucess();
-			await setupWizard.stepThreeSucess();
+			await loginPage.login(adminLogin);
+			await setupWizard.stepTwoSuccess();
+			await setupWizard.stepThreeSuccess();
 		});
 
 		test('expect confirm the standalone option', async () => {

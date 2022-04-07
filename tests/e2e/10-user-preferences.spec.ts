@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/main-content.page';
-import SideNav from './utils/pageobjects/side-nav.page';
-import LoginPage from './utils/pageobjects/login.page';
-import FlexTab from './utils/pageobjects/flex-tab.page';
-import PreferencesMainContent from './utils/pageobjects/preferences-main-content.page';
+import MainContent from './utils/pageobjects/MainContent';
+import SideNav from './utils/pageobjects/SideNav';
+import LoginPage from './utils/pageobjects/LoginPage';
+import FlexTab from './utils/pageobjects/FlexTab';
+import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
 import { adminLogin, adminRegister } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 

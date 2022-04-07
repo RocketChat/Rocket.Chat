@@ -86,7 +86,7 @@ class SetupWizard extends BasePage {
 		return this.getPage().locator('//*[contains(text(), "Standalone Server Confirmation")]');
 	}
 
-	private fullNameIvalidtext(): Locator {
+	private fullNameInvalidText(): Locator {
 		return this.getPage().locator('//input[@name="fullname"]/../following-sibling::span');
 	}
 
@@ -122,15 +122,7 @@ class SetupWizard extends BasePage {
 		return this.getPage().locator('//input[@name="email"]/../../span[contains(text(), "This field is required")]');
 	}
 
-	public async stepOneSucess(adminCredential: IRegister): Promise<void> {
-		await this.fullName().type(adminCredential.name);
-		await this.userName().type(adminCredential.name);
-		await this.companyEmail().type(adminCredential.email);
-		await this.password().type(adminCredential.password);
-		await this.goNext();
-	}
-
-	public async stepTwoSucess(): Promise<void> {
+	public async stepTwoSuccess(): Promise<void> {
 		await this.organizationName().type(reason);
 
 		await this.organizationType().click();
@@ -151,14 +143,14 @@ class SetupWizard extends BasePage {
 		await this.goNext();
 	}
 
-	public async stepThreeSucess(): Promise<void> {
+	public async stepThreeSuccess(): Promise<void> {
 		await this.standaloneServer().click();
 	}
 
 	public async stepOneFailedBlankFields(): Promise<void> {
 		await this.goNext();
 
-		await expect(this.fullNameIvalidtext()).toBeVisible();
+		await expect(this.fullNameInvalidText()).toBeVisible();
 		await expect(this.userNameInvalidText()).toBeVisible();
 		await expect(this.companyEmailInvalidText()).toBeVisible();
 		await expect(this.passwordInvalidText()).toBeVisible();

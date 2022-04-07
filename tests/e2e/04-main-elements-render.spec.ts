@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/main-content.page';
-import SideNav from './utils/pageobjects/side-nav.page';
-import FlexTab from './utils/pageobjects/flex-tab.page';
-import LoginPage from './utils/pageobjects/login.page';
+import MainContent from './utils/pageobjects/MainContent';
+import SideNav from './utils/pageobjects/SideNav';
+import FlexTab from './utils/pageobjects/FlexTab';
+import LoginPage from './utils/pageobjects/LoginPage';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 
@@ -27,7 +27,7 @@ test.describe('[Main Elements Render]', function () {
 	});
 
 	test.describe('[Side Nav Bar]', () => {
-		test.describe('render:', () => {
+		test.describe('[Render]', () => {
 			test('expect show the new channel button', async () => {
 				await expect(sideNav.newChannelBtnToolbar()).toBeVisible();
 			});
@@ -37,7 +37,7 @@ test.describe('[Main Elements Render]', function () {
 			});
 		});
 
-		test.describe('spotlight search render:', () => {
+		test.describe('[Spotlight search bar]', () => {
 			test('expect show spotlight search bar', async () => {
 				await sideNav.spotlightSearchIcon().click();
 				await expect(sideNav.spotlightSearch()).toBeVisible();
@@ -56,7 +56,7 @@ test.describe('[Main Elements Render]', function () {
 		});
 	});
 	test.describe('[User Options]', () => {
-		test.describe('render:', () => {
+		test.describe('[Render]', () => {
 			test.beforeEach(async () => {
 				await sideNav.sidebarUserMenu().click();
 			});
@@ -92,7 +92,7 @@ test.describe('[Main Elements Render]', function () {
 	});
 
 	test.describe('[Main Content]', () => {
-		test.describe('render:', () => {
+		test.describe('[Render]', () => {
 			test.beforeAll(async () => {
 				await sideNav.openChannel('general');
 			});
@@ -144,7 +144,7 @@ test.describe('[Main Elements Render]', function () {
 			});
 
 			test('expect be that the last message is from the logged user', async () => {
-				await expect(mainContent.lastMessageUser()).toContainText(adminLogin.password);
+				await expect(mainContent.lastMessageUser()).toBeVisible();
 			});
 
 			test('expect not show the Admin tag', async () => {
@@ -153,13 +153,13 @@ test.describe('[Main Elements Render]', function () {
 		});
 	});
 
-	test.describe('[Flextab]', () => {
+	test.describe('[FlexTab]', () => {
 		test.describe('[Render]', () => {
 			test.beforeAll(async () => {
 				await sideNav.openChannel('general');
 			});
 
-			test.describe('Room Info Tab:', () => {
+			test.describe('[Room tab info]', () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('info', true);
 				});
@@ -177,7 +177,7 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('Search Tab:', () => {
+			test.describe('[Search Tab]', () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('search', true);
 				});
@@ -195,7 +195,7 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('Members Tab:', () => {
+			test.describe('[Members Tab]', () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('members', true);
 				});
@@ -213,7 +213,7 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('Notifications Tab:', () => {
+			test.describe('[Notifications Tab]', () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('notifications', true);
 				});
@@ -231,7 +231,7 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('Files Tab:', () => {
+			test.describe('[Files Tab]', () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('files', true);
 				});
@@ -245,7 +245,7 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('Mentions Tab:', () => {
+			test.describe('[Mentions Tab]', () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('mentions', true);
 				});
@@ -259,7 +259,7 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('Starred Messages Tab:', () => {
+			test.describe('[Starred Messages Tab]', () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('starred', true);
 				});
@@ -273,7 +273,7 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('Pinned Messages Tab:', () => {
+			test.describe('[Pinned Messages Tab]', () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('pinned', true);
 				});

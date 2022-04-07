@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/main-content.page';
-import SideNav from './utils/pageobjects/side-nav.page';
-import LoginPage from './utils/pageobjects/login.page';
+import MainContent from './utils/pageobjects/MainContent';
+import SideNav from './utils/pageobjects/SideNav';
+import LoginPage from './utils/pageobjects/LoginPage';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 

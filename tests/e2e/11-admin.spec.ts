@@ -1,14 +1,14 @@
 import { test, expect } from '@playwright/test';
 
-import LoginPage from './utils/pageobjects/login.page';
-import SideNav from './utils/pageobjects/side-nav.page';
+import LoginPage from './utils/pageobjects/LoginPage';
+import SideNav from './utils/pageobjects/SideNav';
 import { adminLogin, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
-import Administration from './utils/pageobjects/administration';
-import FlexTab from './utils/pageobjects/flex-tab.page';
+import Administration from './utils/pageobjects/Administration';
+import FlexTab from './utils/pageobjects/FlexTab';
 import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';
 import { Checkbox } from './utils/enums/Checkbox';
 
-test.describe.parallel('[Administration]', () => {
+test.describe('[Administration]', () => {
 	let loginPage: LoginPage;
 	let sideNav: SideNav;
 	let admin: Administration;
@@ -131,7 +131,7 @@ test.describe.parallel('[Administration]', () => {
 					await admin.infoLink().click();
 				});
 
-				test.describe('filter text:', async () => {
+				test.describe('[Filter text]', async () => {
 					test.beforeEach(async () => {
 						await admin.usersFilter().click();
 					});
@@ -151,7 +151,7 @@ test.describe.parallel('[Administration]', () => {
 					});
 				});
 
-				test.describe('create user:', () => {
+				test.describe('[Create user]', () => {
 					test.beforeAll(async () => {
 						await flexTab.usersAddUserTab().click();
 					});
@@ -179,7 +179,7 @@ test.describe.parallel('[Administration]', () => {
 			});
 		});
 
-		// TODO verificar como é feito o invite
+		// TODO verify how is make o invite
 		// 	describe('[Flex Tab] ', () => {
 		// 		describe('send invitation:', () => {
 		// 			before(() => {
@@ -215,7 +215,7 @@ test.describe.parallel('[Administration]', () => {
 				await admin.keyboardPress('Backspace');
 			});
 
-			test.describe('general:', () => {
+			test.describe('[General]', () => {
 				test('expect change site url reset button is showed', async () => {
 					await admin.generalSiteUrl().type('something');
 					await expect(admin.generalSiteUrlReset()).toBeVisible();
@@ -286,7 +286,7 @@ test.describe.parallel('[Administration]', () => {
 				});
 			});
 
-			test.describe('iframe:', () => {
+			test.describe('[Iframe]', () => {
 				test.beforeAll(async () => {
 					await admin.generalSectionIframeIntegration().click();
 				});
@@ -294,65 +294,65 @@ test.describe.parallel('[Administration]', () => {
 				test('expect iframe integration is rendering', async () => {
 					await expect(admin.generalIframeSend()).toBeVisible();
 					await expect(admin.generalIframeSendTargetOrigin()).toBeVisible();
-					await expect(admin.generalIframeRecieve()).toBeVisible();
-					await expect(admin.generalIframeRecieveOrigin()).toBeVisible();
+					await expect(admin.generalIframeReceive()).toBeVisible();
+					await expect(admin.generalIframeReceiveOrigin()).toBeVisible();
 				});
 			});
 
-			test.describe('notifications:', () => {
+			test.describe('[Notifications]', () => {
 				test.beforeAll(async () => {
 					await admin.generalSectionNotifications().click();
 				});
 
-				test('it should show the max room members field', async () => {
+				test('expect the max room members field', async () => {
 					await expect(admin.generalNotificationsMaxRoomMembers()).toBeVisible();
 				});
 			});
 
-			test.describe('rest api:', async () => {
+			test.describe('[Rest api]', async () => {
 				test.beforeAll(async () => {
 					await admin.generalSectionRestApi().click();
 				});
 
-				test('it should show the API user add limit field', async () => {
+				test('expect show the API user add limit field', async () => {
 					await expect(admin.generalRestApiUserLimit()).toBeVisible();
 				});
 			});
 
-			test.describe('reporting:', async () => {
+			test.describe('[Reporting]', async () => {
 				test.beforeAll(async () => {
 					await admin.generalSectionReporting().click();
 				});
 
-				test('it should show the report to rocket.chat toggle', async () => {
+				test('expect show the report to rocket.chat toggle', async () => {
 					await expect(admin.generalReporting()).toBeVisible();
 				});
 			});
 
-			test.describe('stream cast:', async () => {
+			test.describe('[Stream cast]', async () => {
 				test.beforeAll(async () => {
 					await admin.generalSectionStreamCast().click();
 				});
 
-				test('it should show the stream cast adress field', async () => {
-					await expect(admin.generalStreamCastAdress()).toBeVisible();
+				test('expect show the stream cast address field', async () => {
+					await expect(admin.generalStreamCastAddress()).toBeVisible();
 				});
 			});
 
-			test.describe('utf8:', () => {
+			test.describe('UTF-8', () => {
 				test.beforeAll(async () => {
 					await admin.generalSectionUTF8().click();
 				});
 
-				test('it should show the usernames utf8 regex field', async () => {
+				test('expect show the usernames utf8 regex field', async () => {
 					await expect(admin.generalUTF8UsernamesRegex()).toBeVisible();
 				});
 
-				test('it should show the channels utf8 regex field', async () => {
+				test('expect show the channels utf8 regex field', async () => {
 					await expect(admin.generalUTF8ChannelsRegex()).toBeVisible();
 				});
 
-				test('it should show the utf8 names slug checkboxes', async () => {
+				test('expect show the utf8 names slug checkboxes', async () => {
 					await expect(admin.generalUTF8NamesSlug()).toBeVisible();
 				});
 			});
@@ -366,12 +366,12 @@ test.describe.parallel('[Administration]', () => {
 				await admin.keyboardPress('Backspace');
 			});
 
-			test.describe('default user preferences', () => {
+			test.describe('[Default user preferences]', () => {
 				test.beforeAll(async () => {
 					await admin.accountsSectionDefaultUserPreferences().click();
 				});
 
-				test('it should show the enable auto away field', async () => {
+				test('expect show the enable auto away field', async () => {
 					await expect(admin.accountsEnableAutoAway()).toBeVisible();
 				});
 
@@ -380,8 +380,8 @@ test.describe.parallel('[Administration]', () => {
 				});
 
 				test('expect show the idle timeout limit field', async () => {
-					await expect(admin.accountsidleTimeLimit()).toBeVisible();
-					const inputValue = await admin.accountsidleTimeLimit().inputValue();
+					await expect(admin.accountsIdleTimeLimit()).toBeVisible();
+					const inputValue = await admin.accountsIdleTimeLimit().inputValue();
 					expect(inputValue).toEqual('300');
 				});
 
@@ -390,7 +390,7 @@ test.describe.parallel('[Administration]', () => {
 					await expect(admin.accountsDesktopNotifications().locator('.rcx-select__item')).toHaveText('All messages');
 				});
 
-				test('expect show mobile notifications tobe visible and option have value', async () => {
+				test('expect show mobile notifications to be visible and option have value', async () => {
 					await expect(admin.accountsMobileNotifications()).toBeVisible();
 					await expect(admin.accountsMobileNotifications().locator('.rcx-select__item')).toHaveText('All messages');
 				});
@@ -459,27 +459,27 @@ test.describe.parallel('[Administration]', () => {
 					await expect(admin.accountsEmailNotificationMode()).toBeVisible();
 				});
 
-				test('the offline email notification field value should be all', async () => {
+				test('expect the offline email notification field value should be all', async () => {
 					await expect(admin.accountsEmailNotificationMode().locator('.rcx-select__item')).toHaveText('Every Mention/DM');
 				});
 
-				test('it should show the new room notification field', async () => {
+				test('expect show the new room notification field', async () => {
 					await expect(admin.accountsNewRoomNotification()).toBeVisible();
 				});
 
-				test('the new room notification field value should be door', async () => {
+				test('expect the new room notification field value should be door', async () => {
 					await expect(admin.accountsNewRoomNotification().locator('.rcx-select__item')).toHaveText('Default');
 				});
 
-				test('it should show the new message notification field', async () => {
+				test('expect show the new message notification field', async () => {
 					await expect(admin.accountsNewMessageNotification()).toBeVisible();
 				});
 
-				test('the new message notification field value should be chime', async () => {
+				test('expect the new message notification field value should be chime', async () => {
 					await expect(admin.accountsNewMessageNotification().locator('.rcx-select__item')).toHaveText('Default');
 				});
 
-				test('it should show the notification sound volume field', async () => {
+				test('expect show the notification sound volume field', async () => {
 					await expect(admin.accountsNotificationsSoundVolume()).toBeVisible();
 				});
 

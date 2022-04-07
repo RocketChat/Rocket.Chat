@@ -80,11 +80,11 @@ export default class Administration extends BasePage {
 	}
 
 	public async verifyCheckBoxRendered(checkBoxes: string[]): Promise<void> {
-		const expecteds = [];
+		const expected = [];
 		for (const checkBox of checkBoxes) {
-			expecteds.push(expect(this.adminCheckBox(checkBox)).toBeVisible());
+			expected.push(expect(this.adminCheckBox(checkBox)).toBeVisible());
 		}
-		await Promise.all(expecteds);
+		await Promise.all(expected);
 	}
 
 	public roomsGeneralChannel(): Locator {
@@ -382,15 +382,15 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('[data-qa-reset-setting-id="Iframe_Integration_send_tarpublic_origin"]');
 	}
 
-	public generalIframeRecieve(): Locator {
+	public generalIframeReceive(): Locator {
 		return this.getPage().locator('[data-qa-setting-id="Iframe_Integration_receive_enable"]');
 	}
 
-	public generalIframeRecieveOrigin(): Locator {
+	public generalIframeReceiveOrigin(): Locator {
 		return this.getPage().locator('[data-qa-setting-id="Iframe_Integration_receive_origin"]');
 	}
 
-	public generalIframeRecieveOriginReset(): Locator {
+	public generalIframeReceiveOriginReset(): Locator {
 		return this.getPage().locator('[data-qa-reset-setting-id="Iframe_Integration_receive_origin"]');
 	}
 
@@ -418,11 +418,11 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('[data-qa-setting-id="Statistics_reporting"]');
 	}
 
-	public generalStreamCastAdress(): Locator {
+	public generalStreamCastAddress(): Locator {
 		return this.getPage().locator('[data-qa-setting-id="Stream_Cast_Address"]');
 	}
 
-	public generalStreamCastAdressReset(): Locator {
+	public generalStreamCastAddressReset(): Locator {
 		return this.getPage().locator('[data-qa-reset-setting-id="Stream_Cast_Address"]');
 	}
 
@@ -463,11 +463,11 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_enableAutoAway"]');
 	}
 
-	public accountsidleTimeLimit(): Locator {
+	public accountsIdleTimeLimit(): Locator {
 		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_idleTimeLimit"]');
 	}
 
-	public accountsidleTimeLimitReset(): Locator {
+	public accountsIdleTimeLimitReset(): Locator {
 		return this.getPage().locator('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_idleTimeLimit"]');
 	}
 

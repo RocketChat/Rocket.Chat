@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { validUser } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/login.page';
+import LoginPage from './utils/pageobjects/LoginPage';
 import { LOCALHOST } from './utils/mocks/urlMock';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
 
@@ -14,11 +14,6 @@ test.describe('[Login]', () => {
 		await loginPage.goto(baseUrl);
 	});
 
-	test('expect user make login', async () => {
-		await loginPage.login(validUser);
-		await loginPage.waitForSelector(HOME_SELECTOR);
-	});
-
 	test('expect user write a password incorrectly', async () => {
 		const invalidUserPassword = {
 			email: validUser.email,
@@ -26,5 +21,10 @@ test.describe('[Login]', () => {
 		};
 		await loginPage.login(invalidUserPassword);
 		await expect(loginPage.getToastError()).toBeVisible();
+	});
+
+	test('expect user make login', async () => {
+		await loginPage.login(validUser);
+		await loginPage.waitForSelector(HOME_SELECTOR);
 	});
 });

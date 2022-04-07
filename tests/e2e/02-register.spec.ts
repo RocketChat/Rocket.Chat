@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 
 import { registerUser, WRONG_PASSWORD } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/login.page';
+import LoginPage from './utils/pageobjects/LoginPage';
 import { LOCALHOST } from './utils/mocks/urlMock';
 
 test.describe('[Register]', () => {
@@ -18,7 +18,7 @@ test.describe('[Register]', () => {
 	});
 
 	test('expect user click in register button with different password', async () => {
-		await loginPage.registerFailWithDifentPassword(registerUser, WRONG_PASSWORD);
+		await loginPage.registerFailWithDifferentPassword(registerUser, WRONG_PASSWORD);
 	});
 
 	test('expect new user is created', async () => {

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import LoginPage from './utils/pageobjects/login.page';
+import LoginPage from './utils/pageobjects/LoginPage';
 import { LOCALHOST } from './utils/mocks/urlMock';
 import { VALID_EMAIL, INVALID_EMAIL, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from './utils/mocks/userAndPasswordMock';
 

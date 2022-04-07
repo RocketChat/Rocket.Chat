@@ -264,7 +264,7 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('.clearfix li:nth-child(4) .current-setting');
 	}
 
-	// admin view flextab items
+	// admin view flexTab items
 	public usersSendInvitationTab(): Locator {
 		return this.getPage().locator('.tab-button:not(.hidden) .tab-button-icon--send');
 	}
