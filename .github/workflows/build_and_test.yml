@@ -407,28 +407,19 @@ jobs:
           CYPRESS_BASE_URL: http://localhost:4000
           CYPRESS_TEST_API_URL: http://localhost:4000
           OVERWRITE_SETTING_Site_Url: http://localhost:4000
-          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
+          SKIP_PROCESS_EVENT_REGISTRATION: "true"
         run: |
+          cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
+          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
 
-          cd ./apps/meteor
-
-          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright
-
-      - name: Store cypress test screenshots
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ee-cypress-test-screenshots
-          path: apps/meteor/tests/cypress/screenshots*
-
-      - name: Store cypress test videos
+      - name: Store playwrite test videos
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ee-cypress-test-videos
-          path: apps/meteor/tests/cypress/videos*
+          path: apps/meteor/tests/e2e/test-failures*
   #   notification:
   #     runs-on: ubuntu-20.04
   #     needs: test
