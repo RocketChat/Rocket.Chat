@@ -43,6 +43,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 				type: 'success',
 				message: t('Custom_User_Status_Updated_Successfully'),
 			});
+			close();
 			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
