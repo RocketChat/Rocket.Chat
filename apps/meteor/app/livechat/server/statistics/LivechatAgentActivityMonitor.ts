@@ -7,12 +7,13 @@ import { Users } from '../../../models/server';
 import { LivechatAgentActivity, Sessions } from '../../../models/server/raw';
 import { ISocketConnection } from '../../../../definition/ISocketConnection';
 
-const formatDate = (dateTime = new Date()) => ({
+const formatDate = (dateTime = new Date()): { date: number } => ({
 	date: parseInt(moment(dateTime).format('YYYYMMDD')),
 });
 
 export class LivechatAgentActivityMonitor {
 	private _started: boolean;
+
 	private _name: string;
 
 	constructor() {
@@ -22,11 +23,11 @@ export class LivechatAgentActivityMonitor {
 		this._name = 'Livechat Agent Activity Monitor';
 	}
 
-	start() {
+	start(): void {
 		this._setupListeners();
 	}
 
-	stop() {
+	stop(): void {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -36,11 +37,11 @@ export class LivechatAgentActivityMonitor {
 		this._started = false;
 	}
 
-	isRunning() {
+	isRunning(): boolean {
 		return this._started;
 	}
 
-	_setupListeners() {
+	_setupListeners(): void {
 		if (this.isRunning()) {
 			return;
 		}
@@ -53,7 +54,7 @@ export class LivechatAgentActivityMonitor {
 		this._started = true;
 	}
 
-	_startMonitoring() {
+	_startMonitoring(): void {
 		SyncedCron.add({
 			name: this._name,
 			schedule: (parser: any) => parser.cron('0 0 * * *'),
@@ -63,9 +64,9 @@ export class LivechatAgentActivityMonitor {
 		});
 	}
 
-	async _updateActiveSessions() {
+	async _updateActiveSessions(): Promise<void> {
 		const openLivechatAgentSessions = await LivechatAgentActivity.findOpenSessions();
-		if (!await openLivechatAgentSessions.count()) {
+		if (!(await openLivechatAgentSessions.count())) {
 			return;
 		}
 		const today = moment(new Date());
@@ -88,7 +89,7 @@ export class LivechatAgentActivityMonitor {
 		}
 	}
 
-	async _handleMeteorConnection(connection: ISocketConnection) {
+	async _handleMeteorConnection(connection: ISocketConnection): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -108,7 +109,7 @@ export class LivechatAgentActivityMonitor {
 		});
 	}
 
-	_handleAgentStatusChanged({ userId, status }: { userId: string; status: string }) {
+	_handleAgentStatusChanged({ userId, status }: { userId: string; status: string }): void {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -125,7 +126,7 @@ export class LivechatAgentActivityMonitor {
 		}
 	}
 
-	async _handleUserStatusLivechatChanged({ userId, status }: { userId: string; status: string }) {
+	async _handleUserStatusLivechatChanged({ userId, status }: { userId: string; status: string }): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -143,12 +144,12 @@ export class LivechatAgentActivityMonitor {
 		}
 	}
 
-	async _createOrUpdateSession(userId: string, lastStartedAt?: Date) {
+	async _createOrUpdateSession(userId: string, lastStartedAt?: Date): Promise<void> {
 		const data = { ...formatDate(lastStartedAt), agentId: userId, lastStartedAt };
 		await LivechatAgentActivity.createOrUpdate(data);
 	}
 
-	async _updateSessionWhenAgentStop(agentId: string) {
+	async _updateSessionWhenAgentStop(agentId: string): Promise<void> {
 		const { date } = formatDate();
 
 		const livechatSession = await LivechatAgentActivity.findOneByAgendIdAndDate(agentId, date);

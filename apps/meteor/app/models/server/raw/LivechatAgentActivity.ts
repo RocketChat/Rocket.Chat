@@ -1,22 +1,21 @@
 import moment from 'moment';
-import { AggregationCursor } from 'mongodb';
+import type { AggregationCursor, Cursor, FindAndModifyWriteOpResultObject, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
 import { ILivechatAgentActivity, IServiceHistory } from '../../../../definition/ILivechatAgentActivity';
+import { BaseRaw } from './BaseRaw';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
-	private modelIndexes() {
-		return [
-			{ key: { date: 1 } },
-			{ key: { agentId: 1, date: 1 }, unique: true },
-		];
+	private modelIndexes(): IndexSpecification[] {
+		return [{ key: { date: 1 } }, { key: { agentId: 1, date: 1 }, unique: true }];
 	}
 
-	findOneByAgendIdAndDate(agentId: string, date: ILivechatAgentActivity['date']) {
+	findOneByAgendIdAndDate(agentId: string, date: ILivechatAgentActivity['date']): Promise<ILivechatAgentActivity | null> {
 		return this.findOne({ agentId, date });
 	}
 
-	createOrUpdate(data: Partial<Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStartedAt'>> = {}) {
+	async createOrUpdate(
+		data: Partial<Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStartedAt'>> = {},
+	): Promise<FindAndModifyWriteOpResultObject<ILivechatAgentActivity> | undefined> {
 		const { date, agentId, lastStartedAt } = data;
 
 		if (!date || !agentId) {
@@ -40,7 +39,12 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 		);
 	}
 
-	updateLastStoppedAt({ agentId, date, lastStoppedAt, availableTime }: Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStoppedAt' | 'availableTime'>) {
+	updateLastStoppedAt({
+		agentId,
+		date,
+		lastStoppedAt,
+		availableTime,
+	}: Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStoppedAt' | 'availableTime'>): Promise<UpdateWriteOpResult> {
 		const query = {
 			agentId,
 			date,
@@ -54,7 +58,11 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 		return this.updateMany(query, update);
 	}
 
-	updateServiceHistory({ agentId, date, serviceHistory }: Pick<ILivechatAgentActivity, 'date' | 'agentId'> & { serviceHistory: IServiceHistory }) {
+	updateServiceHistory({
+		agentId,
+		date,
+		serviceHistory,
+	}: Pick<ILivechatAgentActivity, 'date' | 'agentId'> & { serviceHistory: IServiceHistory }): Promise<UpdateWriteOpResult> {
 		const query = {
 			agentId,
 			date,
@@ -67,7 +75,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 		return this.updateMany(query, update);
 	}
 
-	findOpenSessions() {
+	findOpenSessions(): Cursor<ILivechatAgentActivity> {
 		const query = {
 			lastStoppedAt: { $exists: false },
 		};
