@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 import NotificationStatus from './NotificationStatus';
 
-function All(props) {
+const All: FC<{ t: (key: string) => string }> = function All(props) {
 	return <NotificationStatus label='mention-all' bg='#F38C39' {...props} />;
-}
+};
 
 export default All;
