@@ -7,7 +7,17 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import { Mailer } from './Mailer';
 
-const useSendMail = () => {
+export type sendMailObject = {
+	fromEmail: { value: string; error?: string };
+	subject: string;
+	emailBody: string;
+	dryRun: boolean;
+	query: { value: string; error?: string };
+};
+
+type useSendMailType = () => ({ fromEmail, subject, emailBody, dryRun, query }: sendMailObject) => void;
+
+const useSendMail: useSendMailType = () => {
 	const meteorSendMail = useMethod('Mailer.sendMail');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -20,7 +30,7 @@ const useSendMail = () => {
 			});
 			return;
 		}
-		if (fromEmail.error || fromEmail.length < 1) {
+		if (fromEmail.error || fromEmail.value.length < 1) {
 			dispatchToastMessage({
 				type: 'error',
 				message: t('error-invalid-from-address'),
