@@ -48,7 +48,7 @@ export function Mailer({ sendMail }: MailerProps) {
 								onChange={(e: SyntheticEvent<HTMLInputElement>) => {
 									setFromEmail({
 										value: e.currentTarget.value,
-										error: !validateEmail(e.currentTarget.value) ? t('Invalid_Email') : undefined,
+										error: !validateEmail(e.currentTarget.value) ? t('Invalid_email') : undefined,
 									});
 								}}
 							/>
