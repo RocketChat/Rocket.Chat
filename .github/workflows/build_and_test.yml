@@ -334,10 +334,7 @@ jobs:
 
       - name: NPM install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
-        run: |
-          yarn
-          cd ./apps/meteor/ee/server/services
-          npm install
+        run: yarn
 
       - name: Build micro services
         run: |
