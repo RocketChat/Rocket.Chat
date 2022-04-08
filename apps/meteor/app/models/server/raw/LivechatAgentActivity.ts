@@ -5,7 +5,7 @@ import { ILivechatAgentActivity, IServiceHistory } from '../../../../definition/
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
-	private modelIndexes(): IndexSpecification[] {
+	modelIndexes(): IndexSpecification[] {
 		return [{ key: { date: 1 } }, { key: { agentId: 1, date: 1 }, unique: true }];
 	}
 
