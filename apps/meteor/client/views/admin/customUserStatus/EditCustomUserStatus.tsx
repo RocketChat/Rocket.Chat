@@ -1,5 +1,5 @@
-import { Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.chat/fuselage';
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import { Button, ButtonGroup, TextInput, Field, Select, Icon, SelectOption } from '@rocket.chat/fuselage';
+import React, { useCallback, useState, useMemo, useEffect, SyntheticEvent } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
@@ -8,7 +8,16 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export function EditCustomUserStatus({ close, onChange, data, ...props }) {
+type EditCustomUserStatusProps = {
+	close: () => void;
+	onChange: () => void;
+	data: {
+		_id: string;
+		name: string;
+		statusType: string | null;
+	};
+};
+export function EditCustomUserStatus({ close, onChange, data, ...props }: EditCustomUserStatusProps) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -45,7 +54,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			});
 			onChange();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	}, [saveStatus, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
 
@@ -60,12 +69,12 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			try {
 				await deleteStatus(_id);
 				setModal(() => (
-					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+					<GenericModal variant='success' onCancel={handleClose} onConfirm={handleClose}>
 						{t('Custom_User_Status_Has_Been_Deleted')}
 					</GenericModal>
 				));
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 				onChange();
 			}
 		};
@@ -81,7 +90,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		));
 	}, [_id, close, deleteStatus, dispatchToastMessage, onChange, setModal, t]);
 
-	const presenceOptions = [
+	const presenceOptions: SelectOption[] = [
 		['online', t('Online')],
 		['busy', t('Busy')],
 		['away', t('Away')],
@@ -93,7 +102,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+					<TextInput value={name} onChange={(e: SyntheticEvent<HTMLInputElement>) => setName(e.currentTarget.value)} placeholder={t('Name')} />
 				</Field.Row>
 			</Field>
 			<Field>

@@ -14,8 +14,8 @@ type GenericModalProps = RequiredModalProps & {
 	title?: string | ReactElement;
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
-	onCancel?: () => void;
-	onClose: () => void;
+	onCancel: () => void;
+	onClose?: () => void;
 	onConfirm: () => void;
 };
 
