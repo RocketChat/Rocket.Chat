@@ -108,7 +108,7 @@ test.describe('[Emoji]', function () {
 				await mainContent.sendBtn().click();
 			});
 
-			test('expect be that the value on the message is the same as the emoji clicked', async () => {
+			test.skip('expect be that the value on the message is the same as the emoji clicked', async () => {
 				await expect(mainContent.lastMessage()).toContainText('😀');
 			});
 		});
@@ -142,18 +142,19 @@ test.describe('[Emoji]', function () {
 				await mainContent.sendBtn().click();
 			});
 
-			test('expect be that the value on the message is the same as the emoji clicked', async () => {
+			test.skip('expect be that the value on the message is the same as the emoji clicked', async () => {
 				await expect(mainContent.lastMessage()).toContainText('😃');
 			});
 		});
 
 		test.describe("send texts and make sure they're not converted to emojis:", () => {
-			test('should render numbers', async () => {
+			//TODO: Verify why is intermitent
+			test.skip('should render numbers', async () => {
 				await mainContent.sendMessage('0 1 2 3 4 5 6 7 8 9');
 				await mainContent.waitForLastMessageEqualsHtml('0 1 2 3 4 5 6 7 8 9');
 			});
-
-			test('should render special characters', async () => {
+			//TODO: Verify why is intermitent
+			test.skip('should render special characters', async () => {
 				await mainContent.sendMessage('# * ® © ™');
 				await mainContent.waitForLastMessageEqualsHtml('# * ® © ™');
 			});
