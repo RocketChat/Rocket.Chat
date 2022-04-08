@@ -51,7 +51,7 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 
 				const reader = new FileReader();
 				reader.readAsBinaryString(soundFile);
-				reader.onloadend = () => {
+				reader.onloadend = (): void => {
 					try {
 						uploadCustomSound(reader.result, soundFile.type, {
 							...soundData,
@@ -90,7 +90,11 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput value={name} onChange={(e: FormEvent<HTMLInputElement>) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+					<TextInput
+						value={name}
+						onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+						placeholder={t('Name')}
+					/>
 				</Field.Row>
 			</Field>
 			<Field>

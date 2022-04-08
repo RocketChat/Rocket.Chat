@@ -1,31 +1,30 @@
 import { Box, Button, Icon, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, ReactElement } from 'react';
 
+import FilterByText from '../../../components/FilterByText';
 import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
+import { GenericTableBody } from '../../../components/GenericTable/V2/GenericTableBody';
+import { GenericTableCell } from '../../../components/GenericTable/V2/GenericTableCell';
 import { GenericTableHeader } from '../../../components/GenericTable/V2/GenericTableHeader';
 import { GenericTableHeaderCell } from '../../../components/GenericTable/V2/GenericTableHeaderCell';
-import { GenericTableBody } from '../../../components/GenericTable/V2/GenericTableBody';
 import { GenericTableLoadingTable } from '../../../components/GenericTable/V2/GenericTableLoadingTable';
 import { GenericTableRow } from '../../../components/GenericTable/V2/GenericTableRow';
-import { GenericTableCell } from '../../../components/GenericTable/V2/GenericTableCell';
-import { useCustomSound } from '../../../contexts/CustomSoundContext';
+import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
+import { useCustomSound } from '../../../contexts/CustomSoundContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomSound from './AddCustomSound';
-// import AdminSounds from './AdminSounds';
 import EditCustomSound from './EditCustomSound';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import FilterByText from '../../../components/FilterByText';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 
-function CustomSoundsRoute() {
+function CustomSoundsRoute(): ReactElement {
 	const route = useRoute('custom-sounds');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -55,7 +54,7 @@ function CustomSoundsRoute() {
 	const { reload, ...result } = useEndpointData('custom-sounds.list', query);
 
 	const handleItemClick = useCallback(
-		(_id) => () => {
+		(_id) => (): void => {
 			route.push({
 				context: 'edit',
 				id: _id,
