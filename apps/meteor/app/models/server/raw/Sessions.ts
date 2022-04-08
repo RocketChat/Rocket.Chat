@@ -759,6 +759,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		super(col, trash);
 
 		this.secondaryCollection = colSecondary;
+		this.col.createIndexes(this.indexes);
 	}
 
 	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
