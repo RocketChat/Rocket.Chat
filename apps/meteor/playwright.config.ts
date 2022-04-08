@@ -2,7 +2,7 @@ import { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
 	outputDir: 'tests/e2e/test-failures',
-	reporter: [['list']],
+	reporter: [['github']],
 	workers: 1,
 	use: {
 		baseURL: 'http://localhost:3000',
