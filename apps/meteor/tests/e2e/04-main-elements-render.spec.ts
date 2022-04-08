@@ -16,9 +16,9 @@ test.describe('[Main Elements Render]', function () {
 	test.beforeAll(async ({ browser, baseURL }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
-		const URL = baseURL || LOCALHOST;
+		const URL = baseURL
 		loginPage = new LoginPage(page);
-		await loginPage.goto(URL);
+		await loginPage.goto(URL as string);
 
 		await loginPage.login(adminLogin);
 		sideNav = new SideNav(page);

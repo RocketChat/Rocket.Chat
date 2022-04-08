@@ -8,7 +8,7 @@ test.describe('[Register]', () => {
 	let loginPage: LoginPage;
 
 	test.beforeEach(async ({ page, baseURL }) => {
-		const URL = baseURL || LOCALHOST;
+		const URL = baseURL as string;
 		loginPage = new LoginPage(page);
 		await loginPage.goto(URL);
 	});

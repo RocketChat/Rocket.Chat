@@ -9,9 +9,9 @@ test.describe('[Login]', () => {
 	let loginPage: LoginPage;
 
 	test.beforeEach(async ({ page, baseURL }) => {
-		const baseUrl = baseURL || LOCALHOST;
+		const baseUrl = baseURL;
 		loginPage = new LoginPage(page);
-		await loginPage.goto(baseUrl);
+		await loginPage.goto(baseUrl as string);
 	});
 
 	test('expect user write a password incorrectly', async () => {

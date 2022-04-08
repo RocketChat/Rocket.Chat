@@ -13,7 +13,7 @@ test.describe('[Channel]', async () => {
 	const HELLO = 'Hello';
 
 	test.beforeEach(async ({ page, baseURL }) => {
-		const baseUrl = baseURL || LOCALHOST;
+		const baseUrl = baseURL as string;
 		loginPage = new LoginPage(page);
 		await loginPage.goto(baseUrl);
 		await loginPage.login(validUser);

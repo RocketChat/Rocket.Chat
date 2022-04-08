@@ -17,7 +17,7 @@ async function initConfig(
 ): Promise<any> {
 	const context = await browser.newContext(options);
 	const page = await context.newPage();
-	const URL = baseURL || LOCALHOST;
+	const URL = baseURL as string
 	loginPage = new LoginPage(page);
 	await loginPage.goto(URL);
 
