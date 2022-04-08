@@ -5,17 +5,19 @@ import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { sendMailObject } from './MailerRoute';
 
 type MailerProps = {
-	sendMail: ({}) => void;
+	sendMail: ({ fromEmail, subject, emailBody, dryRun, query }: sendMailObject) => void;
 };
-export function Mailer({ sendMail = () => {} }: MailerProps) {
+
+export function Mailer({ sendMail }: MailerProps) {
 	const t = useTranslation();
 
 	const [fromEmail, setFromEmail] = useState<{ value: string; error?: string }>({ value: '' });
 	const [dryRun, setDryRun] = useState(false);
 	const [query, setQuery] = useState<{ value: string; error?: string }>({ value: '' });
-	const [subject, setSubject] = useState<{ value: string; error?: string }>({ value: '' });
+	const [subject, setSubject] = useState('');
 	const [emailBody, setEmailBody] = useState('');
 
 	return (
@@ -81,10 +83,9 @@ export function Mailer({ sendMail = () => {} }: MailerProps) {
 						<Field.Row>
 							<TextInput
 								id='subject'
-								value={subject.value}
-								error={subject.error}
+								value={subject}
 								onChange={(e: SyntheticEvent<HTMLInputElement>) => {
-									setSubject({ value: e.currentTarget.value });
+									setSubject(e.currentTarget.value);
 								}}
 							/>
 						</Field.Row>
