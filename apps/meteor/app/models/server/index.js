@@ -12,7 +12,6 @@ import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatVisitors from './models/LivechatVisitors';
 import LivechatInquiry from './models/LivechatInquiry';
-import LivechatExternalMessage from './models/LivechatExternalMessages';
 import OmnichannelQueue from './models/OmnichannelQueue';
 import ImportData from './models/ImportData';
 
@@ -35,7 +34,6 @@ export {
 	LivechatDepartmentAgents,
 	LivechatRooms,
 	LivechatVisitors,
-	LivechatExternalMessage,
 	LivechatInquiry,
 	OmnichannelQueue,
 	ImportData,
