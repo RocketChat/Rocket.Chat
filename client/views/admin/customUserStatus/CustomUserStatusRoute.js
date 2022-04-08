@@ -99,7 +99,7 @@ function CustomUserStatusRoute() {
 					</VerticalBar.Header>
 
 					{context === 'edit' && <EditCustomUserStatusWithData _id={id} close={handleClose} onChange={handleChange} />}
-					{context === 'new' && <AddCustomUserStatus goToNew={handleItemClick} close={handleClose} onChange={handleChange} />}
+					{context === 'new' && <AddCustomUserStatus close={handleClose} onChange={handleChange} />}
 				</VerticalBar>
 			)}
 		</Page>

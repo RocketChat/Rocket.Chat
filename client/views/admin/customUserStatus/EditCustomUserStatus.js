@@ -107,7 +107,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 					<ButtonGroup stretch w='full'>
 						<Button onClick={close}>{t('Cancel')}</Button>
 						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
-							{t('Save')}
+							{t('Update')}
 						</Button>
 					</ButtonGroup>
 				</Field.Row>

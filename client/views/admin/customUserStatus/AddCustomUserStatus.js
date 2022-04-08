@@ -6,7 +6,7 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
+function AddCustomUserStatus({ close, onChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -16,7 +16,7 @@ function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
 	const saveStatus = useMethod('insertOrUpdateUserStatus');
 	const handleSave = useCallback(async () => {
 		try {
-			const result = await saveStatus({
+			await saveStatus({
 				name,
 				statusType,
 			});
@@ -24,12 +24,12 @@ function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
 				type: 'success',
 				message: t('Custom_User_Status_Updated_Successfully'),
 			});
-			goToNew(result)();
+			close();
 			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [dispatchToastMessage, goToNew, name, onChange, saveStatus, statusType, t]);
+	}, [dispatchToastMessage, name, onChange, saveStatus, statusType, t]);
 
 	const presenceOptions = [
 		['online', t('Online')],
