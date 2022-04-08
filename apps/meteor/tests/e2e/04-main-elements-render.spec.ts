@@ -138,11 +138,11 @@ test.describe('[Main Elements Render]', function () {
 			test('expect show the emoji button', async () => {
 				await expect(mainContent.emojiBtn()).toBeVisible();
 			});
-			//TODO: Verify why is intermitent
+			// TODO: Verify why is intermitent
 			test.skip('expect show the last message', async () => {
 				await expect(mainContent.lastMessage()).toBeVisible();
 			});
-			//TODO: Verify why is intermitent
+			// TODO: Verify why is intermitent
 			test.skip('expect be that the last message is from the logged user', async () => {
 				await expect(mainContent.lastMessageUser()).toBeVisible();
 			});

@@ -148,12 +148,12 @@ test.describe('[Emoji]', function () {
 		});
 
 		test.describe("send texts and make sure they're not converted to emojis:", () => {
-			//TODO: Verify why is intermitent
+			// TODO: Verify why is intermitent
 			test.skip('should render numbers', async () => {
 				await mainContent.sendMessage('0 1 2 3 4 5 6 7 8 9');
 				await mainContent.waitForLastMessageEqualsHtml('0 1 2 3 4 5 6 7 8 9');
 			});
-			//TODO: Verify why is intermitent
+			// TODO: Verify why is intermitent
 			test.skip('should render special characters', async () => {
 				await mainContent.sendMessage('# * ® © ™');
 				await mainContent.waitForLastMessageEqualsHtml('# * ® © ™');
