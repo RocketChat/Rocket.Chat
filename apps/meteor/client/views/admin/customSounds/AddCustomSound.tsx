@@ -1,5 +1,5 @@
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, ReactElement, FormEvent } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useMethod } from '../../../contexts/ServerContext';
@@ -8,12 +8,18 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
 
-function AddCustomSound({ goToNew, close, onChange, ...props }) {
+type AddCustomSoundProps = {
+	goToNew: (where: string) => () => void;
+	close: () => void;
+	onChange: () => void;
+};
+
+const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [name, setName] = useState('');
-	const [sound, setSound] = useState();
+	const [sound, setSound] = useState<{ name: string }>();
 
 	const uploadCustomSound = useMethod('uploadCustomSound');
 
@@ -26,42 +32,41 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(
-		async (name, soundFile) => {
-			const soundData = createSoundData(soundFile, name);
-			const validation = validate(soundData, soundFile);
-			if (validation.length === 0) {
-				let soundId;
-				try {
-					soundId = await insertOrUpdateSound(soundData);
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
+		async (name, soundFile): Promise<string | undefined> => {
+			const soundData = createSoundData(soundFile, name) as { extension: string; _id?: string; name: string; newFile?: true };
+			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
-				soundData._id = soundId;
-				soundData.random = Math.round(Math.random() * 1000);
-
-				if (soundId) {
-					dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
-
-					const reader = new FileReader();
-					reader.readAsBinaryString(soundFile);
-					reader.onloadend = () => {
-						try {
-							uploadCustomSound(reader.result, soundFile.type, soundData);
-							dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
-						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
-						}
-					};
-				}
-				return soundId;
-			}
 			validation.forEach((error) => {
-				throw new Error({
-					type: 'error',
-					message: t('error-the-field-is-required', { field: t(error) }),
-				});
+				throw new Error(t('error-the-field-is-required', { field: t(error) }));
 			});
+
+			try {
+				const soundId = await insertOrUpdateSound(soundData);
+
+				if (!soundId) {
+					return undefined;
+				}
+
+				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
+
+				const reader = new FileReader();
+				reader.readAsBinaryString(soundFile);
+				reader.onloadend = () => {
+					try {
+						uploadCustomSound(reader.result, soundFile.type, {
+							...soundData,
+							_id: soundId,
+							random: Math.round(Math.random() * 1000),
+						});
+						dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
+					} catch (error) {
+						(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
+					}
+				};
+				return soundId;
+			} catch (error) {
+				(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
+			}
 		},
 		[dispatchToastMessage, insertOrUpdateSound, t, uploadCustomSound],
 	);
@@ -69,11 +74,14 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 	const handleSave = useCallback(async () => {
 		try {
 			const result = await saveAction(name, sound);
+			if (!result) {
+				throw new Error('error-something-went-wrong');
+			}
+			goToNew(result);
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
-			goToNew(result)();
 			onChange();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 
@@ -82,7 +90,7 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+					<TextInput value={name} onChange={(e: FormEvent<HTMLInputElement>) => setName(e.currentTarget.value)} placeholder={t('Name')} />
 				</Field.Row>
 			</Field>
 			<Field>
@@ -92,7 +100,7 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 						<Button square onClick={clickUpload}>
 							<Icon name='upload' size='x20' />
 						</Button>
-						{(sound && sound.name) || 'none'}
+						{sound?.name || t('None')}
 					</Margins>
 				</Box>
 			</Field>
@@ -110,6 +118,6 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 			</Field>
 		</VerticalBar.ScrollableContent>
 	);
-}
+};
 
 export default AddCustomSound;
