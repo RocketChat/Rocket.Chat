@@ -1,18 +1,21 @@
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, SyntheticEvent } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export function Mailer({ sendMail = () => {} }) {
+type MailerProps = {
+	sendMail: ({}) => void;
+};
+export function Mailer({ sendMail = () => {} }: MailerProps) {
 	const t = useTranslation();
 
-	const [fromEmail, setFromEmail] = useState({ value: '' });
+	const [fromEmail, setFromEmail] = useState<{ value: string; error?: string }>({ value: '' });
 	const [dryRun, setDryRun] = useState(false);
-	const [query, setQuery] = useState({ value: '' });
-	const [subject, setSubject] = useState('');
+	const [query, setQuery] = useState<{ value: string; error?: string }>({ value: '' });
+	const [subject, setSubject] = useState<{ value: string; error?: string }>({ value: '' });
 	const [emailBody, setEmailBody] = useState('');
 
 	return (
@@ -40,7 +43,7 @@ export function Mailer({ sendMail = () => {} }) {
 								placeholder={t('Type_your_email')}
 								value={fromEmail.value}
 								error={fromEmail.error}
-								onChange={(e) => {
+								onChange={(e: SyntheticEvent<HTMLInputElement>) => {
 									setFromEmail({
 										value: e.currentTarget.value,
 										error: !validateEmail(e.currentTarget.value) ? t('Invalid_Email') : undefined,
@@ -63,7 +66,7 @@ export function Mailer({ sendMail = () => {} }) {
 								id='query'
 								value={query.value}
 								error={query.error}
-								onChange={(e) => {
+								onChange={(e: SyntheticEvent<HTMLInputElement>) => {
 									setQuery({
 										value: e.currentTarget.value,
 										error: e.currentTarget.value && !isJSON(e.currentTarget.value) ? t('Invalid_JSON') : undefined,
@@ -80,8 +83,8 @@ export function Mailer({ sendMail = () => {} }) {
 								id='subject'
 								value={subject.value}
 								error={subject.error}
-								onChange={(e) => {
-									setSubject(e.currentTarget.value);
+								onChange={(e: SyntheticEvent<HTMLInputElement>) => {
+									setSubject({ value: e.currentTarget.value });
 								}}
 							/>
 						</Field.Row>
@@ -89,7 +92,12 @@ export function Mailer({ sendMail = () => {} }) {
 					<Field>
 						<Field.Label>{t('Email_body')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput id='emailBody' rows={10} value={emailBody} onChange={(e) => setEmailBody(e.currentTarget.value)} />
+							<TextAreaInput
+								id='emailBody'
+								rows={10}
+								value={emailBody}
+								onChange={(e: SyntheticEvent<HTMLInputElement>) => setEmailBody(e.currentTarget.value)}
+							/>
 						</Field.Row>
 						<Field.Hint dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }} />
 					</Field>
