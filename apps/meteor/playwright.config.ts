@@ -4,7 +4,6 @@ const config: PlaywrightTestConfig = {
 	outputDir: 'tests/e2e/test-failures',
 	reporter: [['list']],
 	workers: 1,
-	globalSetup: './tests/e2e/globoalsetup.ts',
 	use: {
 		baseURL: process.env.CYPRESS_BASE_URL || 'http://localhost:3000',
 		headless: true,
