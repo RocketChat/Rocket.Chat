@@ -36,7 +36,7 @@
 		"testui-intermittent": "cypress run --spec ./tests/cypress/integration/02-intermittent/**/*.spec.js",
 		"testui-skip": "cypress run --spec ./tests/cypress/integration/03-skip/**/*.spec.js",
 		"testapi": "mocha --config ./.mocharc.api.js",
-		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server && npm run test:playwright",
+		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
 		".testunit:server": "mocha --config ./.mocharc.js",
 		".testunit:client": "mocha --config ./.mocharc.client.js",
 		".testunit:definition": "mocha --config ./.mocharc.definition.js",
