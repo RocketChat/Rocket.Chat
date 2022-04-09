@@ -73,6 +73,10 @@ type Request = {
 	body: any;
 };
 
+type PartialThis = {
+	readonly request: Request & { query: Record<string, string> };
+};
+
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	urlParams: UrlParams<TPathPattern>;
 	// TODO make it unsafe
@@ -166,6 +170,8 @@ declare class APIClass<TBasePath extends string = '/'> {
 		options: TOptions,
 		operations: Operations<TPathPattern, TOptions>,
 	): void;
+
+	addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void;
 
 	success<T>(result: T): SuccessResult<T>;
 

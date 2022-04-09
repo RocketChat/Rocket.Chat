@@ -788,6 +788,10 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		);
 	}
 
+	findOneBySessionId(sessionId: string): Promise<ISession | null> {
+		return this.findOne({ sessionId });
+	}
+
 	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
 		const query = {
 			year,
