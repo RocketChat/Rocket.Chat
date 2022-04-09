@@ -301,8 +301,8 @@ class MainContent extends Page {
 
 	closeMessageActionMenu() {
 		cy.get('body').realHover({ position: 'topLeft' });
-		this.messageOptionsBtns.should('not.exist');
-		this.messageActionMenuBtns.should('not.exist');
+		// this.messageOptionsBtns.should('not.exist');
+		// this.messageActionMenuBtns.should('not.exist');
 	}
 
 	setLanguageToEnglish() {

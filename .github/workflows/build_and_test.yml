@@ -37,7 +37,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "14.18.3"
-          cache: "yarn"
 
       - uses: actions/checkout@v3
 
@@ -60,6 +59,7 @@ jobs:
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+      - uses: c-hive/gha-yarn-cache@v2
       - name: Cache turbo
         id: cache-turbo
         uses: actions/cache@v2
@@ -221,6 +221,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cache-cypress-
             ${{ runner.os }}-
+      - uses: c-hive/gha-yarn-cache@v2
       - name: Cache turbo
         id: cache-turbo
         uses: actions/cache@v2
@@ -327,6 +328,7 @@ jobs:
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+      - uses: c-hive/gha-yarn-cache@v2
       - name: Cache turbo
         id: cache-turbo
         uses: actions/cache@v2
@@ -343,7 +345,7 @@ jobs:
         run: yarn
 
       - name: Build micro services
-        run: yarn build --scope=rocketchat-services
+        run: yarn build:services
 
       - name: E2E Test API
         env:
@@ -432,6 +434,7 @@ jobs:
           sudo apt clean
           docker rmi $(docker image ls -aq)
           df -h
+      - uses: c-hive/gha-yarn-cache@v2
       - name: Cache turbo
         id: cache-turbo
         uses: actions/cache@v2
@@ -463,7 +466,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "14.18.3"
-          cache: "yarn"
 
       - name: Install Meteor
         run: |
@@ -750,7 +752,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "14.18.3"
-          cache: "yarn"
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -769,7 +770,7 @@ jobs:
 
           # first install repo dependencies
           yarn
-          yarn build --scope=rocketchat-services
+          yarn build:services
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
 
