@@ -60,13 +60,16 @@ jobs:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
       - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache node modules
-        id: cache-nodemodules
+      - name: Cache turbo
+        id: cache-turbo
         uses: actions/cache@v2
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
       # TODO change to use turbo cache
       - name: Cache meteor local
@@ -74,13 +77,17 @@ jobs:
         with:
           path: ./apps/meteor/.meteor/local
           key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions', '.github/workflows/build_and_test.yml') }}
-
+          restore-keys: |
+            ${{ runner.os }}-meteor_cache-
+            ${{ runner.os }}-
       - name: Cache meteor
         uses: actions/cache@v2
         with:
           path: ~/.meteor
           key: ${{ runner.OS }}-meteor-${{ hashFiles('apps/meteor/.meteor/release', '.github/workflows/build_and_test.yml') }}
-
+          restore-keys: |
+            ${{ runner.os }}-meteor-
+            ${{ runner.os }}-
       - name: Install Meteor
         run: |
           # Restore bin from cache
@@ -211,14 +218,20 @@ jobs:
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-cypress-
+            ${{ runner.os }}-
       - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache node modules
-        id: cache-nodemodules
+      - name: Cache turbo
+        id: cache-turbo
         uses: actions/cache@v2
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
       - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
@@ -316,13 +329,16 @@ jobs:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
       - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache node modules
-        id: cache-nodemodules
+      - name: Cache turbo
+        id: cache-turbo
         uses: actions/cache@v2
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
       - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
@@ -419,26 +435,33 @@ jobs:
           docker rmi $(docker image ls -aq)
           df -h
       - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache node modules
-        id: cache-nodemodules
+      - name: Cache turbo
+        id: cache-turbo
         uses: actions/cache@v2
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
           path: ./apps/meteor/.meteor/local
           key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
-
+          restore-keys: |
+            ${{ runner.os }}-meteor_cache-
+            ${{ runner.os }}-
       - name: Cache meteor
         uses: actions/cache@v2
         with:
           path: ~/.meteor
           key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
-
+          restore-keys: |
+            ${{ runner.os }}-meteor-
+            ${{ runner.os }}-
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
