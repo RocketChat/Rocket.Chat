@@ -6,6 +6,10 @@ import { blazePortals } from '../../lib/portals/blazePortals';
 import PageLoading from './PageLoading';
 import { useTooltipHandling } from './useTooltipHandling';
 
+/**
+ * Layout of front end
+ * @constructor
+ */
 const AppLayout: FC = () => {
 	useTooltipHandling();
 
