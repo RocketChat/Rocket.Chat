@@ -3225,7 +3225,7 @@ __metadata:
     "@types/mongodb": ^3.6.10
     eslint: ^8.12.0
     prettier: ^2.6.1
-    typescript: ^4.3.5
+    typescript: ~4.3.5
   languageName: unknown
   linkType: soft
 
@@ -3850,7 +3850,7 @@ __metadata:
     eslint: ^8.12.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    typescript: ^4.3.5
+    typescript: ~4.3.5
   languageName: unknown
   linkType: soft
 
@@ -23894,9 +23894,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"rocketchat-authorization@workspace:apps/meteor/ee/server/services":
+"rocketchat-services@workspace:apps/meteor/ee/server/services":
   version: 0.0.0-use.local
-  resolution: "rocketchat-authorization@workspace:apps/meteor/ee/server/services"
+  resolution: "rocketchat-services@workspace:apps/meteor/ee/server/services"
   dependencies:
     "@rocket.chat/apps-engine": ^1.31.0
     "@rocket.chat/core-typings": "workspace:^"
@@ -23936,7 +23936,7 @@ __metadata:
     sodium-native: ^3.3.0
     sodium-plus: ^0.9.0
     ts-node: ^10.7.0
-    typescript: ^4.3.5
+    typescript: ~4.3.5
     underscore.string: ^3.3.6
     uuid: ^7.0.3
     ws: ^8.5.0
@@ -26825,17 +26825,7 @@ turbo@latest:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.3.5":
-  version: 4.6.3
-  resolution: "typescript@npm:4.6.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 255bb26c8cb846ca689dd1c3a56587af4f69055907aa2c154796ea28ee0dea871535b1c78f85a6212c77f2657843a269c3a742d09d81495b97b914bf7920415b
-  languageName: node
-  linkType: hard
-
-"typescript@npm:~4.3.4":
+"typescript@npm:~4.3.4, typescript@npm:~4.3.5":
   version: 4.3.5
   resolution: "typescript@npm:4.3.5"
   bin:
@@ -26845,17 +26835,7 @@ turbo@latest:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.3.5#~builtin<compat/typescript>":
-  version: 4.6.3
-  resolution: "typescript@patch:typescript@npm%3A4.6.3#~builtin<compat/typescript>::version=4.6.3&hash=bda367"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 6bf45caf847062420592e711bc9c28bf5f9a9a7fa8245343b81493e4ededae33f1774009d1234d911422d1646a2c839f44e1a23ecb111b40a60ac2ea4c1482a8
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@~4.3.4#~builtin<compat/typescript>":
+"typescript@patch:typescript@~4.3.4#~builtin<compat/typescript>, typescript@patch:typescript@~4.3.5#~builtin<compat/typescript>":
   version: 4.3.5
   resolution: "typescript@patch:typescript@npm%3A4.3.5#~builtin<compat/typescript>::version=4.3.5&hash=bda367"
   bin:
