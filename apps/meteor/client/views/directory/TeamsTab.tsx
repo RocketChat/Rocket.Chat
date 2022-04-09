@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
-import ChannelsTable from './ChannelsTable';
+import TeamsTable from './TeamsTable';
 
-function ChannelsTab(props) {
+function TeamsTab(): ReactElement {
 	const canViewPublicRooms = usePermission('view-c-room');
 
 	if (canViewPublicRooms) {
-		return <ChannelsTable {...props} />;
+		return <TeamsTable />;
 	}
 
 	return <NotAuthorizedPage />;
 }
 
-export default ChannelsTab;
+export default TeamsTab;
