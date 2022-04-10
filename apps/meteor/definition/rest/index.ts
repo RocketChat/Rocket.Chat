@@ -6,6 +6,7 @@ import type { BannersEndpoints } from './v1/banners';
 import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
+import { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DmEndpoints } from './v1/dm';
 import type { DnsEndpoints } from './v1/dns';
@@ -53,7 +54,8 @@ type CommunityEndpoints = BannersEndpoints &
 	InstancesEndpoints &
 	VoipEndpoints &
 	InvitesEndpoints &
-	E2eEndpoints;
+	E2eEndpoints &
+	CustomSoundEndpoint;
 
 type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
 
