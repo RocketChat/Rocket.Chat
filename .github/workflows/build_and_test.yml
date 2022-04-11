@@ -140,12 +140,12 @@ jobs:
         env:
           METEOR_PROFILE: 1000
         run: |
-          yarn build -- --debug --directory /tmp/build-test
+          yarn build:ci -- --debug --directory /tmp/build-test
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
         run: |
-          yarn build --directory /tmp/build-test
+          yarn build:ci -- --directory /tmp/build-test
 
       - name: Prepare build
         run: |
@@ -503,7 +503,7 @@ jobs:
       #     git checkout -- server/main.ts client/main.ts .meteor/packages
 
       - name: Build Rocket.Chat
-        run: yarn build -- --directory /tmp/build-pr
+        run: yarn build:ci -- --directory /tmp/build-pr
 
       - name: Build Docker image for PRs
         run: |
