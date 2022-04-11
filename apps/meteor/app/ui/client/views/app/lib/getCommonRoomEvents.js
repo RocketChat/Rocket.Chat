@@ -329,7 +329,7 @@ export const getCommonRoomEvents = () => ({
 			type: 'message-action',
 			id: item.id,
 			modifier: item.color,
-			action: () => item.action(e, {tabbar: template.tabbar, message, room}),
+			action: () => item.action(e, { tabbar: template.tabbar, message, room }),
 		}));
 
 		const itemsBelowDivider = ['delete-message', 'report-message'];
