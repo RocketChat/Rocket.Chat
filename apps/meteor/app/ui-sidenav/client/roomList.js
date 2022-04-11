@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { UiTextContext } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
+import { UiTextContext } from '../../../definition/IRoomTypeConfig';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { getUserPreference } from '../../utils';
 import { settings } from '../../settings';
