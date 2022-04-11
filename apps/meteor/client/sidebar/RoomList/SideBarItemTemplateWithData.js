@@ -2,9 +2,9 @@ import { Badge, Sidebar } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import { VRecDialog } from '../../../app/ui-vrecord/client';
-import { roomTypes } from '../../../app/utils/client';
 import { RoomIcon } from '../../components/RoomIcon';
 import { useLayout } from '../../contexts/LayoutContext';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
@@ -38,8 +38,8 @@ function SideBarItemTemplateWithData({
 }) {
 	const { sidebar } = useLayout();
 
-	const href = roomTypes.getRouteLink(room.t, room);
-	const title = roomTypes.getRoomName(room.t, room);
+	const href = roomCoordinator.getRouteLink(room.t, room);
+	const title = roomCoordinator.getRoomName(room.t, room);
 
 	const {
 		lastMessage,
