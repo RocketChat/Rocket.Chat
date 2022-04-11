@@ -275,7 +275,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ee-playwright-test-trace
+          name: playwright-test-trace
           path: ./apps/meteor/tests/e2e/test-failures*
 
       - name: Store cypress test screenshots
