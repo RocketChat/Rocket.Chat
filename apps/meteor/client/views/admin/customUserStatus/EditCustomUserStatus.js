@@ -43,11 +43,12 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 				type: 'success',
 				message: t('Custom_User_Status_Updated_Successfully'),
 			});
+			close();
 			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [saveStatus, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
+	}, [saveStatus, close, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleClose = () => {
@@ -107,7 +108,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 					<ButtonGroup stretch w='full'>
 						<Button onClick={close}>{t('Cancel')}</Button>
 						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
-							{t('Save')}
+							{t('Update')}
 						</Button>
 					</ButtonGroup>
 				</Field.Row>
