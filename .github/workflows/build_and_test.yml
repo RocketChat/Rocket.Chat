@@ -275,7 +275,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ee-cypress-test-videos
+          name: ee-playwright-test-trace
           path: ./apps/meteor/tests/e2e/test-failures*
 
       - name: Store cypress test screenshots
@@ -416,16 +416,18 @@ jobs:
           OVERWRITE_SETTING_Site_Url: http://localhost:4000
           SKIP_PROCESS_EVENT_REGISTRATION: "true"
         run: |
-          cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
-          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
+
+          cd ./apps/meteor
+
+          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: ee-cypress-test-videos
+          name: ee-playwright-test-trace
           path: ./apps/meteor/tests/e2e/test-failures*
 
       - name: Store cypress test screenshots
