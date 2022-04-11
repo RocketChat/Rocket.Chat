@@ -421,7 +421,7 @@ jobs:
 
           cd ./apps/meteor
 
-          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright
+          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright:ee
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2

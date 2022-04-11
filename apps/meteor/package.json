@@ -31,6 +31,7 @@
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"testci": "node .scripts/start.js",
 		"test:playwright": "playwright test",
+		"test:playwright:ee": "ENTERPRISE=true playwright test",
 		"testui": "cypress run",
 		"testui-pass": "cypress run --spec ./tests/cypress/integration/01-pass/**/*.spec.js",
 		"testui-intermittent": "cypress run --spec ./tests/cypress/integration/02-intermittent/**/*.spec.js",

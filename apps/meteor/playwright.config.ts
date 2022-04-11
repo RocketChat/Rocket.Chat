@@ -1,15 +1,11 @@
 import { PlaywrightTestConfig } from '@playwright/test';
 
-const [, , ...options] = process.argv;
-
-console.log(options);
-
 const config: PlaywrightTestConfig = {
 	outputDir: 'tests/e2e/test-failures',
 	reporter: [['list']],
 	workers: 1,
 	use: {
-		baseURL: options.includes('--enterprise') ? 'http://localhost:4000' : 'http://localhost:3000',
+		baseURL: process.env.ENTERPRISE ? 'http://localhost:4000' : 'http://localhost:3000',
 		headless: true,
 		viewport: { width: 1024, height: 768 },
 		ignoreHTTPSErrors: true,
