@@ -8,7 +8,15 @@ import { getUserPreference } from '../../../app/utils/client';
 import { IVoipRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
-import { VoipEventDataSignature, isVoipEventAgentCalled, isVoipEventAgentConnected, isVoipEventCallerJoined, isVoipEventQueueMemberAdded, isVoipEventQueueMemberRemoved, isVoipEventCallAbandoned } from '../../../definition/voip/IVoipClientEvents';
+import {
+	VoipEventDataSignature,
+	isVoipEventAgentCalled,
+	isVoipEventAgentConnected,
+	isVoipEventCallerJoined,
+	isVoipEventQueueMemberAdded,
+	isVoipEventQueueMemberRemoved,
+	isVoipEventCallAbandoned,
+} from '../../../definition/voip/IVoipClientEvents';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
