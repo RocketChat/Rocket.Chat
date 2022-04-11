@@ -271,6 +271,13 @@ jobs:
           Xvfb -screen 0 1024x768x24 :99 &
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
 
+      - name: Store playwright test trace
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ee-cypress-test-videos
+          path: ./apps/meteor/tests/e2e/test-failures*
+
       - name: Store cypress test screenshots
         uses: actions/upload-artifact@v2
         if: failure()
@@ -414,12 +421,26 @@ jobs:
           Xvfb -screen 0 1024x768x24 :99 &
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
 
-      - name: Store playwrite test videos
+      - name: Store playwright test trace
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ee-cypress-test-videos
-          path: apps/meteor/tests/e2e/test-failures*
+          path: ./apps/meteor/tests/e2e/test-failures*
+
+      - name: Store cypress test screenshots
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-test-screenshots
+          path: ./apps/meteor/tests/cypress/screenshots*
+
+      - name: Store cypress test videos
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-test-videos
+          path: ./apps/meteor/tests/cypress/videos*
   #   notification:
   #     runs-on: ubuntu-20.04
   #     needs: test
