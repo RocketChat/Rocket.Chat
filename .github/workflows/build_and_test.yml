@@ -434,14 +434,14 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: cypress-test-screenshots
+          name: ee-cypress-test-screenshots
           path: ./apps/meteor/tests/cypress/screenshots*
 
       - name: Store cypress test videos
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: cypress-test-videos
+          name: ee-cypress-test-videos
           path: ./apps/meteor/tests/cypress/videos*
   #   notification:
   #     runs-on: ubuntu-20.04
