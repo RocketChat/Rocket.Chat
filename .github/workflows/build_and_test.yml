@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
   pull_request:
-    branches: '**'
+    branches: "**"
   push:
     branches:
       - develop
@@ -36,7 +36,7 @@ jobs:
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
-          node-version: '14.18.3'
+          node-version: "14.18.3"
 
       - uses: actions/checkout@v3
 
@@ -48,9 +48,10 @@ jobs:
           docker rmi $(docker image ls -aq)
           df -h
 
-      - name: check package-lock
-        run: |
-          npx package-lock-check
+      # TODO is this required?
+      # - name: check package-lock
+      #   run: |
+      #     npx package-lock-check
 
       - name: Cache cypress
         id: cache-cypress
@@ -68,17 +69,18 @@ jobs:
       #       ./ee/server/services/node_modules
       #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
+      # TODO change to use turbo cache
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
-          path: ./.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
+          path: ./apps/meteor/.meteor/local
+          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions', '.github/workflows/build_and_test.yml') }}
 
       - name: Cache meteor
         uses: actions/cache@v2
         with:
           path: ~/.meteor
-          key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-meteor-${{ hashFiles('apps/meteor/.meteor/release', '.github/workflows/build_and_test.yml') }}
 
       - name: Install Meteor
         run: |
@@ -102,6 +104,7 @@ jobs:
       - name: Versions
         run: |
           npm --versions
+          yarn -v
           node -v
           meteor --version
           meteor npm --versions
@@ -111,24 +114,25 @@ jobs:
       - name: npm install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
         run: |
-          meteor npm install
-          cd ./ee/server/services
+          yarn
+          cd ./apps/meteor/ee/server/services
           npm install
           cd -
 
-      - run: meteor npm run lint
+      - run: yarn lint
 
-      - run: meteor npm run translation-check
+      - run: yarn turbo run translation-check
 
       - name: TS typecheck
         run: |
-          meteor npm run typecheck
-          cd ./ee/server/services
+          yarn turbo run typecheck
+          cd ./apps/meteor/ee/server/services
           meteor npm run typecheck
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
         run: |
+          cd ./apps/meteor
           meteor reset
 
       - name: Build Rocket.Chat From Pull Request
@@ -136,12 +140,12 @@ jobs:
         env:
           METEOR_PROFILE: 1000
         run: |
-          meteor build --server-only --directory --debug /tmp/build-test
+          yarn build:ci -- --debug --directory /tmp/build-test
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
         run: |
-          meteor build --server-only --directory /tmp/build-test
+          yarn build:ci -- --directory /tmp/build-test
 
       - name: Prepare build
         run: |
@@ -171,8 +175,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['14.18.3']
-        mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
+        node-version: ["14.18.3"]
+        mongodb-version: ["3.6", "4.0", "4.2", "4.4", "5.0"]
 
     steps:
       - name: Launch MongoDB
@@ -221,39 +225,34 @@ jobs:
       #   with:
       #     path: |
       #       ./node_modules
-      #       ./ee/server/services/node_modules
+      #       ./apps/meteor/ee/server/services/node_modules
       #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
       - name: NPM install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
-        run: |
-          npm install
-
-      - name: Unit Test (definitions)
-        run: npm run testunit-definition
+        run: yarn
 
       - name: Unit Test
-        run: npm run testunit
-
-      - name: Unit Test (client)
-        run: npm run testunit-client
+        run: yarn testunit
 
       - name: E2E Test API
         env:
-          TEST_MODE: 'true'
+          TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
+          cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - name: E2E Test UI
         env:
-          TEST_MODE: 'true'
+          TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
+          cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
           for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
@@ -263,14 +262,14 @@ jobs:
         if: failure()
         with:
           name: cypress-test-screenshots
-          path: tests/cypress/screenshots*
+          path: ./apps/meteor/tests/cypress/screenshots*
 
       - name: Store cypress test videos
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: cypress-test-videos
-          path: tests/cypress/videos*
+          path: ./apps/meteor/tests/cypress/videos*
 
   test-ee:
     runs-on: ubuntu-20.04
@@ -278,8 +277,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['14.18.3']
-        mongodb-version: ['4.4']
+        node-version: ["14.18.3"]
+        mongodb-version: ["4.4"]
 
     steps:
       - name: Launch MongoDB
@@ -331,38 +330,40 @@ jobs:
       #   with:
       #     path: |
       #       ./node_modules
-      #       ./ee/server/services/node_modules
+      #       ./apps/meteor/ee/server/services/node_modules
       #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
       - name: NPM install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
         run: |
-          npm install
-          cd ./ee/server/services
+          yarn
+          cd ./apps/meteor/ee/server/services
           npm install
 
       - name: Build micro services
         run: |
-          cd ./ee/server/services
+          cd ./apps/meteor/ee/server/services
           npm run build
 
       - name: E2E Test API
         env:
-          TEST_MODE: 'true'
+          TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
           TRANSPORTER: nats://localhost:4222
-          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
+          SKIP_PROCESS_EVENT_REGISTRATION: "true"
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
+
+          cd ./apps/meteor/
 
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - name: E2E Test UI
         env:
-          TEST_MODE: 'true'
+          TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
@@ -370,10 +371,12 @@ jobs:
           CYPRESS_BASE_URL: http://localhost:4000
           CYPRESS_TEST_API_URL: http://localhost:4000
           OVERWRITE_SETTING_Site_Url: http://localhost:4000
-          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
+          SKIP_PROCESS_EVENT_REGISTRATION: "true"
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
+
+          cd ./apps/meteor/
 
           for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
 
@@ -382,14 +385,14 @@ jobs:
         if: failure()
         with:
           name: ee-cypress-test-screenshots
-          path: tests/cypress/screenshots*
+          path: apps/meteor/tests/cypress/screenshots*
 
       - name: Store cypress test videos
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ee-cypress-test-videos
-          path: tests/cypress/videos*
+          path: apps/meteor/tests/cypress/videos*
   #   notification:
   #     runs-on: ubuntu-20.04
   #     needs: test
@@ -410,7 +413,7 @@ jobs:
 
     strategy:
       matrix:
-        release: ['official', 'preview']
+        release: ["official", "preview"]
 
     steps:
       - uses: actions/checkout@v3
@@ -436,13 +439,13 @@ jobs:
       #   with:
       #     path: |
       #       ./node_modules
-      #       ./ee/server/services/node_modules
+      #       ./apps/meteor/ee/server/services/node_modules
       #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
-          path: ./.meteor/local
+          path: ./apps/meteor/.meteor/local
           key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
 
       - name: Cache meteor
@@ -454,7 +457,7 @@ jobs:
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
-          node-version: '14.18.3'
+          node-version: "14.18.3"
 
       - name: Install Meteor
         run: |
@@ -478,6 +481,7 @@ jobs:
       - name: Versions
         run: |
           npm --versions
+          yarn -v
           node -v
           meteor --version
           meteor npm --versions
@@ -486,8 +490,7 @@ jobs:
 
       - name: npm install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-        run: |
-          meteor npm install
+        run: yarn
 
       # To reduce memory need during actual build, build the packages solely first
       # - name: Build a Meteor cache
@@ -500,8 +503,7 @@ jobs:
       #     git checkout -- server/main.ts client/main.ts .meteor/packages
 
       - name: Build Rocket.Chat
-        run: |
-          meteor build --server-only --directory /tmp/build-pr
+        run: yarn build:ci -- --directory /tmp/build-pr
 
       - name: Build Docker image for PRs
         run: |
@@ -517,7 +519,7 @@ jobs:
 
           echo "Build official Docker image ${IMAGE_NAME}"
 
-          DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
+          DOCKER_PATH="${GITHUB_WORKSPACE}/apps/meteor/.docker"
           if [[ '${{ matrix.release }}' = 'preview' ]]; then
             DOCKER_PATH="${DOCKER_PATH}-mongo"
           fi;
@@ -549,16 +551,17 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-1'
+          AWS_DEFAULT_REGION: "us-east-1"
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
           REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
           REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
           UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
         run: |
+          REPO_VERSION=$(node -p "require('./package.json').version")
           if [[ '${{ github.event_name }}' = 'release' ]]; then
             GIT_TAG="${GITHUB_REF#*tags/}"
             GIT_BRANCH=""
-            ARTIFACT_NAME="$(npm run version --silent)"
+            ARTIFACT_NAME="${REPO_VERSION}"
             RC_VERSION=$GIT_TAG
 
             if [[ $GIT_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+ ]]; then
@@ -571,8 +574,8 @@ jobs:
           else
             GIT_TAG=""
             GIT_BRANCH="${GITHUB_REF#*heads/}"
-            ARTIFACT_NAME="$(npm run version --silent).$GITHUB_SHA"
-            RC_VERSION="$(npm run version --silent)"
+            ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
+            RC_VERSION="${REPO_VERSION}"
             SNAP_CHANNEL=edge
             RC_RELEASE=develop
           fi;
@@ -616,10 +619,10 @@ jobs:
     strategy:
       matrix:
         # this is current a mix of variants and different images
-        release: ['official', 'preview', 'alpine']
+        release: ["official", "preview", "alpine"]
 
     env:
-      IMAGE_NAME: 'rocketchat/rocket.chat'
+      IMAGE_NAME: "rocketchat/rocket.chat"
 
     steps:
       - uses: actions/checkout@v3
@@ -642,7 +645,7 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-          DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
+          DOCKER_PATH="${GITHUB_WORKSPACE}/apps/meteor/.docker"
           if [[ '${{ matrix.release }}' = 'preview' ]]; then
             DOCKER_PATH="${DOCKER_PATH}-mongo"
           fi;
@@ -731,7 +734,8 @@ jobs:
 
     strategy:
       matrix:
-        service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
+        service:
+          ["account", "authorization", "ddp-streamer", "presence", "stream-hub"]
 
     steps:
       - uses: actions/checkout@v3
@@ -739,7 +743,7 @@ jobs:
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
-          node-version: '14.18.3'
+          node-version: "14.18.3"
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -757,10 +761,10 @@ jobs:
           fi
 
           # first install repo dependencies
-          npm i
+          yarn
 
           # then micro services dependencies
-          cd ./ee/server/services
+          cd ./apps/meteor/ee/server/services
           npm i
           npm run build
 
