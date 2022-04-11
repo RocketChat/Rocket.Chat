@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
 import UserAvatar from '../../../../../../components/avatar/UserAvatar';
 import { usePreventProgation } from '../../../../../../hooks/usePreventProgation';
-import UserActions from './UserActions';
+import MemberItemUserActions from './MemberItemUserActions';
 
 export const MemberItem = ({ _id, status, name, username, onClickView, style, rid, reload }) => {
 	const [showButton, setShowButton] = useState();
@@ -29,7 +29,11 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 				{name} <Option.Description>({username})</Option.Description>
 			</OptionContent>
 			<Option.Menu onClick={onClick}>
-				{showButton ? <UserActions username={username} rid={rid} _id={_id} reload={reload} /> : <ActionButton ghost tiny icon='kebab' />}
+				{showButton ? (
+					<MemberItemUserActions user={{ _id, username }} rid={rid} reload={reload} />
+				) : (
+					<ActionButton ghost tiny icon='kebab' />
+				)}
 			</Option.Menu>
 		</Option>
 	);

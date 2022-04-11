@@ -1,26 +1,32 @@
-import { useMemo } from 'react';
+import { Icon } from '@rocket.chat/fuselage';
+import { useMemo, ComponentProps } from 'react';
 
-type Action = {
+export type Action = {
 	label: string;
-	icon: string;
-	action: () => any;
+	icon: ComponentProps<typeof Icon>['name'];
+	action: () => void;
+	checkOption?: boolean;
+	isChecked?: boolean;
 };
 
-type MenuOption = {
-	label: { label: string; icon: string };
+export type MenuOption = {
+	label: { label: string; icon: ComponentProps<typeof Icon>['name']; checkOption?: boolean; isChecked?: boolean };
 	action: Function;
 };
 
-const mapOptions = ([key, { action, label, icon }]: [string, Action]): [string, MenuOption] => [
+// TODO fuselage
+const mapOptions = ([key, { action, label, icon, checkOption, isChecked }]: [string, Action]): [string, MenuOption] => [
 	key,
 	{
-		label: { label, icon }, // TODO fuselage
+		label: { label, icon, checkOption, isChecked },
 		action,
 	},
 ];
 
 export const useActionSpread = (
-	actions: Action[],
+	actions: {
+		[key: string]: Action;
+	},
 	size = 2,
 ): { actions: [string, Action][]; menu: { [id: string]: MenuOption } | undefined } =>
 	useMemo(() => {
