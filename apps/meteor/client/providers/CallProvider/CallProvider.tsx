@@ -8,7 +8,7 @@ import { getUserPreference } from '../../../app/utils/client';
 import { IVoipRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
-import { VoipEventDataSignature } from '../../../definition/voip/IVoipClientEvents';
+import { VoipEventDataSignature, isVoipEventAgentCalled, isVoipEventAgentConnected, isVoipEventCallerJoined, isVoipEventQueueMemberAdded, isVoipEventQueueMemberRemoved, isVoipEventCallAbandoned } from '../../../definition/voip/IVoipClientEvents';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -68,45 +68,48 @@ export const CallProvider: FC = ({ children }) => {
 			return;
 		}
 
-		const handleEventReceived = async ({ event, data }: VoipEventDataSignature): Promise<void> => {
-			switch (event) {
-				case 'agentcalled': {
-					queueAggregator.callRinging({ queuename: data.queue, callerid: data.callerId });
-					setQueueName(queueAggregator.getCurrentQueueName());
-					break;
-				}
-				case 'agentconnected': {
-					queueAggregator.callPickedup({ queuename: data.queue, queuedcalls: data.queuedCalls, waittimeinqueue: data.waitTimeInQueue });
-					setQueueName(queueAggregator.getCurrentQueueName());
-					setQueueCounter(queueAggregator.getCallWaitingCount());
-					break;
-				}
-				case 'callerjoined': {
-					queueAggregator.queueJoined({ queuename: data.queue, callerid: data.callerId, queuedcalls: data.queuedCalls });
-					setQueueCounter(queueAggregator.getCallWaitingCount());
-					break;
-				}
-				case 'queuememberadded': {
-					queueAggregator.memberAdded({ queuename: data.queue, queuedcalls: data.queuedCalls });
-					setQueueName(queueAggregator.getCurrentQueueName());
-					setQueueCounter(queueAggregator.getCallWaitingCount());
-					break;
-				}
-				case 'queuememberremoved': {
-					queueAggregator.memberRemoved({ queuename: data.queue, queuedcalls: data.queuedCalls });
-					setQueueCounter(queueAggregator.getCallWaitingCount());
-					break;
-				}
-				case 'callabandoned': {
-					queueAggregator.queueAbandoned({ queuename: data.queue, queuedcallafterabandon: data.queuedCallAfterAbandon });
-					setQueueName(queueAggregator.getCurrentQueueName());
-					setQueueCounter(queueAggregator.getCallWaitingCount());
-					break;
-				}
-				default: {
-					console.warn('Unknown event received', event);
-				}
+		const handleEventReceived = async (event: VoipEventDataSignature): Promise<void> => {
+			if (isVoipEventAgentCalled(event)) {
+				const { data } = event;
+				queueAggregator.callRinging({ queuename: data.queue, callerid: data.callerId });
+				setQueueName(queueAggregator.getCurrentQueueName());
+				return;
 			}
+			if (isVoipEventAgentConnected(event)) {
+				const { data } = event;
+				queueAggregator.callPickedup({ queuename: data.queue, queuedcalls: data.queuedCalls, waittimeinqueue: data.waitTimeInQueue });
+				setQueueName(queueAggregator.getCurrentQueueName());
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+			if (isVoipEventCallerJoined(event)) {
+				const { data } = event;
+				queueAggregator.queueJoined({ queuename: data.queue, callerid: data.callerId, queuedcalls: data.queuedCalls });
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+			if (isVoipEventQueueMemberAdded(event)) {
+				const { data } = event;
+				queueAggregator.memberAdded({ queuename: data.queue, queuedcalls: data.queuedCalls });
+				setQueueName(queueAggregator.getCurrentQueueName());
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+			if (isVoipEventQueueMemberRemoved(event)) {
+				const { data } = event;
+				queueAggregator.memberRemoved({ queuename: data.queue, queuedcalls: data.queuedCalls });
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+			if (isVoipEventCallAbandoned(event)) {
+				const { data } = event;
+				queueAggregator.queueAbandoned({ queuename: data.queue, queuedcallafterabandon: data.queuedCallAfterAbandon });
+				setQueueName(queueAggregator.getCurrentQueueName());
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+
+			console.warn('Unknown event received');
 		};
 
 		return subscribeToNotifyUser(`${user._id}/voip.events`, handleEventReceived);
