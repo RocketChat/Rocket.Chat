@@ -10,6 +10,10 @@ export type App = {
 		support: string;
 	};
 	description: string;
+	detailedDescription: {
+		raw: string;
+		rendered: string;
+	};
 	categories: string[];
 	version: string;
 	price: number;

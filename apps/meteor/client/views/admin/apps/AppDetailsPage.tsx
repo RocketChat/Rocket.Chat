@@ -76,14 +76,14 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 	const { isSelectedDetails, isSelectedLogs, isSelectedSettings } = selectedTab;
 
-	const isSettingsTabSelected = Boolean(settings && Object.values(settings).length && isSelectedSettings);
-	const isSettingsTabEnabled = Boolean(settings && Object.values(settings).length && installed);
-
 	const isDetailsTabSelected = isSelectedDetails;
 	const areApisVisible = Boolean(isSelectedDetails && !!showApis);
 
 	const isLogsTabSelected = isSelectedLogs;
 	const isLogsTabEnabled = Boolean(installed);
+
+	const isSettingsTabSelected = Boolean(settings && Object.values(settings).length && isSelectedSettings);
+	const isSettingsTabEnabled = Boolean(settings && Object.values(settings).length && installed);
 
 	return (
 		<Page flexDirection='column'>
