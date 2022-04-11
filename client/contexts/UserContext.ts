@@ -111,7 +111,7 @@ export const useUserSubscriptions = (query: SubscriptionQuery, options?: FindOpt
 	return useSubscription(subscription);
 };
 
-export const useUserSubscriptionByName = (name: string, fields: Fields, sort?: Sort): ISubscription | undefined => {
+export const useUserSubscriptionByName = (name: string, fields?: Fields, sort?: Sort): ISubscription | undefined => {
 	const { querySubscription } = useContext(UserContext);
 	const subscription = useMemo(() => querySubscription({ name }, fields, sort), [querySubscription, name, fields, sort]);
 	return useSubscription(subscription);

@@ -82,4 +82,10 @@ export type GroupsEndpoints = {
 			messages: IMessage[];
 		};
 	};
+	'groups.addLeader': {
+		POST: (params: { roomId: string; userId: string }) => {};
+	};
+	'groups.removeLeader': {
+		POST: (params: { roomId: string; userId: string }) => {};
+	};
 };
