@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 
 import { validUser } from './utils/mocks/userAndPasswordMock';
 import LoginPage from './utils/pageobjects/LoginPage';
-import { LOCALHOST } from './utils/mocks/urlMock';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
 
 test.describe('[Login]', () => {

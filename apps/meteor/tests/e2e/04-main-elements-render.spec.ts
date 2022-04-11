@@ -5,7 +5,6 @@ import SideNav from './utils/pageobjects/SideNav';
 import FlexTab from './utils/pageobjects/FlexTab';
 import LoginPage from './utils/pageobjects/LoginPage';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { LOCALHOST } from './utils/mocks/urlMock';
 
 test.describe('[Main Elements Render]', function () {
 	let loginPage: LoginPage;
@@ -16,7 +15,7 @@ test.describe('[Main Elements Render]', function () {
 	test.beforeAll(async ({ browser, baseURL }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
-		const URL = baseURL
+		const URL = baseURL;
 		loginPage = new LoginPage(page);
 		await loginPage.goto(URL as string);
 

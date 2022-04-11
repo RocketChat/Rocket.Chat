@@ -4,7 +4,6 @@ import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';
 import LoginPage from './utils/pageobjects/LoginPage';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { LOCALHOST } from './utils/mocks/urlMock';
 
 test.describe('[Emoji]', function () {
 	let loginPage: LoginPage;
@@ -14,7 +13,7 @@ test.describe('[Emoji]', function () {
 	test.beforeAll(async ({ browser, baseURL }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
-		const URL = baseURL as string
+		const URL = baseURL as string;
 		loginPage = new LoginPage(page);
 		await loginPage.goto(URL);
 

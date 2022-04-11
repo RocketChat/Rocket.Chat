@@ -6,7 +6,6 @@ import LoginPage from './utils/pageobjects/LoginPage';
 import FlexTab from './utils/pageobjects/FlexTab';
 import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
 import { adminLogin, adminRegister } from './utils/mocks/userAndPasswordMock';
-import { LOCALHOST } from './utils/mocks/urlMock';
 
 test.describe('[User Preferences]', function () {
 	test.describe('default', () => {
@@ -19,7 +18,7 @@ test.describe('[User Preferences]', function () {
 		test.beforeAll(async ({ browser, baseURL }) => {
 			const context = await browser.newContext();
 			const page = await context.newPage();
-			const URL = baseURL as string
+			const URL = baseURL as string;
 			loginPage = new LoginPage(page);
 			await loginPage.goto(URL);
 

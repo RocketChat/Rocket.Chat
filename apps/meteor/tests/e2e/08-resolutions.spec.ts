@@ -4,7 +4,6 @@ import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';
 import LoginPage from './utils/pageobjects/LoginPage';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { LOCALHOST } from './utils/mocks/urlMock';
 
 let loginPage: LoginPage;
 let mainContent: MainContent;
@@ -17,7 +16,7 @@ async function initConfig(
 ): Promise<any> {
 	const context = await browser.newContext(options);
 	const page = await context.newPage();
-	const URL = baseURL as string
+	const URL = baseURL as string;
 	loginPage = new LoginPage(page);
 	await loginPage.goto(URL);
 

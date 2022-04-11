@@ -4,7 +4,6 @@ import { v4 } from 'uuid';
 import ChannelCreation from './utils/pageobjects/ChannelCreation';
 import LoginPage from './utils/pageobjects/LoginPage';
 import { validUser, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
-import { LOCALHOST } from './utils/mocks/urlMock';
 
 test.describe('[Channel]', async () => {
 	let channelCreation: ChannelCreation;

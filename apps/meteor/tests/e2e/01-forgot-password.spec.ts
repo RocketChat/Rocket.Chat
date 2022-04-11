@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 import LoginPage from './utils/pageobjects/LoginPage';
-import { LOCALHOST } from './utils/mocks/urlMock';
 import { VALID_EMAIL, INVALID_EMAIL, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Forgot Password]', () => {
@@ -9,7 +8,7 @@ test.describe('[Forgot Password]', () => {
 
 	test.beforeEach(async ({ page, baseURL }) => {
 		loginPage = new LoginPage(page);
-		const baseUrl = baseURL as string
+		const baseUrl = baseURL as string;
 		await loginPage.goto(baseUrl);
 		await loginPage.gotToForgotPassword();
 	});

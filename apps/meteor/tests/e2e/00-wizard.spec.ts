@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 import SetupWizard from './utils/pageobjects/SetupWizard';
 import { VALID_EMAIL, adminLogin } from './utils/mocks/userAndPasswordMock';
-import { LOCALHOST, setupWizardStepRegex } from './utils/mocks/urlMock';
+import { setupWizardStepRegex } from './utils/mocks/urlMock';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
 import LoginPage from './utils/pageobjects/LoginPage';
 
@@ -16,7 +16,7 @@ test.describe('[Wizard]', () => {
 
 	test.describe('[Step 2]', async () => {
 		test.beforeEach(async ({ baseURL }) => {
-			const baseUrl = baseURL
+			const baseUrl = baseURL;
 			await setupWizard.goto(baseUrl as string);
 			await loginPage.login(adminLogin);
 		});
