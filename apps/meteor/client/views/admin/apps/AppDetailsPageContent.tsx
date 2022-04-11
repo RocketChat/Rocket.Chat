@@ -3,10 +3,10 @@ import { Box, Callout, Chip, Divider, Margins } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
+import MarkdownText from '../../../components/MarkdownText';
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 import { App } from './types';
-import MarkdownText from '/client/components/MarkdownText';
 
 type AppDetailsPageContentProps = {
 	app: App;
