@@ -52,7 +52,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ appId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
-		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
+		this.tryEnsureIndex({ 'visitorEmails.address': 1 }); // TODO: check if we need this index
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });

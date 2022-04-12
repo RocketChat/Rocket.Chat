@@ -43,7 +43,7 @@ export const Contacts = {
 		updateUser.$set.phone = (phone && [{ phoneNumber: phone }]) || null;
 		updateUser.$set.visitorEmails = (visitorEmail && [{ address: visitorEmail }]) || null;
 
-		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }).map(({ _id }) => _id);
+		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }).map(({ _id }) => _id);
 
 		const livechatData = Object.keys(customFields)
 			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
