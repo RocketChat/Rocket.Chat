@@ -1,0 +1,371 @@
+.chatpal-admin-link {
+	text-decoration: underline !important;
+
+	color: red !important;
+}
+
+.chatpalProvider .search-form {
+	padding: 0 24px;
+}
+
+.chatpal_search-loader {
+	position: relative;
+
+	margin-top: 50px;
+}
+
+.chatpal-search-container {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.chatpal-search-result {
+	position: relative;
+
+	overflow: auto;
+	overflow-x: hidden;
+
+	flex: 1;
+
+	padding: 0 24px 24px;
+
+	background-color: #f1f1f1;
+}
+
+.chatpal-search-typefilter {
+	display: flex;
+}
+
+.chatpal-search-typefilter li {
+	display: flex;
+	flex: 0 0 33%;
+
+	height: 35px;
+	padding-top: 10px;
+
+	cursor: pointer;
+
+	border-bottom: 4px solid white;
+	justify-content: center;
+}
+
+.chatpal-search-typefilter li.selected {
+	border-bottom: 4px solid #125074;
+}
+
+.chatpal-admin-header {
+	margin-bottom: 20px;
+
+	font-size: 18px;
+}
+
+.chatpal-search-result-header {
+	margin: 20px 0;
+
+	font-weight: bold;
+}
+
+.chatpal-search-result-single {
+	position: relative;
+
+	min-height: 92px;
+
+	margin-bottom: 10px;
+
+	padding: 10px;
+
+	border: 1px solid #e6e6e6;
+	background-color: white;
+}
+
+.chatpal-search-result-user {
+	position: relative;
+
+	min-height: 40px;
+
+	margin-bottom: 10px;
+
+	padding: 10px;
+
+	border: 1px solid #e6e6e6;
+	background-color: white;
+}
+
+.chatpal-search-result-user .chatpal-avatar {
+	position: absolute;
+
+	width: 36px;
+	height: 36px;
+}
+
+.chatpal-search-result-user .chatpal-avatar .chatpal-avatar-image {
+	width: 100%;
+	height: 100%;
+
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.chatpal-search-result-user h2 {
+	margin-bottom: 5px;
+	padding-left: 45px;
+}
+
+.chatpal-search-result-user .direct-message {
+	padding-left: 45px;
+
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.chatpal-channel {
+	flex: 1 1 auto;
+}
+
+.chatpal-search-result-user .chatpal-channel {
+	font-weight: bold;
+}
+
+.chatpal-show-more-messages {
+	margin-bottom: 20px;
+
+	cursor: pointer;
+
+	text-align: center;
+
+	color: #125074;
+
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.chatpal-show-more-messages:hover {
+	text-decoration: underline;
+}
+
+.chatpal-search-result-user .direct-message a {
+	color: #125074;
+}
+
+.chatpal-search-result-user .direct-message a:hover {
+	text-decoration: underline;
+}
+
+.chatpal-search-result-single h2 {
+	display: flex;
+
+	margin-bottom: 20px;
+	align-items: center;
+}
+
+.chatpal-search-result-single .chatpal-avatar {
+	position: absolute;
+
+	width: 36px;
+	height: 36px;
+}
+
+.chatpal-search-result-single .chatpal-avatar .chatpal-avatar-image {
+	width: 100%;
+	height: 100%;
+
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.chatpal-search-result-single .chatpal-name {
+	padding: 0 0 0 46px;
+
+	color: #444444;
+
+	font-size: 14px;
+
+	font-weight: bold;
+}
+
+.chatpal-search-result-single .chatpal-date {
+	color: #a0a0a0;
+
+	font-size: 12px;
+
+	font-weight: normal;
+}
+
+.chatpal-search-result-single .chatpal-time {
+	margin-left: 3px;
+
+	color: #a0a0a0;
+
+	font-size: 12px;
+}
+
+.chatpal-search-result-single .chatpal-message {
+	overflow-x: hidden;
+
+	margin-top: 5px;
+	padding: 0 0 0 46px;
+
+	line-height: 20px;
+}
+
+.chatpal-search-result-single .chatpal-message em {
+	background-color: #faf9c8;
+
+	font-style: normal;
+}
+
+.chatpal-search-result-single .chatpal-link {
+	display: none;
+	flex: 20;
+
+	color: #125074;
+}
+
+.chatpal-search-result-single .chatpal-link:hover {
+	text-decoration: underline;
+}
+
+.chatpal-search-result-single:hover .chatpal-link {
+	display: inline-block;
+}
+
+.chatpal-paging {
+	margin: 30px 0 50px;
+
+	text-align: center;
+}
+
+.chatpal-paging-text {
+	position: relative;
+	top: -2px;
+
+	display: inline-block;
+}
+
+.chatpal-paging .chatpal-paging-button {
+	display: inline-block;
+
+	cursor: pointer;
+
+	color: #125074;
+
+	font-size: 20px;
+}
+
+.chatpal-paging .chatpal-paging-prev {
+	padding-right: 10px;
+}
+
+.chatpal-paging .chatpal-paging-next {
+	padding-left: 10px;
+}
+
+.chatpal-search-info {
+	margin-top: 40px;
+	padding: 10px;
+}
+
+.chatpal-search-welcome {
+	padding-top: 40px;
+
+	text-align: center;
+}
+
+.chatpal-search-result-room h2 {
+	padding-left: 0 !important;
+}
+
+.chatpal-search-result-list em {
+	background-color: #faf9c8;
+
+	font-style: normal;
+}
+
+.chatpal-search-result-room .chatpal-link {
+	display: none;
+
+	margin-left: 3px;
+
+	color: #125074;
+}
+
+.chatpal-search-result-room:hover .chatpal-link {
+	display: inline-block;
+}
+
+.chatpal-search-result-room .chatpal-link:hover {
+	text-decoration: underline;
+}
+
+.chatpal-search-pills div {
+	display: inline-block;
+
+	margin-top: 5px;
+
+	margin-right: 5px;
+
+	padding: 2px 5px;
+
+	border-radius: 3px;
+	background-color: #f1f1f1;
+}
+
+.apikey h2 {
+	margin-top: 20px;
+}
+
+.apikey .key {
+	position: relative;
+
+	margin: 20px 0;
+
+	padding: 10px;
+
+	text-align: center;
+
+	background-color: #f1f1f1;
+
+	font-size: 20px;
+}
+
+.apikey a {
+	text-decoration: underline;
+}
+
+.chatpal-suggestion {
+	display: flex;
+
+	padding: 10px;
+	justify-items: center;
+}
+
+.chatpal-suggestion-text {
+	flex: 1 1 auto;
+}
+
+.chatpal-suggestion-hint {
+	display: none;
+}
+
+.rocket-search-suggestion-item.active .chatpal-suggestion-hint {
+	display: block;
+}
+
+.chatpalProvider .rc-input__icon {
+	top: 3px;
+
+	left: 10px;
+
+	width: 26px;
+}
+
+.chatpalProvider .rc-input__icon-svg {
+	font-size: 26px !important;
+}
+
+.chatpalProvider .rocket-search-suggestion-item.active,
+.chatpalProvider .rocket-search-suggestion-item:hover {
+	color: white;
+	background-color: #125074;
+}

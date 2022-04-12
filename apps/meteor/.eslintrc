@@ -1,0 +1,145 @@
+{
+  "extends": [
+    "@rocket.chat/eslint-config",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "babel-eslint",
+  "globals": {
+    "__meteor_bootstrap__": false,
+    "__meteor_runtime_config__": false,
+    "Assets": false,
+    "chrome": false,
+    "jscolor": false
+  },
+  "plugins": [
+    "react",
+    "react-hooks"
+  ],
+  "rules": {
+    "jsx-quotes": [
+      "error",
+      "prefer-single"
+    ],
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/jsx-no-undef": "error",
+    "react/jsx-fragments": [
+      "error",
+      "syntax"
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": ["warn", {
+      "additionalHooks": "(useComponentDidUpdate)"
+    }]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".ts",
+          ".tsx"
+        ]
+      }
+    },
+    "react": {
+      "version": "detect"
+    }
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "@rocket.chat/eslint-config",
+        "plugin:prettier/recommended"
+      ],
+      "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+      },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 2018,
+        "warnOnUnsupportedTypeScriptVersion": false,
+        "ecmaFeatures": {
+          "experimentalObjectRestSpread": true,
+          "legacyDecorators": true
+        }
+      },
+      "plugins": [
+        "react",
+        "@typescript-eslint",
+        "anti-trojan-source"
+      ],
+      "rules": {
+        "func-call-spacing": "off",
+        "jsx-quotes": [
+          "error",
+          "prefer-single"
+        ],
+        "indent": "off",
+        "no-dupe-class-members": "off",
+        "no-spaced-func": "off",
+        "no-unused-vars": "off",
+        "no-useless-constructor": "off",
+        "no-use-before-define": "off",
+        "react/jsx-uses-react": "error",
+        "react/jsx-uses-vars": "error",
+        "react/jsx-no-undef": "error",
+        "react/jsx-fragments": [
+          "error",
+          "syntax"
+        ],
+        "@typescript-eslint/ban-ts-ignore": "off",
+        "@typescript-eslint/interface-name-prefix": [
+          "error",
+          "always"
+        ],
+        "@typescript-eslint/no-dupe-class-members": "error",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": ["error", {
+          "argsIgnorePattern": "^_",
+          "ignoreRestSiblings": true
+        }],
+        "@typescript-eslint/prefer-optional-chain": "warn",
+        "anti-trojan-source/no-bidi": "error"
+      },
+      "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true
+      },
+      "settings": {
+        "import/resolver": {
+          "node": {
+            "extensions": [
+              ".js",
+              ".ts",
+              ".tsx"
+            ]
+          }
+        },
+        "react": {
+          "version": "detect"
+        }
+      }
+    },
+    {
+      "files": [
+        "**/*.tests.js",
+        "**/*.tests.ts",
+        "**/*.spec.ts"
+      ],
+      "env": {
+        "mocha": true
+      }
+    }
+  ]
+}
