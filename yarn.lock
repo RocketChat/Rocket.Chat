@@ -3794,7 +3794,7 @@ __metadata:
     asterisk-manager: ^0.2.0
     atlassian-crowd-patched: ^0.5.1
     autolinker: ^3.14.3
-    autoprefixer: ^9.8.6
+    autoprefixer: ^9
     aws-sdk: ^2.735.0
     babel-eslint: ^10.1.0
     babel-loader: ^8.2.2
@@ -3908,7 +3908,7 @@ __metadata:
     pino: ^7.9.2
     pino-pretty: ^7.6.0
     poplib: ^0.1.7
-    postcss: ^8.3.5
+    postcss: ~8
     postcss-custom-properties: ^11.0.0
     postcss-easy-import: ^3.0.0
     postcss-load-config: ^3.1.0
@@ -8008,7 +8008,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:^9.5.1, autoprefixer@npm:^9.8.6":
+"autoprefixer@npm:^9, autoprefixer@npm:^9.5.1, autoprefixer@npm:^9.8.6":
   version: 9.8.8
   resolution: "autoprefixer@npm:9.8.8"
   dependencies:
@@ -22139,7 +22139,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.3.5":
+"postcss@npm:~8":
   version: 8.4.12
   resolution: "postcss@npm:8.4.12"
   dependencies:

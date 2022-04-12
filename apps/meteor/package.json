@@ -2,6 +2,7 @@
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
 	"version": "4.7.0-develop",
+	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -132,7 +133,7 @@
 		"@types/xmldom": "^0.1.30",
 		"@typescript-eslint/eslint-plugin": "^2.34.0",
 		"@typescript-eslint/parser": "^3.0.0",
-		"autoprefixer": "^9.8.6",
+		"autoprefixer": "^9",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^8.2.2",
 		"babel-plugin-array-includes": "^2.0.3",
@@ -157,7 +158,7 @@
 		"mock-require": "^3.0.3",
 		"outdent": "~0.8.0",
 		"pino-pretty": "^7.6.0",
-		"postcss": "^8.3.5",
+		"postcss": "~8",
 		"postcss-custom-properties": "^11.0.0",
 		"postcss-easy-import": "^3.0.0",
 		"postcss-load-config": "^3.1.0",

@@ -1,6 +1,7 @@
 {
 	"name": "@rocket.chat/rest-typings",
 	"version": "0.0.1",
+	"private": true,
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "^1.31.0",
 		"@rocket.chat/core-typings": "workspace:^",
