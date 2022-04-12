@@ -89,7 +89,7 @@ const UserCard = forwardRef(function UserCard(
 					)}
 				</Box>
 				{customStatus && (
-					<UserCardInfo>
+					<UserCardInfo mbe='x16'>
 						{typeof customStatus === 'string' ? (
 							<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
 						) : (
