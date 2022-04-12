@@ -1001,9 +1001,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		if (open !== undefined) {
+		if (open) {
+			query.open = true;
+		} else if (open !== undefined) {
 			query.closedAt = { $exists: true };
 		}
+
 		if (served !== undefined) {
 			query.servedBy = { $exists: served };
 		}
@@ -1042,10 +1045,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 
 		if (onhold) {
-			query.onHold = {
-				$exists: true,
-				$eq: onhold,
-			};
+			query.onHold = onhold;
 		}
 
 		return this.find(query, {
@@ -1057,10 +1057,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 	getOnHoldConversationsBetweenDate(from, to, departmentId) {
 		const query = {
-			onHold: {
-				$exists: true,
-				$eq: true,
-			},
+			onHold: true,
 			ts: {
 				$gte: new Date(from), // ISO Date, ts >= date.gte
 				$lt: new Date(to), // ISODate, ts < date.lt
