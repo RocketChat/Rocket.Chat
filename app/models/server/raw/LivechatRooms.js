@@ -1003,6 +1003,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		if (open) {
 			query.open = true;
+			query.onHold = { $exists: false };
 		} else if (open !== undefined) {
 			query.closedAt = { $exists: true };
 		}
