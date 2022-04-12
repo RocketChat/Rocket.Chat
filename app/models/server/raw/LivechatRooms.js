@@ -589,10 +589,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				't': 'l',
 				'servedBy.username': { $exists: true },
 				'open': true,
-				'onHold': {
-					$exists: true,
-					$eq: true,
-				},
+				'onHold': true,
 				'ts': { $gte: new Date(start), $lte: new Date(end) },
 			},
 		};
@@ -1005,8 +1002,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.departmentId = departmentId;
 		}
 		if (open !== undefined) {
-			query.open = { $exists: open };
-			query.onHold = { $ne: true };
+			query.closedAt = { $exists: true };
 		}
 		if (served !== undefined) {
 			query.servedBy = { $exists: served };
