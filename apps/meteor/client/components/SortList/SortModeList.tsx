@@ -1,5 +1,5 @@
 import { RadioButton, OptionTitle } from '@rocket.chat/fuselage';
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -15,19 +15,20 @@ const checkBoxStyle = {
 	paddingInlineStart: '24px',
 };
 
-function SortModeList() {
+function SortModeList(): ReactElement {
 	const t = useTranslation();
 	const saveUserPreferences = useMethod('saveUserPreferences');
-	const sidebarSortBy = useUserPreference('sidebarSortby', 'activity');
+	const sidebarSortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby', 'activity');
 
-	const useHandleChange = (value) => useCallback(() => saveUserPreferences({ sidebarSortby: value }), [value]);
+	const useHandleChange = (value: 'alphabetical' | 'activity'): (() => void) =>
+		useCallback(() => saveUserPreferences({ sidebarSortby: value }), [value]);
 
 	const setToAlphabetical = useHandleChange('alphabetical');
 	const setToActivity = useHandleChange('activity');
 
 	return (
 		<>
-			<OptionTitle style={style}>{t('Sort_By')}</OptionTitle>
+			<OptionTitle {...({ style } as any)}>{t('Sort_By')}</OptionTitle>
 			<ul className='rc-popover__list'>
 				<ListItem
 					icon={'clock'}
