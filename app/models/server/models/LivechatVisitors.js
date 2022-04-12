@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import s from 'underscore.string';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Settings from './Settings';
@@ -200,7 +199,7 @@ export class LivechatVisitors extends Base {
 
 	findOneGuestByEmailAddress(emailAddress) {
 		const query = {
-			'visitorEmails.address': new RegExp(`^${escapeRegExp(emailAddress)}$`, 'i'),
+			'visitorEmails.address': emailAddress,
 		};
 
 		return this.findOne(query);

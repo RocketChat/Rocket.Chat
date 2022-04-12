@@ -84,13 +84,23 @@ export class LivechatRoomsRaw extends BaseRaw {
 			firstParams.push(matchUsers);
 		}
 		const sort = { $sort: options.sort || { chats: -1 } };
-		const params = [...firstParams, usersGroup, project, sort];
+		const pagination = [sort];
+
 		if (options.offset) {
-			params.push({ $skip: options.offset });
+			pagination.push({ $skip: options.offset });
 		}
 		if (options.count) {
-			params.push({ $limit: options.count });
+			pagination.push({ $limit: options.count });
 		}
+
+		const facet = {
+			$facet: {
+				sortedResults: pagination,
+				totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+			},
+		};
+
+		const params = [...firstParams, usersGroup, project, facet];
 		return this.col.aggregate(params).toArray();
 	}
 
@@ -589,10 +599,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				't': 'l',
 				'servedBy.username': { $exists: true },
 				'open': true,
-				'onHold': {
-					$exists: true,
-					$eq: true,
-				},
+				'onHold': true,
 				'ts': { $gte: new Date(start), $lte: new Date(end) },
 			},
 		};
@@ -1004,10 +1011,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		if (open !== undefined) {
-			query.open = { $exists: open };
-			query.onHold = { $ne: true };
+		if (open) {
+			query.open = true;
+			query.onHold = { $exists: false };
+		} else if (open !== undefined) {
+			query.closedAt = { $exists: true };
 		}
+
 		if (served !== undefined) {
 			query.servedBy = { $exists: served };
 		}
@@ -1046,10 +1056,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 
 		if (onhold) {
-			query.onHold = {
-				$exists: true,
-				$eq: onhold,
-			};
+			query.onHold = onhold;
 		}
 
 		return this.find(query, {
@@ -1061,10 +1068,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 	getOnHoldConversationsBetweenDate(from, to, departmentId) {
 		const query = {
-			onHold: {
-				$exists: true,
-				$eq: true,
-			},
+			onHold: true,
 			ts: {
 				$gte: new Date(from), // ISO Date, ts >= date.gte
 				$lt: new Date(to), // ISODate, ts < date.lt
