@@ -31,12 +31,12 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const closeModal = useMutableCallback(() => setModal());
 
 	const router = useRoute('home');
-	
+
 	const subscription = useUserSubscription(rid, fields);
 	const canFavorite = useSetting('Favorite_Rooms');
 	const isFavorite = (subscription != null ? subscription.f : undefined) != null && subscription.f;
 	const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
-	
+
 	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
 	const hideRoom = useMethod('hideRoom');
@@ -148,14 +148,16 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 					rid,
 					type: 'unread',
 				});
+				const promises = [];
 				for (const thread of threads) {
-					await readThreads(thread?._id);
+					promises.push(readThreads(thread?._id));
 				}
+				await Promise.all(promises);
 			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	})
+	});
 
 	const handleToggleFavorite = useMutableCallback(async () => {
 		try {
@@ -178,8 +180,8 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			...(threadUnread && {
 				threadsToRead: {
 					label: {
-						label: 'Mark Threads Read',
-						icon: 'thread'
+						label: t('Mark_threads_read'),
+						icon: 'thread',
 					},
 					action: handleThreadsToBeRead,
 				},
@@ -200,7 +202,8 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				},
 			}),
 		}),
-		[t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
+		[t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave, handleThreadsToBeRead,
+			threadUnread],
 	);
 
 	return (
