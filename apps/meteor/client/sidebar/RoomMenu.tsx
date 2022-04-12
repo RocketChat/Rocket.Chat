@@ -48,7 +48,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const closeModal = useMutableCallback(() => setModal());
 
 	const router = useRoute('home');
-	
+
 	const subscription = useUserSubscription(rid, fields);
 	const canFavorite = useSetting('Favorite_Rooms');
 	const isFavorite = (subscription != null ? subscription.f : undefined) != null && subscription?.f;
@@ -173,7 +173,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
-	})
+	});
 
 	const handleToggleFavorite = useMutableCallback(async () => {
 		try {
@@ -211,7 +211,8 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				},
 			}),
 		}),
-		[t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
+		[t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave, handleThreadsToBeRead,
+			threadUnread],
 	);
 
 	return (
