@@ -2,9 +2,10 @@ import { matrixBridge } from './bridge';
 import { bridgeUrlTuple, config } from './config';
 import { bridgeLogger } from './logger';
 import './settings';
+import { isFederationV2Enabled } from './tools';
 
 ((): void => {
-	if (!matrixBridge) return;
+	if (!isFederationV2Enabled()) return;
 
 	bridgeLogger.info(`Running Federation V2:
 	  id: ${config.id}
@@ -15,5 +16,5 @@ import './settings';
 
 	const [, , port] = config.bridgeUrl.split(':') as bridgeUrlTuple;
 
-	matrixBridge?.run(port);
+	matrixBridge.run(port);
 })();

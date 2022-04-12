@@ -54,8 +54,6 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 	const invitedUserDomain = invitedId.includes(':') ? invitedId.split(':').pop() : '';
 	const invitedUserIsRemote = invitedUserDomain && invitedUserDomain !== config.homeserverDomain;
 
-	console.log(invitedUserMatrixId, invitedUserDomain, invitedUserIsRemote);
-
 	// Find the invited user in Rocket.Chats users
 	let invitedUser = Users.findOneByUsername(invitedId.replace('@', ''));
 
@@ -68,10 +66,8 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 	if (!invitedUserIsRemote) {
 		console.log(`[${inviterId}-${invitedId}-${roomId}] Creating remote invited user...`);
 
-		let existingMatrixId = false;
-
 		// Check if we already have a matrix id for that user
-		existingMatrixId = MatrixBridgedUser.getMatrixId(invitedUser._id);
+		const existingMatrixId = MatrixBridgedUser.getMatrixId(invitedUser._id);
 
 		if (!existingMatrixId) {
 			const { mui } = await matrixClient.user.createRemote(invitedUser);
