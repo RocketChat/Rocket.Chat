@@ -29,6 +29,7 @@ import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { FindVoipRoomsParams } from './internalTypes';
 import { api } from '../../sdk/api';
+import { callbacks } from '../../../lib/callbacks';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -99,7 +100,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		// and multiple rooms are left opened for one single agent. Best case this will iterate once
 		for await (const room of openRooms) {
 			await this.handleEvent(VoipClientEvents['VOIP-CALL-ENDED'], room, agent, 'Agent disconnected abruptly');
-			await this.closeRoom(agent, room, agent, 'Agent disconnected abruptly', undefined, 'voip-call-ended-unexpectedly');
+			await this.closeRoom(agent, room, agent, { comment: 'Agent disconnected abruptly' }, 'voip-call-ended-unexpectedly');
 		}
 	}
 
@@ -305,13 +306,19 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		closerParam: ILivechatVisitor | ILivechatAgent,
 		room: IVoipRoom,
 		user: IUser,
-		comment?: string,
-		tags?: string[],
+		options: { comment?: string; tags?: string[] },
 		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly' = 'voip-call-wrapup',
 	): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
+		}
+
+		let { tags, comment } = options;
+		if (sysMessageId === 'voip-call-wrapup') {
+			const result = callbacks.run('voip.beforeCloseRoom', options);
+			comment = result?.filteredOptions.comment;
+			tags = result?.filteredOptions.tags;
 		}
 
 		const now = new Date();
@@ -332,12 +339,12 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		};
 
 		const message = {
-			t: sysMessageId,
-			msg: comment,
+			t: sysMessageId === 'voip-call-wrapup' && !comment ? 'voip-call-ended' : sysMessageId,
+			...(comment && { msg: comment }),
 			groupable: false,
 		};
-
 		await sendMessage(user, message, room);
+
 		// There's a race condition between receiving the call and receiving the event
 		// Sometimes it happens before the connection on client, sometimes it happens after
 		// For now, this data will be appended as a metric on room closing

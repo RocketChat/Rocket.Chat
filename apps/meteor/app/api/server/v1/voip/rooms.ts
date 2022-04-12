@@ -218,10 +218,12 @@ API.v1.addRoute(
 			check(this.bodyParams, {
 				rid: String,
 				token: String,
-				comment: Match.Maybe(String),
-				tags: Match.Maybe([String]),
+				options: Match.Maybe({
+					comment: Match.Maybe(String),
+					tags: Match.Maybe([String]),
+				}),
 			});
-			const { rid, token, comment, tags } = this.bodyParams;
+			const { rid, token, options } = this.bodyParams;
 
 			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
 			if (!visitor) {
@@ -234,7 +236,7 @@ API.v1.addRoute(
 			if (!room.open) {
 				return API.v1.failure('room-closed');
 			}
-			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, comment, tags);
+			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, options || {});
 			if (!closeResult) {
 				return API.v1.failure();
 			}
