@@ -200,7 +200,7 @@ export class LivechatVisitors extends Base {
 
 	findOneGuestByEmailAddress(emailAddress) {
 		const query = {
-			'visitorEmails.address': new RegExp(`^${escapeRegExp(emailAddress)}$`, 'i'),
+			'visitorEmails.address': emailAddress,
 		};
 
 		return this.findOne(query);

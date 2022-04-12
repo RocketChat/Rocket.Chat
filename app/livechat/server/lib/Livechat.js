@@ -294,7 +294,7 @@ export const Livechat = {
 		};
 
 		if (email) {
-			email = email.trim();
+			email = email.trim().toLowerCase();
 			validateEmail(email);
 			updateUser.$set.visitorEmails = [{ address: email }];
 		}
