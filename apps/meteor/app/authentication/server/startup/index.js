@@ -4,6 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -17,6 +18,7 @@ import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLo
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
+import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -210,6 +212,18 @@ Accounts.onCreateUser(function (options, user = {}) {
 	}
 
 	callbacks.run('onCreateUser', options, user);
+
+	// App IPostUserCreated event hook
+	try {
+		Promise.await(Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: Meteor.user() }));
+	} catch (error) {
+		if (error instanceof AppsEngineException) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
+
 	return user;
 });
 

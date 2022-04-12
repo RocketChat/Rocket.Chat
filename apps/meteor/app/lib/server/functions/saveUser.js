@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -14,6 +15,7 @@ import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 
 let html = '';
 let passwordChangedHtml = '';
@@ -343,6 +345,8 @@ export const saveUser = function (userId, userData) {
 
 	validateUserEditing(userId, userData);
 
+	const oldUserData = Users.findOneById(userData._id);
+
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
 		if (
@@ -407,6 +411,23 @@ export const saveUser = function (userId, userData) {
 	Meteor.users.update({ _id: userData._id }, updateUser);
 
 	callbacks.run('afterSaveUser', userData);
+
+	// App IPostUserUpdated event hook
+	try {
+		Promise.await(
+			Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+				user: userData,
+				previousUser: oldUserData,
+				performedBy: Meteor.user(),
+			}),
+		);
+	} catch (error) {
+		if (error instanceof AppsEngineException) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
 
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
