@@ -1,9 +1,11 @@
 import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
-// import Global from './global';
+import Global from './Global';
 
 class FlexTab extends BasePage {
+	private global = new Global(this.getPage());
+
 	public headerMoreActions(): Locator {
 		return this.getPage().locator('//main/header//*[contains(@class, "rcx-icon--name-kebab")]/..');
 	}
@@ -359,6 +361,36 @@ class FlexTab extends BasePage {
 
 	public addUserTable(): Locator {
 		return this.getPage().locator('//div[text()="Add User"]');
+	}
+
+	public async setUserOwner(user: string): Promise<void> {
+		await this.enterUserView(user);
+		await this.setOwnerBtn().waitFor();
+		await this.setOwnerBtn().click();
+		await this.viewAllBtn().click();
+	}
+
+	public async setUserModerator(user: string): Promise<void> {
+		await this.enterUserView(user);
+		await this.setModeratorBtn().waitFor();
+		await this.setModeratorBtn().click();
+		await this.viewAllBtn().click();
+	}
+
+	public async muteUser(user: string): Promise<void> {
+		await this.enterUserView(user);
+		await this.muteUserBtn().waitFor();
+		await this.muteUserBtn().click();
+		await this.global.confirmPopup();
+		await this.viewAllBtn().click();
+	}
+
+	public async enterUserView(user: string): Promise<void> {
+		if (!this.membersUserInfo().isVisible()) {
+			const userEl = this.getUserEl(user);
+			await userEl.waitFor();
+			await userEl.click();
+		}
 	}
 
 	public async archiveChannel(): Promise<void> {
