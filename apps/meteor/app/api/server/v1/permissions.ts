@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import type { IPermission } from '@rocket.chat/core-typings';
+import { isBodyParamsValidPermissionUpdate } from '@rocket.chat/rest-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { API } from '../api';
 import { Permissions, Roles } from '../../../models/server/raw';
-import { IPermission } from '../../../../definition/IPermission';
-import { isBodyParamsValidPermissionUpdate } from '../../../../definition/rest/v1/permissions';
 
 API.v1.addRoute(
 	'permissions.listAll',

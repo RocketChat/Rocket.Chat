@@ -1,8 +1,8 @@
 import { ISectionBlock, BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
+import { BannerPlatform } from '@rocket.chat/core-typings';
 
 import { addMigration } from '../../lib/migrations';
-import { BannerPlatform } from '../../../definition/IBanner';
 import { Banner } from '../../sdk';
 import { settings } from '../../../app/settings/server';
 import { isEnterprise } from '../../../ee/app/license/server';

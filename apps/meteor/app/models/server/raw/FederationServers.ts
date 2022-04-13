@@ -1,7 +1,7 @@
 import { UpdateWriteOpResult } from 'mongodb';
+import type { IFederationServer } from '@rocket.chat/core-typings';
 
 import { Users } from './index';
-import { IFederationServer } from '../../../../definition/Federation';
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class FederationServersRaw extends BaseRaw<IFederationServer> {

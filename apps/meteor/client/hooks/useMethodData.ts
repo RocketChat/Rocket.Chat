@@ -1,6 +1,6 @@
+import type { Awaited } from '@rocket.chat/core-typings';
 import { useCallback, useEffect } from 'react';
 
-import type { Awaited } from '../../definition/utils';
 import { ServerMethodFunction, ServerMethodParameters, ServerMethods, useMethod } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { AsyncState, useAsyncState } from './useAsyncState';

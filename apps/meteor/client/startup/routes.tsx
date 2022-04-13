@@ -1,3 +1,4 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
@@ -9,7 +10,6 @@ import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
-import { IUser } from '../../definition/IUser';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 import { dispatchToastMessage } from '../lib/toast';
