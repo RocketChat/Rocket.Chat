@@ -595,10 +595,35 @@ jobs:
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
+  release-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.by-tag.outputs.release }}
+      latest-release: ${{ steps.latest.outputs.latest-release }}
+    steps:
+      - id: by-tag
+        run: |
+          if echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+            RELEASE="latest"
+          elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+            RELEASE="release-candidate"
+          fi
+          echo "RELEASE: ${RELEASE}"
+          echo "::set-output name=release::${RELEASE}"
+
+      - id: latest
+        run: |
+          LATEST_RELEASE="$(
+            git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname "https://github.com/$GITHUB_REPOSITORY" '*' |
+              sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
+          )"
+          echo "LATEST_RELEASE: ${LATEST_RELEASE}"
+          echo "::set-output name=latest-release::${LATEST_RELEASE}"
+
   deploy:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: test
+    needs: [test, release-versions]
 
     steps:
       - uses: actions/checkout@v3
@@ -626,10 +651,10 @@ jobs:
             ARTIFACT_NAME="${REPO_VERSION}"
             RC_VERSION=$GIT_TAG
 
-            if [[ $GIT_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+ ]]; then
+            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
               SNAP_CHANNEL=candidate
               RC_RELEASE=candidate
-            elif [[ $GIT_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
               SNAP_CHANNEL=stable
               RC_RELEASE=stable
             fi
@@ -676,7 +701,7 @@ jobs:
 
   image-build:
     runs-on: ubuntu-20.04
-    needs: deploy
+    needs: [deploy, release-versions]
 
     strategy:
       matrix:
@@ -739,11 +764,7 @@ jobs:
             DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
           fi;
 
-          if echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-            RELEASE="latest"
-          elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-            RELEASE="release-candidate"
-          fi
+          RELEASE="${{ needs.release-versions.outputs.release }}"
 
           if [[ '${{ matrix.release }}' = 'alpine' ]]; then
             RELEASE="${RELEASE}-${{ matrix.release }}"
@@ -758,12 +779,7 @@ jobs:
           docker push $IMAGE_NAME:$DOCKER_TAG
 
           if [[ $RELEASE == 'latest' ]]; then
-            CURRENT_LATEST="$(
-              git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname "https://github.com/$GITHUB_REPOSITORY" '*' |
-                sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
-            )"
-            echo "CURRENT_LATEST: $CURRENT_LATEST"
-            if [[ $CURRENT_LATEST == $GITHUB_REF_NAME ]]; then
+            if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
               docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
               docker push $IMAGE_NAME:$RELEASE
             fi
@@ -792,7 +808,7 @@ jobs:
 
   services-image-build:
     runs-on: ubuntu-20.04
-    needs: deploy
+    needs: [deploy, release-versions]
 
     strategy:
       matrix:
@@ -828,17 +844,23 @@ jobs:
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
 
-          docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
+          docker build \
+            --build-arg SERVICE=${{ matrix.service }} \
+            -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
+            ./apps/meteor/ee/server/services
 
           docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            if echo "$IMAGE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-              RELEASE="latest"
-            elif echo "$IMAGE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-              RELEASE="release-candidate"
-            fi
+            RELEASE="${{ needs.release-versions.outputs.release }}"
 
-            docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
-            docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
+            if [[ $RELEASE == 'latest' ]]; then
+              if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
+                docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
+                docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
+              fi
+            else
+              docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
+              docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
+            fi
           fi
