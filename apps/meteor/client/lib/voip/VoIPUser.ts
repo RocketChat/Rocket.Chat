@@ -34,7 +34,6 @@ import { VoIpCallerInfo, IState } from '../../../definition/voip/VoIpCallerInfo'
 import { VoipEvents } from '../../../definition/voip/VoipEvents';
 import { WorkflowTypes } from '../../../definition/voip/WorkflowTypes';
 import { toggleMediaStreamTracks } from './Helper';
-// import { NetworkMonitor } from './NetworkMonitor';
 import { QueueAggregator } from './QueueAggregator';
 import Stream from './Stream';
 
@@ -78,9 +77,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private networkEmitter: Emitter<SignallinSocketEvents>;
 
-	private offlineNetworkHandler;
+	private offlineNetworkHandler: () => void;
 
-	private onlineNetworkHandler;
+	private onlineNetworkHandler: () => void;
 
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
@@ -136,9 +135,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.userAgent.transport.isConnected();
 		this._opInProgress = Operation.OP_CONNECT;
 		try {
-			if (this.userAgent) {
-				this.registerer = new Registerer(this.userAgent);
-			}
+			this.registerer = new Registerer(this.userAgent, { expires: 60 });
 			this.userAgent.transport.onConnect = this.onConnected.bind(this);
 			this.userAgent.transport.onDisconnect = this.onDisconnected.bind(this);
 			window.addEventListener('online', this.onlineNetworkHandler);
@@ -155,6 +152,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.state.isReady = true;
 		this.sendOptions();
 		this.networkEmitter.emit('connected');
+		/**
+		 * Re-registration post network recovery should be attempted
+		 * if it was previously registered or incall/onhold
+		 * */
+
 		if (this.registerer && this.callState !== 'INITIAL') {
 			this.attemptRegistrationPostRecovery();
 		}
@@ -167,6 +169,13 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		if (error) {
 			this.networkEmitter.emit('connectionerror', error);
 			this.state.isReady = false;
+			/**
+			 * Signalling socket reconnection should be attempted assuming
+			 * that the disconnect happened from the remote side or due to sleep
+			 * In case of remote side disconnection, if config.connectionRetryCount is -1,
+			 * attemptReconnection attempts continuously. Else stops after |config.connectionRetryCount|
+			 *
+			 * */
 			this.attemptReconnection();
 		}
 	}
@@ -174,6 +183,15 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	onNetworkRestored(): void {
 		this.networkEmitter.emit('localnetworkonline');
 		if (this._connectionState === 'WAITING_FOR_NETWORK') {
+			/**
+			 * Signalling socket reconnection should be attempted when online event handler
+			 * gets notified.
+			 * Important thing to note is that the second parameter |checkRegistration| = true passed here
+			 * because after the network recovery and after reconnecting to the server,
+			 * the transport layer of SIPUA does not call onConnected. So by passing |checkRegistration = true |
+			 * the code will check if the endpoint was previously registered before the disconnection.
+			 * If such is the case, it will first unregister and then reregister.
+			 * */
 			this.attemptReconnection(1, true);
 		}
 	}
@@ -731,6 +749,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		 */
 		this.stop = true;
 		this.userAgent?.stop();
+		this.registerer?.dispose();
 		this._connectionState = 'STOP';
 
 		if (this.userAgent) {
@@ -824,13 +843,19 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	async attemptRegistrationPostRecovery(): Promise<void> {
+		/**
+		 * It might happen that the whole network loss can happen
+		 * while there is ongoing call. In that case, we want to maintain
+		 * the call.
+		 *
+		 * So after re-registration, it should remain in the same state.
+		 * */
+
 		const promise = new Promise<void>((_resolve, _reject) => {
 			this.registerer?.unregister({
 				all: true,
 				requestDelegate: {
 					onAccept: (): void => {
-						this.emit('unregistered');
-						this.emit('stateChanged');
 						_resolve();
 					},
 					onReject: (error): void => {
@@ -842,6 +867,14 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			});
 		});
 		await promise;
-		this.register();
+		this.registerer?.register({
+			requestDelegate: {
+				onReject: (error): void => {
+					this._callState = 'UNREGISTERED';
+					this.emit('registrationerror', error);
+					this.emit('stateChanged');
+				},
+			},
+		})
 	}
 }
