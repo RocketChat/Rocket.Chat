@@ -1,7 +1,7 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { Notifications } from '../../../app/notifications/client';
-import { IUser } from '../../../definition/IUser';
 
 type UpdateAvatarEvent = {
 	username: IUser['username'];

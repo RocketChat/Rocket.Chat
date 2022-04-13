@@ -1,8 +1,8 @@
 import { HTTP } from 'meteor/http';
+import { CloudConfirmationPollData } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { CloudConfirmationPollData } from '../../../../definition/ICloud';
 
 export async function getConfirmationPoll(deviceCode: string): Promise<CloudConfirmationPollData> {
 	const cloudUrl = settings.get('Cloud_Url');

@@ -1,5 +1,6 @@
+import type { IIntegrationHistory } from '@rocket.chat/core-typings';
+
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IIntegrationHistory } from '../../../../definition/IIntegrationHistory';
 
 export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> {
 	protected indexes: IndexSpecification[] = [{ key: { 'integration._id': 1, 'integration._createdBy._id': 1 } }];

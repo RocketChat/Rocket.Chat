@@ -1,6 +1,6 @@
 import { Collection, Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
+import type { IBannerDismiss } from '@rocket.chat/core-typings';
 
-import { IBannerDismiss } from '../../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
 
 export class BannersDismissRaw extends BaseRaw<IBannerDismiss> {

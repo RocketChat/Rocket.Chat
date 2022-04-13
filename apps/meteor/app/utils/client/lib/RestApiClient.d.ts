@@ -1,4 +1,4 @@
-import { Serialized } from '../../../../definition/Serialized';
+import { Serialized } from '@rocket.chat/core-typings';
 
 export declare const APIClient: {
 	delete<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;

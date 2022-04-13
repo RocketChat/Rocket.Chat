@@ -1,5 +1,5 @@
-import { ILivechatDepartment } from '../../../definition/ILivechatDepartment';
-import { IOmnichannelCannedResponse } from '../../../definition/IOmnichannelCannedResponse';
+import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
+
 import { RecordList } from './RecordList';
 
 export type CannedResponseOptions = {
