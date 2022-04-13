@@ -2,12 +2,12 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
 import { Users } from '../../../models/server';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
-import { IUser } from '../../../../definition/IUser';
 
 export class EmailCheck implements ICodeCheck {
 	public readonly name = 'email';

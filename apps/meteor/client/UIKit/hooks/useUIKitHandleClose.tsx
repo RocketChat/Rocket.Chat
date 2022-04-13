@@ -3,12 +3,12 @@ import { UIKitInteractionType } from '@rocket.chat/apps-engine/definition/uikit'
 // import { Banner, Icon } from '@rocket.chat/fuselage';
 // import { kitContext, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
 // import React, { Context, FC, useMemo } from 'react';
+import { UiKitPayload } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 // import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 
 // import { useEndpoint } from '../../contexts/ServerContext';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-import { UiKitPayload } from '../../../definition/UIKit';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

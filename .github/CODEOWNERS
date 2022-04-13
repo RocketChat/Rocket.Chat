@@ -1,0 +1,3 @@
+packages/core-typings/*  @RocketChat/chat-engine
+.vscode/*  @RocketChat/chat-engine
+.github/*  @RocketChat/chat-engine

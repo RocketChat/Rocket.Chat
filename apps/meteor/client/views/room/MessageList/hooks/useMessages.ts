@@ -1,8 +1,8 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import { IMessage } from '@rocket.chat/core-typings';
 import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
-import { IMessage } from '../../../../../definition/IMessage';
-import { IRoom } from '../../../../../definition/IRoom';
 // import { useSetting } from '../../../../contexts/SettingsContext';
 import { useUserPreference } from '../../../../contexts/UserContext';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
