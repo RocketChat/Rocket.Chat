@@ -554,7 +554,7 @@ Meteor.startup(() => {
 				addClass.forEach((message) => $(`.messages-box #${message}`).addClass('selected'));
 			}
 		},
-		'click .jump-recent button'(e, template) {
+		'click .jump-recent button'(e) {
 			e.preventDefault();
 			const wrapperObj = document.getElementsByClassName('wrapper')[0];
 			wrapperObj.style.scrollBehavior = 'smooth';
