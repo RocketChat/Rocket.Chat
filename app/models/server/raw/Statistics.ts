@@ -1,8 +1,10 @@
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { IStatistic } from '../../../../definition/IStatistic';
 
 export class StatisticsRaw extends BaseRaw<IStatistic> {
-	protected indexes: IndexSpecification[] = [{ key: { createdAt: -1 } }];
+	protected modelIndexes() {
+		return [{ key: { createdAt: -1 } }];
+	}
 
 	async findLast(): Promise<IStatistic> {
 		const options = {

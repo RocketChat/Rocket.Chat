@@ -1,10 +1,12 @@
 import { Cursor } from 'mongodb';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { IPbxEvent } from '../../../../definition/IPbxEvent';
 
 export class PbxEventsRaw extends BaseRaw<IPbxEvent> {
-	protected indexes: IndexSpecification[] = [{ key: { uniqueId: 1 }, unique: true }];
+	protected modelIndexes() {
+		return [{ key: { uniqueId: 1 }, unique: true }];
+	}
 
 	findByEvents(callUniqueId: string, events: string[]): Cursor<IPbxEvent> {
 		return this.find(

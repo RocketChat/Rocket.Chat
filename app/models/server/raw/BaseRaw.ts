@@ -73,8 +73,6 @@ const warnFields =
 export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseRaw<T> {
 	public readonly defaultFields: C;
 
-	protected indexes?: IndexSpecification[];
-
 	protected name: string;
 
 	private preventSetUpdatedAt: boolean;
@@ -85,11 +83,16 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		this.name = this.col.collectionName.replace(baseName, '');
 		this.trash = trash as unknown as Collection<RocketChatRecordDeleted<T>>;
 
-		if (this.indexes?.length) {
-			this.col.createIndexes(this.indexes);
+		const indexes = this.modelIndexes();
+		if (indexes?.length) {
+			this.col.createIndexes(indexes);
 		}
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
+	}
+
+	protected modelIndexes(): IndexSpecification[] | void {
+		// noop
 	}
 
 	private doNotMixInclusionAndExclusionFields(options: FindOneOptions<T> = {}): FindOneOptions<T> {

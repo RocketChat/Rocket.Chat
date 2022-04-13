@@ -1,16 +1,12 @@
-import { Collection, Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, InsertOneWriteOpResult } from 'mongodb';
+import { Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, InsertOneWriteOpResult } from 'mongodb';
 
 import { BannerPlatform, IBanner } from '../../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
 
 type T = IBanner;
 export class BannersRaw extends BaseRaw<T> {
-	constructor(public readonly col: Collection<T>, trash?: Collection<T>) {
-		super(col, trash);
-
-		this.col.createIndexes([{ key: { platform: 1, startAt: 1, expireAt: 1 } }]);
-
-		this.col.createIndexes([{ key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }]);
+	protected modelIndexes() {
+		return [{ key: { platform: 1, startAt: 1, expireAt: 1 } }, { key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }];
 	}
 
 	create(doc: IBanner): Promise<InsertOneWriteOpResult<IBanner>> {

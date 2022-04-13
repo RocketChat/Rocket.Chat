@@ -1,6 +1,8 @@
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { IEmailInbox } from '../../../../definition/IEmailInbox';
 
 export class EmailInboxRaw extends BaseRaw<IEmailInbox> {
-	protected indexes: IndexSpecification[] = [{ key: { email: 1 }, unique: true }];
+	protected modelIndexes() {
+		return [{ key: { email: 1 }, unique: true }];
+	}
 }

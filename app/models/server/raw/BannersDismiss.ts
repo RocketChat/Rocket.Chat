@@ -1,13 +1,11 @@
-import { Collection, Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
+import { Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
 
 import { IBannerDismiss } from '../../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
 
 export class BannersDismissRaw extends BaseRaw<IBannerDismiss> {
-	constructor(public readonly col: Collection<IBannerDismiss>, trash?: Collection<IBannerDismiss>) {
-		super(col, trash);
-
-		this.col.createIndexes([{ key: { userId: 1, bannerId: 1 } }]);
+	modelIndexes() {
+		return [{ key: { userId: 1, bannerId: 1 } }];
 	}
 
 	findByUserIdAndBannerId(userId: string, bannerIds: string[]): Cursor<IBannerDismiss>;

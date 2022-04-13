@@ -1,7 +1,7 @@
 /**
  * Webdav Accounts model
  */
-import type { Collection, FindOneOptions, Cursor, DeleteWriteOpResultObject } from 'mongodb';
+import type { FindOneOptions, Cursor, DeleteWriteOpResultObject } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { IWebdavAccount } from '../../../../definition/IWebdavAccount';
@@ -9,10 +9,8 @@ import { IWebdavAccount } from '../../../../definition/IWebdavAccount';
 type T = IWebdavAccount;
 
 export class WebdavAccountsRaw extends BaseRaw<T> {
-	constructor(public readonly col: Collection<T>, trash?: Collection<T>) {
-		super(col, trash);
-
-		this.col.createIndex({ userId: 1 });
+	protected modelIndexes() {
+		return [{ key: { userId: 1 } }];
 	}
 
 	findOneByIdAndUserId(_id: string, userId: string, options: FindOneOptions<T>): Promise<T | null> {

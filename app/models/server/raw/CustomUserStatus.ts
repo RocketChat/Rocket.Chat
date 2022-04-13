@@ -1,10 +1,12 @@
 import { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { ICustomUserStatus as T } from '../../../../definition/ICustomUserStatus';
 
 export class CustomUserStatusRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { name: 1 } }];
+	protected modelIndexes() {
+		return [{ key: { name: 1 } }];
+	}
 
 	// find one by name
 	async findOneByName(name: string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null> {
