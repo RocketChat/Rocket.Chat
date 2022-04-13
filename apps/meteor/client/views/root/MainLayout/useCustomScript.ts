@@ -1,6 +1,6 @@
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { useUserId } from '../../../contexts/UserContext';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 
 export const useCustomScript = (): void => {

@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo, useEffect } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useMethodData } from '../../../../hooks/useMethodData';
 import { AsyncStatePhase } from '../../../../lib/asyncState';

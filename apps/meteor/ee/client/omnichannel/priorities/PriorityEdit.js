@@ -1,11 +1,9 @@
 import { Field, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 

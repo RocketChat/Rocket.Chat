@@ -1,7 +1,7 @@
 import { Box, Icon, Button, Scrollable } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useTranslation } from '../contexts/TranslationContext';
 
 const defaultWrapperRenderer = (text) => (

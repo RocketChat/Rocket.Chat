@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
+import { useSetting } from '@rocket.chat/ui-contexts';
 
-import { useSetting } from '../../../../client/contexts/SettingsContext';
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 
 addAction('omnichannel-external-frame', () => {

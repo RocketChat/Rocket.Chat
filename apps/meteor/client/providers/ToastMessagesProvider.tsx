@@ -1,7 +1,7 @@
+import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
 import React, { FC, useEffect } from 'react';
 import toastr from 'toastr';
 
-import { ToastMessagesContext } from '../contexts/ToastMessagesContext';
 import { dispatchToastMessage, subscribeToToastMessages } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
 

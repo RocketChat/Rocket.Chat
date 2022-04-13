@@ -1,9 +1,8 @@
 import { Button, ButtonGroup, TextInput, Field, Select } from '@rocket.chat/fuselage';
+import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {

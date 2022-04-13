@@ -1,10 +1,10 @@
 import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
+import { useUser } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { Rooms, Users } from '../../app/models/client';
 import { getUserAvatarURL } from '../../app/utils/client';
 import { useTranslation } from '../contexts/TranslationContext';
-import { useUser } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { VoipRoomForeword } from './voip/room/VoipRoomForeword';
 

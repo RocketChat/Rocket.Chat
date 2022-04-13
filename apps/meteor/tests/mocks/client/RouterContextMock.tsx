@@ -1,7 +1,6 @@
 import React, { ContextType, ReactElement, ReactNode, useMemo } from 'react';
 import { Subscription } from 'use-subscription';
-
-import { RouterContext } from '../../../client/contexts/RouterContext';
+import { RouterContext } from '@rocket.chat/ui-contexts';
 
 type RouterContextMockProps = {
 	children?: ReactNode;

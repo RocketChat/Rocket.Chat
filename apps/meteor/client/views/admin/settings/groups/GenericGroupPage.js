@@ -1,6 +1,6 @@
+import { useEditableSettingsGroupSections } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 

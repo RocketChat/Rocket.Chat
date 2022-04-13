@@ -1,13 +1,12 @@
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRolesDescription, useSetting } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useRef } from 'react';
 
 import { Backdrop } from '../../../components/Backdrop';
 import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
-import { useRolesDescription } from '../../../contexts/AuthorizationContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -87,7 +86,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action }]) => (
-			<UserCard.Action key={key} title={label} aria-label={label} onClick={action} icon={icon} />
+			<UserCard.Action key={key} label={label} aria-label={label} onClick={action} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

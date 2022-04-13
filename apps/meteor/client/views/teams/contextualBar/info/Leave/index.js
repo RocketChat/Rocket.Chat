@@ -1,10 +1,9 @@
 import { Skeleton } from '@rocket.chat/fuselage';
+import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useCallback } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUserId } from '../../../../../contexts/UserContext';
 import { useAsyncState } from '../../../../../hooks/useAsyncState';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import LeaveTeamModal from './LeaveTeamModal';

@@ -1,12 +1,10 @@
 import { Margins, Icon, Tabs, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { usePermission, useRoute, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import Page from '../../../components/Page';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import FilterComponent from './FilterComponent';
 import PermissionRow from './PermissionRow';

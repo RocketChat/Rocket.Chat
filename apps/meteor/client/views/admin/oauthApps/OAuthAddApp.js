@@ -1,10 +1,8 @@
 import { Button, ButtonGroup, TextInput, Field, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import { useRoute, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 export default function OAuthAddApp(props) {

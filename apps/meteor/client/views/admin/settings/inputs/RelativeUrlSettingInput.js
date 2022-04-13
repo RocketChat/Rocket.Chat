@@ -1,7 +1,7 @@
 import { Box, Field, Flex, UrlInput } from '@rocket.chat/fuselage';
+import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useAbsoluteUrl } from '../../../../contexts/ServerContext';
 import ResetSettingButton from '../ResetSettingButton';
 
 function RelativeUrlSettingInput({

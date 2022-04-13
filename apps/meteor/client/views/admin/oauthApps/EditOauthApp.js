@@ -1,12 +1,9 @@
 import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import { useSetModal, useRoute, useMethod, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useMemo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod, useAbsoluteUrl } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 function EditOauthApp({ onChange, data, ...props }) {

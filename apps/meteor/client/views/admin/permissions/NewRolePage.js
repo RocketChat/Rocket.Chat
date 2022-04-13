@@ -1,11 +1,9 @@
 import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import RoleForm from './RoleForm';

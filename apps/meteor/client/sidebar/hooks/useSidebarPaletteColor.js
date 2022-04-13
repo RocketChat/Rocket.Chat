@@ -1,7 +1,7 @@
 import colors from '@rocket.chat/fuselage-tokens/colors';
+import { useSettings } from '@rocket.chat/ui-contexts';
 import { useLayoutEffect, useEffect, useMemo } from 'react';
 
-import { useSettings } from '../../contexts/SettingsContext';
 import { isIE11 } from '../../lib/utils/isIE11';
 
 const oldPallet = {

@@ -1,7 +1,7 @@
+import { SidebarContext } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import { menu } from '../../app/ui-utils/client';
-import { SidebarContext } from '../contexts/SidebarContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const getOpen = (): boolean => menu.isOpen();

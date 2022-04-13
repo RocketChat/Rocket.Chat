@@ -1,6 +1,6 @@
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useSetting } from '../../../contexts/SettingsContext';
 import { IceServer } from '../definitions/IceServer';
 import { parseStringToIceServers } from '../lib/parseStringToIceServers';
 

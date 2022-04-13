@@ -1,11 +1,9 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import GenericTable from '../../../components/GenericTable';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import UserRow from './UserRow';
 

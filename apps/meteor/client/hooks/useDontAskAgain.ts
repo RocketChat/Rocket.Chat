@@ -1,4 +1,4 @@
-import { useUserPreference } from '../contexts/UserContext';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 
 export type DontAskAgainList = Array<{ action: string; label: string }>;
 

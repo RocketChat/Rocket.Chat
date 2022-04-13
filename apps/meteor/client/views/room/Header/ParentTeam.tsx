@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
 import Header from '../../../components/Header';
-import { useUserId } from '../../../contexts/UserContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';

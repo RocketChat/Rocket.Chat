@@ -1,9 +1,9 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { TooltipContext } from '@rocket.chat/ui-contexts';
 import React, { FC, useEffect, useState, useMemo, ReactNode, useRef, memo } from 'react';
 
 import { TooltipComponent } from '../components/TooltipComponent';
 import TooltipPortal from '../components/TooltipPortal';
-import { TooltipContext } from '../contexts/TooltipContext';
 
 const TooltipProvider: FC = ({ children }) => {
 	const lastAnchor = useRef<HTMLElement>();

@@ -1,7 +1,7 @@
 import type { ILivechatTagRecord } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useEndpoint } from '../../../client/contexts/ServerContext';
 import { useScrollableRecordList } from '../../../client/hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../client/hooks/useComponentDidUpdate';
 import { RecordList } from '../../../client/lib/lists/RecordList';

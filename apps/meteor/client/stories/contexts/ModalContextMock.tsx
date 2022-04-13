@@ -1,7 +1,6 @@
+import { ModalContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
-import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
-
-import { ModalContext } from '../../contexts/ModalContext';
+import React, { ContextType, ReactElement, ReactNode, useMemo } from 'react';
 
 const logAction = action('ModalContext');
 
@@ -10,16 +9,18 @@ type ModalContextMockProps = {
 };
 
 const ModalContextMock = ({ children }: ModalContextMockProps): ReactElement => {
-	const parent = useContext(ModalContext);
-
 	const value = useMemo(
 		(): ContextType<typeof ModalContext> => ({
-			...parent,
+			open: (...args): void => logAction('open', ...args),
+			push: (...args): void => logAction('push', ...args),
+			cancel: (...args): void => logAction('cancel', ...args),
+			close: (...args): void => logAction('close', ...args),
+			confirm: (...args): void => logAction('confirm', ...args),
 			setModal: (modal): void => {
 				logAction('setModal', modal);
 			},
 		}),
-		[parent],
+		[],
 	);
 
 	return <ModalContext.Provider children={children} value={value} />;

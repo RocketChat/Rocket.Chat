@@ -1,8 +1,7 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useMethod } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
-
-import { useMethod } from '../contexts/ServerContext';
 
 function PlanTag() {
 	const [plans, setPlans] = useSafely(useState([]));

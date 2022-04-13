@@ -1,7 +1,7 @@
 import { Sidebar } from '@rocket.chat/fuselage';
+import { useSessionDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useSessionDispatch } from '../../../contexts/SessionContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const Login = (props) => {

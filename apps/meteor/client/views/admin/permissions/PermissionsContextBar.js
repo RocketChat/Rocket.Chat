@@ -1,8 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import EditRolePage from './EditRolePageContainer';
 import NewRolePage from './NewRolePage';

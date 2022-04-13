@@ -1,7 +1,7 @@
 import { useMemo, lazy } from 'react';
+import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
-import { useSetting } from '../../../client/contexts/SettingsContext';
 
 const template = lazy(() => import('../../../client/views/room/contextualBar/Discussions'));
 

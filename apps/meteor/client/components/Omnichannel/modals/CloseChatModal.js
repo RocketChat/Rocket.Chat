@@ -1,8 +1,8 @@
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';

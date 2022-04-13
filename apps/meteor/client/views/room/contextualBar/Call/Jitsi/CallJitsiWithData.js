@@ -1,17 +1,12 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { clear } from '@rocket.chat/memo';
+import { useConnectionStatus, useSetModal, useMethod, useSettings, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, memo } from 'react';
 
 import { Subscriptions } from '../../../../../../app/models/client';
 import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/constants';
-import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusContext';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
-import { useSettings } from '../../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUser } from '../../../../../contexts/UserContext';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import CallJitsi from './CallJitsi';

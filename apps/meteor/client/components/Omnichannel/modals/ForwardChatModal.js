@@ -1,8 +1,8 @@
 import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';

@@ -1,8 +1,8 @@
 import { Table } from '@rocket.chat/fuselage';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';

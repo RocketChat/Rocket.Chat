@@ -1,9 +1,8 @@
 import { usePrefersReducedData } from '@rocket.chat/fuselage-hooks';
+import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC } from 'react';
 
 import { getURL } from '../../../../../app/utils/client';
-import { useLayout } from '../../../../contexts/LayoutContext';
-import { useUserPreference } from '../../../../contexts/UserContext';
 import { AttachmentContext, AttachmentContextValue } from '../context/AttachmentContext';
 
 const AttachmentProvider: FC = ({ children }) => {

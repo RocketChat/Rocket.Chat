@@ -1,10 +1,10 @@
 import { Button, Box, Icon, Flex } from '@rocket.chat/fuselage';
+import { useRouteParameter, useQueryStringParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback, FC } from 'react';
 
 import { APIClient } from '../../../app/utils/client';
 import UserAvatar from '../../components/avatar/UserAvatar';
-import { useRouteParameter, useQueryStringParameter } from '../../contexts/RouterContext';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 import CallPage from './CallPage';

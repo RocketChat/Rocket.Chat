@@ -1,8 +1,7 @@
 import { Box, Button, ButtonGroup, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { ChangeEvent, FC, useState } from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 type PasteStepProps = {

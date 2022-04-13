@@ -3436,7 +3436,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/emitter@npm:~0.31.9":
+"@rocket.chat/emitter@npm:^0.31.9, @rocket.chat/emitter@npm:~0.31.9":
   version: 0.31.9
   resolution: "@rocket.chat/emitter@npm:0.31.9"
   checksum: 150dca691642fcc32c398583190cdc1abf9f19965ac6b9347fb640df9c5b1ad2582a4c159034874c77c5c6ced515c35ef6361f508190af7def720875b9e981c5
@@ -3718,6 +3718,7 @@ __metadata:
     "@rocket.chat/onboarding-ui": next
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.9
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": ~0.31.9
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/client": ^4.12.0
@@ -4083,6 +4084,26 @@ __metadata:
   checksum: 90ba1cbf678a5d836d64fb9645024d7b87598acbae139ce899fe312b71ca49c39ae4a8ed208fcf1928b3093eb7343933454834427d24d9b1e436a5848ad42c15
   languageName: node
   linkType: hard
+
+"@rocket.chat/ui-contexts@workspace:^, @rocket.chat/ui-contexts@workspace:packages/ui-contexts":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-contexts@workspace:packages/ui-contexts"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": ^0.31.9
+    "@rocket.chat/fuselage-hooks": ^0.31.9
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@types/jest": ^27.4.1
+    "@types/react": ~17.0.42
+    "@types/use-subscription": ^1.0.0
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    react: ^18.0.0
+    ts-jest: ^27.1.4
+    typescript: ~4.3.5
+    use-subscription: ^1.6.0
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/ui-kit@npm:^0.14.1":
   version: 0.14.1
@@ -23338,6 +23359,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react@npm:^18.0.0":
+  version: 18.0.0
+  resolution: "react@npm:18.0.0"
+  dependencies:
+    loose-envify: ^1.1.0
+  checksum: 293020b96536b3c7113ee57ca5c990a3f25649d1751b1c7a3aabd16dff0691fe9f1eed1206616d0906d05933536052037340a0c8d0941ff870b0eb469a2f975b
+  languageName: node
+  linkType: hard
+
 "read-cache@npm:^1.0.0":
   version: 1.0.0
   resolution: "read-cache@npm:1.0.0"
@@ -27648,7 +27678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-subscription@npm:^1.5.1":
+"use-subscription@npm:^1.5.1, use-subscription@npm:^1.6.0":
   version: 1.6.0
   resolution: "use-subscription@npm:1.6.0"
   peerDependencies:

@@ -1,9 +1,9 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useState, memo } from 'react';
 
 import { CONSTANTS } from '../../../../app/authorization/lib';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import RoleCell from './RoleCell';
 
 const useChangeRole = ({ onGrant, onRemove, permissionId }) => {

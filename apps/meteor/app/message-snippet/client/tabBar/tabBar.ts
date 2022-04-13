@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
+import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
-import { useSetting } from '../../../../client/contexts/SettingsContext';
 
 addAction('snippeted-messages', () => {
 	const snippetingEnabled = useSetting('Message_AllowSnippeting');

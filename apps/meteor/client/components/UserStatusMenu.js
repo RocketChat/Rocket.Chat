@@ -1,7 +1,7 @@
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
 
-import { useSetting } from '../contexts/SettingsContext';
 import { useTranslation } from '../contexts/TranslationContext';
 import { UserStatus } from './UserStatus';
 

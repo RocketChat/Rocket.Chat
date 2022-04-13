@@ -1,7 +1,7 @@
 import { useMemo, lazy } from 'react';
+import { usePermission } from '@rocket.chat/ui-contexts';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
-import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 
 const template = lazy(() => import('../../../../client/views/room/contextualBar/PruneMessages'));
 

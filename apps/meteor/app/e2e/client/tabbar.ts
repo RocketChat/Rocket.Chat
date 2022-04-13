@@ -1,10 +1,8 @@
 import { useMemo, useCallback } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
-import { useSetting } from '../../../client/contexts/SettingsContext';
-import { usePermission } from '../../../client/contexts/AuthorizationContext';
-import { useMethod } from '../../../client/contexts/ServerContext';
 import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
 import { e2e } from './rocketchat.e2e';
 

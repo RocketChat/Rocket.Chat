@@ -1,6 +1,6 @@
 import { lazy, useMemo } from 'react';
+import { useUserSubscription } from '@rocket.chat/ui-contexts';
 
-import { useUserSubscription } from '../../../client/contexts/UserContext';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('push-notifications', ({ room }) => {

@@ -1,12 +1,17 @@
 import { SettingId, GroupId, ISetting, TabId } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	EditableSettingsContext,
+	IEditableSetting,
+	EditableSettingsContextValue,
+	useSettings,
+	SettingsContextQuery,
+} from '@rocket.chat/ui-contexts';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { FilterQuery } from 'mongodb';
 import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
-import { EditableSettingsContext, IEditableSetting, EditableSettingsContextValue } from '../contexts/EditableSettingsContext';
-import { useSettings, SettingsContextQuery } from '../contexts/SettingsContext';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
 const defaultQuery: SettingsContextQuery = {};

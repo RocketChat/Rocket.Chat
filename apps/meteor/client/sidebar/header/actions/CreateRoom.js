@@ -1,8 +1,8 @@
 import { Box, Sidebar, Dropdown } from '@rocket.chat/fuselage';
+import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useDropdownVisibility } from '../hooks/useDropdownVisibility';
 import CreateRoomList from './CreateRoomList';
 

@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useAsyncState, AsyncState, AsyncStatePhase } from '../../../../hooks/useAsyncState';
 
 export const useDataWithLoadMore = <T, P>(
