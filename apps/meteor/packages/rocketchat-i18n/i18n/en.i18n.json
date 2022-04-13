@@ -727,6 +727,7 @@
   "call-management_description": "Permission to start a meeting",
   "Caller": "Caller",
   "Caller_Id": "Caller ID",
+  "Camera_is_blocked":"Camers is blocked, change the browser setting to allow it",
   "Cancel": "Cancel",
   "Cancel_message_input": "Cancel",
   "Canceled": "Canceled",
