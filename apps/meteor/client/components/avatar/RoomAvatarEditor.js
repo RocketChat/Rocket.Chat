@@ -16,9 +16,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 		if (file.type.startsWith('image/')) {
 			const reader = new FileReader();
 			reader.readAsDataURL(file);
-			reader.onloadend = () => {
-				onChangeAvatar(reader.result);
-			};
+			reader.onloadend = () => onChangeAvatar(reader.result);
 		} else dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
 	});
 
