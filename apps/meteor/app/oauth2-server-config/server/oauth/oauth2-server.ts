@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
+import { Request, Response } from 'express';
 
 import { Users } from '../../../models/server';
 import { OAuthApps } from '../../../models/server/raw';
@@ -17,7 +19,7 @@ const oauth2server = new OAuth2Server({
 });
 
 // https://github.com/RocketChat/rocketchat-oauth2-server/blob/e758fd7ef69348c7ceceabe241747a986c32d036/model.coffee#L27-L27
-function getAccessToken(accessToken) {
+function getAccessToken(accessToken: string): any {
 	return oauth2server.oauth.model.AccessTokens.findOne({
 		accessToken,
 	});
@@ -28,7 +30,7 @@ oauth2server.routes.disable('x-powered-by');
 
 WebApp.connectHandlers.use(oauth2server.app);
 
-oauth2server.routes.get('/oauth/userinfo', function (req, res) {
+oauth2server.routes.get('/oauth/userinfo', function (req: Request, res: Response) {
 	if (req.headers.authorization == null) {
 		return res.sendStatus(401).send('No token');
 	}
@@ -55,17 +57,19 @@ oauth2server.routes.get('/oauth/userinfo', function (req, res) {
 });
 
 API.v1.addAuthMethod(function () {
-	let headerToken = this.request.headers.authorization;
+	const headerToken = this.request.headers.authorization;
 	const getToken = this.request.query.access_token;
+
+	let token: string | undefined;
 	if (headerToken != null) {
 		const matches = headerToken.match(/Bearer\s(\S+)/);
 		if (matches) {
-			headerToken = matches[1];
+			token = matches[1];
 		} else {
-			headerToken = undefined;
+			token = undefined;
 		}
 	}
-	const bearerToken = headerToken || getToken;
+	const bearerToken = token || getToken;
 	if (bearerToken == null) {
 		return;
 	}
