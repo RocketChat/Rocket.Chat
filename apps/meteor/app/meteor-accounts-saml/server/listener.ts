@@ -5,12 +5,12 @@ import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
+import { IIncomingMessage } from '@rocket.chat/core-typings';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
 import { ISAMLAction } from './definition/ISAMLAction';
-import { IIncomingMessage } from '../../../definition/IIncomingMessage';
 
 RoutePolicy.declare('/_saml/', 'network');
 

@@ -7,6 +7,19 @@
  * SIP specific protol details.
  */
 
+import type { IQueueMembershipSubscription } from '@rocket.chat/core-typings';
+import {
+	CallStates,
+	ICallerInfo,
+	Operation,
+	UserState,
+	IMediaStreamRenderer,
+	VoIPUserConfiguration,
+	VoIpCallerInfo,
+	IState,
+	VoipEvents,
+	WorkflowTypes,
+} from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import {
 	UserAgent,
@@ -23,15 +36,6 @@ import {
 import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
-import { IQueueMembershipSubscription } from '../../../definition/IVoipExtension';
-import { CallStates } from '../../../definition/voip/CallStates';
-import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
-import { Operation } from '../../../definition/voip/Operations';
-import { UserState } from '../../../definition/voip/UserState';
-import { IMediaStreamRenderer, VoIPUserConfiguration } from '../../../definition/voip/VoIPUserConfiguration';
-import { VoIpCallerInfo, IState } from '../../../definition/voip/VoIpCallerInfo';
-import { VoipEvents } from '../../../definition/voip/VoipEvents';
-import { WorkflowTypes } from '../../../definition/voip/WorkflowTypes';
 import { toggleMediaStreamTracks } from './Helper';
 import { QueueAggregator } from './QueueAggregator';
 import Stream from './Stream';
