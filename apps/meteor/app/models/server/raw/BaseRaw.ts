@@ -22,8 +22,8 @@ import {
 	WithoutProjection,
 	WriteOpResult,
 } from 'mongodb';
+import { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 
-import { IRocketChatRecord, RocketChatRecordDeleted } from '../../../../definition/IRocketChatRecord';
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 
 export { IndexSpecification } from 'mongodb';

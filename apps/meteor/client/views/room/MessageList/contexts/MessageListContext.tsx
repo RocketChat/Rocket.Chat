@@ -1,6 +1,5 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
-
-import { IMessage } from '../../../../../definition/IMessage';
 
 export type MessageListContextValue = {
 	useShowTranslated: ({ message }: { message: IMessage }) => boolean;

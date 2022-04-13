@@ -1,11 +1,11 @@
 import moment from 'moment';
+import { ISocketConnection } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Users } from '../../../models/server';
 import { LivechatAgentActivity, Sessions } from '../../../models/server/raw';
-import { ISocketConnection } from '../../../../definition/ISocketConnection';
 
 const formatDate = (dateTime = new Date()): { date: number } => ({
 	date: parseInt(moment(dateTime).format('YYYYMMDD')),

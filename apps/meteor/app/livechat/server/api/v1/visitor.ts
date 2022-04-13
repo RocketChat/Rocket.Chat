@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { ILivechatVisitorDTO, IRoom } from '@rocket.chat/core-typings';
 
 import { LivechatRooms, LivechatVisitors, LivechatCustomField } from '../../../../models/server';
 import { LivechatVisitors as VisitorsRaw } from '../../../../models/server/raw';
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
-import { ILivechatVisitorDTO } from '../../../../../definition/ILivechatVisitor';
-import { IRoom } from '../../../../../definition/IRoom';
 import { settings } from '../../../../settings/server';
 
 API.v1.addRoute('livechat/visitor', {

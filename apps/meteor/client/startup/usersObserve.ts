@@ -1,8 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
 import { RoomManager } from '../../app/ui-utils/client';
-import { IUser } from '../../definition/IUser';
 
 Meteor.startup(() => {
 	// TODO: find correct typing for meteor collection

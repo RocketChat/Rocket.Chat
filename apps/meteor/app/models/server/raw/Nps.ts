@@ -1,7 +1,7 @@
 import { UpdateWriteOpResult, Collection } from 'mongodb';
+import { INps, NPSStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import { INps, NPSStatus } from '../../../../definition/INps';
 
 type T = INps;
 export class NpsRaw extends BaseRaw<T> {

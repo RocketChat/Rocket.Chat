@@ -1,14 +1,12 @@
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
+import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 
 import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
-import { ISubscription } from '../../../definition/ISubscription';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { IOmnichannelRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
 import { SystemLogger } from '../../lib/logger/system';
 
 interface IModelsParam {
