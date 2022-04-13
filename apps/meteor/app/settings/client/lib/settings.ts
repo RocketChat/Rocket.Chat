@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { SettingValue } from '@rocket.chat/core-typings';
 
 import { PublicSettingsCachedCollection } from '../../../../client/lib/settings/PublicSettingsCachedCollection';
 import { SettingsBase } from '../../lib/settings';
-import { SettingValue } from '../../../../definition/ISetting';
 
 class Settings extends SettingsBase {
 	cachedCollection = PublicSettingsCachedCollection.get();

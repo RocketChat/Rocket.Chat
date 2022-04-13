@@ -1,7 +1,7 @@
 import { Cursor, UpdateWriteOpResult } from 'mongodb';
+import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { ILivechatTrigger } from '../../../../definition/ILivechatTrigger';
 
 export class LivechatTriggerRaw extends BaseRaw<ILivechatTrigger> {
 	protected indexes: IndexSpecification[] = [{ key: { enabled: 1 } }];

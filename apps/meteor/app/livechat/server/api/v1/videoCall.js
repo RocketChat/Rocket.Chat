@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 import { Messages, Rooms } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { findGuest, getRoom, settings } from '../lib/livechat';
-import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 import { hasPermission, canSendMessage } from '../../../../authorization';
 import { Livechat } from '../../lib/Livechat';
 import { Logger } from '../../../../logger';

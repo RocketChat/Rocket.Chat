@@ -1,4 +1,4 @@
-import { ISetting } from '../../../../definition/ISetting';
+import type { ISetting } from '@rocket.chat/core-typings';
 
 type SettingChange = {
 	_id: ISetting['_id'];
