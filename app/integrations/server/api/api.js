@@ -18,6 +18,28 @@ import { Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 
 const compiledScripts = {};
+
+function getTeamsResponse(text) {
+	return {
+		type: 'message',
+		attachments: [
+			{
+				contentType: 'application/vnd.microsoft.card.adaptive',
+				content: {
+					type: 'AdaptiveCard',
+					version: '1.4',
+					body: [
+						{
+							type: 'TextBlock',
+							text,
+						},
+					],
+				},
+			},
+		],
+	};
+}
+
 function buildSandbox(store = {}) {
 	const sandbox = {
 		scriptTimeout(reject) {
@@ -132,7 +154,7 @@ function createIntegration(options, user) {
 		}
 	});
 
-	return API.v1.success();
+	return API.v1.success(getTeamsResponse('Integration created succesfully'));
 }
 
 function removeIntegration(options, user) {
@@ -146,7 +168,7 @@ function removeIntegration(options, user) {
 
 	Meteor.runAsUser(user._id, () => Meteor.call('deleteOutgoingIntegration', integrationToRemove._id));
 
-	return API.v1.success();
+	return API.v1.success(getTeamsResponse('Integration removed succesfully'));
 }
 
 function executeIntegrationRest() {
@@ -231,7 +253,7 @@ function executeIntegrationRest() {
 					msg: 'Process Incoming Request result of Trigger has no data',
 					name: this.integration.name,
 				});
-				return API.v1.success();
+				return API.v1.success(getTeamsResponse('Request received'));
 			}
 			if (result && result.error) {
 				return API.v1.failure(result.error);
@@ -263,7 +285,7 @@ function executeIntegrationRest() {
 	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
 	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)) {
 		// return RocketChat.API.v1.failure('body-empty');
-		return API.v1.success();
+		return API.v1.success(getTeamsResponse('Request received'));
 	}
 
 	this.bodyParams.bot = { i: this.integration._id };
@@ -278,7 +300,7 @@ function executeIntegrationRest() {
 			incomingLogger.debug({ msg: 'response', response: this.scriptResponse });
 		}
 
-		return API.v1.success(this.scriptResponse);
+		return API.v1.success(getTeamsResponse('Message received succesfully'));
 	} catch ({ error, message }) {
 		return API.v1.failure(error || message);
 	}
