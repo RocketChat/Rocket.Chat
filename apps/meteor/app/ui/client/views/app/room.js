@@ -556,8 +556,10 @@ Meteor.startup(() => {
 		},
 		'click .jump-recent button'(e, template) {
 			e.preventDefault();
-			template.atBottom = true;
-			RoomHistoryManager.clear(template && template.data && template.data._id);
+			const wrapperObj = document.getElementsByClassName('wrapper')[0];
+			wrapperObj.style.scrollBehavior = 'smooth';
+			const { scrollHeight, clientHeight } = wrapperObj;
+			wrapperObj.scrollTop = scrollHeight - clientHeight;
 			RoomHistoryManager.getMoreIfIsEmpty(this._id);
 		},
 		'load .gallery-item'(e, template) {
@@ -615,6 +617,10 @@ Meteor.startup(() => {
 					RoomHistoryManager.getMoreNext(this._id);
 				}
 			}
+			const justRecent = document.getElementsByClassName('jump-recent')[0];
+			const { scrollHeight, scrollTop, clientHeight } = e.target;
+			if (Math.ceil(scrollTop) < scrollHeight - clientHeight) justRecent.classList.remove('not');
+			else justRecent.classList.add('not');
 		}, 100),
 
 		'click .time a'(e) {
@@ -842,6 +848,7 @@ Meteor.startup(() => {
 
 		const wrapperUl = this.find('.wrapper > ul');
 		const newMessage = this.find('.new-message');
+		const justRecent = this.find('.jump-recent');
 
 		const template = this;
 
@@ -856,6 +863,7 @@ Meteor.startup(() => {
 		};
 
 		template.sendToBottom = function () {
+			wrapper.style.scrollBehavior = 'smooth';
 			wrapper.scrollTo(30, wrapper.scrollHeight);
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 		};
@@ -1018,6 +1026,7 @@ Meteor.startup(() => {
 					return template.sendToBottom();
 				}
 
+				justRecent.classList.add('not');
 				if (!template.isAtBottom()) {
 					newMessage.classList.remove('not');
 				}
