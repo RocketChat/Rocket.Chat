@@ -1,13 +1,15 @@
 import { DeleteWriteOpResultObject, UpdateWriteOpResult } from 'mongodb';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { IAvatar as T } from '../../../../definition/IAvatar';
 
 export class AvatarsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { name: 1 }, sparse: true },
-		{ key: { rid: 1 }, sparse: true },
-	];
+	protected modelIndexes() {
+		return [
+			{ key: { name: 1 }, sparse: true },
+			{ key: { rid: 1 }, sparse: true },
+		];
+	}
 
 	insertAvatarFileInit(name: string, userId: string, store: string, file: { name: string }, extra: object): Promise<UpdateWriteOpResult> {
 		const fileData = {

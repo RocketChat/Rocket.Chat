@@ -2,10 +2,12 @@ import { UpdateWriteOpResult } from 'mongodb';
 
 import { Users } from './index';
 import { IFederationServer } from '../../../../definition/Federation';
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 
 export class FederationServersRaw extends BaseRaw<IFederationServer> {
-	protected indexes: IndexSpecification[] = [{ key: { domain: 1 } }];
+	protected modelIndexes() {
+		return [{ key: { domain: 1 } }];
+	}
 
 	saveDomain(domain: string): Promise<UpdateWriteOpResult> {
 		return this.updateOne(

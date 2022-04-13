@@ -1,16 +1,18 @@
 import { UpdateWriteOpResult } from 'mongodb';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { INotification } from '../../../../definition/INotification';
 
 export class NotificationQueueRaw extends BaseRaw<INotification> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { uid: 1 } },
-		{ key: { ts: 1 }, expireAfterSeconds: 2 * 60 * 60 },
-		{ key: { schedule: 1 }, sparse: true },
-		{ key: { sending: 1 }, sparse: true },
-		{ key: { error: 1 }, sparse: true },
-	];
+	protected modelIndexes() {
+		return [
+			{ key: { uid: 1 } },
+			{ key: { ts: 1 }, expireAfterSeconds: 2 * 60 * 60 },
+			{ key: { schedule: 1 }, sparse: true },
+			{ key: { sending: 1 }, sparse: true },
+			{ key: { error: 1 }, sparse: true },
+		];
+	}
 
 	unsetSendingById(_id: string): Promise<UpdateWriteOpResult> {
 		return this.updateOne(
