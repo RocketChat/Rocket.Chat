@@ -1,6 +1,7 @@
 import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuselage';
 import React, { useState, useCallback } from 'react';
 
+import { useUserAvatarPath } from '../../../contexts/AvatarUrlContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -15,6 +16,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	const [newAvatarSource, setNewAvatarSource] = useState();
 	const [urlEmpty, setUrlEmpty] = useState(true);
 	const dispatchToastMessage = useToastMessageDispatch();
+	const getUserAvatarPath = useUserAvatarPath();
 	const toDataURL = (file, callback) => {
 		const reader = new FileReader();
 		reader.onload = function (e) {
@@ -34,7 +36,8 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 		},
 		[setAvatarObj, t, dispatchToastMessage],
 	);
-
+	const reset = document.getElementsByClassName('reset_button')[0];
+	reset?.addEventListener('click', () => setNewAvatarSource(getUserAvatarPath(username, etag)));
 	const [clickUpload] = useFileInput(setUploadedPreview);
 
 	const clickUrl = () => {
