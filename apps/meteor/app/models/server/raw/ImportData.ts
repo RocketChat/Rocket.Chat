@@ -1,7 +1,7 @@
 import { Cursor } from 'mongodb';
+import type { IImportRecord, IImportUserRecord, IImportMessageRecord, IImportChannelRecord } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import { IImportRecord, IImportUserRecord, IImportMessageRecord, IImportChannelRecord } from '../../../../definition/IImportRecord';
 
 export class ImportDataRaw extends BaseRaw<IImportRecord> {
 	getAllUsers(): Cursor<IImportUserRecord> {

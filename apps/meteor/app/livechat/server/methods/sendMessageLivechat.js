@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
-import { OmnichannelSourceType } from '../../../../definition/IRoom';
 import { settings } from '../../../settings/server';
 
 Meteor.methods({

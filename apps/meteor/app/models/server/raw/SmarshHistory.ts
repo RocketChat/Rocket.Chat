@@ -1,5 +1,6 @@
+import type { ISmarshHistory } from '@rocket.chat/core-typings';
+
 import { BaseRaw } from './BaseRaw';
-import { ISmarshHistory } from '../../../../definition/ISmarshHistory';
 
 type T = ISmarshHistory;
 

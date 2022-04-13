@@ -1,28 +1,24 @@
 import { Db } from 'mongodb';
 import mem from 'mem';
-
-import { IVoipService } from '../../sdk/types/IVoipService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { Logger } from '../../lib/logger/Logger';
 import {
 	ServerType,
 	isICallServerConfigData,
 	IVoipCallServerConfig,
 	IVoipManagementServerConfig,
-} from '../../../definition/IVoipServerConfig';
-import { CommandHandler } from './connector/asterisk/CommandHandler';
-import { CommandType } from './connector/asterisk/Command';
-import { Commands } from './connector/asterisk/Commands';
-import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
-import {
 	IQueueMembershipDetails,
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
 	isIExtensionDetails,
-} from '../../../definition/IVoipExtension';
-import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
+} from '@rocket.chat/core-typings';
+import type { IVoipConnectorResult, IQueueDetails, IQueueSummary, IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
+
+import { IVoipService } from '../../sdk/types/IVoipService';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
+import { Logger } from '../../lib/logger/Logger';
+import { CommandHandler } from './connector/asterisk/CommandHandler';
+import { CommandType } from './connector/asterisk/Command';
+import { Commands } from './connector/asterisk/Commands';
 import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
-import { IManagementServerConnectionStatus } from '../../../definition/IVoipServerConnectivityStatus';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';

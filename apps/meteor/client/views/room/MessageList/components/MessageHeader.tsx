@@ -1,3 +1,4 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageHeader as MessageHeaderTemplate,
 	MessageName,
@@ -7,7 +8,6 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
-import { IMessage } from '../../../../../definition/IMessage';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';

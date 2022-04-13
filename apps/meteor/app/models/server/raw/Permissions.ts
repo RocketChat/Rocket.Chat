@@ -1,6 +1,6 @@
+import type { IPermission, IRole } from '@rocket.chat/core-typings';
+
 import { BaseRaw } from './BaseRaw';
-import { IPermission } from '../../../../definition/IPermission';
-import type { IRole } from '../../../../definition/IRole';
 
 export class PermissionsRaw extends BaseRaw<IPermission> {
 	async createOrUpdate(name: string, roles: IRole['_id'][]): Promise<IPermission['_id']> {

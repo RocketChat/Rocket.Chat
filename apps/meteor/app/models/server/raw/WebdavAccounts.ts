@@ -2,9 +2,9 @@
  * Webdav Accounts model
  */
 import type { Collection, FindOneOptions, Cursor, DeleteWriteOpResultObject } from 'mongodb';
+import type { IWebdavAccount } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import { IWebdavAccount } from '../../../../definition/IWebdavAccount';
 
 type T = IWebdavAccount;
 
