@@ -155,6 +155,39 @@ Meteor.startup(async function () {
 	Users.removeById('rocketchat.internal.admin.test');
 
 	if (process.env.TEST_MODE === 'true') {
+		console.log('Inserting public channel for testing:'.green);
+
+		Rooms.createWithIdTypeAndName('PUBLIC_CHANNEL', 'c', 'public_channel', {
+			default: true,
+		});
+
+		console.log('Inserting private channel for testing:'.green);
+
+		Rooms.createWithIdTypeAndName('PRIVATE_CHANNEL', 'c', 'private_channel', {
+			default: true,
+		});
+
+		console.log('Inserting user for testing:'.green);
+
+		Users.create({
+			_id: 'normal_user',
+			name: 'Normal User',
+			username: 'normal_user.test',
+			emails: [
+				{
+					address: 'normal_user.test@rocket.chat',
+					verified: true,
+				},
+			],
+			status: 'offline',
+			statusDefault: 'online',
+			utcOffset: 0,
+			active: true,
+			type: 'user',
+		});
+
+		Accounts.setPassword('normal_user', 'normal_user.test');
+
 		console.log('Inserting admin test user:'.green);
 
 		const adminUser = {
