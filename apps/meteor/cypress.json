@@ -1,0 +1,14 @@
+{
+	"baseUrl": "http://localhost:3000",
+	"defaultCommandTimeout": 10000,
+	"video": false,
+	"trashAssetsBeforeRuns": false,
+	"retries": 2,
+	"projectId": "99zfrs",
+	"screenshotsFolder": "tests/cypress/screenshots",
+	"videosFolder": "tests/cypress/videos",
+	"fixturesFolder": "tests/cypress/fixtures",
+	"pluginsFile": "tests/cypress/plugins",
+	"supportFile": "tests/cypress/support",
+	"integrationFolder": "tests/cypress/integration"
+}
