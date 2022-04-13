@@ -241,11 +241,11 @@ Template.thread.onRendered(function () {
 });
 
 Template.thread.onCreated(async function () {
-	const sendToChannel = settings.get('Send_to_channel_default');
+	const sendToChannel = settings.get('Also_send_to_channel_by_default');
 	this.Threads = new Mongo.Collection(null);
 
 	this.state = new ReactiveDict({
-		sendToChannel,
+		sendToChannel: !this.data.mainMessage.tcount && sendToChannel,
 	});
 
 	this.loadMore = async () => {

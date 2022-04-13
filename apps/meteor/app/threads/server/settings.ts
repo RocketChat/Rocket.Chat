@@ -7,9 +7,8 @@ settingsRegistry.addGroup('Threads', function () {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Send_to_channel_default', true, {
+	this.add('Also_send_to_channel_by_default', true, {
 		group: 'Threads',
-		i18nLabel: 'Also_send_to_channel_default',
 		type: 'boolean',
 		public: true,
 	});
