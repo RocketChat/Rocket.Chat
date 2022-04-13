@@ -59,29 +59,35 @@ jobs:
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
-
-      # - name: Cache node modules
-      #   id: cache-nodemodules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ./node_modules
-      #       ./ee/server/services/node_modules
-      #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
       # TODO change to use turbo cache
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
           path: ./apps/meteor/.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions', '.github/workflows/build_and_test.yml') }}
-
+          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions') }}
+          restore-keys: |
+            ${{ runner.os }}-meteor_cache-
+            ${{ runner.os }}-
       - name: Cache meteor
         uses: actions/cache@v2
         with:
           path: ~/.meteor
-          key: ${{ runner.OS }}-meteor-${{ hashFiles('apps/meteor/.meteor/release', '.github/workflows/build_and_test.yml') }}
-
+          key: ${{ runner.OS }}-meteor-${{ hashFiles('apps/meteor/.meteor/release') }}
+          restore-keys: |
+            ${{ runner.os }}-meteor-
+            ${{ runner.os }}-
       - name: Install Meteor
         run: |
           # Restore bin from cache
@@ -111,13 +117,9 @@ jobs:
           meteor node -v
           git version
 
-      - name: npm install
+      - name: yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
-        run: |
-          yarn
-          cd ./apps/meteor/ee/server/services
-          npm install
-          cd -
+        run: yarn
 
       - run: yarn lint
 
@@ -126,8 +128,6 @@ jobs:
       - name: TS typecheck
         run: |
           yarn turbo run typecheck
-          cd ./apps/meteor/ee/server/services
-          meteor npm run typecheck
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -218,17 +218,22 @@ jobs:
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-cypress-
+            ${{ runner.os }}-
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
-      # - name: Cache node modules
-      #   id: cache-nodemodules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ./node_modules
-      #       ./apps/meteor/ee/server/services/node_modules
-      #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
-
-      - name: NPM install
+      - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
         run: yarn
 
@@ -236,7 +241,9 @@ jobs:
         run: yarn testunit
 
       - name: Install Playwright
-        run: npx playwright install --with-deps
+        run: |
+          cd ./apps/meteor
+          npx playwright install --with-deps
 
       - name: E2E Test API
         env:
@@ -262,7 +269,7 @@ jobs:
 
       - name: E2E Test UI
         env:
-          TEST_MODE: 'true'
+          TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
@@ -344,27 +351,24 @@ jobs:
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
-      # - name: Cache node modules
-      #   id: cache-nodemodules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ./node_modules
-      #       ./apps/meteor/ee/server/services/node_modules
-      #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
-
-      - name: NPM install
+      - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
-        run: |
-          yarn
-          cd ./apps/meteor/ee/server/services
-          npm install
+        run: yarn
 
       - name: Build micro services
-        run: |
-          cd ./apps/meteor/ee/server/services
-          npm run build
+        run: yarn build:services
 
       - name: E2E Test API
         env:
@@ -402,11 +406,13 @@ jobs:
           for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
 
       - name: Install Playwright
-        run: npx playwright install --with-deps
+        run: |
+          cd ./apps/meteor/
+          npx playwright install --with-deps
 
       - name: E2E Test UI
         env:
-          TEST_MODE: 'true'
+          TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
@@ -482,28 +488,34 @@ jobs:
           sudo apt clean
           docker rmi $(docker image ls -aq)
           df -h
-
-      # - name: Cache node modules
-      #   id: cache-nodemodules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ./node_modules
-      #       ./apps/meteor/ee/server/services/node_modules
-      #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
           path: ./apps/meteor/.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
-
+          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}
+          restore-keys: |
+            ${{ runner.os }}-meteor_cache-
+            ${{ runner.os }}-
       - name: Cache meteor
         uses: actions/cache@v2
         with:
           path: ~/.meteor
-          key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
-
+          key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}
+          restore-keys: |
+            ${{ runner.os }}-meteor-
+            ${{ runner.os }}-
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
@@ -538,7 +550,7 @@ jobs:
           meteor node -v
           git version
 
-      - name: npm install
+      - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true'
         run: yarn
 
@@ -812,11 +824,7 @@ jobs:
 
           # first install repo dependencies
           yarn
-
-          # then micro services dependencies
-          cd ./apps/meteor/ee/server/services
-          npm i
-          npm run build
+          yarn build:services
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
 

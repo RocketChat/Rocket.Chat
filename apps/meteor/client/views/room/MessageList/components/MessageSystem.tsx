@@ -1,3 +1,4 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageSystem as MessageSystemTemplate,
 	MessageSystemBody,
@@ -10,7 +11,6 @@ import {
 import React, { FC, memo } from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
-import { IMessage } from '../../../../../definition/IMessage';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
 import UserAvatar from '../../../../components/avatar/UserAvatar';

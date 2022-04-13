@@ -1,9 +1,10 @@
+import type { AtLeast } from '@rocket.chat/core-typings';
+
 import { hasPermission } from '../../../../app/authorization/client';
 import { ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
-import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast } from '../../../../definition/utils';
+import { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { getVoipRoomType } from '../../../../lib/rooms/roomTypes/voip';
 import { roomCoordinator } from '../roomCoordinator';
 

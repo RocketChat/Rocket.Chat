@@ -1,7 +1,7 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Serialized } from '@rocket.chat/core-typings';
 import React, { Dispatch, FC, Key, memo, ReactElement, ReactNode, SetStateAction } from 'react';
 
-import { IOmnichannelRoom } from '../../../../definition/IRoom';
-import { Serialized } from '../../../../definition/Serialized';
 import GenericTable from '../../../components/GenericTable';
 import Page from '../../../components/Page';
 import FilterByText from './FilterByText';

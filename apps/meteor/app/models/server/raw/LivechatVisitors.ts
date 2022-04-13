@@ -1,8 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { AggregationCursor, Cursor, FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 	findOneById(_id: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null> {

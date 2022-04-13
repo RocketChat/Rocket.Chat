@@ -4,8 +4,8 @@ import { Users, Subscriptions } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
 export const useInviteToken = async (userId, token) => {
 	if (!userId) {
