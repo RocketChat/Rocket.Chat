@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { addUserToDefaultChannels } from '../functions';
-import { IUser } from '../../../../definition/IUser';
 
 Meteor.methods({
 	joinDefaultChannels(silenced) {

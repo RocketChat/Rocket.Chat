@@ -62,9 +62,7 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, 
 				</MessageMetricsItem>
 				<MessageMetricsItem>
 					<MessageMetricsItem.Label>
-						{(mention && <NotificationStatus.Me t={t} />) ||
-							(all && <NotificationStatus.All t={t} />) ||
-							(unread && <NotificationStatus.Unread t={t} />)}
+						{(mention && <NotificationStatus.Me />) || (all && <NotificationStatus.All />) || (unread && <NotificationStatus.Unread />)}
 					</MessageMetricsItem.Label>
 				</MessageMetricsItem>
 			</Message.Metrics>
