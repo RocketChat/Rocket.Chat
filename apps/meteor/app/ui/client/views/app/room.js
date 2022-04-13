@@ -488,7 +488,7 @@ export const dropzoneEvents = {
 			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
 
 			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const url = e.dataTransfer.getData('text/html').match('<img.+src=(?:"|\')(.+?)(?:"|\')(?:.+?)>');
+				const url = e.dataTransfer.getData('text/html').match('<a[^>]+href="(.*?)"[^>]*>');
 				const imgURL = url && url[1];
 
 				if (!imgURL) {
