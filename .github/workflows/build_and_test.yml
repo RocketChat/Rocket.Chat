@@ -66,7 +66,7 @@ jobs:
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-turbo-
             ${{ runner.os }}-
@@ -76,7 +76,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./apps/meteor/.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions') }}
           restore-keys: |
             ${{ runner.os }}-meteor_cache-
             ${{ runner.os }}-
@@ -84,7 +84,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.meteor
-          key: ${{ runner.OS }}-meteor-${{ hashFiles('apps/meteor/.meteor/release', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-meteor-${{ hashFiles('apps/meteor/.meteor/release') }}
           restore-keys: |
             ${{ runner.os }}-meteor-
             ${{ runner.os }}-
@@ -228,7 +228,7 @@ jobs:
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-turbo-
             ${{ runner.os }}-
@@ -267,7 +267,7 @@ jobs:
 
       - name: E2E Test UI
         env:
-          TEST_MODE: 'true'
+          TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
@@ -356,7 +356,7 @@ jobs:
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-turbo-
             ${{ runner.os }}-
@@ -408,7 +408,7 @@ jobs:
 
       - name: E2E Test UI
         env:
-          TEST_MODE: 'true'
+          TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
@@ -491,7 +491,7 @@ jobs:
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-turbo-
             ${{ runner.os }}-
@@ -500,7 +500,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./apps/meteor/.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}
           restore-keys: |
             ${{ runner.os }}-meteor_cache-
             ${{ runner.os }}-
@@ -508,7 +508,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.meteor
-          key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
+          key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}
           restore-keys: |
             ${{ runner.os }}-meteor-
             ${{ runner.os }}-
