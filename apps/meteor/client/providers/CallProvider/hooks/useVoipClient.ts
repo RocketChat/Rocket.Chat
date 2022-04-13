@@ -6,7 +6,7 @@ import { IRegistrationInfo } from '../../../../definition/voip/IRegistrationInfo
 import { WorkflowTypes } from '../../../../definition/voip/WorkflowTypes';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
-import { useUser } from '../../../contexts/UserContext';
+import { useUser, useUserId } from '../../../contexts/UserContext';
 import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
@@ -17,28 +17,26 @@ type UseVoipClientResult = {
 	error?: Error | unknown;
 };
 
-const empty = {};
-
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
 export const useVoipClient = (): UseVoipClientResult => {
 	const voipEnabled = useSetting('VoIP_Enabled');
+	const voipRetryCount = useSetting('VoIP_Retry_Count');
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
 	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
 	const user = useUser();
+	const userId = useUserId();
+	const [extension, setExtension] = useSafely(useState<string | null>(null));
+
 	const iceServers = useWebRtcServers();
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
-
 	useEffect(() => {
-		const uid = user?._id;
-		const userExtension = user?.extension;
-
-		if (!uid || !userExtension || !voipEnabled) {
-			setResult(empty);
+		if (!userId || !extension || !voipEnabled) {
+			setResult({});
 			return;
 		}
 		let client: VoIPUser;
-		registrationInfo({ id: uid }).then(
+		registrationInfo({ id: userId }).then(
 			(data) => {
 				let parsedData: IRegistrationInfo;
 				if (isSignedResponse(data)) {
@@ -57,7 +55,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 				(async (): Promise<void> => {
 					try {
 						const subscription = await membership({ extension });
-						client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, 'video');
+						client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, Number(voipRetryCount), 'video');
 						// Today we are hardcoding workflow mode.
 						// In future, this should be ready from configuration
 						client.setWorkflowMode(WorkflowTypes.CONTACT_CENTER_USER);
@@ -77,7 +75,24 @@ export const useVoipClient = (): UseVoipClientResult => {
 				client.clear();
 			}
 		};
-	}, [iceServers, registrationInfo, setResult, membership, voipEnabled, user?._id, user?.extension]);
+	}, [userId, iceServers, registrationInfo, setResult, membership, voipEnabled, extension, voipRetryCount]);
 
+	useEffect(() => {
+		if (!user) {
+			setResult({});
+			return;
+		}
+		if (user.extension) {
+			setExtension(user.extension);
+		} else {
+			setExtension(null);
+
+			if (!result.voipClient) {
+				return;
+			}
+
+			result.voipClient.clear();
+		}
+	}, [result, setExtension, setResult, user]);
 	return result;
 };
