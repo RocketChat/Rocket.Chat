@@ -875,6 +875,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 					this.emit('stateChanged');
 				},
 			},
-		})
+		});
 	}
 }
