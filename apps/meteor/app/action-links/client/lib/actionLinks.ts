@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { handleError } from '../../../../client/lib/utils/handleError';
-import { IMessage } from '../../../../definition/IMessage';
 
 // Action Links namespace creation.
 export const actionLinks = {

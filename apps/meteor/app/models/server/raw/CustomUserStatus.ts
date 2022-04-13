@@ -1,7 +1,7 @@
 import { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
+import { ICustomUserStatus as T } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { ICustomUserStatus as T } from '../../../../definition/ICustomUserStatus';
 
 export class CustomUserStatusRaw extends BaseRaw<T> {
 	protected indexes: IndexSpecification[] = [{ key: { name: 1 } }];

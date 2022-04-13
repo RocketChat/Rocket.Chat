@@ -1,4 +1,5 @@
 /* eslint-disable new-cap */
+import { UiKitBannerProps, UiKitBannerPayload } from '@rocket.chat/core-typings';
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import {
 	kitContext,
@@ -8,7 +9,6 @@ import {
 } from '@rocket.chat/fuselage-ui-kit';
 import React, { Context, FC, useMemo, ReactNode, ComponentProps } from 'react';
 
-import { UiKitBannerProps, UiKitBannerPayload } from '../../../definition/UIKit';
 import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
 import { useUIKitHandleClose } from '../../UIKit/hooks/useUIKitHandleClose';
 import { useUIKitStateManager } from '../../UIKit/hooks/useUIKitStateManager';

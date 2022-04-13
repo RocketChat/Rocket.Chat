@@ -1,6 +1,7 @@
+import { SettingValue } from '@rocket.chat/core-typings';
+
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
 import { settings, settingsRegistry } from '../../app/settings/server';
-import { SettingValue } from '../../definition/ISetting';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { eventTypes } from '../../app/models/server/models/FederationEvents';

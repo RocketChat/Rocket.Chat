@@ -1,9 +1,8 @@
 /* eslint-disable complexity */
+import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
-import { IMessage, isDiscussionMessage, isThreadMainMessage } from '../../../../../definition/IMessage';
-import { ISubscription } from '../../../../../definition/ISubscription';
 import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';

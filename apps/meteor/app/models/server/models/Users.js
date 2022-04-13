@@ -1066,7 +1066,7 @@ export class Users extends Base {
 	}
 
 	/**
-	 * @param {import('mongodb').FilterQuery<import('../../../../definition/IStats').IStats>} fields
+	 * @param {import('mongodb').FilterQuery<import('@rocket.chat/core-typings').IStats>} fields
 	 */
 	getOldest(fields = { _id: 1 }) {
 		const query = {

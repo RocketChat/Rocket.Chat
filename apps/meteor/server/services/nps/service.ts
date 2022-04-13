@@ -1,11 +1,11 @@
 import { createHash } from 'crypto';
 
 import { Db } from 'mongodb';
+import { NPSStatus, INpsVoteStatus, INpsVote, INps } from '@rocket.chat/core-typings';
 
 import { NpsRaw } from '../../../app/models/server/raw/Nps';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { NPSStatus, INpsVoteStatus, INpsVote, INps } from '../../../definition/INps';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
