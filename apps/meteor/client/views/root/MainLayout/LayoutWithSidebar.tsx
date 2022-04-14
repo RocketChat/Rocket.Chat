@@ -1,10 +1,13 @@
 import React, { ReactElement, ReactNode, useCallback } from 'react';
+import { Flex } from '@rocket.chat/fuselage';
+
 
 import { useLayout } from '../../../contexts/LayoutContext';
 import { useCurrentRoute, useRoutePath } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import BlazeTemplate from '../BlazeTemplate';
+import BlogView from './BlogView'
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -23,7 +26,17 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 					.filter(Boolean)
 					.join(' ')}
 			>
-				{children}
+				<Flex.Container wrap='wrap' direction='row' justifyContent='start'>
+					<Flex.Item>
+						<BlogView title={'Companies use NFTs to boost image in metaverse'} body={'Companies use NFTs to boost image in metaverse Indian companies...'} />
+					</Flex.Item>
+					<Flex.Item>
+						<BlogView title={'Companies use NFTs to boost image in metaverse'} body={'Companies use NFTs to boost image in metaverse Indian companies...'} />
+					</Flex.Item>
+					<Flex.Item>
+						<BlogView title={'Companies use NFTs to boost image in metaverse'} body={'Companies use NFTs to boost image in metaverse Indian companies...'} />
+					</Flex.Item>
+				</Flex.Container>
 			</div>
 		</div>
 	);
