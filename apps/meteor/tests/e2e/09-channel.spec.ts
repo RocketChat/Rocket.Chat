@@ -301,41 +301,46 @@ test.describe.serial('[Channel]', () => {
 				});
 			});
 
-			// test.describe('[Owner added]', async () => {
-			// 	test.beforeAll(async () => {
-			// 		if (await global.toastAlert().isVisible()) {
-			// 			await global.dismissToast();
-			// 		}
-			// 		await flexTab.operateFlexTab('members', true);
-			// 	});
-			//
-			// 	test.afterAll(async () => {
-			// 		if (await global.toastAlert().isVisible()) {
-			// 			await global.dismissToast();
-			// 		}
-			// 		await flexTab.operateFlexTab('members', false);
-			// 	});
-			//
-			// 	test('expect set rocket cat as owner', async () => {
-			// 		await flexTab.setUserOwner(targetUser);
-			// 	});
-			//
-			// 	test('expect dismiss the toast', async () => {
-			// 		if (await global.toastAlert().isVisible()) {
-			// 			await global.dismissToast();
-			// 		}
-			// 	});
-			//
-			// 	test('expect the last message should be a subscription role added', async () => {
-			// 		await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
-			// 	});
-			//
-			// 	test('expect show the target username in owner add message', async () => {
-			// 		await expect(mainContent.lastMessage().innerText()).toContain(targetUser);
-			// 	});
-			// });
+			test.describe('[Owner added]', async () => {
+				test.beforeAll(async () => {
+					if (!hasUserAddedInChannel) {
+						await flexTab.operateFlexTab('members', true);
+						await flexTab.addPeopleToChannel(targetUser);
+						if (await global.toastAlert().isVisible()) {
+							await global.dismissToast();
+						}
+						await flexTab.operateFlexTab('members', false);
+					}
+					await flexTab.operateFlexTab('members', true);
+				});
 
-			test.describe.only('[Moderator added]', async () => {
+				test.afterAll(async () => {
+					if (await global.toastAlert().isVisible()) {
+						await global.dismissToast();
+					}
+					await flexTab.operateFlexTab('members', false);
+				});
+
+				test('expect set rocket cat as owner', async () => {
+					await flexTab.setUserOwner(targetUser);
+				});
+
+				test('expect dismiss the toast', async () => {
+					if (await global.toastAlert().isVisible()) {
+						await global.dismissToast();
+					}
+				});
+
+				test('expect the last message should be a subscription role added', async () => {
+					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
+				});
+
+				test('expect show the target username in owner add message', async () => {
+					await expect(mainContent.lastMessageRoleAdded()).toContainText(targetUser);
+				});
+			});
+
+			test.describe('[Moderator added]', async () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
 						await flexTab.operateFlexTab('members', true);
@@ -367,10 +372,6 @@ test.describe.serial('[Channel]', () => {
 
 				test('expect be that the last message is a subscription role added', async () => {
 					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
-				});
-
-				test('expect show the target username in moderator add message', async () => {
-					await expect(mainContent.lastMessage()).toHaveText(targetUser);
 				});
 			});
 		});

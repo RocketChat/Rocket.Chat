@@ -71,7 +71,7 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessage(): Locator {
-		return this.getPage().locator('.message:last-child');
+		return this.getPage().locator('.message:last-child > div:nth-child(3) > div:nth-child(2) > div:first-child');
 	}
 
 	public lastMessageDesc(): Locator {

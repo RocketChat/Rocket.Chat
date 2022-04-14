@@ -140,7 +140,7 @@ class FlexTab extends BasePage {
 	}
 
 	public setOwnerBtn(): Locator {
-		return this.getPage().locator('.set-owner');
+		return this.getPage().locator('//main//aside//button[contains(text(), "Set as owner")]');
 	}
 
 	public setModeratorBtn(): Locator {
@@ -401,10 +401,8 @@ class FlexTab extends BasePage {
 
 	public async setUserOwner(user: string): Promise<void> {
 		await this.enterUserView(user);
-		await this.userMoreActions().click();
 		await this.setOwnerBtn().waitFor();
 		await this.setOwnerBtn().click();
-		await this.viewAllBtn().click();
 	}
 
 	public async setUserModerator(user: string): Promise<void> {
