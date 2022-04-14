@@ -745,6 +745,8 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		{ key: { sessionId: 1 } },
 		{ key: { sessionId: 1, userId: 1 } },
 		{ key: { userId: 1 } },
+		{ key: { userId: 1, loginToken: 1, logoutAt: 1 } },
+		{ key: { loginToken: 1, logoutAt: 1 } },
 		{ key: { year: 1, month: 1, day: 1, type: 1 } },
 		{ key: { type: 1 } },
 		{ key: { ip: 1, loginAt: 1 } },

@@ -7,4 +7,5 @@ export interface ISocketConnection {
 	onClose(fn: (...args: any[]) => void): void;
 	clientAddress: string | undefined;
 	httpHeaders: IncomingHttpHeaders;
+	loginToken?: string;
 }

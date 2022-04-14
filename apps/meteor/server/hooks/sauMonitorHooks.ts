@@ -6,12 +6,21 @@ import { Meteor } from 'meteor/meteor';
 
 import { sauEvents } from '../services/sauMonitor/events';
 
-Accounts.onLogin((info: { user: Meteor.User; connection: Meteor.Connection }) => {
-	const { httpHeaders } = info.connection;
+Accounts.onLogin((info: { user: Meteor.User; connection: Meteor.Connection; methodArguments: any[] }) => {
+	const {
+		user,
+		methodArguments,
+		connection: { httpHeaders },
+	} = info;
+	const { resume } = methodArguments.reduce((a, b) => Object.assign(a, b), {});
+	let loginToken = '';
+	if (resume) {
+		loginToken = Accounts._hashLoginToken(resume);
+	}
 
 	sauEvents.emit('accounts.login', {
-		userId: info.user._id,
-		connection: { instanceId: InstanceStatus.id(), ...info.connection, httpHeaders: httpHeaders as IncomingHttpHeaders },
+		userId: user._id,
+		connection: { loginToken, instanceId: InstanceStatus.id(), ...info.connection, httpHeaders: httpHeaders as IncomingHttpHeaders },
 	});
 });
 
