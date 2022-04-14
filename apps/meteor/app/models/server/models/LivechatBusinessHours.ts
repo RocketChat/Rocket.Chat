@@ -1,8 +1,8 @@
 import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
 import { Base } from './_Base';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 
 export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

@@ -1,5 +1,6 @@
+import type { IIntegration } from '@rocket.chat/core-typings';
+
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IIntegration } from '../../../../definition/IIntegration';
 
 export class IntegrationsRaw extends BaseRaw<IIntegration> {
 	protected indexes: IndexSpecification[] = [{ key: { type: 1 } }];

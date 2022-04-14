@@ -1,10 +1,9 @@
 /* eslint-disable complexity */
+import type { ISubscription, IMessage } from '@rocket.chat/core-typings';
 import { Message as MessageTemplate, MessageLeftContainer, MessageContainer, MessageBody, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo } from 'react';
 
-import { IMessage } from '../../../../../definition/IMessage';
-import { ISubscription } from '../../../../../definition/ISubscription';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useIsMessageHighlight } from '../contexts/MessageHighlightContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
