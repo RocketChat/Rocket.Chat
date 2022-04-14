@@ -1,5 +1,5 @@
 import { ToggleSwitch, RadioButton, OptionTitle } from '@rocket.chat/fuselage';
-import React, { useCallback } from 'react';
+import React, { useCallback, ReactElement } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -15,14 +15,15 @@ const checkBoxStyle = {
 	paddingInlineStart: '24px',
 };
 
-function ViewModeList() {
+function ViewModeList(): ReactElement {
 	const t = useTranslation();
 
 	const saveUserPreferences = useMethod('saveUserPreferences');
 
-	const useHandleChange = (value) => useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
+	const useHandleChange = (value: 'medium' | 'extended' | 'condensed'): (() => void) =>
+		useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
 
-	const sidebarViewMode = useUserPreference('sidebarViewMode', 'extended');
+	const sidebarViewMode = useUserPreference<'medium' | 'extended' | 'condensed'>('sidebarViewMode', 'extended');
 	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
 
 	const setToExtended = useHandleChange('extended');
@@ -36,7 +37,7 @@ function ViewModeList() {
 
 	return (
 		<>
-			<OptionTitle style={style}>{t('Display')}</OptionTitle>
+			<OptionTitle {...({ style } as any)}>{t('Display')}</OptionTitle>
 			<ul className='rc-popover__list'>
 				<ListItem
 					icon={'extended-view'}
