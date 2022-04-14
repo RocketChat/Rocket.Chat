@@ -83,3 +83,4 @@ tests/end-to-end/temporary_staged_test
 coverage
 .nyc_output
 /data
+/tests/e2e/test-failures
