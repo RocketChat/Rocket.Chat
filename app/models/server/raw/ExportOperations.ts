@@ -1,12 +1,14 @@
 import { Cursor, UpdateWriteOpResult } from 'mongodb';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { IExportOperation } from '../../../../definition/IExportOperation';
 
 type T = IExportOperation;
 
 export class ExportOperationsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { userId: 1 } }, { key: { status: 1 } }];
+	protected modelIndexes() {
+		return [{ key: { userId: 1 } }, { key: { status: 1 } }];
+	}
 
 	findOnePending(): Promise<T | null> {
 		const query = {

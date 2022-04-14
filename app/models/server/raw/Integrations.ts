@@ -1,8 +1,10 @@
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { IIntegration } from '../../../../definition/IIntegration';
 
 export class IntegrationsRaw extends BaseRaw<IIntegration> {
-	protected indexes: IndexSpecification[] = [{ key: { type: 1 } }];
+	protected modelIndexes() {
+		return [{ key: { type: 1 } }];
+	}
 
 	findOneByUrl(url: string): Promise<IIntegration | null> {
 		return this.findOne({ url });

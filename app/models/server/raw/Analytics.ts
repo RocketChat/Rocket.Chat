@@ -1,14 +1,16 @@
 import { Random } from 'meteor/random';
 import { AggregationCursor, Cursor, SortOptionObject, UpdateWriteOpResult } from 'mongodb';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { IAnalytic } from '../../../../definition/IAnalytic';
 import { IRoom } from '../../../../definition/IRoom';
 
 type T = IAnalytic;
 
 export class AnalyticsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
+	protected modelIndexes() {
+		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
+	}
 
 	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytic['date'] }): Promise<UpdateWriteOpResult> {
 		return this.updateMany(

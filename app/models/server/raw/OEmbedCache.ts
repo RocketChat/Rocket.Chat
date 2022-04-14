@@ -1,12 +1,14 @@
 import { DeleteWriteOpResultObject } from 'mongodb';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { IOEmbedCache } from '../../../../definition/IOEmbedCache';
 
 type T = IOEmbedCache;
 
 export class OEmbedCacheRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { updatedAt: 1 } }];
+	protected modelIndexes() {
+		return [{ key: { updatedAt: 1 } }];
+	}
 
 	async createWithIdAndData(_id: string, data: any): Promise<T> {
 		const record = {

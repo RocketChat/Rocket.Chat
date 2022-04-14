@@ -1,14 +1,12 @@
-import { ObjectId, Collection, Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
+import { ObjectId, Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
 
 import { INpsVote, INpsVoteStatus } from '../../../../definition/INps';
 import { BaseRaw } from './BaseRaw';
 
 type T = INpsVote;
 export class NpsVoteRaw extends BaseRaw<T> {
-	constructor(public readonly col: Collection<T>, trash?: Collection<T>) {
-		super(col, trash);
-
-		this.col.createIndexes([{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 } }]);
+	modelIndexes() {
+		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 } }];
 	}
 
 	findNotSentByNpsId(npsId: string, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {

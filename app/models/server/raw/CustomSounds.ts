@@ -1,10 +1,12 @@
 import { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
 import { ICustomSound as T } from '../../../../definition/ICustomSound';
 
 export class CustomSoundsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { name: 1 } }];
+	protected modelIndexes() {
+		return [{ key: { name: 1 } }];
+	}
 
 	// find
 	findByName(name: string, options: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
