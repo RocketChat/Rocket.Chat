@@ -196,9 +196,9 @@ class SideNav extends BasePage {
 		await expect(this.spotlightSearch()).toBeFocused();
 		await this.spotlightSearch().type(channelName);
 
-		await this.spotlightSearchPopUp().click();
+		await expect(this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).first()).toContainText(channelName);
 
-		await expect(this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName })).toContainText(channelName);
+		await this.spotlightSearchPopUp().click();
 	}
 
 	public async searchChannelAndOpen(channelName: string): Promise<void> {

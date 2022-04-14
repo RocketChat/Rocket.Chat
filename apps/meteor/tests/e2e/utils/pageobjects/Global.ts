@@ -41,14 +41,13 @@ class Global extends BasePage {
 	}
 
 	public toastAlert(): Locator {
-		return this.getPage().locator('.toast');
+		return this.getPage().locator('.toast-message');
 	}
 
 	public async confirmPopup(): Promise<void> {
 		await this.modalConfirm().waitFor();
 		// browser.pause(500);
 		await this.modalConfirm().click();
-		await this.modal().waitFor();
 	}
 
 	// public async setWindowSize(width, height): Promise<void> {
