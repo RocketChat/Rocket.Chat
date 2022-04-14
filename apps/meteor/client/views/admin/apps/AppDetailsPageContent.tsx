@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { Box, Callout, Chip, Divider, Margins } from '@rocket.chat/fuselage';
+import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
-import MarkdownText from '../../../components/MarkdownText';
-import AppAvatar from '../../../components/avatar/AppAvatar';
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 import { App } from './types';
 
@@ -18,11 +16,11 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 	const {
 		author: { homepage, support },
 		detailedDescription,
+		description,
 		categories = [],
-		bundledIn,
 	} = app;
 
-	const isDescriptionVisible = Object.keys(detailedDescription.raw).length !== 0;
+	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto'>
@@ -43,14 +41,17 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 			)}
 
 			<Box display='flex' flexDirection='column'>
-				<Margins block='x35'>
+				<Margins block='x17'>
 					<Box is='section'>
-						<Box fontScale='h4' mbe='neg-x8'>
+						<Box fontScale='h4' mbe='x8'>
 							{t('Description')}
 						</Box>
-						<Box display='flex' flexDirection='row' mbe='neg-x16'>
-							{isDescriptionVisible && <MarkdownText content={detailedDescription.raw} />}
-						</Box>
+						<Box
+							display='flex'
+							flexDirection='row'
+							mbe='neg-x16'
+							dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }}
+						/>
 					</Box>
 
 					<Box is='section'>
@@ -87,44 +88,6 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 					</Box>
 				</Margins>
 			</Box>
-			{bundledIn && (
-				<>
-					<Divider />
-					<Box display='flex' flexDirection='column'>
-						<Margins block='x12'>
-							<Box fontScale='h4'>{t('Bundles')}</Box>
-							{bundledIn.map((bundle) => (
-								<Box key={bundle.bundleId} display='flex' flexDirection='row' alignItems='center'>
-									<Box
-										width='x80'
-										height='x80'
-										display='flex'
-										flexDirection='row'
-										justifyContent='space-around'
-										flexWrap='wrap'
-										flexShrink={0}
-									>
-										{bundle.apps.map((app) => (
-											<AppAvatar
-												size='x36'
-												key={app.latest.name}
-												iconFileContent={app.latest.iconFileContent}
-												iconFileData={app.latest.iconFileData}
-											/>
-										))}
-									</Box>
-									<Box display='flex' flexDirection='column' mis='x12'>
-										<Box fontScale='p2m'>{bundle.bundleName}</Box>
-										{bundle.apps.map((app) => (
-											<Box key={app.latest.name}>{app.latest.name},</Box>
-										))}
-									</Box>
-								</Box>
-							))}
-						</Margins>
-					</Box>
-				</>
-			)}
 		</Box>
 	);
 };
