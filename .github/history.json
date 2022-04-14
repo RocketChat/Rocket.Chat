@@ -73134,6 +73134,108 @@
           ]
         }
       ]
+    },
+    "4.4.3": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25022",
+          "title": "[FIX] Proxy settings being ignored",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "Modify Meteor's `HTTP.call` to add back proxy support",
+          "milestone": "4.6.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25067",
+          "title": "[FIX] NPS never finishing sending results",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.6.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.5.6": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25022",
+          "title": "[FIX] Proxy settings being ignored",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "Modify Meteor's `HTTP.call` to add back proxy support",
+          "milestone": "4.6.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25067",
+          "title": "[FIX] NPS never finishing sending results",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.6.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.6.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25101",
+          "title": "[FIX] Database indexes not being created",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.6.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24933",
+          "title": "[FIX] Deactivating user breaks if user is the only room owner",
+          "userLogin": "sidmohanty11",
+          "description": "## Before\r\n\r\nhttps://user-images.githubusercontent.com/73601258/160000871-cfc2f2a5-2a59-4d27-8049-7754d003dd48.mp4\r\n\r\n\r\n\r\n## After\r\nhttps://user-images.githubusercontent.com/73601258/159998287-681ab475-ff33-4282-82ff-db751c59a392.mp4",
+          "milestone": "4.6.2",
+          "contributors": [
+            "sidmohanty11",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
