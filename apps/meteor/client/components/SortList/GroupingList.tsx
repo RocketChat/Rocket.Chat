@@ -1,5 +1,5 @@
 import { CheckBox, OptionTitle } from '@rocket.chat/fuselage';
-import React, { useCallback } from 'react';
+import React, { useCallback, ReactElement } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -15,14 +15,17 @@ const checkBoxStyle = {
 	paddingInlineStart: '24px',
 };
 
-function GroupingList() {
-	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
-	const sidebarShowFavorites = useUserPreference('sidebarShowFavorites');
-	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
+// TODO: chapter day frontend: fix OptionTitle style type
+
+const GroupingList = function GroupingList(): ReactElement {
+	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType');
+	const sidebarShowFavorites = useUserPreference<boolean>('sidebarShowFavorites');
+	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread');
 
 	const saveUserPreferences = useMethod('saveUserPreferences');
 
-	const useHandleChange = (key, value) => useCallback(() => saveUserPreferences({ [key]: value }), [key, value]);
+	const useHandleChange = (key: 'sidebarGroupByType' | 'sidebarShowFavorites' | 'sidebarShowUnread', value: boolean): (() => void) =>
+		useCallback(() => saveUserPreferences({ [key]: value }), [key, value]);
 
 	const handleChangeGroupByType = useHandleChange('sidebarGroupByType', !sidebarGroupByType);
 	const handleChangeShoFavorite = useHandleChange('sidebarShowFavorites', !sidebarShowFavorites);
@@ -32,7 +35,7 @@ function GroupingList() {
 
 	return (
 		<>
-			<OptionTitle style={style}>{t('Group_by')}</OptionTitle>
+			<OptionTitle {...({ style } as any)}>{t('Group_by')}</OptionTitle>
 			<ul className='rc-popover__list'>
 				<ListItem
 					icon={'flag'}
@@ -56,6 +59,6 @@ function GroupingList() {
 			</ul>
 		</>
 	);
-}
+};
 
 export default GroupingList;
