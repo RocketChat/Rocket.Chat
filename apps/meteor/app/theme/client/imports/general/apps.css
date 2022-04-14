@@ -43,7 +43,7 @@
 
 		&__content {
 			display: flex;
-			overflow: hidden;
+			overflow: hidden auto;
 			flex-direction: column;
 			flex: 1 1 auto;
 
@@ -68,7 +68,7 @@
 			}
 		}
 
-		&__row + &__row {
+		&__row+&__row {
 			padding-top: 5px;
 		}
 
@@ -90,7 +90,7 @@
 		}
 
 		&__item {
-			overflow: hidden;
+			overflow: hidden auto;
 
 			flex: 1 1 1px;
 
@@ -107,7 +107,7 @@
 
 			&__description {
 				overflow-x: scroll;
-				overflow-y: hidden;
+				/* overflow-y: hidden; */
 
 				white-space: nowrap;
 
@@ -137,7 +137,7 @@
 	}
 }
 
-@media (width <= 500px) {
+@media (width <=500px) {
 	.rc-apps {
 		&-container {
 			flex-direction: column;

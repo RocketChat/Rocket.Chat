@@ -30,7 +30,13 @@
 			],
 			"@/public/*": [
 				"public/*"
-			]
+			],
+			"@/client/*": [
+				"client/*"
+			],
+			"@/app/*": [
+				"app/*"
+			],
 		},
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
