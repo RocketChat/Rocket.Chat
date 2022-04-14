@@ -7,7 +7,9 @@ import { BaseRaw, IndexSpecification } from './BaseRaw';
 type T = IAnalytic;
 
 export class AnalyticsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
+	}
 
 	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytic['date'] }): Promise<UpdateWriteOpResult> {
 		return this.updateMany(
