@@ -847,7 +847,8 @@ jobs:
           docker build \
             --build-arg SERVICE=${{ matrix.service }} \
             -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
-            ./apps/meteor/ee/server/services
+            -f ./apps/meteor/ee/server/services/Dockerfile \
+            .
 
           docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
 
