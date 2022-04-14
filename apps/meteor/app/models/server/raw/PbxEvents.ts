@@ -4,7 +4,9 @@ import type { IPbxEvent } from '@rocket.chat/core-typings';
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class PbxEventsRaw extends BaseRaw<IPbxEvent> {
-	protected indexes: IndexSpecification[] = [{ key: { uniqueId: 1 }, unique: true }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { uniqueId: 1 }, unique: true }];
+	}
 
 	findByEvents(callUniqueId: string, events: string[]): Cursor<IPbxEvent> {
 		return this.find(

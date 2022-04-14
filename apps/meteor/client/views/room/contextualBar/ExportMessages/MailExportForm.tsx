@@ -9,10 +9,10 @@ import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMul
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useUserRoom } from '../../../../contexts/UserContext';
 import { useForm } from '../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
-import { useUserRoom } from '../../hooks/useUserRoom';
 
 type MailExportFormValues = {
 	dateFrom: string;

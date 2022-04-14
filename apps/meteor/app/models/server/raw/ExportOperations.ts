@@ -6,7 +6,9 @@ import { BaseRaw, IndexSpecification } from './BaseRaw';
 type T = IExportOperation;
 
 export class ExportOperationsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { userId: 1 } }, { key: { status: 1 } }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { userId: 1 } }, { key: { status: 1 } }];
+	}
 
 	findOnePending(): Promise<T | null> {
 		const query = {

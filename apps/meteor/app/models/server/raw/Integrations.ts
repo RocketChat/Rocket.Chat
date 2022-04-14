@@ -3,7 +3,9 @@ import type { IIntegration } from '@rocket.chat/core-typings';
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class IntegrationsRaw extends BaseRaw<IIntegration> {
-	protected indexes: IndexSpecification[] = [{ key: { type: 1 } }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { type: 1 } }];
+	}
 
 	findOneByUrl(url: string): Promise<IIntegration | null> {
 		return this.findOne({ url });

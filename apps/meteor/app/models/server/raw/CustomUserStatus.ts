@@ -4,7 +4,9 @@ import { ICustomUserStatus as T } from '@rocket.chat/core-typings';
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class CustomUserStatusRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { name: 1 } }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { name: 1 } }];
+	}
 
 	// find one by name
 	async findOneByName(name: string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null> {

@@ -1,11 +1,11 @@
 import { Option } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import GroupingList from './GroupingList';
 import SortModeList from './SortModeList';
 import ViewModeList from './ViewModeList';
 
-function SortList() {
+function SortList(): ReactElement {
 	return (
 		<>
 			<ViewModeList />
