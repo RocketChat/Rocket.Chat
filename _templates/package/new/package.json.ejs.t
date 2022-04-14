@@ -3,7 +3,7 @@ to: packages/<%= name %>/package.json
 ---
 
 {
-	"name": "@rocket.chat/<%= h.capitalize(name) %>",
+	"name": "@rocket.chat/<%= name.toLowerCase() %>",
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
