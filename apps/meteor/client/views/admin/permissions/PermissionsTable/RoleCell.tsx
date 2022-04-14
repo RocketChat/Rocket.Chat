@@ -1,10 +1,21 @@
-import { Table, Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
+import { IRole } from '@rocket.chat/core-typings';
+import { TableCell, Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, memo } from 'react';
+import React, { useState, memo, ReactElement } from 'react';
 
-import { AuthorizationUtils } from '../../../../app/authorization/lib';
+import { AuthorizationUtils } from '../../../../../app/authorization/lib';
 
-const RoleCell = ({ grantedRoles = [], _id, name, description, onChange, lineHovered, permissionId }) => {
+type RoleCellProps = {
+	_id: IRole['_id'];
+	name: IRole['name'];
+	description: IRole['description'];
+	onChange: (roleId: IRole['_id'], granted: boolean) => Promise<boolean>;
+	lineHovered: boolean;
+	permissionId: string;
+	grantedRoles: IRole['_id'][];
+};
+
+const RoleCell = ({ _id, name, description, onChange, lineHovered, permissionId, grantedRoles = [] }: RoleCellProps): ReactElement => {
 	const [granted, setGranted] = useState(() => !!grantedRoles.includes(_id));
 	const [loading, setLoading] = useState(false);
 
@@ -20,7 +31,7 @@ const RoleCell = ({ grantedRoles = [], _id, name, description, onChange, lineHov
 	const isDisabled = !!loading || !!isRestrictedForRole;
 
 	return (
-		<Table.Cell withTruncatedText>
+		<TableCell withTruncatedText>
 			<Margins inline='x2'>
 				<CheckBox checked={granted} onChange={handleChange} disabled={isDisabled} />
 				{!loading && (
@@ -30,7 +41,7 @@ const RoleCell = ({ grantedRoles = [], _id, name, description, onChange, lineHov
 				)}
 				{loading && <Throbber size='x12' display='inline-block' />}
 			</Margins>
-		</Table.Cell>
+		</TableCell>
 	);
 };
 
