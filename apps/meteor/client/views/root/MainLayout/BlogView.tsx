@@ -12,7 +12,7 @@ type Props = {
 const BlogView = ({ title, body }: Props) => {
     return (
         <Margins block='15px'>
-            <Modal height='400px' width='400px'>
+            <Modal height='400px' width='350px'>
                 {/* <img src={nft1} alt='nft blog image' /> */}
                 <Box height='160px' width='full' bg='primary-500-50'></Box>
                 <Modal.Header>
