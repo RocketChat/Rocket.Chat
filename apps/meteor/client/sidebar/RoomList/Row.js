@@ -2,12 +2,16 @@ import { SidebarSection } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import OmnichannelSection from '../sections/OmnichannelSection';
-import BlogPost from '../sections/BlogPost'
+import {BlogPostSection, ProductsSection, MessagesSection, StoreSection, GamesSection} from '../sections'
 import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
 
 const sections = {
 	Omnichannel: OmnichannelSection,
-	BlogPostSection: BlogPost
+	BlogPostSection,
+	GamesSection,
+	StoreSection,
+	ProductsSection,
+	MessagesSection
 };
 
 const Row = ({ data, item }) => {

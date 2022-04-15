@@ -5,7 +5,7 @@ import React, { ReactElement } from 'react';
 import { useLayout } from '../../contexts/LayoutContext';
 
 
-const BlogPost = (props: typeof Box): ReactElement => {
+const GamesSection = (props: typeof Box): ReactElement => {
     const { sidebar } = useLayout();
 
     const handleRoute = useMutableCallback(() => {
@@ -16,7 +16,7 @@ const BlogPost = (props: typeof Box): ReactElement => {
     return (
         <div onClick={handleRoute}>
             <Sidebar.TopBar.ToolBox className='omnichannel-sidebar' {...props}>
-                <Sidebar.TopBar.Title>Blog Post</Sidebar.TopBar.Title>
+                <Sidebar.TopBar.Title>Games</Sidebar.TopBar.Title>
                 <Sidebar.TopBar.Action icon='chevron-left' />
             </Sidebar.TopBar.ToolBox>
         </div>
@@ -24,4 +24,4 @@ const BlogPost = (props: typeof Box): ReactElement => {
     );
 };
 
-export default BlogPost
+export default GamesSection
