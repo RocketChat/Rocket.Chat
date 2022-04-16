@@ -127,46 +127,6 @@ test.describe.serial('[Channel]', () => {
 		});
 
 		test.describe('[Channel settings]:', async () => {
-			test.describe('Channel name edit', async () => {
-				test.beforeAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
-					}
-					await flexTab.operateFlexTab('info', true);
-				});
-
-				test.afterAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
-					}
-
-					if (await flexTab.mainSideBar().isVisible()) {
-						await flexTab.operateFlexTab('info', false);
-					}
-				});
-
-				test('expect show the old name', async () => {
-					await expect(flexTab.firstSetting()).toHaveText(publicChannelName);
-				});
-
-				test('expect click the edit name', async () => {
-					await flexTab.editNameBtn().click();
-				});
-
-				test('expect edit the name input', async () => {
-					await flexTab.editNameTextInput().fill(`NAME-EDITED-${publicChannelName}`);
-				});
-
-				test('expect save the name', async () => {
-					await flexTab.editNameSave().click();
-				});
-
-				test('expect show the new name', async () => {
-					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`);
-					await expect(channelName).toHaveText(`NAME-EDITED-${publicChannelName}`);
-				});
-			});
-
 			test.describe('[Channel topic edit]', async () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('info', true);
@@ -259,9 +219,6 @@ test.describe.serial('[Channel]', () => {
 					if (!hasUserAddedInChannel) {
 						await flexTab.operateFlexTab('members', true);
 						await flexTab.addPeopleToChannel(targetUser);
-						if (await global.toastAlert().isVisible()) {
-							await global.dismissToast();
-						}
 						await flexTab.operateFlexTab('members', false);
 					}
 					await flexTab.operateFlexTab('members', true);
@@ -284,9 +241,6 @@ test.describe.serial('[Channel]', () => {
 					if (!hasUserAddedInChannel) {
 						await flexTab.operateFlexTab('members', true);
 						await flexTab.addPeopleToChannel(targetUser);
-						if (await global.toastAlert().isVisible()) {
-							await global.dismissToast();
-						}
 						await flexTab.operateFlexTab('members', false);
 					}
 					await flexTab.operateFlexTab('members', true);
@@ -323,9 +277,6 @@ test.describe.serial('[Channel]', () => {
 					if (!hasUserAddedInChannel) {
 						await flexTab.operateFlexTab('members', true);
 						await flexTab.addPeopleToChannel(targetUser);
-						if (await global.toastAlert().isVisible()) {
-							await global.dismissToast();
-						}
 						await flexTab.operateFlexTab('members', false);
 					}
 					await flexTab.operateFlexTab('members', true);
@@ -351,6 +302,46 @@ test.describe.serial('[Channel]', () => {
 				// FIXME: is not finding element
 				test.skip('expect be that the last message is a subscription role added', async () => {
 					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
+				});
+			});
+
+			test.describe('Channel name edit', async () => {
+				test.beforeAll(async () => {
+					if (await global.toastAlert().isVisible()) {
+						await global.dismissToast();
+					}
+					await flexTab.operateFlexTab('info', true);
+				});
+
+				test.afterAll(async () => {
+					if (await global.toastAlert().isVisible()) {
+						await global.dismissToast();
+					}
+
+					if (await flexTab.mainSideBar().isVisible()) {
+						await flexTab.operateFlexTab('info', false);
+					}
+				});
+
+				test('expect show the old name', async () => {
+					await expect(flexTab.firstSetting()).toHaveText(publicChannelName);
+				});
+
+				test('expect click the edit name', async () => {
+					await flexTab.editNameBtn().click();
+				});
+
+				test('expect edit the name input', async () => {
+					await flexTab.editNameTextInput().fill(`NAME-EDITED-${publicChannelName}`);
+				});
+
+				test('expect save the name', async () => {
+					await flexTab.editNameSave().click();
+				});
+
+				test('expect show the new name', async () => {
+					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`);
+					await expect(channelName).toHaveText(`NAME-EDITED-${publicChannelName}`);
 				});
 			});
 		});
