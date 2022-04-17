@@ -777,6 +777,134 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		super(col, trash);
 
 		this.secondaryCollection = colSecondary;
+	async getByUserId({
+		userId,
+		search = '',
+		limit = 10,
+		page = 1,
+	}: {
+		userId: string;
+		search?: string;
+		// offset?: number;
+		limit?: number;
+		page?: number;
+	}): Promise<IMDMSession> {
+		limit = +limit >= 100 ? 100 : +limit;
+		page = +page < 1 ? 1 : +page;
+		// const skipOperator = offset ? [{ $skip: offset }] : [];
+		const searchQuery = search ? [{ $text: { $search: search } }] : [];
+
+		const matchOperator = {
+			$match: {
+				$and: [
+					...searchQuery,
+					{
+						userId: {
+							$eq: userId,
+						},
+					},
+					{
+						loginToken: {
+							$exists: true,
+							$ne: '',
+						},
+					},
+					{
+						logoutAt: {
+							$exists: false,
+						},
+					},
+				],
+			},
+		};
+		const sortOperator = {
+			$sort: {
+				createdAt: -1,
+			},
+		};
+		const groupOperator = {
+			$group: {
+				_id: '$loginToken',
+				day: {
+					$first: '$day',
+				},
+				instanceId: {
+					$first: '$instanceId',
+				},
+				month: {
+					$first: '$month',
+				},
+				sessionId: {
+					$first: '$sessionId',
+				},
+				year: {
+					$first: '$year',
+				},
+				_updatedAt: {
+					$first: '$_updatedAt',
+				},
+				createdAt: {
+					$first: '$createdAt',
+				},
+				device: {
+					$first: '$device',
+				},
+				host: {
+					$first: '$host',
+				},
+				ip: {
+					$first: '$ip',
+				},
+				loginAt: {
+					$first: '$loginAt',
+				},
+				mostImportantRole: {
+					$first: '$mostImportantRole',
+				},
+				roles: {
+					$first: '$roles',
+				},
+			},
+		};
+		const limitOperator = { $limit: limit };
+
+		const [docTotal] = await this.col
+			.aggregate([
+				matchOperator,
+				sortOperator,
+				{
+					$group: {
+						_id: '$loginToken',
+					},
+				},
+				{
+					$count: 'count',
+				},
+			])
+			.toArray();
+		const total = docTotal && docTotal?.count ? docTotal.count : 0; // amount of documents
+		const calcPages = (total / limit).toFixed(0);
+		const pages = +calcPages >= 2 ? +calcPages : 1; // total of pages available
+		console.log({ userId, total, calcPages, pages });
+
+		const skipOperator = pages >= 2 ? [{ $skip: page * limit - limit }] : [];
+
+		const queryArray = [
+			matchOperator,
+			sortOperator,
+			groupOperator,
+			...skipOperator,
+			limitOperator,
+			{
+				$project: {
+					_id: 0,
+				},
+			},
+		];
+
+		const docs = await this.col.aggregate(queryArray).toArray();
+		return { docs, total, limit, page, pages };
+	}
 	}
 
 	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {

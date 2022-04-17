@@ -32,6 +32,7 @@ export interface ISession {
 	ip: string;
 	loginAt: Date;
 	closedAt?: Date;
+	count?: number;
 }
 
 type SessionAggregationResult = {
@@ -51,3 +52,16 @@ export type UserSessionAggregation = Pick<ISession, '_id'> & {
 };
 export type DeviceSessionAggregation = Pick<ISession, '_id'> & { type: string; name: string; version: string; count: number; time: number };
 export type OSSessionAggregation = Pick<ISession, '_id'> & { name: string; version: string; count: number; time: number };
+
+// Session for Multi Device Manager
+
+export interface IMDMSessionParams {
+	limit?: number;
+	page?: number;
+	search?: string;
+}
+export interface IMDMSession extends IMDMSessionParams {
+	total: number;
+	pages: number;
+	docs: ISession[];
+}
