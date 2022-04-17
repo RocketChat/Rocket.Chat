@@ -1,9 +1,11 @@
 import React, { ReactElement, useMemo } from 'react';
+import { Flex } from '@rocket.chat/fuselage';
 
 import BlazeTemplate from '../BlazeTemplate';
 import AuthenticationCheck from './AuthenticationCheck';
 import Preload from './Preload';
 import { useCustomScript } from './useCustomScript';
+import BlogView from './BlogView'
 
 type MainLayoutProps = {
 	center?: string;
@@ -14,7 +16,12 @@ const MainLayout = ({ center }: MainLayoutProps): ReactElement => {
 
 	return (
 		<Preload>
-			<AuthenticationCheck>{useMemo(() => (center ? <BlazeTemplate template={center} /> : null), [center])}</AuthenticationCheck>
+			<AuthenticationCheck>{useMemo(() => (center ?
+				<>
+					{/* <Flex.Container wrap='wrap' direction='row' justifyContent='start'>{blogData.map((blog, index) => (<Flex.Item key={index}><BlogView title={blog.title} body={blog.body} /></Flex.Item>))}</Flex.Container> */}
+					<BlazeTemplate template={center} />
+				</>
+				: null), [center])}</AuthenticationCheck>
 		</Preload>
 	);
 };
