@@ -1,4 +1,4 @@
-import type { IUser } from '../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export const getUserEmailAddress = (user: IUser): string | undefined =>
 	Array.isArray(user.emails) ? user.emails.find(({ address }) => !!address)?.address : undefined;

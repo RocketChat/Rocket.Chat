@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { isRoleCreateProps } from '@rocket.chat/rest-typings';
 
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
@@ -6,7 +7,6 @@ import { Roles } from '../../../models/server/raw';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { updateRoleAsync } from '../../../../server/lib/roles/updateRole';
 import { insertRoleAsync } from '../../../../server/lib/roles/insertRole';
-import { isRoleCreateProps } from '../../../../definition/rest/v1/roles';
 
 Meteor.methods({
 	async 'authorization:saveRole'(roleData: Record<string, unknown>) {
