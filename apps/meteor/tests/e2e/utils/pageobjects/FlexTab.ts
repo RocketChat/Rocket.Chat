@@ -370,7 +370,7 @@ class FlexTab extends BasePage {
 	}
 
 	public getUserEl(username: any): Locator {
-		return this.getPage().locator(`[data-username="${username}"]`);
+		return this.getPage().locator(`//li[@data-username="${username}"]`);
 	}
 
 	public addUserTable(): Locator {
