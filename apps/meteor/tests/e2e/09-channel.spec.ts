@@ -264,7 +264,7 @@ test.describe.serial('[Channel]', () => {
 					}
 				});
 
-				test('expect the last message should be a subscription role added', async () => {
+				test.skip('expect the last message should be a subscription role added', async () => {
 					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
 				});
 
