@@ -202,7 +202,7 @@ export class LivechatVisitors extends Base {
 
 	findOneGuestByEmailAddress(emailAddress) {
 		const query = {
-			'visitorEmails.address': emailAddress,
+			'visitorEmails.address': String(emailAddress).toLowerCase(),
 		};
 
 		return this.findOne(query);

@@ -32,7 +32,7 @@ const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 function getGuestByEmail(email: string, name: string, department = ''): any {
 	logger.debug(`Attempt to register a guest for ${email} on department: ${department}`);
-	const guest = LivechatVisitors.findOneGuestByEmailAddress(email.toLowerCase());
+	const guest = LivechatVisitors.findOneGuestByEmailAddress(email);
 
 	if (guest) {
 		logger.debug(`Guest with email ${email} found with id ${guest._id}`);
