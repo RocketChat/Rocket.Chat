@@ -12,7 +12,7 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { call } from '../../../../client/lib/utils/call';
 import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
-import { Rooms } from '../../../models/client';
+import { CachedChatSubscription, Rooms } from '../../../models/client';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
@@ -96,6 +96,7 @@ export const openRoom = async function (type, name, render = true) {
 			if (type === 'd') {
 				try {
 					const { rid } = await call('createDirectMessage', ...name.split(', '));
+					CachedChatSubscription.loadFromServerAndPopulate();
 					return FlowRouter.go('direct', { rid }, FlowRouter.current().queryParams);
 				} catch (error) {
 					console.error(error);
