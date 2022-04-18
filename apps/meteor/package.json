@@ -39,7 +39,7 @@
 		"testapi": "mocha --config ./.mocharc.api.js",
 		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
 		".testunit:server": "mocha --config ./.mocharc.js",
-		".testunit:client": "mocha --config ./.mocharc.client.js",
+		".testunit:client": "mocha --config ./.mocharc.client.js --exit",
 		".testunit:definition": "mocha --config ./.mocharc.definition.js",
 		"testunit-watch": "mocha --watch --config ./.mocharc.js",
 		"test": "npm run testapi && npm run testui",
