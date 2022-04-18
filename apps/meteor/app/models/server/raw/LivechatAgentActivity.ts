@@ -1,10 +1,88 @@
 import moment from 'moment';
-import { AggregationCursor } from 'mongodb';
+import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/core-typings';
+import type { AggregationCursor, Cursor, FindAndModifyWriteOpResultObject, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ILivechatAgentActivity } from '../../../../definition/ILivechatAgentActivity';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
+	modelIndexes(): IndexSpecification[] {
+		return [{ key: { date: 1 } }, { key: { agentId: 1, date: 1 }, unique: true }];
+	}
+
+	findOneByAgendIdAndDate(agentId: string, date: ILivechatAgentActivity['date']): Promise<ILivechatAgentActivity | null> {
+		return this.findOne({ agentId, date });
+	}
+
+	async createOrUpdate(
+		data: Partial<Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStartedAt'>> = {},
+	): Promise<FindAndModifyWriteOpResultObject<ILivechatAgentActivity> | undefined> {
+		const { date, agentId, lastStartedAt } = data;
+
+		if (!date || !agentId) {
+			return;
+		}
+
+		return this.findOneAndUpdate(
+			{ agentId, date },
+			{
+				$unset: {
+					lastStoppedAt: 1,
+				},
+				$set: {
+					lastStartedAt: lastStartedAt || new Date(),
+				},
+				$setOnInsert: {
+					date,
+					agentId,
+				},
+			},
+		);
+	}
+
+	updateLastStoppedAt({
+		agentId,
+		date,
+		lastStoppedAt,
+		availableTime,
+	}: Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStoppedAt' | 'availableTime'>): Promise<UpdateWriteOpResult> {
+		const query = {
+			agentId,
+			date,
+		};
+		const update = {
+			$inc: { availableTime },
+			$set: {
+				lastStoppedAt,
+			},
+		};
+		return this.updateMany(query, update);
+	}
+
+	updateServiceHistory({
+		agentId,
+		date,
+		serviceHistory,
+	}: Pick<ILivechatAgentActivity, 'date' | 'agentId'> & { serviceHistory: IServiceHistory }): Promise<UpdateWriteOpResult> {
+		const query = {
+			agentId,
+			date,
+		};
+		const update = {
+			$addToSet: {
+				serviceHistory,
+			},
+		};
+		return this.updateMany(query, update);
+	}
+
+	findOpenSessions(): Cursor<ILivechatAgentActivity> {
+		const query = {
+			lastStoppedAt: { $exists: false },
+		};
+
+		return this.find(query);
+	}
+
 	findAllAverageAvailableServiceTime({ date, departmentId }: { date: Date; departmentId: string }): Promise<ILivechatAgentActivity[]> {
 		const match = { $match: { date } };
 		const lookup = {

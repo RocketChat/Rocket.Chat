@@ -1,4 +1,5 @@
-import { isOmnichannelRoom } from '../../../../definition/IRoom';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatInquiry } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';

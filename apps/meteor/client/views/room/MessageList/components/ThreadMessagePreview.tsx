@@ -1,3 +1,4 @@
+import { IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage as ThreadMessageTemplate,
@@ -11,7 +12,6 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { IThreadMessage } from '../../../../../definition/IMessage';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../lib/asyncState';

@@ -1,7 +1,7 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
 import React, { ComponentProps, ReactElement } from 'react';
 
-import { IRoom } from '../../definition/IRoom';
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const colors = {

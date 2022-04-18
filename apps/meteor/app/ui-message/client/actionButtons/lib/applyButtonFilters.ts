@@ -3,8 +3,6 @@
 
 import { Meteor } from 'meteor/meteor';
 import { IUIActionButton, RoomTypeFilter } from '@rocket.chat/apps-engine/definition/ui';
-
-import { hasAtLeastOnePermission, hasPermission, hasRole, hasAnyRole } from '../../../../authorization/client';
 import {
 	IRoom,
 	isDirectMessageRoom,
@@ -14,7 +12,9 @@ import {
 	isPrivateTeamRoom,
 	isPublicDiscussion,
 	isPublicTeamRoom,
-} from '../../../../../definition/IRoom';
+} from '@rocket.chat/core-typings';
+
+import { hasAtLeastOnePermission, hasPermission, hasRole, hasAnyRole } from '../../../../authorization/client';
 
 export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean => {
 	const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};

@@ -1,9 +1,8 @@
+import { isThreadMessage, IThreadMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import React, { FC, Fragment, memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import { isThreadMessage, IThreadMessage } from '../../../../definition/IMessage';
-import { IRoom } from '../../../../definition/IRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserSubscription } from '../../../contexts/UserContext';

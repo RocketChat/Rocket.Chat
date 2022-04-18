@@ -1,8 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { Messages, RoomRoles, Subscriptions } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
-import { IUser } from '../../../definition/IUser';
 
 type UsersNameChangedEvent = Partial<IUser>;
 

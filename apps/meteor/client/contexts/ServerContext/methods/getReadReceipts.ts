@@ -1,4 +1,3 @@
-import type { IMessage } from '../../../../definition/IMessage';
-import type { ReadReceipt } from '../../../../definition/ReadReceipt';
+import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
 
 export type GetReadReceiptsMethod = (options: { messageId: IMessage['_id'] }) => Array<ReadReceipt>;

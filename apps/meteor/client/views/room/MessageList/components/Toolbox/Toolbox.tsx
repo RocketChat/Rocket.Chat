@@ -1,9 +1,8 @@
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import React, { FC, memo, useMemo } from 'react';
 
 import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
-import { IMessage } from '../../../../../../definition/IMessage';
-import { IUser } from '../../../../../../definition/IUser';
 import { useSettings } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUser, useUserRoom, useUserSubscription } from '../../../../../contexts/UserContext';
