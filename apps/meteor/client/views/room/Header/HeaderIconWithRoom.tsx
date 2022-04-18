@@ -1,6 +1,6 @@
+import { IRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import React, { ReactElement } from 'react';
 
-import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
 import Header from '../../../components/Header';
 import { OmnichannelRoomIcon } from '../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';

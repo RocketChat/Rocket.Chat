@@ -1,4 +1,4 @@
-import type { IRoom } from '../../definition/IRoom';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 export const adminFields: Partial<Record<keyof IRoom, 1>> = {
 	prid: 1,

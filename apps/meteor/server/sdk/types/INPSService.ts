@@ -1,4 +1,4 @@
-import { IUser, IRole } from '../../../definition/IUser';
+import type { IUser, IRole } from '@rocket.chat/core-typings';
 
 export type NPSVotePayload = {
 	userId: string;

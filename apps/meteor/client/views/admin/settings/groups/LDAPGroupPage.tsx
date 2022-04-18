@@ -1,8 +1,8 @@
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FormEvent, memo, useMemo } from 'react';
 
-import type { ISetting } from '../../../../../definition/ISetting';
 import GenericModal from '../../../../components/GenericModal';
 import { useEditableSettings } from '../../../../contexts/EditableSettingsContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
@@ -36,9 +36,9 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	const handleTestConnectionButtonClick = async (): Promise<void> => {
 		try {
 			const { message } = await testConnection();
-			dispatchToastMessage({ type: 'success', message: t(message) });
+			dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
@@ -50,9 +50,9 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 				try {
 					const { message } = await syncNow();
-					dispatchToastMessage({ type: 'success', message: t(message) });
+					dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
+					error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
 				}
 			};
 
@@ -69,7 +69,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 				</GenericModal>,
 			);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
@@ -84,9 +84,9 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 			const confirmSearch = async (): Promise<void> => {
 				try {
 					const { message } = await testSearch({ username });
-					dispatchToastMessage({ type: 'success', message: t(message) });
+					dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
+					error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
 				}
 			};
 
@@ -111,7 +111,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 				</GenericModal>,
 			);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 

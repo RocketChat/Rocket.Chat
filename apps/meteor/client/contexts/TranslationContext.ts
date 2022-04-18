@@ -2,6 +2,8 @@ import { createContext, useContext } from 'react';
 
 import type keys from '../../packages/rocketchat-i18n/i18n/en.i18n.json';
 
+export { keys };
+
 export type TranslationLanguage = {
 	name: string;
 	en: string;

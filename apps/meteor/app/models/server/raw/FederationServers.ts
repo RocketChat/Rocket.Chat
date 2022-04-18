@@ -1,11 +1,13 @@
 import { UpdateWriteOpResult } from 'mongodb';
+import type { IFederationServer } from '@rocket.chat/core-typings';
 
 import { Users } from './index';
-import { IFederationServer } from '../../../../definition/Federation';
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class FederationServersRaw extends BaseRaw<IFederationServer> {
-	protected indexes: IndexSpecification[] = [{ key: { domain: 1 } }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { domain: 1 } }];
+	}
 
 	saveDomain(domain: string): Promise<UpdateWriteOpResult> {
 		return this.updateOne(

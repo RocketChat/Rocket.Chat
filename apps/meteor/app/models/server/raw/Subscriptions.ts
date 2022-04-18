@@ -1,10 +1,8 @@
 import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, Collection, WithoutProjection } from 'mongodb';
 import { compact } from 'lodash';
+import type { ISubscription, IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import { ISubscription } from '../../../../definition/ISubscription';
-import { IRole, IUser } from '../../../../definition/IUser';
-import { IRoom } from '../../../../definition/IRoom';
 import { UsersRaw } from './Users';
 
 type T = ISubscription;
