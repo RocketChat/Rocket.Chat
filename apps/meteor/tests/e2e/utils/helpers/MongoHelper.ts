@@ -1,27 +1,36 @@
 import { MongoClient, Collection } from 'mongodb';
 
-export const MongoHelper = {
-	uri: null as unknown as string,
-	client: null as unknown as MongoClient,
-	async connect(uri: string): Promise<void> {
+type MongoHelperConfig = {
+	uri: null | string;
+	client: null | MongoClient;
+	connect(uri: string): Promise<void>;
+	disconnect(): Promise<void>;
+	getCollection(name: string): Promise<Collection>;
+};
+
+export const MongoHelper: MongoHelperConfig = {
+	uri: null,
+	client: null,
+	async connect(uri: string) {
 		this.uri = uri;
 		this.client = await MongoClient.connect(uri, {
 			useNewUrlParser: true,
 			useUnifiedTopology: true,
 		});
 	},
-	async disconnect(): Promise<void> {
-		this.client.close();
-		this.client = null;
-	},
-	async getCollection(name: string): Promise<Collection> {
-		if (!this.client?.isConnected()) {
-			await this.connect(this.uri);
+	async disconnect() {
+		if (this.client) {
+			this.client.close();
+			this.client = null;
 		}
-		return this.client.db().collection(name);
 	},
-	map(collection: any): any {
-		const { _id, ...collectionWithoutId } = collection;
-		return Object.assign({}, collectionWithoutId, { id: _id });
+	async getCollection(name: string) {
+		if (this.client) {
+			if (!this.client.isConnected() && this.uri) {
+				await this.connect(this.uri);
+			}
+			return this.client.db().collection(name);
+		}
+		return {} as Collection;
 	},
 };
