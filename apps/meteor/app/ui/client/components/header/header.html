@@ -1,10 +1,5 @@
 <template name="header">
 	<div>{{> React component=TopBar}}</div>
-	{{#if rawSectionName}}
-	<span class="rc-header__block">{{rawSectionName}}</span>
-	{{else}}
-	<span class="rc-header__block">{{_ sectionName}}</span>
-	{{/if}}
 	<header class="rc-header">
 		<div class="rc-header__wrap">
 			<div class="rc-header__navbar-item">{{> React component=HomeButton}}</div>

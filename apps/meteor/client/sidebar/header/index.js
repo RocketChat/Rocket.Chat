@@ -13,12 +13,12 @@ import Search from './actions/Search';
 import Sort from './actions/Sort';
 import { useLayout } from '../../contexts/LayoutContext';
 
-
 const HeaderWithData = () => {
 	const user = useUser();
 	const t = useTranslation();
 	const { sidebar } = useLayout();
 	useSidebarPaletteColor();
+	console.log(user, 'user in index');
 
 	return (
 		<>
