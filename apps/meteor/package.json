@@ -70,7 +70,7 @@
 		"@babel/register": "^7.14.5",
 		"@playwright/test": "^1.21.0",
 		"@rocket.chat/eslint-config": "^0.4.0",
-		"@rocket.chat/livechat": "^1.12.2",
+		"@rocket.chat/livechat": "1.13.2",
 		"@settlin/spacebars-loader": "^1.0.9",
 		"@storybook/addon-essentials": "~6.4.19",
 		"@storybook/addon-interactions": "~6.4.19",
