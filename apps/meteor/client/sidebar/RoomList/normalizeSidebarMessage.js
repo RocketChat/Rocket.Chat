@@ -1,13 +1,10 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { filterMarkdown } from '../../../app/markdown/lib/markdown';
-import emojione from 'emojione';
 
 export const normalizeSidebarMessage = (message, t) => {
 	if (message.msg) {
-		let msg = message.msg;
-		msg = emojione.shortnameToUnicode(msg);
-		return escapeHTML(filterMarkdown(msg));
+		return escapeHTML(filterMarkdown(message.msg));
 	}
 
 	if (message.attachments) {
