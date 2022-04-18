@@ -1,9 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 
-import { IframeLogin } from '../../ui-utils';
-
-const iframeLogin = new IframeLogin();
+import { iframeLogin } from '../../ui-utils';
 
 const { _unstoreLoginToken } = Accounts;
 Accounts._unstoreLoginToken = function(...args) {
