@@ -1,4 +1,5 @@
-import type { IMessage } from '../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
+
 import { RecordList } from './RecordList';
 
 export class MessageList extends RecordList<IMessage> {

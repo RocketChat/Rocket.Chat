@@ -1,8 +1,7 @@
+import type { IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
 import type { DeleteWriteOpResultObject } from 'mongodb';
 
-import { IRoom } from '../../../definition/IRoom';
-import { ISetting } from '../../../definition/ISetting';
-import { IUser } from '../../../definition/IUser';
+import { ILicenseTag } from '../../../ee/app/license/definitions/ILicenseTag';
 import { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import { FollowMessageMethod } from './methods/followMessage';
 import { GetReadReceiptsMethod } from './methods/getReadReceipts';
@@ -80,7 +79,7 @@ export type ServerMethods = {
 	'jitsi:updateTimeout': (...args: any[]) => any;
 	'leaveRoom': (...args: any[]) => any;
 	'license:getModules': () => string[];
-	'license:getTags': (...args: any[]) => any;
+	'license:getTags': () => ILicenseTag[];
 	'livechat:addMonitor': (...args: any[]) => any;
 	'livechat:changeLivechatStatus': (...args: any[]) => any;
 	'livechat:closeRoom': (...args: any[]) => any;

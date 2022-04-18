@@ -1,4 +1,5 @@
-import { IMessage } from '../../../definition/IMessage';
+import { IMessage } from '@rocket.chat/core-typings';
+
 import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from './helper';
 
 // TODO: delete this file after message rewrites

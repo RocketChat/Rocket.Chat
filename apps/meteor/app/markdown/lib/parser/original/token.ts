@@ -3,8 +3,7 @@
  * @param {String} msg - The message html
  */
 import { Random } from 'meteor/random';
-
-import { IMessage } from '../../../../../definition/IMessage';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
 type Token = {
