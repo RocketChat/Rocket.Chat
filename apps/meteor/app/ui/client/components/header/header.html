@@ -1,33 +1,26 @@
 <template name="header">
+	{{#if rawSectionName}}
+	<span class="rc-header__block">{{rawSectionName}}</span>
+	{{else}}
+	<span class="rc-header__block">{{_ sectionName}}</span>
+	{{/if}}
 	<header class="rc-header">
 		<div class="rc-header__wrap">
-			<div class="rc-header__block rc-header--burger">
-				{{> burger}}
+			<div class="rc-header__navbar-item">{{> React component=HomeButton}}</div>
+			<div class="rc-header__navbar-item">{{> React component=BlogButton}}</div>
+			<div class="rc-header__navbar-item">{{> React component=GameButton}}</div>
+			<div class="rc-header__navbar-item">{{> React component=ProductButton}}</div>
+			<div class="rc-header__navbar-item">{{> React component=MessagesButton}}</div>
+			<div class="rc-header__block rc-header--burger rc-header__navbar-item">{{> burger}}</div>
+
+			{{#if Template.contentBlock}} {{> Template.contentBlock}} {{/if}} {{# unless hideHelp}}
+			<div class="rc-header__section-help"></div>
+			{{/unless}} {{#with toolbarButtons}}
+			<div class="iframe-toolbar">
+				{{#each buttons}}
+				<button class="{{id}}">{{#if icon}}<i class="{{icon}}"></i>{{/if}} {{label}}</button>
+				{{/each}}
 			</div>
-
-			{{#if rawSectionName}}
-				<span class="rc-header__block">{{rawSectionName}}</span>
-			{{else}}
-				<span class="rc-header__block">{{_ sectionName}}</span>
-			{{/if}}
-
-			{{#if Template.contentBlock}}
-				{{> Template.contentBlock}}
-			{{/if}}
-
-			{{# unless hideHelp}}
-				<div class="rc-header__section-help"></div>
-			{{/unless}}
-
-			{{#with toolbarButtons}}
-				<div class="iframe-toolbar">
-					{{#each buttons}}
-					<button class="{{id}}">
-						{{#if icon}}<i class="{{icon}}"></i>{{/if}}
-						{{label}}
-					</button>
-					{{/each}}
-				</div>
 			{{/with}}
 		</div>
 	</header>

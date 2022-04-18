@@ -26,6 +26,8 @@
 
 		align-items: center;
 
+		font-size: 30px;
+
 		&-action {
 			position: relative;
 
@@ -165,8 +167,29 @@
 
 @media (width <=500px) {
 	.rc-header {
+		position: fixed;
+		bottom: 0;
+		height: 70px;
+		width: 100%;
+		background: #fff;
+		z-index: 2;
+
+		&__wrap {
+			display: flex;
+			align-items: center;
+			height: 100%;
+		}
+
+		&__navbar-item {
+			flex: 1;
+			cursor: pointer;
+			display: flex;
+			justify-content: center;
+		}
+
 		&__block {
 			margin: 0 0.25rem;
+			font-size: 25px;
 		}
 
 		&__block-action {

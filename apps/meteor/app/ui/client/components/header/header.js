@@ -1,6 +1,11 @@
 import { Template } from 'meteor/templating';
 
 import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
+import HomeButton from '../../../../../client/components/HomeButton/HomeButton';
+import BlogButton from '../../../../../client/components/BlogButton/BlogButton';
+import GameButton from '../../../../../client/components/GameButton/GameButton';
+import ProductButton from '../../../../../client/components/ProductButton/ProductButton';
+import MessagesButton from '../../../../../client/components/MessagesButton/MessagesButton';
 
 import './header.html';
 
@@ -10,6 +15,21 @@ Template.header.helpers({
 	},
 	buttons() {
 		console.log('asdasd');
+	},
+	HomeButton() {
+		return HomeButton;
+	},
+	BlogButton() {
+		return BlogButton;
+	},
+	GameButton() {
+		return GameButton;
+	},
+	ProductButton() {
+		return ProductButton;
+	},
+	MessagesButton() {
+		return MessagesButton;
 	},
 });
 
