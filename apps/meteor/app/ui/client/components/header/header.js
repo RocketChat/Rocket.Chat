@@ -6,6 +6,7 @@ import BlogButton from '../../../../../client/components/BlogButton/BlogButton';
 import GameButton from '../../../../../client/components/GameButton/GameButton';
 import ProductButton from '../../../../../client/components/ProductButton/ProductButton';
 import MessagesButton from '../../../../../client/components/MessagesButton/MessagesButton';
+import TopBar from '../../../../../client/topbar/TopBar';
 
 import './header.html';
 
@@ -30,6 +31,9 @@ Template.header.helpers({
 	},
 	MessagesButton() {
 		return MessagesButton;
+	},
+	TopBar() {
+		return TopBar;
 	},
 });
 
