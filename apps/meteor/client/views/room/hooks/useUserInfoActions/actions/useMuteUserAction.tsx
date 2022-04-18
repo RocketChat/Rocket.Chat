@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import React, { useMemo } from 'react';
 
+import GenericModal from '../../../../../components/GenericModal';
 import { useAllPermissions, usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
@@ -11,7 +12,6 @@ import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
-import WarningModal from '../../../modals/WarningModal';
 
 const getUserIsMuted = (room: IRoom, user: Pick<IUser, '_id' | 'username'>, userCanPostReadonly: boolean): boolean => {
 	if (room?.ro) {
@@ -71,12 +71,9 @@ export const useMuteUserAction = (room: IRoom, user: Pick<IUser, '_id' | 'userna
 			}
 
 			setModal(
-				<WarningModal
-					text={t('The_user_wont_be_able_to_type_in_s', roomName)}
-					close={closeModal}
-					confirmText={t('Yes_mute_user')}
-					confirm={onConfirm}
-				/>,
+				<GenericModal variant='danger' confirmText={t('Yes_mute_user')} onClose={closeModal} onCancel={closeModal} onConfirm={onConfirm}>
+					{t('The_user_wont_be_able_to_type_in_s', roomName)}
+				</GenericModal>,
 			);
 		};
 

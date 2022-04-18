@@ -4,6 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import React, { useMemo } from 'react';
 
+import GenericModal from '../../../../../components/GenericModal';
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -12,9 +13,7 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { Action } from '../../../../hooks/useActionSpread';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
-import WarningModal from '../../../modals/WarningModal';
 
-// TODO: replace Warning Modal to Generic Modal
 export const useRemoveUserAction = (room: IRoom, user: Pick<IUser, '_id' | 'username'>, reload: () => void): Action => {
 	const t = useTranslation();
 	const rid = room._id;
@@ -54,16 +53,19 @@ export const useRemoveUserAction = (room: IRoom, user: Pick<IUser, '_id' | 'user
 		}
 
 		setModal(
-			<WarningModal
-				text={t('The_user_will_be_removed_from_s', roomName)}
-				close={closeModal}
+			<GenericModal
+				variant='danger'
 				confirmText={t('Yes_remove_user')}
-				confirm={async (): Promise<void> => {
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={async (): Promise<void> => {
 					await removeFromRoom({ roomId: rid, userId: uid });
 					closeModal();
 					reload?.();
 				}}
-			/>,
+			>
+				{t('The_user_will_be_removed_from_s', roomName)}
+			</GenericModal>,
 		);
 	});
 
