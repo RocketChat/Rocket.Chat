@@ -7,6 +7,7 @@ type HeaderCellProps = {
 	active?: boolean;
 	direction?: 'asc' | 'desc';
 	sort?: string;
+	clickable?: boolean;
 	onClick?: (sort: string) => void;
 } & ComponentProps<typeof Box>;
 
