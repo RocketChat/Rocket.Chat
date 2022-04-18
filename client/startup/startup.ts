@@ -52,6 +52,8 @@ Meteor.startup(() => {
 			return;
 		}
 
+		fireGlobalEvent('chitchat-user-state-changed', { uid, customFields: user.customFields });
+
 		if (getUserPreference(user, 'enableAutoAway')) {
 			const idleTimeLimit = getUserPreference(user, 'idleTimeLimit') || 300;
 			UserPresence.awayTime = idleTimeLimit * 1000;
