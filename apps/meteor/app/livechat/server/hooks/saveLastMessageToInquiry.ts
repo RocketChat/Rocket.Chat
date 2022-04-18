@@ -1,4 +1,4 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatInquiry } from '../../../models/server/raw';
@@ -13,7 +13,7 @@ callbacks.add(
 		}
 
 		// skip callback if message was edited
-		if ((message as any).editedAt) {
+		if (isEditedMessage(message)) {
 			return message;
 		}
 
