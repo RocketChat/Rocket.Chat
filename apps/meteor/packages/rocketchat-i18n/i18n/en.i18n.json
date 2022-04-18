@@ -2349,6 +2349,7 @@
   "Invalid_notification_setting_s": "Invalid notification setting: %s",
   "Invalid_or_expired_invite_token": "Invalid or expired invite token",
   "Invalid_pass": "The password must not be empty",
+  "Invalid_password": "Invalid password",
   "Invalid_reason": "The reason to join must not be empty",
   "Invalid_room_name": "<strong>%s</strong> is not a valid room name",
   "Invalid_secret_URL_message": "The URL provided is invalid.",
