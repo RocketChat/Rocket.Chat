@@ -6,6 +6,15 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					offset: Match.Maybe(String),
+					count: Match.Maybe(String),
+					search: Match.Maybe(String),
+				}),
+			);
+
 			try {
 				const { offset, count } = this.getPaginationItems();
 				const { search } = this.queryParams;
