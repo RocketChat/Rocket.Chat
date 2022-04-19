@@ -373,15 +373,7 @@ Accounts.validateLoginAttempt(function (login) {
 	 */
 	if (login.type === 'password') {
 		// App IPostUserLoggedIn event hook
-		try {
-			Promise.await(Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user));
-		} catch (error) {
-			if (error instanceof AppsEngineException) {
-				throw new Meteor.Error('error-app-prevented', error.message);
-			}
-
-			throw error;
-		}
+		Promise.await(Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user));
 	}
 
 	return true;
