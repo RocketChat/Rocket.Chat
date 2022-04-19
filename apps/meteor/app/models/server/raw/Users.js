@@ -174,6 +174,31 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	async findUserBySearchOperator(search = '', options = {}) {
+		const { count = 10, offset = 0 } = options;
+		if (!search) {
+			return [];
+		}
+		const query = {
+			$text: {
+				$search: search,
+			},
+			active: true,
+		};
+
+		return this.find(query)
+			.project({
+				_id: 1,
+				username: 1,
+				name: 1,
+				avatarOrigin: 1,
+				avatarETag: 1,
+			})
+			.skip(offset)
+			.limit(count)
+			.toArray();
+	}
+
 	async findOneByLDAPId(id, attribute = undefined) {
 		const query = {
 			'services.ldap.id': id,
