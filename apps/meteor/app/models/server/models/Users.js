@@ -60,7 +60,13 @@ export class Users extends Base {
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 		this.tryEnsureIndex({ extension: 1 }, { sparse: true, unique: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
-
+		this.tryEnsureIndex(
+			{
+				name: 'text',
+				username: 'text',
+			},
+			{ name: 'search_name_username_1' },
+		);
 		const collectionObj = this.model.rawCollection();
 		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
