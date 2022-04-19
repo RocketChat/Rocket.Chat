@@ -9,8 +9,8 @@
 import {
 	CallStates,
 	ConnectionState,
-	IQueueMembershipSubscription,
 	ICallerInfo,
+	IQueueMembershipSubscription,
 	Operation,
 	SignallinSocketEvents,
 	SocketEventKeys,
@@ -73,8 +73,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private queueInfo: QueueAggregator;
 
-	// private networkMonitor: NetworkMonitor;
-
 	private connectionRetryCount;
 
 	private stop;
@@ -88,7 +86,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
 		this.mediaStreamRendered = mediaRenderer;
-		// this.networkMonitor = new NetworkMonitor(this.config.connectionRetryCount);
 		this.networkEmitter = new Emitter<SignallinSocketEvents>();
 		this.connectionRetryCount = this.config.connectionRetryCount;
 		this.stop = false;
@@ -139,7 +136,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.userAgent.transport.isConnected();
 		this._opInProgress = Operation.OP_CONNECT;
 		try {
-			this.registerer = new Registerer(this.userAgent, { expires: 60 });
+			this.registerer = new Registerer(this.userAgent);
 			this.userAgent.transport.onConnect = this.onConnected.bind(this);
 			this.userAgent.transport.onDisconnect = this.onDisconnected.bind(this);
 			window.addEventListener('online', this.onlineNetworkHandler);

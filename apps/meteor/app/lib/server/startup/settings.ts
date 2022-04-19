@@ -3209,8 +3209,8 @@ settingsRegistry.addGroup('Call_Center', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Retry_Count', '-1', {
-				type: 'string',
+			this.add('VoIP_Retry_Count', -1, {
+				type: 'int',
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',

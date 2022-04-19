@@ -18,7 +18,7 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 
 	const getTooltip = (): string => {
 		if (networkStatus === 'offline') {
-			return t('Signalling_connection_disconnected');
+			return t('Signaling_connection_disconnected');
 		}
 		if (!registered) {
 			return t('Enable');
