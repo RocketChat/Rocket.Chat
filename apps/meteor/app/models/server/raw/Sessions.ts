@@ -1,4 +1,3 @@
-import { IPaginationOptions } from '../../../../definition/ITeam';
 import {
 	AggregationCursor,
 	BulkWriteOperation,
@@ -22,6 +21,7 @@ import type {
 } from '../../../../definition/ISession';
 import { BaseRaw, ModelOptionalId } from './BaseRaw';
 import type { IUser } from '../../../../definition/IUser';
+import { IPaginationOptions } from '../../../../definition/ITeam';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {

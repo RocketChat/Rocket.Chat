@@ -1,6 +1,6 @@
+import { check, Match } from 'meteor/check';
 import { hasRole } from '../../../authorization/server';
-import { Users } from '../../../models/server/raw/index';
-import { Sessions } from '../../../models/server/raw/index';
+import { Users, Sessions } from '../../../models/server/raw/index';
 import { API } from '../api';
 
 API.v1.addRoute(
