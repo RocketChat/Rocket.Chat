@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { MessageAttachment } from '@rocket.chat/core-typings';
+
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { IMessage } from '../../../../definition/IMessage';
-import { IRoom } from '../../../../definition/IRoom';
-import { MessageAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachment';
 
 export const attachMessage = function (
 	message: IMessage,

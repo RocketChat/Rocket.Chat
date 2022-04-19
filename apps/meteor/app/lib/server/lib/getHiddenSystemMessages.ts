@@ -1,5 +1,6 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../settings/server';
-import { IRoom } from '../../../../definition/IRoom';
 
 const hideMessagesOfTypeServer = new Set<string>();
 

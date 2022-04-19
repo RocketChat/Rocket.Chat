@@ -1,6 +1,5 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import { createContext, useContext, MouseEvent } from 'react';
-
-import { IMessage } from '../../../../definition/IMessage';
 
 const openUserCard =
 	(_username: string) =>

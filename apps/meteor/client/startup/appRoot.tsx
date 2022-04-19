@@ -17,6 +17,7 @@ const createContainer = (): Element => {
 };
 
 Meteor.startup(() => {
+	// initiate React container
 	const container = createContainer();
 	render(<AppRoot />, container);
 });

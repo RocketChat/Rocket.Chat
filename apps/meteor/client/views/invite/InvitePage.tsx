@@ -1,8 +1,8 @@
+import { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 import React, { ReactElement } from 'react';
 import { useQuery } from 'react-query';
 
 import { APIClient } from '../../../app/utils/client';
-import { OperationParams, OperationResult } from '../../../definition/rest';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useSessionDispatch } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';

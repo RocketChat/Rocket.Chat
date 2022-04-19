@@ -1,5 +1,6 @@
+import type { IImportUserRecord, IImportChannelRecord } from '@rocket.chat/core-typings';
+
 import { Base } from './_Base';
-import { IImportUserRecord, IImportChannelRecord } from '../../../../definition/IImportRecord';
 
 class ImportDataModel extends Base {
 	constructor() {

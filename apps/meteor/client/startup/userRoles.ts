@@ -1,10 +1,9 @@
+import type { IRocketChatRecord, IRole, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { UserRoles, RoomRoles, ChatMessage } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
-import { IRocketChatRecord } from '../../definition/IRocketChatRecord';
-import { IRole, IUser } from '../../definition/IUser';
 import { handleError } from '../lib/utils/handleError';
 
 Meteor.startup(() => {

@@ -1,6 +1,6 @@
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { useCallback, useState } from 'react';
 
-import { ILivechatAgent } from '../../../../definition/ILivechatAgent';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';

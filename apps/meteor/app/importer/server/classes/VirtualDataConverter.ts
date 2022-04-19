@@ -1,5 +1,4 @@
 import { Random } from 'meteor/random';
-
 import type {
 	IImportUserRecord,
 	IImportChannelRecord,
@@ -7,8 +6,9 @@ import type {
 	IImportRecord,
 	IImportRecordType,
 	IImportData,
-} from '../../../../definition/IImportRecord';
-import { IImportChannel } from '../../../../definition/IImportChannel';
+	IImportChannel,
+} from '@rocket.chat/core-typings';
+
 import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
 

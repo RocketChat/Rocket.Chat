@@ -1,9 +1,9 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Dropdown } from '@rocket.chat/fuselage';
 import React, { memo, useRef, ReactElement, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-import { IUser } from '../../../definition/IUser';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useUser } from '../../contexts/UserContext';
