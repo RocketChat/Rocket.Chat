@@ -1,4 +1,5 @@
 import { check, Match } from 'meteor/check';
+
 import { hasRole } from '../../../authorization/server';
 import { Users, Sessions } from '../../../models/server/raw/index';
 import { API } from '../api';
@@ -50,8 +51,8 @@ API.v1.addRoute(
 				const { offset, count } = this.getPaginationItems();
 				let search = this.queryParams?.search || '';
 
-				const searchUser = search ? await Users.findUserBySearchOperator(search) : [];
-				if (searchUser && searchUser.length) {
+				const searchUser = await Users.findUserBySearchOperator(search);
+				if (searchUser?.length) {
 					search += ` ${searchUser.map((user) => user._id).join(' ')}`;
 				}
 

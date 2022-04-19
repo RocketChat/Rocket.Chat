@@ -58,7 +58,7 @@ export type OSSessionAggregation = Pick<ISession, '_id'> & { name: string; versi
 export interface IMDMSessionParams {
 	count?: number;
 	offset?: number;
-	search?: string;
+	search?: string | null;
 }
 export interface IMDMSession extends IMDMSessionParams {
 	total: number;
