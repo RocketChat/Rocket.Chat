@@ -30,6 +30,6 @@ callbacks.add(
 
 		return message;
 	},
-	callbacks.priority.HIGH,
+	callbacks.priority.LOW,
 	'save-last-message-to-inquiry',
 );
