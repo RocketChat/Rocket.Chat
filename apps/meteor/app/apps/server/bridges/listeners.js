@@ -46,6 +46,9 @@ export class AppListenerBridge {
 				case AppInterface.IPostUserCreated:
 				case AppInterface.IPostUserUpdated:
 				case AppInterface.IPostUserDeleted:
+				case AppInterface.IPostUserLogin:
+				case AppInterface.IPostUserLogout:
+				case AppInterface.IPostUserStatusChanged:
 					return 'userEvent';
 				default:
 					return 'defaultEvent';
@@ -140,15 +143,32 @@ export class AppListenerBridge {
 	}
 
 	async userEvent(inte, data) {
-		const context = {
-			user: this.orch.getConverters().get('users').convertToApp(data.user),
-			performedBy: this.orch.getConverters().get('users').convertToApp(data.performedBy),
-		};
+		let context;
+		switch (inte) {
+			case AppInterface.IPostUserLoggedIn:
+			case AppInterface.IPostUserLogout:
+				context = this.orch.getConverters().get('users').convertToApp(data.user);
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+			case AppInterface.IPostUserStatusChanged:
+				const { currentStatus, previousStatus } = data;
+				context = {
+					user: this.orch.getConverters().get('users').convertToApp(data.user),
+					currentStatus,
+					previousStatus,
+				};
 
-		if (inte === AppInterface.IPostUserUpdated) {
-			context.previousData = this.orch.getConverters().get('users').convertToApp(data.previousUser);
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+			case AppInterface.IPostUserCreated:
+			case AppInterface.IPostUserUpdated:
+			case AppInterface.IPostUserDeleted:
+				context = {
+					user: this.orch.getConverters().get('users').convertToApp(data.user),
+					performedBy: this.orch.getConverters().get('users').convertToApp(data.performedBy),
+				};
+				if (inte === AppInterface.IPostUserUpdated) {
+					context.previousData = this.orch.getConverters().get('users').convertToApp(data.previousUser);
+				}
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
 		}
-
-		return this.orch.getManager().getListenerManager().executeListener(inte, context);
 	}
 }

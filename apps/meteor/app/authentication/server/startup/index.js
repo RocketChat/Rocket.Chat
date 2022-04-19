@@ -367,6 +367,23 @@ Accounts.validateLoginAttempt(function (login) {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
+	/**
+	 * Trigger the event only when the
+	 * user does login in Rocket.chat
+	 */
+	if (login.type === 'password') {
+		// App IPostUserLoggedIn event hook
+		try {
+			Promise.await(Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user));
+		} catch (error) {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		}
+	}
+
 	return true;
 });
 
