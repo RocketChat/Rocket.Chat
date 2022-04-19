@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Dropdown } from '@rocket.chat/fuselage';
-import React, { memo, useRef, ReactElement } from 'react';
+import React, { memo, useRef, ReactElement, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { UserStatus } from '../../components/UserStatus';
@@ -11,7 +11,7 @@ import UserDropdown from './UserDropdown';
 import { useDropdownVisibility } from './hooks/useDropdownVisibility';
 
 const UserAvatarButton = function UserAvatarButton(): ReactElement {
-	const user = useUser() as Required<IUser> | undefined;
+	let user;
 	const {
 		status = !user ? 'online' : 'offline',
 		username,
@@ -29,6 +29,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 	const reference = useRef(null);
 	const target = useRef(null);
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
+	console.log(user, 'user');
 
 	return (
 		<>

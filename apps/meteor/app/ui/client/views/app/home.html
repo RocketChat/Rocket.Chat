@@ -1,11 +1,10 @@
 <template name="home">
 	<section class="page-container page-home page-static content-background-color">
-		{{> header sectionName=pageHeader}}
+		{{> header}}
 		<div class="content">
+			<span class="rc-header__block">{{pageHeader}}</span>
 			{{#each blogs }}
-			<div>
-				{{> React component=BlogView title=title body=body}}
-			</div>
+			<div>{{> React component=BlogView title=title body=body}}</div>
 			{{/each}}
 		</div>
 	</section>
