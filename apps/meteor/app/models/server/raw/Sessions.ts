@@ -779,6 +779,9 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		super(col, trash);
 
 		this.secondaryCollection = colSecondary;
+		this.col.createIndexes(this.indexes);
+	}
+
 	async getByUserId(uid: string, search = '', { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IMDMSession> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
@@ -898,8 +901,8 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				_user: {
 					name: 1,
 					username: 1,
-						},
-					},
+				},
+			},
 		};
 
 		const queryArray = [matchOperator, sortOperator, groupOperator, ...skipOperator, limitOperator, projectOperator];
