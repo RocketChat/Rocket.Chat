@@ -155,7 +155,7 @@ export interface IEditedMessage extends IMessage {
 }
 
 export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
-  "editedAt" in message && "editedBy" in message;
+  "editedAt" in message && "editedBy" in message && !!(message as IEditedMessage).editedAt && !!(message as IEditedMessage).editedBy?._id;
 
 export interface ITranslatedMessage extends IMessage {
   translations: { [key: string]: unknown };
