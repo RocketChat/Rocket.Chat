@@ -12,7 +12,7 @@ import {
 	ICallerInfo,
 	IQueueMembershipSubscription,
 	Operation,
-	SignallinSocketEvents,
+	SignalingSocketEvents,
 	SocketEventKeys,
 	UserState,
 	IMediaStreamRenderer,
@@ -77,7 +77,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private stop;
 
-	private networkEmitter: Emitter<SignallinSocketEvents>;
+	private networkEmitter: Emitter<SignalingSocketEvents>;
 
 	private offlineNetworkHandler: () => void;
 
@@ -86,7 +86,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
 		this.mediaStreamRendered = mediaRenderer;
-		this.networkEmitter = new Emitter<SignallinSocketEvents>();
+		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 		this.connectionRetryCount = this.config.connectionRetryCount;
 		this.stop = false;
 		this.onlineNetworkHandler = this.onNetworkRestored.bind(this);
