@@ -1,3 +1,5 @@
+import { hasRole } from '../../../authorization/server';
+import { Users } from '../../../models/server/raw/index';
 import { Sessions } from '../../../models/server/raw/index';
 import { API } from '../api';
 
@@ -27,3 +29,37 @@ API.v1.addRoute(
 	},
 );
 
+API.v1.addRoute(
+	'sessions.list.all',
+	{ authRequired: true, twoFactorRequired: true },
+	{
+		async get() {
+			if (!hasRole(this.userId, 'admin')) {
+				return API.v1.unauthorized();
+			}
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					offset: Match.Maybe(String),
+					count: Match.Maybe(String),
+					search: Match.Maybe(String),
+				}),
+			);
+
+			try {
+				const { offset, count } = this.getPaginationItems();
+				let search = this.queryParams?.search || '';
+
+				const searchUser = search ? await Users.findUserBySearchOperator(search) : [];
+				if (searchUser && searchUser.length) {
+					search += ` ${searchUser.map((user) => user._id).join(' ')}`;
+				}
+
+				const sessions = await Sessions.getAllSessions(search, { offset, count });
+				return API.v1.success(sessions);
+			} catch (error) {
+				return API.v1.failure(`${error}`);
+			}
+		},
+	},
+);

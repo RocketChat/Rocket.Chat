@@ -5,4 +5,7 @@ export type SessionsEndpoints = {
 		GET: (params: IMDMSessionParams) => IMDMSession;
 	};
 
+	'sessions.list.all': {
+		GET: (params: IMDMSessionParams) => IMDMSession;
+	};
 };

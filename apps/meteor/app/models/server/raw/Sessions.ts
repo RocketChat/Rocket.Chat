@@ -1,3 +1,4 @@
+import { IPaginationOptions } from '../../../../definition/ITeam';
 import {
 	AggregationCursor,
 	BulkWriteOperation,
@@ -17,6 +18,7 @@ import type {
 	UserSessionAggregationResult,
 	DeviceSessionAggregationResult,
 	OSSessionAggregationResult,
+	IMDMSession,
 } from '../../../../definition/ISession';
 import { BaseRaw, ModelOptionalId } from './BaseRaw';
 import type { IUser } from '../../../../definition/IUser';
@@ -905,6 +907,13 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const sessions = await this.col.aggregate(queryArray).toArray();
 		return { sessions, total, count, offset };
 	}
+	async getAllSessions(search = '', { offset, count }: IPaginationOptions = { offset: 0, count: 10 }): Promise<IMDMSession> {
+		const searchQuery = search ? [{ $text: { $search: search } }] : [];
+
+		const matchOperator = {
+			$match: {
+				$and: [
+					...searchQuery,
 					{
 						loginToken: {
 							$exists: true,
@@ -939,6 +948,9 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				sessionId: {
 					$first: '$sessionId',
 				},
+				userId: {
+					$first: '$userId',
+				},
 				year: {
 					$first: '$year',
 				},
@@ -968,7 +980,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				},
 			},
 		};
-		const limitOperator = { $limit: limit };
+		const limitOperator = { $limit: count };
 
 		const [docTotal] = await this.col
 			.aggregate([
@@ -985,11 +997,50 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			])
 			.toArray();
 		const total = docTotal && docTotal?.count ? docTotal.count : 0; // amount of documents
-		const calcPages = (total / limit).toFixed(0);
-		const pages = +calcPages >= 2 ? +calcPages : 1; // total of pages available
-		console.log({ userId, total, calcPages, pages });
 
-		const skipOperator = pages >= 2 ? [{ $skip: page * limit - limit }] : [];
+		const skipOperator = offset >= 1 ? [{ $skip: offset }] : [];
+
+		const lookupOperator = {
+			$lookup: {
+				from: 'users',
+				localField: 'userId',
+				foreignField: 'loginToken',
+				as: '_user',
+			},
+		};
+		const unwindOperator = {
+			$unwind: {
+				path: '$_user',
+				preserveNullAndEmptyArrays: true,
+			},
+		};
+
+		const projectOperator = {
+			$project: {
+				_id: '$sessionId',
+				day: 1,
+				instanceId: 1,
+				month: 1,
+				sessionId: 1,
+				year: 1,
+				_updatedAt: 1,
+				createdAt: 1,
+				device: 1,
+				devices: 1,
+				host: 1,
+				ip: 1,
+				loginAt: 1,
+				mostImportantRole: 1,
+				roles: 1,
+				userId: 1,
+				_user: {
+					name: 1,
+					username: 1,
+					avatarETag: 1,
+					avatarOrigin: 1,
+				},
+			},
+		};
 
 		const queryArray = [
 			matchOperator,
@@ -997,16 +1048,13 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			groupOperator,
 			...skipOperator,
 			limitOperator,
-			{
-				$project: {
-					_id: 0,
-				},
-			},
+			lookupOperator,
+			unwindOperator,
+			projectOperator,
 		];
 
-		const docs = await this.col.aggregate(queryArray).toArray();
-		return { docs, total, limit, page, pages };
-	}
+		const sessions = await this.col.aggregate(queryArray).toArray();
+		return { sessions, total, count, offset };
 	}
 
 	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
