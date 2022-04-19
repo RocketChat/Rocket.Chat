@@ -115,7 +115,7 @@ test.describe('[Messaging]', () => {
 			test('expect send file with description', async () => {
 				await mainContent.setDescription();
 				await mainContent.sendFileClick();
-				await expect(mainContent.lastMessage()).toHaveText('any_description');
+				await expect(mainContent.lastMessageFileName()).toHaveText('any_description');
 			});
 
 			test('expect send file with different file name', async () => {
@@ -126,12 +126,12 @@ test.describe('[Messaging]', () => {
 		});
 	});
 
-	test.describe.only('[Messaging actions]', async () => {
+	test.describe('[Messaging actions]', async () => {
 		test.describe('[Usage]', async () => {
 			test.beforeAll(async () => {
 				await sideNav.general().click();
 			});
-			test.describe('Reply:', async () => {
+			test.describe.only('Reply:', async () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('This is a message for reply');
 					await mainContent.openMessageActionMenu();
@@ -140,87 +140,81 @@ test.describe('[Messaging]', () => {
 					await mainContent.selectAction('reply');
 					await flexTab.messageInput().type('this is a reply message');
 					await flexTab.keyboardPress('Enter');
+					await flexTab.getPage().click('//*[@id="rocket-chat"]/div[3]/div[1]/main/div/aside/h3/div/button');
+
 					await expect(mainContent.reply()).toBeVisible();
 				});
 			});
 
-			// test.describe('Edit:', async () => {
-			// 	test.beforeAll(async () => {
-			// 		await mainContent.sendMessage('Message for Message edit Tests');
-			// 		await mainContent
-			// 			.getPage()
-			// 			.hover('/html/body/div[1]/div/div[3]/div[1]/main/div/div/div/div/div/section/div/div/div[4]/div[3]/ul/li[21]/div[1]/div[2]');
-			// 		await mainContent.getPage().click('//div[@class="message-actions__menu"]');
-			// 	});
+			test.describe('Edit:', async () => {
+				test.beforeAll(async () => {
+					await mainContent.sendMessage('This is a message for edit');
+					await mainContent.openMessageActionMenu();
+				});
 
-			// 	test('expect edit the message', async () => {
-			// 		console.log('teste');
-			// 		expect(1).toBe(1);
-			// 	});
-			// });
+				test('expect edit the message', async () => {
+					await mainContent.selectAction('edit');
+				});
+			});
 
-			// 		test.describe('Delete:', async () => {
-			// 			test.beforeAll(async () => {
-			// 				await mainContent.sendMessage('Message for Message Delete Tests');
-			// 				await mainContent.openMessageActionMenu();
-			// 			});
+			test.describe('Delete:', async () => {
+				test.beforeAll(async () => {
+					await mainContent.sendMessage('Message for Message Delete Tests');
+					await mainContent.openMessageActionMenu();
+				});
 
-			// 			test('it should delete the message', async () => {
-			// 				await mainContent.selectAction('delete');
-			// 			});
+				test('exepect message is deleted', async () => {
+					await mainContent.selectAction('delete');
+				});
+			});
 
-			// 			test('it should not show the deleted message', async () => {
-			// 				await expect(mainContent.lastMessage()).not.toContainText('Message for Message Delete Tests')
-			// 			});
-			// 		});
+			test.describe('Quote:', async () => {
+				const message = `Message for quote Tests - ${Date.now()}`;
 
-			// 		test.describe('Quote:', async () => {
-			// 			const message = `Message for quote Tests - ${Date.now()}`;
+				test.beforeAll(async () => {
+					await mainContent.sendMessage(message);
+					await mainContent.openMessageActionMenu();
+				});
 
-			// 			test.beforeAll(async () => {
-			// 				await mainContent.sendMessage(message);
-			// 				await mainContent.openMessageActionMenu();
-			// 			});
+				test('it should quote the message', async () => {
+					await mainContent.selectAction('quote');
+					await mainContent.sendBtn().click();
+					await mainContent.waitForLastMessageTextAttachmentEqualsText(message);
+				});
+			});
 
-			// 			test('it should quote the message', async () => {
-			// 				await mainContent.selectAction('quote');
-			// 				await mainContent.sendBtn().click();
-			// 				//await mainContent.waitForLastMessageTextAttachmentEqualsText(message);
-			// 			});
-			// 		});
+			test.describe('Star:', async () => {
+				test.beforeAll(async () => {
+					await mainContent.sendMessage('Message for star Tests');
+					await mainContent.openMessageActionMenu();
+				});
 
-			// 		test.describe('Star:', async () => {
-			// 			test.beforeAll( async () => {
-			// 				await mainContent.sendMessage('Message for star Tests');
-			// 				await mainContent.openMessageActionMenu();
-			// 			});
+				test('it should star the message', async () => {
+					await mainContent.selectAction('star');
+				});
+			});
 
-			// 			test('it should star the message', async () => {
-			// 				await mainContent.selectAction('star');
-			// 			});
-			// 		});
+			test.describe('Copy:', async () => {
+				test.beforeAll(async () => {
+					await mainContent.sendMessage('Message for copy Tests');
+					await mainContent.openMessageActionMenu();
+				});
 
-			// 		test.describe('Copy:', async () => {
-			// 			test.beforeAll(async () => {
-			// 				await mainContent.sendMessage('Message for copy Tests');
-			// 				await mainContent.openMessageActionMenu();
-			// 			});
+				test('it should copy the message', async () => {
+					await mainContent.selectAction('copy');
+				});
+			});
 
-			// 			test('it should copy the message', async () => {
-			// 				await mainContent.selectAction('copy');
-			// 			});
-			// 		});
+			test.describe('Permalink:', async () => {
+				test.beforeAll(async () => {
+					await mainContent.sendMessage('Message for permalink Tests');
+					await mainContent.openMessageActionMenu();
+				});
 
-			// 		test.describe('Permalink:', async () => {
-			// 			test.beforeAll(async () => {
-			// 				await mainContent.sendMessage('Message for permalink Tests');
-			// 				await mainContent.openMessageActionMenu();
-			// 			});
-
-			// 			test('it should permalink the message', async() => {
-			// 				await mainContent.selectAction('permalink');
-			// 			});
-			// 		});
+				test('it should permalink the message', async () => {
+					await mainContent.selectAction('permalink');
+				});
+			});
 		});
 	});
 });

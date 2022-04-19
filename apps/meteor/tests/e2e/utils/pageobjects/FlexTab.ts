@@ -309,6 +309,12 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('//label[text()="Roles"]/following-sibling::span//input');
 	}
 
+	public fileDescription(): Locator {
+		return this.getPage().locator(
+			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="js-block-wrapper"]/following-sibling::div//div//p',
+		);
+	}
+
 	public usersAddUserPassword(): Locator {
 		return this.getPage().locator('//label[text()="Password"]/following-sibling::span//input');
 	}

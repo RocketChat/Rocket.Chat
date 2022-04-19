@@ -77,7 +77,9 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessage(): Locator {
-		return this.getPage().locator('.message:last-child > div:nth-child(3) > div:nth-child(2) > div:first-child');
+		return this.getPage().locator(
+			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//div[2]',
+		);
 	}
 
 	public lastMessageDesc(): Locator {
@@ -125,7 +127,7 @@ class MainContent extends BasePage {
 	}
 
 	public messageReply(): Locator {
-		return this.getPage().locator('.message:last-child .message-actions__button[data-message-action="reply-in-thread"]');
+		return this.getPage().locator('[data-id="reply-in-thread"][data-type="message-action"]');
 	}
 
 	public reply(): Locator {
@@ -247,6 +249,10 @@ class MainContent extends BasePage {
 		return this.getPage().locator('#modal-root .rcx-button-group--align-end .rcx-button--ghost');
 	}
 
+	public modalDeleteMessageButton(): Locator {
+		return this.getPage().locator('#modal-root .rcx-button-group--align-end .rcx-button--primary-danger');
+	}
+
 	public buttonSend(): Locator {
 		return this.getPage().locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
@@ -340,16 +346,21 @@ class MainContent extends BasePage {
 	}
 
 	public async selectAction(action: string): Promise<void> {
+		await this.openMessageActions();
 		switch (action) {
 			case 'edit':
 				await this.messageEdit().click();
-				await this.messageInput().type('this message was edited');
+				await this.messageInput().fill('this message was edited');
+				await this.keyboardPress('Enter');
+				await expect(this.lastMessage()).toHaveText('this message was edited');
 				break;
 			case 'reply':
 				this.messageReply().click();
 				break;
 			case 'delete':
 				await this.messageDelete().click();
+				await this.acceptDeleteMessage();
+				await expect(this.lastMessage()).not.toHaveText('Message for Message Delete Tests');
 				break;
 			case 'permalink':
 				await this.messagePermalink().click();
@@ -363,6 +374,7 @@ class MainContent extends BasePage {
 				break;
 			case 'star':
 				await this.messageStar().click();
+				await expect(this.starredMessage()).toBeVisible();
 				break;
 			case 'unread':
 				await this.messageUnread().click();
@@ -381,6 +393,36 @@ class MainContent extends BasePage {
 	public async openMessageActionMenu(): Promise<void> {
 		await this.messageOptionsBtn().hover();
 		await this.messageOptionsBtn().waitFor({ state: 'visible' });
+	}
+
+	public async openMessageActions(): Promise<void> {
+		await this.getPage()
+			.locator(
+				'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-actions"]//div[@class="message-actions__menu"]',
+			)
+			.click();
+	}
+
+	public async acceptDeleteMessage(): Promise<void> {
+		await this.modalDeleteMessageButton().click();
+	}
+
+	public toastSuccess(): Locator {
+		return this.getPage().locator('.toast-message');
+	}
+
+	public async waitForLastMessageTextAttachmentEqualsText(text: string): Promise<void> {
+		await expect(this.getQuotedMessage()).toHaveText(text);
+	}
+
+	public getQuotedMessage(): Locator {
+		return this.getPage().locator('//li[@data-username="rocketchat.internal.admin.test"][last()]//blockquote//div[2]');
+	}
+
+	public starredMessage(): Locator {
+		return this.getPage().locator(
+			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//span[@class="starred"]',
+		);
 	}
 }
 
