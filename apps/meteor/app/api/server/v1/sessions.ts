@@ -7,8 +7,9 @@ API.v1.addRoute(
 	{
 		async get() {
 			try {
-				const { limit, page, search } = this.queryParams;
-				const sessions = await Sessions.getByUserId({ userId: this.userId, limit, page, search });
+				const { offset, count } = this.getPaginationItems();
+				const { search } = this.queryParams;
+				const sessions = await Sessions.getByUserId(this.userId, search, { offset, count });
 				return API.v1.success(sessions);
 			} catch (error) {
 				return API.v1.failure(error);

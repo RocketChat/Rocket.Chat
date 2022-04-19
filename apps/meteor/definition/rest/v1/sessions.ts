@@ -1,4 +1,4 @@
-import { IMDMSession, IMDMSessionParams, ISession } from '../../../definition/ISession';
+import { IMDMSession, IMDMSessionParams } from '../../../definition/ISession';
 
 export type SessionsEndpoints = {
 	'sessions.list': {

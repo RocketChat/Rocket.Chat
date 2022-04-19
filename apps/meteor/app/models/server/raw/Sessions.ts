@@ -777,21 +777,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		super(col, trash);
 
 		this.secondaryCollection = colSecondary;
-	async getByUserId({
-		userId,
-		search = '',
-		limit = 10,
-		page = 1,
-	}: {
-		userId: string;
-		search?: string;
-		// offset?: number;
-		limit?: number;
-		page?: number;
-	}): Promise<IMDMSession> {
-		limit = +limit >= 100 ? 100 : +limit;
-		page = +page < 1 ? 1 : +page;
-		// const skipOperator = offset ? [{ $skip: offset }] : [];
+	async getByUserId(uid: string, search = '', { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IMDMSession> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
 		const matchOperator = {
@@ -800,9 +786,125 @@ export class SessionsRaw extends BaseRaw<ISession> {
 					...searchQuery,
 					{
 						userId: {
-							$eq: userId,
+							$eq: uid,
 						},
 					},
+					{
+						loginToken: {
+							$exists: true,
+							$ne: '',
+						},
+					},
+					{
+						logoutAt: {
+							$exists: false,
+						},
+					},
+				],
+			},
+		};
+		const sortOperator = {
+			$sort: {
+				createdAt: -1,
+			},
+		};
+		const groupOperator = {
+			$group: {
+				_id: '$loginToken',
+				day: {
+					$first: '$day',
+				},
+				instanceId: {
+					$first: '$instanceId',
+				},
+				month: {
+					$first: '$month',
+				},
+				sessionId: {
+					$first: '$sessionId',
+				},
+				userId: {
+					$first: '$userId',
+				},
+				year: {
+					$first: '$year',
+				},
+				_updatedAt: {
+					$first: '$_updatedAt',
+				},
+				createdAt: {
+					$first: '$createdAt',
+				},
+				device: {
+					$first: '$device',
+				},
+				host: {
+					$first: '$host',
+				},
+				ip: {
+					$first: '$ip',
+				},
+				loginAt: {
+					$first: '$loginAt',
+				},
+				mostImportantRole: {
+					$first: '$mostImportantRole',
+				},
+				roles: {
+					$first: '$roles',
+				},
+			},
+		};
+		const limitOperator = { $limit: count };
+
+		const [docTotal] = await this.col
+			.aggregate([
+				matchOperator,
+				sortOperator,
+				{
+					$group: {
+						_id: '$loginToken',
+					},
+				},
+				{
+					$count: 'count',
+				},
+			])
+			.toArray();
+		const total = docTotal && docTotal?.count ? docTotal.count : 0; // amount of documents
+
+		const skipOperator = offset >= 1 ? [{ $skip: offset }] : [];
+
+		const projectOperator = {
+			$project: {
+				_id: '$sessionId',
+				day: 1,
+				instanceId: 1,
+				month: 1,
+				sessionId: 1,
+				year: 1,
+				_updatedAt: 1,
+				createdAt: 1,
+				device: 1,
+				devices: 1,
+				host: 1,
+				ip: 1,
+				loginAt: 1,
+				mostImportantRole: 1,
+				roles: 1,
+				userId: 1,
+				_user: {
+					name: 1,
+					username: 1,
+						},
+					},
+		};
+
+		const queryArray = [matchOperator, sortOperator, groupOperator, ...skipOperator, limitOperator, projectOperator];
+
+		const sessions = await this.col.aggregate(queryArray).toArray();
+		return { sessions, total, count, offset };
+	}
 					{
 						loginToken: {
 							$exists: true,

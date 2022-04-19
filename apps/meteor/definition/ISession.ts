@@ -56,12 +56,11 @@ export type OSSessionAggregation = Pick<ISession, '_id'> & { name: string; versi
 // Session for Multi Device Manager
 
 export interface IMDMSessionParams {
-	limit?: number;
-	page?: number;
+	count?: number;
+	offset?: number;
 	search?: string;
 }
 export interface IMDMSession extends IMDMSessionParams {
 	total: number;
-	pages: number;
-	docs: ISession[];
+	sessions: ISession[];
 }
