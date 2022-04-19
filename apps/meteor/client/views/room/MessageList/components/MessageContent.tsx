@@ -18,6 +18,7 @@ import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageShowReadReceipt } from '../contexts/MessageListContext';
+import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import EncryptedMessageRender from './EncryptedMessageRender';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
@@ -104,7 +105,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 			{message.location && <MessageLocation location={message.location} />}
 
-			{broadcast && user.username && (
+			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
 				<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
 
