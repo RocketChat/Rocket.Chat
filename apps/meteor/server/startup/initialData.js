@@ -49,6 +49,37 @@ Meteor.startup(async function () {
 		});
 	}
 
+	if (!Users.findOneById('rocket.reminder')) {
+		Users.create({
+			_id: 'rocket.reminder',
+			name: 'Rocket.reminder',
+			username: 'rocket.reminder',
+			status: 'online',
+			statusDefault: 'online',
+			utcOffset: 0,
+			active: true,
+			type: 'bot',
+		});
+
+		await addUserRolesAsync('rocket.reminder', 'bot');
+
+		const buffer = Buffer.from(Assets.getBinary('avatars/rocketcat.png'));
+
+		const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
+		const fileStore = FileUpload.getStore('Avatars');
+		fileStore.deleteByName('rocket.reminder');
+
+		const file = {
+			userId: 'rocket.reminder',
+			type: 'image/png',
+			size: buffer.length,
+		};
+
+		Meteor.runAsUser('rocket.reminder', () => {
+			fileStore.insert(file, rs, () => Users.setAvatarData('rocket.reminder', 'local', null));
+		});
+	}
+
 	if (process.env.ADMIN_PASS) {
 		if ((await (await getUsersInRole('admin')).count()) === 0) {
 			console.log('Inserting admin user:'.green);

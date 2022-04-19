@@ -35,6 +35,7 @@ import '../app/message-mark-as-unread/client';
 import '../app/message-pin/client';
 import '../app/message-snippet/client';
 import '../app/message-star/client';
+import '../app/message-remind/client';
 import '../app/nextcloud/client';
 import '../app/oauth2-server-config/client';
 import '../app/oembed/client';

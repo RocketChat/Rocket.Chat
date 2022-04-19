@@ -58,6 +58,34 @@ export async function findStarredMessages({ uid, roomId, pagination: { offset, c
 	};
 }
 
+export async function findMessageRemindersByUserId({ uid, roomId, pagination: { offset, count, sort } }) {
+	const room = await Rooms.findOneById(roomId);
+	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+		throw new Error('error-not-allowed');
+	}
+	const user = await Users.findOneById(uid, { fields: { username: 1 } });
+	if (!user) {
+		throw new Error('invalid-user');
+	}
+
+	const cursor = await Messages.findRemindersByUserAtRoom(uid, roomId, {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+	});
+
+	const total = await cursor.count();
+
+	const messages = await cursor.toArray();
+
+	return {
+		messages,
+		count: messages.length,
+		offset,
+		total,
+	};
+}
+
 export async function findSnippetedMessageById({ uid, messageId }) {
 	if (!(await getValue('Message_AllowSnippeting'))) {
 		throw new Error('error-not-allowed');

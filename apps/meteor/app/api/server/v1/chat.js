@@ -16,6 +16,7 @@ import { settings } from '../../../settings/server';
 import {
 	findMentionedMessages,
 	findStarredMessages,
+	findMessageRemindersByUserId,
 	findSnippetedMessageById,
 	findSnippetedMessages,
 	findDiscussionsFromRoom,
@@ -250,6 +251,71 @@ API.v1.addRoute(
 			);
 
 			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.remindMessage',
+	{ authRequired: true },
+	{
+		post() {
+			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
+				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
+			}
+
+			if (!this.bodyParams.ttr || !this.bodyParams.ttr.trim()) {
+				throw new Meteor.Error('error-ttr-param-not-provided', 'The required "ttr" param is required.');
+			}
+
+			if (!this.bodyParams.permalink || !this.bodyParams.permalink.trim()) {
+				throw new Meteor.Error('error-permalink-param-not-provided', 'The required "permalink" param is required.');
+			}
+
+			const msg = Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+			const reminder = {
+				ttr: new Date(this.bodyParams.ttr),
+				permalink: this.bodyParams.permalink,
+			};
+
+			Meteor.runAsUser(this.userId, () => Meteor.call('remindMessage', msg, reminder));
+
+			return API.v1.success(msg);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.getRemindMessages',
+	{ authRequired: true },
+	{
+		get() {
+			const { roomId } = this.queryParams;
+			const { sort } = this.parseJsonQuery();
+			const { offset, count } = this.getPaginationItems();
+
+			if (!roomId) {
+				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+			}
+			const messages = Promise.await(
+				findMessageRemindersByUserId({
+					uid: this.userId,
+					roomId,
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
+			);
+
+			messages.messages = normalizeMessagesForUser(messages.messages, this.userId);
+
+			return API.v1.success(messages);
 		},
 	},
 );

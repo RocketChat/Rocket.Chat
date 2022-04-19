@@ -749,6 +749,27 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
+	createRemind(messageId, reminder) {
+		const query = { _id: messageId };
+		const { cronId, uid, ttr, permalink } = reminder;
+
+		const update = {
+			$push: { reminders: { cronId, uid, ttr, permalink } },
+		};
+
+		return this.update(query, update);
+	}
+
+	deleteRemind(messageId, cronId) {
+		const query = { _id: messageId };
+
+		const update = {
+			$pull: { reminders: { cronId } },
+		};
+
+		return this.update(query, update);
+	}
+
 	upgradeEtsToEditAt() {
 		const query = { ets: { $exists: 1 } };
 

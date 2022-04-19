@@ -11,6 +11,7 @@ import { Users } from '../../app/models/server';
 import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 import { showErrorBox, showWarningBox, showSuccessBox } from '../lib/logger/showBox';
 import { isRunningMs } from '../lib/isRunningMs';
+import { restartReminderCrons } from '../cron/reminders';
 
 const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -47,6 +48,8 @@ Meteor.startup(function () {
 		}
 
 		msg = msg.join('\n');
+
+		restartReminderCrons();
 
 		if (!isRunningMs() && !oplogEnabled) {
 			msg += [

@@ -23,6 +23,16 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findRemindersByUserAtRoom(userId, roomId, options) {
+		const query = {
+			'_hidden': { $ne: true },
+			'reminders.uid': userId,
+			'rid': roomId,
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomIdAndType(roomId, type, options) {
 		const query = {
 			rid: roomId,

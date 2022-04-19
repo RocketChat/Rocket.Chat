@@ -59,7 +59,7 @@ callbacks.add(
 			// user has to belong to the room the message was first wrote in
 			const room = Rooms.findOneById(jumpToMessage.rid);
 			const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || canAccessRoom(room, currentUser);
+			const canAccessRoomForUser = isLiveChatRoomVisitor || msg.ttr || canAccessRoom(room, currentUser);
 			if (!canAccessRoomForUser) {
 				return;
 			}

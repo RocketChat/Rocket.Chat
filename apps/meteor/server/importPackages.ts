@@ -54,6 +54,7 @@ import '../app/message-snippet/server';
 import '../app/message-star/server';
 import '../app/nextcloud/server';
 import '../app/oauth2-server-config/server';
+import '../app/message-remind/server';
 import '../app/oembed/server';
 import '../app/otr/server';
 import '../app/push-notifications/server';
