@@ -80,7 +80,12 @@ export const useRoomList = (): Array<ISubscription> => {
 			});
 
 			const groups = new Map();
-			showOmnichannel && groups.set('Omnichannel', []);
+			// showOmnichannel && groups.set('Omnichannel', []);
+			showOmnichannel && groups.set('BlogPostSection', []);
+			showOmnichannel && groups.set('GamesSection', []);
+			showOmnichannel && groups.set('ProductsSection', []);
+			showOmnichannel && groups.set('StoreSection', []);
+			showOmnichannel && groups.set('MessagesSection', []);
 			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', queue);
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
@@ -88,7 +93,7 @@ export const useRoomList = (): Array<ISubscription> => {
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 			sidebarGroupByType && team.size && groups.set('Teams', team);
 			sidebarGroupByType && isDiscussionEnabled && discussion.size && groups.set('Discussions', discussion);
-			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+			// sidebarGroupByType && channels.size && groups.set('Channels', channels);
 			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 			return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);

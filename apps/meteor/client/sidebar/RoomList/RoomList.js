@@ -50,7 +50,6 @@ const RoomList = () => {
 	useEffect(() => {
 		listRef.current?.resetAfterIndex(0);
 	}, [sidebarViewMode]);
-
 	return (
 		<Box h='full' w='full' ref={ref}>
 			<Virtuoso

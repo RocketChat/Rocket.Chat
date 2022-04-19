@@ -11,11 +11,14 @@ import Home from './actions/Home';
 import Login from './actions/Login';
 import Search from './actions/Search';
 import Sort from './actions/Sort';
+import { useLayout } from '../../contexts/LayoutContext';
 
 const HeaderWithData = () => {
 	const user = useUser();
 	const t = useTranslation();
+	const { sidebar } = useLayout();
 	useSidebarPaletteColor();
+	console.log(user, 'user in index');
 
 	return (
 		<>
@@ -24,13 +27,7 @@ const HeaderWithData = () => {
 				<Sidebar.TopBar.Actions>
 					<Home title={t('Home')} />
 					<Search title={t('Search')} data-qa='sidebar-search' />
-					{user && (
-						<>
-							<Directory title={t('Directory')} />
-							<Sort title={t('Display')} />
-							<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
-						</>
-					)}
+					<Sidebar.TopBar.Action icon='circle-cross' onClick={() => sidebar.toggle()} />
 					{!user && <Login title={t('Login')} />}
 				</Sidebar.TopBar.Actions>
 			</Sidebar.TopBar.Section>

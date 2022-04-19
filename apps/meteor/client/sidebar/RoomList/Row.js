@@ -2,16 +2,23 @@ import { SidebarSection } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import OmnichannelSection from '../sections/OmnichannelSection';
+import {BlogPostSection, ProductsSection, MessagesSection, StoreSection, GamesSection} from '../sections'
 import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
 
 const sections = {
 	Omnichannel: OmnichannelSection,
+	BlogPostSection,
+	GamesSection,
+	StoreSection,
+	ProductsSection,
+	MessagesSection
 };
 
 const Row = ({ data, item }) => {
 	const { extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
 
 	if (typeof item === 'string') {
+		console.log(item)
 		const Section = sections[item];
 		return Section ? (
 			<Section aria-level='1' />
