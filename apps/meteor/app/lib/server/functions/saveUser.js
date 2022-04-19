@@ -228,7 +228,7 @@ export function validateUserEditing(userId, userData) {
 
 const handleBio = (updateUser, bio) => {
 	if (bio && bio.trim()) {
-		if (typeof bio !== 'string' || bio.length > 260) {
+		if (typeof bio !== 'string' || bio.length > settings.get('Accounts_MaxBioLength')) {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
 			});
@@ -243,7 +243,7 @@ const handleBio = (updateUser, bio) => {
 
 const handleNickname = (updateUser, nickname) => {
 	if (nickname && nickname.trim()) {
-		if (typeof nickname !== 'string' || nickname.length > 120) {
+		if (typeof nickname !== 'string' || nickname.length > settings.get('Accounts_MaxNickNameLength')) {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
 			});
