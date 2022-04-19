@@ -876,7 +876,8 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				},
 			])
 			.toArray();
-		const total = docTotal && docTotal?.count ? docTotal.count : 0; // amount of documents
+
+		const total = docTotal?.count || 0; // amount of documents
 
 		const skipOperator = offset >= 1 ? [{ $skip: offset }] : [];
 
@@ -910,6 +911,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const sessions = await this.col.aggregate(queryArray).toArray();
 		return { sessions, total, count, offset };
 	}
+
 	async getAllSessions(search = '', { offset, count }: IPaginationOptions = { offset: 0, count: 10 }): Promise<IMDMSession> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
@@ -999,7 +1001,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				},
 			])
 			.toArray();
-		const total = docTotal && docTotal?.count ? docTotal.count : 0; // amount of documents
+		const total = docTotal?.count || 0; // amount of documents
 
 		const skipOperator = offset >= 1 ? [{ $skip: offset }] : [];
 
