@@ -1,8 +1,11 @@
+import fs from 'fs';
+
 import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
 
 class MainContent extends BasePage {
+
 	public mainContent(): Locator {
 		return this.getPage().locator('.main-content');
 	}
@@ -70,8 +73,12 @@ class MainContent extends BasePage {
 		return this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "user-card-message")])[last()]');
 	}
 
+	public lastMessageFileName(): Locator {
+		return this.getPage().locator('.message:last-child > div:nth-child(3) > div:nth-child(2) > div:nth-child(1)');
+	}
+
 	public lastMessage(): Locator {
-		return this.getPage().locator('.message:last-child');
+		return this.getPage().locator('.message:last-child > div:nth-child(3) > div:nth-child(2) > div:first-child');
 	}
 
 	public lastMessageDesc(): Locator {
@@ -107,7 +114,7 @@ class MainContent extends BasePage {
 	}
 
 	public messageOptionsBtn(): Locator {
-		return this.getPage().locator('.message:last-child .message-actions__menu');
+		return this.getPage().locator('//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]');
 	}
 
 	public messageOptionsBtns(): Locator {
@@ -120,6 +127,10 @@ class MainContent extends BasePage {
 
 	public messageReply(): Locator {
 		return this.getPage().locator('.message:last-child .message-actions__button[data-message-action="reply-in-thread"]');
+	}
+
+	public reply(): Locator {
+		return this.getPage().locator('[data-title="Replies"]');
 	}
 
 	public messageEdit(): Locator {
@@ -229,7 +240,33 @@ class MainContent extends BasePage {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-smile")]');
 	}
 
-	// Popover
+	public modalTitle(): Locator {
+		return this.getPage().locator('#modal-root .rcx-modal__title');
+	}
+
+	public modalCancelButton(): Locator {
+		return this.getPage().locator('#modal-root .rcx-button-group--align-end .rcx-button--ghost');
+	}
+
+	public buttonSend(): Locator {
+		return this.getPage().locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
+	}
+
+	public modalFilePreview(): Locator {
+		return this.getPage().locator(
+			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
+		);
+	}
+
+	public fileName(): Locator {
+		return this.getPage().locator('//div[@id="modal-root"]//fieldset//div[1]//label');
+	}
+
+	public fileDescription(): Locator {
+		return this.getPage().locator('//div[@id="modal-root"]//fieldset//div[2]//label');
+	}
+
+	// Popovermodal
 	public popoverWrapper(): Locator {
 		return this.getPage().locator('.rc-popover');
 	}
@@ -242,10 +279,9 @@ class MainContent extends BasePage {
 		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
 
-	// Sends a message and wait for the message to equal the text sent
-	public async sendMessage(text: any): Promise<void> {
+	public async sendMessage(text: string): Promise<void> {
 		await this.setTextToInput(text);
-		await this.sendBtn().click();
+		await this.keyboardPress('Enter');
 		await expect(
 			this.getPage().locator('(//*[contains(@class, "message-body-wrapper")])[last()]/div[contains(@class, "body")]'),
 		).toContainText(text);
@@ -257,12 +293,95 @@ class MainContent extends BasePage {
 	}
 
 	// Clear and sets the text to the input
-	public async setTextToInput(text: any): Promise<void> {
-		// cy.wait(200);
-		await this.messageInput().fill('');
-		if (text) {
-			await this.messageInput().type(text);
+	public async setTextToInput(text: string): Promise<void> {
+		await this.messageInput().type(text);
+	}
+
+	public async dragAndDropFile(): Promise<void> {
+		const contract = await fs.promises.readFile('./tests/e2e/utils/fixtures/any_file.txt', 'utf-8');
+
+		const dataTransfer = await this.getPage().evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'any_file.txt', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.getPage().dispatchEvent(
+			'div.dropzone-overlay.dropzone-overlay--enabled.background-transparent-darkest.color-content-background-color',
+			'drop',
+			{ dataTransfer },
+		);
+	}
+
+	public async cancelClick(): Promise<void> {
+		await this.modalCancelButton().click();
+	}
+
+	public async sendFileClick(): Promise<void> {
+		await this.buttonSend().click();
+	}
+
+	public descriptionInput(): Locator {
+		return this.getPage().locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
+	}
+
+	public fileNameInput(): Locator {
+		return this.getPage().locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
+	}
+
+	public async setFileName(): Promise<void> {
+		await this.fileNameInput().fill('any_file1.txt');
+	}
+
+	public async setDescription(): Promise<void> {
+		await this.descriptionInput().type('any_description');
+	}
+
+	public async selectAction(action: string): Promise<void> {
+		switch (action) {
+			case 'edit':
+				await this.messageEdit().click();
+				await this.messageInput().type('this message was edited');
+				break;
+			case 'reply':
+				this.messageReply().click();
+				break;
+			case 'delete':
+				await this.messageDelete().click();
+				break;
+			case 'permalink':
+				await this.messagePermalink().click();
+				break;
+			case 'copy':
+				await this.messageCopy().click();
+				break;
+			case 'quote':
+				await this.messageQuote().click();
+				await this.messageInput().type('this is a quote message');
+				break;
+			case 'star':
+				await this.messageStar().click();
+				break;
+			case 'unread':
+				await this.messageUnread().click();
+				break;
+			case 'reaction':
+				await this.messageReply().click();
+				await this.emojiPickerPeopleIcon().click();
+				await this.emojiGrinning().click();
+				break;
+			// case 'close':
+			// 	await this.messageClose().click();
+			// 	break;
 		}
+	}
+
+	public async openMessageActionMenu(): Promise<void> {
+		await this.messageOptionsBtn().hover();
+		await this.messageOptionsBtn().waitFor({ state: 'visible' })
 	}
 }
 

@@ -1,23 +1,9 @@
 import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
-import Global from './Global';
+// import Global from './global';
 
 class FlexTab extends BasePage {
-	private global = new Global(this.getPage());
-
-	public mainSideBar(): Locator {
-		return this.getPage().locator('//main//aside');
-	}
-
-	public mainSideBarBack(): Locator {
-		return this.getPage().locator('(//main//aside/h3//button)[1]');
-	}
-
-	public mainSideBarClose(): Locator {
-		return this.getPage().locator('//main//aside/h3//i[contains(@class, "rcx-icon--name-cross")]/..');
-	}
-
 	public headerMoreActions(): Locator {
 		return this.getPage().locator('//main/header//*[contains(@class, "rcx-icon--name-kebab")]/..');
 	}
@@ -66,7 +52,7 @@ class FlexTab extends BasePage {
 	}
 
 	public editNameBtn(): Locator {
-		return this.getPage().locator('//aside//button[contains(text(), "Edit")]');
+		return this.getPage().locator('[data-edit="name"]');
 	}
 
 	public editTopicBtn(): Locator {
@@ -98,23 +84,23 @@ class FlexTab extends BasePage {
 	}
 
 	public editNameTextInput(): Locator {
-		return this.getPage().locator('//aside//label[contains(text(), "Name")]/..//input');
+		return this.getPage().locator('.channel-settings input[name="name"]');
 	}
 
 	public editTopicTextInput(): Locator {
-		return this.getPage().locator('//main//aside//label[contains(text(), "Topic")]/..//textarea');
+		return this.getPage().locator('.channel-settings input[name="topic"]');
 	}
 
 	public editAnnouncementTextInput(): Locator {
-		return this.getPage().locator('//main//aside//label[contains(text(), "Announcement")]/..//textarea');
+		return this.getPage().locator('.channel-settings input[name="announcement"]');
 	}
 
 	public editDescriptionTextInput(): Locator {
-		return this.getPage().locator('//main//aside//label[contains(text(), "Description")]/..//textarea');
+		return this.getPage().locator('.channel-settings input[name="description"]');
 	}
 
 	public editNameSave(): Locator {
-		return this.getPage().locator('//aside//button[contains(text(), "Save")]');
+		return this.getPage().locator('.channel-settings .save');
 	}
 
 	public deleteBtn(): Locator {
@@ -131,8 +117,7 @@ class FlexTab extends BasePage {
 	}
 
 	public userSearchBar(): Locator {
-		// TODO: use a better selector here
-		return this.getPage().locator('//*[@placeholder="Search by username"]');
+		return this.getPage().locator('#user-add-search');
 	}
 
 	public removeUserBtn(): Locator {
@@ -140,15 +125,15 @@ class FlexTab extends BasePage {
 	}
 
 	public setOwnerBtn(): Locator {
-		return this.getPage().locator('//main//aside//button[contains(text(), "Set as owner")]');
+		return this.getPage().locator('.set-owner');
 	}
 
 	public setModeratorBtn(): Locator {
-		return this.getPage().locator('[value="changeModerator"]');
+		return this.getPage().locator('.set-moderator');
 	}
 
 	public muteUserBtn(): Locator {
-		return this.getPage().locator('[value="muteUser"]');
+		return this.getPage().locator('.mute-user');
 	}
 
 	public viewAllBtn(): Locator {
@@ -172,8 +157,7 @@ class FlexTab extends BasePage {
 	}
 
 	public avatarImage(): Locator {
-		return this.getPage().locator('(//aside[contains(@class, "rcx-vertical-bar")]//*[contains(@class, "avatar")])[1]');
-		// return this.getPage().locator('aside.rcx-vertical-bar .rcx-avatar');
+		return this.getPage().locator('aside.rcx-vertical-bar .rcx-avatar');
 	}
 
 	public memberUserName(): Locator {
@@ -265,19 +249,19 @@ class FlexTab extends BasePage {
 	}
 
 	public firstSetting(): Locator {
-		return this.getPage().locator('//aside//i[contains(@class, "rcx-icon--name-hashtag")]/../div');
+		return this.getPage().locator('.clearfix li:nth-child(1) .current-setting');
 	}
 
-	public secondSetting(topic: string): Locator {
-		return this.getPage().locator(`//header//*[contains(text(), "${topic}")]`);
+	public secondSetting(): Locator {
+		return this.getPage().locator('.clearfix li:nth-child(2) .current-setting');
 	}
 
-	public thirdSetting(announcement: string): Locator {
-		return this.getPage().locator(`//main//div[contains(@class, "messages-container-main")]//div[contains(text(), "${announcement}")]`);
+	public thirdSetting(): Locator {
+		return this.getPage().locator('.clearfix li:nth-child(3) .current-setting');
 	}
 
 	public fourthSetting(): Locator {
-		return this.getPage().locator('//main//aside//div[contains(text(), "Description")]//following-sibling::div');
+		return this.getPage().locator('.clearfix li:nth-child(4) .current-setting');
 	}
 
 	// admin view flexTab items
@@ -370,61 +354,11 @@ class FlexTab extends BasePage {
 	}
 
 	public getUserEl(username: any): Locator {
-		return this.getPage().locator(`//li[@data-username="${username}"]`);
+		return this.getPage().locator(`.flex-tab button[title="${username}"] > p`);
 	}
 
 	public addUserTable(): Locator {
 		return this.getPage().locator('//div[text()="Add User"]');
-	}
-
-	public addUserButton(): Locator {
-		return this.getPage().locator('//button[contains(text(), "Add")]');
-	}
-
-	public addUserButtonAfterChoose(): Locator {
-		return this.getPage().locator('//button[contains(text(), "Add users")]');
-	}
-
-	public chooseUserSearch(): Locator {
-		return this.getPage().locator('//label[contains(text(), "Choose users")]/..//input');
-	}
-
-	public chooseUserOptions(): Locator {
-		return this.getPage().locator('(//div[@role="option"]//ol/li)[1]');
-	}
-
-	public userMoreActions(): Locator {
-		return this.getPage().locator(
-			'//main//aside//button[contains(text(), "Direct Message")]/..//i[contains(@class, "rcx-icon--name-kebab")]/..',
-		);
-	}
-
-	public async setUserOwner(user: string): Promise<void> {
-		await this.enterUserView(user);
-		await this.setOwnerBtn().waitFor();
-		await this.setOwnerBtn().click();
-	}
-
-	public async setUserModerator(user: string): Promise<void> {
-		await this.enterUserView(user);
-		await this.userMoreActions().click();
-		await this.setModeratorBtn().waitFor();
-		await this.setModeratorBtn().click();
-	}
-
-	public async muteUser(user: string): Promise<void> {
-		await this.enterUserView(user);
-		await this.userMoreActions().click();
-		await this.muteUserBtn().waitFor();
-		await this.muteUserBtn().click();
-		await this.global.confirmPopup();
-		await this.mainSideBarBack().click();
-	}
-
-	public async enterUserView(user: string): Promise<void> {
-		const userEl = this.getUserEl(user);
-		await userEl.waitFor();
-		await userEl.click();
 	}
 
 	public async archiveChannel(): Promise<void> {
@@ -436,13 +370,10 @@ class FlexTab extends BasePage {
 	}
 
 	public async addPeopleToChannel(user: any): Promise<void> {
-		await this.addUserButton().click();
-		await this.chooseUserSearch().type(user);
-		await this.getPage().waitForTimeout(3000);
-		await this.chooseUserOptions().click();
-		await this.addUserButtonAfterChoose().click();
-		// await this.getPage().waitForSelector('.-autocomplete-item');
-		// await this.getPage().click('.-autocomplete-item');
+		await this.userSearchBar().waitFor();
+		await this.userSearchBar().type(user);
+		await this.getPage().waitForSelector('.-autocomplete-item');
+		await this.getPage().click('.-autocomplete-item');
 	}
 
 	public async operateFlexTab(desiredTab: string, desiredState: boolean): Promise<void> {

@@ -6,9 +6,7 @@ import BasePage from './BasePage';
 class SideNav extends BasePage {
 	// New channel
 	public channelType(): Locator {
-		return this.getPage().locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
-		);
+		return this.getPage().locator('#modal-root .rcx-field:contains("Private") .rcx-toggle-switch__fake');
 	}
 
 	public channelReadOnly(): Locator {
@@ -20,7 +18,7 @@ class SideNav extends BasePage {
 	}
 
 	public saveChannelBtn(): Locator {
-		return this.getPage().locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+		return this.getPage().locator('#modal-root button:contains("Create")');
 	}
 
 	// Account box
@@ -110,11 +108,11 @@ class SideNav extends BasePage {
 	}
 
 	public newChannelBtn(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Channel' });
+		return this.getPage().locator('.rcx-option__content:contains("Channel")');
 	}
 
 	public newDiscussionBtn(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Discussion' });
+		return this.getPage().locator('.rcx-option__content:contains("Discussion")');
 	}
 
 	public newChannelIcon(): Locator {
@@ -196,9 +194,7 @@ class SideNav extends BasePage {
 		await expect(this.spotlightSearch()).toBeFocused();
 		await this.spotlightSearch().type(channelName);
 
-		await expect(this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).first()).toContainText(channelName);
-
-		await this.spotlightSearchPopUp().click();
+		await expect(this.getPage().locator('.rcx-room-header')).toContainText(channelName);
 	}
 
 	public async searchChannelAndOpen(channelName: string): Promise<void> {

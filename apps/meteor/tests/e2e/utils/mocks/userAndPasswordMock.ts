@@ -1,4 +1,4 @@
-import { v4 } from 'uuid';
+import { faker } from '@faker-js/faker';
 
 import { ILogin, IRegister } from '../interfaces/Login';
 
@@ -14,20 +14,21 @@ export const adminLogin: ILogin = {
 	email: 'rocketchat.internal.admin.test@rocket.chat',
 	password: 'rocketchat.internal.admin.test',
 };
+const validEmail = faker.internet.email();
 
 export const registerUser: IRegister = {
-	email: `any_user@email.com`,
+	email: validEmail,
 	password: 'any_password',
-	name: `any_name${v4()}`,
+	name: faker.name.findName(),
 };
 
 export const validUser: ILogin = {
-	email: 'any_user@email.com',
+	email: validEmail,
 	password: 'any_password',
 };
 
 export const incorrectUser: ILogin = {
-	email: `${v4()}@email.com`,
+	email: faker.internet.email(),
 	password: 'any_password',
 };
 
