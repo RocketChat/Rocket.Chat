@@ -1,7 +1,7 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Option } from '@rocket.chat/fuselage';
 import { ComponentProps, ReactNode } from 'react';
 
-import { IRoom } from '../../../../../definition/IRoom';
 import { ToolboxActionConfig } from '../Toolbox';
 import { generator, Events as GeneratorEvents } from '../Toolbox/generator';
 

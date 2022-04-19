@@ -1,5 +1,4 @@
-import { IUser } from '../../../definition/IUser';
-import { IMethodConnection } from '../../../definition/IMethodThisType';
+import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 
 interface IMethodArgument {
 	user?: { username: string };

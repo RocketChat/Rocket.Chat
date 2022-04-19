@@ -1,23 +1,33 @@
 import { Db, FindOneOptions } from 'mongodb';
 import _ from 'underscore';
+import type {
+	IVoipExtensionBase,
+	IVoipExtensionWithAgentInfo,
+	IAgentExtensionMap,
+	IRoomCreationResponse,
+	IUser,
+	ILivechatAgent,
+} from '@rocket.chat/core-typings';
+import {
+	ILivechatVisitor,
+	isILivechatVisitor,
+	IVoipRoom,
+	IRoomClosingInfo,
+	OmnichannelSourceType,
+	isVoipRoom,
+	VoipClientEvents,
+} from '@rocket.chat/core-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 import { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IVoipExtensionBase, IVoipExtensionWithAgentInfo } from '../../../definition/IVoipExtension';
 import { Logger } from '../../lib/logger/Logger';
 import { Voip } from '../../sdk';
-import { IAgentExtensionMap, IRoomCreationResponse } from '../../../definition/IOmnichannelVoipServiceResult';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
-import { IUser } from '../../../definition/IUser';
-import { ILivechatVisitor, isILivechatVisitor } from '../../../definition/ILivechatVisitor';
-import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isVoipRoom } from '../../../definition/IRoom';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
-import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
 import { FindVoipRoomsParams } from './internalTypes';
-import { ILivechatAgent } from '../../../definition/ILivechatAgent';
 import { api } from '../../sdk/api';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {

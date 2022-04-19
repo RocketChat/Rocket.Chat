@@ -1,3 +1,13 @@
+import type { IVoipRoom, IUser, VoipEventDataSignature } from '@rocket.chat/core-typings';
+import {
+	ICallerInfo,
+	isVoipEventAgentCalled,
+	isVoipEventAgentConnected,
+	isVoipEventCallerJoined,
+	isVoipEventQueueMemberAdded,
+	isVoipEventQueueMemberRemoved,
+	isVoipEventCallAbandoned,
+} from '@rocket.chat/core-typings';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -5,18 +15,6 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { IVoipRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
-import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
-import {
-	VoipEventDataSignature,
-	isVoipEventAgentCalled,
-	isVoipEventAgentConnected,
-	isVoipEventCallerJoined,
-	isVoipEventQueueMemberAdded,
-	isVoipEventQueueMemberRemoved,
-	isVoipEventCallAbandoned,
-} from '../../../definition/voip/IVoipClientEvents';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -268,8 +266,14 @@ export const CallProvider: FC = ({ children }) => {
 				}
 				return '';
 			},
-			closeRoom: async ({ comment, tags }: { comment: string; tags: string[] }): Promise<void> => {
-				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment: comment || '', tags }));
+			closeRoom: async (data?: { comment: string; tags: string[] }): Promise<void> => {
+				roomInfo &&
+					(await voipCloseRoomEndpoint({
+						rid: roomInfo.rid,
+						token: roomInfo.v.token || '',
+						comment: data?.comment || '',
+						tags: data?.tags,
+					}));
 				homeRoute.push({});
 				const queueAggregator = voipClient.getAggregator();
 				if (queueAggregator) {

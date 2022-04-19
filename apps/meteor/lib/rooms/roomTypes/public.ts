@@ -1,4 +1,4 @@
-import type { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
+import { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
 import type { RoomCoordinator } from '../coordinator';
 
 export function getPublicRoomType(coordinator: RoomCoordinator): IRoomTypeConfig {

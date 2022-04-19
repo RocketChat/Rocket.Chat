@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import type { IMessage } from '@rocket.chat/core-typings';
+
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
 import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
-import { IMessage } from '../../../../definition/IMessage';
 
 /**
  *
