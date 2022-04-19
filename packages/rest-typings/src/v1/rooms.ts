@@ -43,28 +43,28 @@ export type RoomsEndpoints = {
       discussion: IRoom;
     };
   };
-	'/v1/rooms.export': {
-		POST: {
-			(
-				params:
-					| {
-							rid: IRoom['_id'];
-							type: 'file';
-							dateFrom?: string;
-							dateTo?: string;
-							format: 'html' | 'json';
-					  }
-					| {
-							rid: IRoom['_id'];
-							type: 'email';
-							toUsers: string[];
-							toEmails: string[];
-							subject: string;
-							messages: string[];
-					  },
-			): {
-				missing: string[];
-			} | void;
-		};
-	};
+  "/v1/rooms.export": {
+    POST: {
+      (
+        params:
+          | {
+              rid: IRoom["_id"];
+              type: "file";
+              dateFrom?: string;
+              dateTo?: string;
+              format: "html" | "json";
+            }
+          | {
+              rid: IRoom["_id"];
+              type: "email";
+              toUsers: string[];
+              toEmails: string[];
+              subject: string;
+              messages: string[];
+            }
+      ): {
+        missing: string[];
+      } | void;
+    };
+  };
 };
