@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
-import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -413,21 +412,13 @@ export const saveUser = function (userId, userData) {
 	callbacks.run('afterSaveUser', userData);
 
 	// App IPostUserUpdated event hook
-	try {
-		Promise.await(
-			Apps.triggerEvent(AppEvents.IPostUserUpdated, {
-				user: userData,
-				previousUser: oldUserData,
-				performedBy: Meteor.user(),
-			}),
-		);
-	} catch (error) {
-		if (error instanceof AppsEngineException) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
-
-		throw error;
-	}
+	Promise.await(
+		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+			user: userData,
+			previousUser: oldUserData,
+			performedBy: Meteor.user(),
+		}),
+	);
 
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
