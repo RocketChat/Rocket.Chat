@@ -7,11 +7,14 @@
 	"scripts": {
 		"postinstall": "husky install",
 		"build": "turbo run build",
+		"prebuild": "echo \"use yarn build\" & exit 1",
 		"build:services": "turbo run build --filter=rocketchat-services...",
 		"build:ci": "turbo run build:ci",
 		"testunit": "turbo run testunit",
 		"dev": "turbo run dev --filter=@rocket.chat/meteor...",
+		"predev": "echo \"use yarn dev\" & exit 1",
 		"lint": "turbo run lint",
+		"prelint": "echo \"use yarn lint\" & exit 1",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
 	},
 	"devDependencies": {
@@ -34,8 +37,9 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
-		"npm": ">=7.0.0",
-		"node": ">=14.0.0 <15"
+		"yarn": "3.2.0",
+		"node": ">=14.0.0 <15",
+		"npm": "Use yarn instead"
 	},
 	"packageManager": "yarn@3.2.0",
 	"houston": {
