@@ -1,4 +1,4 @@
-import type { IMDMSession, IMDMSessionParams } from "@rocket.chat/core-typings";
+import type { IMDMSession, IMDMSessionParams } from "./IMDMSession";
 
 export type SessionsEndpoints = {
   "sessions.list": {
