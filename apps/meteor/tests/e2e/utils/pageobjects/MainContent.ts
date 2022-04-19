@@ -5,7 +5,6 @@ import { expect, Locator } from '@playwright/test';
 import BasePage from './BasePage';
 
 class MainContent extends BasePage {
-
 	public mainContent(): Locator {
 		return this.getPage().locator('.main-content');
 	}
@@ -381,7 +380,7 @@ class MainContent extends BasePage {
 
 	public async openMessageActionMenu(): Promise<void> {
 		await this.messageOptionsBtn().hover();
-		await this.messageOptionsBtn().waitFor({ state: 'visible' })
+		await this.messageOptionsBtn().waitFor({ state: 'visible' });
 	}
 }
 
