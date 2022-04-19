@@ -423,10 +423,14 @@ export class APIClass extends Restivus {
 							connection,
 						});
 
-						const store = new Set([{ type: 'rest', route: this.request.route, method: this.request.method, userId: this.userId }]);
-						asyncMethodCallContextStore.enterWith(store);
-
-						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
+						const store = [{ type: 'rest', route: this.request.route, method: this.request.method, userId: this.userId }];
+						console.log('api')
+						Promise.await(Promise.await(asyncMethodCallContextStore.run(store, () => {
+							console.log('api', 1);
+							result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this)) || API.v1.success();
+							console.log('api', 1.1, result);
+						})));
+						console.log('api', this.request.route, {result});
 
 						log.http({
 							status: result.statusCode,

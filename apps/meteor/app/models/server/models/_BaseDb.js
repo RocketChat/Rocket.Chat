@@ -48,6 +48,7 @@ function getCallerNames(skip = 3, limit = 2) {
 const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 const DurationStart = new Map();
 client.on('commandStarted', (event) => {
+	console.log('asyncMethodCallContextStore.getStore()', asyncMethodCallContextStore.getStore());
 	DurationStart.set(event.requestId, event);
 	if (asyncMethodCallContextStore.getStore()) {
 		console.log(1, asyncMethodCallContextStore.getStore());

@@ -1,13 +1,13 @@
-import { AsyncLocalStorage } from 'async_hooks';
+import { FibersContextStore } from '../../../server/sdk/lib/ContextStore';
 
-export type asyncMethodCallContextStoreItem = Set<{
+export type asyncMethodCallContextStoreItem = {
 	type: 'rest' | 'ddp' | 'model';
 	userId?: string;
 	method?: string;
 	route?: string;
-}>;
+}[];
 
-export const asyncMethodCallContextStore = new AsyncLocalStorage<asyncMethodCallContextStoreItem>();
+export const asyncMethodCallContextStore = new FibersContextStore<asyncMethodCallContextStoreItem>();
 
 export function traceInstanceMethods<T extends object>(instance: T, ignoreMethods: string[] = []): T {
 	const className = instance.constructor.name;
@@ -18,8 +18,9 @@ export function traceInstanceMethods<T extends object>(instance: T, ignoreMethod
 				return new Proxy(target[prop], {
 					apply: (target, thisArg, argumentsList): any => {
 						const store = asyncMethodCallContextStore.getStore();
-						if (store) {
-							store.add({ type: 'model', method: `${className}.${prop}` });
+						if (store?.push) {
+							console.log(store);
+							store.push({ type: 'model', method: `${className}.${prop}` });
 						}
 						return Reflect.apply(target, thisArg, argumentsList);
 					},

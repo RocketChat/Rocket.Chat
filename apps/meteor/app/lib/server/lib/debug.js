@@ -72,10 +72,13 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 			...getMethodArgs(name, originalArgs),
 		});
 
-		const store = new Set([{ type: 'ddp', method: name, userId: this.userId }]);
-		asyncMethodCallContextStore.enterWith(store);
-
-		const result = originalHandler.apply(this, originalArgs);
+		const store = [{ type: 'ddp', method: name, userId: this.userId }];
+		let result;
+		console.log('method');
+		Promise.await(asyncMethodCallContextStore.run(store, () => {
+			result = originalHandler.apply(this, originalArgs);
+		}));
+		console.log('method', {result});
 		end();
 		return result;
 	};
