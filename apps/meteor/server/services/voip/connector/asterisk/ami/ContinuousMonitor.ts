@@ -101,9 +101,9 @@ export class ContinuousMonitor extends Command {
 		});
 		if (user) {
 			if (isIQueueMemberAddedEvent(event)) {
-				api.broadcast(`voip.events`, user._id, { data: { queue, queuedCalls: calls }, event: 'queuememberadded' });
+				api.broadcast(`voip.events`, user._id, { data: { queue, queuedCalls: calls }, event: 'queue-member-added' });
 			} else if (isIQueueMemberRemovedEvent(event)) {
-				api.broadcast(`voip.events`, user._id, { event: 'queuememberremoved', data: { queue, queuedCalls: calls } });
+				api.broadcast(`voip.events`, user._id, { event: 'queue-member-removed', data: { queue, queuedCalls: calls } });
 			}
 		}
 	}
@@ -130,7 +130,7 @@ export class ContinuousMonitor extends Command {
 			name: event.calleridname,
 		};
 
-		api.broadcast('voip.events', user._id, { event: 'agentcalled', data: { callerId, queue: event.queue } });
+		api.broadcast('voip.events', user._id, { event: 'agent-called', data: { callerId, queue: event.queue } });
 		// api.broadcast('queue.agentcalled', user._id, event.queue, callerId);
 	}
 
@@ -186,7 +186,7 @@ export class ContinuousMonitor extends Command {
 				await this.storePbxEvent(event, 'QueueCallerJoin');
 				this.logger.debug(`Broadcasting event queue.callerjoined to ${members.length} agents on queue ${event.queue}`);
 				members.forEach((m) => {
-					api.broadcast('voip.events', m, { event: 'callerjoined', data: { callerId, queue: event.queue, queuedCalls: event.count } });
+					api.broadcast('voip.events', m, { event: 'caller-joined', data: { callerId, queue: event.queue, queuedCalls: event.count } });
 				});
 				break;
 			}
@@ -195,7 +195,7 @@ export class ContinuousMonitor extends Command {
 				await this.storePbxEvent(event, 'QueueCallerAbandon');
 				this.logger.debug(`Broadcasting event queue.callabandoned to ${members.length} agents on queue ${event.queue}`);
 				members.forEach((m) => {
-					api.broadcast('voip.events', m, { event: 'callabandoned', data: { queue: event.queue, queuedCallAfterAbandon: calls } });
+					api.broadcast('voip.events', m, { event: 'call-abandoned', data: { queue: event.queue, queuedCallAfterAbandon: calls } });
 				});
 				break;
 			}
@@ -207,7 +207,7 @@ export class ContinuousMonitor extends Command {
 				members.forEach((m) => {
 					// event.holdtime signifies wait time in the queue.
 					api.broadcast('voip.events', m, {
-						event: 'agentconnected',
+						event: 'agent-connected',
 						data: { queue: event.queue, queuedCalls: calls, waitTimeInQueue: event.holdtime },
 					});
 				});
