@@ -2,14 +2,11 @@ import debounce from 'lodash.debounce';
 
 import { settings } from '../../settings/server';
 import { Voip } from '../../../server/sdk';
-import { api } from '../../../server/sdk/api';
 
 const debouncedRefresh = debounce(Voip.refresh, 1000);
 
-settings.watch('VoIP_Enabled', async (value: boolean) => {
-	const data = value ? await Voip.init() : Voip.stop();
-	api.broadcast('connector.statuschanged', value);
-	return data;
+settings.watch('VoIP_Enabled', (value: boolean) => {
+	return value ? Voip.init() : Voip.stop();
 });
 
 settings.changeMultiple(

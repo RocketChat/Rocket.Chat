@@ -30,11 +30,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
 
 	useEffect(() => {
-		const voipEnableEventHandler = (...args: any[]): void => {
-			let enabled = false;
-			if (args.length === 1 && args[0]) {
-				enabled = args[0];
-			}
+		const voipEnableEventHandler = (enabled: boolean): void => {
 			setVoipEnabled(enabled);
 		};
 		return subscribeToNotifyLoggedIn(`voip.statuschanged`, voipEnableEventHandler);
