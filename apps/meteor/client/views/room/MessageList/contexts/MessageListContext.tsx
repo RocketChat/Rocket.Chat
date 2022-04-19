@@ -20,6 +20,11 @@ export type MessageListContextValue = {
 				regex: RegExp;
 				urlRegex: RegExp;
 		  }[];
+	katex?: {
+		enabled: boolean;
+		dollarSyntaxEnabled: boolean;
+		parenthesisSyntaxEnabled: boolean;
+	};
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -57,6 +62,7 @@ export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] 
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
+export const useMessageListKatex = (): MessageListContextValue['katex'] => useContext(MessageListContext).katex;
 
 export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
 	useContext(MessageListContext).useUserHasReacted(message);
