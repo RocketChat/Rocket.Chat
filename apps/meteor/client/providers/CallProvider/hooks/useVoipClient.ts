@@ -3,7 +3,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
+import { useEndpoint, useStream } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useUser } from '../../../contexts/UserContext';
 import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
@@ -21,12 +21,24 @@ const empty = {};
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
 export const useVoipClient = (): UseVoipClientResult => {
-	const voipEnabled = useSetting('VoIP_Enabled');
+	const [voipEnabled, setVoipEnabled] = useSafely(useState(useSetting('VoIP_Enabled')));
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
 	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
 	const user = useUser();
+	const subscribeToNotifyLoggedIn = useStream('notify-logged');
 	const iceServers = useWebRtcServers();
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
+
+	useEffect(() => {
+		const voipEnableEventHandler = (...args: any[]): void => {
+			let enabled = false;
+			if (args.length === 1 && args[0]) {
+				enabled = args[0];
+			}
+			setVoipEnabled(enabled);
+		};
+		return subscribeToNotifyLoggedIn(`voip.statuschanged`, voipEnableEventHandler);
+	}, [setResult, setVoipEnabled, subscribeToNotifyLoggedIn]);
 
 	useEffect(() => {
 		const uid = user?._id;
