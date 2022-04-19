@@ -31,15 +31,17 @@ export const WrapUpCallModal = (): ReactElement => {
 		setValue('tags', value);
 	};
 
-	const onSubmit: SubmitHandler<WrapUpCallPayload> = (data): void => {
+	const onSubmit: SubmitHandler<WrapUpCallPayload> = (data: { comment?: string; tags?: string[] }): void => {
 		closeRoom(data);
 		closeModal();
 	};
 
 	const onCancel = (): void => {
-		closeRoom({});
+		closeRoom();
 		closeModal();
 	};
+
+	useEffect(() => closeRoom, [closeRoom]);
 
 	return (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>

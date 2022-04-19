@@ -6,7 +6,22 @@
  * This class thus abstracts user from Browser specific media details as well as
  * SIP specific protol details.
  */
-
+import {
+	CallStates,
+	ConnectionState,
+	IQueueMembershipSubscription,
+	ICallerInfo,
+	Operation,
+	SignallinSocketEvents,
+	SocketEventKeys,
+	UserState,
+	IMediaStreamRenderer,
+	VoIPUserConfiguration,
+	VoIpCallerInfo,
+	IState,
+	VoipEvents,
+	WorkflowTypes,
+} from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import {
 	UserAgent,
@@ -22,17 +37,6 @@ import {
 import { OutgoingByeRequest, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
-import { IQueueMembershipSubscription } from '../../../definition/IVoipExtension';
-import { CallStates } from '../../../definition/voip/CallStates';
-import { ConnectionState } from '../../../definition/voip/ConnectionState';
-import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
-import { Operation } from '../../../definition/voip/Operations';
-import { SocketEventKeys, SignallinSocketEvents } from '../../../definition/voip/SignallingSocketEvents';
-import { UserState } from '../../../definition/voip/UserState';
-import { IMediaStreamRenderer, VoIPUserConfiguration } from '../../../definition/voip/VoIPUserConfiguration';
-import { VoIpCallerInfo, IState } from '../../../definition/voip/VoIpCallerInfo';
-import { VoipEvents } from '../../../definition/voip/VoipEvents';
-import { WorkflowTypes } from '../../../definition/voip/WorkflowTypes';
 import { toggleMediaStreamTracks } from './Helper';
 import { QueueAggregator } from './QueueAggregator';
 import Stream from './Stream';
