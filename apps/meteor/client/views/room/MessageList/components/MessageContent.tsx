@@ -17,7 +17,7 @@ import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageShowReadReceipt } from '../contexts/MessageListContext';
+import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import EncryptedMessageRender from './EncryptedMessageRender';
 import ReactionsList from './MessageReactionsList';
@@ -36,7 +36,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 	const runActionLink = useMessageRunActionLink();
 
 	const oembedIsEnabled = useMessageOembedIsEnabled();
-	const shouldShowReadReceipt = useMessageShowReadReceipt({ message });
+	const shouldShowReadReceipt = useMessageListShowReadReceipt({ message });
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const isEncryptedMessage = isE2EEMessage(message);
 
