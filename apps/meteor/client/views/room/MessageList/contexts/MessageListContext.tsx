@@ -5,7 +5,6 @@ export type MessageListContextValue = {
 	useShowTranslated: ({ message }: { message: IMessage }) => boolean;
 	useShowStarred: ({ message }: { message: IMessage }) => boolean;
 	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
-	useShowReadReceipt: ({ message }: { message: IMessage }) => boolean;
 	useMessageDateFormatter: () => (date: Date) => string;
 	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
 	useReactToMessage: (message: IMessage) => (reaction: string) => void;
@@ -27,7 +26,6 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	useShowTranslated: () => false,
 	useShowStarred: () => false,
 	useShowFollowing: () => false,
-	useShowReadReceipt: () => false,
 	useUserHasReacted: () => (): boolean => false,
 	useMessageDateFormatter:
 		() =>

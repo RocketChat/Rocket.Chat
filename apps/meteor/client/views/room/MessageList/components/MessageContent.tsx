@@ -36,7 +36,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 	const runActionLink = useMessageRunActionLink();
 
 	const oembedIsEnabled = useMessageOembedIsEnabled();
-	const shouldShowReadReceipt = useMessageListShowReadReceipt({ message });
+	const shouldShowReadReceipt = useMessageListShowReadReceipt();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const isEncryptedMessage = isE2EEMessage(message);
 

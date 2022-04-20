@@ -75,7 +75,6 @@ export const MessageListProvider: FC<{
 			useShowStarred: hasSubscription
 				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
-			useShowReadReceipt: ({ message }): boolean => showReadReceipt && !message.unread,
 			useMessageDateFormatter:
 				() =>
 				(date: Date): string =>
