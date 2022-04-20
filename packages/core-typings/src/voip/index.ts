@@ -7,7 +7,7 @@ export * from "./IQueueInfo";
 export * from "./IRegisterHandlerDelegate";
 export * from "./IRegistrationInfo";
 export * from "./Operations";
-export * from "./SignallingSocketEvents";
+export * from "./SignalingSocketEvents";
 export * from "./UserState";
 export * from "./VoipClientEvents";
 export * from "./VoipEvents";
