@@ -30,6 +30,7 @@ const removePossibleNullValues = ({
 	reactions,
 	...message
 }: any): IMessage => ({
+	...message,
 	editedBy: ifNullUndefined(editedBy),
 	editedAt: ifNullUndefined(editedAt),
 	emoji: ifNullUndefined(emoji),
@@ -39,7 +40,6 @@ const removePossibleNullValues = ({
 	groupable: ifNullUndefined(groupable),
 	attachments: ifNullUndefined(attachments),
 	reactions: ifNullUndefined(reactions),
-	...message,
 });
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
