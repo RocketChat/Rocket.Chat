@@ -7,6 +7,7 @@ import {
 	MessageSystemName,
 	MessageSystemTimestamp,
 	MessageSystemBlock,
+	CheckBox,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
@@ -17,6 +18,7 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { TranslationKey, useTranslation } from '../../../../contexts/TranslationContext';
 import { useMessageActions, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowRealName } from '../contexts/MessageListContext';
+import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 
 export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 	const t = useTranslation();
@@ -26,10 +28,16 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 
 	const messageType = MessageTypes.getType(message);
 
+	const isSelecting = useIsSelecting();
+	const toggleSelected = useToggleSelect(message._id);
+	const isSelected = useIsSelectedMessage(message._id);
+	useCountSelected();
+
 	return (
-		<MessageSystemTemplate>
+		<MessageSystemTemplate onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
 			<MessageSystemLeftContainer>
-				<UserAvatar username={message.u.username} size='x18' />
+				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
