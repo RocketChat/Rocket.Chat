@@ -5,6 +5,7 @@ import { Session } from 'meteor/session';
 import _ from 'underscore';
 
 import { appLayout } from '../../../../client/lib/appLayout';
+import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
 import { Messages, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
@@ -12,7 +13,7 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { call } from '../../../../client/lib/utils/call';
 import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
-import { CachedChatSubscription, Rooms } from '../../../models/client';
+import { Rooms, Subscriptions } from '../../../models/client';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
@@ -96,7 +97,7 @@ export const openRoom = async function (type, name, render = true) {
 			if (type === 'd') {
 				try {
 					const { rid } = await call('createDirectMessage', ...name.split(', '));
-					CachedChatSubscription.loadFromServerAndPopulate();
+					await waitUntilFind(() => Subscriptions.findOne({ rid }));
 					return FlowRouter.go('direct', { rid }, FlowRouter.current().queryParams);
 				} catch (error) {
 					console.error(error);
