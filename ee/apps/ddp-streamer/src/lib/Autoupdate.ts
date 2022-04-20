@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
 
-import { AutoUpdateRecord } from '../../../../../server/sdk/types/IMeteor';
+import { AutoUpdateRecord } from '../../../../../apps/meteor/server/sdk/types/IMeteor';
 
-export const Autoupdate = new (class Autoupdate extends EventEmitter {
+class AutoupdateSingleton extends EventEmitter {
 	private versions = new Map<string, Omit<AutoUpdateRecord, '_id'>>();
 
 	public updateVersion(record: AutoUpdateRecord): void {
@@ -15,4 +15,6 @@ export const Autoupdate = new (class Autoupdate extends EventEmitter {
 	public getVersions(): Map<string, Omit<AutoUpdateRecord, '_id'>> {
 		return this.versions;
 	}
-})();
+}
+
+export const Autoupdate = new AutoupdateSingleton();

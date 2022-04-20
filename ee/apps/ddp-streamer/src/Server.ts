@@ -8,9 +8,9 @@ import { DDP_EVENTS } from './constants';
 import { Publication } from './Publication';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
-import { MeteorService } from '../../../../server/sdk';
-import { isMeteorError, MeteorError } from '../../../../server/sdk/errors';
-import { Logger } from '../../../../server/lib/logger/Logger';
+import { MeteorService } from '../../../../apps/meteor/server/sdk';
+import { isMeteorError, MeteorError } from '../../../../apps/meteor/server/sdk/errors';
+import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const logger = new Logger('DDP-Streamer');
 
