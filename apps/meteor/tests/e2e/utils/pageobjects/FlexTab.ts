@@ -359,6 +359,10 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('.rcx-option__content:contains("Deactivate")');
 	}
 
+	public closeThreadMessage(): Locator {
+		return this.getPage().locator('/html/body/div[1]/div/div[3]/div[1]/main/div/aside/div[2]/div/div/h3/div/div[2]/button[2]');
+	}
+
 	public getUserEl(username: any): Locator {
 		return this.getPage().locator(`.flex-tab button[title="${username}"] > p`);
 	}

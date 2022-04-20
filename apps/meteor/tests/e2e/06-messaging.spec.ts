@@ -131,7 +131,7 @@ test.describe('[Messaging]', () => {
 			test.beforeAll(async () => {
 				await sideNav.general().click();
 			});
-			test.describe.only('Reply:', async () => {
+			test.describe('[Reply]', async () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('This is a message for reply');
 					await mainContent.openMessageActionMenu();
@@ -140,16 +140,16 @@ test.describe('[Messaging]', () => {
 					await mainContent.selectAction('reply');
 					await flexTab.messageInput().type('this is a reply message');
 					await flexTab.keyboardPress('Enter');
-					await flexTab.getPage().click('//*[@id="rocket-chat"]/div[3]/div[1]/main/div/aside/h3/div/button');
-
-					await expect(mainContent.reply()).toBeVisible();
+					await flexTab.closeThreadMessage().click();
+					await expect(mainContent.lastMessageQuoted()).toHaveText('this is a reply message');
 				});
 			});
 
-			test.describe('Edit:', async () => {
+			test.describe('[Edit]', async () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('This is a message for edit');
 					await mainContent.openMessageActionMenu();
+					await mainContent.openMessageActions();
 				});
 
 				test('expect edit the message', async () => {
@@ -157,10 +157,11 @@ test.describe('[Messaging]', () => {
 				});
 			});
 
-			test.describe('Delete:', async () => {
+			test.describe('[Delete]', async () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('Message for Message Delete Tests');
 					await mainContent.openMessageActionMenu();
+					await mainContent.openMessageActions();
 				});
 
 				test('exepect message is deleted', async () => {
@@ -168,12 +169,13 @@ test.describe('[Messaging]', () => {
 				});
 			});
 
-			test.describe('Quote:', async () => {
+			test.describe('[Quote]', async () => {
 				const message = `Message for quote Tests - ${Date.now()}`;
 
 				test.beforeAll(async () => {
 					await mainContent.sendMessage(message);
 					await mainContent.openMessageActionMenu();
+					await mainContent.openMessageActions();
 				});
 
 				test('it should quote the message', async () => {
@@ -183,10 +185,11 @@ test.describe('[Messaging]', () => {
 				});
 			});
 
-			test.describe('Star:', async () => {
+			test.describe('[Star]', async () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('Message for star Tests');
 					await mainContent.openMessageActionMenu();
+					await mainContent.openMessageActions();
 				});
 
 				test('it should star the message', async () => {
@@ -194,10 +197,11 @@ test.describe('[Messaging]', () => {
 				});
 			});
 
-			test.describe('Copy:', async () => {
+			test.describe('[Copy]', async () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('Message for copy Tests');
 					await mainContent.openMessageActionMenu();
+					await mainContent.openMessageActions();
 				});
 
 				test('it should copy the message', async () => {
@@ -205,10 +209,11 @@ test.describe('[Messaging]', () => {
 				});
 			});
 
-			test.describe('Permalink:', async () => {
+			test.describe('[Permalink]', async () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('Message for permalink Tests');
 					await mainContent.openMessageActionMenu();
+					await mainContent.openMessageActions();
 				});
 
 				test('it should permalink the message', async () => {

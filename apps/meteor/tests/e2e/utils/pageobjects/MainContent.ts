@@ -86,6 +86,12 @@ class MainContent extends BasePage {
 		return this.getPage().locator('.message:last-child .body .attachment-description');
 	}
 
+	public lastMessageQuoted(): Locator {
+		return this.getPage().locator(
+			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="thread-replied js-open-thread"]//span//span',
+		);
+	}
+
 	public lastMessageRoleAdded(): Locator {
 		return this.getPage().locator('.message:last-child.subscription-role-added .body');
 	}
