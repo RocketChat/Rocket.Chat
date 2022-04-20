@@ -29,6 +29,7 @@ import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { FindVoipRoomsParams } from './internalTypes';
 import { api } from '../../sdk/api';
+import { calculateOnHoldTimeForRoom } from './helper';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -266,40 +267,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return this.voipRoom.findOneByIdAndVisitorToken(rid, token, { projection });
 	}
 
-	private async calculateOnHoldTimeForRoom(room: IVoipRoom, closedAt: Date): Promise<number> {
-		if (!room || !room.callUniqueId) {
-			return 0;
-		}
-
-		const events = await this.pbxEvents.findByEvents(room.callUniqueId, ['Hold', 'Unhold']).toArray();
-		if (!events.length) {
-			// if there's no events, that means no hold time
-			return 0;
-		}
-
-		if (events.length === 1 && events[0].event === 'Unhold') {
-			// if the only event is an unhold event, something bad happened
-			return 0;
-		}
-
-		if (events.length === 1 && events[0].event === 'Hold') {
-			// if the only event is a hold event, the call was ended while on hold
-			// hold time = room.closedAt - event.ts
-			return closedAt.getTime() - events[0].ts.getTime();
-		}
-
-		let currentOnHoldTime = 0;
-
-		for (let i = 0; i < events.length; i += 2) {
-			const onHold = events[i].ts;
-			const unHold = events[i + 1]?.ts || closedAt;
-
-			currentOnHoldTime += unHold.getTime() - onHold.getTime();
-		}
-
-		return currentOnHoldTime;
-	}
-
 	async closeRoom(
 		closerParam: ILivechatVisitor | ILivechatAgent,
 		room: IVoipRoom,
@@ -313,6 +280,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		}
 
 		const { closeInfo, closeSystemMsgData } = await this.getRoomClosingData(closerParam, room, options, sysMessageId);
+		this.logger.debug(`Closing room ${room._id} by ${closerParam._id}`);
 
 		await sendMessage(user, closeSystemMsgData, room);
 
@@ -346,17 +314,17 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 	): Promise<{ closeInfo: IRoomClosingInfo; closeSystemMsgData: any }> {
 		const now = new Date();
 		const closer = isILivechatVisitor(closerParam) ? 'visitor' : 'user';
-		const callTotalHoldTime = await this.calculateOnHoldTimeForRoom(room, now);
+		const callTotalHoldTime = await calculateOnHoldTimeForRoom(room, now);
+
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
 			callDuration: now.getTime() - room.ts.getTime(),
 			closer,
 			callTotalHoldTime,
-		};
-		this.logger.debug(`Closing room ${room._id} by ${closer} ${closerParam._id}`);
-		closeData.closedBy = {
-			_id: closerParam._id,
-			username: closerParam.username,
+			closedBy: {
+				_id: closerParam._id,
+				username: closerParam.username,
+			},
 		};
 
 		const message = {
