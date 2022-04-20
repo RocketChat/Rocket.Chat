@@ -13,34 +13,19 @@ const options = {
 	},
 };
 
-// In a previous version of the app, some values were being set to null instead of undefined.
+// In a previous version of the app, some values were being set to null.
 // This is a workaround to remove those null values.
 // A migration script should be created to remove this code.
-const ifNullUndefined = <T extends any>(value: T): T | undefined => (value === null ? undefined : value);
+const nullValuesList = ['editedBy', 'editedAt', 'emoji', 'avatar', 'alias', 'customFields', 'groupable', 'attachments', 'reactions'];
 
-const removePossibleNullValues = ({
-	editedBy,
-	editedAt,
-	emoji,
-	avatar,
-	alias,
-	customFields,
-	groupable,
-	attachments,
-	reactions,
-	...message
-}: any): IMessage => ({
-	...message,
-	editedBy: ifNullUndefined(editedBy),
-	editedAt: ifNullUndefined(editedAt),
-	emoji: ifNullUndefined(emoji),
-	avatar: ifNullUndefined(avatar),
-	alias: ifNullUndefined(alias),
-	customFields: ifNullUndefined(customFields),
-	groupable: ifNullUndefined(groupable),
-	attachments: ifNullUndefined(attachments),
-	reactions: ifNullUndefined(reactions),
-});
+const removePossibleNullValues = (message: any): IMessage => {
+	nullValuesList.forEach((key) => {
+		if (message[key] === null) {
+			delete message[key];
+		}
+	});
+	return message;
+};
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	const showInMainThread = useUserPreference<boolean>('showMessageInMainThread', false);
