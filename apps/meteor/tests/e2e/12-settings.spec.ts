@@ -20,4 +20,17 @@ test.describe('[API Settings Change]', async () => {
 		expect(headersSession["X-Auth-Token"].length).toBeGreaterThan(0)
 		expect(headersSession["X-User-Id"].length).toBeGreaterThan(0)
 	})
+
+	test.describe('Message edit:', () => {
+		test('(API) expect disable message editing', async ({ request }) => {
+			const response = await request.post(
+				`${BASE_API_URL}/settings/Message_AllowEditing`,
+				{ headers: headersSession, data: { value: false } }
+			)
+			const data = await response.json()
+
+			expect(response.status()).toBe(200)
+			expect(data).toHaveProperty('success', true)
+		})
+	})
 })
