@@ -97,7 +97,7 @@
 						<span class="toggle-hidden icon-right-dir" data-message="{{msg._id}}"> {{_ "Message_Ignored"}} </span>
 					{{/if}}
 				</div>
-				<div class="body {{bodyClass}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
+				<div class="body {{bodyClass}}" data-qa-type="message-body" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 					{{#if isSnippet}}
 						<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 					{{/if}}
@@ -151,7 +151,7 @@
 							</button>
 						{{/each}}
 					</div>
-					<div class="message-actions__menu" aria-haspopup="true" title="{{_ "More_options"}}">
+					<div class="message-actions__menu" data-qa-type="message-action-menu-options" aria-haspopup="true" title="{{_ "More_options"}}">
 						{{> icon block="message-actions__menu-icon" icon="menu"}}
 					</div>
 				</div>
