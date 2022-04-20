@@ -79,11 +79,10 @@ export const MessageListProvider: FC<{
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
-
+			showReadReceipt,
 			showRoles,
 			showRealName,
 			showUsername,
-			showReadReceipt,
 			highlights: highlights
 				?.map((str) => str.trim())
 				.map((highlight) => ({

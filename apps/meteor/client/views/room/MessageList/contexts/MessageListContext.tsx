@@ -10,10 +10,10 @@ export type MessageListContextValue = {
 	useReactToMessage: (message: IMessage) => (reaction: string) => void;
 	useReactionsFilter: (message: IMessage) => (reaction: string) => string[];
 	useOpenEmojiPicker: (message: IMessage) => (event: React.MouseEvent) => void;
+	showReadReceipt: boolean;
 	showRoles: boolean;
 	showRealName: boolean;
 	showUsername: boolean;
-	showReadReceipt: boolean;
 	highlights?:
 		| {
 				highlight: string;
@@ -37,10 +37,10 @@ export const MessageListContext = createContext<MessageListContextValue>({
 		(message) =>
 		(reaction: string): string[] =>
 			message.reactions ? message.reactions[reaction]?.usernames || [] : [],
+	showReadReceipt: false,
 	showRoles: false,
 	showRealName: false,
 	showUsername: false,
-	showReadReceipt: false,
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
@@ -51,11 +51,11 @@ export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (..
 	useContext(MessageListContext).useShowFollowing(...args);
 export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
 	useContext(MessageListContext).useMessageDateFormatter(...args);
+export const useMessageListShowReadReceipt = (): MessageListContextValue['showReadReceipt'] =>
+	useContext(MessageListContext).showReadReceipt;
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
-export const useMessageListShowReadReceipt = (): MessageListContextValue['showReadReceipt'] =>
-	useContext(MessageListContext).showReadReceipt;
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 
 export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
