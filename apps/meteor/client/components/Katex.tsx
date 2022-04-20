@@ -1,8 +1,8 @@
-import React, { FC, memo } from 'react';
+import React, { memo, ReactElement } from 'react';
 
 import { createKatexMessageRendering } from '../../app/katex/client';
 
-type KatexType = {
+type KatexProps = {
 	text: string;
 	options: {
 		dollarSyntax: boolean;
@@ -10,8 +10,8 @@ type KatexType = {
 	};
 };
 
-const Katex: FC<KatexType> = ({ text, options }) => (
-	<span dangerouslySetInnerHTML={{ __html: createKatexMessageRendering(options)(`${text}`) }} />
+const Katex = ({ text, options }: KatexProps): ReactElement => (
+	<span dangerouslySetInnerHTML={{ __html: createKatexMessageRendering(options)(text) }} />
 );
 
 export default memo(Katex);

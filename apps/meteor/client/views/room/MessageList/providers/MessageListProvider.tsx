@@ -88,11 +88,12 @@ export const MessageListProvider: FC<{
 			showRoles,
 			showRealName,
 			showUsername,
-			katex: {
-				enabled: katexEnabled,
-				dollarSyntaxEnabled: katexDollarSyntaxEnabled,
-				parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled,
-			},
+			...(katexEnabled && {
+				katex: {
+					dollarSyntaxEnabled: katexDollarSyntaxEnabled,
+					parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled,
+				},
+			}),
 			highlights: highlights
 				?.map((str) => str.trim())
 				.map((highlight) => ({

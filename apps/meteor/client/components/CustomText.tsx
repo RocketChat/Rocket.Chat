@@ -1,9 +1,9 @@
-import React, { FC, memo } from 'react';
+import React, { memo, ReactElement } from 'react';
 
 import { highlightWords as getHighlightHtml } from '../../app/highlight-words/client/helper';
-import { getKatexHtml } from '../../app/katex/client';
+import Katex from './Katex';
 
-type CustomTextType = {
+type CustomTextProps = {
 	text: string;
 	wordsToHighlight?: {
 		highlight: string;
@@ -11,21 +11,16 @@ type CustomTextType = {
 		urlRegex: RegExp;
 	}[];
 	katex?: {
-		enabled: boolean;
 		dollarSyntaxEnabled: boolean;
 		parenthesisSyntaxEnabled: boolean;
 	};
 };
 
-const CustomText: FC<CustomTextType> = ({ text, wordsToHighlight, katex }) => {
-	let html = text;
-
-	if (wordsToHighlight?.length) {
-		html = getHighlightHtml(html, wordsToHighlight);
-	}
-
-	if (katex?.enabled) {
-		html = getKatexHtml(html, katex);
+const CustomText = ({ text, wordsToHighlight, katex }: CustomTextProps): ReactElement => {
+	// TODO: chapter day frontend: remove dangerouslySetInnerHTML, convert to tokens and do not mix with katex
+	const html = wordsToHighlight?.length ? getHighlightHtml(text, wordsToHighlight) : text;
+	if (katex) {
+		return <Katex text={html} katex={katex} />;
 	}
 
 	return <span dangerouslySetInnerHTML={{ __html: html }} />;

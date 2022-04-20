@@ -21,7 +21,6 @@ export type MessageListContextValue = {
 				urlRegex: RegExp;
 		  }[];
 	katex?: {
-		enabled: boolean;
 		dollarSyntaxEnabled: boolean;
 		parenthesisSyntaxEnabled: boolean;
 	};
