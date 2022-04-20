@@ -13,6 +13,7 @@ import { useUserRoom } from '../../../../contexts/UserContext';
 import { useForm } from '../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
+import { useMessages } from '../../MessageList/hooks/useMessages';
 
 type MailExportFormValues = {
 	dateFrom: string;
@@ -35,11 +36,12 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const room = useUserRoom(rid);
 	const roomName = room?.t && roomCoordinator.getRoomName(room.t, room);
 
-	const [selectedMessages, setSelected] = useState([]);
 	const [errorMessage, setErrorMessage] = useState<string>();
 
-	const messages = selectedMessageStore ? selectedMessageStore.getSelectedMessages() : selectedMessages;
+	const messages = selectedMessageStore.getSelectedMessages();
 	const count = useCountSelected();
+
+	const messageList = useMessages({ rid });
 
 	const { values, handlers } = useForm({
 		dateFrom: '',
@@ -54,7 +56,6 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const { toUsers, additionalEmails, subject } = values as MailExportFormValues;
 
 	const clearSelection = useMutableCallback(() => {
-		setSelected([]);
 		selectedMessageStore.clearStore();
 	});
 
@@ -65,10 +66,28 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		};
 	}, [selectedMessageStore]);
 
+	// add select option to legacy messages template
+	useEffect(() => {
+		const $root = $(`#chat-window-${rid}`);
+
+		$('.messages-box', $root).addClass('selectable');
+
+		const handler = function (this: any): void {
+			selectedMessageStore.toggle(this.id);
+			this.classList.toggle('selected');
+		};
+
+		$('.messages-box .message', $root).on('click', handler);
+
+		return () => {
+			$('.messages-box', $root).removeClass('selectable');
+			$('.messages-box .message', $root).off('click', handler).filter('.selected').removeClass('selected');
+		};
+	}, [rid, messageList]);
+
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
-		console.log(value, action);
 		if (!action) {
 			if (toUsers.includes(value)) {
 				return;
