@@ -22,6 +22,7 @@ const isSignedResponse = (data: any): data is { result: string } => typeof data?
 
 export const useVoipClient = (): UseVoipClientResult => {
 	const [voipEnabled, setVoipEnabled] = useSafely(useState(useSetting('VoIP_Enabled')));
+	const voipRetryCount = useSetting('VoIP_Retry_Count');
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
 	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
 	const user = useUser();
@@ -64,7 +65,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 				(async (): Promise<void> => {
 					try {
 						const subscription = await membership({ extension });
-						client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, 'video');
+						client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, Number(voipRetryCount), 'video');
 						// Today we are hardcoding workflow mode.
 						// In future, this should be ready from configuration
 						client.setWorkflowMode(WorkflowTypes.CONTACT_CENTER_USER);
@@ -84,7 +85,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 				client.clear();
 			}
 		};
-	}, [iceServers, registrationInfo, setResult, membership, voipEnabled, user?._id, user?.extension]);
+	}, [iceServers, registrationInfo, setResult, membership, voipEnabled, user?._id, user?.extension, voipRetryCount]);
 
 	return result;
 };
