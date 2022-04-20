@@ -7,6 +7,8 @@ export const Contacts = {
 	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
 		check(token, String);
 
+		const visitorEmail = s.trim(email).toLowerCase();
+
 		let contactId;
 		const updateUser = {
 			$set: {
@@ -25,7 +27,7 @@ export const Contacts = {
 
 			let existingUser = null;
 
-			if (s.trim(email) !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
+			if (visitorEmail !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(visitorEmail))) {
 				contactId = existingUser._id;
 			} else {
 				const userData = {
@@ -39,9 +41,9 @@ export const Contacts = {
 
 		updateUser.$set.name = name;
 		updateUser.$set.phone = (phone && [{ phoneNumber: phone }]) || null;
-		updateUser.$set.visitorEmails = (email && [{ address: email }]) || null;
+		updateUser.$set.visitorEmails = (visitorEmail && [{ address: visitorEmail }]) || null;
 
-		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }).map(({ _id }) => _id);
+		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }).map(({ _id }) => _id);
 
 		const livechatData = Object.keys(customFields)
 			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
