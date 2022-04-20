@@ -66,7 +66,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		};
 	}, [selectedMessageStore]);
 
-	// add select option to legacy messages template
+	// TODO: chapter day frontend -  after 5.0 remove
 	useEffect(() => {
 		const $root = $(`#chat-window-${rid}`);
 
