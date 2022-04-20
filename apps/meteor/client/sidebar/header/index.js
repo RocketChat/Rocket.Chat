@@ -18,7 +18,6 @@ const HeaderWithData = () => {
 	const t = useTranslation();
 	const { sidebar } = useLayout();
 	useSidebarPaletteColor();
-	console.log(user, 'user in index');
 
 	return (
 		<>

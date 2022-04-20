@@ -114,6 +114,17 @@ FlowRouter.route('/home', {
 	},
 });
 
+// New Routes
+FlowRouter.route('/blogs', {
+	name: 'blogs',
+	action: () => {
+		const BlogViewPage = createTemplateForComponent('BlogViewPage', () => import('../views/blog/BlogView'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: BlogViewPage });
+	},
+});
+
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
