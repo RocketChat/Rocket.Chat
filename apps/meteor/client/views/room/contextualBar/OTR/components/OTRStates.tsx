@@ -1,5 +1,5 @@
 import { Icon, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import React, { FC, ComponentProps } from 'react';
+import React, { ReactElement, ComponentProps } from 'react';
 
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 
@@ -10,7 +10,7 @@ type OTRStatesProps = {
 	onClickStart: () => void;
 };
 
-const OTRStates: FC<OTRStatesProps> = ({ title, description, icon, onClickStart }) => {
+const OTRStates = ({ title, description, icon, onClickStart }: OTRStatesProps): ReactElement => {
 	const t = useTranslation();
 
 	return (

@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Throbber } from '@rocket.chat/fuselage';
-import React, { MouseEventHandler, FC, ReactElement } from 'react';
+import React, { MouseEventHandler, ReactElement } from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/client/OtrRoomState';
 import VerticalBar from '../../../../components/VerticalBar';
@@ -18,7 +18,7 @@ type OTRProps = {
 	peerUsername: IUser['username'];
 };
 
-const OTR: FC<OTRProps> = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh, otrState, peerUsername }) => {
+const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh, otrState, peerUsername }: OTRProps): ReactElement => {
 	const t = useTranslation();
 
 	const renderOTRState = (): ReactElement => {
@@ -33,7 +33,9 @@ const OTR: FC<OTRProps> = ({ isOnline, onClickClose, onClickStart, onClickEnd, o
 				return (
 					<Box>
 						<Box fontScale='p2'>{t('Please_wait_while_OTR_is_being_established')}</Box>
-						<Throbber inheritColor />
+						<Box mb='x16'>
+							<Throbber />
+						</Box>
 					</Box>
 				);
 			case OtrRoomState.ESTABLISHED:

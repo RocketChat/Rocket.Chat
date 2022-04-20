@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useCallback, FC } from 'react';
+import { IRoom } from '@rocket.chat/core-typings';
+import React, { useEffect, useMemo, useCallback, ReactElement } from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/client/OtrRoomState';
 import { OTR as ORTInstance } from '../../../../../app/otr/client/rocketchat.otr';
@@ -7,19 +8,13 @@ import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import OTR from './OTR';
 
-const OTRWithData: FC<{ rid: string }> = ({ rid }) => {
+const OTRWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const closeTabBar = useTabBarClose();
-
 	const otr = useMemo(() => ORTInstance.getInstanceByRoomId(rid), [rid]);
-
 	const otrState = useReactiveValue(useCallback(() => (otr ? otr.state.get() : OtrRoomState.ERROR), [otr]));
-
 	const peerUserPresence = usePresence(otr.peerId);
-
 	const userStatus = peerUserPresence?.status;
-
 	const peerUsername = peerUserPresence?.username;
-
 	const isOnline = !['offline', 'loading'].includes(userStatus || '');
 
 	const handleStart = (): void => {

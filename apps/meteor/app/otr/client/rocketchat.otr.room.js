@@ -24,7 +24,6 @@ OTR.Room = class {
 		this.userId = userId;
 		this.roomId = roomId;
 		this.peerId = getUidDirectMessage(roomId);
-
 		this.state = new ReactiveVar(OtrRoomState.NOT_STARTED);
 
 		this.isFirstOTR = true;
@@ -41,6 +40,7 @@ OTR.Room = class {
 		if (currentState === nextState) {
 			return;
 		}
+
 		this.state.set(nextState);
 	}
 
