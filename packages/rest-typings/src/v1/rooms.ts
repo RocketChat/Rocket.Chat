@@ -43,7 +43,7 @@ export type RoomsEndpoints = {
       discussion: IRoom;
     };
   };
-  "/v1/rooms.export": {
+  "rooms.export": {
     POST: {
       (
         params:
