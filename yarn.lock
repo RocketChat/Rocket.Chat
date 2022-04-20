@@ -3604,9 +3604,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/livechat@npm:1.13.2":
-  version: 1.13.2
-  resolution: "@rocket.chat/livechat@npm:1.13.2"
+"@rocket.chat/livechat@npm:1.13.3":
+  version: 1.13.3
+  resolution: "@rocket.chat/livechat@npm:1.13.3"
   dependencies:
     "@kossnocorp/desvg": ^0.2.0
     "@rocket.chat/sdk": ^1.0.0-alpha.42
@@ -3626,7 +3626,7 @@ __metadata:
     query-string: ^6.13.1
     react-i18next: ^11.13.0
     whatwg-fetch: ^3.4.0
-  checksum: 1dc2329a5ac82d36d6e802c7203c26ea4b89c28a1a310e4d27c8b7d11db423c7462aaf3dc94117303b84a769dc2d5d7f5af96738ea2ffb479dca9794963f4684
+  checksum: b56a47a17fafe695950447e28da91ae43d7ed35ee7589a66d0ac0b2d6bdfeef334a694f6a6aab364a86cfcb454d0925eb488907b9c71fd165088ac711fd1ce53
   languageName: node
   linkType: hard
 
@@ -3710,7 +3710,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": ~0.31.9
     "@rocket.chat/fuselage-ui-kit": ~0.31.9
     "@rocket.chat/icons": ~0.31.9
-    "@rocket.chat/livechat": 1.13.2
+    "@rocket.chat/livechat": 1.13.3
     "@rocket.chat/logo": ~0.31.9
     "@rocket.chat/memo": ~0.31.9
     "@rocket.chat/message-parser": ~0.31.9
