@@ -111,7 +111,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 			{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
 
-			{shouldShowReadReceipt && <ReadReceipt />}
+			{shouldShowReadReceipt && <ReadReceipt unread={message.unread} />}
 		</>
 	);
 };

@@ -80,7 +80,7 @@ export const MessageListProvider: FC<{
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
-
+			showReadReceipt,
 			showRoles,
 			showRealName,
 			showUsername,
