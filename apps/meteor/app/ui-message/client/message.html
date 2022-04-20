@@ -74,6 +74,9 @@
 					{{#if showStar}}
 						<span title="{{_ "Message_has_been_starred"}}" class="starred"><i class="icon-star"></i></span>
 					{{/if}}
+					{{#if showOtrAck}}
+						<span title="{{_ "OTR_message"}}">{{> icon icon="stopwatch" }}</span>
+					{{/if}}
 					{{#if following }}
 						{{#unless msg.tcount}}
 							<span title="{{_ "Following"}}" class="following"><i class="icon-bell"></i></span>
