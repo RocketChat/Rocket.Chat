@@ -4,8 +4,8 @@ import { check } from 'meteor/check';
 import { Rooms } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
 import { archiveRoom } from '../functions';
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
 Meteor.methods({
 	archiveRoom(rid) {

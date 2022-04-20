@@ -157,6 +157,7 @@ Template.popover.onDestroyed(function () {
 
 Template.popover.events({
 	'click .js-action'(e, instance) {
+		e.stopPropagation();
 		!this.action || this.action.call(this, e, instance.data.data);
 		popover.close();
 	},

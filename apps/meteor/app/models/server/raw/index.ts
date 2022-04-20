@@ -24,7 +24,6 @@ import { LivechatBusinessHoursRaw } from './LivechatBusinessHours';
 import { LivechatCustomFieldRaw } from './LivechatCustomField';
 import { LivechatDepartmentAgentsRaw } from './LivechatDepartmentAgents';
 import { LivechatDepartmentRaw } from './LivechatDepartment';
-import { LivechatExternalMessageRaw } from './LivechatExternalMessages';
 import { LivechatInquiryRaw } from './LivechatInquiry';
 import { LivechatRoomsRaw } from './LivechatRooms';
 import { LivechatTriggerRaw } from './LivechatTrigger';
@@ -54,12 +53,10 @@ import { UploadsRaw } from './Uploads';
 import { WebdavAccountsRaw } from './WebdavAccounts';
 import { VoipRoomsRaw } from './VoipRooms';
 import ImportDataModel from '../models/ImportData';
-import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
 import LivechatCustomFieldModel from '../models/LivechatCustomField';
 import LivechatDepartmentAgentsModel from '../models/LivechatDepartmentAgents';
 import LivechatDepartmentModel from '../models/LivechatDepartment';
-import LivechatExternalMessagesModel from '../models/LivechatExternalMessages';
 import LivechatInquiryModel from '../models/LivechatInquiry';
 import LivechatRoomsModel from '../models/LivechatRooms';
 import LivechatVisitorsModel from '../models/LivechatVisitors';
@@ -86,10 +83,8 @@ export const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(
 );
 export const LivechatRooms = new LivechatRoomsRaw(LivechatRoomsModel.model.rawCollection(), trashCollection);
 export const Messages = new MessagesRaw(MessagesModel.model.rawCollection(), trashCollection);
-export const LivechatExternalMessage = new LivechatExternalMessageRaw(LivechatExternalMessagesModel.model.rawCollection(), trashCollection);
 export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.model.rawCollection(), trashCollection);
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection(), trashCollection);
-export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 // export const Roles = new RolesRaw(RolesModel.model.rawCollection(), { Users, Subscriptions }, trashCollection);
 export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection(), trashCollection);
@@ -148,6 +143,7 @@ export const Uploads = new UploadsRaw(db.collection(`${prefix}uploads`), trashCo
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${prefix}webdav_accounts`), trashCollection);
 export const VoipRoom = new VoipRoomsRaw(db.collection(`${prefix}room`), trashCollection);
 export const PbxEvent = new PbxEventsRaw(db.collection('pbx_events'), trashCollection);
+export const LivechatAgentActivity = new LivechatAgentActivityRaw(db.collection(`${prefix}livechat_agent_activity`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,

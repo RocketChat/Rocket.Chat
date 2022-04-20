@@ -1,8 +1,8 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
-import { IMessage } from '../../../../definition/IMessage';
 import { useLayout } from '../../../contexts/LayoutContext';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';

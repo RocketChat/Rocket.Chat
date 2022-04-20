@@ -1,5 +1,6 @@
+import type { ISetting } from '@rocket.chat/core-typings';
+
 import { Settings, Users } from '../../../../app/models/server';
-import { ISetting } from '../../../../definition/ISetting';
 
 type WizardSettings = Array<ISetting>;
 

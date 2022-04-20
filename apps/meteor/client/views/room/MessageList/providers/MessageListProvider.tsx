@@ -1,9 +1,8 @@
+import { IRoom, IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '@rocket.chat/core-typings';
 import React, { useMemo, FC, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
-import { IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '../../../../../definition/IMessage';
-import { IRoom } from '../../../../../definition/IRoom';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
@@ -76,6 +75,7 @@ export const MessageListProvider: FC<{
 			useShowStarred: hasSubscription
 				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
+			useShowReadReceipt: ({ message }): boolean => showReadReceipt && !message.unread,
 			useMessageDateFormatter:
 				() =>
 				(date: Date): string =>
@@ -84,7 +84,6 @@ export const MessageListProvider: FC<{
 			showRoles,
 			showRealName,
 			showUsername,
-			showReadReceipt,
 			highlights: highlights
 				?.map((str) => str.trim())
 				.map((highlight) => ({

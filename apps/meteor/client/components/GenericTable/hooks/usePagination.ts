@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { useCurrent } from './useCurrent';
 import { useItemsPerPage } from './useItemsPerPage';
 import { useItemsPerPageLabel } from './useItemsPerPageLabel';
@@ -12,19 +14,19 @@ export const usePagination = (): {
 	showingResultsLabel: ReturnType<typeof useShowingResultsLabel>;
 } => {
 	const [itemsPerPage, setItemsPerPage] = useItemsPerPage();
-
 	const [current, setCurrent] = useCurrent();
-
 	const itemsPerPageLabel = useItemsPerPageLabel();
-
 	const showingResultsLabel = useShowingResultsLabel();
 
-	return {
-		itemsPerPage,
-		setItemsPerPage,
-		current,
-		setCurrent,
-		itemsPerPageLabel,
-		showingResultsLabel,
-	};
+	return useMemo(
+		() => ({
+			itemsPerPage,
+			setItemsPerPage,
+			current,
+			setCurrent,
+			itemsPerPageLabel,
+			showingResultsLabel,
+		}),
+		[itemsPerPage, setItemsPerPage, current, setCurrent, itemsPerPageLabel, showingResultsLabel],
+	);
 };

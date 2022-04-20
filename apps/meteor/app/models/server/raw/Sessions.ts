@@ -3,12 +3,10 @@ import {
 	BulkWriteOperation,
 	BulkWriteOpResultObject,
 	Collection,
-	IndexSpecification,
 	UpdateWriteOpResult,
 	FilterQuery,
 	Cursor,
 } from 'mongodb';
-
 import type {
 	ISession,
 	UserSessionAggregation,
@@ -17,9 +15,10 @@ import type {
 	UserSessionAggregationResult,
 	DeviceSessionAggregationResult,
 	OSSessionAggregationResult,
-} from '../../../../definition/ISession';
-import { BaseRaw, ModelOptionalId } from './BaseRaw';
-import type { IUser } from '../../../../definition/IUser';
+	IUser,
+} from '@rocket.chat/core-typings';
+
+import { BaseRaw, IndexSpecification, ModelOptionalId } from './BaseRaw';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {
@@ -762,6 +761,20 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		this.col.createIndexes(this.indexes);
 	}
 
+	protected modelIndexes(): IndexSpecification[] {
+		return [
+			{ key: { instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 } },
+			{ key: { instanceId: 1, sessionId: 1, userId: 1 } },
+			{ key: { instanceId: 1, sessionId: 1 } },
+			{ key: { sessionId: 1 } },
+			{ key: { userId: 1 } },
+			{ key: { year: 1, month: 1, day: 1, type: 1 } },
+			{ key: { type: 1 } },
+			{ key: { ip: 1, loginAt: 1 } },
+			{ key: { _computedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 45 },
+		];
+	}
+
 	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
 		return this.col
 			.aggregate([
@@ -790,6 +803,10 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				limit: 1,
 			},
 		);
+	}
+
+	findOneBySessionId(sessionId: string): Promise<ISession | null> {
+		return this.findOne({ sessionId });
 	}
 
 	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
