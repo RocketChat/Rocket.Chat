@@ -45,4 +45,17 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 	});
+
+	test.describe('Message delete:', () => {
+		test('(API) expect disable message deleting', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowDeleting`, {
+				headers: headersSession,
+				data: { value: false },
+			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+	});
 });
