@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -17,7 +17,7 @@ import { SelectedMessageContext, useCountSelected } from '../../MessageList/cont
 type MailExportFormValues = {
 	dateFrom: string;
 	dateTo: string;
-	toUsers: IUser['username'][];
+	toUsers: string[];
 	additionalEmails: string;
 	subject: string;
 };
@@ -81,7 +81,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
 	const handleSubmit = async (): Promise<void> => {
-		if (toUsers.length === 0 && additionalEmails === '') {
+		if (toUsers === undefined || (toUsers?.length === 0 && additionalEmails === '')) {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
 		}
