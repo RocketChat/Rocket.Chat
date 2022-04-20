@@ -71,7 +71,7 @@ const OTR: FC<OTRProps> = ({ isOnline, onClickClose, onClickStart, onClickEnd, o
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='shredder' />
+				<VerticalBar.Icon name='stopwatch' />
 				<VerticalBar.Text>{t('OTR')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
