@@ -29,7 +29,6 @@ import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { FindVoipRoomsParams } from './internalTypes';
 import { api } from '../../sdk/api';
-import { callbacks } from '../../../lib/callbacks';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -301,7 +300,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return currentOnHoldTime;
 	}
 
-	// Comment can be used to store wrapup call data
 	async closeRoom(
 		closerParam: ILivechatVisitor | ILivechatAgent,
 		room: IVoipRoom,
@@ -314,15 +312,39 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			return false;
 		}
 
-		let { tags, comment } = options;
-		if (sysMessageId === 'voip-call-wrapup') {
-			const result = callbacks.run('voip.beforeCloseRoom', options);
-			comment = result?.filteredOptions.comment;
-			tags = result?.filteredOptions.tags;
-		}
+		const { closeInfo, closeSystemMsgData } = await this.getRoomClosingData(closerParam, room, options, sysMessageId);
 
+		await sendMessage(user, closeSystemMsgData, room);
+
+		// There's a race condition between receiving the call and receiving the event
+		// Sometimes it happens before the connection on client, sometimes it happens after
+		// For now, this data will be appended as a metric on room closing
+		await this.setCallWaitingQueueTimers(room);
+
+		this.logger.debug(`Room ${room._id} closed and timers set`);
+		this.logger.debug(`Room ${room._id} was closed at ${closeInfo.closedAt} (duration ${closeInfo.callDuration})`);
+		this.voipRoom.closeByRoomId(room._id, closeInfo);
+
+		return true;
+	}
+
+	async getRoomClosingData(
+		closerParam: ILivechatVisitor | ILivechatAgent,
+		room: IVoipRoom,
+		options: { comment?: string; tags?: string[] },
+		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
+	): Promise<{ closeInfo: IRoomClosingInfo; closeSystemMsgData: any }> {
+		console.log('Calling community version');
+		return this.getBaseRoomClosingData(closerParam, room, options, sysMessageId);
+	}
+
+	async getBaseRoomClosingData(
+		closerParam: ILivechatVisitor | ILivechatAgent,
+		room: IVoipRoom,
+		_options: { comment?: string; tags?: string[] },
+		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
+	): Promise<{ closeInfo: IRoomClosingInfo; closeSystemMsgData: any }> {
 		const now = new Date();
-		const { _id: rid } = room;
 		const closer = isILivechatVisitor(closerParam) ? 'visitor' : 'user';
 		const callTotalHoldTime = await this.calculateOnHoldTimeForRoom(room, now);
 		const closeData: IRoomClosingInfo = {
@@ -330,7 +352,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			callDuration: now.getTime() - room.ts.getTime(),
 			closer,
 			callTotalHoldTime,
-			tags,
 		};
 		this.logger.debug(`Closing room ${room._id} by ${closer} ${closerParam._id}`);
 		closeData.closedBy = {
@@ -339,21 +360,14 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		};
 
 		const message = {
-			t: sysMessageId === 'voip-call-wrapup' && !comment ? 'voip-call-ended' : sysMessageId,
-			...(comment && { msg: comment }),
+			t: sysMessageId,
 			groupable: false,
 		};
-		await sendMessage(user, message, room);
 
-		// There's a race condition between receiving the call and receiving the event
-		// Sometimes it happens before the connection on client, sometimes it happens after
-		// For now, this data will be appended as a metric on room closing
-		await this.setCallWaitingQueueTimers(room);
-
-		this.logger.debug(`Room ${room._id} closed and timers set`);
-		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
-		this.voipRoom.closeByRoomId(rid, closeData);
-		return true;
+		return {
+			closeInfo: closeData,
+			closeSystemMsgData: message,
+		};
 	}
 
 	private getQueuesForExt(
