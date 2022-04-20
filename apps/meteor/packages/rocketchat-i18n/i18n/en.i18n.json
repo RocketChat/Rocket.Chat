@@ -1679,6 +1679,7 @@
   "Enterprise_License_Description": "If your workspace is registered and license is provided by Rocket.Chat Cloud you don't need to manually update the license here.",
   "Entertainment": "Entertainment",
   "Error": "Error",
+  "Error_something_went_wrong": "Oops! Something went wrong. Please reload the page or contact an administrator.",
   "Error_404": "Error:404",
   "Error_changing_password": "Error changing password",
   "Error_loading_pages": "Error loading pages",

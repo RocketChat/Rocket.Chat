@@ -17,7 +17,8 @@ import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
+import { useMessageShowReadReceipt } from '../contexts/MessageListContext';
+import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import EncryptedMessageRender from './EncryptedMessageRender';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
@@ -35,7 +36,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 	const runActionLink = useMessageRunActionLink();
 
 	const oembedIsEnabled = useMessageOembedIsEnabled();
-	const shouldShowReadReceipt = useMessageListShowReadReceipt();
+	const shouldShowReadReceipt = useMessageShowReadReceipt({ message });
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const isEncryptedMessage = isE2EEMessage(message);
 
@@ -104,7 +105,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 			{message.location && <MessageLocation location={message.location} />}
 
-			{broadcast && user.username && (
+			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
 				<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
 
