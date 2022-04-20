@@ -15,11 +15,11 @@ import type {
 	UserSessionAggregationResult,
 	DeviceSessionAggregationResult,
 	OSSessionAggregationResult,
-	IMDMSession,
 	IUser,
 	IPaginationOptions,
 } from '@rocket.chat/core-typings';
 
+import { IMDMSession } from '../../../../../../packages/rest-typings/src/v1/sessions/IMDMSession';
 import { BaseRaw, IndexSpecification, ModelOptionalId } from './BaseRaw';
 
 type DestructuredDate = { year: number; month: number; day: number };
