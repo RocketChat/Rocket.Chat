@@ -132,13 +132,18 @@ async function startMicroservices() {
 					return resolve();
 				}
 			};
+			const cwd =
+				name === 'ddp-streamer'
+					? path.resolve(srcDir, '..', 'ee', 'apps', name, 'dist', 'ee', 'apps', 'services', name)
+					: path.resolve(srcDir, 'ee', 'server', 'services', 'dist', 'ee', 'server', 'services', name);
+
 			startProcess({
 				name: `${name} service`,
 				command: 'node',
-				params: ['service.js'],
+				params: ['src/service.js'],
 				onData: waitStart,
 				options: {
-					cwd: path.resolve(srcDir, 'ee', 'server', 'services', 'dist', 'ee', 'server', 'services', name),
+					cwd,
 					env: {
 						...appOptions.env,
 						...process.env,
