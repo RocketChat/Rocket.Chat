@@ -18,7 +18,7 @@ const options = {
 // A migration script should be created to remove this code.
 const nullValuesList = ['editedBy', 'editedAt', 'emoji', 'avatar', 'alias', 'customFields', 'groupable', 'attachments', 'reactions'];
 
-const removePossibleNullValues = (message: any): IMessage => {
+const removePossibleNullValues = <T extends Record<string, any>>(message: T): T => {
 	nullValuesList.forEach((key) => {
 		if (message[key] === null) {
 			delete message[key];
