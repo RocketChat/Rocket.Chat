@@ -148,10 +148,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 					rid,
 					type: 'unread',
 				});
-				const promises = [];
-				for (const thread of threads) {
-					promises.push(readThreads(thread?._id));
-				}
+				const promises = threads.map((thread) => readThreads(thread?._id));
 				await Promise.all(promises);
 			}
 		} catch (error) {
