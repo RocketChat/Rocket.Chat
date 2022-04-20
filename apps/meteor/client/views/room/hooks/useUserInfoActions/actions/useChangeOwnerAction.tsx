@@ -5,20 +5,20 @@ import { useMemo } from 'react';
 
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
-// TODO: add return type
-export const useChangeOwnerAction = (room: IRoom, user: Pick<IUser, '_id' | 'username'>): Action => {
+export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action => {
 	const t = useTranslation();
-	const rid = room._id;
+	const room = useUserRoom(rid);
 	const { _id: uid } = user;
 	const userCanSetOwner = usePermission('set-owner', rid);
 	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
-	const endpointPrefix = room.t === 'p' ? 'groups' : 'channels';
+	const endpointPrefix = room?.t === 'p' ? 'groups' : 'channels';
 
 	const [roomCanSetOwner] = getRoomDirectives(room);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));

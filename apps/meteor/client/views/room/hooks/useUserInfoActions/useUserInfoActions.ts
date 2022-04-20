@@ -1,7 +1,6 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 
-import { useUserRoom } from '../../../../contexts/UserContext';
 import { Action } from '../../../hooks/useActionSpread';
 import { useAudioCallAction } from './actions/useAudioCallAction';
 import { useBlockUserAction } from './actions/useBlockUserAction';
@@ -21,16 +20,15 @@ export const useUserInfoActions = (
 ): {
 	[key: string]: Action;
 } => {
-	const room = useUserRoom(rid);
 	const audioCallOption = useAudioCallAction(rid);
-	const blockUserOption = useBlockUserAction(room, user);
-	const changeLeaderOption = useChangeLeaderAction(room, user);
-	const changeModeratorOption = useChangeModeratorAction(room, user);
-	const changeOwnerOption = useChangeOwnerAction(room, user);
-	const openDirectMessageOption = useDirectMessageAction(rid, user);
-	const ignoreUserOption = useIgnoreUserAction(room, user);
-	const muteUserOption = useMuteUserAction(room, user);
-	const removeUserOption = useRemoveUserAction(room, user, reload);
+	const blockUserOption = useBlockUserAction(user, rid);
+	const changeLeaderOption = useChangeLeaderAction(user, rid);
+	const changeModeratorOption = useChangeModeratorAction(user, rid);
+	const changeOwnerOption = useChangeOwnerAction(user, rid);
+	const openDirectMessageOption = useDirectMessageAction(user, rid);
+	const ignoreUserOption = useIgnoreUserAction(user, rid);
+	const muteUserOption = useMuteUserAction(user, rid);
+	const removeUserOption = useRemoveUserAction(user, rid, reload);
 	const videoCallOption = useVideoCallAction(rid);
 
 	return useMemo(

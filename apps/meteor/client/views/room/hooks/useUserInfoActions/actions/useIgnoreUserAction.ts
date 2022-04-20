@@ -5,13 +5,13 @@ import { useMemo } from 'react';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUserId, useUserSubscription } from '../../../../../contexts/UserContext';
+import { useUserRoom, useUserId, useUserSubscription } from '../../../../../contexts/UserContext';
 import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 
-export const useIgnoreUserAction = (room: IRoom, user: Pick<IUser, '_id' | 'username'>): Action => {
+export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action => {
 	const t = useTranslation();
-	const rid = room._id;
+	const room = useUserRoom(rid);
 	const { _id: uid } = user;
 	const ownUserId = useUserId();
 	const dispatchToastMessage = useToastMessageDispatch();

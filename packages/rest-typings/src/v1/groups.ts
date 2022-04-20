@@ -96,6 +96,18 @@ export type GroupsEndpoints = {
       messages: IMessage[];
     };
   };
+  "groups.addModerator": {
+    POST: (params: { roomId: string; userId: string }) => {};
+  };
+  "groups.removeModerator": {
+    POST: (params: { roomId: string; userId: string }) => {};
+  };
+  "groups.addOwner": {
+    POST: (params: { roomId: string; userId: string }) => {};
+  };
+  "groups.removeOwner": {
+    POST: (params: { roomId: string; userId: string }) => {};
+  };
   'groups.addLeader': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};

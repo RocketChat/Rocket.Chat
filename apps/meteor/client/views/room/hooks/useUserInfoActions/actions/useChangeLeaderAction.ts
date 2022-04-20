@@ -5,18 +5,19 @@ import { useMemo } from 'react';
 
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
-export const useChangeLeaderAction = (room: IRoom, user: Pick<IUser, '_id' | 'username'>): Action => {
+export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action => {
 	const t = useTranslation();
-	const rid = room._id;
+	const room = useUserRoom(rid);
 	const { _id: uid } = user;
 	const userCanSetLeader = usePermission('set-leader', rid);
-	const endpointPrefix = room.t === 'p' ? 'groups' : 'channels';
+	const endpointPrefix = room?.t === 'p' ? 'groups' : 'channels';
 
 	const [roomCanSetLeader] = getRoomDirectives(room);
 	const isLeader = useUserHasRoomRole(uid, rid, 'leader');

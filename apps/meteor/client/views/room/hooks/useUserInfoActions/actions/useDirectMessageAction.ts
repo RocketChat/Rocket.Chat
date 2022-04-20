@@ -8,7 +8,6 @@ import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserSubscription, useUserSubscriptionByName } from '../../../../../contexts/UserContext';
 import { Action } from '../../../../hooks/useActionSpread';
 
-// TODO: add types
 const getShouldOpenDirectMessage = (
 	currentSubscription?: ISubscription,
 	usernameSubscription?: ISubscription,
@@ -20,7 +19,7 @@ const getShouldOpenDirectMessage = (
 	return canOpenDm && directMessageIsNotAlreadyOpen;
 };
 
-export const useDirectMessageAction = (rid: IRoom['_id'], user: Pick<IUser, '_id' | 'username'>): Action => {
+export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const currentSubscription = useUserSubscription(rid);
