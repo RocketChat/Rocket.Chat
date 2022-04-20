@@ -106,7 +106,7 @@ Meteor.methods({
 		}
 
 		try {
-			// If the room is bridged, send the message to Synapse only
+			// If the room is bridged, send the message to matrix only
 			const { bridged } = Rooms.findOne({ _id: message.rid }, { fields: { bridged: 1 } });
 			if (bridged) {
 				return matrixClient.message.send({ ...message, u: { _id: uid } });
