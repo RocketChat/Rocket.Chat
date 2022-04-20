@@ -1,36 +1,37 @@
-import { test, expect } from '@playwright/test'
-import { BASE_API_URL } from './utils/mocks/urlMock'
+import { test, expect } from '@playwright/test';
+
+import { BASE_API_URL } from './utils/mocks/urlMock';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
-let headersSession = {
+const headersSession = {
 	'X-Auth-Token': '',
-	'X-User-Id': ''
-}
+	'X-User-Id': '',
+};
 
 test.describe('[API Settings Change]', async () => {
 	test.beforeAll(async ({ request }) => {
-		const response = await request.post(`${BASE_API_URL}/login`, { data: adminLogin })
-		const { userId, authToken } = (await response.json()).data
+		const response = await request.post(`${BASE_API_URL}/login`, { data: adminLogin });
+		const { userId, authToken } = (await response.json()).data;
 
-		headersSession['X-Auth-Token'] = authToken
-		headersSession['X-User-Id'] = userId
+		headersSession['X-Auth-Token'] = authToken;
+		headersSession['X-User-Id'] = userId;
 	});
 
 	test('expect successfully create a session', async () => {
-		expect(headersSession["X-Auth-Token"].length).toBeGreaterThan(0)
-		expect(headersSession["X-User-Id"].length).toBeGreaterThan(0)
-	})
+		expect(headersSession['X-Auth-Token'].length).toBeGreaterThan(0);
+		expect(headersSession['X-User-Id'].length).toBeGreaterThan(0);
+	});
 
 	test.describe('Message edit:', () => {
 		test('(API) expect disable message editing', async ({ request }) => {
-			const response = await request.post(
-				`${BASE_API_URL}/settings/Message_AllowEditing`,
-				{ headers: headersSession, data: { value: false } }
-			)
-			const data = await response.json()
+			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowEditing`, {
+				headers: headersSession,
+				data: { value: false },
+			});
+			const data = await response.json();
 
-			expect(response.status()).toBe(200)
-			expect(data).toHaveProperty('success', true)
-		})
-	})
-})
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+	});
+});

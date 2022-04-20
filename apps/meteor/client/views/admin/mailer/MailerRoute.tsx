@@ -22,7 +22,7 @@ const useSendMail: useSendMailType = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return ({ fromEmail, subject, emailBody, dryRun, query }) => {
+	return ({ fromEmail, subject, emailBody, dryRun, query }): void => {
 		if (query.error) {
 			dispatchToastMessage({
 				type: 'error',
@@ -53,7 +53,7 @@ const useSendMail: useSendMailType = () => {
 	};
 };
 
-export default function MailerRoute() {
+export default function MailerRoute(): JSX.Element {
 	const canAccessMailer = usePermission('access-mailer');
 	const sendMail = useSendMail();
 
