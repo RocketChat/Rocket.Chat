@@ -302,7 +302,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		options: { comment?: string; tags?: string[] },
 		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
 	): Promise<{ closeInfo: IRoomClosingInfo; closeSystemMsgData: any }> {
-		console.log('Calling community version');
 		return this.getBaseRoomClosingData(closerParam, room, options, sysMessageId);
 	}
 
