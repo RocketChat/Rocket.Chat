@@ -26,9 +26,9 @@ export const MessageListProvider: FC<{
 	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
 	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
-	const katexEnabled = useSetting('Katex_Enabled');
-	const katexDollarSyntaxEnabled = useSetting('Katex_Dollar_Syntax');
-	const katexParenthesisSyntaxEnabled = useSetting('Katex_Parenthesis_Syntax');
+	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
+	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax'));
+	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax'));
 
 	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
