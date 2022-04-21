@@ -136,7 +136,11 @@ const propsAreEqual = (prevProps, nextProps) => {
 	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
 		return false;
 	}
-	if (prevProps.room.lastMessage?._updatedAt?.toISOString() !== nextProps.room.lastMessage?._updatedAt?.toISOString()) {
+	if (
+		typeof prevProps.lastMessage?._updatedAt === 'object' &&
+		typeof nextProps.lastMessage?._updatedAt === 'object' &&
+		prevProps.lastMessage?._updatedAt?.toISOString() !== nextProps.lastMessage?._updatedAt?.toISOString()
+	) {
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
