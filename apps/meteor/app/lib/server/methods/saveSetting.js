@@ -47,7 +47,7 @@ Meteor.methods({
 				break;
 		}
 
-		await Settings.updateValueAndEditorById(_id, value, editor);
+		await Settings.updateValueAndEditorById(_id, value, editor, uid);
 		return true;
 	}),
 });

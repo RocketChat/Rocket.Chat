@@ -1,7 +1,9 @@
 import { Cursor, FilterQuery, UpdateQuery, WriteOpResult } from 'mongodb';
 import type { ISetting, ISettingColor, ISettingSelectOption } from '@rocket.chat/core-typings';
+import { ServerEventType } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
+import { serverEvents } from '../../../../lib/serverEvents';
 
 export class SettingsRaw extends BaseRaw<ISetting> {
 	async getValueById(_id: string): Promise<ISetting['value'] | undefined> {
@@ -45,7 +47,12 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.find(query);
 	}
 
-	updateValueById<T extends ISetting['value'] = ISetting['value']>(_id: string, value: T): Promise<WriteOpResult> {
+	updateValueById<T extends ISetting['value'] = ISetting['value']>(
+		_id: string,
+		value: T,
+		_editor?: ISettingColor['editor'],
+		uid?: string,
+	): Promise<WriteOpResult> {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },
@@ -58,6 +65,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 			},
 		};
 
+		serverEvents.emit(ServerEventType.SETTING_MODIFIED, _id, value, uid);
 		return this.update(query, update);
 	}
 
@@ -72,7 +80,11 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.update(query, update);
 	}
 
-	updateValueNotHiddenById<T extends ISetting['value'] = ISetting['value']>(_id: ISetting['_id'], value: T): Promise<WriteOpResult> {
+	updateValueNotHiddenById<T extends ISetting['value'] = ISetting['value']>(
+		_id: ISetting['_id'],
+		value: T,
+		uid?: string,
+	): Promise<WriteOpResult> {
 		const query = {
 			_id,
 			hidden: { $ne: true },
@@ -85,6 +97,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 			},
 		};
 
+		serverEvents.emit(ServerEventType.SETTING_MODIFIED, _id, value, uid);
 		return this.update(query, update);
 	}
 
@@ -92,6 +105,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		_id: ISetting['_id'],
 		value: T,
 		editor: ISettingColor['editor'],
+		uid?: string,
 	): Promise<WriteOpResult> {
 		const query = {
 			blocked: { $ne: true },
@@ -106,6 +120,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 			},
 		};
 
+		serverEvents.emit(ServerEventType.SETTING_MODIFIED, _id, value, uid);
 		return this.update(query, update);
 	}
 

@@ -12,7 +12,8 @@
 		"testunit": "turbo run testunit",
 		"dev": "turbo run dev --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
-		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
+		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
+		"typecheck": "turbo run typecheck"
 	},
 	"devDependencies": {
 		"husky": "^7.0.1",

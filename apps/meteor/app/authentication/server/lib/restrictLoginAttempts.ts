@@ -1,6 +1,7 @@
 import moment from 'moment';
 import type { IServerEvent } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
+import farmhash from 'farmhash';
 
 import { ILoginAttempt } from '../ILoginAttempt';
 import { ServerEvents, Users, Rooms, Sessions } from '../../../models/server/raw';
@@ -137,9 +138,13 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 		username: login.user?.username || login.methodArguments[0].user?.username,
 	};
 
+	const userIp = getClientAddress(login.connection);
+	const hashKey = `${login.type}-${login.methodName}-${userIp}`;
+
 	await ServerEvents.insertOne({
-		ip: getClientAddress(login.connection),
+		ip: userIp,
 		t: ServerEventType.FAILED_LOGIN_ATTEMPT,
+		indexHash: farmhash.fingerprint64(hashKey),
 		ts: new Date(),
 		u: user,
 	});
@@ -151,9 +156,12 @@ export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> =
 		username: login.user?.username || login.methodArguments[0].user?.username,
 	};
 
+	const userIp = getClientAddress(login.connection);
+	const hashKey = `${login.type}-${login.methodName}-${userIp}`;
 	await ServerEvents.insertOne({
-		ip: getClientAddress(login.connection),
+		ip: userIp,
 		t: ServerEventType.LOGIN,
+		indexHash: farmhash.fingerprint64(hashKey),
 		ts: new Date(),
 		u: user,
 	});

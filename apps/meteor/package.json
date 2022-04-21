@@ -249,6 +249,7 @@
 		"exif-be-gone": "^1.2.0",
 		"express": "^4.17.1",
 		"express-rate-limit": "^5.2.6",
+		"farmhash": "3.2.2",
 		"fflate": "^0.7.1",
 		"fibers": "^5.0.1",
 		"file-type": "^10.11.0",

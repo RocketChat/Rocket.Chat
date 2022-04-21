@@ -1,4 +1,4 @@
-import type { ISetting, ISettingColor } from "@rocket.chat/core-typings";
+import type { ISetting, ISettingColor, IServerEvent } from "@rocket.chat/core-typings";
 import type { PaginatedResult } from "../helpers/PaginatedResult";
 
 type SettingsUpdateProps =
@@ -108,4 +108,8 @@ export type SettingsEndpoints = {
       }>;
     };
   };
+
+  "settings/audit": {
+		GET: (params: { id?: string; from?: string; to?: string }) => IServerEvent[];
+	};
 };

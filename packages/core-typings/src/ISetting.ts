@@ -93,6 +93,7 @@ export interface ISettingBase {
   readonly?: boolean; // todo: remove
   alert?: string; // todo: check if this is still used
   private?: boolean; // todo: remove
+  nonAuditable?: boolean;
 }
 
 export interface ISettingGroup {

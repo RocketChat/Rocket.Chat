@@ -8,8 +8,9 @@ import {
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
 } from '@rocket.chat/rest-typings';
+import farmhash from 'farmhash';
 
-import { Settings } from '../../../models/server/raw';
+import { Settings, ServerEvents } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { API, ResultFor } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
@@ -155,7 +156,8 @@ API.v1.addRoute(
 		post: {
 			twoFactorRequired: true,
 			async action(): Promise<ResultFor<'POST', 'settings/:_id'>> {
-				if (!hasPermission(this.userId, 'edit-privileged-setting')) {
+				const uid = this.userId;
+				if (!hasPermission(uid, 'edit-privileged-setting')) {
 					return API.v1.unauthorized();
 				}
 
@@ -180,13 +182,13 @@ API.v1.addRoute(
 					Settings.updateOptionsById<ISettingColor>(this.urlParams._id, {
 						editor: this.bodyParams.editor,
 					});
-					Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value, uid);
 					return API.v1.success();
 				}
 
 				if (
 					isSettingsUpdatePropDefault(this.bodyParams) &&
-					(await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value))
+					(await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value, uid))
 				) {
 					const s = await Settings.findOneNotHiddenById(this.urlParams._id);
 					if (!s) {
@@ -211,6 +213,24 @@ API.v1.addRoute(
 			return API.v1.success({
 				configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch(),
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'settings/audit',
+	{ authRequired: true, permissionsRequired: ['view-setting-audit-data'] },
+	{
+		async get() {
+			const { id, from, to } = this.queryParams;
+			const { offset: skip, count: limit } = this.getPaginationItems();
+
+			if (id) {
+				return API.v1.success(
+					await ServerEvents.findSettingEventsByIndexHashIdBetweenDate(farmhash.fingerprint64(id), from, to, { skip, limit }).toArray(),
+				);
+			}
+			return API.v1.success(await ServerEvents.findSettingEventsAuditBetweenDates(from, to, { skip, limit }).toArray());
 		},
 	},
 );

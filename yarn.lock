@@ -3880,6 +3880,7 @@ __metadata:
     exif-be-gone: ^1.2.0
     express: ^4.17.1
     express-rate-limit: ^5.2.6
+    farmhash: 3.2.2
     fast-glob: ^3.2.5
     fflate: ^0.7.1
     fibers: ^5.0.1
@@ -13152,6 +13153,17 @@ __metadata:
   version: 1.4.1
   resolution: "extsprintf@npm:1.4.1"
   checksum: a2f29b241914a8d2bad64363de684821b6b1609d06ae68d5b539e4de6b28659715b5bea94a7265201603713b7027d35399d10b0548f09071c5513e65e8323d33
+  languageName: node
+  linkType: hard
+
+"farmhash@npm:3.2.2":
+  version: 3.2.2
+  resolution: "farmhash@npm:3.2.2"
+  dependencies:
+    node-addon-api: ^4.2.0
+    node-gyp: latest
+    prebuild-install: ^7.0.0
+  checksum: 65fc5511f3568b829612e88332060f2d206a55862f89da8082673c054451901f3c7192e4dbf2cb0bdcb8f15167db97ae488472620960b53d4afad64f8cb6fb7a
   languageName: node
   linkType: hard
 
