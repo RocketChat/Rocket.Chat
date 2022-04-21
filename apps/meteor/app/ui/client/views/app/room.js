@@ -489,13 +489,13 @@ export const dropzoneEvents = {
 
 			if (e.dataTransfer.types.includes('text/uri-list')) {
 				const url = e.dataTransfer.getData('text/html').match('<a[^>]+href="(.*?)"[^>]*>');
-				const imgURL = url && url[1];
+				const mediaURL = url && url[1];
 
-				if (!imgURL) {
+				if (!mediaURL) {
 					return;
 				}
 
-				const file = await createFileFromUrl(imgURL);
+				const file = await createFileFromUrl(mediaURL);
 				if (typeof file === 'string') {
 					return addToInput(file);
 				}
