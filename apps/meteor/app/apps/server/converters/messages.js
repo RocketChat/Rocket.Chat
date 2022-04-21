@@ -120,7 +120,7 @@ export class AppMessagesConverter {
 
 		const newMessage = {
 			_id: message.id || Random.id(),
-			...(message.threadId && { tmid: message.threadId }),
+			...('threadId' in message && { tmid: message.threadId }),
 			rid: room._id,
 			u,
 			msg: message.text,
