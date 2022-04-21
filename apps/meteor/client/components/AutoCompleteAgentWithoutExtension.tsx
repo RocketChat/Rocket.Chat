@@ -1,15 +1,14 @@
+import { ILivechatAgent } from '@rocket.chat/core-typings';
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useMemo, useState } from 'react';
 
-import { ILivechatAgent } from '../../definition/ILivechatAgent';
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useAvailableAgentsList } from './Omnichannel/hooks/useAvailableAgentsList';
 
 type AutoCompleteAgentProps = {
 	onChange: (value: string) => void;
-	empty: boolean;
 	haveAll?: boolean;
 	value?: string;
 	currentExtension?: string;
@@ -55,9 +54,7 @@ const AutoCompleteAgentWithoutExtension: FC<AutoCompleteAgentProps> = (props) =>
 			onChange={onChange}
 			flexShrink={0}
 			filter={agentsFilter as string | undefined}
-			setFilter={(value?: string | number): void => {
-				setAgentsFilter(value);
-			}}
+			setFilter={setAgentsFilter}
 			options={sortedByName}
 			endReached={
 				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start, Math.min(50, agentsTotal))

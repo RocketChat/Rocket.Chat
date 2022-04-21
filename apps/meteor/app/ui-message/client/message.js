@@ -260,6 +260,10 @@ Template.message.helpers({
 			);
 		}
 	},
+	showOtrAck() {
+		const { msg } = this;
+		return msg.t === 'otr-ack';
+	},
 	translationProvider() {
 		const instance = Template.instance();
 		const { translationProvider } = instance.data.msg;

@@ -1,7 +1,6 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
-
-import { IUser } from '../../../../../definition/IUser';
 
 type ReactionUserTag = {
 	username: IUser['username'];

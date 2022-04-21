@@ -1,8 +1,8 @@
+import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
+
 import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings } from '../../sdk/index';
-import { UserStatus } from '../../../definition/UserStatus';
-import { isSettingColor } from '../../../definition/ISetting';
 
 const STATUS_MAP: { [k: string]: number } = {
 	[UserStatus.OFFLINE]: 0,
@@ -324,6 +324,10 @@ export class ListenersModule {
 
 		service.onEvent('notify.updateCustomSound', (data): void => {
 			notifications.notifyAllInThisInstance('updateCustomSound', data);
+		});
+
+		service.onEvent('connector.statuschanged', (enabled): void => {
+			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
 		});
 	}
 }
