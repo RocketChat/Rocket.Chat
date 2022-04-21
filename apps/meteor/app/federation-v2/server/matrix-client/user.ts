@@ -1,6 +1,6 @@
 import { MatrixProfileInfo } from 'matrix-bot-sdk';
-
 import { IUser } from '@rocket.chat/core-typings';
+
 import { matrixBridge } from '../bridge';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions';

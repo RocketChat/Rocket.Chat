@@ -1,4 +1,5 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
+
 import { MatrixBridgedRoom, MatrixBridgedUser } from '../../../models/server';
 import { matrixBridge } from '../bridge';
 

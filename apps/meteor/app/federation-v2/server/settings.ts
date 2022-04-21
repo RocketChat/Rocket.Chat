@@ -74,7 +74,6 @@ Meteor.startup(async function () {
 				i18nDescription: 'Federation_Matrix_registration_file_desc',
 			});
 		});
-
 	});
 });
 
@@ -84,7 +83,7 @@ const updateRegistrationFile = async function (): Promise<void> {
 	// Refresh config
 	getConfig();
 
-	let bridgeUrl = config.bridgeUrl;
+	let { bridgeUrl } = config;
 
 	if (!bridgeUrl.includes(':')) {
 		bridgeUrl = `${bridgeUrl}:3300`;

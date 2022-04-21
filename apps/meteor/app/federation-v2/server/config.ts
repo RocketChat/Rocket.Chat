@@ -23,10 +23,10 @@ function _getConfig(): IBridgeConfig {
 		bridgeUrl: settings.get('Federation_Matrix_bridge_url') as bridgeUrlString,
 		bridgeLocalpart: settings.get('Federation_Matrix_bridge_localpart') as string,
 	} as IBridgeConfig;
-};
+}
 
 export let config: IBridgeConfig = _getConfig();
 
 export function getConfig() {
 	config = _getConfig();
-};
+}

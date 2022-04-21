@@ -1,5 +1,6 @@
-import { MatrixBridgedRoom, MatrixBridgedUser } from '../../../models/server';
 import { IMessage } from '@rocket.chat/core-typings';
+
+import { MatrixBridgedRoom, MatrixBridgedUser } from '../../../models/server';
 import { matrixBridge } from '../bridge';
 
 export const send = async (message: IMessage): Promise<IMessage> => {

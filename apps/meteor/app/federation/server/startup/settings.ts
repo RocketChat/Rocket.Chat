@@ -14,8 +14,7 @@ Meteor.startup(async function () {
 	const federationPublicKey = await FederationKeys.getPublicKeyString();
 
 	settingsRegistry.addGroup('Federation', function () {
-		this.section('Rocket.Chat Federation', function() {
-
+		this.section('Rocket.Chat Federation', function () {
 			this.add('FEDERATION_Enabled', false, {
 				type: 'boolean',
 				i18nLabel: 'Enabled',
