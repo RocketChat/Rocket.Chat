@@ -26,6 +26,10 @@ export const MessageListProvider: FC<{
 	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
 	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
+	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
+	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax'));
+	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax'));
+
 	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
@@ -75,15 +79,20 @@ export const MessageListProvider: FC<{
 			useShowStarred: hasSubscription
 				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
-			useShowReadReceipt: ({ message }): boolean => showReadReceipt && !message.unread,
 			useMessageDateFormatter:
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
-
+			showReadReceipt,
 			showRoles,
 			showRealName,
 			showUsername,
+			...(katexEnabled && {
+				katex: {
+					dollarSyntaxEnabled: katexDollarSyntaxEnabled,
+					parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled,
+				},
+			}),
 			highlights: highlights
 				?.map((str) => str.trim())
 				.map((highlight) => ({
@@ -118,6 +127,9 @@ export const MessageListProvider: FC<{
 			showRealName,
 			showUsername,
 			showReadReceipt,
+			katexEnabled,
+			katexDollarSyntaxEnabled,
+			katexParenthesisSyntaxEnabled,
 			highlights,
 			reactToMessage,
 		],

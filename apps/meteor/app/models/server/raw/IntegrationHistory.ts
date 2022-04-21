@@ -4,7 +4,10 @@ import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> {
 	protected modelIndexes(): IndexSpecification[] {
-		return [{ key: { 'integration._id': 1, 'integration._createdBy._id': 1 } }];
+		return [
+			{ key: { 'integration._id': 1, 'integration._createdBy._id': 1 } },
+			{ key: { _updatedAt: 1 }, expireAfterSeconds: 30 * 24 * 60 * 60 },
+		];
 	}
 
 	removeByIntegrationId(integrationId: string): ReturnType<BaseRaw<IIntegrationHistory>['deleteMany']> {
