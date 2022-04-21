@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import BurgerBadge from './BurgerBadge';
 import BurgerIcon from './BurgerIcon';
 
