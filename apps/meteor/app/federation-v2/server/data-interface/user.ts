@@ -1,4 +1,5 @@
-import { IUser } from '../../../../definition/IUser';
+import { IUser } from '@rocket.chat/core-typings';
+
 import { Users } from '../../../models/server';
 
 export const normalize = async (userId: string): Promise<IUser> => {

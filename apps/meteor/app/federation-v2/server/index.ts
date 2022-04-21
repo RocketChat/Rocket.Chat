@@ -2,10 +2,10 @@ import { matrixBridge } from './bridge';
 import { bridgeUrlTuple, config } from './config';
 import { bridgeLogger } from './logger';
 import './settings';
-import { isFederationV2Enabled } from './tools';
+import { isFederation_MatrixEnabled } from './tools';
 
 ((): void => {
-	if (!isFederationV2Enabled()) return;
+	if (!isFederation_MatrixEnabled()) return;
 
 	bridgeLogger.info(`Running Federation V2:
 	  id: ${config.id}

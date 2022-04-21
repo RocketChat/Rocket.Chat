@@ -3,15 +3,15 @@ import { Bridge, AppServiceRegistration } from 'matrix-appservice-bridge';
 import { IMatrixEvent } from './definitions/IMatrixEvent';
 import { MatrixEventType } from './definitions/MatrixEventType';
 import { addToQueue } from './queue';
-import { settings } from '../../settings/server';
+import { config } from './config';
 
 /* eslint-disable @typescript-eslint/camelcase */
 const registrationConfig = AppServiceRegistration.fromObject({
-	id: settings.get('FederationV2_id') as string,
-	hs_token: settings.get('FederationV2_hs_token') as string,
-	as_token: settings.get('FederationV2_as_token') as string,
-	url: settings.get('FederationV2_bridge_url') as string,
-	sender_localpart: settings.get('FederationV2_bridge_localpart') as string,
+	id: config.id,
+	hs_token: config.hsToken,
+	as_token: config.asToken,
+	url: config.bridgeUrl,
+	sender_localpart: config.bridgeLocalpart,
 	namespaces: {
 		users: [
 			{
@@ -42,8 +42,8 @@ const registrationConfig = AppServiceRegistration.fromObject({
 /* eslint-enable @typescript-eslint/camelcase */
 
 export const matrixBridge = new Bridge({
-	homeserverUrl: settings.get('FederationV2_homeserver_url') as string,
-	domain: settings.get('FederationV2_homeserver_domain') as string,
+	homeserverUrl: config.homeserverUrl,
+	domain: config.homeserverDomain,
 	registration: registrationConfig,
 	disableStores: true,
 	controller: {

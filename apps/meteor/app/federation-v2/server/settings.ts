@@ -5,78 +5,86 @@ import { SHA256 } from 'meteor/sha';
 import { settings, settingsRegistry } from '../../settings/server';
 import { Settings } from '../../models/server/raw';
 import { setupLogger } from './logger';
+import { getConfig, config } from './config';
 
 Meteor.startup(async function () {
 	const uniqueId = await settings.get('uniqueID');
 	const hsToken = SHA256(`hs_${uniqueId}`);
 	const asToken = SHA256(`as_${uniqueId}`);
 
-	settingsRegistry.addGroup('FederationV2', function () {
-		this.add('FederationV2_enabled', false, {
-			readonly: false,
-			type: 'boolean',
-			i18nLabel: 'FederationV2_enabled',
-			i18nDescription: 'FederationV2_enabled_desc',
+	settingsRegistry.addGroup('Federation', function () {
+		this.section('Matrix Bridge', function () {
+			this.add('Federation_Matrix_enabled', false, {
+				readonly: false,
+				type: 'boolean',
+				i18nLabel: 'Federation_Matrix_enabled',
+				i18nDescription: 'Federation_Matrix_enabled_desc',
+				alert: 'Federation_Matrix_Enabled_Alert',
+			});
+
+			this.add('Federation_Matrix_id', `rocketchat_${uniqueId}`, {
+				readonly: true,
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_id',
+				i18nDescription: 'Federation_Matrix_id_desc',
+			});
+
+			this.add('Federation_Matrix_hs_token', hsToken, {
+				readonly: true,
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_hs_token',
+				i18nDescription: 'Federation_Matrix_hs_token_desc',
+			});
+
+			this.add('Federation_Matrix_as_token', asToken, {
+				readonly: true,
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_as_token',
+				i18nDescription: 'Federation_Matrix_as_token_desc',
+			});
+
+			this.add('Federation_Matrix_homeserver_url', 'http://localhost:8008', {
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_homeserver_url',
+				i18nDescription: 'Federation_Matrix_homeserver_url_desc',
+			});
+
+			this.add('Federation_Matrix_homeserver_domain', 'local.rocket.chat', {
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_homeserver_domain',
+				i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
+			});
+
+			this.add('Federation_Matrix_bridge_url', 'http://host.docker.internal:3300', {
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_bridge_url',
+				i18nDescription: 'Federation_Matrix_bridge_url_desc',
+			});
+
+			this.add('Federation_Matrix_bridge_localpart', 'rocket.cat', {
+				type: 'string',
+				i18nLabel: 'Federation_Matrix_bridge_localpart',
+				i18nDescription: 'Federation_Matrix_bridge_localpart_desc',
+			});
+
+			this.add('Federation_Matrix_registration_file', '', {
+				readonly: true,
+				type: 'code',
+				i18nLabel: 'Federation_Matrix_registration_file',
+				i18nDescription: 'Federation_Matrix_registration_file_desc',
+			});
 		});
 
-		this.add('FederationV2_id', `rocketchat_${uniqueId}`, {
-			readonly: true,
-			type: 'string',
-			i18nLabel: 'FederationV2_id',
-			i18nDescription: 'FederationV2_id_desc',
-		});
-
-		this.add('FederationV2_hs_token', hsToken, {
-			readonly: true,
-			type: 'string',
-			i18nLabel: 'FederationV2_hs_token',
-			i18nDescription: 'FederationV2_hs_token_desc',
-		});
-
-		this.add('FederationV2_as_token', asToken, {
-			readonly: true,
-			type: 'string',
-			i18nLabel: 'FederationV2_as_token',
-			i18nDescription: 'FederationV2_as_token_desc',
-		});
-
-		this.add('FederationV2_homeserver_url', 'http://localhost:8008', {
-			type: 'string',
-			i18nLabel: 'FederationV2_homeserver_url',
-			i18nDescription: 'FederationV2_homeserver_url_desc',
-		});
-
-		this.add('FederationV2_homeserver_domain', 'local.rocket.chat', {
-			type: 'string',
-			i18nLabel: 'FederationV2_homeserver_domain',
-			i18nDescription: 'FederationV2_homeserver_domain_desc',
-		});
-
-		this.add('FederationV2_bridge_url', 'http://host.docker.internal:3300', {
-			type: 'string',
-			i18nLabel: 'FederationV2_bridge_url',
-			i18nDescription: 'FederationV2_bridge_url_desc',
-		});
-
-		this.add('FederationV2_bridge_localpart', 'rocket.cat', {
-			type: 'string',
-			i18nLabel: 'FederationV2_bridge_localpart',
-			i18nDescription: 'FederationV2_bridge_localpart_desc',
-		});
-
-		this.add('FederationV2_registration_file', '', {
-			readonly: true,
-			type: 'code',
-			i18nLabel: 'FederationV2_registration_file',
-			i18nDescription: 'FederationV2_registration_file_desc',
-		});
 	});
 });
 
 let registrationFile = {};
 
 const updateRegistrationFile = async function (): Promise<void> {
-	let bridgeUrl = (await Settings.getValueById('FederationV2_bridge_url')) as string;
+	// Refresh config
+	getConfig();
+
+	let bridgeUrl = config.bridgeUrl;
 
 	if (!bridgeUrl.includes(':')) {
 		bridgeUrl = `${bridgeUrl}:3300`;
@@ -84,11 +92,11 @@ const updateRegistrationFile = async function (): Promise<void> {
 
 	/* eslint-disable @typescript-eslint/camelcase */
 	registrationFile = {
-		id: await Settings.getValueById('FederationV2_id'),
-		hs_token: await Settings.getValueById('FederationV2_hs_token'),
-		as_token: await Settings.getValueById('FederationV2_as_token'),
+		id: config.id,
+		hs_token: config.hsToken,
+		as_token: config.asToken,
 		url: bridgeUrl,
-		sender_localpart: await Settings.getValueById('FederationV2_bridge_localpart'),
+		sender_localpart: config.bridgeLocalpart,
 		namespaces: {
 			users: [
 				{
@@ -113,23 +121,24 @@ const updateRegistrationFile = async function (): Promise<void> {
 	/* eslint-enable @typescript-eslint/camelcase */
 
 	// Update the registration file
-	await Settings.updateValueById('FederationV2_registration_file', yaml.dump(registrationFile));
+	await Settings.updateValueById('Federation_Matrix_registration_file', yaml.dump(registrationFile));
 };
 
+// TODO: Changes here should re-initialize the bridge instead of needing a restart
 // Add settings listeners
-settings.watch('FederationV2_enabled', (value) => {
-	setupLogger.info(`Federation V2 is ${value ? 'enabled' : 'disabled'}`);
+settings.watch('Federation_Matrix_enabled', (value) => {
+	setupLogger.info(`Federation Matrix is ${value ? 'enabled' : 'disabled'}`);
 });
 
 settings.watchMultiple(
 	[
-		'FederationV2_id',
-		'FederationV2_hs_token',
-		'FederationV2_as_token',
-		'FederationV2_homeserver_url',
-		'FederationV2_homeserver_domain',
-		'FederationV2_bridge_url',
-		'FederationV2_bridge_localpart',
+		'Federation_Matrix_id',
+		'Federation_Matrix_hs_token',
+		'Federation_Matrix_as_token',
+		'Federation_Matrix_homeserver_url',
+		'Federation_Matrix_homeserver_domain',
+		'Federation_Matrix_bridge_url',
+		'Federation_Matrix_bridge_localpart',
 	],
 	updateRegistrationFile,
 );

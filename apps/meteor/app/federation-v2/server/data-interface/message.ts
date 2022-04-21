@@ -1,9 +1,8 @@
-import { IMessage } from '../../../../definition/IMessage';
-import { IUser } from '../../../../definition/IUser';
+import { IMessage, IUser } from '@rocket.chat/core-typings';
 import { dataInterface } from '.';
 
 interface INormalizedMessage extends IMessage {
-	u: IUser;
+	u: Required<Pick<IUser, "_id" | "username" | "name">>;
 }
 
 export const normalize = async (message: IMessage): Promise<INormalizedMessage> => {
@@ -11,7 +10,7 @@ export const normalize = async (message: IMessage): Promise<INormalizedMessage> 
 	const normalizedMessage: INormalizedMessage = message as INormalizedMessage;
 
 	// Normalize the user
-	normalizedMessage.u = await dataInterface.user(message.u._id);
+	normalizedMessage.u = await dataInterface.user(message.u._id) as Required<Pick<IUser, "_id" | "username" | "name">>;
 
 	return normalizedMessage;
 };
