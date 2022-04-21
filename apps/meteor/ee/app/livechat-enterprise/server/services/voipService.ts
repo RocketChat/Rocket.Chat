@@ -1,20 +1,16 @@
-import { ILivechatVisitor, ILivechatAgent, IVoipRoom, IRoomClosingInfo } from '@rocket.chat/core-typings';
+import { IRoomClosingInfo, IOmniRoomClosingMessage } from '@rocket.chat/core-typings';
 
 import { OmnichannelVoipService } from '../../../../../server/services/omnichannel-voip/service';
 import { overwriteClassOnLicense } from '../../../license/server';
 
-const { getBaseRoomClosingData } = OmnichannelVoipService.prototype;
-
 overwriteClassOnLicense('livechat-enterprise', OmnichannelVoipService, {
-	async getRoomClosingData(
+	getRoomClosingData(
 		_originalFn: any,
-		closerParam: ILivechatVisitor | ILivechatAgent,
-		room: IVoipRoom,
-		options: { comment?: string; tags?: string[] },
+		closeInfo: IRoomClosingInfo,
+		closeSystemMsgData: IOmniRoomClosingMessage,
 		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
-	): Promise<{ closeInfo: IRoomClosingInfo; closeSystemMsgData: any }> {
-		const { closeInfo, closeSystemMsgData } = await getBaseRoomClosingData(closerParam, room, options, sysMessageId);
-
+		options: { comment?: string; tags?: string[] },
+	): { closeInfo: IRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage } {
 		const { comment, tags } = options;
 		if (comment) {
 			closeSystemMsgData.msg = comment;
