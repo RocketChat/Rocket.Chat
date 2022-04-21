@@ -127,7 +127,7 @@ export class AppMessagesConverter {
 			ts: message.createdAt || new Date(),
 			_updatedAt: message.updatedAt || new Date(),
 			...(editedBy && { editedBy }),
-			...(!!message.editedAt & { editedAt: message.editedAt }),
+			...(message.editedAt && { editedAt: message.editedAt }),
 			...(message.emoji && { emoji: message.emoji }),
 			...(message.avatarUrl && { avatar: message.avatarUrl }),
 			...(message.alias && { alias: message.alias }),
