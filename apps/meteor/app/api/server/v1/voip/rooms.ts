@@ -236,7 +236,7 @@ API.v1.addRoute(
 			if (!room.open) {
 				return API.v1.failure('room-closed');
 			}
-			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, options || {});
+			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, 'voip-call-wrapup', options);
 			if (!closeResult) {
 				return API.v1.failure();
 			}

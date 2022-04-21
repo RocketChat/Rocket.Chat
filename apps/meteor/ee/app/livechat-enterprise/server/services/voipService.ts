@@ -9,9 +9,9 @@ overwriteClassOnLicense('livechat-enterprise', OmnichannelVoipService, {
 		closeInfo: IRoomClosingInfo,
 		closeSystemMsgData: IOmniRoomClosingMessage,
 		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
-		options: { comment?: string; tags?: string[] },
+		options?: { comment?: string; tags?: string[] },
 	): { closeInfo: IRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage } {
-		const { comment, tags } = options;
+		const { comment, tags } = options || {};
 		if (comment) {
 			closeSystemMsgData.msg = comment;
 		}

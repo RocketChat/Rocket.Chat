@@ -28,7 +28,8 @@ export interface IOmnichannelVoipService {
 		closer: ILivechatVisitor | ILivechatAgent,
 		room: IVoipRoom,
 		user: IUser,
-		options: { comment?: string | null; tags?: string[] | null },
+		sysMessageId?: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
+		options?: { comment?: string | null; tags?: string[] | null },
 	): Promise<boolean>;
 	handleEvent(
 		event: VoipClientEvents,
