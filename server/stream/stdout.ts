@@ -3,7 +3,17 @@ import { Log } from 'meteor/logging';
 
 import notifications from '../../app/notifications/server/lib/Notifications';
 import { getQueuedLogs, logEntries } from '../lib/logger/logQueue';
-import { ILog, ITransformLog } from '../../definition/ILog';
+
+interface ILog {
+	id: string;
+	string: string;
+	ts: Date;
+}
+interface ITransformLog {
+	id: string;
+	data: string;
+	ts: Date;
+}
 
 const processString = function (string: string, date: Date): string {
 	try {

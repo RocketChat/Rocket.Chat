@@ -1,4 +1,4 @@
-import { IOTRAlgorithm } from '../../../definition/IOTR';
+import { IOTRAlgorithm } from './IOTR';
 
 const { subtle } = crypto || window.crypto;
 

@@ -13,7 +13,7 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { IMessage } from '../../../definition/IMessage';
-import { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom, userPresenceUsername } from '../../../definition/IOTR';
+import { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom, userPresenceUsername } from './IOTR';
 import { Notifications } from '../../notifications/client';
 import { otrSystemMessages } from '../lib/constants';
 import {

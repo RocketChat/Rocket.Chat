@@ -1,8 +1,8 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import type { OTRRoom } from '../app/otr/client/OTRRoom';
-import { UserPresence } from '../client/lib/presence';
-import { IMessage } from './IMessage';
+import type { OTRRoom } from './OTRRoom';
+import { UserPresence } from '../../../client/lib/presence';
+import { IMessage } from '../../../definition/IMessage';
 
 export interface IOnUserStreamData {
 	roomId: string;

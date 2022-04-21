@@ -1,4 +1,4 @@
 import './stylesheets/otr.css';
-// import './rocketchat.otr';
+import './OTR';
 import './tabBar';
 import './messageTypes';
