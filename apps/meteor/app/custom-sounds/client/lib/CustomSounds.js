@@ -39,6 +39,9 @@ class CustomSoundsClass {
 			extension: 'mp3',
 			src: getURL('sounds/telephone.mp3'),
 		});
+		this.add({
+			_id: 'None',name: 'none',extension: '',src: getURL(''),
+		});
 	}
 
 	add(sound) {
