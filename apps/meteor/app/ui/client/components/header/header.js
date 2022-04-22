@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import {isMobile} from 'react-device-detect'
+import { isMobile } from 'react-device-detect';
 
 import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
 import HomeButton from '../../../../../client/components/HomeButton/HomeButton';
@@ -20,37 +20,37 @@ Template.header.helpers({
 	},
 	HomeButton() {
 		if (!isMobile) {
-			return null
+			return null;
 		}
 		return HomeButton;
 	},
 	BlogButton() {
 		if (!isMobile) {
-			return null
+			return null;
 		}
 		return BlogButton;
 	},
 	GameButton() {
 		if (!isMobile) {
-			return null
+			return null;
 		}
 		return GameButton;
 	},
 	ProductButton() {
 		if (!isMobile) {
-			return null
+			return null;
 		}
 		return ProductButton;
 	},
 	MessagesButton() {
 		if (!isMobile) {
-			return null
+			return null;
 		}
 		return MessagesButton;
 	},
 	TopBar() {
 		if (!isMobile) {
-			return null
+			return null;
 		}
 		return TopBar;
 	},

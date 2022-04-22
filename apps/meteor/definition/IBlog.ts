@@ -2,9 +2,7 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
 import { ITag } from './ITag';
 import { PartialBy } from './PartialBy';
-import { IPaginationOptions } from './ITeam';
-import { IQueryOptions } from './ITeam';
-import { IRecordsWithTotal } from './ITeam';
+import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from './ITeam';
 
 export interface IBlog extends IRocketChatRecord {
 	createdAt: Date;

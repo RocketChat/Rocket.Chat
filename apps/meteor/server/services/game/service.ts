@@ -1,7 +1,8 @@
+import { Db } from 'mongodb';
+
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IGameService, IGameCreateParams, IGame } from '../../../definition/IGame';
 import { GamesRaw } from '../../../app/models/server/raw/Games';
-import { Db } from 'mongodb';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 
 export class GameService extends ServiceClassInternal implements IGameService {
@@ -17,7 +18,7 @@ export class GameService extends ServiceClassInternal implements IGameService {
 
 	async create(params: IGameCreateParams): Promise<IGame> {
 		const result = await this.GameModel.insertOne(params);
-		return await this.GameModel.findOneById(result.insertedId);
+		return this.GameModel.findOneById(result.insertedId);
 	}
 
 	async delete(gameId: string): Promise<void> {
@@ -37,7 +38,7 @@ export class GameService extends ServiceClassInternal implements IGameService {
 			_id: gameId,
 		};
 		const result = await this.GameModel.updateOne(query, params);
-		return await this.GameModel.findOneById(result.upsertedId._id.toHexString());
+		return this.GameModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
 	async list(

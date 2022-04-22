@@ -1,7 +1,5 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
-import { IPaginationOptions } from './ITeam';
-import { IQueryOptions } from './ITeam';
-import { IRecordsWithTotal } from './ITeam';
+import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from './ITeam';
 
 export interface ITag extends IRocketChatRecord {
 	title: string;

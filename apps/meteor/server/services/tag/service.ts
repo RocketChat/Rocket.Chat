@@ -1,7 +1,8 @@
+import { Db } from 'mongodb';
+
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { ITagService, ITagCreateParams, ITag } from '../../../definition/ITag';
 import { TagsRaw } from '../../../app/models/server/raw/Tags';
-import { Db } from 'mongodb';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 
 export class TagService extends ServiceClassInternal implements ITagService {
@@ -17,7 +18,7 @@ export class TagService extends ServiceClassInternal implements ITagService {
 
 	async create(params: ITagCreateParams): Promise<ITag> {
 		const result = await this.TagModel.insertOne(params);
-		return await this.TagModel.findOneById(result.insertedId);
+		return this.TagModel.findOneById(result.insertedId);
 	}
 
 	async delete(tagId: string): Promise<void> {
@@ -37,7 +38,7 @@ export class TagService extends ServiceClassInternal implements ITagService {
 			_id: tagId,
 		};
 		const result = await this.TagModel.updateOne(query, params);
-		return await this.TagModel.findOneById(result.upsertedId._id.toHexString());
+		return this.TagModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
 	async list(

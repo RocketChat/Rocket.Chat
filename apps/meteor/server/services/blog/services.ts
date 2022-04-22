@@ -1,7 +1,8 @@
+import { Db } from 'mongodb';
+
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IBlogService, IBlogCreateParams, IBlog } from '../../../definition/IBlog';
 import { BlogsRaw } from '../../../app/models/server/raw/Blogs';
-import { Db } from 'mongodb';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 
 export class BlogService extends ServiceClassInternal implements IBlogService {
@@ -17,7 +18,7 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 
 	async create(params: IBlogCreateParams): Promise<IBlog> {
 		const result = await this.BlogModel.insertOne(params);
-		return await this.BlogModel.findOneById(result.insertedId);
+		return this.BlogModel.findOneById(result.insertedId);
 	}
 
 	async delete(blogId: string): Promise<void> {
@@ -37,7 +38,7 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 			_id: blogId,
 		};
 		const result = await this.BlogModel.updateOne(query, params);
-		return await this.BlogModel.findOneById(result.upsertedId._id.toHexString());
+		return this.BlogModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
 	async list(
