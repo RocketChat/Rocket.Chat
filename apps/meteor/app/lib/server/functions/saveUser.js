@@ -13,6 +13,7 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
+import { Users as UsersRaw } from '../../../models/server/raw';
 import { callbacks } from '../../../../lib/callbacks';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 
@@ -407,14 +408,14 @@ export const saveUser = function (userId, userData) {
 		updateUser.$set['emails.0.verified'] = userData.verified;
 	}
 
-	Meteor.users.update({ _id: userData._id }, updateUser);
+	const userUpdateResult = Promise.await(UsersRaw.findOneAndUpdate({ _id: userData._id }, updateUser));
 
 	callbacks.run('afterSaveUser', userData);
 
 	// App IPostUserUpdated event hook
 	Promise.await(
 		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
-			user: userData,
+			user: userUpdateResult.value,
 			previousUser: oldUserData,
 			performedBy: Meteor.user(),
 		}),
