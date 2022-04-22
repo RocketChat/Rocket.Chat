@@ -3690,7 +3690,6 @@ __metadata:
     "@types/fibers": ^3.1.1
     "@types/google-libphonenumber": ^7.4.21
     "@types/imap": ^0.8.35
-    "@types/js-yaml": ^4.0.5
     "@types/jsdom": ^16.2.12
     "@types/jsdom-global": ^3.0.2
     "@types/jsrsasign": ^9.0.3
@@ -5815,13 +5814,6 @@ __metadata:
   dependencies:
     "@types/sizzle": "*"
   checksum: 159d6f804ed1a204b3f79f2d591a271d82e866bd45bd49fb6ef40561a25dbe0f47ec7815681b44cc2db5598425f72811e7e80ab0e983d980470998ac56feb375
-  languageName: node
-  linkType: hard
-
-"@types/js-yaml@npm:^4.0.5":
-  version: 4.0.5
-  resolution: "@types/js-yaml@npm:4.0.5"
-  checksum: 7dcac8c50fec31643cc9d6444b5503239a861414cdfaa7ae9a38bc22597c4d850c4b8cec3d82d73b3fbca408348ce223b0408d598b32e094470dfffc6d486b4d
   languageName: node
   linkType: hard
 
