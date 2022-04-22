@@ -125,4 +125,14 @@ export type ChannelsEndpoints = {
       messages: IMessage[];
     };
   };
+  "channels.addAll": {
+    POST: (params: { roomId: string; activeUserOnly?: boolean }) => {
+      channel: IRoom;
+    };
+  };
+  "channels.anonymousread": {
+    GET: (params: { roomId?: string; roomName?: string }) => {
+      messages: IMessage[];
+    };
+  };
 };
