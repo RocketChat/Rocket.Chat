@@ -1,8 +1,27 @@
 import { EmailInbox } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../models';
+import { Users } from './../../../models/server';
+import { IEmailInbox } from '@rocket.chat/core-typings';
+import { InsertOneWriteOpResult, UpdateWriteOpResult, WithId } from 'mongodb';
 
-export async function findEmailInboxes({ userId, query = {}, pagination: { offset, count, sort } }) {
+export const findEmailInboxes = async ({
+	userId,
+	query = {},
+	pagination: { offset, count, sort },
+}: {
+	userId: string;
+	query?: {};
+	pagination: {
+		offset: number;
+		count: number;
+		sort?: {};
+	};
+}): Promise<{
+	emailInboxes: IEmailInbox[];
+	total: number;
+	count: number;
+	offset: number;
+}> => {
 	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
 		throw new Error('error-not-allowed');
 	}
@@ -22,16 +41,19 @@ export async function findEmailInboxes({ userId, query = {}, pagination: { offse
 		offset,
 		total,
 	};
-}
+};
 
-export async function findOneEmailInbox({ userId, _id }) {
+export const findOneEmailInbox = async ({ userId, _id }: { userId: string; _id: string }): Promise<IEmailInbox | null> => {
 	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
 		throw new Error('error-not-allowed');
 	}
 	return EmailInbox.findOneById(_id);
-}
+};
 
-export async function insertOneOrUpdateEmailInbox(userId, emailInboxParams) {
+export const insertOneOrUpdateEmailInbox = async (
+	userId: string,
+	emailInboxParams: IEmailInbox,
+): Promise<InsertOneWriteOpResult<WithId<IEmailInbox>> | UpdateWriteOpResult> => {
 	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailInboxParams;
 
 	if (!_id) {
@@ -41,7 +63,7 @@ export async function insertOneOrUpdateEmailInbox(userId, emailInboxParams) {
 		return EmailInbox.insertOne(emailInboxParams);
 	}
 
-	const emailInbox = await findOneEmailInbox({ userId, id: _id });
+	const emailInbox = await findOneEmailInbox({ userId, _id: _id });
 
 	if (!emailInbox) {
 		throw new Error('error-invalid-email-inbox');
@@ -57,23 +79,17 @@ export async function insertOneOrUpdateEmailInbox(userId, emailInboxParams) {
 			smtp,
 			imap,
 			_updatedAt: new Date(),
+			...(department !== 'All' && { department }),
 		},
+		...(department === 'All' && { $unset: { department: 1 as const } }),
 	};
 
-	if (department === 'All') {
-		updateEmailInbox.$unset = {
-			department: 1,
-		};
-	} else {
-		updateEmailInbox.$set.department = department;
-	}
-
 	return EmailInbox.updateOne({ _id }, updateEmailInbox);
-}
+};
 
-export async function findOneEmailInboxByEmail({ userId, email }) {
+export const findOneEmailInboxByEmail = async ({ userId, email }: { userId: string; email: string }): Promise<IEmailInbox | null> => {
 	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
 		throw new Error('error-not-allowed');
 	}
 	return EmailInbox.findOne({ email });
-}
+};
