@@ -118,6 +118,8 @@ API.v1.addRoute(
 			});
 
 			const { email } = this.queryParams;
+
+			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
 			const emailInbox = await EmailInbox.findOne({ email });
 
 			return API.v1.success({ emailInbox });
