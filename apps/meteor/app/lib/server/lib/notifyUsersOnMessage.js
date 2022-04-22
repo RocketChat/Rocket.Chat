@@ -2,6 +2,7 @@ import moment from 'moment';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Rooms, Subscriptions } from '../../../models/server';
+import { Subscriptions as SubscriptionsRaw } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -85,7 +86,7 @@ const getUserIdsFromHighlights = (rid, message) => {
 		.map(({ u: { _id: uid } }) => uid);
 };
 
-export function updateUsersSubscriptions(message, room) {
+/* export function updateUsersSubscriptions(message, room) {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
 		const { toAll, toHere, mentionIds } = getMentions(message);
@@ -115,6 +116,39 @@ export function updateUsersSubscriptions(message, room) {
 	// We now set alert and open properties in two separate update commands. This proved to be more efficient on MongoDB - because it uses a more efficient index.
 	Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
 	Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id);
+} */
+
+export async function updateUsersSubscriptions(message, room) {
+	if (room != null && !message.tmid) {
+		const { toAll, toHere, mentionIds } = getMentions(message);
+
+		const userIds = new Set(mentionIds);
+
+		const unreadSetting = room.t === 'd' ? 'Unread_Count_DM' : 'Unread_Count';
+		const unreadCount = settings.get(unreadSetting);
+
+		getUserIdsFromHighlights(room._id, message).forEach((uid) => userIds.add(uid));
+
+		// give priority to user mentions over group mentions
+		if (userIds.size > 0) {
+			incUserMentions(room._id, room.t, [...userIds], unreadCount);
+		} else if (toAll || toHere) {
+			incGroupMentions(room._id, room.t, message.u._id, unreadCount);
+		}
+
+		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
+		if (!toAll && !toHere && unreadCount === 'all_messages') {
+			await SubscriptionsRaw.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
+		}
+	}
+
+	// Update all other subscriptions to alert their owners but without incrementing
+	// the unread counter, as it is only for mentions and direct messages
+	// We now set alert and open properties in two separate update commands. This proved to be more efficient on MongoDB - because it uses a more efficient index.
+	await Promise.all([
+		SubscriptionsRaw.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
+		SubscriptionsRaw.setOpenForRoomIdExcludingUserId(message.rid, message.u._id),
+	]);
 }
 
 export function updateThreadUsersSubscriptions(message, room, replies) {
@@ -131,7 +165,7 @@ export function updateThreadUsersSubscriptions(message, room, replies) {
 	Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());
 }
 
-export function notifyUsersOnMessage(message, room) {
+export async function notifyUsersOnMessage(message, room) {
 	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (message.editedAt) {
 		if (Math.abs(moment(message.editedAt).diff()) > 60000) {
@@ -166,7 +200,7 @@ export function notifyUsersOnMessage(message, room) {
 	// Update all the room activity tracker fields
 	Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
 
-	updateUsersSubscriptions(message, room);
+	await updateUsersSubscriptions(message, room);
 
 	return message;
 }
