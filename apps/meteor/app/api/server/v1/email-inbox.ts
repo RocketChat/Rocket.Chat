@@ -12,7 +12,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+			const { sort, query }: { sort: {}; query: {} } = this.parseJsonQuery();
 			const emailInboxes = await findEmailInboxes({ userId: this.userId, query, pagination: { offset, count, sort } });
 
 			return API.v1.success(emailInboxes);
