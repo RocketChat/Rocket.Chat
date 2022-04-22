@@ -105,7 +105,7 @@ MessageTypes.registerType({
 		}
 		return message.msg;
 	},
-});
+} as any); // to omit message prop
 
 MessageTypes.registerType({
 	id: 'omnichannel_placed_chat_on_hold',

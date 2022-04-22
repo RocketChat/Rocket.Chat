@@ -314,10 +314,6 @@ export type OmnichannelEndpoints = {
 		GET: () => { settings: ISetting[] };
 	};
 
-	'livechat/messages.external/:roomId': {
-		GET: (params: { roomId: string }) => {};
-	};
-
 	'livechat/office-hours': {
 		GET: (params: {}) => { officeHours: IBusinessHourWorkHour[] | undefined };
 	};

@@ -272,7 +272,10 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ id, token, name, email, department, phone, username, connectionData, status = 'online' } = {}) {
+	registerGuest(guest) {
+		const { id, token, name, department, phone, connectionData, status = 'online' } = guest || {};
+		let { email, username } = guest || {};
+
 		check(token, String);
 		check(id, Match.Maybe(String));
 
