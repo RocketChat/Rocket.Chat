@@ -1,7 +1,7 @@
 import formatDistance from 'date-fns/formatDistance';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
-import { IMessage, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 

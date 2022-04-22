@@ -1,4 +1,4 @@
-import { typedJsonParse } from '../../../lib/typedJsonParse';
+import { typedJsonParse } from '../../../lib/typedJSONParse';
 
 type DateParam = { start?: string; end?: string };
 const parseDateParams = (date?: string): DateParam => {
