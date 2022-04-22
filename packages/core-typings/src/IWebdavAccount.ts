@@ -10,5 +10,5 @@ export interface IWebdavAccount extends IRocketChatRecord {
 
 export type IWebdavAccountPayload = Pick<
 	IWebdavAccount,
-	'_id' | 'username' | 'serverURL' | 'name'
+	'serverURL' | 'username' | 'password' | 'name'
 >;

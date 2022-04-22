@@ -1,9 +1,9 @@
-import type { IWebdavAccountPayload } from "@rocket.chat/core-typings";
+import type { IWebdavAccount } from "@rocket.chat/core-typings";
 
 export type WebdavEndpoints = {
 	'webdav.getMyAccounts': {
 		GET: () => {
-			accounts: IWebdavAccountPayload[];
+			accounts: Pick<IWebdavAccount, '_id' | 'username' | 'serverURL' | 'name'>[];
 		};
 	};
 };
