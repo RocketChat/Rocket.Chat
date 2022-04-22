@@ -1,6 +1,33 @@
+type soundFileType = {
+	name: string;
+	type: string;
+	extension?: string;
+};
+
+type previousDataType = {
+	_id: string;
+	previousName: string;
+	previousSound: {
+		extension: string;
+	};
+};
+
+type soundDataType = {
+	extension?: string;
+	_id?: string;
+	previousName?: string;
+	previousSound?: {
+		extension: string;
+	};
+	previousExtension?: string;
+	name?: string;
+	newFile?: boolean;
+	random?: number;
+};
+
 // Here previousData will define if it is an update or a new entry
-export function validate(soundData, soundFile) {
-	const errors = [];
+export function validate(soundData: soundDataType, soundFile?: soundFileType): ('Name' | 'Sound File' | 'FileType')[] {
+	const errors: ('Name' | 'Sound File' | 'FileType')[] = [];
 
 	if (!soundData.name) {
 		errors.push('Name');
@@ -21,8 +48,12 @@ export function validate(soundData, soundFile) {
 	return errors;
 }
 
-export function createSoundData(soundFile, name = '', previousData) {
-	const soundData = {
+export const createSoundData = function createSoundData(
+	soundFile: soundFileType,
+	name: string,
+	previousData: previousDataType,
+): soundDataType {
+	const soundData: soundDataType = {
 		extension: soundFile?.name.split('.').pop(),
 	};
 
@@ -39,4 +70,4 @@ export function createSoundData(soundFile, name = '', previousData) {
 	}
 
 	return soundData;
-}
+};

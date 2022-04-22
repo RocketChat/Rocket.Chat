@@ -1,6 +1,6 @@
 import { Box, Button, Icon, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState, useCallback, ReactElement } from 'react';
+import React, { useMemo, useState, useCallback, ReactElement, SyntheticEvent } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
@@ -125,7 +125,7 @@ function CustomSoundsRoute(): ReactElement {
 												small
 												square
 												aria-label={t('Play')}
-												onClick={(e) => {
+												onClick={(e: SyntheticEvent): void => {
 													e.preventDefault();
 													e.stopPropagation();
 													handlePlay(sound._id);

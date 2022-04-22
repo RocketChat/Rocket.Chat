@@ -1,11 +1,17 @@
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditSound from './EditSound';
 
-function EditCustomSound({ _id, onChange, ...props }) {
+type EditCustomSoundProps = {
+	_id: string | undefined;
+	onChange?: () => void;
+	close?: () => void;
+};
+
+function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): ReactElement {
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
 	const { value: data, phase: state, error, reload } = useEndpointData('custom-sounds.list', query);
@@ -42,9 +48,9 @@ function EditCustomSound({ _id, onChange, ...props }) {
 		);
 	}
 
-	const handleChange = () => {
-		onChange && onChange();
-		reload && reload();
+	const handleChange: () => void = () => {
+		onChange?.();
+		reload?.();
 	};
 
 	return <EditSound data={data.sounds[0]} onChange={handleChange} {...props} />;
