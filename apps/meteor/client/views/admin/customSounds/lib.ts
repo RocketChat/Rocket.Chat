@@ -43,7 +43,7 @@ export function validate(soundData: soundDataType, soundFile?: soundFileType): (
 export const createSoundData = function createSoundData(
 	soundFile: soundFileType,
 	name: string,
-	previousData: soundDataType,
+	previousData?: soundDataType,
 ): soundDataType {
 	const soundData: soundDataType = {
 		extension: soundFile?.name.split('.').pop(),
