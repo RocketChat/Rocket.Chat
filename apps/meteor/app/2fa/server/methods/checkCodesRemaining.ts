@@ -8,6 +8,12 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: '2fa:checkCodesRemaining',
+			});
+		}
+
 		if (!user.services || !user.services.totp || !user.services.totp.enabled) {
 			throw new Meteor.Error('invalid-totp');
 		}
