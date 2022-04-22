@@ -97,7 +97,6 @@
 		"@types/fibers": "^3.1.1",
 		"@types/google-libphonenumber": "^7.4.21",
 		"@types/imap": "^0.8.35",
-		"@types/js-yaml": "^4.0.5",
 		"@types/jsdom": "^16.2.12",
 		"@types/jsdom-global": "^3.0.2",
 		"@types/jsrsasign": "^9.0.3",
