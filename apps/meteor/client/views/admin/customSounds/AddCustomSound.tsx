@@ -6,7 +6,7 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
-import { validate, createSoundData } from './lib';
+import { validate, createSoundData, soundDataType } from './lib';
 
 type AddCustomSoundProps = {
 	goToNew: (where: string) => () => void;
@@ -33,7 +33,7 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 
 	const saveAction = useCallback(
 		async (name, soundFile): Promise<string | undefined> => {
-			const soundData = createSoundData(soundFile, name) as { extension: string; _id?: string; name: string; newFile?: true };
+			const soundData: soundDataType = createSoundData(soundFile, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
 			validation.forEach((error) => {

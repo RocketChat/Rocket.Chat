@@ -16,7 +16,7 @@ type EditSoundProps = {
 	data: {
 		_id: string;
 		name: string;
-		extension: string;
+		extension?: string;
 	};
 };
 
@@ -29,7 +29,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const previousSound = useMemo(() => data || {}, [data]);
 
 	const [name, setName] = useState(() => data?.name ?? '');
-	const [sound, setSound] = useState(() => data ?? {});
+	const [sound, setSound] = useState(() => data);
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -48,7 +48,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 	const saveAction = useCallback(
 		async (sound) => {
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id });
+			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
 			const validation = validate(soundData, sound);
 			if (validation.length === 0) {
 				let soundId;
@@ -103,7 +103,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 			try {
 				await deleteCustomSound(_id);
 				setModal(() => (
-					<GenericModal variant='success' onCancel={handleClose} onConfirm={handleClose}>
+					<GenericModal variant='success' onCancel={handleClose} onClose={handleClose} onConfirm={handleClose}>
 						{t('Custom_Sound_Has_Been_Deleted')}
 					</GenericModal>
 				));
@@ -118,7 +118,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		};
 
 		setModal(() => (
-			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} confirmText={t('Delete')}>
+			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_Sound_Delete_Warning')}
 			</GenericModal>
 		));

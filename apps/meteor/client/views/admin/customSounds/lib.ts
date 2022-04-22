@@ -4,12 +4,12 @@ type soundFileType = {
 	extension?: string;
 };
 
-type soundDataType = {
-	extension?: string;
+export type soundDataType = {
+	extension: string;
 	_id?: string;
 	previousName?: string;
 	previousSound?: {
-		extension: string;
+		extension?: string;
 	};
 	previousExtension?: string;
 	name?: string;
@@ -46,7 +46,7 @@ export const createSoundData = function createSoundData(
 	previousData?: soundDataType,
 ): soundDataType {
 	const soundData: soundDataType = {
-		extension: soundFile?.name.split('.').pop(),
+		extension: soundFile?.name.split('.').pop() || '',
 	};
 
 	if (previousData) {
