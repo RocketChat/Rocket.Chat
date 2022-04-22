@@ -34,15 +34,15 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
-		"npm": ">=7.0.0",
-		"node": ">=14.0.0 <15"
+		"yarn": "3.2.0",
+		"node": "14.18.3",
+		"npm": "Use yarn instead"
 	},
 	"packageManager": "yarn@3.2.0",
 	"houston": {
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
 			"apps/meteor/package.json",
-			"apps/meteor/package-lock.json",
 			"apps/meteor/.snapcraft/snap/snapcraft.yaml",
 			"apps/meteor/.snapcraft/resources/prepareRocketChat",
 			"apps/meteor/.docker/Dockerfile.rhel",
