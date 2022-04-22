@@ -28,15 +28,12 @@ export class GameService extends ServiceClassInternal implements IGameService {
 	}
 
 	async delete(gameId: string): Promise<void> {
-		const game = this.GameModel.findOneById(gameId);
-		if (!game) {
-			throw new Error('game-does-not-exist');
-		}
+		await this.getGame(gameId);
 		await this.GameModel.removeById(gameId);
 	}
 
 	async getGame(gameId: string): Promise<IGame> {
-		const game = this.GameModel.findOneById(gameId);
+		const game = await this.GameModel.findOneById(gameId);
 		if (!game) {
 			throw new Error('game-does-not-exist');
 		}
@@ -44,10 +41,7 @@ export class GameService extends ServiceClassInternal implements IGameService {
 	}
 
 	async update(gameId: string, params: IGameUpdateParams): Promise<IGame> {
-		const game = this.GameModel.findOneById(gameId);
-		if (!game) {
-			throw new Error('game-does-not-exist');
-		}
+		await this.getGame(gameId);
 		const query = {
 			_id: gameId,
 		};

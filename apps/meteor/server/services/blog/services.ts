@@ -1,9 +1,10 @@
 import { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IBlogService, IBlogCreateParams, IBlog, IBlogUpdateBody, IBlogUpdateParams } from '../../../definition/IBlog';
+import { IBlogService, IBlogCreateParams, IBlog, IBlogUpdateBody, IBlogUpdateParams, IBlogWithComments } from '../../../definition/IBlog';
 import { BlogsRaw } from '../../../app/models/server/raw/Blogs';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
+import { CommentsRaw } from '../../../app/models/server/raw/Comments';
+import { IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 
@@ -12,10 +13,13 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 
 	private BlogModel: BlogsRaw;
 
+	private CommentModel: CommentsRaw;
+
 	constructor(db: Db) {
 		super();
 
 		this.BlogModel = new BlogsRaw(db.collection('blogs'));
+		this.CommentModel = new CommentsRaw(db.collection('comments'));
 	}
 
 	async create(params: IBlogCreateParams): Promise<IBlog> {
@@ -28,15 +32,19 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 	}
 
 	async delete(blogId: string): Promise<void> {
-		const blog = this.BlogModel.findOneById(blogId);
-		if (!blog) {
-			throw new Error('blog-does-not-exist');
-		}
+		await this.getBlog(blogId);
 		await this.BlogModel.removeById(blogId);
 	}
 
+	async getBlogWithComments(blogId: string): Promise<IBlogWithComments> {
+		const blog = await this.getBlog(blogId);
+		const comments = await this.CommentModel.find({ blogId }).limit(25).toArray();
+		const blogWithComments: IBlogWithComments = { ...blog, comments };
+		return blogWithComments;
+	}
+
 	async getBlog(blogId: string): Promise<IBlog> {
-		const blog = this.BlogModel.findOneById(blogId);
+		const blog = await this.BlogModel.findOneById(blogId);
 		if (!blog) {
 			throw new Error('blog-does-not-exist');
 		}
@@ -44,10 +52,7 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 	}
 
 	async update(blogId: string, params: IBlogUpdateParams): Promise<IBlog> {
-		const blog = this.BlogModel.findOneById(blogId);
-		if (!blog) {
-			throw new Error('blog-does-not-exist');
-		}
+		await this.getBlog(blogId);
 		const query = {
 			_id: blogId,
 		};
@@ -59,21 +64,7 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 		return this.BlogModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
-	async list(
-		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
-		{ sort, query }: IQueryOptions<IBlog> = { sort: {} },
-	): Promise<IRecordsWithTotal<IBlog>> {
-		const result = this.BlogModel.find(
-			{ ...query },
-			{
-				...(sort && { sort }),
-				limit: count,
-				skip: offset,
-			},
-		);
-		return {
-			total: await result.count(),
-			records: await result.toArray(),
-		};
+	async list(limit = 10): Promise<IRecordsWithTotal<IBlogWithComments>> {
+		return this.BlogModel.getBlogsWithComments(limit);
 	}
 }

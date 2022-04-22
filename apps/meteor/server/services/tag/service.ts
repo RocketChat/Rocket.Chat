@@ -28,10 +28,7 @@ export class TagService extends ServiceClassInternal implements ITagService {
 	}
 
 	async delete(tagId: string): Promise<void> {
-		const tag = this.TagModel.findOneById(tagId);
-		if (!tag) {
-			throw new Error('tag-does-not-exist');
-		}
+		await this.getTag(tagId);
 		await this.TagModel.removeById(tagId);
 	}
 
@@ -44,10 +41,7 @@ export class TagService extends ServiceClassInternal implements ITagService {
 	}
 
 	async update(tagId: string, params: ITagUpdateParams): Promise<ITag> {
-		const tag = this.TagModel.findOneById(tagId);
-		if (!tag) {
-			throw new Error('tag-does-not-exist');
-		}
+		await this.getTag(tagId);
 		const query = {
 			_id: tagId,
 		};

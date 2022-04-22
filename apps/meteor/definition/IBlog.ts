@@ -1,16 +1,17 @@
-import { IRocketChatRecord } from './IRocketChatRecord';
-import { IUser } from './IUser';
 import { ITag } from './ITag';
 import { PartialBy } from './PartialBy';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from './ITeam';
+import { IRecordsWithTotal } from './ITeam';
 import { AtLeastOne } from './AtLeastOne';
+import { IPost } from './IPost';
+import { IComment } from './IComment';
 
-export interface IBlog extends IRocketChatRecord {
-	createdAt: Date;
+export interface IBlog extends IPost {
 	title: string;
-	authorId: IUser['_id'];
-	content: string;
 	tags: ITag['_id'][];
+}
+
+export interface IBlogWithComments extends IBlog {
+	comments: IComment[];
 }
 
 export type IBlogWithoutID = PartialBy<Omit<IBlog, '_id'>, 'tags'>;
@@ -27,8 +28,9 @@ export type IBlogUpdateBody = IBlogUpdateParams & { _updatedAt: IBlog['_updatedA
 
 export interface IBlogService {
 	create(params: IBlogCreateParams): Promise<IBlog>;
-	list(paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<IBlog>): Promise<IRecordsWithTotal<IBlog>>;
+	list(limit?: number): Promise<IRecordsWithTotal<IBlogWithComments>>;
 	update(blogId: string, params: IBlogUpdateParams): Promise<IBlog>;
 	delete(blogId: string): Promise<void>;
 	getBlog(blogId: string): Promise<IBlog>;
+	getBlogWithComments(blogId: string): Promise<IBlogWithComments>;
 }

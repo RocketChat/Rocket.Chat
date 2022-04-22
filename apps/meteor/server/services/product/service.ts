@@ -35,10 +35,7 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 	}
 
 	async delete(productId: string): Promise<void> {
-		const product = this.ProductModel.findOneById(productId);
-		if (!product) {
-			throw new Error('product-does-not-exist');
-		}
+		await this.getProduct(productId);
 		await this.ProductModel.removeById(productId);
 	}
 
@@ -51,10 +48,7 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 	}
 
 	async update(productId: string, params: IProductUpdateParams): Promise<IProduct> {
-		const product = this.ProductModel.findOneById(productId);
-		if (!product) {
-			throw new Error('product-does-not-exist');
-		}
+		await this.getProduct(productId);
 		const query = {
 			_id: productId,
 		};
