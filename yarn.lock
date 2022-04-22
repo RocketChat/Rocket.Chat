@@ -3688,7 +3688,6 @@ __metadata:
     "@types/ejson": ^2.1.3
     "@types/express": ^4.17.12
     "@types/fibers": ^3.1.1
-    "@types/filesize": ^5.0.0
     "@types/google-libphonenumber": ^7.4.21
     "@types/imap": ^0.8.35
     "@types/js-yaml": ^4.0.5
@@ -3795,7 +3794,7 @@ __metadata:
     fibers: ^5.0.1
     file-type: ^10.11.0
     filenamify: ^4.3.0
-    filesize: ^3.6.1
+    filesize: ^8.0.7
     google-libphonenumber: ^3.2.25
     googleapis: ^25.0.0
     grapheme-splitter: ^1.0.4
@@ -5687,15 +5686,6 @@ __metadata:
   version: 3.1.1
   resolution: "@types/fibers@npm:3.1.1"
   checksum: 3bcc53c92dcaabf77cf31274c06ba615a59d21730bdb47214f64d7bf356ab31712f1d9c79707e50d2c9d2f8cda8cca4f7e4c20ddf272b07397d20fb196dbc400
-  languageName: node
-  linkType: hard
-
-"@types/filesize@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@types/filesize@npm:5.0.0"
-  dependencies:
-    filesize: "*"
-  checksum: 6bd510787bc8c6d328bd24e257d90234aaa7d642a087bb835991b79e97ff30b1b414098c712010da818cf95127fde9f93698fe23b4e09bd7ab7a06a6cd62ae80
   languageName: node
   linkType: hard
 
@@ -13448,17 +13438,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filesize@npm:*":
+"filesize@npm:^8.0.7":
   version: 8.0.7
   resolution: "filesize@npm:8.0.7"
   checksum: 8603d27c5287b984cb100733640645e078f5f5ad65c6d913173e01fb99e09b0747828498fd86647685ccecb69be31f3587b9739ab1e50732116b2374aff4cbf9
-  languageName: node
-  linkType: hard
-
-"filesize@npm:^3.6.1":
-  version: 3.6.1
-  resolution: "filesize@npm:3.6.1"
-  checksum: 9ba47e9df90cd6bb6c0434418123facf9dafbe92c850f29ed50bfa42d60d00f8501a8a9b962f77ec7d1ba30190d5dbda5f6f56c5e56bce9e09729988bf0613c4
   languageName: node
   linkType: hard
 
