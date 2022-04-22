@@ -149,7 +149,6 @@ test.describe('[Messaging]', () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('This is a message for edit');
 					await mainContent.openMessageActionMenu();
-					await mainContent.openMessageActions();
 				});
 
 				test('expect edit the message', async () => {
@@ -161,7 +160,6 @@ test.describe('[Messaging]', () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('Message for Message Delete Tests');
 					await mainContent.openMessageActionMenu();
-					await mainContent.openMessageActions();
 				});
 
 				test('exepect message is deleted', async () => {
@@ -175,7 +173,6 @@ test.describe('[Messaging]', () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage(message);
 					await mainContent.openMessageActionMenu();
-					await mainContent.openMessageActions();
 				});
 
 				test('it should quote the message', async () => {
@@ -189,7 +186,6 @@ test.describe('[Messaging]', () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('Message for star Tests');
 					await mainContent.openMessageActionMenu();
-					await mainContent.openMessageActions();
 				});
 
 				test('it should star the message', async () => {
@@ -201,7 +197,6 @@ test.describe('[Messaging]', () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('Message for copy Tests');
 					await mainContent.openMessageActionMenu();
-					await mainContent.openMessageActions();
 				});
 
 				test('it should copy the message', async () => {
@@ -213,7 +208,6 @@ test.describe('[Messaging]', () => {
 				test.beforeAll(async () => {
 					await mainContent.sendMessage('Message for permalink Tests');
 					await mainContent.openMessageActionMenu();
-					await mainContent.openMessageActions();
 				});
 
 				test('it should permalink the message', async () => {

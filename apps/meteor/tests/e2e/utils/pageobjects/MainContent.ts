@@ -86,7 +86,7 @@ class MainContent extends BasePage {
 		return this.getPage().locator('.message:last-child .body .attachment-description');
 	}
 
-	public lastMessageQuoted(): Locator {
+	public lastMessageReply(): Locator {
 		return this.getPage().locator(
 			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="thread-replied js-open-thread"]//span//span',
 		);
@@ -110,6 +110,12 @@ class MainContent extends BasePage {
 
 	public lastMessageTextAttachment(): Locator {
 		return this.getPage().locator('.message:last-child .attachment-text');
+	}
+
+	public lastMessageForMessageTest(): Locator {
+		return this.getPage().locator(
+			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//div[2]',
+		);
 	}
 
 	public beforeLastMessageQuote(): Locator {
@@ -141,15 +147,15 @@ class MainContent extends BasePage {
 	}
 
 	public messageEdit(): Locator {
-		return this.getPage().locator('[data-id="edit-message"][data-type="message-action"]');
+		return this.getPage().locator('[data-type="message-action"][data-id="edit-message"]');
 	}
 
 	public messageDelete(): Locator {
-		return this.getPage().locator('[data-id="delete-message"][data-type="message-action"]');
+		return this.getPage().locator('[data-type="message-action"][data-id="delete-message"]');
 	}
 
 	public messagePermalink(): Locator {
-		return this.getPage().locator('[data-id="permalink"][data-type="message-action"]');
+		return this.getPage().locator('[data-type="message-action"][data-id="permalink"]');
 	}
 
 	public messageCopy(): Locator {
@@ -358,7 +364,7 @@ class MainContent extends BasePage {
 				await this.messageEdit().click();
 				await this.messageInput().fill('this message was edited');
 				await this.keyboardPress('Enter');
-				await expect(this.lastMessage()).toHaveText('this message was edited');
+				await expect(this.lastMessageForMessageTest()).toHaveText('this message was edited');
 				break;
 			case 'reply':
 				this.messageReply().click();
@@ -366,7 +372,7 @@ class MainContent extends BasePage {
 			case 'delete':
 				await this.messageDelete().click();
 				await this.acceptDeleteMessage();
-				await expect(this.lastMessage()).not.toHaveText('Message for Message Delete Tests');
+				await expect(this.lastMessageForMessageTest()).not.toHaveText('Message for Message Delete Tests');
 				break;
 			case 'permalink':
 				await this.messagePermalink().click();
@@ -428,6 +434,12 @@ class MainContent extends BasePage {
 	public starredMessage(): Locator {
 		return this.getPage().locator(
 			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//span[@class="starred"]',
+		);
+	}
+
+	public lastMessageQuoted(): Locator {
+		return this.getPage().locator(
+			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="thread-replied js-open-thread"]//span//span',
 		);
 	}
 }
