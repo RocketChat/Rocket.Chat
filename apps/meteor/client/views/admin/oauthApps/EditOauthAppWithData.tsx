@@ -1,15 +1,16 @@
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
-import React, { useCallback, useMemo } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditOauthApp from './EditOauthApp';
 
-function EditOauthAppWithData({ _id, ...props }) {
+const EditOauthAppWithData = ({ _id, ...props }: { _id: string | undefined }): ReactElement => {
 	const t = useTranslation();
 
 	const params = useMemo(() => ({ appId: _id }), [_id]);
+
 	const { value: data, phase: state, error, reload } = useEndpointData('oauth-apps.get', params);
 
 	const onChange = useCallback(() => {
@@ -49,6 +50,6 @@ function EditOauthAppWithData({ _id, ...props }) {
 	}
 
 	return <EditOauthApp data={data.oauthApp} onChange={onChange} {...props} />;
-}
+};
 
 export default EditOauthAppWithData;

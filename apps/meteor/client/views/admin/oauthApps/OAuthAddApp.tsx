@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, TextInput, Field, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
-import React, { useCallback, useState } from 'react';
+import React, { ReactElement, useCallback } from 'react';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -7,15 +8,22 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export default function OAuthAddApp(props) {
+type OAuthAddAppPayload = {
+	name: string;
+	active: boolean;
+	redirectUri: string;
+};
+
+const OAuthAddApp = (): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [newData, setNewData] = useState({
-		name: '',
-		active: false,
-		redirectUri: '',
-	});
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		control,
+	} = useForm<OAuthAddAppPayload>();
 
 	const saveApp = useMethod('addOAuthApp');
 
@@ -23,51 +31,51 @@ export default function OAuthAddApp(props) {
 
 	const close = useCallback(() => router.push({}), [router]);
 
-	const handleSave = useCallback(async () => {
+	const onSubmit: SubmitHandler<OAuthAddAppPayload> = async (data) => {
 		try {
-			await saveApp(newData);
+			await saveApp(data);
 			close();
 			dispatchToastMessage({ type: 'success', message: t('Application_added') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [close, dispatchToastMessage, newData, saveApp, t]);
-
-	const handleChange =
-		(field, getValue = (e) => e.currentTarget.value) =>
-		(e) =>
-			setNewData({ ...newData, [field]: getValue(e) });
-
-	const { active, name, redirectUri } = newData;
+	};
 
 	return (
-		<VerticalBar.ScrollableContent w='full' {...props}>
+		<VerticalBar.ScrollableContent w='full'>
 			<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
 				<Field>
 					<Field.Label display='flex' justifyContent='space-between' w='full'>
 						{t('Active')}
-						<ToggleSwitch checked={active} onChange={handleChange('active', () => !active)} />
+						<Controller
+							name='active'
+							control={control}
+							defaultValue={false}
+							render={({ field }): ReactElement => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
+						/>
 					</Field.Label>
 				</Field>
 				<Field>
 					<Field.Label>{t('Application_Name')}</Field.Label>
 					<Field.Row>
-						<TextInput value={name} onChange={handleChange('name')} />
+						<TextInput {...register('name', { required: true })} />
 					</Field.Row>
 					<Field.Hint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</Field.Hint>
+					{errors?.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
 				</Field>
 				<Field>
 					<Field.Label>{t('Redirect_URI')}</Field.Label>
 					<Field.Row>
-						<TextAreaInput rows={5} value={redirectUri} onChange={handleChange('redirectUri')} />
+						<TextAreaInput rows={5} {...register('redirectUri', { required: true })} />
 					</Field.Row>
 					<Field.Hint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</Field.Hint>
+					{errors?.redirectUri && <Field.Error>{t('error-the-field-is-required', { field: t('Redirect_URI') })}</Field.Error>}
 				</Field>
 				<Field>
 					<Field.Row>
 						<ButtonGroup stretch w='full'>
 							<Button onClick={close}>{t('Cancel')}</Button>
-							<Button primary onClick={handleSave}>
+							<Button primary onClick={handleSubmit(onSubmit)}>
 								{t('Save')}
 							</Button>
 						</ButtonGroup>
@@ -76,4 +84,6 @@ export default function OAuthAddApp(props) {
 			</FieldGroup>
 		</VerticalBar.ScrollableContent>
 	);
-}
+};
+
+export default OAuthAddApp;

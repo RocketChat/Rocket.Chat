@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import OAuthAppsPage from './OAuthAppsPage';
 
-export default function MailerRoute() {
+const OAuthAppsRoute = (): ReactElement => {
 	const canAccessOAuthApps = usePermission('manage-oauth-apps');
 
 	if (!canAccessOAuthApps) {
@@ -12,4 +12,6 @@ export default function MailerRoute() {
 	}
 
 	return <OAuthAppsPage />;
-}
+};
+
+export default OAuthAppsRoute;

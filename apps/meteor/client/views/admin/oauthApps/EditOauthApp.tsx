@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useMemo, ReactElement, ComponentProps } from 'react';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
@@ -9,15 +10,49 @@ import { useMethod, useAbsoluteUrl } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-function EditOauthApp({ onChange, data, ...props }) {
+export type OAuthApp = {
+	_id: string;
+	active: boolean;
+	clientId: string;
+	clientSecret: string;
+	name: string;
+	redirectUri: string;
+	_createdAt: Date;
+	_createdBy: {
+		username: string;
+		_id: string;
+	};
+	_updatedAt: Date;
+};
+
+export type EditOAuthAddAppPayload = {
+	name: string;
+	active: boolean;
+	redirectUri: string;
+};
+
+export type EditOauthAppProps = {
+	onChange: () => void;
+	data: OAuthApp;
+} & ComponentProps<typeof VerticalBar.ScrollableContent>;
+
+const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [newData, setNewData] = useState({
-		name: data.name,
-		active: data.active,
-		redirectUri: Array.isArray(data.redirectUri) ? data.redirectUri.join('\n') : data.redirectUri,
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		control,
+	} = useForm<EditOAuthAddAppPayload>({
+		defaultValues: {
+			name: data.name,
+			active: data.active,
+			redirectUri: Array.isArray(data.redirectUri) ? data.redirectUri.join('\n') : data.redirectUri,
+		},
 	});
+
 	const setModal = useSetModal();
 
 	const router = useRoute('admin-oauth-apps');
@@ -31,7 +66,7 @@ function EditOauthApp({ onChange, data, ...props }) {
 	const saveApp = useMethod('updateOAuthApp');
 	const deleteApp = useMethod('deleteOAuthApp');
 
-	const handleSave = useCallback(async () => {
+	const onSubmit: SubmitHandler<EditOAuthAddAppPayload> = async (newData: EditOAuthAddAppPayload) => {
 		try {
 			await saveApp(data._id, newData);
 			dispatchToastMessage({ type: 'success', message: t('Application_updated') });
@@ -39,13 +74,13 @@ function EditOauthApp({ onChange, data, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [data._id, dispatchToastMessage, newData, onChange, saveApp, t]);
+	};
 
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteApp(data._id);
 
-			const handleClose = () => {
+			const handleClose = (): void => {
 				setModal();
 				close();
 			};
@@ -60,19 +95,18 @@ function EditOauthApp({ onChange, data, ...props }) {
 		}
 	}, [close, data._id, deleteApp, dispatchToastMessage, setModal, t]);
 
-	const openConfirmDelete = () =>
+	const openConfirmDelete = (): void =>
 		setModal(() => (
-			<GenericModal variant='danger' onConfirm={onDeleteConfirm} onCancel={() => setModal(undefined)} confirmText={t('Delete')}>
+			<GenericModal
+				variant='danger'
+				onConfirm={onDeleteConfirm}
+				onCancel={(): void => setModal(undefined)}
+				onClose={(): void => setModal(undefined)}
+				confirmText={t('Delete')}
+			>
 				{t('Application_delete_warning')}
 			</GenericModal>
 		));
-
-	const handleChange =
-		(field, getValue = (e) => e.currentTarget.value) =>
-		(e) =>
-			setNewData({ ...newData, [field]: getValue(e) });
-
-	const { active, name, redirectUri } = newData;
 
 	return (
 		<VerticalBar.ScrollableContent w='full' {...props}>
@@ -80,27 +114,34 @@ function EditOauthApp({ onChange, data, ...props }) {
 				<Field>
 					<Field.Label display='flex' justifyContent='space-between' w='full'>
 						{t('Active')}
-						<ToggleSwitch checked={active} onChange={handleChange('active', () => !active)} />
+						<Controller
+							name='active'
+							control={control}
+							defaultValue={data.active}
+							render={({ field }): ReactElement => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
+						/>
 					</Field.Label>
 				</Field>
 				<Field>
 					<Field.Label>{t('Application_Name')}</Field.Label>
 					<Field.Row>
-						<TextInput value={name} onChange={handleChange('name')} />
+						<TextInput {...register('name', { required: true })} />
 					</Field.Row>
 					<Field.Hint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</Field.Hint>
+					{errors?.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
 				</Field>
 				<Field>
 					<Field.Label>{t('Redirect_URI')}</Field.Label>
 					<Field.Row>
-						<TextAreaInput rows={5} value={redirectUri} onChange={handleChange('redirectUri')} />
+						<TextAreaInput rows={5} {...register('redirectUri', { required: true })} />
 					</Field.Row>
 					<Field.Hint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</Field.Hint>
+					{errors?.redirectUri && <Field.Error>{t('error-the-field-is-required', { field: t('Redirect_URI') })}</Field.Error>}
 				</Field>
 				<Field>
 					<Field.Label>{t('Client_ID')}</Field.Label>
 					<Field.Row>
-						<TextInput value={data.clientId} onChange={handleChange('clientId')} />
+						<TextInput value={data.clientId} />
 					</Field.Row>
 				</Field>
 				<Field>
@@ -125,7 +166,7 @@ function EditOauthApp({ onChange, data, ...props }) {
 					<Field.Row>
 						<ButtonGroup stretch w='full'>
 							<Button onClick={close}>{t('Cancel')}</Button>
-							<Button primary onClick={handleSave}>
+							<Button primary onClick={handleSubmit(onSubmit)}>
 								{t('Save')}
 							</Button>
 						</ButtonGroup>
@@ -144,6 +185,6 @@ function EditOauthApp({ onChange, data, ...props }) {
 			</FieldGroup>
 		</VerticalBar.ScrollableContent>
 	);
-}
+};
 
 export default EditOauthApp;
