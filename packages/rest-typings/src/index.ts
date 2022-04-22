@@ -27,6 +27,7 @@ import type { SettingsEndpoints } from "./v1/settings";
 import type { StatisticsEndpoints } from "./v1/statistics";
 import type { TeamsEndpoints } from "./v1/teams";
 import type { UsersEndpoints } from "./v1/users";
+import type { VideoConferenceEndpoints } from "./v1/videoConference";
 import type { VoipEndpoints } from "./v1/voip";
 
 type CommunityEndpoints = BannersEndpoints &
@@ -53,6 +54,7 @@ type CommunityEndpoints = BannersEndpoints &
   PermissionsEndpoints &
   InstancesEndpoints &
   VoipEndpoints &
+  VideoConferenceEndpoints &
   InvitesEndpoints &
   E2eEndpoints &
   CustomSoundEndpoint;
