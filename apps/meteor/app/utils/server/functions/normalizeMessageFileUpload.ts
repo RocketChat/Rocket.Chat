@@ -1,8 +1,12 @@
+import { IMessage } from '@rocket.chat/core-typings';
+
 import { getURL } from '../../lib/getURL';
 import { FileUpload } from '../../../file-upload/server';
 import { Uploads } from '../../../models/server/raw';
 
-export const normalizeMessageFileUpload = async (message) => {
+export type IMessageWithFileUpload = IMessage & { fileUpload?: { publicFilePath: string; type?: string; size?: number } };
+
+export const normalizeMessageFileUpload = async (message: IMessageWithFileUpload): Promise<IMessageWithFileUpload> => {
 	if (message.file && !message.fileUpload) {
 		const jwt = FileUpload.generateJWTToFileUrls({
 			rid: message.rid,

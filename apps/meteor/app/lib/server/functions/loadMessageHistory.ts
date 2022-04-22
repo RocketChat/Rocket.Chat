@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { IMessage } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -18,7 +19,7 @@ export const loadMessageHistory = function loadMessageHistory({
 	end?: Date;
 	ls?: Date;
 	showThreadMessages?: boolean;
-}) {
+}): { messages: IMessage[]; firstUnread: IMessage; unreadNotLoaded: number } {
 	const room = Rooms.findOneById(rid, { fields: { sysMes: 1 } });
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room);

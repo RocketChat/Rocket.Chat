@@ -246,14 +246,19 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				limit = parseInt(this.queryParams.limit);
 			}
 
-			const messages = loadMessageHistory({
+			const { messages } = loadMessageHistory({
 				userId: guest._id,
 				rid,
 				end,
 				limit,
 				ls,
-			}).messages.map((message: IMessage) => normalizeMessageFileUpload(message));
-			return API.v1.success({ messages });
+			});
+			const normalizedMessages: IMessage[] = [];
+			for await (const message of messages) {
+				const normalizedMessage = await normalizeMessageFileUpload(message);
+				normalizedMessages.push(normalizedMessage);
+			}
+			return API.v1.success({ messages: normalizedMessages });
 		} catch (e) {
 			return API.v1.failure(e);
 		}

@@ -9,4 +9,5 @@ export interface IUpload extends IRocketChatRecord {
   complete?: boolean;
   uploading?: boolean;
   progress?: number;
+  size?: number;
 }
