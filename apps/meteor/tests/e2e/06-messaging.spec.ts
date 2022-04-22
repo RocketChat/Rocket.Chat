@@ -6,6 +6,7 @@ import LoginPage from './utils/pageobjects/LoginPage';
 import FlexTab from './utils/pageobjects/FlexTab';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { ChatContext } from './utils/types/ChatContext';
+import { ILogin } from './utils/interfaces/Login';
 
 const createBrowserContextForChat = async (browser: Browser, baseURL: string): Promise<ChatContext> => {
 	const page = await browser.newPage();
@@ -15,7 +16,7 @@ const createBrowserContextForChat = async (browser: Browser, baseURL: string): P
 	const sideNav = new SideNav(page);
 
 	await loginPage.goto(baseURL);
-	await loginPage.login(anotherUserLogin);
+	await loginPage.login({} as ILogin);
 
 	return { mainContent, sideNav };
 };
