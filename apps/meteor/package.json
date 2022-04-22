@@ -220,7 +220,7 @@
 		"aws-sdk": "^2.1119.0",
 		"bad-words": "^3.0.4",
 		"bcrypt": "^5.0.1",
-		"blockstack": "19.3.0",
+		"blockstack": "21.1.1",
 		"body-parser": "1.20.0",
 		"bson": "^4.6.3",
 		"busboy": "^1.6.0",
