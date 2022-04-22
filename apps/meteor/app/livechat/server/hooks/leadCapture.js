@@ -1,3 +1,5 @@
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings';
 import { LivechatVisitors } from '../../../models';
@@ -29,6 +31,10 @@ function validateMessage(message, room) {
 callbacks.add(
 	'afterSaveMessage',
 	function (message, room) {
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		if (!validateMessage(message, room)) {
 			return message;
 		}

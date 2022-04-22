@@ -1,3 +1,5 @@
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
@@ -6,17 +8,13 @@ import { normalizeMessageFileUpload } from '../../../utils/server/functions/norm
 callbacks.add(
 	'afterSaveMessage',
 	function (message, room) {
+		// only send the sms by SMS if it is a livechat room with SMS set to true
+		if (!(isOmnichannelRoom(room) && room.facebook && room.v && room.v.token)) {
+			return message;
+		}
+
 		// skips this callback if the message was edited
 		if (message.editedAt) {
-			return message;
-		}
-
-		if (!settings.get('Livechat_Facebook_Enabled') || !settings.get('Livechat_Facebook_API_Key')) {
-			return message;
-		}
-
-		// only send the sms by SMS if it is a livechat room with SMS set to true
-		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.facebook && room.v && room.v.token)) {
 			return message;
 		}
 
@@ -27,6 +25,10 @@ callbacks.add(
 
 		// if the message has a type means it is a special message (like the closing comment), so skips
 		if (message.t) {
+			return message;
+		}
+
+		if (!settings.get('Livechat_Facebook_Enabled') || !settings.get('Livechat_Facebook_API_Key')) {
 			return message;
 		}
 
