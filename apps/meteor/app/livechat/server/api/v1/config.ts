@@ -28,7 +28,7 @@ API.v1.addRoute('livechat/config', {
 			const status = Livechat.online(department);
 			const guest = token && Livechat.findGuest(token);
 
-			const room = guest && findOpenRoom(token, undefined);
+			const room = guest && token && findOpenRoom(token);
 			const agent = guest && room && room.servedBy && findAgent(room.servedBy._id);
 
 			const extra = await getExtraConfigInfo(room);
