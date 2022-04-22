@@ -1,5 +1,5 @@
-import { Box, Icon, Tabs, Grid } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Box, Icon, Tabs, Grid, Button, Position } from '@rocket.chat/fuselage';
+import React, { useRef } from 'react';
 import Page from '../../components/Page';
 import TopBar from '../../../client/topbar/TopBar';
 import SingleBlogPost from './SingleBlogPost';
@@ -9,6 +9,7 @@ import './blog.css';
 type Props = {};
 
 const BlogView = (props: Props) => {
+	const pageRef = useRef();
 	const data = [
 		{
 			author: 'Tanjiro Kamado',
@@ -61,20 +62,26 @@ const BlogView = (props: Props) => {
 						<Tabs.Item>anime</Tabs.Item>
 						<Tabs.Item>art</Tabs.Item>
 						<Tabs.Item>cook</Tabs.Item>
-						<Tabs.Item>sport</Tabs.Item>
+						<Tabs.Item>sports</Tabs.Item>
 						<Tabs.Item>
 							<Icon name='chevron-left' />
 						</Tabs.Item>
 					</Tabs>
 				</Box>
-				<Page.Content>
+
+				<Page.Content ref={pageRef}>
 					<Grid style={{ overflowY: 'auto', overflowX: 'hidden' }}>
 						{data.map((item, index) => (
-							<Grid.Item xs={4} md={4} lg={6}>
-								<SingleBlogPost key={index} {...item} />
+							<Grid.Item xs={4} md={4} lg={6} key={index}>
+								<SingleBlogPost {...item} />
 							</Grid.Item>
 						))}
 					</Grid>
+					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '80px' }}>
+						<Button square primary>
+							<Icon name='plus' size='x20' />
+						</Button>
+					</div>
 				</Page.Content>
 			</Page>
 		</Page>
