@@ -11,6 +11,7 @@ import type { CustomUserStatusEndpoints } from "./v1/customUserStatus";
 import type { DmEndpoints } from "./v1/dm";
 import type { DnsEndpoints } from "./v1/dns";
 import type { E2eEndpoints } from "./v1/e2e";
+import type { EmailInboxEndpoints } from "./v1/email-inbox";
 import type { EmojiCustomEndpoints } from "./v1/emojiCustom";
 import type { GroupsEndpoints } from "./v1/groups";
 import type { ImEndpoints } from "./v1/im";
@@ -55,7 +56,8 @@ type CommunityEndpoints = BannersEndpoints &
   VoipEndpoints &
   InvitesEndpoints &
   E2eEndpoints &
-  CustomSoundEndpoint;
+  CustomSoundEndpoint &
+  EmailInboxEndpoints;
 
 export interface Endpoints extends CommunityEndpoints {}
 // type Endpoints = CommunityEndpoints;
@@ -140,10 +142,10 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> =
   TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
+export * from "./helpers/PaginatedRequest";
+export * from "./helpers/PaginatedResult";
+export * from "./helpers/ReplacePlaceholders";
 export * from "./v1/permissions";
 export * from "./v1/roles";
 export * from "./v1/settings";
 export * from "./v1/teams";
-export * from "./helpers/PaginatedRequest";
-export * from "./helpers/PaginatedResult";
-export * from "./helpers/ReplacePlaceholders";
