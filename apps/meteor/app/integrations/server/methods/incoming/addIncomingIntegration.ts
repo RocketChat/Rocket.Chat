@@ -3,6 +3,7 @@ import { Random } from 'meteor/random';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
+import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 
 import { hasPermission, hasAllPermission } from '../../../../authorization/server';
 import { Users, Rooms, Subscriptions } from '../../../../models/server';
@@ -11,8 +12,10 @@ import { Integrations, Roles } from '../../../../models/server/raw';
 const validChannelChars = ['@', '#'];
 
 Meteor.methods({
-	async addIncomingIntegration(integration) {
-		if (!hasPermission(this.userId, 'manage-incoming-integrations') && !hasPermission(this.userId, 'manage-own-incoming-integrations')) {
+	async addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration> {
+		const { userId } = this;
+
+		if (!userId || !hasPermission(userId, 'manage-incoming-integrations') && !hasPermission(userId, 'manage-own-incoming-integrations')) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', {
 				method: 'addIncomingIntegration',
 			});
@@ -45,16 +48,22 @@ Meteor.methods({
 				method: 'addIncomingIntegration',
 			});
 		}
+
+		const integrationData: IIncomingIntegration = {
+			...integration,
+			channel: [],
+		};
+
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 			try {
 				let babelOptions = Babel.getDefaultOptions({ runtime: false });
 				babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
 
-				integration.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-				integration.scriptError = undefined;
+				integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+				integrationData.scriptError = undefined;
 			} catch (e) {
-				integration.scriptCompiled = undefined;
-				integration.scriptError = _.pick(e, 'name', 'message', 'stack');
+				integrationData.scriptCompiled = undefined;
+				integrationData.scriptError = _.pick(e, 'name', 'message', 'stack');
 			}
 		}
 
@@ -83,7 +92,7 @@ Meteor.methods({
 			}
 
 			if (
-				!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
+				!hasAllPermission(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
 				!Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })
 			) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
@@ -102,19 +111,19 @@ Meteor.methods({
 
 		const token = Random.id(48);
 
-		integration.type = 'webhook-incoming';
-		integration.token = token;
-		integration.channel = channels;
-		integration.userId = user._id;
-		integration._createdAt = new Date();
-		integration._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
+		integrationData.type = 'webhook-incoming';
+		integrationData.token = token;
+		integrationData.channel = channels;
+		integrationData.userId = user._id;
+		integrationData._createdAt = new Date();
+		integrationData._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 
 		await Roles.addUserRoles(user._id, ['bot']);
 
-		const result = await Integrations.insertOne(integration);
+		const result = await Integrations.insertOne(integrationData);
 
-		integration._id = result.insertedId;
+		integrationData._id = result.insertedId;
 
-		return integration;
+		return integrationData;
 	},
 });

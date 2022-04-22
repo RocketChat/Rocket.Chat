@@ -1,24 +1,27 @@
 import { Meteor } from 'meteor/meteor';
+import type { INewOutgoingIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../../authorization/server';
 import { Users } from '../../../../models/server';
 import { Integrations } from '../../../../models/server/raw';
-import { integrations } from '../../../lib/rocketchat';
+import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
 Meteor.methods({
-	async addOutgoingIntegration(integration) {
-		if (!hasPermission(this.userId, 'manage-outgoing-integrations') && !hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
+	async addOutgoingIntegration(integration: INewOutgoingIntegration): Promise<IOutgoingIntegration> {
+		const { userId } = this;
+
+		if (!userId || (!hasPermission(userId, 'manage-outgoing-integrations') && !hasPermission(userId, 'manage-own-outgoing-integrations'))) {
 			throw new Meteor.Error('not_authorized');
 		}
 
-		integration = integrations.validateOutgoing(integration, this.userId);
+		const integrationData = validateOutgoingIntegration(integration, userId);
 
-		integration._createdAt = new Date();
-		integration._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
+		integrationData._createdAt = new Date();
+		integrationData._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 
-		const result = await Integrations.insertOne(integration);
-		integration._id = result.insertedId;
+		const result = await Integrations.insertOne(integrationData);
+		integrationData._id = result.insertedId;
 
-		return integration;
+		return integrationData;
 	},
 });
