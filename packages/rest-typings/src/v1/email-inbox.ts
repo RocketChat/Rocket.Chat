@@ -9,40 +9,38 @@ export type EmailInboxEndpoints = {
     ) => PaginatedResult<{ emailInboxes: IEmailInbox[] }>;
   };
   "email-inbox": {
-    POST: (
-      params: PaginatedRequest<{
-        _id?: string;
-        name: string;
-        email: string;
-        active: boolean;
-        description?: string;
-        senderInfo?: string;
-        department?: string;
-        smtp: {
-          password: string;
-          port: number;
-          secure: boolean;
-          server: string;
-          username: string;
-        };
-        imap: {
-          password: string;
-          port: number;
-          secure: boolean;
-          server: string;
-          username: string;
-        };
-      }>
-    ) => PaginatedResult<{ _id: string }>;
+    POST: (params: {
+      _id?: string;
+      name: string;
+      email: string;
+      active: boolean;
+      description?: string;
+      senderInfo?: string;
+      department?: string;
+      smtp: {
+        password: string;
+        port: number;
+        secure: boolean;
+        server: string;
+        username: string;
+      };
+      imap: {
+        password: string;
+        port: number;
+        secure: boolean;
+        server: string;
+        username: string;
+      };
+    }) => { _id: string };
   };
   "email-inbox/:_id": {
-    GET: () => IEmailInbox | null;
-    DELETE: () => { _id: string };
+    GET: (params: void) => IEmailInbox | null;
+    DELETE: (params: void) => { _id: string };
   };
   "email-inbox.search": {
-    GET: (params: { email: string }) => IEmailInbox | null;
+    GET: (params: { email: string }) => { emailInbox: IEmailInbox | null };
   };
   "email-inbox.send-test/:_id": {
-    POST: () => { _id: string };
+    POST: (params: void) => { _id: string };
   };
 };
