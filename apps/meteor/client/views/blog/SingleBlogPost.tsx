@@ -1,5 +1,4 @@
 import { Box, Icon, Margins, Modal } from '@rocket.chat/fuselage';
-
 import React, { ReactElement } from 'react';
 
 type Props = {

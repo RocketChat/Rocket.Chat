@@ -1,5 +1,4 @@
 import { TopBarTitle, TopBarToolBox, TopBarActions, TopBarAction, Menu, Box, Icon } from '@rocket.chat/fuselage';
-
 import React, { ReactElement } from 'react';
 
 const TopBar = (): ReactElement => (

@@ -1,8 +1,6 @@
 import { Icon } from '@rocket.chat/fuselage';
-
-import { FlowRouter } from 'meteor/kadira:flow-router';
-
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import React, { ReactElement } from 'react';
 

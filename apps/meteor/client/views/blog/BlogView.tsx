@@ -1,8 +1,8 @@
 import { Box, Icon, Tabs, Grid, Button } from '@rocket.chat/fuselage';
-
 import React, { ReactElement, useRef } from 'react';
-import TopBar from '../../topbar/TopBar';
+
 import Page from '../../components/Page';
+import TopBar from '../../topbar/TopBar';
 import SingleBlogPost from './SingleBlogPost';
 
 import './blog.css';

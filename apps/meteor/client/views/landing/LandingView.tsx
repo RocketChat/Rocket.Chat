@@ -1,5 +1,4 @@
 import { Modal, Button, ButtonGroup, Box, Margins } from '@rocket.chat/fuselage';
-
 import React, { ReactElement } from 'react';
 
 type Props = {
