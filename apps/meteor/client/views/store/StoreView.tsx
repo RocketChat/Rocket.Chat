@@ -1,9 +1,5 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
-type Props = {};
-
-const StoreView = (props: Props) => {
-	return <div>StoreView</div>;
-};
+const StoreView = (): ReactElement => <div>StoreView</div>;
 
 export default StoreView;

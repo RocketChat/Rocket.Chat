@@ -1,7 +1,5 @@
 import { Template } from 'meteor/templating';
-import { Flex } from '@rocket.chat/fuselage';
 
-import { settings } from '../../../../settings';
 import './home.html';
 import LandingView from '../../../../../client/views/landing/LandingView';
 

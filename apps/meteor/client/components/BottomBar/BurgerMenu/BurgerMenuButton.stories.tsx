@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
+import { useAutoSequence } from '../../../stories/hooks/useAutoSequence';
 import BurgerMenuButton from './BurgerMenuButton';
 
 export default {

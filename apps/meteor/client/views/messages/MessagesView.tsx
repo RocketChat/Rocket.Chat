@@ -1,9 +1,5 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
-type Props = {};
-
-const MessagesView = (props: Props) => {
-	return <div>MessagesView</div>;
-};
+const MessagesView = (): ReactElement => <div>MessagesView</div>;
 
 export default MessagesView;

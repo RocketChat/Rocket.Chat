@@ -1,12 +1,12 @@
-import React from 'react';
 import { Icon } from '@rocket.chat/fuselage';
+
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute } from '../../../contexts/RouterContext';
 
-type Props = {};
+import React, { ReactElement } from 'react';
 
-function ProductButton({}: Props) {
+function ProductButton(): ReactElement {
 	const handleRoute = useMutableCallback(() => {
 		FlowRouter.go('/products');
 	});

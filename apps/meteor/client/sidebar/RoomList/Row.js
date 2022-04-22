@@ -1,8 +1,8 @@
 import { SidebarSection } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
-import OmnichannelSection from '../sections/OmnichannelSection';
 import { BlogPostSection, ProductsSection, MessagesSection, StoreSection, GamesSection } from '../sections';
+import OmnichannelSection from '../sections/OmnichannelSection';
 import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
 
 const sections = {

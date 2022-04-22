@@ -1,12 +1,10 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Dropdown } from '@rocket.chat/fuselage';
-import React, { memo, useRef, ReactElement, useEffect } from 'react';
+import React, { memo, useRef, ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
-import { useUser } from '../../contexts/UserContext';
 import UserDropdown from './UserDropdown';
 import { useDropdownVisibility } from './hooks/useDropdownVisibility';
 
@@ -29,7 +27,6 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 	const reference = useRef(null);
 	const target = useRef(null);
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
-	console.log(user, 'user');
 
 	return (
 		<>

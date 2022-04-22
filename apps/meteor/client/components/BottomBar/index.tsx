@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
+
 import BlogButton from './BlogButton/BlogButton';
+
 import GameButton from './GameButton/GameButton';
+
 import HomeButton from './HomeButton/HomeButton';
+
 import MessagesButton from './MessagesButton/MessagesButton';
+
 import ProductButton from './ProductButton/ProductButton';
 
-type Props = {};
-
-const BottomBar = (props: Props) => {
+const BottomBar = (): ReactElement => {
 	return (
 		<div style={{ display: 'flex', width: '100%' }}>
 			<div className='rc-header__navbar-item'>

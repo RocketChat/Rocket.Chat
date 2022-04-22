@@ -1,14 +1,13 @@
-import { Box, Icon, Tabs, Grid, Button, Position } from '@rocket.chat/fuselage';
-import React, { useRef } from 'react';
+import { Box, Icon, Tabs, Grid, Button } from '@rocket.chat/fuselage';
+
+import React, { ReactElement, useRef } from 'react';
+import TopBar from '../../topbar/TopBar';
 import Page from '../../components/Page';
-import TopBar from '../../../client/topbar/TopBar';
 import SingleBlogPost from './SingleBlogPost';
 
 import './blog.css';
 
-type Props = {};
-
-const BlogView = (props: Props) => {
+const BlogView = (): ReactElement => {
 	const pageRef = useRef();
 	const data = [
 		{

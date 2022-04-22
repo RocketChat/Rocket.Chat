@@ -1,5 +1,4 @@
 import React, { ReactElement, useMemo } from 'react';
-import { Flex } from '@rocket.chat/fuselage';
 
 import BlazeTemplate from '../BlazeTemplate';
 import AuthenticationCheck from './AuthenticationCheck';
