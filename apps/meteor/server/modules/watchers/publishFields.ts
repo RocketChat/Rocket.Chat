@@ -103,6 +103,9 @@ export const roomFields = {
 	waitingResponse: 1,
 	queuedAt: 1,
 
+	// Federation fields
+	bridged: 1,
+
 	// fields used by DMs
 	usernames: 1,
 	uids: 1,
