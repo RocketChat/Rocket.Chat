@@ -4,14 +4,6 @@ type soundFileType = {
 	extension?: string;
 };
 
-type previousDataType = {
-	_id: string;
-	previousName: string;
-	previousSound: {
-		extension: string;
-	};
-};
-
 type soundDataType = {
 	extension?: string;
 	_id?: string;
@@ -51,7 +43,7 @@ export function validate(soundData: soundDataType, soundFile?: soundFileType): (
 export const createSoundData = function createSoundData(
 	soundFile: soundFileType,
 	name: string,
-	previousData: previousDataType,
+	previousData: soundDataType,
 ): soundDataType {
 	const soundData: soundDataType = {
 		extension: soundFile?.name.split('.').pop(),
@@ -61,7 +53,7 @@ export const createSoundData = function createSoundData(
 		soundData._id = previousData._id;
 		soundData.previousName = previousData.previousName;
 		soundData.previousSound = previousData.previousSound;
-		soundData.previousExtension = previousData.previousSound.extension;
+		soundData.previousExtension = previousData.previousSound?.extension;
 		soundData.name = name;
 		soundData.newFile = false;
 	} else {
