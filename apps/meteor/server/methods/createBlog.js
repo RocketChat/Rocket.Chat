@@ -9,15 +9,20 @@ Meteor.methods({
 			params,
 			Match.ObjectIncluding({
 				title: String,
-				authorId: String,
 				content: String,
 				tags: Match.Optional([String]),
 			}),
 		);
 
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'addComment',
+			});
+		}
+
 		const Blogs = new BlogService();
 
-		const blog = await Blogs.create(params);
+		const blog = await Blogs.create({ ...params, authorId: Meteor.userId() });
 
 		return blog;
 	},
