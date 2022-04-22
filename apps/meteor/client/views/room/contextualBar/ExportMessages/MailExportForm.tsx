@@ -79,11 +79,11 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 
 		$('.messages-box .message', $root).on('click', handler);
 
-		return () => {
+		return (): void => {
 			$('.messages-box', $root).removeClass('selectable');
 			$('.messages-box .message', $root).off('click', handler).filter('.selected').removeClass('selected');
 		};
-	}, [rid, messageList]);
+	}, [rid, messageList, selectedMessageStore]);
 
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
