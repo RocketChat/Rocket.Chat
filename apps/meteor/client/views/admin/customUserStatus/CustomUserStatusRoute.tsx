@@ -1,6 +1,6 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, ReactNode } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
@@ -8,12 +8,13 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomUserStatus from './AddCustomUserStatus';
-import CustomUserStatus from './CustomUserStatus';
+import CustomUserStatus, { paramsType, SortType } from './CustomUserStatus';
 import EditCustomUserStatusWithData from './EditCustomUserStatusWithData';
 
-function CustomUserStatusRoute() {
+function CustomUserStatusRoute(): ReactNode {
 	const route = useRoute('custom-user-status');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -21,8 +22,8 @@ function CustomUserStatusRoute() {
 
 	const t = useTranslation();
 
-	const [params, setParams] = useState(() => ({ text: '', current: 0, itemsPerPage: 25 }));
-	const [sort, setSort] = useState(() => ['name', 'asc']);
+	const [params, setParams] = useState<paramsType>(() => ({ text: '', current: 0, itemsPerPage: 25 }));
+	const [sort, setSort] = useState<SortType>(() => ['name', 'asc']);
 
 	const { text, itemsPerPage, current } = useDebouncedValue(params, 500);
 	const [column, direction] = useDebouncedValue(sort, 500);
@@ -36,16 +37,16 @@ function CustomUserStatusRoute() {
 		[text, itemsPerPage, current, column, direction],
 	);
 
-	const { value: data, reload } = useEndpointData('custom-user-status.list', query);
+	const { reload, ...result } = useEndpointData('custom-user-status.list', query);
 
-	const handleItemClick = (_id) => () => {
+	const handleItemClick = (id: string) => (): void => {
 		route.push({
 			context: 'edit',
-			id: _id,
+			id,
 		});
 	};
 
-	const handleHeaderClick = (id) => {
+	const handleHeaderClick = (id: SortType[0]): void => {
 		setSort(([sortBy, sortDirection]) => {
 			if (sortBy === id) {
 				return [id, sortDirection === 'asc' ? 'desc' : 'asc'];
@@ -71,6 +72,10 @@ function CustomUserStatusRoute() {
 		return <NotAuthorizedPage />;
 	}
 
+	if (result.phase === AsyncStatePhase.LOADING || result.phase === AsyncStatePhase.REJECTED) {
+		return null;
+	}
+
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-custom-user-status'>
@@ -84,7 +89,7 @@ function CustomUserStatusRoute() {
 						setParams={setParams}
 						params={params}
 						onHeaderClick={handleHeaderClick}
-						data={data}
+						data={result.value}
 						onClick={handleItemClick}
 						sort={sort}
 					/>

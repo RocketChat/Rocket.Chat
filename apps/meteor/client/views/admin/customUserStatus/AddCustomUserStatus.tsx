@@ -1,12 +1,18 @@
-import { Button, ButtonGroup, TextInput, Field, Select } from '@rocket.chat/fuselage';
-import React, { useCallback, useState } from 'react';
+import { Button, ButtonGroup, TextInput, Field, Select, SelectOption } from '@rocket.chat/fuselage';
+import React, { ReactElement, SyntheticEvent, useCallback, useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
+type AddCustomUserStatusProps = {
+	goToNew: (id: string) => () => void;
+	close: () => void;
+	onChange: () => void;
+};
+
+function AddCustomUserStatus({ goToNew, close, onChange, ...props }: AddCustomUserStatusProps): ReactElement {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -27,11 +33,11 @@ function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
 			goToNew(result)();
 			onChange();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	}, [dispatchToastMessage, goToNew, name, onChange, saveStatus, statusType, t]);
 
-	const presenceOptions = [
+	const presenceOptions: SelectOption[] = [
 		['online', t('Online')],
 		['busy', t('Busy')],
 		['away', t('Away')],
@@ -43,13 +49,22 @@ function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+					<TextInput
+						value={name}
+						onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+						placeholder={t('Name')}
+					/>
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Presence')}</Field.Label>
 				<Field.Row>
-					<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions} />
+					<Select
+						value={statusType}
+						onChange={(value): void => setStatusType(value)}
+						placeholder={t('Presence')}
+						options={presenceOptions}
+					/>
 				</Field.Row>
 			</Field>
 			<Field>

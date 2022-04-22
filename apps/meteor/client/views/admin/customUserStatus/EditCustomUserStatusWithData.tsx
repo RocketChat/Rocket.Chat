@@ -7,7 +7,7 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditCustomUserStatus from './EditCustomUserStatus';
 
 type EditCustomUserStatusWithDataProps = {
-	_id: string;
+	_id: string | undefined;
 	close: () => void;
 	onChange: () => void;
 };
