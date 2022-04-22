@@ -4,6 +4,8 @@ import React, { CSSProperties, Dispatch, ReactElement, SetStateAction, useMemo }
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
 import { GenericTableHeaderCell } from '../../../components/GenericTable/V2/GenericTableHeaderCell';
+import { GenericTableRow } from '../../../components/GenericTable/V2/GenericTableRow';
+import { GenericTableCell } from '../../../components/GenericTable/V2/GenericTableCell';
 import MarkdownText from '../../../components/MarkdownText';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
@@ -59,14 +61,22 @@ function CustomUserStatus({ data, sort, onClick, onHeaderClick, setParams, param
 	const renderRow = (status: statusType): ReactElement => {
 		const { _id, name, statusType } = status;
 		return (
-			<Table.Row key={_id} onKeyDown={onClick(_id, status)} onClick={onClick(_id, status)} tabIndex={0} role='link' action qa-user-id={_id}>
-				<Table.Cell fontScale='p2' color='default' style={style}>
+			<GenericTableRow
+				key={_id}
+				onKeyDown={onClick(_id, status)}
+				onClick={onClick(_id, status)}
+				tabIndex={0}
+				role='link'
+				action
+				qa-user-id={_id}
+			>
+				<GenericTableCell fontScale='p2' color='default' style={style}>
 					<MarkdownText content={name} parseEmoji={true} variant='inline' />
-				</Table.Cell>
-				<Table.Cell fontScale='p2' color='default' style={style}>
+				</GenericTableCell>
+				<GenericTableCell fontScale='p2' color='default' style={style}>
 					{statusType}
-				</Table.Cell>
-			</Table.Row>
+				</GenericTableCell>
+			</GenericTableRow>
 		);
 	};
 
