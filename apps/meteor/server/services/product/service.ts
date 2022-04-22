@@ -1,9 +1,18 @@
 import { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IProductService, IProductCreateParams, IProduct } from '../../../definition/IProduct';
+import {
+	IProductService,
+	IProductCreateParams,
+	IProduct,
+	IProductCreateBody,
+	IProductUpdateBody,
+	IProductUpdateParams,
+} from '../../../definition/IProduct';
 import { ProductsRaw } from '../../../app/models/server/raw/Products';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
+import { CreateObject } from '../../../definition/ICreate';
+import { UpdateObject } from '../../../definition/IUpdate';
 
 export class ProductService extends ServiceClassInternal implements IProductService {
 	protected name = 'product';
@@ -17,7 +26,11 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 	}
 
 	async create(params: IProductCreateParams): Promise<IProduct> {
-		const result = await this.ProductModel.insertOne(params);
+		const createData: IProductCreateBody = {
+			...new CreateObject(),
+			...params,
+		};
+		const result = await this.ProductModel.insertOne(createData);
 		return this.ProductModel.findOneById(result.insertedId);
 	}
 
@@ -29,7 +42,15 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 		await this.ProductModel.removeById(productId);
 	}
 
-	async update(productId: string, params: Partial<IProductCreateParams>): Promise<IProduct> {
+	async getProduct(productId: string): Promise<IProduct> {
+		const product = this.ProductModel.findOneById(productId);
+		if (!product) {
+			throw new Error('product-does-not-exist');
+		}
+		return product;
+	}
+
+	async update(productId: string, params: IProductUpdateParams): Promise<IProduct> {
 		const product = this.ProductModel.findOneById(productId);
 		if (!product) {
 			throw new Error('product-does-not-exist');
@@ -37,7 +58,11 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 		const query = {
 			_id: productId,
 		};
-		const result = await this.ProductModel.updateOne(query, params);
+		const updateData: IProductUpdateBody = {
+			...new UpdateObject(),
+			...params,
+		};
+		const result = await this.ProductModel.updateOne(query, updateData);
 		return this.ProductModel.findOneById(result.upsertedId._id.toHexString());
 	}
 

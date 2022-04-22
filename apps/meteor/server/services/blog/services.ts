@@ -1,9 +1,11 @@
 import { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IBlogService, IBlogCreateParams, IBlog } from '../../../definition/IBlog';
+import { IBlogService, IBlogCreateParams, IBlog, IBlogUpdateBody, IBlogUpdateParams } from '../../../definition/IBlog';
 import { BlogsRaw } from '../../../app/models/server/raw/Blogs';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
+import { CreateObject } from '../../../definition/ICreate';
+import { UpdateObject } from '../../../definition/IUpdate';
 
 export class BlogService extends ServiceClassInternal implements IBlogService {
 	protected name = 'blog';
@@ -17,7 +19,11 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 	}
 
 	async create(params: IBlogCreateParams): Promise<IBlog> {
-		const result = await this.BlogModel.insertOne(params);
+		const updateData: IBlogUpdateBody = {
+			...new CreateObject(),
+			...params,
+		};
+		const result = await this.BlogModel.insertOne(updateData);
 		return this.BlogModel.findOneById(result.insertedId);
 	}
 
@@ -29,7 +35,15 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 		await this.BlogModel.removeById(blogId);
 	}
 
-	async update(blogId: string, params: Partial<IBlogCreateParams>): Promise<IBlog> {
+	async getBlog(blogId: string): Promise<IBlog> {
+		const blog = this.BlogModel.findOneById(blogId);
+		if (!blog) {
+			throw new Error('blog-does-not-exist');
+		}
+		return blog;
+	}
+
+	async update(blogId: string, params: IBlogUpdateParams): Promise<IBlog> {
 		const blog = this.BlogModel.findOneById(blogId);
 		if (!blog) {
 			throw new Error('blog-does-not-exist');
@@ -37,7 +51,11 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 		const query = {
 			_id: blogId,
 		};
-		const result = await this.BlogModel.updateOne(query, params);
+		const updateData: IBlogUpdateBody = {
+			...new UpdateObject(),
+			...params,
+		};
+		const result = await this.BlogModel.updateOne(query, updateData);
 		return this.BlogModel.findOneById(result.upsertedId._id.toHexString());
 	}
 

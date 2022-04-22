@@ -1,9 +1,11 @@
 import { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IGameService, IGameCreateParams, IGame } from '../../../definition/IGame';
+import { IGameService, IGameCreateParams, IGame, IGameCreateBody, IGameUpdateParams } from '../../../definition/IGame';
 import { GamesRaw } from '../../../app/models/server/raw/Games';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
+import { CreateObject } from '../../../definition/ICreate';
+import { UpdateObject } from '../../../definition/IUpdate';
 
 export class GameService extends ServiceClassInternal implements IGameService {
 	protected name = 'game';
@@ -17,7 +19,11 @@ export class GameService extends ServiceClassInternal implements IGameService {
 	}
 
 	async create(params: IGameCreateParams): Promise<IGame> {
-		const result = await this.GameModel.insertOne(params);
+		const createData: IGameCreateBody = {
+			...new CreateObject(),
+			...params,
+		};
+		const result = await this.GameModel.insertOne(createData);
 		return this.GameModel.findOneById(result.insertedId);
 	}
 
@@ -29,7 +35,15 @@ export class GameService extends ServiceClassInternal implements IGameService {
 		await this.GameModel.removeById(gameId);
 	}
 
-	async update(gameId: string, params: Partial<IGameCreateParams>): Promise<IGame> {
+	async getGame(gameId: string): Promise<IGame> {
+		const game = this.GameModel.findOneById(gameId);
+		if (!game) {
+			throw new Error('game-does-not-exist');
+		}
+		return game;
+	}
+
+	async update(gameId: string, params: IGameUpdateParams): Promise<IGame> {
 		const game = this.GameModel.findOneById(gameId);
 		if (!game) {
 			throw new Error('game-does-not-exist');
@@ -37,7 +51,11 @@ export class GameService extends ServiceClassInternal implements IGameService {
 		const query = {
 			_id: gameId,
 		};
-		const result = await this.GameModel.updateOne(query, params);
+		const updateData = {
+			...new UpdateObject(),
+			...params,
+		};
+		const result = await this.GameModel.updateOne(query, updateData);
 		return this.GameModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
