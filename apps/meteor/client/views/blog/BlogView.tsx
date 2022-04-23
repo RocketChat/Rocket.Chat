@@ -1,33 +1,90 @@
-import React from 'react'
-import { Modal, Button, ButtonGroup, Box, Margins } from '@rocket.chat/fuselage';
+import { Box, Icon, Tabs, Grid, Button } from '@rocket.chat/fuselage';
+import React, { ReactElement, useRef } from 'react';
 
-// import * as nft1 from '@/public/images/blog_images/nft_blog_1.jpg'
+import Page from '../../components/Page';
+import TopBar from '../../topbar/TopBar';
+import SingleBlogPost from './SingleBlogPost';
 
+import './blog.css';
 
-type Props = {
-    title: string,
-    body: string
-}
+const BlogView = (): ReactElement => {
+	const pageRef = useRef();
+	const data = [
+		{
+			author: 'Tanjiro Kamado',
+			location: 'Japan',
+			content:
+				"Tanjiro Kamado is a fictional character and the main protagonist in Koyoharu Gotouge's manga Demon Slayer: Kimetsu no Yaiba.",
+			images: 'images/blog_images/Kimetsu_no_yaiba_1.jpg',
+			createdAt: 'April',
+		},
+		{
+			author: 'Zenitsu Agatsuma',
+			location: 'Japan',
+			content:
+				'is one of the main protagonists of Demon Slayer: Kimetsu no Yaiba and along with Inosuke Hashibira, a travelling companion of Tanjiro Kamado and Nezuko Kamado.',
+			images: 'images/blog_images/Kimetsu_no_yaiba_2.jpg',
+			createdAt: 'April',
+		},
+		{
+			author: 'Hashibira Inosuke',
+			location: 'Japan',
+			content:
+				'is one of the main protagonists of Demon Slayer: Kimetsu no Yaiba and along with Zenitsu Agatsuma, a traveling companion of Tanjiro Kamado and Nezuko Kamado.',
+			images: 'images/blog_images/Kimetsu_no_yaiba_3.png',
+			createdAt: 'April',
+		},
+		{
+			author: 'Nezuko Kamado',
+			location: 'Japan',
+			content: "Nezuko Kamado is a fictional character from Koyoharu Gotouge's manga Demon Slayer: Kimetsu no Yaiba.",
+			images: 'images/blog_images/Kimetsu_no_yaiba_4.jpg',
+			createdAt: 'April',
+		},
+		{
+			author: 'Tanjiro Kamado',
+			location: 'Japan',
+			content: 'is a major supporting character of Demon Slayer: Kimetsu no Yaiba and a major character in the Entertainment District Arc.',
+			images: 'images/blog_images/Kimetsu_no_yaiba_5.png',
+			createdAt: 'April',
+		},
+	];
+	return (
+		<Page flexDirection='row'>
+			<Page>
+				<TopBar />
+				<Box display='flex' justifyContent='space-between' style={{ marginTop: '20px' }}>
+					<Tabs>
+						<Tabs.Item>
+							<Icon name='chevron-right' />
+						</Tabs.Item>
+						<Tabs.Item>anime</Tabs.Item>
+						<Tabs.Item>art</Tabs.Item>
+						<Tabs.Item>cook</Tabs.Item>
+						<Tabs.Item>sports</Tabs.Item>
+						<Tabs.Item>
+							<Icon name='chevron-left' />
+						</Tabs.Item>
+					</Tabs>
+				</Box>
 
-const BlogView = ({ title, body }: Props) => {
-    return (
-        <Margins block='15px'>
-            <Modal height='400px' width='350px'>
-                {/* <img src={nft1} alt='nft blog image' /> */}
-                <Box height='160px' width='full' bg='primary-500-50'></Box>
-                <Modal.Header>
-                    <Modal.Title>{title}</Modal.Title>
-                </Modal.Header>
-                <Modal.Content>{body}</Modal.Content>
-                <Modal.Footer>
-                    <ButtonGroup align='end'>
-                        <Button primary>Read More</Button>
-                    </ButtonGroup>
-                </Modal.Footer>
-            </Modal>
-        </Margins>
+				<Page.Content ref={pageRef}>
+					<Grid style={{ overflowY: 'auto', overflowX: 'hidden' }}>
+						{data.map((item, index) => (
+							<Grid.Item xs={4} md={4} lg={6} key={index}>
+								<SingleBlogPost {...item} />
+							</Grid.Item>
+						))}
+					</Grid>
+					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '80px' }}>
+						<Button square primary>
+							<Icon name='plus' size='x20' />
+						</Button>
+					</div>
+				</Page.Content>
+			</Page>
+		</Page>
+	);
+};
 
-    )
-}
-
-export default BlogView
+export default BlogView;

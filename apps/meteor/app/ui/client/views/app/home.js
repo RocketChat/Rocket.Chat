@@ -1,9 +1,7 @@
 import { Template } from 'meteor/templating';
-import { Flex } from '@rocket.chat/fuselage';
 
-import { settings } from '../../../../settings';
 import './home.html';
-import BlogView from '../../../../../client/views/blog/BlogView';
+import LandingView from '../../../../../client/views/landing/LandingView';
 
 const blogData = [
 	{
@@ -55,7 +53,7 @@ Template.home.helpers({
 	blogs() {
 		return blogData;
 	},
-	BlogView() {
-		return BlogView;
+	LandingView() {
+		return LandingView;
 	},
 });

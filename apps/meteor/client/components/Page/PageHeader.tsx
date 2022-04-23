@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import React, { useContext, FC, ReactNode } from 'react';
 
 import { useLayout } from '../../contexts/LayoutContext';
-import BurgerMenu from '../BurgerMenu';
+import BurgerMenu from '../BottomBar/BurgerMenu';
 import TemplateHeader from '../Header';
 import PageContext from './PageContext';
 
