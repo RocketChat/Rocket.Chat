@@ -30,10 +30,10 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.9",
 		"@rocket.chat/ui-kit": "~0.31.9",
-		"ajv": "^8.7.1",
+		"ajv": "^8.11.0",
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.20.0",
-		"colorette": "^1.4.0",
+		"colorette": "^2.0.16",
 		"cookie": "^0.5.0",
 		"cookie-parser": "^1.4.6",
 		"ejson": "^2.2.2",
@@ -44,12 +44,12 @@
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.20",
 		"mongodb": "^3.6.10",
-		"nats": "^2.4.0",
+		"nats": "^2.6.1",
 		"pino": "^7.10.0",
 		"sodium-native": "^3.3.0",
 		"sodium-plus": "^0.9.0",
 		"underscore.string": "^3.3.6",
-		"uuid": "^7.0.3",
+		"uuid": "^8.3.2",
 		"ws": "^8.5.0"
 	},
 	"devDependencies": {
@@ -66,7 +66,7 @@
 		"pino-pretty": "^7.6.1",
 		"pm2": "^5.2.0",
 		"ts-node": "^10.7.0",
-		"typescript": "~4.3.5"
+		"typescript": "~4.3.4"
 	},
 	"volta": {
 		"node": "14.18.2",

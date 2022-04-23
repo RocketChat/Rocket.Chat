@@ -1,10 +1,10 @@
 import s from 'underscore.string';
-import * as colors from 'colorette';
+import { createColors } from 'colorette';
 
 // force enable colors on dev env
-if (process.env.NODE_ENV !== 'production') {
-	colors.options.enabled = true;
-}
+const colors = createColors({
+	useColor: process.env.NODE_ENV !== 'production',
+});
 
 type LogColors = 'white' | 'blue' | 'green' | 'magenta' | 'red';
 
