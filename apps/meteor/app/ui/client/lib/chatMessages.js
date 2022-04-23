@@ -177,7 +177,7 @@ export class ChatMessages {
 	edit(element, isEditingTheNextOne) {
 		const message = this.collection.findOne(element.dataset.id);
 
-		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+		const hasPermission = hasAtLeastOnePermission('edit-message', Session.get('openedRoom'));
 		const editAllowed = settings.get('Message_AllowEditing');
 		const editOwn = message && message.u && message.u._id === Meteor.userId();
 
