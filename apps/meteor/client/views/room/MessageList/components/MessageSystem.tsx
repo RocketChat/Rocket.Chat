@@ -7,6 +7,8 @@ import {
 	MessageSystemName,
 	MessageSystemTimestamp,
 	MessageSystemBlock,
+	CheckBox,
+	MessageUsername,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
@@ -15,25 +17,52 @@ import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { TranslationKey, useTranslation } from '../../../../contexts/TranslationContext';
+import { useUserData } from '../../../../hooks/useUserData';
+import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
+import { UserPresence } from '../../../../lib/presence';
 import { useMessageActions, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowRealName } from '../contexts/MessageListContext';
+import { useMessageListShowRealName, useMessageListShowUsername } from '../contexts/MessageListContext';
+import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 
 export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 	const t = useTranslation();
-	const { formatters } = useMessageActions();
+	const {
+		actions: { openUserCard },
+		formatters,
+	} = useMessageActions();
 	const runActionLink = useMessageRunActionLink();
-	const showUsername = useMessageListShowRealName();
+	const showRealName = useMessageListShowRealName();
+	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
+	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
+	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 
 	const messageType = MessageTypes.getType(message);
 
+	const isSelecting = useIsSelecting();
+	const toggleSelected = useToggleSelect(message._id);
+	const isSelected = useIsSelectedMessage(message._id);
+	useCountSelected();
+
 	return (
-		<MessageSystemTemplate>
+		<MessageSystemTemplate onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
 			<MessageSystemLeftContainer>
-				<UserAvatar username={message.u.username} size='x18' />
+				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageSystemName>{(showUsername && message.u.name) || message.u.username}</MessageSystemName>
+					<MessageSystemName onClick={user.username !== undefined ? openUserCard(user.username) : undefined} style={{ cursor: 'pointer' }}>
+						{getUserDisplayName(user.name, user.username, showRealName)}
+					</MessageSystemName>
+					{showUsername && (
+						<MessageUsername
+							data-username={user.username}
+							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+							style={{ cursor: 'pointer' }}
+						>
+							@{user.username}
+						</MessageUsername>
+					)}
 					{messageType && (
 						<MessageSystemBody
 							dangerouslySetInnerHTML={{

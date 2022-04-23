@@ -106,6 +106,7 @@ export interface IMessage extends IRocketChatRecord {
   };
   starred?: { _id: IUser["_id"] }[];
   pinned?: boolean;
+  unread?: boolean;
   drid?: RoomID;
   tlm?: Date;
 
