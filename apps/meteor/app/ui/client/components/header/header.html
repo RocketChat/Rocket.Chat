@@ -2,13 +2,8 @@
 	<div>{{> React component=TopBar}}</div>
 	<header class="rc-header">
 		<div class="rc-header__wrap">
-			<div class="rc-header__navbar-item">{{> React component=HomeButton}}</div>
-			<div class="rc-header__navbar-item">{{> React component=BlogButton}}</div>
-			<div class="rc-header__navbar-item">{{> React component=GameButton}}</div>
-			<div class="rc-header__navbar-item">{{> React component=ProductButton}}</div>
-			<div class="rc-header__navbar-item">{{> React component=MessagesButton}}</div>
-			<div class="rc-header__block rc-header--burger rc-header__navbar-item">{{> burger}}</div>
-
+			<div style="width: 100%; margin-left: -20px">{{> React component=BottomBar}}</div>
+			<div class="rc-header__block rc-header--burger rc-header__navbar-item" style="margin-right: 40px">{{> burger}}</div>
 			{{#if Template.contentBlock}} {{> Template.contentBlock}} {{/if}} {{# unless hideHelp}}
 			<div class="rc-header__section-help"></div>
 			{{/unless}} {{#with toolbarButtons}}

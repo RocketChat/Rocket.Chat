@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import React, { memo, ReactElement, useMemo } from 'react';
 
-import BurgerMenu from '../../../components/BurgerMenu';
+import BurgerMenu from '../../../components/BottomBar/BurgerMenu';
 import TemplateHeader from '../../../components/Header';
 import { useLayout } from '../../../contexts/LayoutContext';
 import DirectRoomHeader from './DirectRoomHeader';

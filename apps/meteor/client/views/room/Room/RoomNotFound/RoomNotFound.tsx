@@ -1,7 +1,7 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import BurgerMenu from '../../../../components/BurgerMenu';
+import BurgerMenu from '../../../../components/BottomBar/BurgerMenu';
 import TemplateHeader from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';

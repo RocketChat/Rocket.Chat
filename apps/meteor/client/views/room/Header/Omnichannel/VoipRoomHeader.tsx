@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 
-import BurgerMenu from '../../../../components/BurgerMenu';
+import BurgerMenu from '../../../../components/BottomBar/BurgerMenu';
 import TemplateHeader from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useCurrentRoute } from '../../../../contexts/RouterContext';

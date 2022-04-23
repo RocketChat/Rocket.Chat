@@ -3,7 +3,6 @@ import React, { FC } from 'react';
 
 import { useLayout } from '../../contexts/LayoutContext';
 import HeaderDivider from './HeaderDivider';
-import HeaderIcon from './HeaderIcon';
 
 const Header: FC<any> = (props) => {
 	const { isMobile } = useLayout();
