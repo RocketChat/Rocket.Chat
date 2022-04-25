@@ -1,3 +1,4 @@
+import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
@@ -7,7 +8,19 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import EmailInboxForm from './EmailInboxForm';
 import { FormSkeleton } from './Skeleton';
 
-function EmailInboxEditWithData({ id }) {
+declare module '@rocket.chat/rest-typings' {
+	interface IEndpoints {
+		'email-inbox/:_id': {
+			GET: () => IEmailInbox;
+		};
+	}
+}
+
+type EmailInboxEditWithDataProps = {
+	id: string;
+};
+
+const EmailInboxEditWithData = ({ id }: EmailInboxEditWithDataProps) => {
 	const t = useTranslation();
 	const { value: data, error, phase: state } = useEndpointData(`email-inbox/${id}`);
 
@@ -16,10 +29,10 @@ function EmailInboxEditWithData({ id }) {
 	}
 
 	if (error || !data) {
-		return <Box mbs='x16'>{t('EmailInbox_not_found')}</Box>;
+		return <Box mbs='x16'>{t('error-email-inbox-not-found')}</Box>;
 	}
 
 	return <EmailInboxForm id={id} data={data} />;
-}
+};
 
 export default EmailInboxEditWithData;

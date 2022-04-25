@@ -1,4 +1,5 @@
 import { check, Match } from 'meteor/check';
+
 import { API } from '../api';
 import { findEmailInboxes, findOneEmailInbox, insertOneOrUpdateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
