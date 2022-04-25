@@ -1,5 +1,5 @@
 {
-	"extends": ["@rocket.chat/eslint-config", "plugin:prettier/recommended"],
+	"extends": ["@rocket.chat/eslint-config", "plugin:prettier/recommended", "plugin:import/typescript"],
 	"parser": "babel-eslint",
 	"globals": {
 		"__meteor_bootstrap__": false,
