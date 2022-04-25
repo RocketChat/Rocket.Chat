@@ -151,7 +151,7 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
-	})
+	});
 
 	test.describe('Message pin', () => {
 		test('(API) expect disable message pinning', async ({ request }) => {
@@ -175,7 +175,7 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
-	})
+	});
 
 	test.describe('Message star', () => {
 		test('(API) expect disable message starring', async ({ request }) => {
@@ -199,7 +199,7 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
-	})
+	});
 
 	test.describe('File upload', () => {
 		test('(API) expect disable file upload', async ({ request }) => {
@@ -223,7 +223,7 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
-	})
+	});
 
 	test.describe('Profile', () => {
 		test.describe('Profile change', () => {
@@ -248,7 +248,7 @@ test.describe('[API Settings Change]', async () => {
 				expect(response.status()).toBe(200);
 				expect(data).toHaveProperty('success', true);
 			});
-		})
+		});
 
 		test.describe('Avatar change', () => {
 			test('(API) expect disable avatar change', async ({ request }) => {
@@ -272,8 +272,8 @@ test.describe('[API Settings Change]', async () => {
 				expect(response.status()).toBe(200);
 				expect(data).toHaveProperty('success', true);
 			});
-		})
-	})
+		});
+	});
 
 	test.describe('Manual new users approve', () => {
 		test('(API) expect enable manually approve new users', async ({ request }) => {
@@ -297,5 +297,5 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
-	})
+	});
 });
