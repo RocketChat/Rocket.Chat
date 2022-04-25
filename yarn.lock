@@ -3448,13 +3448,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/emitter@npm:~0.31.10":
-  version: 0.31.10
-  resolution: "@rocket.chat/emitter@npm:0.31.10"
-  checksum: fb72e86b47e2e1b5add11717547aa11416efe228b54612a98e12fedf74875580a071e2f51edcb55b37ab95106aa7feaa7257b35d62abc517471433cf06e6f802
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
@@ -3487,6 +3480,13 @@ __metadata:
     ws: ^8.5.0
   languageName: unknown
   linkType: soft
+
+"@rocket.chat/emitter@npm:~0.31.10":
+  version: 0.31.10
+  resolution: "@rocket.chat/emitter@npm:0.31.10"
+  checksum: fb72e86b47e2e1b5add11717547aa11416efe228b54612a98e12fedf74875580a071e2f51edcb55b37ab95106aa7feaa7257b35d62abc517471433cf06e6f802
+  languageName: node
+  linkType: hard
 
 "@rocket.chat/emitter@npm:~0.31.9":
   version: 0.31.9
@@ -10066,6 +10066,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"color@npm:^3.1.3":
+  version: 3.2.1
+  resolution: "color@npm:3.2.1"
+  dependencies:
+    color-convert: ^1.9.3
+    color-string: ^1.6.0
+  checksum: f81220e8b774d35865c2561be921f5652117638dcda7ca4029262046e37fc2444ac7bbfdd110cf1fd9c074a4ee5eda8f85944ffbdda26186b602dd9bb05f6400
+  languageName: node
+  linkType: hard
+
 "color@npm:^4.0.1, color@npm:^4.2.3":
   version: 4.2.3
   resolution: "color@npm:4.2.3"
@@ -10076,7 +10086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colorette@npm:^1.4.0":
+"colorette@npm:^1.3.0, colorette@npm:^1.4.0":
   version: 1.4.0
   resolution: "colorette@npm:1.4.0"
   checksum: 01c3c16058b182a4ab4c126a65a75faa4d38a20fa7c845090b25453acec6c371bb2c5dceb0a2338511f17902b9d1a9af0cadd8509c9403894b79311032c256c3
@@ -19731,7 +19741,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moleculer@npm:^0.14.20":
+"moleculer@npm:^0.14.19, moleculer@npm:^0.14.20":
   version: 0.14.20
   resolution: "moleculer@npm:0.14.20"
   dependencies:
@@ -21717,7 +21727,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino-pretty@npm:^7.6.1":
+"pino-pretty@npm:^7.6.0, pino-pretty@npm:^7.6.1":
   version: 7.6.1
   resolution: "pino-pretty@npm:7.6.1"
   dependencies:
@@ -21747,7 +21757,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:^7.10.0":
+"pino@npm:^7.10.0, pino@npm:^7.9.2":
   version: 7.10.0
   resolution: "pino@npm:7.10.0"
   dependencies:
