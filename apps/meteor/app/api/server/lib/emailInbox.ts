@@ -1,8 +1,9 @@
-import { EmailInbox } from '../../../models/server/raw';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Users } from './../../../models/server';
 import { IEmailInbox } from '@rocket.chat/core-typings';
 import { InsertOneWriteOpResult, UpdateWriteOpResult, WithId } from 'mongodb';
+
+import { EmailInbox } from '../../../models/server/raw';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { Users } from '../../../models/server';
 
 export const findEmailInboxes = async ({
 	userId,
@@ -63,7 +64,7 @@ export const insertOneOrUpdateEmailInbox = async (
 		return EmailInbox.insertOne(emailInboxParams);
 	}
 
-	const emailInbox = await findOneEmailInbox({ userId, _id: _id });
+	const emailInbox = await findOneEmailInbox({ userId, _id });
 
 	if (!emailInbox) {
 		throw new Error('error-invalid-email-inbox');
