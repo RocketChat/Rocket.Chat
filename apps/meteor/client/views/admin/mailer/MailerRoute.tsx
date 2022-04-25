@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
@@ -53,7 +53,7 @@ const useSendMail: useSendMailType = () => {
 	};
 };
 
-export default function MailerRoute(): JSX.Element {
+export default function MailerRoute(): ReactElement {
 	const canAccessMailer = usePermission('access-mailer');
 	const sendMail = useSendMail();
 

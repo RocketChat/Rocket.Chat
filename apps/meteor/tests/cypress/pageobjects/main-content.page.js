@@ -239,8 +239,8 @@ class MainContent extends Page {
 	sendMessage(text) {
 		this.setTextToInput(text);
 		this.sendBtn.click();
-		cy.wait(200);
-		cy.get('[data-qa-type="message"]:last-child [data-qa-type="message-body"]').should('be.visible');
+		cy.wait(300);
+		this.lastMessage.should('be.visible');
 		cy.get('[data-qa-type="message"]:last-child [data-qa-type="message-body"]').should('contain', text);
 	}
 
@@ -290,7 +290,7 @@ class MainContent extends Page {
 
 		this.messageOptionsBtns.should('be.visible');
 
-		this.messageOptionsBtn.click();
+		this.messageOptionsBtn.click().wait(100);
 
 		cy.waitUntil(() => {
 			return this.messageActionMenuBtns.then((el) => el.length);

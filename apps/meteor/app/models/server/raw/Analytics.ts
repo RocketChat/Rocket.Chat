@@ -1,14 +1,15 @@
 import { Random } from 'meteor/random';
 import { AggregationCursor, Cursor, SortOptionObject, UpdateWriteOpResult } from 'mongodb';
+import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IAnalytic } from '../../../../definition/IAnalytic';
-import { IRoom } from '../../../../definition/IRoom';
 
 type T = IAnalytic;
 
 export class AnalyticsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
+	}
 
 	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytic['date'] }): Promise<UpdateWriteOpResult> {
 		return this.updateMany(

@@ -1,5 +1,5 @@
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
-import React, { useState, useCallback, SyntheticEvent } from 'react';
+import React, { useState, useCallback, SyntheticEvent, ReactElement } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
@@ -11,7 +11,7 @@ type MailerProps = {
 	sendMail: ({ fromEmail, subject, emailBody, dryRun, query }: sendMailObject) => void;
 };
 
-export function Mailer({ sendMail }: MailerProps): JSX.Element {
+export function Mailer({ sendMail }: MailerProps): ReactElement {
 	const t = useTranslation();
 
 	const [fromEmail, setFromEmail] = useState<{ value: string; error?: string }>({ value: '' });

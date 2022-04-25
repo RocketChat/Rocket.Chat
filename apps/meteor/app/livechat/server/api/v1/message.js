@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
@@ -10,7 +11,6 @@ import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { settings } from '../../../../settings/server';
-import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 API.v1.addRoute('livechat/message', {
 	post() {

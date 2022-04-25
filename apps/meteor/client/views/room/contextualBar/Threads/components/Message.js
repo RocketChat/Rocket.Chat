@@ -81,9 +81,9 @@ export default React.memo(function MessageThread({
 					>
 						<Icon name={button} size='x20' />
 					</Button>
-					{(mention && <NotificationStatus.Me t={t} mb='x24' />) ||
-						(all && <NotificationStatus.All t={t} mb='x24' />) ||
-						(unread && <NotificationStatus.Unread t={t} mb='x24' />)}
+					{(mention && <NotificationStatus.Me mb='x24' />) ||
+						(all && <NotificationStatus.All mb='x24' />) ||
+						(unread && <NotificationStatus.Unread mb='x24' />)}
 				</Message.ContainerFixed>
 			</Message>
 		</Box>
