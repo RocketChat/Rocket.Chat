@@ -1,11 +1,10 @@
-import { Table } from '@rocket.chat/fuselage';
 import React, { CSSProperties, Dispatch, ReactElement, SetStateAction, useMemo } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
+import { GenericTableCell } from '../../../components/GenericTable/V2/GenericTableCell';
 import { GenericTableHeaderCell } from '../../../components/GenericTable/V2/GenericTableHeaderCell';
 import { GenericTableRow } from '../../../components/GenericTable/V2/GenericTableRow';
-import { GenericTableCell } from '../../../components/GenericTable/V2/GenericTableCell';
 import MarkdownText from '../../../components/MarkdownText';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
