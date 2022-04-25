@@ -140,5 +140,16 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
+
+		test('(API) expect disable bad words filter', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowBadWordsFilter`, {
+				headers: headersSession,
+				data: { value: false },
+			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
 	})
 });
