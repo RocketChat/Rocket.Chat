@@ -301,8 +301,8 @@ class MainContent extends Page {
 
 	closeMessageActionMenu() {
 		// Old popover closes only on click outside
-		// cy.get('body').realHover({ position: 'topLeft' });
-		this.popoverWrapper.click();
+		cy.get('body').click();
+		// this.popoverWrapper.click();
 		this.messageOptionsBtns.should('not.exist');
 		this.messageActionMenuBtns.should('not.exist');
 	}
