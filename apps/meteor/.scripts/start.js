@@ -134,7 +134,7 @@ async function startMicroservices() {
 			};
 			const cwd =
 				name === 'ddp-streamer'
-					? path.resolve(srcDir, '..', '..', 'ee', 'apps', name, 'dist', 'ee', 'apps', 'services', name)
+					? path.resolve(srcDir, '..', '..', 'ee', 'apps', name, 'dist', 'ee', 'apps', name)
 					: path.resolve(srcDir, 'ee', 'server', 'services', 'dist', 'ee', 'server', 'services', name);
 
 			console.log('cwd ->', name, cwd);
