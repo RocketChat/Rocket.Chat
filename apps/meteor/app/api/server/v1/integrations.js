@@ -15,8 +15,10 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
+			const { userId, bodyParams } = this;
+
 			check(
-				this.bodyParams,
+				bodyParams,
 				Match.ObjectIncluding({
 					type: String,
 					name: String,
@@ -38,15 +40,15 @@ API.v1.addRoute(
 
 			let integration;
 
-			switch (this.bodyParams.type) {
+			switch (bodyParams.type) {
 				case 'webhook-outgoing':
-					Meteor.runAsUser(this.userId, () => {
-						integration = Meteor.call('addOutgoingIntegration', this.bodyParams);
+					Meteor.runAsUser(userId, () => {
+						integration = Meteor.call('addOutgoingIntegration', bodyParams);
 					});
 					break;
 				case 'webhook-incoming':
-					Meteor.runAsUser(this.userId, () => {
-						integration = Meteor.call('addIncomingIntegration', this.bodyParams);
+					Meteor.runAsUser(userId, () => {
+						integration = Meteor.call('addIncomingIntegration', bodyParams);
 					});
 					break;
 				default:
@@ -63,18 +65,27 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
-			if (!hasAtLeastOnePermission(this.userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'])) {
+			const { userId, queryParams } = this;
+
+			if (!hasAtLeastOnePermission(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'])) {
 				return API.v1.unauthorized();
 			}
 
-			if (!this.queryParams.id || this.queryParams.id.trim() === '') {
+			check(
+				queryParams,
+				Match.ObjectIncluding({
+					id: String,
+				}),
+			);
+
+			if (!queryParams.id || queryParams.id.trim() === '') {
 				return API.v1.failure('Invalid integration id.');
 			}
 
-			const { id } = this.queryParams;
+			const { id } = queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
-			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(this.userId, id), query);
+			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
 
 			const cursor = IntegrationHistory.find(ourQuery, {
 				sort: sort || { _updatedAt: -1 },
