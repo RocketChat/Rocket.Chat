@@ -1,4 +1,22 @@
 
+# 4.6.3
+`2022-04-19  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.31.0`
+
+### 🐛 Bug fixes
+
+
+- Desktop notification on multi-instance environments ([#25220](https://github.com/RocketChat/Rocket.Chat/pull/25220))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 4.6.2
 `2022-04-14  ·  2 🐛  ·  2 👩‍💻👨‍💻`
 
