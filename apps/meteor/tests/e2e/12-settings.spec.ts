@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 
 import { BASE_API_URL } from './utils/mocks/urlMock';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
+import LoginPage from './utils/pageobjects/LoginPage';
+import MainContent from './utils/pageobjects/MainContent';
+import SideNav from './utils/pageobjects/SideNav';
 
 const headersSession = {
 	'X-Auth-Token': '',
@@ -9,6 +12,25 @@ const headersSession = {
 };
 
 test.describe('[API Settings Change]', async () => {
+	let page: Page;
+
+	let loginPage: LoginPage;
+	let mainContent: MainContent;
+	let sideNav: SideNav;
+
+	test.beforeAll(async ({ browser, baseURL }) => {
+		const context = await browser.newContext();
+		page = await context.newPage();
+
+		loginPage = new LoginPage(page);
+		mainContent = new MainContent(page);
+		sideNav = new SideNav(page);
+
+		await loginPage.goto(baseURL as string);
+		await loginPage.login(adminLogin);
+		await sideNav.general().click();
+	});
+
 	test.beforeAll(async ({ request }) => {
 		const response = await request.post(`${BASE_API_URL}/login`, { data: adminLogin });
 		const { userId, authToken } = (await response.json()).data;
