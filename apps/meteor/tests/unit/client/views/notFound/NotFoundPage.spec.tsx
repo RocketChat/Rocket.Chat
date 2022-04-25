@@ -7,7 +7,7 @@ import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 import NotFoundPage from '../../../../../client/views/notFound/NotFoundPage';
 
 describe('views/notFound/NotFoundPage', () => {
-	it('should look good', async () => {
+	it('should look good', () => {
 		render(<NotFoundPage />);
 
 		expect(screen.getByRole('heading', { level: 1, name: 'Oops_page_not_found' })).to.exist;
