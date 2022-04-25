@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
@@ -22,7 +22,7 @@ const useSendMail: useSendMailType = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return ({ fromEmail, subject, emailBody, dryRun, query }) => {
+	return ({ fromEmail, subject, emailBody, dryRun, query }): void => {
 		if (query.error) {
 			dispatchToastMessage({
 				type: 'error',
@@ -53,7 +53,7 @@ const useSendMail: useSendMailType = () => {
 	};
 };
 
-export default function MailerRoute() {
+export default function MailerRoute(): ReactElement {
 	const canAccessMailer = usePermission('access-mailer');
 	const sendMail = useSendMail();
 
