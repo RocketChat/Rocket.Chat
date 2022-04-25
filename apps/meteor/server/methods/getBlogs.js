@@ -10,6 +10,7 @@ Meteor.methods({
 		const Blogs = new BlogService();
 
 		const results = await Blogs.list(limit);
+		console.log(results, 'results in the server');
 
 		return results;
 	},

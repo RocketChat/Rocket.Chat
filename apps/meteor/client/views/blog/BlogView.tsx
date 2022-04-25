@@ -1,14 +1,16 @@
 import { Box, Icon, Tabs, Grid, Button } from '@rocket.chat/fuselage';
-import React, { ReactElement, useRef } from 'react';
+import React, { ReactElement, useRef, useState } from 'react';
 
 import Page from '../../components/Page';
 import TopBar from '../../topbar/TopBar';
+import CreateBlogForm from './components/CreateBlogForm';
 import SingleBlogPost from './SingleBlogPost';
 
 import './blog.css';
 
 const BlogView = (): ReactElement => {
 	const pageRef = useRef();
+	const [showModal, setShowModal] = useState(true);
 	const data = [
 		{
 			author: 'Tanjiro Kamado',
@@ -49,6 +51,8 @@ const BlogView = (): ReactElement => {
 			createdAt: 'April',
 		},
 	];
+	// Send the data to the backend.
+	// Call the backend to get the new blog data.
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -67,7 +71,7 @@ const BlogView = (): ReactElement => {
 						</Tabs.Item>
 					</Tabs>
 				</Box>
-
+				<CreateBlogForm showModal={showModal} setShowModal={setShowModal} />
 				<Page.Content ref={pageRef}>
 					<Grid style={{ overflowY: 'auto', overflowX: 'hidden' }}>
 						{data.map((item, index) => (
@@ -78,7 +82,7 @@ const BlogView = (): ReactElement => {
 					</Grid>
 					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '80px' }}>
 						<Button square primary>
-							<Icon name='plus' size='x20' />
+							<Icon name='plus' size='x20' onClick={() => setShowModal(true)} />
 						</Button>
 					</div>
 				</Page.Content>
