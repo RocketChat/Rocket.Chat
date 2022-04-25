@@ -1,5 +1,6 @@
 /packages/* @RocketChat/chat-engine
 /packages/core-typings/ @RocketChat/chat-engine
+/packages/livechat/ @RocketChat/frontend
 /.vscode/ @RocketChat/chat-engine
 /.github/ @RocketChat/chat-engine
 /_templates/ @RocketChat/chat-engine
