@@ -152,4 +152,17 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 	})
+
+	test.describe('Block message pin:', () => {
+		test('(API) expect disable message pinning', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
+				headers: headersSession,
+				data: { value: false },
+			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+	})
 });
