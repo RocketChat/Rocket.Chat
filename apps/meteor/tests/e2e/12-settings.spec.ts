@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
 import { BASE_API_URL } from './utils/mocks/urlMock';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
@@ -53,6 +53,10 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
+		test.skip('(UI) expect option(edit) not be visible', async () => {
+			//
+		});
+
 		test('(API) expect enable message editing', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowEditing`, {
 				headers: apiSessionHeaders,
@@ -75,6 +79,10 @@ test.describe('[API Settings Change]', async () => {
 
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
+		});
+
+		test.skip('(UI) expect option(delete) not be visible', async () => {
+			//
 		});
 
 		test('(API) expect enable message deleting', async ({ request }) => {
@@ -101,6 +109,10 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
+		test.skip('(UI) expect option(upload audio) not be visible', async () => {
+			//
+		});
+
 		test('(API) expect enable audio files', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AudioRecorderEnabled`, {
 				headers: apiSessionHeaders,
@@ -123,6 +135,10 @@ test.describe('[API Settings Change]', async () => {
 
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
+		});
+
+		test.skip('(UI) expect option(upload video) not be visible', async () => {
+			//
 		});
 
 		test('(API) expect enable video files', async ({ request }) => {
@@ -160,6 +176,10 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
+		test.skip('(UI) expect badword be censored', async () => {
+			//
+		});
+
 		test('(API) expect disable bad words filter', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowBadWordsFilter`, {
 				headers: apiSessionHeaders,
@@ -182,6 +202,10 @@ test.describe('[API Settings Change]', async () => {
 
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
+		});
+
+		test.skip('(UI) expect option(pin message) not be visible', async () => {
+			//
 		});
 
 		test('(API) expect enable message pinning', async ({ request }) => {
@@ -208,6 +232,10 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
+		test.skip('(UI) expect option(star message) not be visible', async () => {
+			//
+		});
+
 		test('(API) expect enable message starring', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
 				headers: apiSessionHeaders,
@@ -230,6 +258,10 @@ test.describe('[API Settings Change]', async () => {
 
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
+		});
+
+		test.skip('(UI) expect option(upload file) not be visible', async () => {
+			//
 		});
 
 		test('(API) expect enable file upload', async ({ request }) => {
@@ -257,6 +289,10 @@ test.describe('[API Settings Change]', async () => {
 				expect(data).toHaveProperty('success', true);
 			});
 
+			test.skip('(UI) expect option(update profile) not be visible', async () => {
+				//
+			});
+
 			test('(API) expect enable profile change', async ({ request }) => {
 				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
 					headers: apiSessionHeaders,
@@ -279,6 +315,10 @@ test.describe('[API Settings Change]', async () => {
 
 				expect(response.status()).toBe(200);
 				expect(data).toHaveProperty('success', true);
+			});
+
+			test.skip('(UI) expect option(update avatar) not be visible', async () => {
+				//
 			});
 
 			test('(API) expect enable avatar change', async ({ request }) => {
@@ -304,6 +344,28 @@ test.describe('[API Settings Change]', async () => {
 
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
+		});
+
+		test.skip('(API) expect register a user', () => {
+			//
+		});
+
+		test.describe('(UI) expect activate/deactivate flow as admin', () => {
+			test.skip('expect open /users as admin', async () => {
+				//
+			});
+
+			test.skip('expect find registered user', async () => {
+				//
+			});
+
+			test.skip('expect activate registered user', async () => {
+				//
+			});
+
+			test.skip('expect deactivate registered user', async () => {
+				//
+			});
 		});
 
 		test('(API) expect disable manually approve new users', async ({ request }) => {
