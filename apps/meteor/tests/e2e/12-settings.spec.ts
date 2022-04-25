@@ -122,7 +122,7 @@ test.describe('[API Settings Change]', async () => {
 		test('(API) expect enable bad words filter', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowBadWordsFilter`, {
 				headers: headersSession,
-				data: { value: false },
+				data: { value: true },
 			});
 			const data = await response.json();
 
