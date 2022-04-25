@@ -61,7 +61,7 @@
 		"@types/express": "^4.17.13",
 		"@types/fibers": "^3.1.1",
 		"@types/mongodb": "^3.6.20",
-		"@types/node": "^14.18.12",
+		"@types/node": "^14.18.15",
 		"@types/ws": "^8.5.3",
 		"pino-pretty": "^7.6.1",
 		"pm2": "^5.2.0",
