@@ -17,7 +17,7 @@ test.describe('[API Settings Change]', async () => {
 		headersSession['X-User-Id'] = userId;
 	});
 
-	test('expect successfully create a session', async () => {
+	test('(API) expect successfully create a session', async () => {
 		expect(headersSession['X-Auth-Token'].length).toBeGreaterThan(0);
 		expect(headersSession['X-User-Id'].length).toBeGreaterThan(0);
 	});
