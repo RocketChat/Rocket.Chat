@@ -237,6 +237,17 @@ test.describe('[API Settings Change]', async () => {
 				expect(response.status()).toBe(200);
 				expect(data).toHaveProperty('success', true);
 			});
+
+			test('(API) expect enable profile change', async ({ request }) => {
+				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
+					headers: headersSession,
+					data: { value: true },
+				});
+				const data = await response.json();
+
+				expect(response.status()).toBe(200);
+				expect(data).toHaveProperty('success', true);
+			});
 		})
 	})
 });
