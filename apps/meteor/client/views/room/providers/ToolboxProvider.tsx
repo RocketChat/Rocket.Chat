@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect, MouseEventHandler, useEffect } from 'react';
+import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect, useEffect } from 'react';
 
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSession } from '../../../contexts/SessionContext';
@@ -125,7 +125,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 export const useTabContext = (): unknown | undefined => useContext(ToolboxContext).context;
 export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).activeTabBar;
 export const useTabBarOpen = (): Function => useContext(ToolboxContext).open;
-export const useTabBarClose = (): MouseEventHandler<HTMLOrSVGElement> => useContext(ToolboxContext).close;
+export const useTabBarClose = (): (() => void) => useContext(ToolboxContext).close;
 export const useTabBarOpenUserInfo = (): Function => useContext(ToolboxContext).openUserInfo;
 
 export default ToolboxProvider;

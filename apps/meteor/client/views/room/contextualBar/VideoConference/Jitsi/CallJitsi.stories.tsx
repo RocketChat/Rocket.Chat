@@ -3,7 +3,6 @@ import React from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
 import CallJitsi from './CallJitsi';
-import CallModal from './components/CallModal';
 
 export default {
 	title: 'Room/Contextual Bar/CallJitsi',
@@ -19,5 +18,3 @@ Default.storyName = 'CallJitsi';
 Default.args = {
 	openNewWindow: true,
 };
-
-export const Modal: ComponentStory<typeof CallModal> = (args) => <CallModal {...args} />;

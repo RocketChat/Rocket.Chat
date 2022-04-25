@@ -1,10 +1,12 @@
-import { Skeleton } from '@rocket.chat/fuselage';
+import { IRoom } from '@rocket.chat/core-typings';
+import { Skeleton, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { clear } from '@rocket.chat/memo';
-import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, memo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, memo, ReactElement } from 'react';
 
 import { Subscriptions } from '../../../../../../app/models/client';
 import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/constants';
+import GenericModal from '../../../../../components/GenericModal';
 import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
@@ -15,10 +17,7 @@ import { useUser } from '../../../../../contexts/UserContext';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import CallJitsi from './CallJitsi';
-import CallModal from './components/CallModal';
 import { JitsiBridge } from './lib/JitsiBridge';
-
-export { default as CallJitsi } from './CallJitsi';
 
 const querySettings = {
 	_id: [
@@ -34,12 +33,13 @@ const querySettings = {
 	],
 };
 
-const CallJitsiWithData = ({ rid }) => {
+const CallJitsiWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const user = useUser();
 	const { connected } = useConnectionStatus();
 	const [accessToken, setAccessToken] = useSafely(useState());
 	const [accepted, setAccepted] = useState(false);
 	const room = useRoom();
+	const ref = useRef<HTMLDivElement>(null);
 	const setModal = useSetModal();
 	const handleClose = useTabBarClose();
 	const closeModal = useMutableCallback(() => setModal(null));
@@ -53,8 +53,6 @@ const CallJitsiWithData = ({ rid }) => {
 		closeModal();
 		handleClose();
 	});
-
-	const ref = useRef();
 
 	const {
 		Jitsi_Open_New_Window: openNewWindow,
@@ -71,14 +69,16 @@ const CallJitsiWithData = ({ rid }) => {
 	useEffect(() => {
 		let ignore = false;
 		if (!isEnabledTokenAuth) {
-			setAccessToken();
+			setAccessToken(undefined);
 			return;
 		}
-		(async () => {
+
+		(async (): Promise<void> => {
 			const accessToken = await generateAccessToken(rid);
 			!ignore && setAccessToken(accessToken);
 		})();
-		return () => {
+
+		return (): void => {
 			ignore = true;
 		};
 	}, [generateAccessToken, isEnabledTokenAuth, rid, setAccessToken]);
@@ -89,7 +89,7 @@ const CallJitsiWithData = ({ rid }) => {
 		}
 	}, [connected, handleClose]);
 
-	const rname = useHashName ? uniqueID + rid : encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+	const rname = useHashName ? uniqueID + rid : encodeURIComponent((room?.t === 'd' ? room.usernames?.join('x') : room.name) ?? '');
 
 	const jitsi = useMemo(() => {
 		if (isEnabledTokenAuth && !accessToken) {
@@ -106,7 +106,7 @@ const CallJitsiWithData = ({ rid }) => {
 				jitsiRoomName,
 				accessToken,
 				desktopSharingChromeExtId,
-				name: user.name || user.username,
+				name: user?.name || user?.username,
 			},
 			HEARTBEAT,
 		);
@@ -120,36 +120,38 @@ const CallJitsiWithData = ({ rid }) => {
 		rname,
 		ssl,
 		sufix,
-		user.name,
-		user.username,
+		user?.name,
+		user?.username,
 	]);
 
 	const testAndHandleTimeout = useMutableCallback(() => {
-		if (jitsi.openNewWindow) {
-			if (jitsi.window?.closed) {
+		if (jitsi?.openNewWindow) {
+			if (jitsi?.window?.closed) {
 				return jitsi.dispose();
 			}
+
 			try {
 				return updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
-				clear();
+				clear(() => undefined);
 				handleClose();
 				return jitsi.dispose();
 			}
-		}
-		if (new Date() - new Date(room.jitsiTimeout) > TIMEOUT) {
-			return jitsi.dispose();
 		}
 
-		if (new Date() - new Date(room.jitsiTimeout) + TIMEOUT > DEBOUNCE) {
+		if (new Date().valueOf() - new Date(room.jitsiTimeout ?? '').valueOf() > TIMEOUT) {
+			return jitsi?.dispose();
+		}
+
+		if (new Date().valueOf() - new Date(room.jitsiTimeout ?? '').valueOf() + TIMEOUT > DEBOUNCE) {
 			try {
 				return updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
-				clear();
+				clear(() => undefined);
 				handleClose();
-				return jitsi.dispose();
+				return jitsi?.dispose();
 			}
 		}
 	});
@@ -159,7 +161,7 @@ const CallJitsiWithData = ({ rid }) => {
 			return;
 		}
 
-		const clear = () => {
+		const clear = (): void => {
 			jitsi.off('HEARTBEAT', testAndHandleTimeout);
 			jitsi.dispose();
 		};
@@ -178,18 +180,18 @@ const CallJitsiWithData = ({ rid }) => {
 		}
 		jitsi.on('HEARTBEAT', testAndHandleTimeout);
 
-		return () => {
+		return (): void => {
 			if (!jitsi.openNewWindow) clear();
 		};
 	}, [accepted, jitsi, rid, testAndHandleTimeout, updateTimeout, dispatchToastMessage, handleClose, t]);
 
-	const handleYes = useMutableCallback(() => {
+	const handleConfirm = useMutableCallback(() => {
 		if (jitsi) {
 			jitsi.needsStart = true;
 		}
 
 		setAccepted(true);
-		const sub = Subscriptions.findOne({ rid, 'u._id': user._id });
+		const sub = Subscriptions.findOne({ rid, 'u._id': user?._id });
 		if (!sub) {
 			joinRoom(rid);
 		}
@@ -201,11 +203,25 @@ const CallJitsiWithData = ({ rid }) => {
 
 	useLayoutEffect(() => {
 		if (!accepted) {
-			setModal(() => <CallModal handleYes={handleYes} handleCancel={handleCancel} />);
-			return;
+			return setModal(() => (
+				<GenericModal
+					variant='warning'
+					title={t('Video_Conference')}
+					confirmText={t('Yes')}
+					onClose={handleCancel}
+					onCancel={handleCancel}
+					onConfirm={handleConfirm}
+				>
+					<Box display='flex' flexDirection='column' alignItems='center'>
+						<Icon name='modal-warning' size='x128' color='warning-500' />
+						<Box fontScale='h4'>{t('Start_video_call')}</Box>
+					</Box>
+				</GenericModal>
+			));
 		}
+
 		closeModal();
-	}, [accepted, closeModal, handleCancel, handleYes, setModal]);
+	}, [accepted, closeModal, handleCancel, handleConfirm, setModal, t]);
 
 	return (
 		<CallJitsi handleClose={handleClose} openNewWindow={openNewWindow} refContent={ref}>

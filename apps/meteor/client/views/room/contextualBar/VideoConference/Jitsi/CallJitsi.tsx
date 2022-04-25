@@ -1,10 +1,18 @@
+import { ISetting } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement, ReactNode, RefObject } from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 
-const CallJitsi = ({ handleClose, openNewWindow, refContent, children }) => {
+type CallJitsiProps = {
+	handleClose: () => void;
+	openNewWindow: ISetting['value'];
+	refContent: RefObject<HTMLDivElement>;
+	children: ReactNode;
+};
+
+const CallJitsi = ({ handleClose, openNewWindow, refContent, children }: CallJitsiProps): ReactElement => {
 	const t = useTranslation();
 
 	const content = openNewWindow ? (
