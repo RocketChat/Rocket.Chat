@@ -70,7 +70,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Block audio files:', () => {
+	test.describe('Audio files:', () => {
 		test('(API) expect disable audio files', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AudioRecorderEnabled`, {
 				headers: headersSession,
@@ -94,7 +94,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Block video files:', () => {
+	test.describe('Video files:', () => {
 		test('(API) expect disable video files', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_VideoRecorderEnabled`, {
 				headers: headersSession,
@@ -153,7 +153,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	})
 
-	test.describe('Block message pin:', () => {
+	test.describe('Message pin:', () => {
 		test('(API) expect disable message pinning', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
 				headers: headersSession,
