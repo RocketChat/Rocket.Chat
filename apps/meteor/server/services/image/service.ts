@@ -1,6 +1,6 @@
 import stream, { Readable } from 'stream';
 
-import { fileTypeFromBuffer } from 'file-type';
+import ft from 'file-type';
 import sharp from 'sharp';
 import isSvg from 'is-svg';
 
@@ -82,7 +82,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 	}
 
 	async isImage(buff: Buffer): Promise<boolean> {
-		const data = await fileTypeFromBuffer(buff);
+		const data = await ft.fromBuffer(buff);
 		if (!data?.ext) {
 			return false || this.isSvgImage(buff);
 		}
