@@ -200,4 +200,17 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 	})
+
+	test.describe('File upload:', () => {
+		test('(API) expect disable file upload', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/FileUpload_Enabled`, {
+				headers: headersSession,
+				data: { value: false },
+			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+	})
 });
