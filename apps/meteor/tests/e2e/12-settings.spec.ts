@@ -22,7 +22,7 @@ test.describe('[API Settings Change]', async () => {
 		expect(headersSession['X-User-Id'].length).toBeGreaterThan(0);
 	});
 
-	test.describe('Message edit:', () => {
+	test.describe('Message edit', () => {
 		test('(API) expect disable message editing', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowEditing`, {
 				headers: headersSession,
@@ -46,7 +46,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Message delete:', () => {
+	test.describe('Message delete', () => {
 		test('(API) expect disable message deleting', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowDeleting`, {
 				headers: headersSession,
@@ -70,7 +70,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Audio files:', () => {
+	test.describe('Audio files', () => {
 		test('(API) expect disable audio files', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AudioRecorderEnabled`, {
 				headers: headersSession,
@@ -94,7 +94,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Video files:', () => {
+	test.describe('Video files', () => {
 		test('(API) expect disable video files', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_VideoRecorderEnabled`, {
 				headers: headersSession,
@@ -118,7 +118,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Bad words filter:', () => {
+	test.describe('Bad words filter', () => {
 		test('(API) expect enable bad words filter', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowBadWordsFilter`, {
 				headers: headersSession,
@@ -153,7 +153,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	})
 
-	test.describe('Message pin:', () => {
+	test.describe('Message pin', () => {
 		test('(API) expect disable message pinning', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
 				headers: headersSession,
@@ -177,7 +177,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	})
 
-	test.describe('Message star:', () => {
+	test.describe('Message star', () => {
 		test('(API) expect disable message starring', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
 				headers: headersSession,
@@ -201,7 +201,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	})
 
-	test.describe('File upload:', () => {
+	test.describe('File upload', () => {
 		test('(API) expect disable file upload', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/FileUpload_Enabled`, {
 				headers: headersSession,
@@ -225,8 +225,8 @@ test.describe('[API Settings Change]', async () => {
 		});
 	})
 
-	test.describe('Profile:', () => {
-		test.describe('Profile change:', () => {
+	test.describe('Profile', () => {
+		test.describe('Profile change', () => {
 			test('(API) expect disable profile change', async ({ request }) => {
 				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
 					headers: headersSession,
@@ -250,7 +250,7 @@ test.describe('[API Settings Change]', async () => {
 			});
 		})
 
-		test.describe('Avatar change:', () => {
+		test.describe('Avatar change', () => {
 			test('(API) expect disable avatar change', async ({ request }) => {
 				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
 					headers: headersSession,
