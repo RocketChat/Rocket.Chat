@@ -1,13 +1,27 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState, ReactElement, forwardRef } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
-const AutoCompleteAgent = (props) => {
-	const { value, onChange = () => {}, haveAll = false } = props;
+type AutoCompleteAgentProps = {
+	value: string;
+	onChange: (value: string) => void;
+	haveAll: boolean;
+	name?: string;
+	onBlur?: () => void;
+};
+
+const AutoCompleteAgent = forwardRef(function AutoCompleteAgent({
+	value,
+	onChange = (): void => undefined,
+	haveAll = false,
+	onBlur,
+	name,
+}: AutoCompleteAgentProps): // ref,
+ReactElement {
 	const [agentsFilter, setAgentsFilter] = useState('');
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
@@ -23,10 +37,11 @@ const AutoCompleteAgent = (props) => {
 			return -1;
 		}
 
-		if (a.usename > b.usename) {
+		if (a.label > b.label) {
 			return 1;
 		}
-		if (a.usename < b.usename) {
+
+		if (a.label < b.label) {
 			return -1;
 		}
 
@@ -39,11 +54,15 @@ const AutoCompleteAgent = (props) => {
 			onChange={onChange}
 			flexShrink={0}
 			filter={agentsFilter}
-			setFilter={setAgentsFilter}
+			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={sortedByName}
-			endReached={agentsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreAgents(start, Math.min(50, agentsTotal))}
+			endReached={
+				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start, Math.min(50, agentsTotal))
+			}
+			onBlur={onBlur}
+			name={name}
 		/>
 	);
-};
+});
 
 export default memo(AutoCompleteAgent);

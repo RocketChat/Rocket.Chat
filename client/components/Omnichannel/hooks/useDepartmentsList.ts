@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 
-import { ILivechatDepartmentRecord } from '../../../../definition/ILivechatDepartmentRecord';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
@@ -17,17 +16,24 @@ type DepartmentsListOptions = {
 	enabled?: boolean;
 };
 
+type PaginatedOptionType = {
+	_id: string;
+	_updatedAt: Date;
+	value: string | number;
+	label: string;
+};
+
 export const useDepartmentsList = (
 	options: DepartmentsListOptions,
 ): {
-	itemsList: RecordList<ILivechatDepartmentRecord>;
+	itemsList: RecordList<PaginatedOptionType>;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
 	const t = useTranslation();
-	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
-	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
+	const [itemsList, setItemsList] = useState(() => new RecordList<PaginatedOptionType>());
+	const reload = useCallback(() => setItemsList(new RecordList<PaginatedOptionType>()), []);
 	const endpoint = 'livechat/department';
 
 	const getDepartments = useEndpoint('GET', endpoint);
@@ -55,24 +61,26 @@ export const useDepartmentsList = (
 					}
 					return true;
 				})
-				.map((department: any) => {
-					department._updatedAt = new Date(department._updatedAt);
-					department.label = department.name;
-					department.value = { value: department._id, label: department.name };
-					return department;
-				});
+				.map((department: any) => ({
+					_updatedAt: new Date(department._updatedAt),
+					label: department.name,
+					value: department._id,
+					_id: department._id,
+				}));
 
 			options.haveAll &&
 				items.unshift({
+					_id: 'all',
 					label: t('All'),
-					value: { value: 'all', label: t('All') },
+					value: 'all',
 					_updatedAt: new Date(),
 				});
 
 			options.haveNone &&
 				items.unshift({
+					_id: 'none',
 					label: t('None'),
-					value: { value: '', label: t('None') },
+					value: '',
 					_updatedAt: new Date(),
 				});
 

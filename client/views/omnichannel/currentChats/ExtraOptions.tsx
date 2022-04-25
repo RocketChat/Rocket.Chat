@@ -1,30 +1,18 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { usePermission } from '../../../contexts/AuthorizationContext';
+import { usePermission, useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const ExtraOptions: FC<{
 	handleClearFilters: any;
 	handleRemoveClosed: any;
-	handleCustomFieldsFilterToggle: () => void;
-	canViewCustomFields: boolean;
-}> = ({ handleClearFilters, handleRemoveClosed, handleCustomFieldsFilterToggle, canViewCustomFields, ...props }) => {
+	handleShowCustomFields?: any;
+}> = ({ handleClearFilters, handleRemoveClosed, handleShowCustomFields, ...props }) => {
 	const t = useTranslation();
 	const canRemove = usePermission('remove-closed-livechat-rooms');
 
 	const menuOptions = {
-		...(canViewCustomFields && {
-			customFields: {
-				label: (
-					<Box>
-						<Icon name='magnifier' size='x16' marginInlineEnd='x4' />
-						{t('Custom_Fields')}
-					</Box>
-				),
-				action: handleCustomFieldsFilterToggle,
-			},
-		}),
 		clearFilters: {
 			label: (
 				<Box>
@@ -34,6 +22,17 @@ const ExtraOptions: FC<{
 			),
 			action: handleClearFilters,
 		},
+		// ...(handleShowCustomFields && {
+		// 	customFields: {
+		// 		label: (
+		// 			<Box>
+		// 				<Icon name='magnifier' size='x16' marginInlineEnd='x4' />
+		// 				{t('Custom_Fields')}
+		// 			</Box>
+		// 		),
+		// 		action: handleShowCustomFields,
+		// 	},
+		// }),
 		...(canRemove && {
 			removeClosed: {
 				label: (

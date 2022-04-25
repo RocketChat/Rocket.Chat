@@ -1,18 +1,33 @@
-// Cannot convert this file to ts because PaginatedSelectFiltered is not typed yet
-// Next release we'll add required types and convert this file, since a new
-// fuselage release is OoS of this regression
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState, ReactElement, forwardRef } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
-const AutoCompleteDepartment = (props) => {
-	const { value, excludeDepartmentId, onlyMyDepartments = false, onChange = () => {}, haveAll = false, haveNone = false } = props;
+type AutoCompleteDepartmentProps = {
+	value: string;
+	excludeDepartmentId?: string;
+	onlyMyDepartments?: boolean;
+	haveAll?: boolean;
+	haveNone?: boolean;
+	name?: string;
+	onBlur?: () => void;
+	onChange: () => void;
+};
 
+const AutoCompleteDepartment = forwardRef(function AutoCompleteDepartment({
+	value,
+	excludeDepartmentId,
+	onlyMyDepartments = false,
+	onChange = (): void => undefined,
+	haveAll = false,
+	haveNone = false,
+	name,
+	onBlur,
+}: AutoCompleteDepartmentProps): ReactElement {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
@@ -34,39 +49,38 @@ const AutoCompleteDepartment = (props) => {
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	const sortedByName = departmentsItems.sort((a, b) => {
-		if (a.value.value === 'all') {
+		if (a.value === 'all') {
 			return -1;
 		}
 
-		if (a.name > b.name) {
+		if (a.label > b.label) {
 			return 1;
 		}
-		if (a.name < b.name) {
+		if (a.label < b.label) {
 			return -1;
 		}
 
 		return 0;
 	});
 
-	const findValue = value !== undefined && value !== null ? value : '';
-	const department = sortedByName.find(
-		(dep) => dep._id === (typeof findValue !== 'object' && findValue ? findValue : findValue.value),
-	)?.value;
-
 	return (
 		<PaginatedSelectFiltered
 			withTitle
-			value={department}
+			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
-			setFilter={setDepartmentsFilter}
+			setFilter={setDepartmentsFilter as (value: string | number | undefined) => void}
 			options={sortedByName}
 			placeholder={t('Select_an_option')}
 			endReached={
-				departmentsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+				departmentsPhase === AsyncStatePhase.LOADING
+					? (): void => undefined
+					: (start): void => loadMoreDepartments(start, Math.min(50, departmentsTotal))
 			}
+			name={name}
+			onBlur={onBlur}
 		/>
 	);
-};
+});
 
 export default memo(AutoCompleteDepartment);

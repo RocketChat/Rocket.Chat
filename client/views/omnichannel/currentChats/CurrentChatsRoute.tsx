@@ -108,6 +108,7 @@ const CurrentChatsRoute: FC = () => {
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const directoryRoute = useRoute('omnichannel-current-chats');
 	const id = useRouteParameter('id');
+	const context = useRouteParameter('context');
 
 	const [params, setParams] = useState({
 		guest: '',
@@ -212,7 +213,8 @@ const CurrentChatsRoute: FC = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	return id ? (
+	console.log(context, id);
+	return id && id !== 'custom-fields' ? (
 		<Chat rid={id} />
 	) : (
 		<CurrentChatsPage
@@ -223,6 +225,8 @@ const CurrentChatsRoute: FC = () => {
 			header={header}
 			renderRow={renderRow}
 			title={t('Current_Chats')}
+			context={context}
+			id={id}
 		/>
 	);
 };

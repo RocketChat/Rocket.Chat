@@ -1,6 +1,7 @@
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
+import { Controller } from 'react-hook-form';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
@@ -8,7 +9,7 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';
 
 const AutoCompleteTagMultiple = (props) => {
-	const { value, onlyMyTags = false, onChange = () => {} } = props;
+	const { value, onlyMyTags = false, onChange = () => {}, control, name } = props;
 
 	const t = useTranslation();
 	const [tagsFilter, setTagsFilter] = useState('');
@@ -32,7 +33,25 @@ const AutoCompleteTagMultiple = (props) => {
 		return 0;
 	});
 
-	return (
+	return control ? (
+		<Controller
+			name={name}
+			control={control}
+			render={({ field }) => (
+				<PaginatedMultiSelectFiltered
+					{...field}
+					filter={tagsFilter}
+					setFilter={setTagsFilter}
+					options={sortedByName}
+					width='100%'
+					flexShrink={0}
+					flexGrow={0}
+					placeholder={t('Select_an_option')}
+					endReached={tagsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreTags(start, Math.min(50, tagsTotal))}
+				/>
+			)}
+		/>
+	) : (
 		<PaginatedMultiSelectFiltered
 			withTitle
 			value={value}
