@@ -368,7 +368,7 @@ jobs:
         run: yarn
 
       - name: Build micro services
-        run: yarn build:services
+        run: yarn build
 
       - name: E2E Test API
         env:
@@ -840,9 +840,11 @@ jobs:
 
           # first install repo dependencies
           yarn
-          yarn build:services
+          yarn build
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
+
+          # TODO missing ddp-streamer
 
           docker build \
             --build-arg SERVICE=${{ matrix.service }} \
