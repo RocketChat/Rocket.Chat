@@ -5,12 +5,13 @@ import Emoji from '../../Emoji';
 
 type BigEmojiProps = {
 	value: ASTBigEmoji['value'];
+	disableBigEmoji: boolean;
 };
 
-const BigEmoji: FC<BigEmojiProps> = ({ value }) => (
+const BigEmoji: FC<BigEmojiProps> = ({ value, disableBigEmoji }) => (
 	<>
 		{value.map((block, index) => (
-			<Emoji className='big' key={index} emojiHandle={`:${block.value.value}:`} />
+			<Emoji className={!disableBigEmoji ? 'big' : undefined} key={index} emojiHandle={`:${block.value.value}:`} />
 		))}
 	</>
 );

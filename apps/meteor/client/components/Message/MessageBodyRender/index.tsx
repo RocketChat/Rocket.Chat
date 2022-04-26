@@ -17,15 +17,23 @@ type BodyProps = {
 	tokens: MarkdownAST;
 	mentions: UserMention[];
 	channels: ChannelMention[];
+	disableBigEmoji?: boolean;
 	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
 	onChannelMentionClick?: (id: string) => (e: MouseEvent<HTMLDivElement>) => void;
 };
 
 const isBigEmoji = (tokens: MarkdownAST): tokens is [ASTBigEmoji] => tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
-const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [], channels = [], onUserMentionClick, onChannelMentionClick }) => {
+const MessageBodyRender: FC<BodyProps> = ({
+	tokens,
+	mentions = [],
+	channels = [],
+	disableBigEmoji = false,
+	onUserMentionClick,
+	onChannelMentionClick,
+}) => {
 	if (isBigEmoji(tokens)) {
-		return <BigEmoji value={tokens[0].value} />;
+		return <BigEmoji value={tokens[0].value} disableBigEmoji={disableBigEmoji} />;
 	}
 
 	return (
