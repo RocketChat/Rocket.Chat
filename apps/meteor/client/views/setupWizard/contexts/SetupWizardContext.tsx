@@ -37,7 +37,7 @@ type SetupWizarContextValue = {
 
 export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	setupWizardData: {
-		adminData: { fullname: '', username: '', companyEmail: '', password: '' },
+		adminData: { fullname: '', username: '', email: '', password: '' },
 		organizationData: {
 			organizationName: '',
 			organizationType: '',
