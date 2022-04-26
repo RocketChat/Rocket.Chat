@@ -1,4 +1,4 @@
-import { Bridge, AppServiceRegistration } from 'matrix-appservice-bridge';
+import { Bridge, AppServiceRegistration } from '@rocket.chat/forked-matrix-appservice-bridge';
 
 import { IMatrixEvent } from './definitions/IMatrixEvent';
 import { MatrixEventType } from './definitions/MatrixEventType';
