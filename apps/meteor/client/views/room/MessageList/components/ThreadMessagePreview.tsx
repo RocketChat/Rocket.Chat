@@ -9,6 +9,7 @@ import {
 	ThreadMessageOrigin,
 	ThreadMessageBody,
 	ThreadMessageUnfollow,
+	CheckBox,
 } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
@@ -16,6 +17,7 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useMessageActions } from '../../contexts/MessageContext';
+import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
 
@@ -27,8 +29,18 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 	const body = useMessageBody(parentMessage.value);
 	const t = useTranslation();
 
+	const isSelecting = useIsSelecting();
+	const toggleSelected = useToggleSelect(message._id);
+	const isSelected = useIsSelectedMessage(message._id);
+	useCountSelected();
+
 	return (
-		<ThreadMessageTemplate {...props}>
+		<ThreadMessageTemplate
+			{...props}
+			onClick={isSelecting ? toggleSelected : undefined}
+			isSelected={isSelected}
+			data-qa-selected={isSelected}
+		>
 			{!sequential && (
 				<ThreadMessageRow>
 					<ThreadMessageLeftContainer>
@@ -40,9 +52,10 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
-			<ThreadMessageRow onClick={!message.ignored ? openThread(message.tmid, message._id) : undefined}>
+			<ThreadMessageRow onClick={!message.ignored && !isSelecting ? openThread(message.tmid, message._id) : undefined}>
 				<ThreadMessageLeftContainer>
-					<UserAvatar username={message.u.username} size='x18' />
+					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>{message.ignored ? t('Message_Ignored') : message.msg}</ThreadMessageBody>
