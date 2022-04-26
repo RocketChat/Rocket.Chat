@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from "./IRocketChatRecord";
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface IWebdavAccount extends IRocketChatRecord {
 	userId: string;
