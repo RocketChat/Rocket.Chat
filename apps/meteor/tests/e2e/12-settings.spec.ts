@@ -42,7 +42,7 @@ test.describe('[API Settings Change]', async () => {
 		expect(apiSessionHeaders['X-User-Id'].length).toBeGreaterThan(0);
 	});
 
-	test.describe('Message edit', () => {
+	test.describe.serial('Message edit', () => {
 		test('(API) expect disable message editing', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowEditing`, {
 				headers: apiSessionHeaders,
@@ -56,6 +56,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(edit) not be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
@@ -79,6 +80,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(edit) be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
@@ -90,7 +92,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Message delete', () => {
+	test.describe.serial('Message delete', () => {
 		test('(API) expect disable message deleting', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowDeleting`, {
 				headers: apiSessionHeaders,
@@ -104,6 +106,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(delete) not be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
@@ -127,6 +130,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(delete) be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
@@ -138,7 +142,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Audio files', () => {
+	test.describe.serial('Audio files', () => {
 		test('(API) expect disable audio files', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AudioRecorderEnabled`, {
 				headers: apiSessionHeaders,
@@ -152,6 +156,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(upload audio) not be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			expect(await page.isVisible('[data-qa-id="audio-record"]')).toBeFalsy();
 		});
@@ -169,13 +174,13 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(upload audio) be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
-			await page.waitForSelector('[data-qa-id="audio-record"]');
 			expect(await page.isVisible('[data-qa-id="audio-record"]')).toBeTruthy();
 		});
 	});
 
-	test.describe('Video files', () => {
+	test.describe.serial('Video files', () => {
 		test('(API) expect disable video files', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_VideoRecorderEnabled`, {
 				headers: apiSessionHeaders,
@@ -189,7 +194,9 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(upload video) not be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
+			await page.waitForSelector('.rc-popover__content');
 
 			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeFalsy();
 		});
@@ -207,14 +214,15 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(upload video) be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
+			await page.waitForSelector('.rc-popover__content');
 
-			await page.waitForSelector('.rc-popover__content [data-id="video-message"]');
 			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeTruthy();
 		});
 	});
 
-	test.describe('Bad words filter', () => {
+	test.describe.serial('Bad words filter', () => {
 		const unauthorizedWord = 'badword';
 
 		test('(API) expect add "badword" to filterlist', async ({ request }) => {
@@ -241,6 +249,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect badword be censored', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(unauthorizedWord);
 			await mainContent.waitForLastMessageEqualsText('*'.repeat(unauthorizedWord.length));
@@ -259,13 +268,14 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect badword not be censored', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(unauthorizedWord);
 			await mainContent.waitForLastMessageEqualsText(unauthorizedWord);
 		});
 	});
 
-	test.describe('Message pin', () => {
+	test.describe.serial('Message pin', () => {
 		test('(API) expect disable message pinning', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
 				headers: apiSessionHeaders,
@@ -279,6 +289,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(pin message) not be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
@@ -302,6 +313,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test.skip('(UI) expect option(pin message) be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
@@ -309,12 +321,11 @@ test.describe('[API Settings Change]', async () => {
 			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
 			await page.locator('.messages-box [data-qa-id="menu"]').click();
 
-			await page.waitForSelector('[data-qa-id="pin-message"]');
 			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeTruthy();
 		});
 	});
 
-	test.describe('Message star', () => {
+	test.describe.serial('Message star', () => {
 		test('(API) expect disable message starring', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
 					headers: apiSessionHeaders,
@@ -328,6 +339,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test.skip('(UI) expect option(star message) not be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
@@ -351,6 +363,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(star message) be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
