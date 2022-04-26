@@ -284,8 +284,7 @@
 	image-rendering: auto;
 }
 
-.emoji.big,
-.big .emoji {
+.emoji.big {
 	width: 44px;
 	height: 44px;
 }
