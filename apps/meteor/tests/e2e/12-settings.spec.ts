@@ -169,8 +169,8 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(upload audio) be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('[data-qa-id="audio-record"]');
 
+			await page.waitForSelector('[data-qa-id="audio-record"]');
 			expect(await page.isVisible('[data-qa-id="audio-record"]')).toBeTruthy();
 		});
 	});
@@ -209,6 +209,7 @@ test.describe('[API Settings Change]', async () => {
 			await page.reload({ waitUntil: 'load' });
 			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
 
+			await page.waitForSelector('.rc-popover__content [data-id="video-message"]');
 			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeTruthy();
 		});
 	});
