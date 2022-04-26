@@ -192,8 +192,12 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
-		test.skip('(UI) expect option(upload video) not be visible', async () => {
-			//
+		test('(UI) expect option(upload video) not be visible', async () => {
+			await page.reload();
+			await page.waitForLoadState();
+
+			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
+			await page.locator('.rc-popover__content [data-id="video-message"]').waitFor({ state: 'hidden' });
 		});
 
 		test('(API) expect enable video files', async ({ request }) => {
