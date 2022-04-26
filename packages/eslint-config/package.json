@@ -1,0 +1,34 @@
+{
+	"name": "@rocket.chat/eslint-config",
+	"version": "0.5.0",
+	"description": "Rocket.Chat's JS ESLint config",
+	"devDependencies": {
+		"@types/prettier": "^2",
+		"@typescript-eslint/eslint-plugin": "^2.34.0",
+		"@typescript-eslint/parser": "^3.0.0",
+		"babel-eslint": "^10.1.0",
+		"eslint": "^6.8.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-anti-trojan-source": "^1.1.0",
+		"eslint-plugin-import": "^2.24.2",
+		"eslint-plugin-jest": "^26.1.5",
+		"eslint-plugin-prettier": "^3.4.1",
+		"prettier": "2.6.2"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js .",
+		"lint:fix": "eslint --ext .js . --fix"
+	},
+	"main": "./standard/index.js",
+	"files": [
+		"/standard",
+		"/original",
+		"/best-practices",
+		"/errors",
+		"/es6",
+		"/imports",
+		"/node",
+		"/style",
+		"/variables"
+	]
+}
