@@ -214,6 +214,19 @@ test.describe('[API Settings Change]', async () => {
 	});
 
 	test.describe('Bad words filter', () => {
+		const unauthorizedWord = 'badword';
+
+		test('(API) expect add "badword" to filterlist', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Message_BadWordsFilterList`, {
+				headers: apiSessionHeaders,
+				data: { value: unauthorizedWord },
+			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+
 		test('(API) expect enable bad words filter', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowBadWordsFilter`, {
 				headers: apiSessionHeaders,
@@ -225,19 +238,11 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
-		test('(API) expect add "badword" to filterlist', async ({ request }) => {
-			const response = await request.post(`${BASE_API_URL}/settings/Message_BadWordsFilterList`, {
-				headers: apiSessionHeaders,
-				data: { value: 'badword' },
-			});
-			const data = await response.json();
+		test('(UI) expect badword be censored', async () => {
+			await page.reload({ waitUntil: 'load' });
 
-			expect(response.status()).toBe(200);
-			expect(data).toHaveProperty('success', true);
-		});
-
-		test.skip('(UI) expect badword be censored', async () => {
-			//
+			await mainContent.sendMessage(unauthorizedWord);
+			await mainContent.waitForLastMessageEqualsText('*'.repeat(unauthorizedWord.length));
 		});
 
 		test('(API) expect disable bad words filter', async ({ request }) => {
@@ -250,23 +255,14 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
+
+		test('(UI) expect badword not be censored', async () => {
+			await page.reload({ waitUntil: 'load' });
+
+			await mainContent.sendMessage(unauthorizedWord);
+			await mainContent.waitForLastMessageEqualsText(unauthorizedWord);
+		});
 	});
-
-	test.describe('Message pin', () => {
-		test('(API) expect disable message pinning', async ({ request }) => {
-			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
-				headers: apiSessionHeaders,
-				data: { value: false },
-			});
-			const data = await response.json();
-
-			expect(response.status()).toBe(200);
-			expect(data).toHaveProperty('success', true);
-		});
-
-		test.skip('(UI) expect option(pin message) not be visible', async () => {
-			//
-		});
 
 		test('(API) expect enable message pinning', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
