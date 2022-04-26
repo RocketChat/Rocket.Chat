@@ -14,6 +14,9 @@ interface ICreateUserResult {
 	remote: boolean;
 }
 
+const removeUselessCharsFromMatrixId = (matrixUserId = ''): string => matrixUserId.replace('@', '');
+const formatUserIdAsRCUsername = (userId = ''): string => removeUselessCharsFromMatrixId(userId.split(':')[0]);
+
 export const invite = async (inviterId: string, roomId: string, invitedId: string): Promise<void> => {
 	console.log(`[${inviterId}-${invitedId}-${roomId}] Inviting user ${invitedId} to ${roomId}...`);
 
@@ -117,10 +120,7 @@ export const createRemote = async (u: IUser): Promise<ICreateUserResult> => {
 	return payload;
 };
 
-const removeUselessCharsFromMatrixId = (matrixUserId: string = '') => matrixUserId.replace('@', '');
-const formatUserIdAsRCUsername = (userId: string = '') => removeUselessCharsFromMatrixId(userId.split(':')[0]);
-
-const createLocalUserIfNotExists = async (userId: string = '', profileInfo: MatrixProfileInfo = {}): Promise<string> => {
+const createLocalUserIfNotExists = async (userId = '', profileInfo: MatrixProfileInfo = {}): Promise<string> => {
 	const existingUser = await Users.findOneByUsername(formatUserIdAsRCUsername(userId));
 
 	if (existingUser) {
@@ -136,7 +136,7 @@ const createLocalUserIfNotExists = async (userId: string = '', profileInfo: Matr
 		name: profileInfo.displayname,
 		requirePasswordChange: false,
 	});
-}
+};
 
 export const createLocal = async (matrixUserId: string): Promise<ICreateUserResult> => {
 	console.log(`Creating local user ${matrixUserId}...`);
