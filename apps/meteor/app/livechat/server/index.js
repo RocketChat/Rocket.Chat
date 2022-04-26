@@ -19,6 +19,7 @@ import './hooks/saveLastVisitorMessageTs';
 import './hooks/markRoomNotResponded';
 import './hooks/sendTranscriptOnClose';
 import './hooks/saveContactLastChat';
+import './hooks/saveLastMessageToInquiry';
 import './methods/addAgent';
 import './methods/addManager';
 import './methods/changeLivechatStatus';
