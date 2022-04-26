@@ -13,12 +13,6 @@ const CreateBlogForm = ({ showModal, setShowModal }: Props): ReactElement => {
 	const [tags, setTags] = useState('');
 	const [titleError, setTitleError] = useState(false);
 	const [contentError, setTContentError] = useState(false);
-
-	// useEffect(() => {
-	// 	const results = Meteor.call('getBlogs', 10);
-	// 	console.log(results, 'results');
-	// }, []);
-
 	const handleSubmit = () => {
 		const cleanedTags = tags.replace(/[, ]+/g, ',').trim();
 		if (title.length && content.length) {

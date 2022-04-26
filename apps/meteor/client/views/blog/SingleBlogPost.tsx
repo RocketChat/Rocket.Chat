@@ -2,14 +2,14 @@ import { Box, Icon, Margins, Modal } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
 type Props = {
-	author: string;
-	location: string;
+	author?: string;
+	location?: string;
 	content: string;
 	images: string;
 	createdAt: string;
 };
 
-const SingleBlogPost = ({ author, location, content, images, createdAt }: Props): ReactElement => (
+const SingleBlogPost = ({ author, location = 'Kenya', content, images, createdAt }: Props): ReactElement => (
 	<Margins block='15px'>
 		<Modal>
 			<Modal.Content>

@@ -25,7 +25,7 @@ export class BlogsRaw extends BaseRaw<T> {
 		];
 		const cursor = this.col.aggregate(pipeline);
 		return {
-			total: await cursor.count(),
+			total: await (await cursor.toArray()).length,
 			records: await cursor.toArray(),
 		};
 	}

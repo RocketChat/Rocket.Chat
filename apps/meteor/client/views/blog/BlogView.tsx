@@ -10,7 +10,7 @@ import './blog.css';
 
 const BlogView = (): ReactElement => {
 	const pageRef = useRef();
-	const [showModal, setShowModal] = useState(true);
+	const [showModal, setShowModal] = useState(false);
 	const data = [
 		{
 			author: 'Tanjiro Kamado',
@@ -51,8 +51,6 @@ const BlogView = (): ReactElement => {
 			createdAt: 'April',
 		},
 	];
-	// Send the data to the backend.
-	// Call the backend to get the new blog data.
 	return (
 		<Page flexDirection='row'>
 			<Page>

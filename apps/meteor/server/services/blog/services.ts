@@ -8,6 +8,7 @@ import { IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
+import { BlogModel } from '../../../app/models/server/raw';
 
 export class BlogService extends ServiceClassInternal implements IBlogService {
 	protected name = 'blog';
@@ -18,9 +19,6 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 
 	constructor(db: Db) {
 		super();
-
-		this.BlogModel = new BlogsRaw(db.collection('blogs'));
-		this.CommentModel = new CommentsRaw(db.collection('comments'));
 	}
 
 	async create(params: IBlogCreateParams): Promise<IBlog> {
@@ -29,17 +27,17 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 			...params,
 			...(params.tags ? { tags: params.tags } : { tags: [] }),
 		};
-		const result = await this.BlogModel.insertOne(createData);
-		return this.BlogModel.findOneById(result.insertedId);
+		const result = await BlogModel.insertOne(createData);
+		return BlogModel.findOneById(result.insertedId);
 	}
 
 	async delete(blogId: string): Promise<void> {
 		await this.getBlog(blogId);
-		await this.BlogModel.removeById(blogId);
+		await BlogModel.removeById(blogId);
 	}
 
 	async getBlog(blogId: string): Promise<IBlog> {
-		const blog = await this.BlogModel.findOneById(blogId);
+		const blog = await BlogModel.findOneById(blogId);
 		if (!blog) {
 			throw new Error('blog-does-not-exist');
 		}
@@ -55,11 +53,11 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 			...new UpdateObject(),
 			...params,
 		};
-		const result = await this.BlogModel.updateOne(query, updateData);
-		return this.BlogModel.findOneById(result.upsertedId._id.toHexString());
+		const result = await BlogModel.updateOne(query, updateData);
+		return BlogModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
 	async list(limit = 10): Promise<IRecordsWithTotal<IBlog>> {
-		return this.BlogModel.getBlogsWithComments(limit);
+		return BlogModel.getBlogsWithComments(limit);
 	}
 }
