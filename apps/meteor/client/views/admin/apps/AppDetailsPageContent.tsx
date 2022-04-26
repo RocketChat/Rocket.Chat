@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Box, Callout, Chip, Divider, Icon, Margins } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
-import { css } from '@rocket.chat/css-in-js';
 
 import ExternalLink from '../../../components/ExternalLink';
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 import { App } from './types';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import ScreenshotCarouselAnchor from './components/ScreenshotCarouselAnchor';
 
 type AppDetailsPageContentProps = {
 	app: App;
@@ -43,18 +42,8 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 
 			<Box display='flex' flexDirection='column'>
 				<Margins block='x12'>
-					<Box display='flex' flexDirection='column' maxWidth='x640' width='100%' style={{ cursor: 'pointer' }}>
-						<img
-							src='https://marketplace.cdn.cloud.rocket.chat/screenshots/fc96e832-5472-49e4-aace-1521a7ebeaa6/0f5f5ef7-6c79-4c26-9661-d54b37f2b345.png'
-							alt='App preview image'
-						/>
-						<Box display='flex' flexDirection='row' bg={colors.n100} pi='x16' pb='x10' alignItems='center'>
-							<Icon name='image' size='x24' mie='x8' />{' '}
-							<Box is='span' fontWeight={500} fontSize='x14' color={colors.n800}>
-								1 of 3
-							</Box>
-						</Box>
-					</Box>
+					<ScreenshotCarouselAnchor />
+
 					<Box fontScale='h4'>{t('Categories')}</Box>
 					<Box display='flex' flexDirection='row'>
 						{categories?.map((current) => (

@@ -131,6 +131,12 @@ class AppClientOrchestrator {
 		return languages;
 	};
 
+	getAppScreenshots = async (appId) => {
+		const appScreenshots = await APIClient.get(`apps/${appId}/screenshots`);
+
+		return [];
+	};
+
 	installApp = async (appId, version, permissionsGranted) => {
 		const { app } = await APIClient.post('apps/', {
 			appId,

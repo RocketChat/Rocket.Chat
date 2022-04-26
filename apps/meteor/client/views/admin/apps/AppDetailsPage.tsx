@@ -87,7 +87,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 	return (
 		<Page flexDirection='column'>
-			<Page.Header title={t('Back')} isAppDetails>
+			<Page.Header title={t('App_Info')} isAppDetails>
 				<ButtonGroup>
 					<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
 						{!isSaving && t('Save_changes')}

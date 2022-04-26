@@ -4,13 +4,14 @@ import { useState, useEffect, useContext } from 'react';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { AppsContext } from '../AppsContext';
-import { AppInfo } from '../definitions/AppInfo';
+import { AppInfo, Screenshot } from '../definitions/AppInfo';
 import { handleAPIError } from '../helpers';
 import { App } from '../types';
 
 const getBundledIn = async (appId: string, appVersion: string): Promise<App['bundledIn']> => {
 	try {
 		const { bundledIn } = (await Apps.getLatestAppFromMarketplace(appId, appVersion)) as App;
+
 		if (!bundledIn) {
 			return [];
 		}
@@ -54,6 +55,15 @@ const getApis = async (appId: string, installed: boolean): Promise<Array<IApiEnd
 	}
 };
 
+const getScreenshots = async (appId: string): Promise<Array<Screenshot>> => {
+	try {
+		return Apps.getAppScreenshots(appId);
+	} catch (e) {
+		handleAPIError(e);
+		return [];
+	}
+};
+
 export const useAppInfo = (appId: string): AppInfo | undefined => {
 	const { installedApps, marketplaceApps } = useContext(AppsContext);
 
@@ -81,12 +91,14 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 				marketplace: false,
 			};
 
-			const [bundledIn, settings, apis] = await Promise.all([
+			const [bundledIn, settings, apis, screenshots] = await Promise.all([
 				app.marketplace === false ? [] : getBundledIn(app.id, app.version),
 				getSettings(app.id, app.installed),
 				getApis(app.id, app.installed),
+				getScreenshots(app.id),
 			]);
-			setAppData({ ...app, bundledIn, settings, apis });
+
+			setAppData({ ...app, bundledIn, settings, apis, screenshots });
 		};
 
 		fetchAppInfo();
