@@ -1,6 +1,30 @@
 
 # 4.7.0 (Under Release Candidate Process)
 
+## 4.7.0-rc.1
+`2022-04-26  ·  4 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Add `isPending` status to message ([#25299](https://github.com/RocketChat/Rocket.Chat/pull/25299))
+
+- Regression: eslint not running on packages ([#25305](https://github.com/RocketChat/Rocket.Chat/pull/25305))
+
+- Regression: Shows error if micro service cannot connect to Mongo ([#25301](https://github.com/RocketChat/Rocket.Chat/pull/25301))
+
+- Regression: Use exact Node version on micro services Docker images ([#25287](https://github.com/RocketChat/Rocket.Chat/pull/25287))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@filipemarins](https://github.com/filipemarins)
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 4.7.0-rc.0
 `2022-04-22  ·  4 🎉  ·  7 🚀  ·  33 🐛  ·  47 🔍  ·  34 👩‍💻👨‍💻`
 
