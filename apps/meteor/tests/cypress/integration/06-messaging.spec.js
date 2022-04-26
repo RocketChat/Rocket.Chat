@@ -181,7 +181,7 @@ function messageActionsTest(currentTest, testChannel) {
 			});
 
 			it('it should show the delete action', () => {
-				mainContent.messageDelete.should('be.visible');
+				mainContent.messageDelete.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the permalink action', () => {
