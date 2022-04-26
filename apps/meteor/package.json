@@ -27,12 +27,12 @@
 		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
-		"typecheck": "NODE_OPTIONS=\"--max-old-space-size=4092\" tsc --noEmit --skipLibCheck",
+		"typecheck": "cross-env NODE_OPTIONS=\"--max-old-space-size=4092\" tsc --noEmit --skipLibCheck",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"testci": "node .scripts/start.js",
 		"test:playwright": "playwright test",
-		"test:playwright:ee": "ENTERPRISE=true playwright test",
+		"test:playwright:ee": "cross-env ENTERPRISE=true yarn test:playwright",
 		"testui": "cypress run",
 		"testui-pass": "cypress run --spec ./tests/cypress/integration/01-pass/**/*.spec.js",
 		"testui-intermittent": "cypress run --spec ./tests/cypress/integration/02-intermittent/**/*.spec.js",
@@ -50,7 +50,8 @@
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
 		"release": "meteor npm run set-version --silent",
-		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006"
+		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006",
+		"docker:start": "docker-compose up"
 	},
 	"license": "MIT",
 	"repository": {
