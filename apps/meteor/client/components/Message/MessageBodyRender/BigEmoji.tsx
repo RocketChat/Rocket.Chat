@@ -1,5 +1,4 @@
 import { css } from '@rocket.chat/css-in-js';
-
 import { BigEmoji as ASTBigEmoji } from '@rocket.chat/message-parser';
 import React, { FC } from 'react';
 

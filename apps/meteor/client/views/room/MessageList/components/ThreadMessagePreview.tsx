@@ -13,12 +13,12 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
+import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useMessageActions } from '../../contexts/MessageContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
