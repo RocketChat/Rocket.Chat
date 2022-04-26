@@ -328,14 +328,14 @@ test.describe('[API Settings Change]', async () => {
 	test.describe.serial('Message star', () => {
 		test('(API) expect disable message starring', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
-					headers: apiSessionHeaders,
-					data: { value: false },
-				});
-				const data = await response.json();
-
-				expect(response.status()).toBe(200);
-				expect(data).toHaveProperty('success', true);
+				headers: apiSessionHeaders,
+				data: { value: false },
 			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
 
 		test.skip('(UI) expect option(star message) not be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
@@ -348,18 +348,18 @@ test.describe('[API Settings Change]', async () => {
 			await page.locator('.messages-box [data-qa-id="menu"]').click();
 
 			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeFalsy();
-			});
+		});
 
 		test('(API) expect enable message starring', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
-					headers: apiSessionHeaders,
-					data: { value: true },
-				});
-				const data = await response.json();
-
-				expect(response.status()).toBe(200);
-				expect(data).toHaveProperty('success', true);
+				headers: apiSessionHeaders,
+				data: { value: true },
 			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
 
 		test('(UI) expect option(star message) be visible', async () => {
 			await page.reload({ waitUntil: 'load' });
@@ -372,7 +372,7 @@ test.describe('[API Settings Change]', async () => {
 			await page.locator('.messages-box [data-qa-id="menu"]').click();
 
 			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeTruthy();
-				});
+		});
 	});
 
 	test.describe.serial('File upload', () => {
@@ -417,6 +417,62 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
+	test.describe('Profile', () => {
+		test.describe.serial('Profile change', () => {
+			test('(API) expect disable profile change', async ({ request }) => {
+				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
+					headers: apiSessionHeaders,
+					data: { value: false },
+				});
+				const data = await response.json();
+
+				expect(response.status()).toBe(200);
+				expect(data).toHaveProperty('success', true);
+			});
+
+			test.skip('(UI) expect option(update profile) not be visible', async () => {});
+
+			test('(API) expect enable profile change', async ({ request }) => {
+				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
+					headers: apiSessionHeaders,
+					data: { value: true },
+				});
+				const data = await response.json();
+
+				expect(response.status()).toBe(200);
+				expect(data).toHaveProperty('success', true);
+			});
+		});
+
+		test.describe('Avatar change', () => {
+			test('(API) expect disable avatar change', async ({ request }) => {
+				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
+					headers: apiSessionHeaders,
+					data: { value: false },
+				});
+				const data = await response.json();
+
+				expect(response.status()).toBe(200);
+				expect(data).toHaveProperty('success', true);
+			});
+
+			test.skip('(UI) expect option(update avatar) not be visible', async () => {
+				//
+			});
+
+			test('(API) expect enable avatar change', async ({ request }) => {
+				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
+					headers: apiSessionHeaders,
+					data: { value: true },
+				});
+				const data = await response.json();
+
+				expect(response.status()).toBe(200);
+				expect(data).toHaveProperty('success', true);
+			});
+		});
+	});
+
 	test.describe('Manual new users approve', () => {
 		test('(API) expect enable manually approve new users', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Accounts_ManuallyApproveNewUsers`, {
@@ -433,7 +489,7 @@ test.describe('[API Settings Change]', async () => {
 			//
 		});
 
-		test.describe('(UI) expect activate/deactivate flow as admin', () => {
+		test.describe.serial('(UI) expect activate/deactivate flow as admin', () => {
 			test.skip('expect open /users as admin', async () => {
 				//
 			});
