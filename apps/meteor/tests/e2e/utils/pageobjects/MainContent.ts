@@ -73,7 +73,7 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessageFileName(): Locator {
-		return this.getPage().locator('.message:last-child > div:nth-child(3) > div:nth-child(2) > div:nth-child(1)');
+		return this.getPage().locator('//div[@class="rcx-message" and @data-own="true"][last()]//div[4]//a[1]');
 	}
 
 	public lastMessage(): Locator {
@@ -113,9 +113,7 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessageForMessageTest(): Locator {
-		return this.getPage().locator(
-			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//div[2]',
-		);
+		return this.getPage().locator('//div[@class="rcx-message" and @data-own="true"][last()][last()]//div[2]//div//p');
 	}
 
 	public beforeLastMessageQuote(): Locator {
@@ -139,7 +137,7 @@ class MainContent extends BasePage {
 	}
 
 	public messageReply(): Locator {
-		return this.getPage().locator('[data-id="reply-in-thread"][data-type="message-action"]');
+		return this.getPage().locator('#reply-in-thread');
 	}
 
 	public reply(): Locator {
@@ -147,27 +145,27 @@ class MainContent extends BasePage {
 	}
 
 	public messageEdit(): Locator {
-		return this.getPage().locator('[data-type="message-action"][data-id="edit-message"]');
+		return this.getPage().locator('#edit-message');
 	}
 
 	public messageDelete(): Locator {
-		return this.getPage().locator('[data-type="message-action"][data-id="delete-message"]');
+		return this.getPage().locator('#delete-message');
 	}
 
 	public messagePermalink(): Locator {
-		return this.getPage().locator('[data-type="message-action"][data-id="permalink"]');
+		return this.getPage().locator('#permalink');
 	}
 
 	public messageCopy(): Locator {
-		return this.getPage().locator('[data-id="copy"][data-type="message-action"]');
+		return this.getPage().locator('#copy');
 	}
 
 	public messageQuote(): Locator {
-		return this.getPage().locator('[data-id="quote-message"][data-type="message-action"]');
+		return this.getPage().locator('#quote-message');
 	}
 
 	public messageStar(): Locator {
-		return this.getPage().locator('[data-id="star-message"][data-type="message-action"]');
+		return this.getPage().locator('#star-message');
 	}
 
 	public messageUnread(): Locator {
@@ -299,9 +297,6 @@ class MainContent extends BasePage {
 	public async sendMessage(text: string): Promise<void> {
 		await this.setTextToInput(text);
 		await this.keyboardPress('Enter');
-		await expect(
-			this.getPage().locator('(//*[contains(@class, "message-body-wrapper")])[last()]/div[contains(@class, "body")]'),
-		).toContainText(text);
 	}
 
 	// adds text to the input
@@ -357,8 +352,11 @@ class MainContent extends BasePage {
 		await this.descriptionInput().type('any_description');
 	}
 
+	public getFileDescription(): Locator {
+		return this.getPage().locator('//div[@class="rcx-message" and @data-own="true"][last()]//div[4]//div//p');
+	}
+
 	public async selectAction(action: string): Promise<void> {
-		await this.openMessageActions();
 		switch (action) {
 			case 'edit':
 				await this.messageEdit().click();
@@ -403,16 +401,9 @@ class MainContent extends BasePage {
 	}
 
 	public async openMessageActionMenu(): Promise<void> {
-		await this.messageOptionsBtn().hover();
-		await this.messageOptionsBtn().waitFor({ state: 'visible' });
-	}
-
-	public async openMessageActions(): Promise<void> {
-		await this.getPage()
-			.locator(
-				'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-actions"]//div[@class="message-actions__menu"]',
-			)
-			.click();
+		await this.getPage().locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
+		await this.getPage().locator('.messages-box [data-qa-id="menu"]').waitFor({ state: 'visible' });
+		await this.getPage().locator('.messages-box [data-qa-id="menu"]').click();
 	}
 
 	public async acceptDeleteMessage(): Promise<void> {
@@ -432,15 +423,15 @@ class MainContent extends BasePage {
 	}
 
 	public starredMessage(): Locator {
-		return this.getPage().locator(
-			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//span[@class="starred"]',
-		);
+		return this.getPage().locator('//div[@class="rcx-message"][last()]//div//div[@class="rcx-message-status-indicator"]');
+	}
+
+	public lastMessageThread(): Locator {
+		return this.getPage().locator('//div[@class="rcx-message rcx-message--thread"][last()]//div//div[2]');
 	}
 
 	public lastMessageQuoted(): Locator {
-		return this.getPage().locator(
-			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="thread-replied js-open-thread"]//span//span',
-		);
+		return this.getPage().locator('//div[@class="rcx-message"][last()]//blockquote//div[2]');
 	}
 }
 

@@ -14,6 +14,11 @@ export const adminLogin: ILogin = {
 	email: 'rocketchat.internal.admin.test@rocket.chat',
 	password: 'rocketchat.internal.admin.test',
 };
+
+export const validUserInserted: ILogin = {
+	email: 'user.name.test@email.com',
+	password: 'any_password',
+};
 const validEmail = faker.internet.email();
 
 export const registerUser: IRegister = {

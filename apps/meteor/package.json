@@ -25,7 +25,7 @@
 		"lint": "meteor npm run stylelint && meteor npm run eslint",
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"obj:dev": "MONGO_URL=mongodb://localhost:27017/rocketchat MONGO_OPLOG_URL=mongodb://localhost:27017/local TEST_MODE=true yarn dev",
+		"obj:dev": "TEST_MODE=true yarn dev",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"typecheck": "NODE_OPTIONS=\"--max-old-space-size=4092\" tsc --noEmit --skipLibCheck",

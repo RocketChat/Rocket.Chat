@@ -4,9 +4,8 @@ import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';
 import LoginPage from './utils/pageobjects/LoginPage';
 import FlexTab from './utils/pageobjects/FlexTab';
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
+import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
 import { ChatContext } from './utils/types/ChatContext';
-import { ILogin } from './utils/interfaces/Login';
 
 const createBrowserContextForChat = async (browser: Browser, baseURL: string): Promise<ChatContext> => {
 	const page = await browser.newPage();
@@ -16,7 +15,7 @@ const createBrowserContextForChat = async (browser: Browser, baseURL: string): P
 	const sideNav = new SideNav(page);
 
 	await loginPage.goto(baseURL);
-	await loginPage.login({} as ILogin);
+	await loginPage.login(validUserInserted);
 
 	return { mainContent, sideNav };
 };
@@ -41,48 +40,83 @@ test.describe('[Messaging]', () => {
 	});
 
 	test.describe('[Normal messaging]', async () => {
+		let anotherContext: ChatContext;
 		test.describe('[General channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
-				const anotherContext = await createBrowserContextForChat(browser, baseURL as string);
+				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
 				await anotherContext.sideNav.general().click();
+				await anotherContext.mainContent.sendMessage('Hello');
 				await sideNav.general().click();
-				await mainContent.sendMessage('any_message');
+				await mainContent.sendMessage('Hello');
 			});
-			test('expect message have user name from logged user', async () => {
-				await expect(mainContent.lastMessage()).toContainText('rocketchat.internal.admin.test');
+			test.afterAll(async () => {
+				await anotherContext.mainContent.getPage().close();
+			});
+			test('expect received message is visible for two context', async () => {
+				const anotherUserMessage = mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
+				const mainUserMessage = anotherContext.mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
+
+				await expect(anotherUserMessage).toBeVisible();
+				await expect(mainUserMessage).toBeVisible();
 			});
 		});
-		// 	test.describe('[Public channel]', async () => {
-		// 		test.beforeAll(async () => {
-		// 			await sideNav.general().click()
-		// 			await mainContent.sendMessage('any_message');
-		// 		})
+		test.describe('[Public channel]', async () => {
+			test.beforeAll(async ({ browser, baseURL }) => {
+				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
+				await anotherContext.sideNav.findFindForChat('public channel');
+				await anotherContext.mainContent.sendMessage('Hello');
+				await sideNav.findFindForChat('public channel');
+				await mainContent.sendMessage('Hello');
+			});
+			test.afterAll(async () => {
+				await anotherContext.mainContent.getPage().close();
+			});
+			test('expect received message is visible for two context', async () => {
+				const anotherUserMessage = mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
+				const mainUserMessage = anotherContext.mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
 
-		// 		test('expect message have user name from logged user', async () => {
-		// 			await expect(mainContent.lastMessage()).toContainText('rocketchat.internal.admin.test')
-		// 		});
-		// 	})
-		// 	test.describe('[Private channel]', async () => {
-		// 		test.beforeAll(async () => {
-		// 			await sideNav.general().click()
-		// 			await mainContent.sendMessage('any_message');
-		// 		})
+				await expect(anotherUserMessage).toBeVisible();
+				await expect(mainUserMessage).toBeVisible();
+			});
+		});
+		test.describe('[Private channel]', async () => {
+			test.beforeAll(async ({ browser, baseURL }) => {
+				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
+				await anotherContext.sideNav.findFindForChat('private channel');
+				await anotherContext.mainContent.sendMessage('Hello');
+				await sideNav.findFindForChat('private channel');
+				await mainContent.sendMessage('Hello');
+			});
+			test.afterAll(async () => {
+				await anotherContext.mainContent.getPage().close();
+			});
+			test('expect received message is visible for two context', async () => {
+				const anotherUserMessage = mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
+				const mainUserMessage = anotherContext.mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
 
-		// 		test('expect message have user name from logged user', async () => {
-		// 			await expect(mainContent.lastMessage()).toContainText('rocketchat.internal.admin.test')
-		// 		});
-		// 	})
-		// 	test.describe('[Direct message]', async () => {
-		// 		test.beforeAll(async () => {
-		// 			await sideNav.general().click()
-		// 			await mainContent.sendMessage('any_message');
-		// 		})
+				await expect(anotherUserMessage).toBeVisible();
+				await expect(mainUserMessage).toBeVisible();
+			});
+		});
+		test.describe.skip('[Direct Message]', async () => {
+			test.beforeAll(async ({ browser, baseURL }) => {
+				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
+				await anotherContext.sideNav.findFindForChat('rocketchat.internal.admin.test');
+				await anotherContext.mainContent.sendMessage('Hello');
+				await sideNav.findFindForChat('user.name.test');
+				await mainContent.sendMessage('Hello');
+			});
+			test.afterAll(async () => {
+				await anotherContext.mainContent.getPage().close();
+			});
+			test('expect received message is visible for two context', async () => {
+				const anotherUserMessage = mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
+				const mainUserMessage = anotherContext.mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
 
-		// 		test('expect message have user name from logged user', async () => {
-		// 			await expect(mainContent.lastMessage()).toContainText('rocketchat.internal.admin.test')
-		// 		});
-		// 	})
-		// })
+				await expect(anotherUserMessage).toBeVisible();
+				await expect(mainUserMessage).toBeVisible();
+			});
+		});
 
 		test.describe('[File Upload]', async () => {
 			test.beforeAll(async () => {
@@ -132,7 +166,7 @@ test.describe('[Messaging]', () => {
 				test('expect send file with description', async () => {
 					await mainContent.setDescription();
 					await mainContent.sendFileClick();
-					await expect(mainContent.lastMessageFileName()).toHaveText('any_description');
+					await expect(mainContent.getFileDescription()).toHaveText('any_description');
 				});
 
 				test('expect send file with different file name', async () => {
@@ -158,7 +192,7 @@ test.describe('[Messaging]', () => {
 						await flexTab.messageInput().type('this is a reply message');
 						await flexTab.keyboardPress('Enter');
 						await flexTab.closeThreadMessage().click();
-						await expect(mainContent.lastMessageQuoted()).toHaveText('this is a reply message');
+						await expect(mainContent.lastMessageThread()).toHaveText('this is a reply message');
 					});
 				});
 
@@ -179,7 +213,7 @@ test.describe('[Messaging]', () => {
 						await mainContent.openMessageActionMenu();
 					});
 
-					test('exepect message is deleted', async () => {
+					test('expect message is deleted', async () => {
 						await mainContent.selectAction('delete');
 					});
 				});
@@ -195,7 +229,7 @@ test.describe('[Messaging]', () => {
 					test('it should quote the message', async () => {
 						await mainContent.selectAction('quote');
 						await mainContent.sendBtn().click();
-						await mainContent.waitForLastMessageTextAttachmentEqualsText(message);
+						await expect(mainContent.lastMessageQuoted()).toHaveText(message);
 					});
 				});
 
