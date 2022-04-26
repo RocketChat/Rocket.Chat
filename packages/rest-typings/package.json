@@ -5,6 +5,7 @@
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "^1.31.0",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/message-parser": "^0.31.6",
 		"@rocket.chat/ui-kit": "^0.31.6",
 		"@types/jest": "^27.4.1",

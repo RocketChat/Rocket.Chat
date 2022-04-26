@@ -1,12 +1,12 @@
-import type { IVoipRoom } from "./IRoom";
+import type { IVoipRoom } from './IRoom';
 
 export interface IAgentExtensionMap {
-  _id: string;
-  agentName: string;
-  extension: string;
+	_id: string;
+	agentName: string;
+	extension: string;
 }
 
 export interface IRoomCreationResponse {
-  newRoom: boolean;
-  room: IVoipRoom;
+	newRoom: boolean;
+	room: IVoipRoom;
 }
