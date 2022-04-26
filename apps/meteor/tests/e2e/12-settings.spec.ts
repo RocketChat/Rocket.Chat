@@ -210,6 +210,14 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
+
+		test('(UI) expect option(upload video) be visible', async () => {
+			await page.reload();
+			await page.waitForLoadState();
+
+			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
+			await page.locator('.rc-popover__content [data-id="video-message"]').waitFor({ state: 'visible' });
+		});
 	});
 
 	test.describe('Bad words filter', () => {
