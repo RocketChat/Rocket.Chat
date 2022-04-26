@@ -2,7 +2,7 @@
 /packages/core-typings/ @RocketChat/chat-engine
 /packages/rest-typings/ @RocketChat/chat-engine
 /packages/eslint-config/ @RocketChat/chat-engine
-/packages/livechat/ @RocketChat/frontend
+/packages/livechat/ @RocketChat/frontend @RocketChat/chat-engine
 /.vscode/ @RocketChat/chat-engine
 /.github/ @RocketChat/chat-engine
 /_templates/ @RocketChat/chat-engine
