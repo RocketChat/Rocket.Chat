@@ -17,7 +17,7 @@ type BodyProps = {
 	tokens: MarkdownAST;
 	mentions: UserMention[];
 	channels: ChannelMention[];
-	disableBigEmoji?: boolean;
+	disableBigEmoji: boolean;
 	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
 	onChannelMentionClick?: (id: string) => (e: MouseEvent<HTMLDivElement>) => void;
 };
@@ -28,7 +28,7 @@ const MessageBodyRender: FC<BodyProps> = ({
 	tokens,
 	mentions = [],
 	channels = [],
-	disableBigEmoji = false,
+	disableBigEmoji,
 	onUserMentionClick,
 	onChannelMentionClick,
 }) => {

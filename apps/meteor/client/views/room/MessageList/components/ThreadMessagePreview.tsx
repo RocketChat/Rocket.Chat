@@ -13,8 +13,6 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
-import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
@@ -22,17 +20,15 @@ import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
-import EncryptedMessageRender from './EncryptedMessageRender';
+import MessageRender from './MessageRender';
 
 export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }> = ({ message, sequential, ...props }) => {
 	const {
-		actions: { openThread, openRoom, openUserCard },
+		actions: { openThread },
 	} = useMessageActions();
 	const parentMessage = useParentMessage(message.tmid);
 	const body = useMessageBody(parentMessage.value);
 	const t = useTranslation();
-
-	const isEncryptedMessage = isE2EEMessage(message);
 
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
@@ -64,21 +60,7 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
-						{message.ignored && t('Message_Ignored')}
-						{!isEncryptedMessage && !message.blocks && message.md && !message.ignored && (
-							<MessageBodyRender
-								onUserMentionClick={openUserCard}
-								onChannelMentionClick={openRoom}
-								mentions={message?.mentions || []}
-								channels={message?.channels || []}
-								tokens={message.md}
-								disableBigEmoji
-							/>
-						)}
-
-						{!isEncryptedMessage && !message.blocks && !message.md && !message.ignored && message.msg}
-
-						{isEncryptedMessage && !message.ignored && <EncryptedMessageRender message={message} />}
+						{message.ignored ? t('Message_Ignored') : <MessageRender message={message} disableBigEmoji />}
 					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>
