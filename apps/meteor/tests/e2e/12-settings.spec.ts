@@ -148,8 +148,11 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
-		test.skip('(UI) expect option(upload audio) not be visible', async () => {
-			//
+		test('(UI) expect option(upload audio) not be visible', async () => {
+			await page.reload();
+			await page.waitForLoadState();
+
+			await page.locator('[data-qa-id="audio-record"]').waitFor({ state: 'hidden' });
 		});
 
 		test('(API) expect enable audio files', async ({ request }) => {
