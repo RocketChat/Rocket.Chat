@@ -8,7 +8,7 @@ type EmojiProps = {
 };
 
 function Emoji({ emojiHandle, className = undefined }: EmojiProps): ReactElement {
-	const markup = { __html: `${renderEmoji(emojiHandle)}` };
+	const markup = { __html: `${renderEmoji(emojiHandle) || emojiHandle}` };
 	return <span className={className} dangerouslySetInnerHTML={markup} />;
 }
 
