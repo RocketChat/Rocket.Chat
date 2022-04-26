@@ -375,16 +375,28 @@ test.describe('[API Settings Change]', async () => {
 				});
 	});
 
+	test.describe.serial('File upload', () => {
+		test('(API) expect disable file upload', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/FileUpload_Enabled`, {
+				headers: apiSessionHeaders,
+				data: { value: false },
+			});
+			const data = await response.json();
+
 				expect(response.status()).toBe(200);
 				expect(data).toHaveProperty('success', true);
 			});
 
-			test.skip('(UI) expect option(update avatar) not be visible', async () => {
-				//
+		test('(UI) expect option(upload file) not be visible', async () => {
+			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
+			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
+
+			expect(await page.isVisible('.rc-popover__content [data-id="file-upload"]')).toBeFalsy();
 			});
 
-			test('(API) expect enable avatar change', async ({ request }) => {
-				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
+		test('(API) expect enable file upload', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/FileUpload_Enabled`, {
 					headers: apiSessionHeaders,
 					data: { value: true },
 				});
@@ -393,6 +405,13 @@ test.describe('[API Settings Change]', async () => {
 				expect(response.status()).toBe(200);
 				expect(data).toHaveProperty('success', true);
 			});
+
+		test('(UI) expect option(upload file) be visible', async () => {
+			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('.messages-box');
+			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
+
+			expect(await page.isVisible('.rc-popover__content [data-id="file-upload"]')).toBeTruthy();
 		});
 	});
 
