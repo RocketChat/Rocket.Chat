@@ -4,7 +4,7 @@ import type { parser } from '@rocket.chat/message-parser';
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';
-import type { ChannelName, IRoom, RoomID } from '../IRoom';
+import type { IRoom, RoomID } from '../IRoom';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 
@@ -102,6 +102,7 @@ export interface IMessage extends IRocketChatRecord {
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
 	unread?: boolean;
+	temp?: boolean;
 	drid?: RoomID;
 	tlm?: Date;
 
