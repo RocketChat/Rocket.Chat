@@ -75,8 +75,6 @@ export * from './ldap';
 
 export * from './IOmnichannelBusinessUnit';
 export * from './IOmnichannelCustomAgent';
-export * from './IOmnichannelBusinessUnit';
-export * from './IOmnichannelCustomAgent';
 
 export * from './ILivechatTag';
 export * from './IPbxEvent';
@@ -98,16 +96,8 @@ export * from './IOmnichannelAgent';
 export * from './OmichannelRoutingConfig';
 export * from './IVoipExtension';
 export * from './voip';
-export * from './voip/CallStates';
-export * from './voip/ICallerInfo';
-export * from './voip/Operations';
-export * from './voip/UserState';
 export * from './voip/VoIPUserConfiguration';
 export * from './voip/VoIpCallerInfo';
-export * from './voip/VoipEvents';
-export * from './voip/VoIpCallerInfo';
-export * from './voip/VoipClientEvents';
-export * from './voip/WorkflowTypes';
 export * from './ACDQueues';
 export * from './IVoipConnectorResult';
 export * from './IVoipServerConfig';

@@ -234,6 +234,3 @@ export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichanne
 
 	return room.source?.type === OmnichannelSourceType.APP;
 };
-
-/** @deprecated */
-export { RoomType };

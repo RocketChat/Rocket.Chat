@@ -1,7 +1,8 @@
 import type { SortOptionObject, FilterQuery, SchemaMember } from 'mongodb';
 
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser, IRole } from './IUser';
+import type { IRole } from './IRole';
+import type { IUser } from './IUser';
 
 export enum TEAM_TYPE {
 	PUBLIC = 0,

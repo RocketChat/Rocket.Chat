@@ -1,5 +1,6 @@
 import type { UserStatus } from './UserStatus';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRole } from './IRole';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -89,15 +90,6 @@ export interface IUserSettings {
 	preferences: {
 		[key: string]: any;
 	};
-}
-
-export interface IRole {
-	description: string;
-	mandatory2fa?: boolean;
-	name: string;
-	protected: boolean;
-	scope: 'Users' | 'Subscriptions';
-	_id: string;
 }
 
 export interface IGetRoomRoles {

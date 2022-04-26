@@ -30,36 +30,35 @@ import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VoipEndpoints } from './v1/voip';
 
-type CommunityEndpoints = BannersEndpoints &
-	ChatEndpoints &
-	ChannelsEndpoints &
-	CloudEndpoints &
-	CustomUserStatusEndpoints &
-	DmEndpoints &
-	DnsEndpoints &
-	EmojiCustomEndpoints &
-	GroupsEndpoints &
-	ImEndpoints &
-	LDAPEndpoints &
-	RoomsEndpoints &
-	RolesEndpoints &
-	TeamsEndpoints &
-	SettingsEndpoints &
-	UsersEndpoints &
-	AppsEndpoints &
-	OmnichannelEndpoints &
-	StatisticsEndpoints &
-	LicensesEndpoints &
-	MiscEndpoints &
-	PermissionsEndpoints &
-	InstancesEndpoints &
-	VoipEndpoints &
-	InvitesEndpoints &
-	E2eEndpoints &
-	CustomSoundEndpoint;
-
-export type Endpoints = CommunityEndpoints;
-// type Endpoints = CommunityEndpoints;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
+export interface Endpoints
+	extends BannersEndpoints,
+		ChatEndpoints,
+		ChannelsEndpoints,
+		CloudEndpoints,
+		CustomUserStatusEndpoints,
+		DmEndpoints,
+		DnsEndpoints,
+		EmojiCustomEndpoints,
+		GroupsEndpoints,
+		ImEndpoints,
+		LDAPEndpoints,
+		RoomsEndpoints,
+		RolesEndpoints,
+		TeamsEndpoints,
+		SettingsEndpoints,
+		UsersEndpoints,
+		AppsEndpoints,
+		OmnichannelEndpoints,
+		StatisticsEndpoints,
+		LicensesEndpoints,
+		MiscEndpoints,
+		PermissionsEndpoints,
+		InstancesEndpoints,
+		VoipEndpoints,
+		InvitesEndpoints,
+		E2eEndpoints,
+		CustomSoundEndpoint {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
