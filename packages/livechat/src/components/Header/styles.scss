@@ -1,0 +1,126 @@
+@use 'sass:math';
+
+@import '../../styles/colors';
+@import '../../styles/helpers';
+@import '../../styles/variables';
+
+$header-background-color: $color-dark-blue;
+$header-color: $color-text-lighter;
+$header-padding: $default-padding;
+$header-height: 56px;
+$header-height-large: 77px;
+
+$header-action-active-displacement: 2px;
+
+.header {
+	z-index: 1;
+
+	display: flex;
+	flex: 0 0 auto;
+
+	width: 100%;
+	height: $header-height;
+	padding: 0 math.div($header-padding, 2);
+
+	color: var(--font-color, $header-color);
+	background-color: var(--color, $header-background-color);
+	box-shadow: 0 0 16px $bg-color-grey;
+
+	font-size: 16px;
+	align-items: center;
+	justify-content: space-between;
+
+	&__item {
+		flex: 0 0 auto;
+
+		margin: 0 math.div($header-padding, 2);
+	}
+
+	&__picture {
+		@extend .header__item;
+	}
+
+	&__content {
+		@extend .header__item;
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		flex-grow: 1;
+		flex-shrink: 1;
+
+		.header__title {
+			overflow: hidden;
+
+			text-overflow: ellipsis;
+
+			font-size: 16px;
+			font-weight: 500;
+			line-height: 1.5;
+		}
+
+		.header__subtitle {
+			overflow: hidden;
+
+			letter-spacing: normal;
+			text-overflow: ellipsis;
+
+			opacity: 0.7;
+
+			font-size: 12px;
+			font-weight: 500;
+			line-height: 1.5;
+		}
+
+		.header__custom-field {
+			overflow: hidden;
+
+			letter-spacing: normal;
+			text-overflow: ellipsis;
+
+			opacity: 0.7;
+
+			font-size: 12px;
+			font-weight: 500;
+			line-height: 1.67;
+		}
+	}
+
+	&__actions {
+		@extend .header__item;
+		display: flex;
+
+		.header__action {
+			display: flex;
+			flex: 0 0 auto;
+
+			cursor: pointer;
+
+			color: inherit;
+			border: none;
+			outline: none;
+			background: none;
+			justify-content: center;
+
+			@include pressable-button($header-action-active-displacement, 0);
+		}
+	}
+
+	&__post {
+		position: absolute;
+		z-index: 10;
+		top: $header-height;
+		right: 0;
+		left: 0;
+
+		width: 100%;
+	}
+
+	&--large {
+		height: $header-height-large;
+
+		.header__post {
+			top: $header-height-large;
+		}
+	}
+}

@@ -1,0 +1,80 @@
+@import '../../../styles/colors';
+@import '../../../styles/variables';
+
+$message-bubble-padding: 12px;
+$message-bubble-background-color: $bg-color-light;
+$message-bubble-color: $color-text-dark;
+$message-bubble-border-radius: $default-border-radius;
+$message-bubble-link-color: $color-blue;
+$message-bubble-me-background-color: $color-blue;
+$message-bubble-me-color: $color-text-lighter;
+$message-bubble-me-link-color: $color-text-lighter;
+$message-bubble-nude-padding: 0;
+$message-bubble-quoted-padding: 12px 12px 12px 0;
+$message-bubble-quoted-indicator-width: 3px;
+$message-bubble-quoted-indicator-margin:
+	(-2 * $message-bubble-quoted-indicator-width)
+	(2 * $message-bubble-quoted-indicator-width)
+	(-2 * $message-bubble-quoted-indicator-width)
+	$message-bubble-quoted-indicator-width;
+$message-bubble-quoted-indicator-border-radius: $default-border-radius;
+$message-bubble-quoted-indicator-color: $color-green;
+
+.message-bubble {
+	display: flex;
+
+	padding: $message-bubble-padding;
+
+	color: $message-bubble-color;
+	border-radius: $message-bubble-border-radius;
+
+	background-color: $message-bubble-background-color;
+	align-items: stretch;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+
+	a {
+		color: var(--color, $message-bubble-link-color);
+	}
+
+	&--inverse {
+		color: var(--font-color, $message-bubble-me-color);
+		background-color: var(--color, $message-bubble-me-background-color);
+
+		a {
+			color: var(--font-color, $message-bubble-me-link-color);
+		}
+	}
+
+	&--nude {
+		padding: $message-bubble-nude-padding;
+
+		background-color: transparent;
+	}
+
+	&--quoted {
+		padding: $message-bubble-quoted-padding;
+
+		background-color: $message-bubble-background-color;
+
+		&::before {
+			width: $message-bubble-quoted-indicator-width;
+			margin: -6px 6px -6px 3px;
+
+			content: "";
+
+			border-radius: $message-bubble-quoted-indicator-border-radius;
+			background-color: $message-bubble-quoted-indicator-color;
+		}
+	}
+
+	&--system {
+		text-align: center;
+
+		background-color: transparent;
+
+		.message-container {
+			justify-content: center;
+		}
+	}
+}

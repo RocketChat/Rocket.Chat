@@ -1,0 +1,9 @@
+@import '../mixins';
+
+.text-input {
+	@include form__input-box;
+
+	&--multiple {
+		resize: none;
+	}
+}

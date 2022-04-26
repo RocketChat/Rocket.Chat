@@ -1,0 +1,19 @@
+{
+    "translation": {
+        "are_you_sure_you_want_to_switch_the_department": "Är du säker på att du vill byta avdelning?",
+        "cancel": "Avbryt",
+        "conversation_finished": "Konversation avslutad",
+        "department_switched": "Avdelning bytt",
+        "insert_your_field_here": "{{field}}",
+        "no": "Nej",
+        "options": "Inställningar",
+        "send": "Skicka",
+        "start_chat": "Starta chat",
+        "type_your_message_here": "Meddelande",
+        "user_joined": "Användare ansluten",
+        "user_left": "Användare lämnade",
+        "we_are_not_online_right_now_please_leave_a_message": "Vi är inte online just nu. Lämna gärna ett medelande.",
+        "write_your_message": "Skriv meddelande",
+        "yes": "Ja"
+    }
+}

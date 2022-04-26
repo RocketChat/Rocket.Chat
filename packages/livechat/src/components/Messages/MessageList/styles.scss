@@ -1,0 +1,35 @@
+@import '../../../styles/colors';
+@import '../../../styles/variables';
+
+.message-list {
+	display: flex;
+	overflow-y: scroll;
+	flex: 1 1 0;
+	align-items: stretch;
+	flex-flow: column nowrap;
+
+	&::-webkit-scrollbar {
+		&-track {
+			background-color: rgba(0, 0, 0, 0);
+		}
+
+		&-thumb {
+			background: rgba(0, 0, 0, 0);
+		}
+	}
+
+	&:hover::-webkit-scrollbar {
+		&-thumb {
+			background-color: $color-text-light;
+		}
+	}
+
+	&__content {
+		flex: 1 1 auto;
+
+		margin: 0 16px;
+		padding: 0;
+
+		list-style: none;
+	}
+}
