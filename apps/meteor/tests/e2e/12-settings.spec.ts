@@ -265,6 +265,30 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
+	test.describe('Message pin', () => {
+		test('(API) expect disable message pinning', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
+				headers: apiSessionHeaders,
+				data: { value: false },
+			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+
+		test('(UI) expect option(pin message) not be visible', async () => {
+			await page.reload({ waitUntil: 'load' });
+
+			await mainContent.sendMessage(`any_message_${uuid()}`);
+
+			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
+			await page.locator('.messages-box [data-qa-id="menu"]').click();
+
+			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeFalsy();
+		});
+
 		test('(API) expect enable message pinning', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
 				headers: apiSessionHeaders,
@@ -275,61 +299,18 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
-	});
 
-	test.describe('Message star', () => {
-		test('(API) expect disable message starring', async ({ request }) => {
-			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
-				headers: apiSessionHeaders,
-				data: { value: false },
-			});
-			const data = await response.json();
+		test.skip('(UI) expect option(pin message) be visible', async () => {
+			await page.reload({ waitUntil: 'load' });
 
-			expect(response.status()).toBe(200);
-			expect(data).toHaveProperty('success', true);
-		});
+			await mainContent.sendMessage(`any_message_${uuid()}`);
 
-		test.skip('(UI) expect option(star message) not be visible', async () => {
-			//
-		});
+			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
+			await page.locator('.messages-box [data-qa-id="menu"]').click();
 
-		test('(API) expect enable message starring', async ({ request }) => {
-			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
-				headers: apiSessionHeaders,
-				data: { value: true },
-			});
-			const data = await response.json();
-
-			expect(response.status()).toBe(200);
-			expect(data).toHaveProperty('success', true);
-		});
-	});
-
-	test.describe('File upload', () => {
-		test('(API) expect disable file upload', async ({ request }) => {
-			const response = await request.post(`${BASE_API_URL}/settings/FileUpload_Enabled`, {
-				headers: apiSessionHeaders,
-				data: { value: false },
-			});
-			const data = await response.json();
-
-			expect(response.status()).toBe(200);
-			expect(data).toHaveProperty('success', true);
-		});
-
-		test.skip('(UI) expect option(upload file) not be visible', async () => {
-			//
-		});
-
-		test('(API) expect enable file upload', async ({ request }) => {
-			const response = await request.post(`${BASE_API_URL}/settings/FileUpload_Enabled`, {
-				headers: apiSessionHeaders,
-				data: { value: true },
-			});
-			const data = await response.json();
-
-			expect(response.status()).toBe(200);
-			expect(data).toHaveProperty('success', true);
+			await page.waitForSelector('[data-qa-id="pin-message"]');
+			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeTruthy();
 		});
 	});
 
