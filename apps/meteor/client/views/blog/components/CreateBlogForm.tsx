@@ -1,6 +1,6 @@
 import { Modal, TextInput, TextAreaInput, Label, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState } from 'react';
 
 type Props = {
 	showModal: boolean;
@@ -16,8 +16,9 @@ const CreateBlogForm = ({ showModal, setShowModal }: Props): ReactElement => {
 	const handleSubmit = () => {
 		const cleanedTags = tags.replace(/[, ]+/g, ',').trim();
 		if (title.length && content.length) {
-			const result = Meteor.call('createBlog', { title, content, tags: [cleanedTags] });
-			console.log(result, 'result');
+			Meteor.call('createBlog', { title, content, tags: [cleanedTags] }, (error, result) => {
+				console.log(result, 'Created blog')
+			});
 		}
 
 		if (!title.length) {
