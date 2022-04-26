@@ -430,7 +430,9 @@ test.describe('[API Settings Change]', async () => {
 				expect(data).toHaveProperty('success', true);
 			});
 
-			test.skip('(UI) expect option(update profile) not be visible', async () => {});
+			test.skip('(UI) expect option(update profile) not be visible', async () => {
+				//
+			});
 
 			test('(API) expect enable profile change', async ({ request }) => {
 				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
