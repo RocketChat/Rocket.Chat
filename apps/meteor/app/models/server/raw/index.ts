@@ -70,6 +70,9 @@ import { PbxEventsRaw } from './PbxEvents';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { BlogsRaw } from './Blogs';
 import { CommentsRaw } from './Comments';
+import { ProductsRaw } from './Products';
+import { TagsRaw } from './Tags';
+import { GamesRaw } from './Games';
 
 const trashCollection = trash.rawCollection();
 export const Users = new UsersRaw(UsersModel.model.rawCollection(), trashCollection);
@@ -96,6 +99,9 @@ const prefix = 'rocketchat_';
 
 export const BlogModel = new BlogsRaw(db.collection('blogs'));
 export const CommentModel = new CommentsRaw(db.collection('comments'));
+export const ProductModel = new ProductsRaw(db.collection('products'));
+export const TagModel = new TagsRaw(db.collection('tags'));
+export const GameModel = new GamesRaw(db.collection('games'));
 
 export const Avatars = new AvatarsRaw(db.collection(`${prefix}avatars`), trashCollection);
 export const Analytics = new AnalyticsRaw(

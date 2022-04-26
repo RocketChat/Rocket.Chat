@@ -7,6 +7,7 @@ import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../d
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
+import { TagModel } from '../../../app/models/server/raw';
 
 export class TagService extends ServiceClassInternal implements ITagService {
 	protected name = 'tag';
@@ -15,8 +16,6 @@ export class TagService extends ServiceClassInternal implements ITagService {
 
 	constructor(db: Db) {
 		super();
-
-		this.TagModel = new TagsRaw(db.collection('tags'));
 	}
 
 	async create(params: ITagCreateParams): Promise<ITag> {
@@ -24,17 +23,17 @@ export class TagService extends ServiceClassInternal implements ITagService {
 			...new CreateObject(),
 			...params,
 		};
-		const result = await this.TagModel.insertOne(createData);
-		return this.TagModel.findOneById(result.insertedId);
+		const result = await TagModel.insertOne(createData);
+		return TagModel.findOneById(result.insertedId);
 	}
 
 	async delete(tagId: string): Promise<void> {
 		await this.getTag(tagId);
-		await this.TagModel.removeById(tagId);
+		await TagModel.removeById(tagId);
 	}
 
 	async getTag(tagId: string): Promise<ITag> {
-		const tag = this.TagModel.findOneById(tagId);
+		const tag = TagModel.findOneById(tagId);
 		if (!tag) {
 			throw new Error('tag-does-not-exist');
 		}
@@ -50,8 +49,8 @@ export class TagService extends ServiceClassInternal implements ITagService {
 			...new UpdateObject(),
 			...params,
 		};
-		const result = await this.TagModel.updateOne(query, updateData);
-		return this.TagModel.findOneById(result.upsertedId._id.toHexString());
+		const result = await TagModel.updateOne(query, updateData);
+		return TagModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
 	async list(

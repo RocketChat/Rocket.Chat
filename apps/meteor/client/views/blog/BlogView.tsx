@@ -16,8 +16,8 @@ const BlogView = (): ReactElement => {
 
 	useEffect(() => {
 		Meteor.call('getBlogs', 10, (error, result) => {
+			// TODO: Add a success and error messages
 			setBlogResults(result.records);
-			console.log(result.records);
 		});
 	}, []);
 

@@ -7,6 +7,7 @@ import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../d
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
+import { CommentModel } from '../../../app/models/server/raw';
 
 export class CommentService extends ServiceClassInternal implements ICommentService {
 	protected name = 'comment';
@@ -15,8 +16,6 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 
 	constructor(db: Db) {
 		super();
-
-		this.CommentModel = new CommentsRaw(db.collection('comments'));
 	}
 
 	async create(params: ICommentCreateParams): Promise<IComment> {
@@ -24,17 +23,17 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 			...new CreateObject(),
 			...params,
 		};
-		const result = await this.CommentModel.insertOne(createData);
-		return this.CommentModel.findOneById(result.insertedId);
+		const result = await CommentModel.insertOne(createData);
+		return CommentModel.findOneById(result.insertedId);
 	}
 
 	async delete(commentId: string): Promise<void> {
 		await this.getComment(commentId);
-		await this.CommentModel.removeById(commentId);
+		await CommentModel.removeById(commentId);
 	}
 
 	async getComment(commentId: string): Promise<IComment> {
-		const comment = await this.CommentModel.findOneById(commentId);
+		const comment = await CommentModel.findOneById(commentId);
 		if (!comment) {
 			throw new Error('comment-does-not-exist');
 		}
@@ -50,15 +49,15 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 			...new UpdateObject(),
 			...params,
 		};
-		const result = await this.CommentModel.updateOne(query, updateData);
-		return this.CommentModel.findOneById(result.upsertedId._id.toHexString());
+		const result = await CommentModel.updateOne(query, updateData);
+		return CommentModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
 	async list(
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
 		{ sort, query }: IQueryOptions<IComment> = { sort: {} },
 	): Promise<IRecordsWithTotal<IComment>> {
-		const result = this.CommentModel.find(
+		const result = CommentModel.find(
 			{ ...query },
 			{
 				...(sort && { sort }),

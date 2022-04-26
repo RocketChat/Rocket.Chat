@@ -17,7 +17,8 @@ const CreateBlogForm = ({ showModal, setShowModal }: Props): ReactElement => {
 		const cleanedTags = tags.replace(/[, ]+/g, ',').trim();
 		if (title.length && content.length) {
 			Meteor.call('createBlog', { title, content, tags: [cleanedTags] }, (error, result) => {
-				console.log(result, 'Created blog')
+				// TODO: Add a success and error messages
+				console.log(result, 'Created blog');
 			});
 		}
 
