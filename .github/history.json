@@ -74125,6 +74125,52 @@
           ]
         }
       ]
+    },
+    "4.7.0-rc.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25305",
+          "title": "Regression: eslint not running on packages",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "25299",
+          "title": "Regression: Add `isPending` status to message",
+          "userLogin": "filipemarins",
+          "contributors": [
+            "filipemarins"
+          ]
+        },
+        {
+          "pr": "25301",
+          "title": "Regression: Shows error if micro service cannot connect to Mongo",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25287",
+          "title": "Regression: Use exact Node version on micro services Docker images",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
