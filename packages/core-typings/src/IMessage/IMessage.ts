@@ -27,128 +27,122 @@ type VoipMessageTypesValues =
 	| 'voip-call-ended-unexpectedly';
 
 type TeamMessageTypes =
-  | "removed-user-from-team"
-  | "added-user-to-team"
-  | "ult"
-  | "user-converted-to-team"
-  | "user-converted-to-channel"
-  | "user-removed-room-from-team"
-  | "user-deleted-room-from-team"
-  | "user-added-room-to-team"
-  | "ujt";
+	| 'removed-user-from-team'
+	| 'added-user-to-team'
+	| 'ult'
+	| 'user-converted-to-team'
+	| 'user-converted-to-channel'
+	| 'user-removed-room-from-team'
+	| 'user-deleted-room-from-team'
+	| 'user-added-room-to-team'
+	| 'ujt';
 
-  
-type OmnichannelTypesValues =
-  | "livechat_transfer_history_fallback"
-  | "livechat-close";
-  
+type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close';
+
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
-type OtrSystemMessages =
-  | "user_joined_otr"
-  | "user_requested_otr_key_refresh"
-  | "user_key_refreshed_successfully";
+type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
-  | "e2e"
-  | "uj"
-  | "ul"
-  | "ru"
-  | "au"
-  | "mute_unmute"
-  | "r"
-  | "ut"
-  | "wm"
-  | "rm"
-  | "subscription-role-added"
-  | "subscription-role-removed"
-  | "room-archived"
-  | "room-unarchived"
-  | "room_changed_privacy"
-  | "room_changed_description"
-  | "room_changed_announcement"
-  | "room_changed_avatar"
-  | "room_changed_topic"
-  | "room_e2e_enabled"
-  | "room_e2e_disabled"
-  | "user-muted"
-  | "user-unmuted"
-  | "room-removed-read-only"
-  | "room-set-read-only"
-  | "room-allowed-reacting"
-  | "room-disallowed-reacting"
-  | TeamMessageTypes
-  | VoipMessageTypesValues
-  | OmnichannelTypesValues
-  | OtrMessageTypeValues
-  | OtrSystemMessages;
+	| 'e2e'
+	| 'uj'
+	| 'ul'
+	| 'ru'
+	| 'au'
+	| 'mute_unmute'
+	| 'r'
+	| 'ut'
+	| 'wm'
+	| 'rm'
+	| 'subscription-role-added'
+	| 'subscription-role-removed'
+	| 'room-archived'
+	| 'room-unarchived'
+	| 'room_changed_privacy'
+	| 'room_changed_description'
+	| 'room_changed_announcement'
+	| 'room_changed_avatar'
+	| 'room_changed_topic'
+	| 'room_e2e_enabled'
+	| 'room_e2e_disabled'
+	| 'user-muted'
+	| 'user-unmuted'
+	| 'room-removed-read-only'
+	| 'room-set-read-only'
+	| 'room-allowed-reacting'
+	| 'room-disallowed-reacting'
+	| TeamMessageTypes
+	| VoipMessageTypesValues
+	| OmnichannelTypesValues
+	| OtrMessageTypeValues
+	| OtrSystemMessages;
 
 export interface IMessage extends IRocketChatRecord {
-  rid: RoomID;
-  msg: string;
-  tmid?: string;
-  ts: Date;
-  mentions?: ({
-    type: MentionType;
-  } & Pick<IUser, "_id" | "username" | "name">)[];
+	rid: RoomID;
+	msg: string;
+	tmid?: string;
+	ts: Date;
+	mentions?: ({
+		type: MentionType;
+	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
 
-  groupable?: false;
-  channels?: Pick<IRoom, "_id" | "name">[];
-  u: Required<Pick<IUser, "_id" | "username" | "name">>;
-  blocks?: MessageSurfaceLayout;
-  alias?: string;
-  md?: ReturnType<typeof parser>;
+	groupable?: false;
+	channels?: Pick<IRoom, '_id' | 'name'>[];
+	u: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
+	blocks?: MessageSurfaceLayout;
+	alias?: string;
+	md?: ReturnType<typeof parser>;
 
-  // TODO: chapter day frontend - wrong type
-  ignored?: boolean;
-  _hidden?: boolean;
-  imported?: boolean;
-  replies?: IUser["_id"][];
-  location?: {
-    type: "Point";
-    coordinates: [string, string];
-  };
-  starred?: { _id: IUser["_id"] }[];
-  pinned?: boolean;
-  unread?: boolean;
-  drid?: RoomID;
-  tlm?: Date;
+	// TODO: chapter day frontend - wrong type
+	ignored?: boolean;
+	_hidden?: boolean;
+	imported?: boolean;
+	replies?: IUser['_id'][];
+	location?: {
+		type: 'Point';
+		coordinates: [string, string];
+	};
+	starred?: { _id: IUser['_id'] }[];
+	pinned?: boolean;
+	unread?: boolean;
+	drid?: RoomID;
+	tlm?: Date;
 
-  dcount?: number;
-  tcount?: number;
-  t?: MessageTypesValues;
-  e2e?: "pending" | "done";
-  otrAck?: string;
-  notification?: boolean
+	dcount?: number;
+	tcount?: number;
+	t?: MessageTypesValues;
+	e2e?: 'pending' | 'done';
+	otrAck?: string;
+	notification?: boolean;
 
-  urls?: MessageUrl[];
+	urls?: MessageUrl[];
 
-  /** @deprecated Deprecated */
-  actionLinks?: {
-    icon: keyof typeof Icons;
-    i18nLabel: unknown;
-    label: string;
-    method_id: string;
-    params: string;
-  }[];
+	/** @deprecated Deprecated */
+	actionLinks?: {
+		icon: keyof typeof Icons;
+		i18nLabel: unknown;
+		label: string;
+		method_id: string;
+		params: string;
+	}[];
 
-  /** @deprecated Deprecated in favor of files */
-  file?: FileProp;
-  files?: FileProp[];
-  attachments?: MessageAttachment[];
+	/** @deprecated Deprecated in favor of files */
+	file?: FileProp;
+	files?: FileProp[];
+	attachments?: MessageAttachment[];
 
-  reactions?: {
-    [key: string]: { names?: (string | undefined)[]; usernames: string[] };
-  };
+	reactions?: {
+		[key: string]: { names?: (string | undefined)[]; usernames: string[] };
+	};
 
-  private?: boolean;
-  /* @deprecated */
-  bot?: boolean;
-  sentByEmail?: boolean;
-  webRtcCallEndTs?: Date;
-  role?: string;
+	private?: boolean;
+	/* @deprecated */
+	bot?: boolean;
+	sentByEmail?: boolean;
+	webRtcCallEndTs?: Date;
+	role?: string;
 
-  avatar?: string;
-  emoji?: string;
+	avatar?: string;
+	emoji?: string;
 }
 
 export type MessageSystem = {
