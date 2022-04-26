@@ -1,4 +1,4 @@
-FROM node:14 as build
+FROM node:14.18.3 as build
 
 WORKDIR /app
 
@@ -23,7 +23,7 @@ COPY ./tsconfig.base.json .
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:14-alpine
+FROM node:14.18.3-alpine
 
 ARG SERVICE
 
