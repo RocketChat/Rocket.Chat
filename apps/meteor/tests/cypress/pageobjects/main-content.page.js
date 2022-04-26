@@ -122,7 +122,7 @@ class MainContent extends Page {
 	}
 
 	get messageReply() {
-		return browser.element('[data-qa-type="message"]:last-child [data-qa-type="message-action"][data-qa-id="reply-in-thread"]');
+		return browser.element('[data-qa-type="message-action"][data-qa-id="reply-in-thread"]');
 	}
 
 	get messageEdit() {
@@ -301,10 +301,7 @@ class MainContent extends Page {
 
 	closeMessageActionMenu() {
 		// Old popover closes only on click outside
-		cy.get('body').click();
-		// this.popoverWrapper.click();
-		this.messageOptionsBtns.should('not.exist');
-		this.messageActionMenuBtns.should('not.exist');
+		cy.get('body').realHover({ position: 'topLeft' }).click();
 	}
 
 	setLanguageToEnglish() {

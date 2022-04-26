@@ -244,8 +244,8 @@ function messageActionsTest(currentTest, testChannel) {
 						before(() => grantCreateDPermission());
 
 						before(() => {
-							sideNav.spotlightSearchIcon.click();
 							mainContent.closeMessageActionMenu();
+							sideNav.spotlightSearchIcon.click();
 							sideNav.searchChannel(testDMUsername);
 						});
 
