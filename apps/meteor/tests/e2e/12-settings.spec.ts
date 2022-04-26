@@ -55,13 +55,12 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(edit) not be visible', async () => {
-			await page.reload();
-			await page.waitForLoadState();
+			await page.reload({ waitUntil: 'load' });
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
 			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor({ state: 'visible' });
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
 			await page.locator('.messages-box [data-qa-id="menu"]').click();
 
 			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeFalsy();
@@ -79,13 +78,12 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(edit) be visible', async () => {
-			await page.reload();
-			await page.waitForLoadState();
+			await page.reload({ waitUntil: 'load' });
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
 			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor({ state: 'visible' });
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
 			await page.locator('.messages-box [data-qa-id="menu"]').click();
 
 			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeTruthy();
@@ -105,13 +103,12 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(delete) not be visible', async () => {
-			await page.reload();
-			await page.waitForLoadState();
+			await page.reload({ waitUntil: 'load' });
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
 			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor({ state: 'visible' });
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
 			await page.locator('.messages-box [data-qa-id="menu"]').click();
 
 			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
@@ -129,13 +126,12 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(delete) be visible', async () => {
-			await page.reload();
-			await page.waitForLoadState();
+			await page.reload({ waitUntil: 'load' });
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
 			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor({ state: 'visible' });
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
 			await page.locator('.messages-box [data-qa-id="menu"]').click();
 
 			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeTruthy();
@@ -155,10 +151,9 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload audio) not be visible', async () => {
-			await page.reload();
-			await page.waitForLoadState();
+			await page.reload({ waitUntil: 'load' });
 
-			await page.locator('[data-qa-id="audio-record"]').waitFor({ state: 'hidden' });
+			expect(await page.isVisible('[data-qa-id="audio-record"]')).toBeFalsy();
 		});
 
 		test('(API) expect enable audio files', async ({ request }) => {
@@ -173,10 +168,10 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload audio) be visible', async () => {
-			await page.reload();
-			await page.waitForLoadState();
+			await page.reload({ waitUntil: 'load' });
+			await page.waitForSelector('[data-qa-id="audio-record"]');
 
-			await page.locator('[data-qa-id="audio-record"]').waitFor({ state: 'visible' });
+			expect(await page.isVisible('[data-qa-id="audio-record"]')).toBeTruthy();
 		});
 	});
 
@@ -193,11 +188,10 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload video) not be visible', async () => {
-			await page.reload();
-			await page.waitForLoadState();
-
+			await page.reload({ waitUntil: 'load' });
 			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
-			await page.locator('.rc-popover__content [data-id="video-message"]').waitFor({ state: 'hidden' });
+
+			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeFalsy();
 		});
 
 		test('(API) expect enable video files', async ({ request }) => {
@@ -212,11 +206,10 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload video) be visible', async () => {
-			await page.reload();
-			await page.waitForLoadState();
-
+			await page.reload({ waitUntil: 'load' });
 			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
-			await page.locator('.rc-popover__content [data-id="video-message"]').waitFor({ state: 'visible' });
+
+			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeTruthy();
 		});
 	});
 
