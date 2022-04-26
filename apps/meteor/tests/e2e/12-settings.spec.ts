@@ -314,10 +314,9 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Profile', () => {
-		test.describe('Profile change', () => {
-			test('(API) expect disable profile change', async ({ request }) => {
-				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
+	test.describe('Message star', () => {
+		test('(API) expect disable message starring', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
 					headers: apiSessionHeaders,
 					data: { value: false },
 				});
@@ -327,12 +326,20 @@ test.describe('[API Settings Change]', async () => {
 				expect(data).toHaveProperty('success', true);
 			});
 
-			test.skip('(UI) expect option(update profile) not be visible', async () => {
-				//
+		test.skip('(UI) expect option(star message) not be visible', async () => {
+			await page.reload({ waitUntil: 'load' });
+
+			await mainContent.sendMessage(`any_message_${uuid()}`);
+
+			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
+			await page.locator('.messages-box [data-qa-id="menu"]').click();
+
+			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeFalsy();
 			});
 
-			test('(API) expect enable profile change', async ({ request }) => {
-				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
+		test('(API) expect enable message starring', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
 					headers: apiSessionHeaders,
 					data: { value: true },
 				});
@@ -341,15 +348,19 @@ test.describe('[API Settings Change]', async () => {
 				expect(response.status()).toBe(200);
 				expect(data).toHaveProperty('success', true);
 			});
-		});
 
-		test.describe('Avatar change', () => {
-			test('(API) expect disable avatar change', async ({ request }) => {
-				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
-					headers: apiSessionHeaders,
-					data: { value: false },
+		test('(UI) expect option(star message) be visible', async () => {
+			await page.reload({ waitUntil: 'load' });
+
+			await mainContent.sendMessage(`any_message_${uuid()}`);
+
+			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
+			await page.locator('.messages-box [data-qa-id="menu"]').click();
+
+			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeTruthy();
 				});
-				const data = await response.json();
+	});
 
 				expect(response.status()).toBe(200);
 				expect(data).toHaveProperty('success', true);
