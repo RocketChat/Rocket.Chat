@@ -165,6 +165,13 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
+
+		test('(UI) expect option(upload audio) be visible', async () => {
+			await page.reload();
+			await page.waitForLoadState();
+
+			await page.locator('[data-qa-id="audio-record"]').waitFor({ state: 'visible' });
+		});
 	});
 
 	test.describe('Video files', () => {
