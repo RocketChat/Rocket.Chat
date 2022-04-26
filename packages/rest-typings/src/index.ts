@@ -29,7 +29,7 @@ import type { StatisticsEndpoints } from './v1/statistics';
 import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VoipEndpoints } from './v1/voip';
-import type { WebdavEndpoints } from "./v1/webdav";
+import type { WebdavEndpoints } from './v1/webdav';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
@@ -60,7 +60,7 @@ export interface Endpoints
 		InvitesEndpoints,
 		E2eEndpoints,
 		CustomSoundEndpoint,
-    WebdavEndpoints {}
+		WebdavEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
