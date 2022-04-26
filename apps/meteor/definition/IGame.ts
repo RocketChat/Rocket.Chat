@@ -17,8 +17,6 @@ export type IGameLean = Omit<IGame, 'createdAt' | '_updatedAt' | '_id'>;
 
 export type IGameCreateParams = PartialBy<IGameLean, 'tags' | 'ranking'>;
 
-export type IGameCreateBody = PartialBy<Omit<IGame, '_id'>, 'tags' | 'ranking'>;
-
 export type IGameUpdateParams = AtLeastOne<IGameLean>;
 
 export type IGameUpdateBody = IGameUpdateParams & { _updatedAt: IGame['_updatedAt'] };

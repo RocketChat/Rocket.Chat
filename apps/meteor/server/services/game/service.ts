@@ -1,11 +1,12 @@
 import { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IGameService, IGameCreateParams, IGame, IGameCreateBody, IGameUpdateParams } from '../../../definition/IGame';
+import { IGameService, IGameCreateParams, IGame, IGameUpdateParams } from '../../../definition/IGame';
 import { GamesRaw } from '../../../app/models/server/raw/Games';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
+import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 
 export class GameService extends ServiceClassInternal implements IGameService {
 	protected name = 'game';
@@ -19,9 +20,11 @@ export class GameService extends ServiceClassInternal implements IGameService {
 	}
 
 	async create(params: IGameCreateParams): Promise<IGame> {
-		const createData: IGameCreateBody = {
+		const createData: InsertionModel<IGame> = {
 			...new CreateObject(),
 			...params,
+			...(params.tags ? { tags: params.tags } : { tags: [] }),
+			...(params.ranking ? { ranking: params.ranking } : { ranking: 0 }),
 		};
 		const result = await this.GameModel.insertOne(createData);
 		return this.GameModel.findOneById(result.insertedId);

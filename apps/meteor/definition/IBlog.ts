@@ -8,10 +8,7 @@ import { IComment } from './IComment';
 export interface IBlog extends IPost {
 	title: string;
 	tags: ITag['_id'][];
-}
-
-export interface IBlogWithComments extends IBlog {
-	comments: IComment[];
+	comments?: IComment[];
 }
 
 export type IBlogWithoutID = PartialBy<Omit<IBlog, '_id'>, 'tags'>;
@@ -28,9 +25,8 @@ export type IBlogUpdateBody = IBlogUpdateParams & { _updatedAt: IBlog['_updatedA
 
 export interface IBlogService {
 	create(params: IBlogCreateParams): Promise<IBlog>;
-	list(limit?: number): Promise<IRecordsWithTotal<IBlogWithComments>>;
+	list(limit?: number): Promise<IRecordsWithTotal<IBlog>>;
 	update(blogId: string, params: IBlogUpdateParams): Promise<IBlog>;
 	delete(blogId: string): Promise<void>;
 	getBlog(blogId: string): Promise<IBlog>;
-	getBlogWithComments(blogId: string): Promise<IBlogWithComments>;
 }

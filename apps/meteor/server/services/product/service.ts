@@ -1,18 +1,12 @@
 import { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import {
-	IProductService,
-	IProductCreateParams,
-	IProduct,
-	IProductCreateBody,
-	IProductUpdateBody,
-	IProductUpdateParams,
-} from '../../../definition/IProduct';
+import { IProductService, IProductCreateParams, IProduct, IProductUpdateBody, IProductUpdateParams } from '../../../definition/IProduct';
 import { ProductsRaw } from '../../../app/models/server/raw/Products';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
+import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 
 export class ProductService extends ServiceClassInternal implements IProductService {
 	protected name = 'product';
@@ -26,9 +20,10 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 	}
 
 	async create(params: IProductCreateParams): Promise<IProduct> {
-		const createData: IProductCreateBody = {
+		const createData: InsertionModel<IProduct> = {
 			...new CreateObject(),
 			...params,
+			...(params.ranking ? { ranking: params.ranking } : { ranking: 0 }),
 		};
 		const result = await this.ProductModel.insertOne(createData);
 		return this.ProductModel.findOneById(result.insertedId);

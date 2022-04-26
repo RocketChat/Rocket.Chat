@@ -6,6 +6,7 @@ import { CommentsRaw } from '../../../app/models/server/raw/Comments';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
+import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 
 export class CommentService extends ServiceClassInternal implements ICommentService {
 	protected name = 'comment';
@@ -19,11 +20,11 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 	}
 
 	async create(params: ICommentCreateParams): Promise<IComment> {
-		const updateData: ICommentUpdateBody = {
+		const createData: InsertionModel<IComment> = {
 			...new CreateObject(),
 			...params,
 		};
-		const result = await this.CommentModel.insertOne(updateData);
+		const result = await this.CommentModel.insertOne(createData);
 		return this.CommentModel.findOneById(result.insertedId);
 	}
 

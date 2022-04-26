@@ -1,12 +1,13 @@
 import { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IBlogService, IBlogCreateParams, IBlog, IBlogUpdateBody, IBlogUpdateParams, IBlogWithComments } from '../../../definition/IBlog';
+import { IBlogService, IBlogCreateParams, IBlog, IBlogUpdateBody, IBlogUpdateParams } from '../../../definition/IBlog';
 import { BlogsRaw } from '../../../app/models/server/raw/Blogs';
 import { CommentsRaw } from '../../../app/models/server/raw/Comments';
 import { IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
+import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 
 export class BlogService extends ServiceClassInternal implements IBlogService {
 	protected name = 'blog';
@@ -23,24 +24,18 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 	}
 
 	async create(params: IBlogCreateParams): Promise<IBlog> {
-		const updateData: IBlogUpdateBody = {
+		const createData: InsertionModel<IBlog> = {
 			...new CreateObject(),
 			...params,
+			...(params.tags ? { tags: params.tags } : { tags: [] }),
 		};
-		const result = await this.BlogModel.insertOne(updateData);
+		const result = await this.BlogModel.insertOne(createData);
 		return this.BlogModel.findOneById(result.insertedId);
 	}
 
 	async delete(blogId: string): Promise<void> {
 		await this.getBlog(blogId);
 		await this.BlogModel.removeById(blogId);
-	}
-
-	async getBlogWithComments(blogId: string): Promise<IBlogWithComments> {
-		const blog = await this.getBlog(blogId);
-		const comments = await this.CommentModel.find({ blogId }).limit(25).toArray();
-		const blogWithComments: IBlogWithComments = { ...blog, comments };
-		return blogWithComments;
 	}
 
 	async getBlog(blogId: string): Promise<IBlog> {
@@ -64,7 +59,7 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 		return this.BlogModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
-	async list(limit = 10): Promise<IRecordsWithTotal<IBlogWithComments>> {
+	async list(limit = 10): Promise<IRecordsWithTotal<IBlog>> {
 		return this.BlogModel.getBlogsWithComments(limit);
 	}
 }

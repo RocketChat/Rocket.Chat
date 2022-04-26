@@ -13,8 +13,6 @@ export type ITagLean = Omit<ITag, 'createdAt' | '_updatedAt' | '_id'>;
 
 export type ITagCreateParams = Omit<ITag, 'createdAt' | '_updatedAt' | '_id'>;
 
-export type ITagCreateBody = Omit<ITag, '_id'>;
-
 export type ITagUpdateParams = AtLeastOne<ITagLean>;
 
 export type ITagUpdateBody = ITagUpdateParams & { _updatedAt: ITag['_updatedAt'] };

@@ -1,11 +1,12 @@
 import { Db } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { ITagService, ITagCreateParams, ITag, ITagCreateBody, ITagUpdateBody, ITagUpdateParams } from '../../../definition/ITag';
+import { ITagService, ITagCreateParams, ITag, ITagUpdateBody, ITagUpdateParams } from '../../../definition/ITag';
 import { TagsRaw } from '../../../app/models/server/raw/Tags';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
+import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 
 export class TagService extends ServiceClassInternal implements ITagService {
 	protected name = 'tag';
@@ -19,7 +20,7 @@ export class TagService extends ServiceClassInternal implements ITagService {
 	}
 
 	async create(params: ITagCreateParams): Promise<ITag> {
-		const createData: ITagCreateBody = {
+		const createData: InsertionModel<ITag> = {
 			...new CreateObject(),
 			...params,
 		};
