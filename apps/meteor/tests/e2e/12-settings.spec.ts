@@ -56,6 +56,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(edit) not be visible', async () => {
 			await page.reload();
+			await page.waitForLoadState();
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
@@ -79,6 +80,7 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(edit) be visible', async () => {
 			await page.reload();
+			await page.waitForLoadState();
 
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
@@ -104,6 +106,8 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(delete) not be visible', async () => {
 			await page.reload();
+			await page.waitForLoadState();
+
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
 			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
@@ -126,6 +130,8 @@ test.describe('[API Settings Change]', async () => {
 
 		test('(UI) expect option(delete) be visible', async () => {
 			await page.reload();
+			await page.waitForLoadState();
+
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 
 			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
