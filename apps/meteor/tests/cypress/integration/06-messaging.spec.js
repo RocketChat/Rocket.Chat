@@ -202,12 +202,12 @@ function messageActionsTest(currentTest, testChannel) {
 
 			if (currentTest === 'general') {
 				it('it should not show the pin action', () => {
-					mainContent.messagePin.scrollIntoView().should('not.exist');
+					mainContent.messagePin.should('not.exist');
 				});
 			}
 
 			it('it should not show the mark as unread action', () => {
-				mainContent.messageUnread.scrollIntoView().should('not.exist');
+				mainContent.messageUnread.should('not.exist');
 			});
 
 			if (currentTest === 'direct') {
