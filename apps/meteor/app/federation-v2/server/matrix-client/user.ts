@@ -55,7 +55,7 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 	const invitedUserIsRemote = invitedUserDomain && invitedUserDomain !== settings.get('Federation_Matrix_homeserver_domain');
 
 	// Find the invited user in Rocket.Chats users
-	let invitedUser = Users.findOneByUsername(invitedId.replace('@', ''));
+	let invitedUser = Users.findOneByUsername(removeUselessCharsFromMatrixId(invitedId));
 
 	if (!invitedUser) {
 		// Create the invited user
@@ -117,6 +117,27 @@ export const createRemote = async (u: IUser): Promise<ICreateUserResult> => {
 	return payload;
 };
 
+const removeUselessCharsFromMatrixId = (matrixUserId: string = '') => matrixUserId.replace('@', '');
+const formatUserIdAsRCUsername = (userId: string = '') => removeUselessCharsFromMatrixId(userId.split(':')[0]);
+
+const createLocalUserIfNotExists = async (userId: string = '', profileInfo: MatrixProfileInfo = {}): Promise<string> => {
+	const existingUser = await Users.findOneByUsername(formatUserIdAsRCUsername(userId));
+
+	if (existingUser) {
+		return existingUser._id;
+	}
+
+	return Users.create({
+		username: removeUselessCharsFromMatrixId(userId),
+		type: 'user',
+		status: 'online',
+		active: true,
+		roles: ['user'],
+		name: profileInfo.displayname,
+		requirePasswordChange: false,
+	});
+}
+
 export const createLocal = async (matrixUserId: string): Promise<ICreateUserResult> => {
 	console.log(`Creating local user ${matrixUserId}...`);
 
@@ -130,16 +151,7 @@ export const createLocal = async (matrixUserId: string): Promise<ICreateUserResu
 		// no-op
 	}
 
-	const uid = Users.create({
-		username: matrixUserId.replace('@', ''),
-		type: 'user',
-		status: 'online',
-		active: true,
-		roles: ['user'],
-		name: currentProfile.displayname,
-		requirePasswordChange: false,
-	});
-
+	const uid = await createLocalUserIfNotExists(matrixUserId, currentProfile);
 	const payload = { uid, mui: matrixUserId, remote: false };
 
 	MatrixBridgedUser.upsert({ uid }, payload);
