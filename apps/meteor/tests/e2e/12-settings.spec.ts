@@ -123,6 +123,17 @@ test.describe('[API Settings Change]', async () => {
 			expect(response.status()).toBe(200);
 			expect(data).toHaveProperty('success', true);
 		});
+
+		test('(UI) expect option(delete) be visible', async () => {
+			await page.reload();
+			await mainContent.sendMessage(`any_message_${uuid()}`);
+
+			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor({ state: 'visible' });
+			await page.locator('.messages-box [data-qa-id="menu"]').click();
+
+			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeTruthy();
+		});
 	});
 
 	test.describe('Audio files', () => {
