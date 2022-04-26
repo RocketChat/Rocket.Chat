@@ -1,7 +1,8 @@
 import { test, expect, Page } from '@playwright/test';
+import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL } from './utils/mocks/urlMock';
-import { adminLogin } from './utils/mocks/userAndPasswordMock';
+import { adminLogin, validUser } from './utils/mocks/userAndPasswordMock';
 import LoginPage from './utils/pageobjects/LoginPage';
 import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';
@@ -24,7 +25,7 @@ test.describe('[API Settings Change]', async () => {
 		sideNav = new SideNav(page);
 
 		await loginPage.goto(baseURL as string);
-		await loginPage.login(adminLogin);
+		await loginPage.login(validUser);
 		await sideNav.general().click();
 	});
 
@@ -53,8 +54,16 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
-		test.skip('(UI) expect option(edit) not be visible', async () => {
-			//
+		test('(UI) expect option(edit) not be visible', async () => {
+			await page.reload();
+
+			await mainContent.sendMessage(`any_message_${uuid()}`);
+
+			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
+			await page.locator('.messages-box [data-qa-id="menu"]').waitFor({ state: 'visible' });
+			await page.locator('.messages-box [data-qa-id="menu"]').click();
+
+			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeFalsy();
 		});
 
 		test('(API) expect enable message editing', async ({ request }) => {
