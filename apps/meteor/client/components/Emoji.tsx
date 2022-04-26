@@ -10,7 +10,7 @@ type EmojiProps = {
 
 function Emoji({ emojiHandle, className = undefined }: EmojiProps): ReactElement {
 	const markup = { __html: `${renderEmoji(emojiHandle) || emojiHandle}` };
-	return <Box className={className} display='inline' dangerouslySetInnerHTML={markup} />;
+	return <Box is='span' className={className} dangerouslySetInnerHTML={markup} />;
 }
 
 export default Emoji;
