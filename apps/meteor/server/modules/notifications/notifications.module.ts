@@ -1,14 +1,12 @@
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
+import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 
 import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
-import { ISubscription } from '../../../definition/ISubscription';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { IOmnichannelRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
 import { SystemLogger } from '../../lib/logger/system';
 
 interface IModelsParam {
@@ -50,6 +48,8 @@ export class NotificationsModule {
 	public readonly streamStdout: IStreamer;
 
 	public readonly streamRoomData: IStreamer;
+
+	public readonly streamLocal: IStreamer;
 
 	public readonly streamPresence: IStreamer;
 
@@ -93,6 +93,7 @@ export class NotificationsModule {
 		});
 
 		this.streamUser = new this.Streamer('notify-user');
+		this.streamLocal = new this.Streamer('local');
 	}
 
 	async configure({ Rooms, Subscriptions, Users, Settings }: IModelsParam): Promise<void> {
@@ -447,6 +448,11 @@ export class NotificationsModule {
 				});
 			}
 		});
+
+		this.streamLocal.serverOnly = true;
+		this.streamLocal.allowRead('none');
+		this.streamLocal.allowEmit('all');
+		this.streamLocal.allowWrite('none');
 
 		this.streamPresence.allowRead('logged');
 		this.streamPresence.allowWrite('none');

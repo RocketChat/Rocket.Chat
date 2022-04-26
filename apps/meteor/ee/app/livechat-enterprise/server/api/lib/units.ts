@@ -1,10 +1,9 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { IOmnichannelBusinessUnit, ILivechatMonitor } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import LivechatUnit from '../../../../models/server/models/LivechatUnit';
 import LivechatUnitMonitors from '../../../../models/server/raw/LivechatUnitMonitors';
-import { IOmnichannelBusinessUnit } from '../../../../../../definition/IOmnichannelBusinessUnit';
-import { ILivechatMonitor } from '../../../../../../definition/ILivechatMonitor';
 
 export async function findUnits({
 	userId,

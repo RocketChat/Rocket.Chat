@@ -1,4 +1,5 @@
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+
 import { BaseRaw } from './BaseRaw';
-import { ILivechatCustomField } from '../../../../definition/ILivechatCustomField';
 
 export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> {}

@@ -1,8 +1,6 @@
+import type { IMessage, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import type { IMessage } from '../../../definition/IMessage';
-import { ISubscription } from '../../../definition/ISubscription';
-import { IUser } from '../../../definition/IUser';
 import { MessageList } from './MessageList';
 
 type ThreadMessage = Omit<IMessage, 'tcount'> & Required<Pick<IMessage, 'tcount'>>;

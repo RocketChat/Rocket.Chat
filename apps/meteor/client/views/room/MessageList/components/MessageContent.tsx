@@ -1,9 +1,8 @@
 /* eslint-disable complexity */
+import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
-import { IMessage, isDiscussionMessage, isThreadMainMessage } from '../../../../../definition/IMessage';
-import { ISubscription } from '../../../../../definition/ISubscription';
 import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
@@ -19,6 +18,7 @@ import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
+import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import EncryptedMessageRender from './EncryptedMessageRender';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
@@ -105,13 +105,13 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 			{message.location && <MessageLocation location={message.location} />}
 
-			{broadcast && user.username && (
+			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
 				<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
 
 			{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
 
-			{shouldShowReadReceipt && <ReadReceipt />}
+			{shouldShowReadReceipt && <ReadReceipt unread={message.unread} />}
 		</>
 	);
 };

@@ -1,6 +1,14 @@
-import type { JoinPathPattern, Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '../../../definition/rest';
-import type { IUser } from '../../../definition/IUser';
-import { IMethodConnection } from '../../../definition/IMethodThisType';
+import type {
+	JoinPathPattern,
+	Method,
+	MethodOf,
+	OperationParams,
+	OperationResult,
+	PathPattern,
+	UrlParams,
+} from '@rocket.chat/rest-typings';
+import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
+
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
 type SuccessResult<T> = {
@@ -63,6 +71,10 @@ type Request = {
 	url: string;
 	headers: Record<string, string>;
 	body: any;
+};
+
+type PartialThis = {
+	readonly request: Request & { query: Record<string, string> };
 };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
@@ -158,6 +170,8 @@ declare class APIClass<TBasePath extends string = '/'> {
 		options: TOptions,
 		operations: Operations<TPathPattern, TOptions>,
 	): void;
+
+	addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void;
 
 	success<T>(result: T): SuccessResult<T>;
 
