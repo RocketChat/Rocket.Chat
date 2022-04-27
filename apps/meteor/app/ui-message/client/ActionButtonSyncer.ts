@@ -5,6 +5,7 @@ import { APIClient } from '../../utils/client';
 import * as TabBar from './actionButtons/tabbar';
 import * as MessageAction from './actionButtons/messageAction';
 import * as MessageBox from './actionButtons/messageBox';
+import { AccountBox } from '../../ui-utils/client/lib/AccountBox';
 
 let registeredButtons: Array<IUIActionButton> = [];
 
@@ -18,6 +19,18 @@ export const addButton = (button: IUIActionButton): void => {
 			break;
 		case UIActionButtonContext.MESSAGE_BOX_ACTION:
 			MessageBox.onAdded(button);
+			break;
+		case UIActionButtonContext.USER_DROPDOWN_ACTION:
+			const { appId, actionId, labelI18n, context } = button;
+			AccountBox.addItem({
+				...button,
+				name: button.labelI18n,
+				appId,
+				actionId,
+				labelI18n,
+				context,
+				isAppButtonItem: true,
+			});
 			break;
 	}
 
@@ -34,6 +47,18 @@ export const removeButton = (button: IUIActionButton): void => {
 			break;
 		case UIActionButtonContext.MESSAGE_BOX_ACTION:
 			MessageBox.onRemoved(button);
+			break;
+		case UIActionButtonContext.USER_DROPDOWN_ACTION:
+			const { appId, actionId, labelI18n, context } = button;
+			AccountBox.deleteItem({
+				...button,
+				name: button.labelI18n,
+				appId,
+				actionId,
+				labelI18n,
+				context,
+				isAppButtonItem: true,
+			});
 			break;
 	}
 };
