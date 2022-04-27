@@ -1,6 +1,9 @@
 import { Box, Icon, Margins, Modal, Menu } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useContext } from 'react';
+
+import { useRoute } from '../../contexts/RouterContext';
+import { DispatchGlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
 
 type Props = {
 	content?: string;
@@ -27,6 +30,8 @@ const SingleBlogPost = ({
 	setUpdateContent,
 	setUpdateTags,
 }: Props): ReactElement => {
+	const { dispatch } = useContext(DispatchGlobalContext);
+
 	const authors = ['Tanjiro Kamado', 'Zenitsu Agatsuma', 'Hashibira Inosuke', 'Nezuko Kamado', 'Tanjiro Kamado'];
 	const images = [
 		'images/blog_images/Kimetsu_no_yaiba_1.jpg',
@@ -36,12 +41,30 @@ const SingleBlogPost = ({
 		'images/blog_images/Kimetsu_no_yaiba_5.png',
 	];
 
+	const BlogDetailRoute = useRoute('blog-detail');
+
 	// Use the random number to display random images and names.
 	const randNum = Math.floor(Math.random() * 5);
 
+	const handleDetailRoute = (id: string, author: string, createdAt: string, title: string, content: string, image: string) => {
+		const payload = {
+			id,
+			author,
+			createdAt,
+			title,
+			content,
+			image,
+		};
+		dispatch({ type: 'ADD_DETAILS', payload });
+		BlogDetailRoute.push({});
+	};
+
 	return (
 		<Margins block='15px'>
-			<Modal>
+			<Modal
+				cursor='pointer'
+				onClick={() => handleDetailRoute(_id, authors[randNum], createdAt.toString().slice(4, 10), title, content, images[randNum])}
+			>
 				<Modal.Content>
 					<Box display='flex' justifyContent='flex-end' alignItems='center' flexDirection='column' style={{ margin: '13px 0px' }}>
 						<Menu
@@ -52,10 +75,10 @@ const SingleBlogPost = ({
 									action: function noRefCheck(): void {
 										Meteor.call('deleteBlog', _id, (error, result) => {
 											if (result) {
-			// TODO: Add a success and error messages
-												console.log('Deleted successfully')
+												// TODO: Add a success and error messages
+												console.log('Deleted successfully');
 											}
-										})
+										});
 									},
 									label: (
 										<Box alignItems='center' color='danger' display='flex'>

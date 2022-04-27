@@ -1,7 +1,6 @@
 import { Box, Icon, Tabs, Grid, Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import React, { ReactElement, useRef, useState, useEffect } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
 
 import Page from '../../components/Page';
 import TopBar from '../../topbar/TopBar';
@@ -11,7 +10,6 @@ import SingleBlogPost from './SingleBlogPost';
 import './blog.css';
 
 const BlogView = (): ReactElement => {
-	const pageRef = useRef();
 	const [showModal, setShowModal] = useState(false);
 	const [blogResults, setBlogResults] = useState<Record<string, string>[]>([]);
 	const [updateTitle, setUpdateTitle] = useState('');
@@ -59,7 +57,7 @@ const BlogView = (): ReactElement => {
 					updateTags={updateTags}
 					clearUpdateFields={clearUpdateFields}
 				/>
-				<Page.Content ref={pageRef}>
+				<Page.Content>
 					<Grid style={{ overflowY: 'auto', overflowX: 'hidden' }}>
 						{blogResults.length &&
 							blogResults.map((item, index) => (
