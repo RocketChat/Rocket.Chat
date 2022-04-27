@@ -9,7 +9,7 @@ const Mrkdwn = ({ text/* , verbatim = false */ }) =>
 	<div
 		className={createClassName(styles, 'uikit-mrkdwn')}
 		// eslint-disable-next-line react/no-danger
-		dangerouslySetInnerHTML={{ __html: renderEmojis(renderMarkdown(text), text) }}
+		dangerouslySetInnerHTML={{ __html: renderEmojis(renderMarkdown(text)) }}
 		dir='auto'
 	/>;
 

@@ -67,4 +67,12 @@ export const normalizeMessage = async (message) => {
 	return message;
 };
 
-export const normalizeMessages = (messages = []) => Promise.all(messages.filter((message) => !!normalizeMessage(message)));
+export const normalizeMessages = (messages = []) =>
+	Promise.all(
+		messages.filter(
+			async (message) => {
+				const result = await normalizeMessage(message);
+				return result;
+			},
+		),
+	);
