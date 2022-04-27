@@ -23,7 +23,7 @@ export type MessageContextValue = {
 	actions: {
 		openUserCard: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
 		openRoom: (id: string) => () => void;
-		openThread: (tmid: string, jump?: string) => () => void;
+		openThread: (tmid: string, jump?: string) => (e: MouseEvent) => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;
 		replyBroadcast: (message: IMessage) => void;
 	};
