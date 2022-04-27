@@ -15,7 +15,9 @@
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
 	},
 	"devDependencies": {
+		"babel-plugin-istanbul": "^6.1.1",
 		"husky": "^7.0.4",
+		"nyc": "^15.1.0",
 		"turbo": "1.2.5"
 	},
 	"workspaces": [
