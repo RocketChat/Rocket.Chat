@@ -12,6 +12,7 @@ const config: PlaywrightTestConfig = {
 		video: 'retain-on-failure',
 		screenshot: 'only-on-failure',
 		trace: 'retain-on-failure',
+		browserName: 'chromium',
 	},
 	testDir: 'tests/e2e',
 };
