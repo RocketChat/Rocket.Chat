@@ -626,7 +626,7 @@ export class Subscriptions extends Base {
 			$set: {
 				alert: false,
 				open: false,
-				...keepClosed ? { keepClosed: true } : {},
+				...(keepClosed ? { keepClosed: true } : {}),
 			},
 		};
 
