@@ -1,12 +1,12 @@
-import { MatrixProfileInfo } from 'matrix-bot-sdk';
+import { MatrixProfileInfo } from '@rocket.chat/forked-matrix-bot-sdk';
 import { IUser } from '@rocket.chat/core-typings';
 
 import { matrixBridge } from '../bridge';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions';
-import { config } from '../config';
 import { matrixClient } from '.';
 import { dataInterface } from '../data-interface';
+import { settings } from '../../../settings/server';
 
 interface ICreateUserResult {
 	uid: string;
@@ -52,7 +52,7 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 	// Determine if the user is local or remote
 	let invitedUserMatrixId = invitedId;
 	const invitedUserDomain = invitedId.includes(':') ? invitedId.split(':').pop() : '';
-	const invitedUserIsRemote = invitedUserDomain && invitedUserDomain !== config.homeserverDomain;
+	const invitedUserIsRemote = invitedUserDomain && invitedUserDomain !== settings.get('Federation_Matrix_homeserver_domain');
 
 	// Find the invited user in Rocket.Chats users
 	let invitedUser = Users.findOneByUsername(invitedId.replace('@', ''));
@@ -100,7 +100,7 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 };
 
 export const createRemote = async (u: IUser): Promise<ICreateUserResult> => {
-	const matrixUserId = `@${u.username?.toLowerCase()}:${config.homeserverDomain}`;
+	const matrixUserId = `@${u.username?.toLowerCase()}:${settings.get('Federation_Matrix_homeserver_domain')}`;
 
 	console.log(`Creating remote user ${matrixUserId}...`);
 

@@ -1,14 +1,14 @@
-import type { UserStatus } from "./UserStatus";
+import type { UserStatus } from './UserStatus';
 
 export interface IUserSessionConnection {
-  id: string;
-  instanceId: string;
-  status: UserStatus;
-  _createdAt: Date;
-  _updatedAt: Date;
+	id: string;
+	instanceId: string;
+	status: UserStatus;
+	_createdAt: Date;
+	_updatedAt: Date;
 }
 
 export interface IUserSession {
-  _id: string;
-  connections: IUserSessionConnection[];
+	_id: string;
+	connections: IUserSessionConnection[];
 }
