@@ -7,6 +7,7 @@ export type MessageQuoteAttachment = {
 	message_link?: string;
 	text: string;
 	attachments?: Array<MessageQuoteAttachment>;
+	rid: string;
 } & MessageAttachmentBase;
 
 export const isQuoteAttachment = (attachment: MessageAttachmentBase): attachment is MessageQuoteAttachment => 'message_link' in attachment;

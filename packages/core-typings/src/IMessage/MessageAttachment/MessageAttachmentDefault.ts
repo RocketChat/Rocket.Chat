@@ -1,3 +1,4 @@
+import type { IMessage } from '../IMessage';
 import type { FieldProps } from './FieldProps';
 import type { Dimensions } from './Files/Dimensions';
 import type { MessageAttachmentBase } from './MessageAttachmentBase';
@@ -24,4 +25,7 @@ export type MessageAttachmentDefault = {
 	thumb_url?: string;
 
 	color?: string;
+
+	rid?: string;
+	t?: IMessage['t'];
 } & MessageAttachmentBase;

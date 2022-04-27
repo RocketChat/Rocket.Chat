@@ -28,6 +28,7 @@ export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 	ts,
 	text,
 	attachments,
+	rid,
 }) => {
 	const format = useTimeAgo();
 	return (
@@ -55,7 +56,7 @@ export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 					<MarkdownText parseEmoji variant='inline' content={text} />
 					{attachments && (
 						<Attachment.Inner mbe='-12px'>
-							<Attachments attachments={attachments} />
+							<Attachments attachments={attachments} rid={rid} />
 						</Attachment.Inner>
 					)}
 				</Attachment.Details>

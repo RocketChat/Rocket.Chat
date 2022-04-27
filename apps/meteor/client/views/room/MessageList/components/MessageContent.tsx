@@ -62,7 +62,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 				{isEncryptedMessage && <EncryptedMessageRender message={message} />}
 			</MessageBody>
 			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
-			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+			{message.attachments && <Attachments attachments={message.attachments} file={message.file} rid={message.rid} />}
 
 			{message.actionLinks?.length && (
 				<MessageActions
