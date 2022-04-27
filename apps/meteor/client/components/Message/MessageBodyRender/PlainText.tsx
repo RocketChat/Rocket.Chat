@@ -12,6 +12,10 @@ const PlainText: FC<PlainTextType> = ({ value: text }) => {
 	const highlights = useMessageListHighlights();
 	const katex = useMessageListKatex();
 
+	if (!text.trim()) {
+		return <br />;
+	}
+
 	if (highlights || katex) {
 		return <CustomText text={text} wordsToHighlight={highlights} katex={katex} />;
 	}
