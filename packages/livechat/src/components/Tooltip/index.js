@@ -1,4 +1,4 @@
-import { h, cloneElement, Component, createContext, toChildArray } from 'preact';
+import { cloneElement, Component, createContext, toChildArray } from 'preact';
 
 import { createClassName } from '../helpers';
 import styles from './styles.scss';
@@ -107,7 +107,7 @@ export const TooltipTrigger = ({ children, content, placement }) => (
 export const withTooltip = (component) => {
 	const TooltipConnection = ({ tooltip, ...props }) => (
 		<Tooltip.Trigger content={tooltip}>
-			{h(component, props)}
+			{component(props)}
 		</Tooltip.Trigger>
 	);
 	TooltipConnection.displayName = `withTooltip(${ component.displayName })`;

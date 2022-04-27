@@ -1,4 +1,4 @@
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 
 import { PopoverTrigger } from '../Popover';
 import { createClassName, normalizeDOMRect } from '../helpers';
@@ -20,7 +20,7 @@ export const Group = ({ children, title, ...props }) => (
 );
 
 
-export const Item = ({ children, primary, danger, disabled, icon, ...props }) => (
+export const Item = ({ children, primary, danger, disabled, icon, ...props }) =>
 	<button
 		className={createClassName(styles, 'menu__item', { primary, danger, disabled })}
 		disabled={disabled}
@@ -28,14 +28,11 @@ export const Item = ({ children, primary, danger, disabled, icon, ...props }) =>
 	>
 		{icon && (
 			<div className={createClassName(styles, 'menu__item__icon')}>
-				{h(icon)}
+				{icon()}
 			</div>
 		)}
 		{children}
-	</button>
-);
-
-
+	</button>;
 class PopoverMenuWrapper extends Component {
 	state = {}
 

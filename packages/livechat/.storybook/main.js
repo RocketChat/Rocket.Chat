@@ -6,7 +6,7 @@ module.exports = {
 				backgrounds: false,
 			}
 		},
-		'@storybook/addon-knobs/register',
+		'@storybook/addon-knobs',
   ],
   stories: [
 		'../src/**/stories.js',
