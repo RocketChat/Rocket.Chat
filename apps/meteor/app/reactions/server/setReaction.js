@@ -9,12 +9,17 @@ import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { api } from '../../../server/sdk/api';
+import { AppEvents, Apps } from '../../apps/server/orchestrator';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
 	if (message.reactions[reaction].usernames.length === 0) {
 		delete message.reactions[reaction];
 	}
+
+	const reactionRemoved = true;
+	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, Meteor.user(), reaction, reactionRemoved));
+
 	return message;
 };
 
@@ -84,6 +89,9 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		}
 		callbacks.run('setReaction', message._id, reaction);
 		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
+
+		const reactionRemoved = false;
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, reactionRemoved));
 	}
 
 	msgStream.emit(message.rid, message);
