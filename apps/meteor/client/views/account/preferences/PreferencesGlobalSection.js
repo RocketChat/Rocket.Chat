@@ -9,7 +9,7 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
 
 	const userDontAskAgainList = useUserPreference('dontAskAgainList');
-	const userEnableLegacyMessages = useUserPreference('enableLegacyMessages');
+	const userEnableNewMessageTemplate = useUserPreference('enableNewMessageTemplate');
 
 	const options = useMemo(() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]), [userDontAskAgainList]);
 
@@ -18,14 +18,14 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 	const { values, handlers, commit } = useForm(
 		{
 			dontAskAgainList: selectedOptions,
-			enableLegacyMessages: userEnableLegacyMessages,
+			enableNewMessageTemplate: userEnableNewMessageTemplate,
 		},
 		onChange,
 	);
 
-	const { dontAskAgainList, enableLegacyMessages } = values;
+	const { dontAskAgainList, enableNewMessageTemplate } = values;
 
-	const { handleDontAskAgainList, handleEnableLegacyMessages } = handlers;
+	const { handleDontAskAgainList, handleEnableNewMessageTemplate } = handlers;
 
 	commitRef.current.global = commit;
 
@@ -44,12 +44,12 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 					</Field.Row>
 				</Field>
 				<Field display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-					<Field.Label>{t('Enable_legacy_messages')}</Field.Label>
+					<Field.Label>{t('Enable_New_Message_Template')}</Field.Label>
 					<Field.Row>
-						<ToggleSwitch checked={enableLegacyMessages} onChange={handleEnableLegacyMessages} />
+						<ToggleSwitch checked={enableNewMessageTemplate} onChange={handleEnableNewMessageTemplate} />
 					</Field.Row>
 				</Field>
-				<Callout type='warning'>{t('Enable_legacy_messages_alert')}</Callout>
+				<Callout type='warning'>{t('Enable_New_Message_Template_alert')}</Callout>
 			</FieldGroup>
 		</Accordion.Item>
 	);
