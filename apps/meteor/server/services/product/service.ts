@@ -50,7 +50,7 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 			...new UpdateObject(),
 			...params,
 		};
-		const result = await ProductModel.updateOne(query, updateData);
+		const result = await ProductModel.updateOne(query, { $set: updateData });
 		return ProductModel.findOneById(result.upsertedId._id.toHexString());
 	}
 

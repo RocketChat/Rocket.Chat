@@ -51,7 +51,7 @@ export class GameService extends ServiceClassInternal implements IGameService {
 			...new UpdateObject(),
 			...params,
 		};
-		const result = await GameModel.updateOne(query, updateData);
+		const result = await GameModel.updateOne(query, { $set: updateData });
 		return GameModel.findOneById(result.upsertedId._id.toHexString());
 	}
 

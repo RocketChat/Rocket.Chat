@@ -49,7 +49,7 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 			...new UpdateObject(),
 			...params,
 		};
-		const result = await CommentModel.updateOne(query, updateData);
+		const result = await CommentModel.updateOne(query, { $set: updateData });
 		return CommentModel.findOneById(result.upsertedId._id.toHexString());
 	}
 

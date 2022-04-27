@@ -49,7 +49,7 @@ export class TagService extends ServiceClassInternal implements ITagService {
 			...new UpdateObject(),
 			...params,
 		};
-		const result = await TagModel.updateOne(query, updateData);
+		const result = await TagModel.updateOne(query, { $set: updateData });
 		return TagModel.findOneById(result.upsertedId._id.toHexString());
 	}
 

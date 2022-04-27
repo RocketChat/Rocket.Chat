@@ -53,8 +53,9 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 			...new UpdateObject(),
 			...params,
 		};
-		const result = await BlogModel.updateOne(query, updateData);
-		return BlogModel.findOneById(result.upsertedId._id.toHexString());
+		const result = await BlogModel.updateOne(query, { $set: updateData });
+		console.log(result);
+		return BlogModel.findOneById(blogId);
 	}
 
 	async list(limit = 10): Promise<IRecordsWithTotal<IBlog>> {
