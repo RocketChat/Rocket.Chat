@@ -406,7 +406,7 @@ export class RoomsRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference }).toArray();
+		return this.col.aggregate(params, { allowDiskUse: true, readPreference });
 	}
 
 	findOneByName(name, options = {}) {
