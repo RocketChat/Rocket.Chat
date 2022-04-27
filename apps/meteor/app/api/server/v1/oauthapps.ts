@@ -7,7 +7,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			return API.v1.success({
-				oauthApps: await(findOAuthApps({ uid: this.userId })),
+				oauthApps: await findOAuthApps({ uid: this.userId }),
 			});
 		},
 	},
@@ -24,7 +24,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				oauthApp: await(findOneAuthApp({ clientId, appId })),
+				oauthApp: await findOneAuthApp({ clientId, appId }),
 			});
 		},
 	},
