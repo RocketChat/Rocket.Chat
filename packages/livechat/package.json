@@ -12,7 +12,7 @@
 	},
 	"scripts": {
 		"clean": "rimraf dist",
-		"build": "webpack --mode production",
+		"build": "webpack-cli --mode production",
 		"start": "webpack-dev-server --mode development",
 		"lint": "run-s eslint stylelint",
 		"eslint": "eslint src",
