@@ -1,7 +1,6 @@
 import { formatDistance } from 'date-fns';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
-import { h } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import { getAttachmentUrl, memo, normalizeTransferHistoryMessage, resolveDate } from '../../helpers';

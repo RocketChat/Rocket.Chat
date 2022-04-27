@@ -2,7 +2,6 @@ import { action } from '@storybook/addon-actions';
 import { withKnobs, boolean, color, object, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import i18next from 'i18next';
-import { h } from 'preact';
 
 import { Screen } from '.';
 import { screenCentered, gazzoAvatar } from '../../helpers.stories';

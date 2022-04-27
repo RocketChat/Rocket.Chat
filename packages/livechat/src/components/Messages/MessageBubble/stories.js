@@ -1,6 +1,5 @@
 import { withKnobs, boolean } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { MessageBubble } from '.';
 import { loremIpsum, centered } from '../../../helpers.stories';

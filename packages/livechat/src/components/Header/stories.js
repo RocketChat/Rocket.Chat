@@ -1,7 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import { withKnobs, boolean, color, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import Header, { Picture, Content, SubTitle, Title, Actions, Action, Post, CustomField } from '.';
 import { avatarResolver } from '../../helpers.stories';

@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { memo } from 'preact/compat';
 
 import renderEmojis from '../../../Messages/MessageText/emoji';

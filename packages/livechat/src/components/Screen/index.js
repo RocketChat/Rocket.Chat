@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { useEffect } from 'preact/hooks';
 
 import ChatIcon from '../../icons/chat.svg';

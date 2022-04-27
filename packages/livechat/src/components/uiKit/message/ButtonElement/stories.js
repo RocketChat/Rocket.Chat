@@ -1,6 +1,5 @@
 import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
-import { h } from 'preact';
 
 import ButtonElement from '.';
 import { parser } from '..';

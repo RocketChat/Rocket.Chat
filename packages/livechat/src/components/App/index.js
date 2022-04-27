@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import { Provider as StoreProvider, Consumer as StoreConsumer } from '../../store';
 import App from './App';
 

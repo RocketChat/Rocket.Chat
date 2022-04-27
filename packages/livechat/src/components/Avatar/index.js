@@ -1,4 +1,4 @@
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 
 import { createClassName } from '../helpers';
 import styles from './styles.scss';

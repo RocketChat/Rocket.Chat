@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { memo, useCallback } from 'preact/compat';
 
 import KebabIcon from '../../../../icons/kebab.svg';

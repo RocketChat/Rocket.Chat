@@ -1,4 +1,4 @@
-import { h, toChildArray } from 'preact';
+import { toChildArray } from 'preact';
 
 import { createClassName } from '../helpers';
 import styles from './styles.scss';

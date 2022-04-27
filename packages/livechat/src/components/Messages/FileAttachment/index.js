@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import DownloadIcon from '../../../icons/download.svg';
 import { createClassName, memo } from '../../helpers';
 import { FileAttachmentIcon } from '../FileAttachmentIcon';

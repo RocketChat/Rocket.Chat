@@ -1,4 +1,4 @@
-import { h, Component, createContext } from 'preact';
+import { Component, createContext } from 'preact';
 
 import { createClassName, normalizeDOMRect } from '../helpers';
 import styles from './styles.scss';

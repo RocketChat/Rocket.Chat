@@ -1,7 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import { withKnobs, boolean, number, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { loremIpsum, centered } from '../../helpers.stories';
 import Modal from './component';

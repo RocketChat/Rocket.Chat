@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { memo, useEffect, useState, useMemo } from 'preact/compat';
 
 import { createClassName } from '../../../helpers';

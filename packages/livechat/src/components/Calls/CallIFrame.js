@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import { Livechat } from '../../api';
 import store from '../../store';
 import { createClassName } from '../helpers';

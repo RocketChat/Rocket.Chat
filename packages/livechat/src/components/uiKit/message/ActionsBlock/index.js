@@ -1,5 +1,4 @@
 import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
-import { h } from 'preact';
 import { useState, useMemo, useCallback } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 

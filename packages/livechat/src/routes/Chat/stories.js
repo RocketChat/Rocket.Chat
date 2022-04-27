@@ -1,7 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import { withKnobs, boolean, number, object, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import soundSrc from '../../../.storybook/assets/beep.mp3';
 import { screenCentered, screenProps, avatarResolver } from '../../helpers.stories';

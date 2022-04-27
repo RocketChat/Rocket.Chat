@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { memo, useCallback } from 'preact/compat';
 
 import DateInput from '../../../Form/DateInput';

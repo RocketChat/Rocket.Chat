@@ -1,5 +1,5 @@
 import { Picker } from 'emoji-mart';
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import { Button } from '../../components/Button';

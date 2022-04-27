@@ -1,6 +1,5 @@
 import { withKnobs, boolean, select, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import Tooltip, { withTooltip } from '.';
 import { centered } from '../../helpers.stories';

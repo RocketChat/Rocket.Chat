@@ -1,5 +1,4 @@
 import { action } from '@storybook/addon-actions';
-import { h } from 'preact';
 
 import { renderMessageBlocks } from '.';
 import Surface from './Surface';

@@ -1,4 +1,4 @@
-import { h, Component, createContext } from 'preact';
+import { Component, createContext } from 'preact';
 
 import { createToken } from '../lib/random';
 import Store from './Store';

@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import Message from '.';
 import sampleAudio from '../../../../.storybook/assets/sample-audio.mp3';
 import sampleImage from '../../../../.storybook/assets/sample-image.jpg';

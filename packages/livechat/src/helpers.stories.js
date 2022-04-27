@@ -1,7 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import { boolean, color } from '@storybook/addon-knobs';
 import { loremIpsum as originalLoremIpsum } from 'lorem-ipsum';
-import { h } from 'preact';
 
 import gazzoAvatar from '../.storybook/assets/gazzo.jpg';
 import martinAvatar from '../.storybook/assets/martin.jpg';

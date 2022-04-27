@@ -1,7 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import { withKnobs, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { Composer, ComposerActions, ComposerAction } from '.';
 import { centered } from '../../helpers.stories';

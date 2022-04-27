@@ -1,4 +1,4 @@
-import { h, Component, createRef } from 'preact';
+import { Component, createRef } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import Screen from '../../components/Screen';

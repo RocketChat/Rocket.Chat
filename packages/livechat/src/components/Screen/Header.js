@@ -1,4 +1,4 @@
-import { Component, h } from 'preact';
+import { Component } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import MinimizeIcon from '../../icons/arrowDown.svg';

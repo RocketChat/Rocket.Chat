@@ -1,6 +1,5 @@
 import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import {
 	Form,

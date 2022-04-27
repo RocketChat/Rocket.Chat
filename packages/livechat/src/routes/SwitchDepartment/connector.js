@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import { Consumer } from '../../store';
 import SwitchDepartmentContainer from './container';
 

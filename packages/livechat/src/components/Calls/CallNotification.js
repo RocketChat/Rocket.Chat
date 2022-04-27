@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { useState } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 

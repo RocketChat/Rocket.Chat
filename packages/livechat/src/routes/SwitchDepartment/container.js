@@ -1,4 +1,4 @@
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';

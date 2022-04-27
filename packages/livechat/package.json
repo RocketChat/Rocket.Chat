@@ -39,6 +39,7 @@
 		"autoprefixer": "^9.8.6",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^8.1.0",
+		"babel-plugin-jsx-pragmatic": "^1.0.2",
 		"cross-env": "^7.0.2",
 		"css-loader": "^4.2.2",
 		"cssnano": "^4.1.10",

@@ -1,4 +1,4 @@
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';

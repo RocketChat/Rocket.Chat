@@ -1,6 +1,5 @@
 import { withKnobs, boolean, text, select } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { Avatar } from '.';
 import { avatarResolver, centered } from '../../helpers.stories';

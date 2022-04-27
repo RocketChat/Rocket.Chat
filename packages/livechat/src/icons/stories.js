@@ -2,7 +2,6 @@ import path from 'path';
 
 import { withKnobs, color } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { centered } from '../helpers.stories';
 

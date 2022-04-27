@@ -1,5 +1,4 @@
 import i18next from 'i18next';
-import { h } from 'preact';
 
 import { validateEmail } from '../../lib/email';
 import { createClassName, MemoizedComponent } from '../helpers';

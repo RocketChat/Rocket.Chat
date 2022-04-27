@@ -1,5 +1,4 @@
 import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
-import { h } from 'preact';
 import { memo } from 'preact/compat';
 
 import { createClassName } from '../../../helpers';

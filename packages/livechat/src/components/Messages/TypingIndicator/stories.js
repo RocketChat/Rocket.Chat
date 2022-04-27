@@ -1,6 +1,5 @@
 import { withKnobs, object, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { TypingIndicator } from '.';
 import { avatarResolver, centered } from '../../../helpers.stories';

@@ -1,4 +1,4 @@
-import { h, cloneElement, toChildArray } from 'preact';
+import { cloneElement, toChildArray } from 'preact';
 
 
 import { createClassName, memo } from '../helpers';

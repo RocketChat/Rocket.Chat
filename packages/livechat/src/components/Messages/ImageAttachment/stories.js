@@ -1,6 +1,5 @@
 import { withKnobs, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { ImageAttachment } from '.';
 import sampleImage from '../../../../.storybook/assets/sample-image.jpg';

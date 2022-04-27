@@ -1,7 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import { withKnobs, color, text, object } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { screenCentered, screenProps } from '../../helpers.stories';
 import TriggerMessage from './component';

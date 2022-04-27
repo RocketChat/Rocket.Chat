@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { memo } from 'preact/compat';
 
 import shortnameToUnicode from '../../../Emoji/shortnameToUnicode';

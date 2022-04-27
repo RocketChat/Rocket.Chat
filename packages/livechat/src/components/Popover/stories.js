@@ -1,6 +1,5 @@
 import { withKnobs, object } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { PopoverContainer, PopoverTrigger } from '.';
 import { centered } from '../../helpers.stories';

@@ -1,6 +1,5 @@
 import { withKnobs, boolean, date } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import MessageSeparator from '.';
 import { centered } from '../../../helpers.stories';

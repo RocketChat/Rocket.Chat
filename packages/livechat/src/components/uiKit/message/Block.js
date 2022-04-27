@@ -1,4 +1,4 @@
-import { createContext, h } from 'preact';
+import { createContext } from 'preact';
 import { memo, useContext, useCallback, useState, useRef, useEffect } from 'preact/compat';
 
 import { useDispatchAction } from './Surface';

@@ -1,6 +1,5 @@
 import { parseISO } from 'date-fns/fp';
 import isSameDay from 'date-fns/isSameDay';
-import { h } from 'preact';
 
 import constants from '../../../lib/constants';
 import store from '../../../store';

@@ -1,5 +1,5 @@
 import MarkdownIt from 'markdown-it';
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 import { Trans, withTranslation } from 'react-i18next';
 
 import { Button } from '../../components/Button';

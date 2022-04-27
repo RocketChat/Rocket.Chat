@@ -1,7 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import { withKnobs, number, object } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { MessageList } from '.';
 import { avatarResolver, loremIpsum, centered } from '../../../helpers.stories';

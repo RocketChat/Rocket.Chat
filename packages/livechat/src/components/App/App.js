@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 import { Router, route } from 'preact-router';
 import queryString from 'query-string';
 import { withTranslation } from 'react-i18next';

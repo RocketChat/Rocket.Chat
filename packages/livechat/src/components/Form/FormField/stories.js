@@ -1,6 +1,5 @@
 import { withKnobs, boolean, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { h } from 'preact';
 
 import { FormField } from '.';
 import { Form, TextInput } from '..';

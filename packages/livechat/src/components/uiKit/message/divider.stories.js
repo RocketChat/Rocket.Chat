@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import { renderMessageBlocks } from '.';
 
 export default {

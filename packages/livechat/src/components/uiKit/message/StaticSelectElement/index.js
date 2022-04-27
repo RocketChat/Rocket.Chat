@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { memo, useCallback, useMemo } from 'preact/compat';
 
 import { SelectInput } from '../../../Form/SelectInput';

@@ -1,5 +1,4 @@
 import { uiKitMessage, UiKitParserMessage, BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
-import { h } from 'preact';
 
 import ActionsBlock from './ActionsBlock';
 import ButtonElement from './ButtonElement';

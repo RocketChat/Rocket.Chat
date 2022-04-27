@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import { renderMessageBlocks } from '.';
 import accessoryImage from '../../../../.storybook/assets/accessoryImage.png';
 

@@ -1,4 +1,4 @@
-import { createContext, h } from 'preact';
+import { createContext } from 'preact';
 import { memo, useContext } from 'preact/compat';
 
 const SurfaceContext = createContext({

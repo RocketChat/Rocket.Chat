@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import { memo } from '../../helpers';
 import { MessageAvatars } from '../MessageAvatars';
 import { MessageBubble } from '../MessageBubble';

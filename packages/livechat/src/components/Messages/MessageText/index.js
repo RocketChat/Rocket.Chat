@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import { createClassName, memo } from '../../helpers';
 import renderEmojis from './emoji';
 import { renderMarkdown } from './markdown';

@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import { createClassName, memo } from '../../helpers';

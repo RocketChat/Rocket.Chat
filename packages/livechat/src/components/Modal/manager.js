@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import store from '../../store';
 import Modal from './component';
 

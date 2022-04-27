@@ -1,5 +1,3 @@
-import { h } from 'preact';
-
 import DocIcon from '../../../icons/doc.svg';
 import FileIcon from '../../../icons/file.svg';
 import PDFIcon from '../../../icons/pdf.svg';

@@ -1,4 +1,4 @@
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 
 import ArrowIcon from '../../../icons/arrowDown.svg';
 import { createClassName } from '../../helpers';
