@@ -29,8 +29,9 @@ function connectDb(poolSize: number): Promise<MongoClient> {
 	});
 }
 
+let db: Db;
+
 export const getConnection = ((): ((poolSize?: number) => Promise<Db>) => {
-	let db: Db;
 	let client: Promise<MongoClient>;
 
 	return async (poolSize = 5): Promise<Db> => {
@@ -49,6 +50,8 @@ export const getConnection = ((): ((poolSize?: number) => Promise<Db>) => {
 })();
 
 export async function getCollection<T>(name: Collections): Promise<Collection<T>> {
-	const db = await getConnection();
+	if (!db) {
+		db = await getConnection();
+	}
 	return db.collection<T>(name);
 }
