@@ -1,16 +1,16 @@
-import { Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import React, { ReactElement, CSSProperties } from 'react';
 
-import { renderEmoji } from '../lib/utils/renderEmoji';
+import { getEmojiClassNameAndDataTitle } from '../lib/utils/renderEmoji';
 
 type EmojiProps = {
 	emojiHandle: string; // :emoji:
-	className?: ComponentProps<typeof Box>['className'];
+	style?: CSSProperties;
 };
 
-function Emoji({ emojiHandle, className = undefined }: EmojiProps): ReactElement {
-	const markup = { __html: `${renderEmoji(emojiHandle) || emojiHandle}` };
-	return <Box is='span' className={className} dangerouslySetInnerHTML={markup} />;
+function Emoji({ emojiHandle, style }: EmojiProps): ReactElement {
+	const { image: backgroundImage, ...emojiProps } = getEmojiClassNameAndDataTitle(emojiHandle);
+
+	return <span style={{ backgroundImage, ...style }} {...emojiProps} />;
 }
 
 export default Emoji;

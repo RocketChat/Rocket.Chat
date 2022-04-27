@@ -1,4 +1,4 @@
-import { css } from '@rocket.chat/css-in-js';
+import { Box } from '@rocket.chat/fuselage';
 import { BigEmoji as ASTBigEmoji } from '@rocket.chat/message-parser';
 import React, { FC } from 'react';
 
@@ -9,21 +9,21 @@ type BigEmojiProps = {
 	disableBigEmoji: boolean;
 };
 
-const BigEmoji: FC<BigEmojiProps> = ({ value, disableBigEmoji }) => {
-	const bigEmojiClass = css`
-		> span {
-			width: ${disableBigEmoji ? '1em' : '44px'};
-			height: ${disableBigEmoji ? '1em' : '44px'};
-		}
-	`;
+const emojiStyle = { width: '100%', height: '100%' };
 
-	return (
-		<>
-			{value.map((block, index) => (
-				<Emoji className={bigEmojiClass} key={index} emojiHandle={`:${block.value.value}:`} />
-			))}
-		</>
-	);
-};
+// TODO ENGINEERING DAY:
+// Create new parser renderer for threadPreview instead of
+// disabling big emoji via disableBigEmoji prop
+const BigEmoji: FC<BigEmojiProps> = ({ value, disableBigEmoji }) => (
+	<>
+		{disableBigEmoji
+			? value.map((block, index) => <Emoji key={index} emojiHandle={`:${block.value.value}:`} />)
+			: value.map((block, index) => (
+					<Box size='x44' key={index}>
+						<Emoji emojiHandle={`:${block.value.value}:`} style={emojiStyle} />
+					</Box>
+			  ))}
+	</>
+);
 
 export default BigEmoji;
