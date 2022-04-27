@@ -1734,7 +1734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bugsnag/js@npm:^7.16.2":
+"@bugsnag/js@npm:^7.11.0":
   version: 7.16.2
   resolution: "@bugsnag/js@npm:7.16.2"
   dependencies:
@@ -3481,6 +3481,66 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/forked-matrix-appservice-bridge@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@rocket.chat/forked-matrix-appservice-bridge@npm:4.0.1"
+  dependencies:
+    "@alloc/quick-lru": ^5.2.0
+    "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
+    axios: ^0.23.0
+    chalk: ^4.1.0
+    express-rate-limit: ^6.2.0
+    extend: ^3.0.2
+    ip-cidr: ^3.0.4
+    is-my-json-valid: ^2.20.5
+    js-yaml: ^4.0.0
+    matrix-appservice: ^0.10.0
+    matrix-js-sdk: ^12.4.1
+    nedb: ^1.8.0
+    nopt: ^5.0.0
+    p-queue: ^6.6.2
+    prom-client: ^14.0.0
+    uuid: ^8.3.2
+    winston: ^3.3.3
+    winston-daily-rotate-file: ^4.5.1
+  checksum: 218a46170d084bfe672f3a7e48a33d2179b314c0a4d021b1f7d9d8a6388a9bdb52daa7e3abd1502c40f6f7e6cec689ea24dc942d92bc51e4e37d5ba62d5b8f73
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/forked-matrix-bot-sdk@npm:^0.6.0-beta.2":
+  version: 0.6.0-beta.2
+  resolution: "@rocket.chat/forked-matrix-bot-sdk@npm:0.6.0-beta.2"
+  dependencies:
+    "@rocket.chat/forked-matrix-sdk-crypto-nodejs": ^0.1.0-beta.12
+    "@types/express": ^4.17.13
+    another-json: ^0.2.0
+    chalk: ^4
+    express: ^4.17.2
+    glob-to-regexp: ^0.4.1
+    hash.js: ^1.1.7
+    html-to-text: ^8.1.0
+    htmlencode: ^0.0.4
+    lowdb: ^1
+    lru-cache: ^6.0.0
+    mkdirp: ^1.0.4
+    morgan: ^1.10.0
+    request: ^2.88.2
+    request-promise: ^4.2.6
+    sanitize-html: ^2.6.1
+  checksum: f2ce128ab6d93289d711161c217ad0d2c0b879ae37c8c5527b3aea7294845c19f713f69fccde65d260f07780777be80718b73e8bdc38a6c65cba94a94fd7d85d
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/forked-matrix-sdk-crypto-nodejs@npm:^0.1.0-beta.12":
+  version: 0.1.0-beta.12
+  resolution: "@rocket.chat/forked-matrix-sdk-crypto-nodejs@npm:0.1.0-beta.12"
+  dependencies:
+    "@napi-rs/cli": ^2.2.0
+    shelljs: ^0.8.4
+  checksum: 61a25753631a9d6d3ee37e437a6b453f0d596beb6d938dea6712793b941baf7bbfbb2240299049bb126ebeddaa65d119f8e716070929e7317f96ae582e457f91
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/fuselage-hooks@npm:^0.31.10, @rocket.chat/fuselage-hooks@npm:~0.31.10":
   version: 0.31.10
   resolution: "@rocket.chat/fuselage-hooks@npm:0.31.10"
@@ -3640,7 +3700,7 @@ __metadata:
     "@babel/preset-react": ^7.14.5
     "@babel/register": ^7.14.5
     "@babel/runtime": ^7.15.4
-    "@bugsnag/js": ^7.16.2
+    "@bugsnag/js": ^7.11.0
     "@google-cloud/language": ^3.8.0
     "@google-cloud/storage": ^2.5.0
     "@nivo/bar": 0.73.1
@@ -3654,6 +3714,8 @@ __metadata:
     "@rocket.chat/css-in-js": ~0.31.10
     "@rocket.chat/emitter": ~0.31.10
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
+    "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
     "@rocket.chat/fuselage": ~0.31.10
     "@rocket.chat/fuselage-hooks": ~0.31.10
     "@rocket.chat/fuselage-polyfills": ~0.31.10
@@ -3833,7 +3895,6 @@ __metadata:
     lodash.get: ^4.4.2
     mailparser: ^3.4.0
     marked: ^0.7.0
-    matrix-appservice-bridge: ^3.2.0
     mem: ^8.1.1
     meteor-node-stubs: ^1.1.0
     mime-db: ^1.48.0
@@ -5396,16 +5457,6 @@ __metadata:
   version: 1.0.2
   resolution: "@tsconfig/node16@npm:1.0.2"
   checksum: ca94d3639714672bbfd55f03521d3f56bb6a25479bd425da81faf21f13e1e9d15f40f97377dedbbf477a5841c5b0c8f4cd1b391f33553d750b9202c54c2c07aa
-  languageName: node
-  linkType: hard
-
-"@turt2live/matrix-sdk-crypto-nodejs@npm:^0.1.0-beta.10":
-  version: 0.1.0-beta.10
-  resolution: "@turt2live/matrix-sdk-crypto-nodejs@npm:0.1.0-beta.10"
-  dependencies:
-    "@napi-rs/cli": ^2.2.0
-    shelljs: ^0.8.4
-  checksum: 0cd6d7237cbac5366c39ebe8c69619b467ab253067c48d5bfd7020895caf1afb290a917e03a0ee62c57307cd0f8c656590d9a9ce9b289ad1b7eb3f1cb89389cb
   languageName: node
   linkType: hard
 
@@ -8106,6 +8157,15 @@ __metadata:
   dependencies:
     follow-redirects: ^1.14.0
   checksum: 44245f24ac971e7458f3120c92f9d66d1fc695e8b97019139de5b0cc65d9b8104647db01e5f46917728edfc0cfd88eb30fc4c55e6053eef4ace76768ce95ff3c
+  languageName: node
+  linkType: hard
+
+"axios@npm:^0.23.0":
+  version: 0.23.0
+  resolution: "axios@npm:0.23.0"
+  dependencies:
+    follow-redirects: ^1.14.4
+  checksum: 879f61022bd825da2a7ebb72410bc528683ba54c140436baa0b924b7cab02ec0919fe64a04a546f482a75f5fd570b77884f9826764a95f2fd88265e61dcb70db
   languageName: node
   linkType: hard
 
@@ -13093,6 +13153,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"express-rate-limit@npm:^6.2.0":
+  version: 6.4.0
+  resolution: "express-rate-limit@npm:6.4.0"
+  peerDependencies:
+    express: ^4 || ^5
+  checksum: 3125332fc3a73f0c50eaece169fa8d956d212f7b5c4dcaaa713fbe00fea6edc1a030705a71b60b8c8b5734c5b03004be38f843336e0bba4116a51726297f35e4
+  languageName: node
+  linkType: hard
+
 "express@npm:^4.17.1, express@npm:^4.17.2, express@npm:^4.17.3":
   version: 4.17.3
   resolution: "express@npm:4.17.3"
@@ -13738,7 +13807,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.8":
+"follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.4, follow-redirects@npm:^1.14.8":
   version: 1.14.9
   resolution: "follow-redirects@npm:1.14.9"
   peerDependenciesMeta:
@@ -15922,6 +15991,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ip-address@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "ip-address@npm:7.1.0"
+  dependencies:
+    jsbn: 1.1.0
+    sprintf-js: 1.1.2
+  checksum: b514b93b76639b204e52a16b1cebdc23c69fa71464665583278cbd0adf402d0b0e15f606049010b7230d35f6e9fa4d0a4ffd61d63fbc00f71adf08f00bc7614b
+  languageName: node
+  linkType: hard
+
+"ip-cidr@npm:^3.0.4":
+  version: 3.0.7
+  resolution: "ip-cidr@npm:3.0.7"
+  dependencies:
+    ip-address: ^7.1.0
+    jsbn: ^1.1.0
+  checksum: 83a25b57f986c7f1b5baa6642ade1c0536a7cc71b67e44dec8b4537351508be01e85eedd5ebc956440dcc96e3d47535727ab6010771d3001dc9497ab61bf336f
+  languageName: node
+  linkType: hard
+
 "ip-range-check@npm:^0.2.0":
   version: 0.2.0
   resolution: "ip-range-check@npm:0.2.0"
@@ -17415,6 +17504,13 @@ __metadata:
   bin:
     js-yaml: bin/js-yaml.js
   checksum: bef146085f472d44dee30ec34e5cf36bf89164f5d585435a3d3da89e52622dff0b188a580e4ad091c3341889e14cb88cac6e4deb16dc5b1e9623bb0601fc255c
+  languageName: node
+  linkType: hard
+
+"jsbn@npm:1.1.0, jsbn@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "jsbn@npm:1.1.0"
+  checksum: 944f924f2bd67ad533b3850eee47603eed0f6ae425fd1ee8c760f477e8c34a05f144c1bd4f5a5dd1963141dc79a2c55f89ccc5ab77d039e7077f3ad196b64965
   languageName: node
   linkType: hard
 
@@ -18918,28 +19014,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"matrix-appservice-bridge@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "matrix-appservice-bridge@npm:3.2.0"
-  dependencies:
-    "@alloc/quick-lru": ^5.2.0
-    chalk: ^4.1.0
-    extend: ^3.0.2
-    is-my-json-valid: ^2.20.5
-    js-yaml: ^4.0.0
-    matrix-appservice: ^0.10.0
-    matrix-bot-sdk: ^0.6.0-beta.2
-    matrix-js-sdk: ^12.4.1
-    nedb: ^1.8.0
-    nopt: ^5.0.0
-    p-queue: ^6.6.2
-    prom-client: ^14.0.0
-    winston: ^3.3.3
-    winston-daily-rotate-file: ^4.5.1
-  checksum: c5209600008c7e4c3c556b3762b2df9c15b7631ba528dbe3d72bc420086424a3d552e2b9b7c5447607e6e71ad8c20e2531280789139867819657f4061bdbde57
-  languageName: node
-  linkType: hard
-
 "matrix-appservice@npm:^0.10.0":
   version: 0.10.0
   resolution: "matrix-appservice@npm:0.10.0"
@@ -18950,30 +19024,6 @@ __metadata:
     js-yaml: ^4.1.0
     morgan: ^1.10.0
   checksum: 09eac24253744dd257f5529666bd02aa2b8cd655410ed4a008eb709d229a65f2bc3e23078af229da3509e13d918bbb0919e02ccb1b8a0ca4281ed1e2956feb25
-  languageName: node
-  linkType: hard
-
-"matrix-bot-sdk@npm:^0.6.0-beta.2":
-  version: 0.6.0-beta.7
-  resolution: "matrix-bot-sdk@npm:0.6.0-beta.7"
-  dependencies:
-    "@turt2live/matrix-sdk-crypto-nodejs": ^0.1.0-beta.10
-    "@types/express": ^4.17.13
-    another-json: ^0.2.0
-    chalk: ^4
-    express: ^4.17.2
-    glob-to-regexp: ^0.4.1
-    hash.js: ^1.1.7
-    html-to-text: ^8.1.0
-    htmlencode: ^0.0.4
-    lowdb: ^1
-    lru-cache: ^6.0.0
-    mkdirp: ^1.0.4
-    morgan: ^1.10.0
-    request: ^2.88.2
-    request-promise: ^4.2.6
-    sanitize-html: ^2.6.1
-  checksum: 12f5a03f26a8c70ba5b95fbc6feb811586d36730870bcbb3471513c11f17f2c5ec475ce387377f2924e4114217b1b1810a7f58d13b085f02081f957c91e7b44d
   languageName: node
   linkType: hard
 
