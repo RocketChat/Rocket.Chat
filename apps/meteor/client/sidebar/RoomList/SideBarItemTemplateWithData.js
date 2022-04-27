@@ -117,6 +117,13 @@ function SideBarItemTemplateWithData({
 	);
 }
 
+function safeDateNotEqualCheck(a, b) {
+	if (!a || !b) {
+		return a !== b;
+	}
+	return new Date(a).toISOString() !== new Date(b).toISOString();
+}
+
 const propsAreEqual = (prevProps, nextProps) => {
 	if (
 		['id', 'style', 'extended', 'selected', 'SideBarItemTemplate', 'AvatarTemplate', 't', 'sidebarViewMode'].some(
@@ -136,7 +143,7 @@ const propsAreEqual = (prevProps, nextProps) => {
 	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
 		return false;
 	}
-	if (prevProps.room.lastMessage?._updatedAt?.toISOString() !== nextProps.room.lastMessage?._updatedAt?.toISOString()) {
+	if (safeDateNotEqualCheck(prevProps.lastMessage?._updatedAt, nextProps.lastMessage?._updatedAt)) {
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
