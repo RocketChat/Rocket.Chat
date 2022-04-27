@@ -1,12 +1,10 @@
 import moment from 'moment';
 
 import { ILoginAttempt } from '../ILoginAttempt';
-import { ServerEvents, Users, Rooms } from '../../../models/server/raw';
-import { IServerEventType } from '../../../../definition/IServerEvent';
-import { IUser } from '../../../../definition/IUser';
+import { ServerEvents, Users, Rooms, Sessions } from '../../../models/server/raw';
+import { IServerEventType, IServerEvent } from '../../../../definition/IServerEvent';
 import { settings } from '../../../settings/server';
-import { addMinutesToADate } from '../../../utils/lib/date.helper';
-import Sessions from '../../../models/server/raw/Sessions';
+import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions';
 import { Logger } from '../../../logger/server';
@@ -16,7 +14,6 @@ const logger = new Logger('LoginProtection');
 export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
 	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
 	if (!channelToNotify) {
-		/* @ts-expect-error */
 		logger.error('Cannot notify failed logins: channel provided is invalid');
 		return;
 	}
@@ -24,22 +21,25 @@ export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date
 	// to avoid issues when "fname" is presented in the UI, check if the name matches it as well
 	const room = await Rooms.findOneByNameOrFname(channelToNotify);
 	if (!room) {
-		/* @ts-expect-error */
-		logger.error('Cannot notify failed logins: channel provided doesn\'t exists');
+		logger.error("Cannot notify failed logins: channel provided doesn't exists");
 		return;
 	}
 
 	const rocketCat = await Users.findOneById('rocket.cat');
 	// send message
 	const message = {
-		attachments: [{
-			fields: [{
-				title: 'Failed login attempt threshold exceeded',
-				value: `User or IP: ${ ipOrUsername }\nBlocked until: ${ blockedUntil }\nFailed Attempts: ${ failedAttempts }`,
-				short: true,
-			}],
-			color: 'red',
-		}],
+		attachments: [
+			{
+				fields: [
+					{
+						title: 'Failed login attempt threshold exceeded',
+						value: `User or IP: ${ipOrUsername}\nBlocked until: ${blockedUntil}\nFailed Attempts: ${failedAttempts}`,
+						short: true,
+					},
+				],
+				color: 'red',
+			},
+		],
 	};
 
 	await sendMessage(rocketCat, message, room, false);
@@ -48,13 +48,15 @@ export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date
 export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const whitelist = String(settings.get('Block_Multiple_Failed_Logins_Ip_Whitelist')).split(',');
 
-	if (!settings.get('Block_Multiple_Failed_Logins_Enabled')
-		|| !settings.get('Block_Multiple_Failed_Logins_By_Ip')
-		|| whitelist.includes(ip)) {
+	if (
+		!settings.get('Block_Multiple_Failed_Logins_Enabled') ||
+		!settings.get('Block_Multiple_Failed_Logins_By_Ip') ||
+		whitelist.includes(ip)
+	) {
 		return true;
 	}
 
-	const lastLogin = await Sessions.findLastLoginByIp(ip) as {loginAt?: Date} | undefined;
+	const lastLogin = await Sessions.findLastLoginByIp(ip);
 	let failedAttemptsSinceLastLogin;
 
 	if (!lastLogin || !lastLogin.loginAt) {
@@ -87,14 +89,13 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 };
 
 export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolean> => {
-	if (!settings.get('Block_Multiple_Failed_Logins_Enabled')
-		|| !settings.get('Block_Multiple_Failed_Logins_By_User')) {
+	if (!settings.get('Block_Multiple_Failed_Logins_Enabled') || !settings.get('Block_Multiple_Failed_Logins_By_User')) {
 		return true;
 	}
 
-	const user = login.user || await Users.findOneByUsername(login.methodArguments[0].user?.username);
+	const user = login.user || (await Users.findOneByUsername(login.methodArguments[0].user?.username));
 
-	if (!user) {
+	if (!user?.username) {
 		return true;
 	}
 
@@ -130,7 +131,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 };
 
 export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<void> => {
-	const user: Partial<IUser> = {
+	const user: IServerEvent['u'] = {
 		_id: login.user?._id,
 		username: login.user?.username || login.methodArguments[0].user?.username,
 	};
@@ -144,10 +145,15 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 };
 
 export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> => {
+	const user: IServerEvent['u'] = {
+		_id: login.user?._id,
+		username: login.user?.username || login.methodArguments[0].user?.username,
+	};
+
 	await ServerEvents.insertOne({
 		ip: getClientAddress(login.connection),
 		t: IServerEventType.LOGIN,
 		ts: new Date(),
-		u: login.user,
+		u: user,
 	});
 };

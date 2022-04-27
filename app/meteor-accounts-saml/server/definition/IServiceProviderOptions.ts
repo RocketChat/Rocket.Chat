@@ -9,8 +9,6 @@ export interface IServiceProviderOptions {
 	customAuthnContext: string;
 	authnContextComparison: string;
 	defaultUserRole: string;
-	roleAttributeName: string;
-	roleAttributeSync: boolean;
 	allowedClockDrift: number;
 	signatureValidationType: string;
 	identifierFormat: string;

@@ -5,9 +5,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
-import { roomTypes } from '../../../utils/client';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Threads_enabled')) {
 			return MessageAction.removeButton('reply-in-thread');
@@ -26,7 +26,7 @@ Meteor.startup(function() {
 				});
 			},
 			condition({ subscription, room }) {
-				const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+				const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 				if (isLivechatRoom) {
 					return false;
 				}

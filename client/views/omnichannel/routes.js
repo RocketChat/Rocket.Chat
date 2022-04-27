@@ -1,8 +1,6 @@
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
-export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () =>
-	import('./OmnichannelRouter'),
-);
+export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
 
 registerOmnichannelRoute('/installation', {
 	name: 'omnichannel-installation',
@@ -64,7 +62,7 @@ registerOmnichannelRoute('/facebook', {
 	lazyRouteComponent: () => import('./facebook/FacebookPageContainer'),
 });
 
-registerOmnichannelRoute('/current', {
+registerOmnichannelRoute('/current/:id?/:tab?/:context?', {
 	name: 'omnichannel-current-chats',
 	lazyRouteComponent: () => import('./currentChats/CurrentChatsRoute'),
 });

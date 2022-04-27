@@ -1,42 +1,47 @@
 import { Meteor } from 'meteor/meteor';
 
-import { FederationServers, FederationRoomEvents, Users } from '../../../models/server';
+import { FederationRoomEvents, Users } from '../../../models/server';
+import { FederationServers } from '../../../models/server/raw';
 
-export function getStatistics() {
+export async function getStatistics() {
 	const numberOfEvents = FederationRoomEvents.find().count();
 	const numberOfFederatedUsers = Users.findRemote().count();
-	const numberOfServers = FederationServers.find().count();
+	const numberOfServers = await FederationServers.find().count();
 
 	return { numberOfEvents, numberOfFederatedUsers, numberOfServers };
 }
 
-export function federationGetOverviewData() {
+export async function federationGetOverviewData() {
 	if (!Meteor.userId()) {
 		throw new Meteor.Error('not-authorized');
 	}
 
-	const { numberOfEvents, numberOfFederatedUsers, numberOfServers } = getStatistics();
+	const { numberOfEvents, numberOfFederatedUsers, numberOfServers } = await getStatistics();
 
 	return {
-		data: [{
-			title: 'Number_of_events',
-			value: numberOfEvents,
-		}, {
-			title: 'Number_of_federated_users',
-			value: numberOfFederatedUsers,
-		}, {
-			title: 'Number_of_federated_servers',
-			value: numberOfServers,
-		}],
+		data: [
+			{
+				title: 'Number_of_events',
+				value: numberOfEvents,
+			},
+			{
+				title: 'Number_of_federated_users',
+				value: numberOfFederatedUsers,
+			},
+			{
+				title: 'Number_of_federated_servers',
+				value: numberOfServers,
+			},
+		],
 	};
 }
 
-export function federationGetServers() {
+export async function federationGetServers() {
 	if (!Meteor.userId()) {
 		throw new Meteor.Error('not-authorized');
 	}
 
-	const servers = FederationServers.find().fetch();
+	const servers = await FederationServers.find().toArray();
 
 	return {
 		data: servers,

@@ -1,19 +1,12 @@
-import { UpdateWriteOpResult, Collection } from 'mongodb';
+import { UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { INps, NPSStatus } from '../../../../definition/INps';
 
 type T = INps;
 export class NpsRaw extends BaseRaw<T> {
-	constructor(
-		public readonly col: Collection<T>,
-		public readonly trash?: Collection<T>,
-	) {
-		super(col, trash);
-
-		this.col.createIndexes([
-			{ key: { status: 1, expireAt: 1 } },
-		]);
+	modelIndexes() {
+		return [{ key: { status: 1, expireAt: 1 } }];
 	}
 
 	// get expired surveys still in progress
@@ -55,23 +48,33 @@ export class NpsRaw extends BaseRaw<T> {
 		return this.col.updateOne({ _id }, update);
 	}
 
-	save({ _id, startAt, expireAt, createdBy, status }: Pick<INps, '_id' | 'startAt' | 'expireAt' | 'createdBy' | 'status'>): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne({
-			_id,
-		}, {
-			$set: {
-				startAt,
-				_updatedAt: new Date(),
+	save({
+		_id,
+		startAt,
+		expireAt,
+		createdBy,
+		status,
+	}: Pick<INps, '_id' | 'startAt' | 'expireAt' | 'createdBy' | 'status'>): Promise<UpdateWriteOpResult> {
+		return this.col.updateOne(
+			{
+				_id,
 			},
-			$setOnInsert: {
-				expireAt,
-				createdBy,
-				createdAt: new Date(),
-				status,
+			{
+				$set: {
+					startAt,
+					_updatedAt: new Date(),
+				},
+				$setOnInsert: {
+					expireAt,
+					createdBy,
+					createdAt: new Date(),
+					status,
+				},
 			},
-		}, {
-			upsert: true,
-		});
+			{
+				upsert: true,
+			},
+		);
 	}
 
 	closeAllByStatus(status: NPSStatus): Promise<UpdateWriteOpResult> {

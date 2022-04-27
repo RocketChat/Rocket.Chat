@@ -22,13 +22,11 @@ addAction('user-info', {
 });
 
 addAction('contact-profile', {
-	groups: ['live'],
+	groups: ['live' /* , 'voip'*/],
 	id: 'contact-profile',
 	title: 'Contact_Info',
 	icon: 'user',
-	template: lazy(
-		() => import('../../../omnichannel/directory/contacts/contextualBar/ContactsContextualBar'),
-	),
+	template: lazy(() => import('../../../omnichannel/directory/contacts/contextualBar/ContactsContextualBar')),
 	order: 1,
 });
 

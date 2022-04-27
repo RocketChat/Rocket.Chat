@@ -7,12 +7,14 @@ import { settings } from '../../../settings';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { api } from '../../../../server/sdk/api';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) => api.broadcast('notify.ephemeralMessage', userId, rid, {
-	msg,
-});
+const notifyAgent = (userId, rid, msg) =>
+	api.broadcast('notify.ephemeralMessage', userId, rid, {
+		msg,
+	});
 
 class Twilio {
 	constructor() {
@@ -49,7 +51,7 @@ class Twilio {
 		}
 
 		if (isNaN(numMedia)) {
-			console.error(`Error parsing NumMedia ${ data.NumMedia }`);
+			SystemLogger.error(`Error parsing NumMedia ${data.NumMedia}`);
 			return returnData;
 		}
 
@@ -61,8 +63,8 @@ class Twilio {
 				contentType: '',
 			};
 
-			const mediaUrl = data[`MediaUrl${ mediaIndex }`];
-			const contentType = data[`MediaContentType${ mediaIndex }`];
+			const mediaUrl = data[`MediaUrl${mediaIndex}`];
+			const contentType = data[`MediaContentType${mediaIndex}`];
 
 			media.url = mediaUrl;
 			media.contentType = contentType;
@@ -80,7 +82,11 @@ class Twilio {
 		let mediaUrl;
 		const defaultLanguage = settings.get('Language') || 'en';
 		if (extraData && extraData.fileUpload) {
-			const { rid, userId, fileUpload: { size, type, publicFilePath } } = extraData;
+			const {
+				rid,
+				userId,
+				fileUpload: { size, type, publicFilePath },
+			} = extraData;
 			const user = userId ? Meteor.users.findOne(userId) : null;
 			const lng = (user && user.language) || defaultLanguage;
 
@@ -98,7 +104,7 @@ class Twilio {
 
 			if (reason) {
 				rid && userId && notifyAgent(userId, rid, reason);
-				return console.error(`(Twilio) -> ${ reason }`);
+				return SystemLogger.error(`(Twilio) -> ${reason}`);
 			}
 
 			mediaUrl = [publicFilePath];
@@ -107,7 +113,7 @@ class Twilio {
 		let persistentAction;
 		if (extraData && extraData.location) {
 			const [longitude, latitude] = extraData.location.coordinates;
-			persistentAction = `geo:${ latitude },${ longitude }`;
+			persistentAction = `geo:${latitude},${longitude}`;
 			body = TAPi18n.__('Location', { lng: defaultLanguage });
 		}
 
@@ -115,8 +121,8 @@ class Twilio {
 			to: toNumber,
 			from: fromNumber,
 			body,
-			...mediaUrl && { mediaUrl },
-			...persistentAction && { persistentAction },
+			...(mediaUrl && { mediaUrl }),
+			...(persistentAction && { persistentAction }),
 		});
 	}
 
@@ -132,13 +138,13 @@ class Twilio {
 	error(error) {
 		let message = '';
 		if (error.reason) {
-			message = `<Message>${ error.reason }</Message>`;
+			message = `<Message>${error.reason}</Message>`;
 		}
 		return {
 			headers: {
 				'Content-Type': 'text/xml',
 			},
-			body: `<Response>${ message }</Response>`,
+			body: `<Response>${message}</Response>`,
 		};
 	}
 }

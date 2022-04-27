@@ -1,15 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import {
-	Box,
-	Field,
-	TextInput,
-	ToggleSwitch,
-	Accordion,
-	FieldGroup,
-	InputBox,
-	TextAreaInput,
-	NumberInput,
-} from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, ToggleSwitch, Accordion, FieldGroup, InputBox, TextAreaInput, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, FormEvent } from 'react';
 
@@ -108,8 +98,7 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 	} = handlers;
 
 	const onChangeCharacterLimit = useMutableCallback(({ currentTarget: { value } }) => {
-		handleLivechat_message_character_limit &&
-			handleLivechat_message_character_limit(Number(value) < 0 ? 0 : value);
+		handleLivechat_message_character_limit?.(Number(value) < 0 ? 0 : value);
 	});
 
 	return (
@@ -119,31 +108,20 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 					<Field>
 						<Field.Label>{t('Title')}</Field.Label>
 						<Field.Row>
-							<TextInput
-								value={Livechat_title}
-								onChange={handleLivechat_title}
-								placeholder={t('Title')}
-							/>
+							<TextInput value={Livechat_title} onChange={handleLivechat_title} placeholder={t('Title')} />
 						</Field.Row>
 					</Field>
 					<Field>
 						<Field.Label>{t('Title_bar_color')}</Field.Label>
 						<Field.Row>
-							<InputBox
-								type='color'
-								value={Livechat_title_color}
-								onChange={handleLivechat_title_color}
-							/>
+							<InputBox type='color' value={Livechat_title_color} onChange={handleLivechat_title_color} />
 						</Field.Row>
 					</Field>
 					<Field>
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Message_Characther_Limit')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={Livechat_enable_message_character_limit}
-									onChange={handleLivechat_enable_message_character_limit}
-								/>
+								<ToggleSwitch checked={Livechat_enable_message_character_limit} onChange={handleLivechat_enable_message_character_limit} />
 							</Field.Row>
 						</Box>
 						<Field.Row>
@@ -158,10 +136,7 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Show_agent_info')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={Livechat_show_agent_info}
-									onChange={handleLivechat_show_agent_info}
-								/>
+								<ToggleSwitch checked={Livechat_show_agent_info} onChange={handleLivechat_show_agent_info} />
 							</Field.Row>
 						</Box>
 					</Field>
@@ -169,10 +144,7 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Show_agent_email')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={Livechat_show_agent_email}
-									onChange={handleLivechat_show_agent_email}
-								/>
+								<ToggleSwitch checked={Livechat_show_agent_email} onChange={handleLivechat_show_agent_email} />
 							</Field.Row>
 						</Box>
 					</Field>
@@ -185,10 +157,7 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Display_offline_form')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={Livechat_display_offline_form}
-									onChange={handleLivechat_display_offline_form}
-								/>
+								<ToggleSwitch checked={Livechat_display_offline_form} onChange={handleLivechat_display_offline_form} />
 							</Field.Row>
 						</Box>
 					</Field>
@@ -217,21 +186,13 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 					<Field>
 						<Field.Label>{t('Title_offline')}</Field.Label>
 						<Field.Row>
-							<TextInput
-								value={Livechat_offline_title}
-								onChange={handleLivechat_offline_title}
-								placeholder={t('Title_offline')}
-							/>
+							<TextInput value={Livechat_offline_title} onChange={handleLivechat_offline_title} placeholder={t('Title_offline')} />
 						</Field.Row>
 					</Field>
 					<Field>
 						<Field.Label>{t('Title_bar_color_offline')}</Field.Label>
 						<Field.Row>
-							<InputBox
-								type='color'
-								value={Livechat_offline_title_color}
-								onChange={handleLivechat_offline_title_color}
-							/>
+							<InputBox type='color' value={Livechat_offline_title_color} onChange={handleLivechat_offline_title_color} />
 						</Field.Row>
 					</Field>
 					<Field>
@@ -264,10 +225,7 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Enabled')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={Livechat_registration_form}
-									onChange={handleLivechat_registration_form}
-								/>
+								<ToggleSwitch checked={Livechat_registration_form} onChange={handleLivechat_registration_form} />
 							</Field.Row>
 						</Box>
 					</Field>
@@ -275,10 +233,7 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Show_name_field')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={Livechat_name_field_registration_form}
-									onChange={handleLivechat_name_field_registration_form}
-								/>
+								<ToggleSwitch checked={Livechat_name_field_registration_form} onChange={handleLivechat_name_field_registration_form} />
 							</Field.Row>
 						</Box>
 					</Field>
@@ -286,10 +241,7 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Show_email_field')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={Livechat_email_field_registration_form}
-									onChange={handleLivechat_email_field_registration_form}
-								/>
+								<ToggleSwitch checked={Livechat_email_field_registration_form} onChange={handleLivechat_email_field_registration_form} />
 							</Field.Row>
 						</Box>
 					</Field>

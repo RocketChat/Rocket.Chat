@@ -1,6 +1,6 @@
 <template name="popover">
 	<div class="rc-popover rc-popover--{{popoverClass}}" data-popover="popover" style="display: block; visibility: hidden;">
-		<div class="rc-popover__content {{#if isSafariIos}}rc-popover__content--safariIos{{/if}}">
+		<div class="rc-popover__content {{#unless template}}rc-popover__content--templateless{{/unless}} {{#if isSafariIos}}rc-popover__content--safariIos{{/if}}">
 			{{#if template}}
 				{{> Template.dynamic template=template data=data}}
 			{{else}}

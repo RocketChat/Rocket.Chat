@@ -6,19 +6,24 @@ import Page from '../../../../client/components/Page';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
-import { LivechatDepartmentSingleGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/livechat/departmentSingle';
-import { CannedResponseEndpointGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/omnichannel/cannedResponse';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
+import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
+import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
+import { Serialized } from '../../../../definition/Serialized';
 import CannedResponseForm from './components/cannedResponseForm';
 
 const CannedResponseEdit: FC<{
-	data?: CannedResponseEndpointGetReturn;
+	data?: {
+		cannedResponse: Serialized<IOmnichannelCannedResponse>;
+	};
 	reload: () => void;
 	totalDataReload: () => void;
 	isNew?: boolean;
-	departmentData?: LivechatDepartmentSingleGetReturn;
+	departmentData?: {
+		department: Serialized<ILivechatDepartment>;
+	};
 }> = ({ data, reload, totalDataReload, isNew = false, departmentData = {} }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -36,7 +41,7 @@ const CannedResponseEdit: FC<{
 	const hasMonitorPermission = usePermission('save-department-canned-responses');
 
 	const form = useForm({
-		_id: data && data.cannedResponse ? data.cannedResponse._id : '',
+		_id: data?.cannedResponse ? data.cannedResponse._id : '',
 		shortcut: data ? data.cannedResponse.shortcut : '',
 		text: data ? data.cannedResponse.text : '',
 		tags:
@@ -44,18 +49,15 @@ const CannedResponseEdit: FC<{
 				? data.cannedResponse.tags.map((tag) => ({ label: tag, value: tag }))
 				: [],
 		scope: data ? data.cannedResponse.scope : 'user',
-		departmentId:
-			data && data.cannedResponse && data.cannedResponse.departmentId
-				? { value: data.cannedResponse.departmentId, label: departmentData?.department?.name }
-				: '',
+		departmentId: data?.cannedResponse?.departmentId
+			? { value: data.cannedResponse.departmentId, label: departmentData?.department?.name }
+			: '',
 	});
 
 	const { values, handlers, hasUnsavedChanges } = form;
 
 	const [errors, setErrors] = useState<any>({});
-	const [radioDescription, setRadioDescription] = useState<string>(
-		t('Canned_Response_Sharing_Private_Description'),
-	);
+	const [radioDescription, setRadioDescription] = useState<string>(t('Canned_Response_Sharing_Private_Description'));
 	const [preview, setPreview] = useState(false);
 
 	const listErrors = useMemo(() => {
@@ -105,9 +107,7 @@ const CannedResponseEdit: FC<{
 				tags: any;
 				departmentId: { value: string; label: string };
 			};
-			const mappedTags = tags.map((tag: string | { value: string; label: string }) =>
-				typeof tag === 'object' ? tag?.value : tag,
-			);
+			const mappedTags = tags.map((tag: string | { value: string; label: string }) => (typeof tag === 'object' ? tag?.value : tag));
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
@@ -126,7 +126,7 @@ const CannedResponseEdit: FC<{
 			reload();
 			totalDataReload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error as Error });
 		}
 	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload, totalDataReload]);
 
@@ -147,18 +147,12 @@ const CannedResponseEdit: FC<{
 					<Button onClick={handleReturn}>
 						<Icon name='back' /> {t('Back')}
 					</Button>
-					<Button
-						primary
-						mie='none'
-						flexGrow={1}
-						disabled={!hasUnsavedChanges || !canSave}
-						onClick={onSave}
-					>
+					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={onSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
-			<Page.ScrollableContentWithShadow fontScale='p1'>
+			<Page.ScrollableContentWithShadow fontScale='p2'>
 				<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 					<CannedResponseForm
 						isManager={hasManagerPermission}

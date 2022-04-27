@@ -1,10 +1,6 @@
 import { Random } from 'meteor/random';
 
-import {
-	Base,
-	ProgressStep,
-	ImporterWebsocket,
-} from '../../importer/server';
+import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Users } from '../../models/server';
 
 export class CsvImporter extends Base {
@@ -29,13 +25,13 @@ export class CsvImporter extends Base {
 		const increaseProgressCount = () => {
 			try {
 				count++;
-				const rate = Math.floor(count * 1000 / totalEntries) / 10;
+				const rate = Math.floor((count * 1000) / totalEntries) / 10;
 				if (rate > oldRate) {
 					ImporterWebsocket.progressUpdated({ rate });
 					oldRate = rate;
 				}
 			} catch (e) {
-				console.error(e);
+				this.logger.error(e);
 			}
 		};
 
@@ -56,17 +52,17 @@ export class CsvImporter extends Base {
 		};
 
 		zip.forEach((entry) => {
-			this.logger.debug(`Entry: ${ entry.entryName }`);
+			this.logger.debug(`Entry: ${entry.entryName}`);
 
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
-				this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
+				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
 				return increaseProgressCount();
 			}
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
-				this.logger.debug(`Ignoring the directory entry: ${ entry.entryName }`);
+				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
 				return increaseProgressCount();
 			}
 
@@ -81,12 +77,14 @@ export class CsvImporter extends Base {
 					const id = getRoomId(name);
 					const creator = c[1].trim();
 					const isPrivate = c[2].trim().toLowerCase() === 'private';
-					const members = c[3].trim().split(';').map((m) => m.trim()).filter((m) => m);
+					const members = c[3]
+						.trim()
+						.split(';')
+						.map((m) => m.trim())
+						.filter((m) => m);
 
 					this.converter.addChannel({
-						importIds: [
-							id,
-						],
+						importIds: [id],
 						u: {
 							_id: creator,
 						},
@@ -114,12 +112,8 @@ export class CsvImporter extends Base {
 					const name = u[2].trim();
 
 					this.converter.addUser({
-						importIds: [
-							username,
-						],
-						emails: [
-							email,
-						],
+						importIds: [username],
+						emails: [email],
 						username,
 						name,
 					});
@@ -143,7 +137,7 @@ export class CsvImporter extends Base {
 				try {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
-					this.logger.warn(`The file ${ entry.entryName } contains invalid syntax`, e);
+					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
 					return increaseProgressCount();
 				}
 
@@ -153,13 +147,19 @@ export class CsvImporter extends Base {
 
 				if (folderName.toLowerCase() === 'directmessages') {
 					isDirect = true;
-					data = msgs.map((m) => ({ username: m[0], ts: m[2], text: m[3], otherUsername: m[1], isDirect: true }));
+					data = msgs.map((m) => ({
+						username: m[0],
+						ts: m[2],
+						text: m[3],
+						otherUsername: m[1],
+						isDirect: true,
+					}));
 				} else {
 					data = msgs.map((m) => ({ username: m[0], ts: m[1], text: m[2] }));
 				}
 
 				messagesCount += data.length;
-				const channelName = `${ folderName }/${ msgGroupData }`;
+				const channelName = `${folderName}/${msgGroupData}`;
 
 				super.updateRecord({ messagesstatus: channelName });
 
@@ -169,9 +169,7 @@ export class CsvImporter extends Base {
 
 						if (!dmRooms.has(sourceId)) {
 							this.converter.addChannel({
-								importIds: [
-									sourceId,
-								],
+								importIds: [sourceId],
 								users: [msg.username, msg.otherUsername],
 								t: 'd',
 							});
@@ -210,7 +208,7 @@ export class CsvImporter extends Base {
 					}
 				}
 
-				super.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
+				super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
 				return increaseProgressCount();
 			}
 

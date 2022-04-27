@@ -3,23 +3,23 @@ import Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { IUser } from '../../../definition/IUser';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Messages, Rooms, Uploads, Users } from '../../../app/models/server';
+import { Messages, Rooms, Users } from '../../../app/models/server';
+import { Uploads } from '../../../app/models/server/raw';
 import { Inbox, inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { IMessage } from '../../../definition/IMessage';
 
-
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
 const user: IUser = Users.findOneById('rocket.cat');
 
-const language = settings.get('Language') || 'en';
+const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 const sendErrorReplyMessage = (error: string, options: any): void => {
@@ -29,7 +29,7 @@ const sendErrorReplyMessage = (error: string, options: any): void => {
 
 	const message = {
 		groupable: false,
-		msg: `@${ options.sender } something went wrong when replying email, sorry. **Error:**: ${ error }`,
+		msg: `@${options.sender} something went wrong when replying email, sorry. **Error:**: ${error}`,
 		_id: String(Date.now()),
 		rid: options.rid,
 		ts: new Date(),
@@ -39,184 +39,227 @@ const sendErrorReplyMessage = (error: string, options: any): void => {
 };
 
 function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): void {
-	inbox.smtp.sendMail({
-		from: inbox.config.senderInfo ? {
-			name: inbox.config.senderInfo,
-			address: inbox.config.email,
-		} : inbox.config.email,
-		...mail,
-	}).then((info) => {
-		console.log('Message sent: %s', info.messageId);
-	}).catch((error) => {
-		console.log('Error sending Email reply: %s', error.message);
+	inbox.smtp
+		.sendMail({
+			from: inbox.config.senderInfo
+				? {
+						name: inbox.config.senderInfo,
+						address: inbox.config.email,
+				  }
+				: inbox.config.email,
+			...mail,
+		})
+		.then((info) => {
+			console.log('Message sent: %s', info.messageId);
+		})
+		.catch((error) => {
+			console.log('Error sending Email reply: %s', error.message);
 
-		if (!options?.msgId) {
+			if (!options?.msgId) {
+				return;
+			}
+
+			sendErrorReplyMessage(error.message, options);
+		});
+}
+
+slashCommands.add(
+	'sendEmailAttachment',
+	(command: any, params: string) => {
+		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
 		}
 
-		sendErrorReplyMessage(error.message, options);
-	});
-}
+		const message = Messages.findOneById(params.trim());
 
-slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
-	if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
-		return;
-	}
+		if (!message || !message.file) {
+			return;
+		}
 
-	const message = Messages.findOneById(params.trim());
+		const room = Rooms.findOneById(message.rid);
 
-	if (!message || !message.file) {
-		return;
-	}
+		const inbox = inboxes.get(room.email.inbox);
 
-	const room = Rooms.findOneById(message.rid);
+		if (!inbox) {
+			return sendErrorReplyMessage(`Email inbox ${room.email.inbox} not found or disabled.`, {
+				msgId: message._id,
+				sender: message.u.username,
+				rid: room._id,
+			});
+		}
 
-	const inbox = inboxes.get(room.email.inbox);
+		const file = Promise.await(Uploads.findOneById(message.file._id));
 
-	if (!inbox) {
-		return sendErrorReplyMessage(`Email inbox ${ room.email.inbox } not found or disabled.`, {
-			msgId: message._id,
-			sender: message.u.username,
-			rid: room._id,
-		});
-	}
+		if (!file) {
+			return;
+		}
 
-	const file = Uploads.findOneById(message.file._id);
-
-	FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
-		!_err && buffer && sendEmail(inbox, {
-			to: room.email.replyTo,
-			subject: room.email.subject,
-			text: message.attachments[0].description || '',
-			attachments: [{
-				content: buffer,
-				contentType: file.type,
-				filename: file.name,
-			}],
-			inReplyTo: room.email.thread,
-			references: [
-				room.email.thread,
-			],
-		},
-		{
-			msgId: message._id,
-			sender: message.u.username,
-			rid: message.rid,
-		});
-	});
-
-	Messages.update({ _id: message._id }, {
-		$set: {
-			blocks: [{
-				type: 'context',
-				elements: [{
-					type: 'mrkdwn',
-					text: `**${ t('To') }:** ${ room.email.replyTo }\n**${ t('Subject') }:** ${ room.email.subject }`,
-				}],
-			}],
-		},
-		$pull: {
-			attachments: { 'actions.0.type': 'button' },
-		},
-	});
-}, {
-	description: 'Send attachment as email',
-	params: 'msg_id',
-});
-
-callbacks.add('beforeSaveMessage', function(message: IMessage, room: any) {
-	if (!room?.email?.inbox) {
-		return message;
-	}
-
-	if (message.file) {
-		message.attachments.push({
-			actions: [{
-				type: 'button',
-				text: t('Send_via_Email_as_attachment'),
-				msg: `/sendEmailAttachment ${ message._id }`,
-				msg_in_chat_window: true,
-				msg_processing_type: 'sendMessage',
-			}],
+		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
+			!_err &&
+				buffer &&
+				sendEmail(
+					inbox,
+					{
+						to: room.email.replyTo,
+						subject: room.email.subject,
+						text: message.attachments[0].description || '',
+						attachments: [
+							{
+								content: buffer,
+								contentType: file.type,
+								filename: file.name,
+							},
+						],
+						inReplyTo: room.email.thread,
+						references: [room.email.thread],
+					},
+					{
+						msgId: message._id,
+						sender: message.u.username,
+						rid: message.rid,
+					},
+				);
 		});
 
-		return message;
-	}
-
-	const { msg } = message;
-
-	// Try to identify a quote in a livechat room
-	const match = msg.match(livechatQuoteRegExp);
-	if (!match?.groups) {
-		return message;
-	}
-
-	const inbox = inboxes.get(room.email.inbox);
-
-	if (!inbox) {
-		sendErrorReplyMessage(`Email inbox ${ room.email.inbox } not found or disabled.`, {
-			msgId: message._id,
-			sender: message.u.username,
-			rid: room._id,
-		});
-
-		return message;
-	}
-
-	if (!inbox) {
-		return message;
-	}
-
-	const replyToMessage = Messages.findOneById(match.groups.id);
-
-	if (!replyToMessage?.email?.messageId) {
-		return message;
-	}
-
-	sendEmail(inbox, {
-		text: match.groups.text,
-		inReplyTo: replyToMessage.email.messageId,
-		references: [
-			...replyToMessage.email.references ?? [],
-			replyToMessage.email.messageId,
-		],
-		to: room.email.replyTo,
-		subject: room.email.subject,
+		Messages.update(
+			{ _id: message._id },
+			{
+				$set: {
+					blocks: [
+						{
+							type: 'context',
+							elements: [
+								{
+									type: 'mrkdwn',
+									text: `**${t('To')}:** ${room.email.replyTo}\n**${t('Subject')}:** ${room.email.subject}`,
+								},
+							],
+						},
+					],
+				},
+				$pull: {
+					attachments: { 'actions.0.type': 'button' },
+				},
+			},
+		);
 	},
 	{
-		msgId: message._id,
-		sender: message.u.username,
-		rid: room._id,
-	});
+		description: 'Send attachment as email',
+		params: 'msg_id',
+	},
+	undefined,
+	false,
+	undefined,
+	undefined,
+);
 
-	message.msg = match.groups.text;
+callbacks.add(
+	'beforeSaveMessage',
+	function (message: IMessage, room: any) {
+		if (!room?.email?.inbox) {
+			return message;
+		}
 
-	message.groupable = false;
+		if (message.file) {
+			message.attachments = message.attachments || [];
+			message.attachments.push({
+				actions: [
+					{
+						type: 'button',
+						text: t('Send_via_Email_as_attachment'),
+						msg: `/sendEmailAttachment ${message._id}`,
+						msg_in_chat_window: true,
+						msg_processing_type: 'sendMessage',
+					},
+				],
+			});
 
-	message.blocks = [{
-		type: 'context',
-		elements: [{
-			type: 'mrkdwn',
-			text: `**${ t('To') }:** ${ room.email.replyTo }\n**${ t('Subject') }:** ${ room.email.subject }`,
-		}],
-	}, {
-		type: 'section',
-		text: {
-			type: 'mrkdwn',
-			text: message.msg,
-		},
-	}, {
-		type: 'section',
-		text: {
-			type: 'mrkdwn',
-			text: `> ---\n${ replyToMessage.msg.replace(/^/gm, '> ') }`,
-		},
-	}];
+			return message;
+		}
 
-	delete message.urls;
+		const { msg } = message;
 
-	return message;
-}, callbacks.priority.LOW, 'ReplyEmail');
+		// Try to identify a quote in a livechat room
+		const match = msg.match(livechatQuoteRegExp);
+		if (!match?.groups) {
+			return message;
+		}
+
+		const inbox = inboxes.get(room.email.inbox);
+
+		if (!inbox) {
+			sendErrorReplyMessage(`Email inbox ${room.email.inbox} not found or disabled.`, {
+				msgId: message._id,
+				sender: message.u.username,
+				rid: room._id,
+			});
+
+			return message;
+		}
+
+		if (!inbox) {
+			return message;
+		}
+
+		const replyToMessage = Messages.findOneById(match.groups.id);
+
+		if (!replyToMessage?.email?.messageId) {
+			return message;
+		}
+
+		sendEmail(
+			inbox,
+			{
+				text: match.groups.text,
+				inReplyTo: replyToMessage.email.messageId,
+				references: [...(replyToMessage.email.references ?? []), replyToMessage.email.messageId],
+				to: room.email.replyTo,
+				subject: room.email.subject,
+			},
+			{
+				msgId: message._id,
+				sender: message.u.username,
+				rid: room._id,
+			},
+		);
+
+		message.msg = match.groups.text;
+
+		message.groupable = false;
+
+		message.blocks = [
+			{
+				type: 'context',
+				elements: [
+					{
+						type: 'mrkdwn',
+						text: `**${t('To')}:** ${room.email.replyTo}\n**${t('Subject')}:** ${room.email.subject}`,
+					},
+				],
+			},
+			{
+				type: 'section',
+				text: {
+					type: 'mrkdwn',
+					text: message.msg,
+				},
+			},
+			{
+				type: 'section',
+				text: {
+					type: 'mrkdwn',
+					text: `> ---\n${replyToMessage.msg.replace(/^/gm, '> ')}`,
+				},
+			},
+		];
+
+		delete message.urls;
+
+		return message;
+	},
+	callbacks.priority.LOW,
+	'ReplyEmail',
+);
 
 export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: IUser): Promise<void> {
 	const inbox = inboxes.get(emailInboxRecord.email);
@@ -231,7 +274,7 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	console.log(`Sending testing email to ${ address }`);
+	console.log(`Sending testing email to ${address}`);
 	sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',

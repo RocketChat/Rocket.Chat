@@ -1,6 +1,6 @@
 import { FederationRoomEvents } from '../../../models/server';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
@@ -13,7 +13,7 @@ async function afterLeaveRoom(user, room) {
 		return user;
 	}
 
-	logger.client.debug(() => `afterLeaveRoom => user=${ JSON.stringify(user, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterLeaveRoom', user, room });
 
 	const { users } = getFederatedRoomData(room);
 
@@ -40,7 +40,7 @@ async function afterLeaveRoom(user, room) {
 		// Dispatch the events
 		dispatchEvent(domainsBeforeLeft, userLeftEvent);
 	} catch (err) {
-		logger.client.error('afterLeaveRoom => Could not make user leave:', err);
+		clientLogger.error({ msg: 'afterLeaveRoom => Could not make user leave:', err });
 	}
 
 	return user;

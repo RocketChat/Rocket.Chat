@@ -3,7 +3,7 @@ import dompurify from 'dompurify';
 import marked from 'marked';
 import React, { ComponentProps, FC, useMemo } from 'react';
 
-import { renderMessageEmoji } from '../lib/renderMessageEmoji';
+import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
 type MarkdownTextParams = {
 	content: string;
@@ -31,6 +31,7 @@ const listItemMarked = (text: string): string => {
 	const cleanText = text.replace(/<p.*?>|<\/p>/gi, '');
 	return `<li>${cleanText}</li>`;
 };
+const horizontalRuleMarked = (): string => '';
 
 documentRenderer.link = linkMarked;
 documentRenderer.listitem = listItemMarked;
@@ -38,11 +39,13 @@ documentRenderer.listitem = listItemMarked;
 inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
 inlineRenderer.listitem = listItemMarked;
+inlineRenderer.hr = horizontalRuleMarked;
 
 inlineWithoutBreaks.link = linkMarked;
 inlineWithoutBreaks.paragraph = paragraphMarked;
 inlineWithoutBreaks.br = brMarked;
 inlineWithoutBreaks.listitem = listItemMarked;
+inlineWithoutBreaks.hr = horizontalRuleMarked;
 
 const defaultOptions = {
 	gfm: true,
@@ -76,7 +79,6 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 	let markedOptions: {};
 
-	const withRichContent = variant;
 	switch (variant) {
 		case 'inline':
 			markedOptions = inlineOptions;
@@ -112,7 +114,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 		<Box
 			dangerouslySetInnerHTML={{ __html }}
 			withTruncatedText={withTruncatedText}
-			withRichContent={withRichContent}
+			withRichContent={variant === 'inlineWithoutBreaks' ? 'inlineWithoutBreaks' : true}
 			{...props}
 		/>
 	) : null;

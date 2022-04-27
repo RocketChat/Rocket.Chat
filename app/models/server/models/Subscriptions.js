@@ -14,18 +14,17 @@ export class Subscriptions extends Base {
 
 		this.tryEnsureIndex({ rid: 1 });
 		this.tryEnsureIndex({ rid: 1, ls: 1 });
-		this.tryEnsureIndex({ rid: 1, 'u._id': 1 }, { unique: 1 });
-		this.tryEnsureIndex({ rid: 1, 'u._id': 1, open: 1 });
-		this.tryEnsureIndex({ rid: 1, 'u.username': 1 });
-		this.tryEnsureIndex({ rid: 1, alert: 1, 'u._id': 1 });
+		this.tryEnsureIndex({ 'rid': 1, 'u._id': 1 }, { unique: 1 });
+		this.tryEnsureIndex({ 'rid': 1, 'u._id': 1, 'open': 1 });
+		this.tryEnsureIndex({ 'rid': 1, 'u.username': 1 });
+		this.tryEnsureIndex({ 'rid': 1, 'alert': 1, 'u._id': 1 });
 		this.tryEnsureIndex({ rid: 1, roles: 1 });
-		this.tryEnsureIndex({ 'u._id': 1, name: 1, t: 1 });
+		this.tryEnsureIndex({ 'u._id': 1, 'name': 1, 't': 1 });
 		this.tryEnsureIndex({ name: 1, t: 1 });
 		this.tryEnsureIndex({ open: 1 });
 		this.tryEnsureIndex({ alert: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ ls: 1 });
-		this.tryEnsureIndex({ audioNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ desktopNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ mobilePushNotifications: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ emailNotifications: 1 }, { sparse: 1 });
@@ -33,7 +32,10 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ autoTranslateLanguage: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ prid: 1 });
-		this.tryEnsureIndex({ 'u._id': 1, open: 1, department: 1 });
+		this.tryEnsureIndex({ 'u._id': 1, 'open': 1, 'department': 1 });
+
+		const collectionObj = this.model.rawCollection();
+		this.distinct = Meteor.wrapAsync(collectionObj.distinct, collectionObj);
 	}
 
 	findByRoomIds(roomIds) {
@@ -45,7 +47,7 @@ export class Subscriptions extends Base {
 		const options = {
 			fields: {
 				'u._id': 1,
-				rid: 1,
+				'rid': 1,
 			},
 		};
 
@@ -98,16 +100,18 @@ export class Subscriptions extends Base {
 	}
 
 	getAutoTranslateLanguagesByRoomAndNotUser(rid, userId) {
-		const subscriptionsRaw = this.model.rawCollection();
-		const distinct = Meteor.wrapAsync(subscriptionsRaw.distinct, subscriptionsRaw);
 		const query = {
 			rid,
 			'u._id': { $ne: userId },
-			autoTranslate: true,
+			'autoTranslate': true,
 		};
-		return distinct('autoTranslateLanguage', query);
+		return this.distinct('autoTranslateLanguage', query);
 	}
 
+	/**
+	 * @param {string} userId
+	 * @param {string} scope the value for the role scope (room id)
+	 */
 	roleBaseQuery(userId, scope) {
 		if (scope == null) {
 			return;
@@ -139,6 +143,20 @@ export class Subscriptions extends Base {
 		const update = {
 			$set: {
 				audioNotificationValue,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	clearAudioNotificationValueById(_id) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$unset: {
+				audioNotificationValue: 1,
 			},
 		};
 
@@ -236,15 +254,6 @@ export class Subscriptions extends Base {
 		this.update(query, update);
 	}
 
-	findAlwaysNotifyAudioUsersByRoomId(roomId) {
-		const query = {
-			rid: roomId,
-			audioNotifications: 'all',
-		};
-
-		return this.find(query);
-	}
-
 	findAlwaysNotifyDesktopUsersByRoomId(roomId) {
 		const query = {
 			rid: roomId,
@@ -292,71 +301,24 @@ export class Subscriptions extends Base {
 		return this.find(query, { fields: { emailNotifications: 1, u: 1 } });
 	}
 
-	findNotificationPreferencesByRoom(query/* { roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }*/) {
-		return this._db.find(query, {
-			fields: {
-
-				// fields needed for notifications
-				rid: 1,
-				t: 1,
-				u: 1,
-				name: 1,
-				fname: 1,
-				code: 1,
-
-				// fields to define if should send a notification
-				ignored: 1,
-				audioNotifications: 1,
-				audioNotificationValue: 1,
-				desktopNotifications: 1,
-				mobilePushNotifications: 1,
-				emailNotifications: 1,
-				disableNotifications: 1,
-				muteGroupMentions: 1,
-				userHighlights: 1,
-			},
-		});
-	}
-
-	findAllMessagesNotificationPreferencesByRoom(roomId) {
-		const query = {
-			rid: roomId,
-			'u._id': { $exists: true },
-			$or: [
-				{ desktopNotifications: { $in: ['all', 'mentions'] } },
-				{ mobilePushNotifications: { $in: ['all', 'mentions'] } },
-				{ emailNotifications: { $in: ['all', 'mentions'] } },
-			],
-		};
-
-		return this._db.find(query, {
-			fields: {
-				'u._id': 1,
-				audioNotifications: 1,
-				audioNotificationValue: 1,
-				desktopNotifications: 1,
-				mobilePushNotifications: 1,
-				emailNotifications: 1,
-				disableNotifications: 1,
-				muteGroupMentions: 1,
-			},
-		});
-	}
-
 	resetUserE2EKey(userId) {
-		this.update({ 'u._id': userId }, {
-			$unset: {
-				E2EKey: '',
+		this.update(
+			{ 'u._id': userId },
+			{
+				$unset: {
+					E2EKey: '',
+				},
 			},
-		}, {
-			multi: true,
-		});
+			{
+				multi: true,
+			},
+		);
 	}
 
 	findByUserIdWithoutE2E(userId, options) {
 		const query = {
 			'u._id': userId,
-			E2EKey: {
+			'E2EKey': {
 				$exists: false,
 			},
 		};
@@ -371,6 +333,11 @@ export class Subscriptions extends Base {
 		return this.findOne({ _id });
 	}
 
+	/**
+	 * @param {IRole['_id'][]} roles
+	 * @param {string} scope the value for the role scope (room id)
+	 * @param {any} options
+	 */
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -384,11 +351,13 @@ export class Subscriptions extends Base {
 
 		const subscriptions = this.find(query).fetch();
 
-		const users = _.compact(_.map(subscriptions, function(subscription) {
-			if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
-				return subscription.u._id;
-			}
-		}));
+		const users = _.compact(
+			_.map(subscriptions, function (subscription) {
+				if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
+					return subscription.u._id;
+				}
+			}),
+		);
 
 		return Users.find({ _id: { $in: users } }, options);
 	}
@@ -396,7 +365,7 @@ export class Subscriptions extends Base {
 	// FIND ONE
 	findOneByRoomIdAndUserId(roomId, userId, options = {}) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': userId,
 		};
 
@@ -405,7 +374,7 @@ export class Subscriptions extends Base {
 
 	findOneByRoomIdAndUsername(roomId, username, options) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u.username': username,
 		};
 
@@ -414,7 +383,7 @@ export class Subscriptions extends Base {
 
 	findOneByRoomNameAndUserId(roomName, userId) {
 		const query = {
-			name: roomName,
+			'name': roomName,
 			'u._id': userId,
 		};
 
@@ -433,7 +402,7 @@ export class Subscriptions extends Base {
 	findByUserIdExceptType(userId, typeException, options) {
 		const query = {
 			'u._id': userId,
-			t: { $ne: typeException },
+			't': { $ne: typeException },
 		};
 
 		return this.find(query, options);
@@ -442,7 +411,7 @@ export class Subscriptions extends Base {
 	findByUserIdAndRoomIds(userId, roomIds, options) {
 		const query = {
 			'u._id': userId,
-			rid: { $in: roomIds },
+			'rid': { $in: roomIds },
 		};
 
 		return this.find(query, options);
@@ -451,7 +420,7 @@ export class Subscriptions extends Base {
 	findByUserIdAndType(userId, type, options) {
 		const query = {
 			'u._id': userId,
-			t: type,
+			't': type,
 		};
 
 		return this.find(query, options);
@@ -460,7 +429,7 @@ export class Subscriptions extends Base {
 	findByUserIdAndTypes(userId, types, options) {
 		const query = {
 			'u._id': userId,
-			t: {
+			't': {
 				$in: types,
 			},
 		};
@@ -468,10 +437,15 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
+	/**
+	 * @param {IUser['_id']} userId
+	 * @param {IRole['_id'][]} roles
+	 * @param {any} options
+	 */
 	findByUserIdAndRoles(userId, roles, options) {
 		const query = {
 			'u._id': userId,
-			roles: { $in: roles },
+			'roles': { $in: roles },
 		};
 
 		return this.find(query, options);
@@ -480,7 +454,7 @@ export class Subscriptions extends Base {
 	findByUserIdUpdatedAfter(userId, updatedAt, options) {
 		const query = {
 			'u._id': userId,
-			_updatedAt: {
+			'_updatedAt': {
 				$gt: updatedAt,
 			},
 		};
@@ -488,7 +462,12 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	findByRoomIdAndRoles(roomId, roles, options) {
+	/**
+	 * @param {string} roomId
+	 * @param {IRole['_id'][]} roles the list of roles
+	 * @param {any} options
+	 */
+	findByRoomIdAndRoles(roomId, roles, options = undefined) {
 		roles = [].concat(roles);
 		const query = {
 			rid: roomId,
@@ -510,7 +489,7 @@ export class Subscriptions extends Base {
 
 	findByTypeAndUserId(type, userId, options) {
 		const query = {
-			t: type,
+			't': type,
 			'u._id': userId,
 		};
 
@@ -524,7 +503,7 @@ export class Subscriptions extends Base {
 
 	findByRoomIdAndNotUserId(roomId, userId, options = {}) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': {
 				$ne: userId,
 			},
@@ -535,7 +514,7 @@ export class Subscriptions extends Base {
 
 	findByRoomWithUserHighlights(roomId, options) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'userHighlights.0': { $exists: true },
 		};
 
@@ -551,7 +530,7 @@ export class Subscriptions extends Base {
 
 	findByRoomIdAndUserIds(roomId, userIds, options) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': {
 				$in: userIds,
 			},
@@ -563,10 +542,7 @@ export class Subscriptions extends Base {
 	findByRoomIdAndUserIdsOrAllMessages(roomId, userIds) {
 		const query = {
 			rid: roomId,
-			$or: [
-				{ 'u._id': { $in: userIds } },
-				{ emailNotifications: 'all' },
-			],
+			$or: [{ 'u._id': { $in: userIds } }, { emailNotifications: 'all' }],
 		};
 
 		return this.find(query);
@@ -587,7 +563,7 @@ export class Subscriptions extends Base {
 	findUnreadByUserId(userId) {
 		const query = {
 			'u._id': userId,
-			unread: {
+			'unread': {
 				$gt: 0,
 			},
 		};
@@ -596,19 +572,19 @@ export class Subscriptions extends Base {
 	}
 
 	getMinimumLastSeenByRoomId(rid) {
-		return this.db.findOne({
-			rid,
-			ls: {
-				$exists: true,
+		return this.db.findOne(
+			{
+				rid,
 			},
-		}, {
-			sort: {
-				ls: 1,
+			{
+				sort: {
+					ls: 1,
+				},
+				fields: {
+					ls: 1,
+				},
 			},
-			fields: {
-				ls: 1,
-			},
-		});
+		);
 	}
 
 	// UPDATE
@@ -627,7 +603,7 @@ export class Subscriptions extends Base {
 	}
 
 	unarchiveByRoomId(roomId) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -642,7 +618,7 @@ export class Subscriptions extends Base {
 
 	hideByRoomIdAndUserId(roomId, userId, keepClosed) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': userId,
 		};
 
@@ -663,7 +639,7 @@ export class Subscriptions extends Base {
 
 	openByRoomIdAndUserId(roomId, userId) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': userId,
 		};
 
@@ -678,7 +654,7 @@ export class Subscriptions extends Base {
 
 	setAsReadByRoomIdAndUserId(roomId, userId) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': userId,
 		};
 
@@ -698,7 +674,7 @@ export class Subscriptions extends Base {
 
 	setAsUnreadByRoomIdAndUserId(roomId, userId, firstMessageUnreadTimestamp) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': userId,
 		};
 
@@ -716,7 +692,7 @@ export class Subscriptions extends Base {
 	setCustomFieldsDirectMessagesByUserId(userId, fields) {
 		const query = {
 			'u._id': userId,
-			t: 'd',
+			't': 'd',
 		};
 		const update = { $set: { customFields: fields } };
 		const options = { multi: true };
@@ -729,7 +705,7 @@ export class Subscriptions extends Base {
 			favorite = true;
 		}
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': userId,
 		};
 
@@ -743,7 +719,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateNameAndAlertByRoomId(roomId, name, fname) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -757,7 +733,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateDisplayNameByRoomId(roomId, fname) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -795,7 +771,7 @@ export class Subscriptions extends Base {
 	}
 
 	setUserUsernameByUserId(userId, username) {
-		const query =			{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		const update = {
 			$set: {
@@ -829,8 +805,8 @@ export class Subscriptions extends Base {
 
 		const update = {
 			$set: {
-				...newName && { name: newName },
-				...newFname && { fname: newFname },
+				...(newName && { name: newName }),
+				...(newFname && { fname: newFname }),
 			},
 		};
 
@@ -842,7 +818,7 @@ export class Subscriptions extends Base {
 			inc = 1;
 		}
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': {
 				$nin: userIds,
 			},
@@ -863,7 +839,7 @@ export class Subscriptions extends Base {
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(roomId, userId, incGroup = 1, incUnread = 1) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': {
 				$ne: userId,
 			},
@@ -885,7 +861,7 @@ export class Subscriptions extends Base {
 
 	incUserMentionsAndUnreadForRoomIdAndUserIds(roomId, userIds, incUser = 1, incUnread = 1) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': {
 				$in: userIds,
 			},
@@ -909,8 +885,7 @@ export class Subscriptions extends Base {
 		const query = {
 			_id,
 		};
-		const update = {
-		};
+		const update = {};
 		if (ignore) {
 			update.$addToSet = { ignored };
 		} else {
@@ -922,11 +897,11 @@ export class Subscriptions extends Base {
 
 	setAlertForRoomIdExcludingUserId(roomId, userId) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': {
 				$ne: userId,
 			},
-			alert: { $ne: true },
+			'alert': { $ne: true },
 		};
 
 		const update = {
@@ -939,12 +914,12 @@ export class Subscriptions extends Base {
 
 	setOpenForRoomIdExcludingUserId(roomId, userId) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': {
 				$ne: userId,
 			},
-			open: { $ne: true },
-			keepClosed: { $ne: true },
+			'open': { $ne: true },
+			'keepClosed': { $ne: true },
 		};
 
 		const update = {
@@ -957,9 +932,9 @@ export class Subscriptions extends Base {
 
 	setAlertForRoomIdAndUserIds(roomId, uids) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': { $in: uids },
-			alert: { $ne: true },
+			'alert': { $ne: true },
 		};
 
 		const update = {
@@ -972,9 +947,9 @@ export class Subscriptions extends Base {
 
 	setOpenForRoomIdAndUserIds(roomId, uids) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': { $in: uids },
-			open: { $ne: true },
+			'open': { $ne: true },
 		};
 
 		const update = {
@@ -987,7 +962,7 @@ export class Subscriptions extends Base {
 
 	setLastReplyForRoomIdAndUserIds(roomId, uids, lr) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': { $in: uids },
 		};
 
@@ -1064,7 +1039,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateTypeByRoomId(roomId, type) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -1075,8 +1050,12 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	/**
+	 * @param {string} _id the subscription id
+	 * @param {IRole['_id']} role the id of the role
+	 */
 	addRoleById(_id, role) {
-		const query =			{ _id };
+		const query = { _id };
 
 		const update = {
 			$addToSet: {
@@ -1087,8 +1066,12 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
+	/**
+	 * @param {string} _id the subscription id
+	 * @param {IRole['_id']} role the id of the role
+	 */
 	removeRoleById(_id, role) {
-		const query =			{ _id };
+		const query = { _id };
 
 		const update = {
 			$pull: {
@@ -1224,7 +1207,6 @@ export class Subscriptions extends Base {
 		return result;
 	}
 
-
 	// REMOVE
 	removeByUserId(userId) {
 		const query = {
@@ -1252,7 +1234,7 @@ export class Subscriptions extends Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			Rooms.incUsersCountById(roomId, - result);
+			Rooms.incUsersCountById(roomId, -result);
 		}
 
 		Users.removeRoomByRoomId(roomId);
@@ -1262,14 +1244,14 @@ export class Subscriptions extends Base {
 
 	removeByRoomIdAndUserId(roomId, userId) {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': userId,
 		};
 
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			Rooms.incUsersCountById(roomId, - result);
+			Rooms.incUsersCountById(roomId, -result);
 		}
 
 		Users.removeRoomByUserId(userId, roomId);
@@ -1286,7 +1268,7 @@ export class Subscriptions extends Base {
 	}
 
 	removeByRoomIdsAndUserId(rids, userId) {
-		const result = this.remove({ rid: { $in: rids }, 'u._id': userId });
+		const result = this.remove({ 'rid': { $in: rids }, 'u._id': userId });
 
 		if (Match.test(result, Number) && result > 0) {
 			Rooms.incUsersCountByIds(rids, -1);
@@ -1305,16 +1287,20 @@ export class Subscriptions extends Base {
 			return;
 		}
 
-		return this.update({
-			'u._id': { $in: users },
-			rid,
-		}, {
-			$addToSet: {
-				tunread: tmid,
-				...groupMention && { tunreadGroup: tmid },
-				...userMention && { tunreadUser: tmid },
+		return this.update(
+			{
+				'u._id': { $in: users },
+				rid,
 			},
-		}, { multi: true });
+			{
+				$addToSet: {
+					tunread: tmid,
+					...(groupMention && { tunreadGroup: tmid }),
+					...(userMention && { tunreadUser: tmid }),
+				},
+			},
+			{ multi: true },
+		);
 	}
 
 	removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert = false) {
@@ -1330,10 +1316,13 @@ export class Subscriptions extends Base {
 			update.$set = { alert: false };
 		}
 
-		return this.update({
-			'u._id': userId,
-			rid,
-		}, update);
+		return this.update(
+			{
+				'u._id': userId,
+				rid,
+			},
+			update,
+		);
 	}
 
 	removeAllUnreadThreadsByRoomIdAndUserId(rid, userId) {
@@ -1371,19 +1360,11 @@ export class Subscriptions extends Base {
 	}
 
 	setOnHold(roomId) {
-		return this.update(
-			{ rid: roomId },
-			{ $set: { onHold: true } },
-			{ multi: true },
-		);
+		return this.update({ rid: roomId }, { $set: { onHold: true } }, { multi: true });
 	}
 
 	unsetOnHold(roomId) {
-		return this.update(
-			{ rid: roomId },
-			{ $unset: { onHold: 1 } },
-			{ multi: true },
-		);
+		return this.update({ rid: roomId }, { $unset: { onHold: 1 } }, { multi: true });
 	}
 }
 

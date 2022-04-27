@@ -1,2 +1,3 @@
 meteor npm run lint && \
-meteor npm run testunit -- --exclude app/models/server/models/Sessions.tests.js
+meteor npm run testunit && \
+meteor npm run testunit-client

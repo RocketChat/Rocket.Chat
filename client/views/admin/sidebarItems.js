@@ -1,6 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-
-import { hasPermission, hasRole } from '../../../app/authorization/client';
+import { hasPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {
@@ -54,31 +52,25 @@ export const {
 		href: 'custom-sounds',
 		i18nLabel: 'Custom_Sounds',
 		icon: 'volume',
-		permissionGranted: () => hasPermission(['manage-sounds']),
+		permissionGranted: () => hasPermission('manage-sounds'),
 	},
 	{
 		icon: 'discover',
 		href: 'federation-dashboard',
 		i18nLabel: 'Federation Dashboard',
-		permissionGranted: () => hasRole(Meteor.userId(), 'admin'),
-	},
-	{
-		icon: 'cube',
-		href: 'admin-apps',
-		i18nLabel: 'Apps',
-		permissionGranted: () => hasPermission(['manage-apps']),
+		permissionGranted: () => hasPermission('view-federation-data'),
 	},
 	{
 		icon: 'cube',
 		href: 'admin-marketplace',
-		i18nLabel: 'Marketplace',
-		permissionGranted: () => hasPermission(['manage-apps']),
+		i18nLabel: 'Apps',
+		permissionGranted: () => hasPermission('manage-apps'),
 	},
 	{
 		icon: 'mail',
 		href: 'admin-email-inboxes',
 		i18nLabel: 'Email_Inboxes',
 		tag: 'Alpha',
-		permissionGranted: () => hasPermission(['manage-email-inbox']),
+		permissionGranted: () => hasPermission('manage-email-inbox'),
 	},
 ]);

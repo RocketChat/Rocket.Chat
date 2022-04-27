@@ -1,12 +1,4 @@
-import {
-	Accordion,
-	Field,
-	Select,
-	FieldGroup,
-	ToggleSwitch,
-	Tooltip,
-	Box,
-} from '@rocket.chat/fuselage';
+import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Tooltip, Box } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
 import { CustomSounds } from '../../../../app/custom-sounds/client';
@@ -15,13 +7,7 @@ import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
 const useCustomSoundsOptions = () =>
-	useMemo(
-		() =>
-			CustomSounds &&
-			CustomSounds.getList &&
-			CustomSounds.getList().map(({ _id, name }) => [_id, name]),
-		[],
-	);
+	useMemo(() => CustomSounds && CustomSounds.getList && CustomSounds.getList().map(({ _id, name }) => [_id, name]), []);
 
 const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
@@ -37,23 +23,13 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 
 	const { values, handlers, commit } = useForm(settings, onChange);
 
-	const {
-		newRoomNotification,
-		newMessageNotification,
-		muteFocusedConversations,
-		notificationsSoundVolume,
-	} = values;
+	const { newRoomNotification, newMessageNotification, muteFocusedConversations, notificationsSoundVolume } = values;
 
-	const {
-		handleNewRoomNotification,
-		handleNewMessageNotification,
-		handleMuteFocusedConversations,
-		handleNotificationsSoundVolume,
-	} = handlers;
+	const { handleNewRoomNotification, handleNewMessageNotification, handleMuteFocusedConversations, handleNotificationsSoundVolume } =
+		handlers;
 
 	const onChangeNotificationsSoundVolume = useCallback(
-		(e) =>
-			handleNotificationsSoundVolume(Math.max(0, Math.min(Number(e.currentTarget.value), 100))),
+		(e) => handleNotificationsSoundVolume(Math.max(0, Math.min(Number(e.currentTarget.value), 100))),
 		[handleNotificationsSoundVolume],
 	);
 
@@ -67,11 +43,7 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 						<Field>
 							<Field.Label>{t('New_Room_Notification')}</Field.Label>
 							<Field.Row>
-								<Select
-									value={newRoomNotification}
-									onChange={handleNewRoomNotification}
-									options={soundsList}
-								/>
+								<Select value={newRoomNotification} onChange={handleNewRoomNotification} options={soundsList} />
 							</Field.Row>
 						</Field>
 					),
@@ -82,11 +54,7 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 						<Field>
 							<Field.Label>{t('New_Message_Notification')}</Field.Label>
 							<Field.Row>
-								<Select
-									value={newMessageNotification}
-									onChange={handleNewMessageNotification}
-									options={soundsList}
-								/>
+								<Select value={newMessageNotification} onChange={handleNewMessageNotification} options={soundsList} />
 							</Field.Row>
 						</Field>
 					),
@@ -97,10 +65,7 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 							<Field.Label>{t('Mute_Focused_Conversations')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={muteFocusedConversations}
-									onChange={handleMuteFocusedConversations}
-								/>
+								<ToggleSwitch checked={muteFocusedConversations} onChange={handleMuteFocusedConversations} />
 							</Field.Row>
 						</Field>
 					),

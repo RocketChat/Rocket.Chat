@@ -1,9 +1,9 @@
-import { IUser } from '../../../definition/IUser';
+import { IUser, IRole } from '../../../definition/IUser';
 
 export type NPSVotePayload = {
 	userId: string;
 	npsId: string;
-	roles: string[];
+	roles: IRole['_id'][];
 	score: number;
 	comment: string;
 };

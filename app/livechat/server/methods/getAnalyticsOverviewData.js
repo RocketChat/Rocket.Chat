@@ -15,13 +15,17 @@ Meteor.methods({
 		}
 
 		if (!(options.analyticsOptions && options.analyticsOptions.name)) {
-			console.error('Incorrect analytics options');
+			Livechat.logger.error('Incorrect analytics options');
 			return;
 		}
 
 		const user = Users.findOneById(userId, { fields: { _id: 1, utcOffset: 1, language: 1 } });
 		const language = user.language || settings.get('Language') || 'en';
 
-		return Livechat.Analytics.getAnalyticsOverviewData({ ...options, utcOffset: user?.utcOffset || 0, language });
+		return Livechat.Analytics.getAnalyticsOverviewData({
+			...options,
+			utcOffset: user?.utcOffset || 0,
+			language,
+		});
 	},
 });

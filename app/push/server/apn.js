@@ -47,10 +47,10 @@ export const sendAPN = ({ userToken, notification, _removeToken }) => {
 
 	apnConnection.send(note, userToken).then((response) => {
 		response.failed.forEach((failure) => {
-			logger.debug(`Got error code ${ failure.status } for token ${ userToken }`);
+			logger.debug(`Got error code ${failure.status} for token ${userToken}`);
 
 			if (['400', '410'].includes(failure.status)) {
-				logger.debug(`Removing token ${ userToken }`);
+				logger.debug(`Removing token ${userToken}`);
 				_removeToken({
 					apn: userToken,
 				});
@@ -70,7 +70,7 @@ export const initAPN = ({ options, absoluteUrl }) => {
 	// Give the user warnings about development settings
 	if (options.apn.development) {
 		// This flag is normally set by the configuration file
-		console.warn('WARNING: Push APN is using development key and certificate');
+		logger.warn('WARNING: Push APN is using development key and certificate');
 	} else if (options.apn.gateway) {
 		// We check the apn gateway i the options, we could risk shipping
 		// server into production while using the production configuration.
@@ -83,39 +83,39 @@ export const initAPN = ({ options, absoluteUrl }) => {
 
 		if (options.apn.gateway === 'gateway.sandbox.push.apple.com') {
 			// Using the development sandbox
-			console.warn('WARNING: Push APN is in development mode');
+			logger.warn('WARNING: Push APN is in development mode');
 		} else if (options.apn.gateway === 'gateway.push.apple.com') {
 			// In production - but warn if we are running on localhost
 			if (/http:\/\/localhost/.test(absoluteUrl)) {
-				console.warn('WARNING: Push APN is configured to production mode - but server is running from localhost');
+				logger.warn('WARNING: Push APN is configured to production mode - but server is running from localhost');
 			}
 		} else {
 			// Warn about gateways we dont know about
-			console.warn(`WARNING: Push APN unknown gateway "${ options.apn.gateway }"`);
+			logger.warn(`WARNING: Push APN unknown gateway "${options.apn.gateway}"`);
 		}
 	} else if (options.apn.production) {
 		if (/http:\/\/localhost/.test(absoluteUrl)) {
-			console.warn('WARNING: Push APN is configured to production mode - but server is running from localhost');
+			logger.warn('WARNING: Push APN is configured to production mode - but server is running from localhost');
 		}
 	} else {
-		console.warn('WARNING: Push APN is in development mode');
+		logger.warn('WARNING: Push APN is in development mode');
 	}
 
 	// Check certificate data
 	if (!options.apn.cert || !options.apn.cert.length) {
-		console.error('ERROR: Push server could not find cert');
+		logger.error('ERROR: Push server could not find cert');
 	}
 
 	// Check key data
 	if (!options.apn.key || !options.apn.key.length) {
-		console.error('ERROR: Push server could not find key');
+		logger.error('ERROR: Push server could not find key');
 	}
 
 	// Rig apn connection
 	try {
 		apnConnection = new apn.Provider(options.apn);
 	} catch (e) {
-		console.error('Error trying to initialize APN');
-		console.error(e);
+		logger.error('Error trying to initialize APN');
+		logger.error(e);
 	}
 };

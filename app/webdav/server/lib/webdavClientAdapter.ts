@@ -1,6 +1,4 @@
-import { createClient } from 'webdav';
-
-import type { WebDavClient, Stat } from '../../../../definition/webdav';
+import { createClient, WebDavClient, Stat } from 'webdav';
 
 export type ServerCredentials = {
 	token?: string;
@@ -13,18 +11,12 @@ export class WebdavClientAdapter {
 
 	constructor(serverConfig: string, cred: ServerCredentials) {
 		if (cred.token) {
-			this._client = createClient(
-				serverConfig,
-				{ token: cred.token },
-			);
+			this._client = createClient(serverConfig, { token: cred.token });
 		} else {
-			this._client = createClient(
-				serverConfig,
-				{
-					username: cred.username,
-					password: cred.password,
-				},
-			);
+			this._client = createClient(serverConfig, {
+				username: cred.username,
+				password: cred.password,
+			});
 		}
 	}
 
@@ -32,7 +24,9 @@ export class WebdavClientAdapter {
 		try {
 			return await this._client.stat(path);
 		} catch (error) {
-			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error checking if directory exists on webdav');
+			throw new Error(
+				error.response && error.response.statusText ? error.response.statusText : 'Error checking if directory exists on webdav',
+			);
 		}
 	}
 
@@ -54,7 +48,7 @@ export class WebdavClientAdapter {
 
 	async getFileContents(filename: string): Promise<Buffer> {
 		try {
-			return await this._client.getFileContents(filename) as Buffer;
+			return (await this._client.getFileContents(filename)) as Buffer;
 		} catch (error) {
 			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting file contents webdav');
 		}

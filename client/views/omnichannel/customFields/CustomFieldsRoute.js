@@ -3,11 +3,11 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomFieldsPage from './CustomFieldsPage';
 import EditCustomFieldsPage from './EditCustomFieldsPageContainer';
 import NewCustomFieldsPage from './NewCustomFieldsPage';
@@ -64,31 +64,13 @@ const CustomFieldsRoute = () => {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'field'}
-					direction={sort[1]}
-					active={sort[0] === '_id'}
-					onClick={onHeaderClick}
-					sort='_id'
-				>
+				<GenericTable.HeaderCell key={'field'} direction={sort[1]} active={sort[0] === '_id'} onClick={onHeaderClick} sort='_id'>
 					{t('Field')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'label'}
-					direction={sort[1]}
-					active={sort[0] === 'label'}
-					onClick={onHeaderClick}
-					sort='label'
-				>
+				<GenericTable.HeaderCell key={'label'} direction={sort[1]} active={sort[0] === 'label'} onClick={onHeaderClick} sort='label'>
 					{t('Label')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'scope'}
-					direction={sort[1]}
-					active={sort[0] === 'scope'}
-					onClick={onHeaderClick}
-					sort='scope'
-				>
+				<GenericTable.HeaderCell key={'scope'} direction={sort[1]} active={sort[0] === 'scope'} onClick={onHeaderClick} sort='scope'>
 					{t('Scope')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -109,20 +91,11 @@ const CustomFieldsRoute = () => {
 
 	const renderRow = useCallback(
 		({ label, _id, scope, visibility }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{_id}</Table.Cell>
 				<Table.Cell withTruncatedText>{label}</Table.Cell>
 				<Table.Cell withTruncatedText>{scope === 'visitor' ? t('Visitor') : t('Room')}</Table.Cell>
-				<Table.Cell withTruncatedText>
-					{visibility === 'visible' ? t('Visible') : t('Hidden')}
-				</Table.Cell>
+				<Table.Cell withTruncatedText>{visibility === 'visible' ? t('Visible') : t('Hidden')}</Table.Cell>
 				<RemoveCustomFieldButton _id={_id} reload={reload} />
 			</Table.Row>
 		),

@@ -3,6 +3,8 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 import { Storage } from '@google-cloud/storage';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
+
 /**
  * GoogleStorage store
  * @param options
@@ -15,11 +17,13 @@ export class GoogleStorageStore extends UploadFS.Store {
 		const gcs = new Storage(options.connection);
 		this.bucket = gcs.bucket(options.bucket);
 
-		options.getPath = options.getPath || function(file) {
-			return file._id;
-		};
+		options.getPath =
+			options.getPath ||
+			function (file) {
+				return file._id;
+			};
 
-		this.getPath = function(file) {
+		this.getPath = function (file) {
 			if (file.GoogleStorage) {
 				return file.GoogleStorage.path;
 			}
@@ -30,7 +34,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 			}
 		};
 
-		this.getRedirectURL = function(file, forceDownload = false, callback) {
+		this.getRedirectURL = function (file, forceDownload = false, callback) {
 			const params = {
 				action: 'read',
 				responseDisposition: forceDownload ? 'attachment' : 'inline',
@@ -46,7 +50,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = function(file, callback) {
+		this.create = function (file, callback) {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -66,11 +70,11 @@ export class GoogleStorageStore extends UploadFS.Store {
 		 * @param fileId
 		 * @param callback
 		 */
-		this.delete = function(fileId, callback) {
+		this.delete = function (fileId, callback) {
 			const file = this.getCollection().findOne({ _id: fileId });
-			this.bucket.file(this.getPath(file)).delete(function(err, data) {
+			this.bucket.file(this.getPath(file)).delete(function (err, data) {
 				if (err) {
-					console.error(err);
+					SystemLogger.error(err);
 				}
 
 				callback && callback(err, data);
@@ -84,7 +88,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function(fileId, file, options = {}) {
+		this.getReadStream = function (fileId, file, options = {}) {
 			const config = {};
 
 			if (options.start != null) {
@@ -105,12 +109,12 @@ export class GoogleStorageStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getWriteStream = function(fileId, file/* , options*/) {
+		this.getWriteStream = function (fileId, file /* , options*/) {
 			return this.bucket.file(this.getPath(file)).createWriteStream({
 				gzip: false,
 				metadata: {
 					contentType: file.type,
-					contentDisposition: `inline; filename=${ file.name }`,
+					contentDisposition: `inline; filename=${file.name}`,
 					// metadata: {
 					// 	custom: 'metadata'
 					// }

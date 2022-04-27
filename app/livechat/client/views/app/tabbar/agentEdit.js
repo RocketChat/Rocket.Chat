@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import toastr from 'toastr';
 
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './agentEdit.html';
 import { hasPermission } from '../../../../../authorization';
-import { t, handleError, APIClient } from '../../../../../utils/client';
+import { t, APIClient } from '../../../../../utils/client';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 
 Template.agentEdit.helpers({
 	canEditDepartment() {
@@ -82,7 +83,7 @@ Template.agentEdit.events({
 				return handleError(error);
 			}
 
-			toastr.success(t('Saved'));
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			return this.back && this.back(_id);
 		});
 	},
@@ -95,7 +96,11 @@ Template.agentEdit.events({
 			return;
 		}
 
-		const { currentTarget: { dataset: { id } } } = e;
+		const {
+			currentTarget: {
+				dataset: { id },
+			},
+		} = e;
 		const agentDepartments = instance.agentDepartments.get();
 		instance.agentDepartments.set(agentDepartments.filter((el) => el !== id));
 	},
@@ -120,7 +125,7 @@ Template.agentEdit.events({
 	},
 });
 
-Template.agentEdit.onCreated(async function() {
+Template.agentEdit.onCreated(async function () {
 	this.agent = new ReactiveVar();
 	this.ready = new ReactiveVar(false);
 	this.agentDepartments = new ReactiveVar([]);
@@ -141,8 +146,8 @@ Template.agentEdit.onCreated(async function() {
 			return;
 		}
 
-		const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
-		const { departments } = await APIClient.v1.get(`livechat/agents/${ agentId }/departments`);
+		const { user } = await APIClient.v1.get(`livechat/users/agent/${agentId}`);
+		const { departments } = await APIClient.v1.get(`livechat/agents/${agentId}/departments`);
 		this.agent.set(user);
 		this.agentDepartments.set((departments || []).map((department) => department.departmentId));
 		this.ready.set(true);

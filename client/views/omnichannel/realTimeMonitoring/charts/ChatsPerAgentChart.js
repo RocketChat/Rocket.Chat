@@ -12,7 +12,7 @@ const initialData = {
 };
 
 const init = (canvas, context, t) =>
-	drawLineChart(canvas, context, [t('Open'), t('Closed')], [], [[], []], {
+	drawLineChart(canvas, context, [t('Open'), t('Closed'), t('On_Hold_Chats')], [], [[], []], {
 		legends: true,
 		anim: true,
 		smallTicks: true,
@@ -31,11 +31,7 @@ const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const {
-		value: data,
-		phase: state,
-		reload,
-	} = useEndpointData('livechat/analytics/dashboards/charts/chats-per-agent', params);
+	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/chats-per-agent', params);
 
 	reloadRef.current.chatsPerAgentChart = reload;
 
@@ -53,7 +49,7 @@ const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
 			if (chartData && chartData.success) {
 				delete chartData.success;
 				Object.entries(chartData).forEach(([name, value]) => {
-					updateChartData(name, [value.open, value.closed]);
+					updateChartData(name, [value.open, value.closed, value.onhold]);
 				});
 			}
 		}

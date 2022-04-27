@@ -23,8 +23,7 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
 	const showingResultsLabel = useCallback(
-		({ count, current, itemsPerPage }) =>
-			t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count),
+		({ count, current, itemsPerPage }) => t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count),
 		[t],
 	);
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
@@ -40,9 +39,7 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 								indeterminate={usersCount > 0 && usersCount !== users.length}
 								onChange={(): void => {
 									setUsers((users) => {
-										const hasCheckedDeletedUsers = users.some(
-											({ is_deleted, do_import }) => is_deleted && do_import,
-										);
+										const hasCheckedDeletedUsers = users.some(({ is_deleted, do_import }) => is_deleted && do_import);
 										const isChecking = usersCount === 0;
 
 										if (isChecking) {
@@ -50,9 +47,7 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 										}
 
 										if (hasCheckedDeletedUsers) {
-											return users.map((user) =>
-												user.is_deleted ? { ...user, do_import: false } : user,
-											);
+											return users.map((user) => (user.is_deleted ? { ...user, do_import: false } : user));
 										}
 
 										return users.map((user) => ({ ...user, do_import: false }));
@@ -73,19 +68,13 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 									checked={user.do_import}
 									onChange={(event: ChangeEvent<HTMLInputElement>): void => {
 										const { checked } = event.currentTarget;
-										setUsers((users) =>
-											users.map((_user) =>
-												_user === user ? { ..._user, do_import: checked } : _user,
-											),
-										);
+										setUsers((users) => users.map((_user) => (_user === user ? { ..._user, do_import: checked } : _user)));
 									}}
 								/>
 							</Table.Cell>
 							<Table.Cell>{user.username}</Table.Cell>
 							<Table.Cell>{user.email}</Table.Cell>
-							<Table.Cell align='end'>
-								{user.is_deleted && <Tag variant='danger'>{t('Deleted')}</Tag>}
-							</Table.Cell>
+							<Table.Cell align='end'>{user.is_deleted && <Tag variant='danger'>{t('Deleted')}</Tag>}</Table.Cell>
 						</Table.Row>
 					))}
 				</Table.Body>

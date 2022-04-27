@@ -3,11 +3,13 @@ import _ from 'underscore';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { settings } from '../../../settings';
 import '../../ufs/Webdav/server.js';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const get = function(file, req, res) {
-	this.store.getReadStream(file._id, file)
+const get = function (file, req, res) {
+	this.store
+		.getReadStream(file._id, file)
 		.on('error', () => {
-			console.error('An error ocurred when fetching the file');
+			SystemLogger.error('An error ocurred when fetching the file');
 			res.writeHead(503);
 			res.end();
 		})
@@ -17,7 +19,7 @@ const get = function(file, req, res) {
 		.on('end', res.end.bind(res));
 };
 
-const copy = function(file, out) {
+const copy = function (file, out) {
 	this.store.getReadStream(file._id, file).pipe(out);
 };
 
@@ -42,7 +44,7 @@ const WebdavUserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(function() {
+const configure = _.debounce(function () {
 	const uploadFolderPath = settings.get('FileUpload_Webdav_Upload_Folder_Path');
 	const server = settings.get('FileUpload_Webdav_Server_URL');
 	const username = settings.get('FileUpload_Webdav_Username');
@@ -68,4 +70,4 @@ const configure = _.debounce(function() {
 	WebdavUserDataFiles.store = FileUpload.configureUploadsStore('Webdav', WebdavUserDataFiles.name, config);
 }, 500);
 
-settings.get(/^FileUpload_Webdav_/, configure);
+settings.watchByRegex(/^FileUpload_Webdav_/, configure);

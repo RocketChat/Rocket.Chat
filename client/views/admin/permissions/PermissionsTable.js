@@ -2,48 +2,17 @@ import { Margins, Icon, Tabs, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useCallback } from 'react';
 
-import { ChatPermissions } from '../../../../app/authorization/client/lib/ChatPermissions';
-import { CONSTANTS } from '../../../../app/authorization/lib';
-import { Roles } from '../../../../app/models/client';
 import GenericTable from '../../../components/GenericTable';
 import Page from '../../../components/Page';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import FilterComponent from './FilterComponent';
 import PermissionRow from './PermissionRow';
 import PermissionsContextBar from './PermissionsContextBar';
 import RoleHeader from './RoleHeader';
-
-const usePermissionsAndRoles = (type = 'permissions', filter = '', limit = 25, skip = 0) => {
-	const getPermissions = useCallback(() => {
-		const filterRegExp = new RegExp(filter, 'i');
-
-		return ChatPermissions.find(
-			{
-				level:
-					type === 'permissions' ? { $ne: CONSTANTS.SETTINGS_LEVEL } : CONSTANTS.SETTINGS_LEVEL,
-				_id: filterRegExp,
-			},
-			{
-				sort: {
-					_id: 1,
-				},
-				skip,
-				limit,
-			},
-		);
-	}, [filter, limit, skip, type]);
-
-	const getRoles = useMutableCallback(() => Roles.find().fetch(), []);
-
-	const permissions = useReactiveValue(getPermissions);
-	const roles = useReactiveValue(getRoles);
-
-	return [permissions.fetch(), permissions.count(false), roles];
-};
+import { usePermissionsAndRoles } from './hooks/usePermissionsAndRoles';
 
 const PermissionsTable = () => {
 	const t = useTranslation();
@@ -91,24 +60,16 @@ const PermissionsTable = () => {
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Permissions')}>
-					<Button small square onClick={handleAdd}>
-						<Icon name='plus' />
+					<Button primary onClick={handleAdd} aria-label={t('New')}>
+						<Icon name='plus' /> {t('New_role')}
 					</Button>
 				</Page.Header>
 				<Margins blockEnd='x16'>
 					<Tabs>
-						<Tabs.Item
-							selected={type === 'permissions'}
-							onClick={handlePermissionsTab}
-							disabled={!canViewPermission}
-						>
+						<Tabs.Item selected={type === 'permissions'} onClick={handlePermissionsTab} disabled={!canViewPermission}>
 							{t('Permissions')}
 						</Tabs.Item>
-						<Tabs.Item
-							selected={type === 'settings'}
-							onClick={handleSettingsTab}
-							disabled={!canViewSettingPermission}
-						>
+						<Tabs.Item selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
 							{t('Settings')}
 						</Tabs.Item>
 					</Tabs>
@@ -120,8 +81,8 @@ const PermissionsTable = () => {
 							header={
 								<>
 									<GenericTable.HeaderCell width='x120'>{t('Name')}</GenericTable.HeaderCell>
-									{roleList.map(({ _id, description }) => (
-										<RoleHeader key={_id} _id={_id} description={description} router={router} />
+									{roleList.map(({ _id, name, description }) => (
+										<RoleHeader key={_id} _id={_id} name={name} description={description} router={router} />
 									))}
 								</>
 							}

@@ -30,15 +30,19 @@ function wrapMeteorDDPCalls(): void {
 			return _send.call(Meteor.connection, message);
 		}
 
-		const endpoint = Tracker.nonreactive(() =>
-			!Meteor.userId() ? 'method.callAnon' : 'method.call',
-		);
+		const endpoint = Tracker.nonreactive(() => (!Meteor.userId() ? 'method.callAnon' : 'method.call'));
 
 		const restParams = {
-			message: DDPCommon.stringifyDDP(message),
+			message: DDPCommon.stringifyDDP({ ...message }),
 		};
 
 		const processResult = (_message: any): void => {
+			// Prevent error on reconnections and method retry.
+			// On those cases the API will be called 2 times but
+			// the handler will be deleted after the first execution.
+			if (!Meteor.connection._methodInvokers[message.id]) {
+				return;
+			}
 			Meteor.connection._livedata_data({
 				msg: 'updated',
 				methods: [message.id],
@@ -51,7 +55,7 @@ function wrapMeteorDDPCalls(): void {
 			.then(({ message: _message }) => {
 				processResult(_message);
 				if (message.method === 'login') {
-					const parsedMessage = DDPCommon.parseDDP(_message);
+					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
 					if (parsedMessage.result?.token) {
 						Meteor.loginWithToken(parsedMessage.result.token);
 					}

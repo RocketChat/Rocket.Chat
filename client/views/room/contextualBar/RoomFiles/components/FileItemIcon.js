@@ -5,13 +5,7 @@ const FileItemIcon = ({ type }) => {
 	switch (type) {
 		case 'application/vnd.ms-excel':
 			icon = (
-				<svg
-					width='50'
-					height='49'
-					viewBox='0 0 50 49'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1ECB92' />
 					<path
 						d='M14.0065 16.5001C13.3153 16.5001 12.7549 17.0598 12.7549 17.7501V40.2509C12.7549 40.9413 13.3153 41.5009 14.0065 41.5009H44.0462C44.7375 41.5009 45.2979 40.9413 45.2979 40.2509V17.7501C45.2979 17.0598 44.7375 16.5001 44.0462 16.5001H14.0065ZM15.2582 23.7775V19.0001H21.0992V23.7775H15.2582ZM15.2582 26.2775H21.0992V31.8135H15.2582V26.2775ZM15.2582 34.3135H21.0992V39.0009H15.2582V34.3135ZM23.6025 39.0009V34.3135H42.7946V39.0009H23.6025ZM42.7946 31.8135H23.6025V26.2775H42.7946V31.8135ZM42.7946 23.7775H23.6025V19.0001H42.7946V23.7775Z'
@@ -22,13 +16,7 @@ const FileItemIcon = ({ type }) => {
 			break;
 		case 'application/msword':
 			icon = (
-				<svg
-					width='50'
-					height='49'
-					viewBox='0 0 50 49'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1D74F5' />{' '}
 					<path
 						fillRule='evenodd'
@@ -41,13 +29,7 @@ const FileItemIcon = ({ type }) => {
 			break;
 		case 'audio':
 			icon = (
-				<svg
-					width='50'
-					height='49'
-					viewBox='0 0 50 49'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1D74F5' />
 					<path
 						d='M40.6439 15.514C40.9482 15.7509 41.1262 16.1147 41.1262 16.5V34H41.1219C41.1248 34.0677 41.1262 34.1358 41.1262 34.2043C41.1262 36.9016 38.8847 39.0882 36.1196 39.0882C33.3545 39.0882 31.113 36.9016 31.113 34.2043C31.113 31.5069 33.3545 29.3203 36.1196 29.3203C37.0315 29.3203 37.8865 29.5581 38.6229 29.9737V18.1042L23.6031 21.8853V37.8673C23.6031 40.5646 21.3615 42.7515 18.5965 42.7515C15.8314 42.7515 13.5898 40.5649 13.5898 37.8675C13.5898 35.1702 15.8314 32.9836 18.5965 32.9836C19.5084 32.9836 20.3634 33.2214 21.0998 33.637V20.9113C21.0998 20.3386 21.4894 19.8392 22.0455 19.6992L39.5686 15.2879C39.9428 15.1937 40.3395 15.2772 40.6439 15.514Z'
@@ -58,13 +40,7 @@ const FileItemIcon = ({ type }) => {
 			break;
 		case 'video':
 			icon = (
-				<svg
-					width='50'
-					height='49'
-					viewBox='0 0 50 49'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1D74F5' />
 					<path
 						d='M20.2651 17.75C19.5738 17.75 19.0134 18.3096 19.0134 19C19.0134 19.6904 19.5738 20.25 20.2651 20.25H30.2783C30.9696 20.25 31.53 19.6904 31.53 19C31.53 18.3096 30.9696 17.75 30.2783 17.75H20.2651Z'
@@ -79,31 +55,16 @@ const FileItemIcon = ({ type }) => {
 			break;
 		case 'application/pdf':
 			icon = (
-				<svg
-					width='50'
-					height='49'
-					viewBox='0 0 50 49'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#F5455C' />
 					<path d='M30 11C39.3888 11 47 18.6112 47 28H30V11Z' fill='white' />
-					<path
-						d='M11 30C11 20.6112 18.6112 13 28 13V30H45C45 39.3888 37.3888 47 28 47C18.6112 47 11 39.3888 11 30Z'
-						fill='white'
-					/>
+					<path d='M11 30C11 20.6112 18.6112 13 28 13V30H45C45 39.3888 37.3888 47 28 47C18.6112 47 11 39.3888 11 30Z' fill='white' />
 				</svg>
 			);
 			break;
 		case 'application/x-zip-compressed':
 			icon = (
-				<svg
-					width='50'
-					height='49'
-					viewBox='0 0 50 49'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='50' height='49' viewBox='0 0 50 49' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#F3BE08' />
 					<path
 						d='M24.0195 14.8333C24.0195 14.3731 24.3931 14 24.854 14H28.1917C28.6526 14 29.0261 14.3731 29.0261 14.8333V19H24.854C24.3931 19 24.0195 18.6269 24.0195 18.1667V14.8333Z'
@@ -117,10 +78,7 @@ const FileItemIcon = ({ type }) => {
 						d='M24.0195 24.8333C24.0195 24.3731 24.3931 24 24.854 24H29.0261V29H24.854C24.3931 29 24.0195 28.6269 24.0195 28.1667V24.8333Z'
 						fill='white'
 					/>
-					<path
-						d='M29.0261 29H33.1983C33.6592 29 34.0328 29.3731 34.0328 29.8333V34H29.0261V29Z'
-						fill='white'
-					/>
+					<path d='M29.0261 29H33.1983C33.6592 29 34.0328 29.3731 34.0328 29.8333V34H29.0261V29Z' fill='white' />
 					<path
 						fillRule='evenodd'
 						clipRule='evenodd'
@@ -132,13 +90,7 @@ const FileItemIcon = ({ type }) => {
 			break;
 		default:
 			icon = (
-				<svg
-					width='48'
-					height='48'
-					viewBox='0 0 48 48'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<rect width='48' height='48' rx='3' fill='#1D74F5' />
 					<path
 						fillRule='evenodd'

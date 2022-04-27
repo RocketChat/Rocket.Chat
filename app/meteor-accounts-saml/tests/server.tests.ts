@@ -1,7 +1,4 @@
-/* eslint-env mocha */
-import 'babel-polyfill';
-
-import chai from 'chai';
+import { expect } from 'chai';
 
 import '../../lib/tests/server.mocks.js';
 import { AuthorizeRequest } from '../server/lib/generators/AuthorizeRequest';
@@ -38,16 +35,15 @@ import {
 	privateKeyCert,
 	privateKey,
 } from './data';
-import '../../../definition/xml-encryption';
-
-const { expect } = chai;
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
 		describe('AuthorizeRequest.generate', () => {
 			it('should use the custom templates to generate the request', () => {
 				const authorizeRequest = AuthorizeRequest.generate(serviceProviderOptions);
-				expect(authorizeRequest.request).to.be.equal('<authRequest><NameID IdentifierFormat="email"/> <authnContext Comparison="Whatever">Password</authnContext> </authRequest>');
+				expect(authorizeRequest.request).to.be.equal(
+					'<authRequest><NameID IdentifierFormat="email"/> <authnContext Comparison="Whatever">Password</authnContext> </authRequest>',
+				);
 			});
 
 			it('should include the unique ID on the request', () => {
@@ -173,8 +169,7 @@ describe('SAML', () => {
 
 		describe('LogoutResponse.validate', () => {
 			it('should extract the inResponseTo from the response', () => {
-				const logoutResponse = simpleLogoutResponse
-					.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success');
+				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success');
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 
 				parser.validate(logoutResponse, (err, inResponseTo) => {
@@ -184,8 +179,7 @@ describe('SAML', () => {
 			});
 
 			it('should reject a response with a non-success StatusCode', () => {
-				const logoutResponse = simpleLogoutResponse
-					.replace('[STATUSCODE]', 'Anything');
+				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'Anything');
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 
 				parser.validate(logoutResponse, (err, inResponseTo) => {
@@ -288,9 +282,7 @@ describe('SAML', () => {
 				const notBefore = new Date();
 				notBefore.setMinutes(notBefore.getMinutes() - 3);
 
-				const response = samlResponse
-					.replace('[NOTBEFORE]', notBefore.toISOString())
-					.replace('[NOTONORAFTER]', new Date().toISOString());
+				const response = samlResponse.replace('[NOTBEFORE]', notBefore.toISOString()).replace('[NOTONORAFTER]', new Date().toISOString());
 
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(response, (err, profile, loggedOut) => {
@@ -307,9 +299,7 @@ describe('SAML', () => {
 				const notOnOrAfter = new Date();
 				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
 
-				const response = samlResponse
-					.replace('[NOTBEFORE]', notBefore.toISOString())
-					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+				const response = samlResponse.replace('[NOTBEFORE]', notBefore.toISOString()).replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(response, (err, profile, loggedOut) => {
@@ -318,7 +308,6 @@ describe('SAML', () => {
 					expect(loggedOut).to.be.false;
 				});
 			});
-
 
 			it('should fail to parse an invalid xml', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
@@ -515,9 +504,7 @@ describe('SAML', () => {
 				const notOnOrAfter = new Date();
 				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
 
-				const response = samlResponse
-					.replace('[NOTBEFORE]', notBefore.toISOString())
-					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+				const response = samlResponse.replace('[NOTBEFORE]', notBefore.toISOString()).replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(response, (err, data, loggedOut) => {
@@ -632,13 +619,9 @@ describe('SAML', () => {
 					username: 'anotherUsername',
 					email: 'singleEmail',
 					name: 'anotherName',
-					customField1: 'customField1',
-					customField2: 'customField2',
-					customField3: 'customField3',
 				};
 
 				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
-				globalSettings.roleAttributeName = 'roles';
 
 				SAMLUtils.updateGlobalSettings(globalSettings);
 				SAMLUtils.relayState = '[RelayState]';
@@ -653,15 +636,8 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('testing@server.com');
 				expect(userObject).to.have.property('fullName').that.is.equal('[AnotherName]');
 				expect(userObject).to.have.property('username').that.is.equal('[AnotherUserName]');
-				expect(userObject).to.have.property('roles').that.is.an('array').with.members(['user', 'ruler', 'admin', 'king', 'president', 'governor', 'mayor']);
+				expect(userObject).to.not.have.property('roles');
 				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny', 'random', 'babies']);
-
-				const map = new Map();
-				map.set('customField1', 'value1');
-				map.set('customField2', 'value2');
-				map.set('customField3', 'value3');
-
-				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 
 			it('should join array values if username receives an array of values', () => {
@@ -684,11 +660,7 @@ describe('SAML', () => {
 			it('should support `channels` attribute with multiple values', () => {
 				const channelsProfile = {
 					...profile,
-					channels: [
-						'pets',
-						'pics',
-						'funny',
-					],
+					channels: ['pets', 'pics', 'funny'],
 				};
 
 				const userObject = SAMLUtils.mapProfileToUserObject(channelsProfile);
@@ -738,37 +710,6 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('username').that.is.equal('[username]');
 			});
 
-			it('should load multiple roles from the roleAttributeName when it has multiple values', () => {
-				const multipleRoles = {
-					...profile,
-					roles: ['role1', 'role2'],
-				};
-
-				const userObject = SAMLUtils.mapProfileToUserObject(multipleRoles);
-
-				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['role1', 'role2']);
-			});
-
-			it('should assign the default role when the roleAttributeName is missing', () => {
-				const { globalSettings } = SAMLUtils;
-				globalSettings.roleAttributeName = '';
-				SAMLUtils.updateGlobalSettings(globalSettings);
-
-				const userObject = SAMLUtils.mapProfileToUserObject(profile);
-
-				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['user']);
-			});
-
-			it('should assign the default role when the value of the role attribute is missing', () => {
-				const { globalSettings } = SAMLUtils;
-				globalSettings.roleAttributeName = 'inexistentField';
-				SAMLUtils.updateGlobalSettings(globalSettings);
-
-				const userObject = SAMLUtils.mapProfileToUserObject(profile);
-
-				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['user']);
-			});
-
 			it('should run custom regexes when one is used', () => {
 				const { globalSettings } = SAMLUtils;
 
@@ -801,10 +742,7 @@ describe('SAML', () => {
 					},
 					email: 'singleEmail',
 					name: {
-						fieldNames: [
-							'anotherName',
-							'displayName',
-						],
+						fieldNames: ['anotherName', 'displayName'],
 						template: '__displayName__ (__anotherName__)',
 					},
 				};
@@ -831,10 +769,7 @@ describe('SAML', () => {
 					},
 					email: 'singleEmail',
 					name: {
-						fieldNames: [
-							'anotherName',
-							'displayName',
-						],
+						fieldNames: ['anotherName', 'displayName'],
 						regex: '\\[(.*)\\]',
 						template: '__displayName__ (__regex__)',
 					},
@@ -882,7 +817,6 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('user-1');
 			});
 
-
 			it('should collect the values of every attribute on the field map', () => {
 				const { globalSettings } = SAMLUtils;
 
@@ -891,18 +825,7 @@ describe('SAML', () => {
 					email: 'singleEmail',
 					name: 'anotherName',
 					others: {
-						fieldNames: [
-							'issuer',
-							'sessionIndex',
-							'nameID',
-							'displayName',
-							'username',
-							'roles',
-							'otherRoles',
-							'language',
-							'channels',
-							'customField1',
-						],
+						fieldNames: ['issuer', 'sessionIndex', 'nameID', 'displayName', 'username', 'roles', 'otherRoles', 'language', 'channels'],
 					},
 				};
 
@@ -912,21 +835,23 @@ describe('SAML', () => {
 				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object');
-				expect(userObject).to.have.property('attributeList').that.is.a('Map').that.have.keys([
-					'anotherUsername',
-					'singleEmail',
-					'anotherName',
-					'issuer',
-					'sessionIndex',
-					'nameID',
-					'displayName',
-					'username',
-					'roles',
-					'otherRoles',
-					'language',
-					'channels',
-					'customField1',
-				]);
+				expect(userObject)
+					.to.have.property('attributeList')
+					.that.is.a('Map')
+					.that.have.keys([
+						'anotherUsername',
+						'singleEmail',
+						'anotherName',
+						'issuer',
+						'sessionIndex',
+						'nameID',
+						'displayName',
+						'username',
+						'roles',
+						'otherRoles',
+						'language',
+						'channels',
+					]);
 
 				// Workaround because chai doesn't handle Maps very well
 				for (const [key, value] of userObject.attributeList) {
@@ -1001,11 +926,9 @@ describe('SAML', () => {
 						template: 'user-__uid__',
 					},
 					email: 'email',
-					epa: 'eduPersonAffiliation',
 				};
 
 				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
-				globalSettings.roleAttributeName = 'roles';
 
 				SAMLUtils.updateGlobalSettings(globalSettings);
 				SAMLUtils.relayState = '[RelayState]';
@@ -1024,8 +947,6 @@ describe('SAML', () => {
 
 				const map = new Map();
 				map.set('epa', 'group1');
-
-				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 		});
 	});

@@ -1,20 +1,28 @@
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 
-function getCustomOAuthServices(): Record<string, {
-	enabled: boolean;
-	mergeRoles: boolean;
-	users: number;
-}> {
-	const customOauth = settings.get(/Accounts_OAuth_Custom-[^-]+$/mi);
-	return Object.fromEntries(customOauth.map(({ key, value }) => {
-		const name = key.replace('Accounts_OAuth_Custom-', '');
-		return [name, {
-			enabled: Boolean(value),
-			mergeRoles: Boolean(settings.get(`Accounts_OAuth_Custom-${ name }-merge_roles`)),
-			users: Users.countActiveUsersByService(name),
-		}];
-	}));
+function getCustomOAuthServices(): Record<
+	string,
+	{
+		enabled: boolean;
+		mergeRoles: boolean;
+		users: number;
+	}
+> {
+	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/im);
+	return Object.fromEntries(
+		Object.entries(customOauth).map(([key, value]) => {
+			const name = key.replace('Accounts_OAuth_Custom-', '');
+			return [
+				name,
+				{
+					enabled: Boolean(value),
+					mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${name}-merge_roles`),
+					users: Users.countActiveUsersByService(name),
+				},
+			];
+		}),
+	);
 }
 
 export function getServicesStatistics(): Record<string, unknown> {
@@ -25,10 +33,10 @@ export function getServicesStatistics(): Record<string, unknown> {
 			loginFallback: settings.get('LDAP_Login_Fallback'),
 			encryption: settings.get('LDAP_Encryption'),
 			mergeUsers: settings.get('LDAP_Merge_Existing_Users'),
-			syncRoles: settings.get('LDAP_Sync_User_Data_Groups'),
-			syncRolesAutoRemove: settings.get('LDAP_Sync_User_Data_Groups_AutoRemove'),
-			syncData: settings.get('LDAP_Sync_User_Data'),
-			syncChannels: settings.get('LDAP_Sync_User_Data_Groups_AutoChannels'),
+			syncRoles: settings.get('LDAP_Sync_User_Data_Roles'),
+			syncRolesAutoRemove: settings.get('LDAP_Sync_User_Data_Roles_AutoRemove'),
+			syncData: settings.get('LDAP_Sync_Custom_Fields'),
+			syncChannels: settings.get('LDAP_Sync_User_Data_Channels'),
 			syncAvatar: settings.get('LDAP_Sync_User_Avatar'),
 			groupFilter: settings.get('LDAP_Group_Filter_Enable'),
 			backgroundSync: {
@@ -40,7 +48,7 @@ export function getServicesStatistics(): Record<string, unknown> {
 			ee: {
 				syncActiveState: settings.get('LDAP_Sync_User_Active_State'),
 				syncTeams: settings.get('LDAP_Enable_LDAP_Groups_To_RC_Teams'),
-				syncRoles: settings.get('LDAP_Enable_LDAP_Roles_To_RC_Roles'),
+				syncRoles: settings.get('LDAP_Sync_User_Data_Roles'),
 			},
 		},
 		saml: {

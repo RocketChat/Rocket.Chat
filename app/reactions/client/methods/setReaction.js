@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Messages, Rooms, Subscriptions } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { emoji } from '../../../emoji';
-import { roomTypes } from '../../../utils/client';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 Meteor.methods({
 	setReaction(reaction, messageId) {
@@ -25,7 +25,7 @@ Meteor.methods({
 			return false;
 		}
 
-		if (roomTypes.readOnly(room._id, user._id)) {
+		if (roomCoordinator.readOnly(room._id, user)) {
 			return false;
 		}
 

@@ -1,4 +1,3 @@
-import './startup';
 import './methods/saveRoomSettings';
 
 export { saveRoomTopic } from './functions/saveRoomTopic';

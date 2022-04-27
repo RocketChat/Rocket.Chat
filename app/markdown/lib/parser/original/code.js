@@ -4,13 +4,18 @@
  */
 import { unescapeHTML } from '@rocket.chat/string-helpers';
 
-import hljs from '../../hljs';
+import hljs, { register } from '../../hljs';
 import { addAsToken } from './token';
 
 const inlinecode = (message) => {
 	// Support `text`
 	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) =>
-		addAsToken(message, `<span class=\"copyonly\">\`</span><span><code class=\"code-colors inline\">${ p1 }</code></span><span class=\"copyonly\">\`</span>${ p2 }`, 'inlinecode', { noHtml: match }),
+		addAsToken(
+			message,
+			`<span class=\"copyonly\">\`</span><span><code class=\"code-colors inline\">${p1}</code></span><span class=\"copyonly\">\`</span>${p2}`,
+			'inlinecode',
+			{ noHtml: match },
+		),
 	);
 };
 
@@ -20,9 +25,9 @@ const codeblocks = (message) => {
 
 	if (count) {
 		// Check if we need to add a final ```
-		if ((count % 2) > 0) {
-			message.html = `${ message.html }\n\`\`\``;
-			message.msg = `${ message.msg }\n\`\`\``;
+		if (count % 2 > 0) {
+			message.html = `${message.html}\n\`\`\``;
+			message.msg = `${message.msg}\n\`\`\``;
 		}
 
 		// Separate text in code blocks and non code blocks
@@ -40,15 +45,26 @@ const codeblocks = (message) => {
 				const emptyLanguage = lang === '' ? unescapeHTML(codeMatch[1] + codeMatch[2]) : unescapeHTML(codeMatch[2]);
 				const code = singleLine ? unescapeHTML(codeMatch[1]) : emptyLanguage;
 
-				const result = lang === '' ? hljs.highlightAuto(lang + code) : hljs.highlight(lang, code);
+				const result = (() => {
+					if (lang) {
+						try {
+							register(lang);
+							return hljs.highlight(lang, code);
+						} catch (error) {
+							console.error(error);
+						}
+					}
+					return hljs.highlightAuto(lang + code);
+				})();
 				const token = addAsToken(
 					message,
-					`<pre><code class='code-colors hljs ${ result.language }'><span class='copyonly'>\`\`\`<br></span>${ result.value }<span class='copyonly'><br>\`\`\`</span></code></pre>`,
+					`<pre><code class='code-colors hljs ${result.language}'><span class='copyonly'>\`\`\`<br></span>${result.value}<span class='copyonly'><br>\`\`\`</span></code></pre>`,
 					'code',
 					{
 						noHtml: codeMatch[0],
 						highlight: true,
-					});
+					},
+				);
 
 				msgParts[index] = token;
 			} else {

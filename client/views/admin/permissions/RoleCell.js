@@ -4,7 +4,7 @@ import React, { useState, memo } from 'react';
 
 import { AuthorizationUtils } from '../../../../app/authorization/lib';
 
-const RoleCell = ({ grantedRoles = [], _id, description, onChange, lineHovered, permissionId }) => {
+const RoleCell = ({ grantedRoles = [], _id, name, description, onChange, lineHovered, permissionId }) => {
 	const [granted, setGranted] = useState(() => !!grantedRoles.includes(_id));
 	const [loading, setLoading] = useState(false);
 
@@ -25,7 +25,7 @@ const RoleCell = ({ grantedRoles = [], _id, description, onChange, lineHovered, 
 				<CheckBox checked={granted} onChange={handleChange} disabled={isDisabled} />
 				{!loading && (
 					<Box display='inline' color='hint' invisible={!lineHovered}>
-						{description || _id}
+						{description || name}
 					</Box>
 				)}
 				{loading && <Throbber size='x12' display='inline-block' />}

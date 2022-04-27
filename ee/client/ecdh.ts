@@ -11,9 +11,7 @@ const sessionPromise = new Promise<ClientSession | void>((resolve) => {
 function init(session: ClientSession): void {
 	Meteor.connection._stream.allowConnection();
 
-	const _didMessage = Meteor.connection._stream.socket._didMessage.bind(
-		Meteor.connection._stream.socket,
-	);
+	const _didMessage = Meteor.connection._stream.socket._didMessage.bind(Meteor.connection._stream.socket);
 	const send = Meteor.connection._stream.socket.send.bind(Meteor.connection._stream.socket);
 
 	Meteor.connection._stream.socket._didMessage = async (data): Promise<void> => {

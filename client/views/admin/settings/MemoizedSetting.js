@@ -20,15 +20,20 @@ import StringSettingInput from './inputs/StringSettingInput';
 
 const MemoizedSetting = ({
 	type,
-	hint,
-	callout,
-	value,
-	editor,
+	hint = undefined,
+	callout = undefined,
+	value = undefined,
+	editor = undefined,
 	onChangeValue = () => {},
 	onChangeEditor = () => {},
-	className,
+	className = undefined,
+	invisible = undefined,
 	...inputProps
 }) => {
+	if (invisible) {
+		return null;
+	}
+
 	const InputComponent =
 		{
 			boolean: BooleanSettingInput,
@@ -50,13 +55,7 @@ const MemoizedSetting = ({
 
 	return (
 		<Field className={className}>
-			<InputComponent
-				value={value}
-				editor={editor}
-				onChangeValue={onChangeValue}
-				onChangeEditor={onChangeEditor}
-				{...inputProps}
-			/>
+			<InputComponent value={value} editor={editor} onChangeValue={onChangeValue} onChangeEditor={onChangeEditor} {...inputProps} />
 			{hint && <Field.Hint>{hint}</Field.Hint>}
 			{callout && (
 				<Margins block='x16'>

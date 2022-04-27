@@ -26,7 +26,7 @@
 				{{#if msg.emoji}}
 					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 						<div class="avatar">
-							{{> renderEmoji msg.emoji}}
+							{{{renderEmoji msg.emoji}}}
 						</div>
 					</button>
 				{{else}}
@@ -40,7 +40,6 @@
 					<button type="button" class="user user-card-message color-primary-font-color" data-username="{{msg.u.username}}" tabindex="1">
 						{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}
 					</button>
-					{{> StatusMessage uid=msg.u._id}}
 					<span class="info border-component-color color-info-font-color"></span>
 					{{# if showRoles }}
 						{{#each role in roleTags}}
@@ -50,7 +49,9 @@
 					{{#if isBot}}
 						<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
 					{{/if}}
+					{{#unless system}}
 					<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
+					{{/unless}}
 					{{#if showTranslated}}
 						<span class="translated">
 							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" title="{{_ "Translated"}}"></i>
@@ -112,6 +113,11 @@
 						{{> messageLocation location=msg.location}}
 					{{/if}}
 				</div>
+				{{#if system}}
+					<div class='title border-component-color color-info-font-color'>
+						<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
+					</div>
+				{{/if}}
 			</div>
 
 			{{#if hasOembed}}
@@ -154,7 +160,7 @@
 			<ul class="reactions">
 				{{#each reaction in reactions}}
 					<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
-						<span class="reaction-emoji">{{> renderEmoji reaction.emoji}}</span>
+						<span class="reaction-emoji">{{{renderEmoji reaction.emoji}}}</span>
 						<span class="reaction-count">{{reaction.count}}</span>
 						<span class="people" style="font-weight: bold">
 							{{reaction.usernames}} <span style="color: #aaa;">{{reaction.reaction}}</span>

@@ -49,18 +49,11 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 			}
 			const result = await loadData(params);
 			if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
-				throw new Error(
-					'Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data',
-				);
+				throw new Error('Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data');
 			}
-			context.current = await drawLineChart(
-				canvas.current,
-				context.current,
-				[result.chartLabel],
-				result.dataLabels,
-				[result.dataPoints],
-				{ tooltipCallbacks },
-			);
+			context.current = await drawLineChart(canvas.current, context.current, [result.chartLabel], result.dataLabels, [result.dataPoints], {
+				tooltipCallbacks,
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

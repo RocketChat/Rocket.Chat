@@ -33,6 +33,15 @@ export interface IUserEmailCode {
 type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
 export type Username = string;
 
+export type ILoginUsername =
+	| {
+			username: string;
+	  }
+	| {
+			email: string;
+	  };
+export type LoginUsername = string | ILoginUsername;
+
 export interface IUserServices {
 	password?: {
 		bcrypt: string;
@@ -64,11 +73,15 @@ export interface IUserServices {
 		idpSession?: string;
 		nameID?: string;
 	};
+	ldap?: {
+		id: string;
+		idAttribute?: string;
+	};
 }
 
 export interface IUserEmail {
 	address: string;
-	verified: boolean;
+	verified?: boolean;
 }
 
 export interface IUserSettings {
@@ -83,22 +96,24 @@ export interface IRole {
 	mandatory2fa?: boolean;
 	name: string;
 	protected: boolean;
-	scope?: string;
+	scope: 'Users' | 'Subscriptions';
 	_id: string;
 }
 
-export interface IDailyActiveUsers {
-	usersList: string[];
-	users: number;
-	day: number;
-	month: number;
-	year: number;
+export interface IGetRoomRoles {
+	_id: string;
+	rid: string;
+	u: {
+		_id: string;
+		username: string;
+	};
+	roles: string[];
 }
 
 export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
-	roles: string[];
+	roles: IRole['_id'][];
 	type: string;
 	active: boolean;
 	username?: string;
@@ -129,21 +144,29 @@ export interface IUser extends IRocketChatRecord {
 	};
 	settings?: IUserSettings;
 	defaultRoom?: string;
+	ldap?: boolean;
+	extension?: string;
+	inviteToken?: string;
 }
+
+export interface IRegisterUser extends IUser {
+	username: string;
+	name: string;
+}
+export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
 
 export type IUserDataEvent = {
 	id: unknown;
-}
-& (
-	({
-		type: 'inserted';
-	} & IUser)
+} & (
 	| ({
-		type: 'removed';
-	})
-	| ({
-		type: 'updated';
-		diff: Partial<IUser>;
-		unset: Record<keyof IUser, boolean | 0 | 1>;
-	})
-)
+			type: 'inserted';
+	  } & IUser)
+	| {
+			type: 'removed';
+	  }
+	| {
+			type: 'updated';
+			diff: Partial<IUser>;
+			unset: Record<keyof IUser, boolean | 0 | 1>;
+	  }
+);

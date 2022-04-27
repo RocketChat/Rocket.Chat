@@ -1,8 +1,13 @@
+import { DecoratorFunction } from '@storybook/addons';
 import React, { ReactElement } from 'react';
 
-import { MeteorProviderMock } from './mocks/providers';
+import ModalContextMock from '../client/stories/contexts/ModalContextMock';
+import QueryClientProviderMock from '../client/stories/contexts/QueryClientProviderMock';
+import RouterContextMock from '../client/stories/contexts/RouterContextMock';
+import ServerContextMock from '../client/stories/contexts/ServerContextMock';
+import TranslationContextMock from '../client/stories/contexts/TranslationContextMock';
 
-export const rocketChatDecorator = (storyFn: () => ReactElement): ReactElement => {
+export const rocketChatDecorator: DecoratorFunction<ReactElement<unknown>> = (fn, { parameters }) => {
 	const linkElement = document.getElementById('theme-styles') || document.createElement('link');
 	if (linkElement.id !== 'theme-styles') {
 		require('../app/theme/client/main.css');
@@ -18,34 +23,23 @@ export const rocketChatDecorator = (storyFn: () => ReactElement): ReactElement =
 	/* eslint-disable-next-line */
 	const { default: icons } = require('!!raw-loader!../private/public/icons.svg');
 
-	return <MeteorProviderMock>
-		<style>{`
-			body {
-				background-color: white;
-			}
-		`}</style>
-		<div dangerouslySetInnerHTML={{ __html: icons }} />
-		<div className='color-primary-font-color'>
-			{storyFn()}
-		</div>
-	</MeteorProviderMock>;
+	return (
+		<QueryClientProviderMock>
+			<ServerContextMock {...parameters.serverContext}>
+				<TranslationContextMock {...parameters.translationContext}>
+					<ModalContextMock {...parameters.modalContext}>
+						<RouterContextMock {...parameters.routerContext}>
+							<style>{`
+								body {
+									background-color: white;
+								}
+							`}</style>
+							<div dangerouslySetInnerHTML={{ __html: icons }} />
+							<div className='color-primary-font-color'>{fn()}</div>
+						</RouterContextMock>
+					</ModalContextMock>
+				</TranslationContextMock>
+			</ServerContextMock>
+		</QueryClientProviderMock>
+	);
 };
-
-export const fullHeightDecorator = (storyFn: () => ReactElement): ReactElement =>
-	<div style={{
-		display: 'flex',
-		flexDirection: 'column',
-		maxHeight: '100vh',
-	}}>
-		{storyFn()}
-	</div>;
-
-export const centeredDecorator = (storyFn: () => ReactElement): ReactElement =>
-	<div style={{
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-		minHeight: '100vh',
-	}}>
-		{storyFn()}
-	</div>;

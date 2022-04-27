@@ -12,8 +12,7 @@ type UserPreferences = {
 	unreadAlert: boolean;
 	notificationsSoundVolume: number;
 	desktopNotifications: string;
-	audioNotifications: string;
-	mobileNotifications: string;
+	pushNotifications: string;
 	enableAutoAway: boolean;
 	highlights: string[];
 	messageViewMode: number;

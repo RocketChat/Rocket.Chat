@@ -48,20 +48,9 @@ function ImportHistoryPage() {
 		};
 
 		loadData();
-	}, [
-		dispatchToastMessage,
-		getCurrentImportOperation,
-		getLatestImportOperations,
-		setCurrentOperation,
-		setLatestOperations,
-		setLoading,
-		t,
-	]);
+	}, [dispatchToastMessage, getCurrentImportOperation, getLatestImportOperations, setCurrentOperation, setLatestOperations, setLoading, t]);
 
-	const hasAnySuccessfulImport = useMemo(
-		() => latestOperations?.some(({ status }) => status === ProgressStep.DONE),
-		[latestOperations],
-	);
+	const hasAnySuccessfulImport = useMemo(() => latestOperations?.some(({ status }) => status === ProgressStep.DONE), [latestOperations]);
 
 	const handleNewImportClick = () => {
 		newImportRoute.push();
@@ -171,24 +160,15 @@ function ImportHistoryPage() {
 					</Table.Head>
 					<Table.Body>
 						{isLoading ? (
-							Array.from({ length: 20 }, (_, i) => (
-								<ImportOperationSummary.Skeleton small={small} key={i} />
-							))
+							Array.from({ length: 20 }, (_, i) => <ImportOperationSummary.Skeleton small={small} key={i} />)
 						) : (
 							<>
-								{currentOperation?.valid && (
-									<ImportOperationSummary {...currentOperation} small={small} />
-								)}
+								{currentOperation?.valid && <ImportOperationSummary {...currentOperation} small={small} />}
 								{latestOperations
 									?.filter(({ _id }) => currentOperation?._id !== _id || !currentOperation?.valid)
 									// Forcing valid=false as the current API only accept preparation/progress over currentOperation
 									?.map((operation) => (
-										<ImportOperationSummary
-											key={operation._id}
-											{...operation}
-											valid={false}
-											small={small}
-										/>
+										<ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />
 									))}
 							</>
 						)}

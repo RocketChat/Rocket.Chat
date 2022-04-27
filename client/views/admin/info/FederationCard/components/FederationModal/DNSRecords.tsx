@@ -16,15 +16,7 @@ export const DNSRecords: FC<{
 	rocketChatPort: string;
 	resolvedEntries: ResolvedDNS;
 	legacy?: boolean;
-}> = ({
-	federationSubdomain,
-	rocketChatProtocol,
-	federationPublicKey,
-	rocketChatDomain,
-	rocketChatPort,
-	resolvedEntries,
-	legacy,
-}) => {
+}> = ({ federationSubdomain, rocketChatProtocol, federationPublicKey, rocketChatDomain, rocketChatPort, resolvedEntries, legacy }) => {
 	const t = useTranslation();
 
 	function buildDNSRecord(
@@ -79,16 +71,11 @@ export const DNSRecords: FC<{
 		if (rootLevelEntry) {
 			switch (type) {
 				case DNSRecordType.SRV: {
-					dnsRecord.status =
-						Object.keys(resolvedEntries[type]).length > 0
-							? SectionStatus.SUCCESS
-							: SectionStatus.FAILED;
+					dnsRecord.status = Object.keys(resolvedEntries[type]).length > 0 ? SectionStatus.SUCCESS : SectionStatus.FAILED;
 					break;
 				}
 				case DNSRecordType.TXT: {
-					dnsRecord.status = resolvedEntries[type][name as TXTRecordValue]
-						? SectionStatus.SUCCESS
-						: SectionStatus.UNKNOWN;
+					dnsRecord.status = resolvedEntries[type][name as TXTRecordValue] ? SectionStatus.SUCCESS : SectionStatus.UNKNOWN;
 					break;
 				}
 			}
@@ -96,8 +83,7 @@ export const DNSRecords: FC<{
 
 		// If the entry is not failed, check the value
 		if (dnsRecord.status !== SectionStatus.FAILED) {
-			dnsRecord.status =
-				dnsRecord.value === expectedValue ? SectionStatus.SUCCESS : SectionStatus.FAILED;
+			dnsRecord.status = dnsRecord.value === expectedValue ? SectionStatus.SUCCESS : SectionStatus.FAILED;
 		}
 
 		// If the entry has a long value, hide it
@@ -116,14 +102,9 @@ export const DNSRecords: FC<{
 		buildDNSRecord(DNSRecordType.SRV, DNSRecordName.SERVICE, '_rocketchat', {
 			rootLevelEntry: true,
 		}),
-		buildDNSRecord(
-			DNSRecordType.SRV,
-			DNSRecordName.PROTOCOL,
-			legacy ? '_tcp' : `_${rocketChatProtocol}`,
-			{
-				rootLevelEntry: true,
-			},
-		),
+		buildDNSRecord(DNSRecordType.SRV, DNSRecordName.PROTOCOL, legacy ? '_tcp' : `_${rocketChatProtocol}`, {
+			rootLevelEntry: true,
+		}),
 		buildDNSRecord(DNSRecordType.SRV, DNSRecordName.NAME, federationSubdomain, {
 			rootLevelEntry: true,
 		}),
@@ -138,14 +119,9 @@ export const DNSRecords: FC<{
 	];
 
 	const txtDNSRecords: DNSRecord[] = [
-		buildDNSRecord(
-			DNSRecordType.TXT,
-			DNSRecordName.HOST,
-			`rocketchat-public-key${federationSubdomain ? `.${federationSubdomain}` : ''}`,
-			{
-				rootLevelEntry: true,
-			},
-		),
+		buildDNSRecord(DNSRecordType.TXT, DNSRecordName.HOST, `rocketchat-public-key${federationSubdomain ? `.${federationSubdomain}` : ''}`, {
+			rootLevelEntry: true,
+		}),
 		buildDNSRecord(DNSRecordType.TXT, TXTRecordValue.PUBLIC_KEY, federationPublicKey, {
 			rootLevelEntry: false,
 			longValueTitle: '<my-public-key>',

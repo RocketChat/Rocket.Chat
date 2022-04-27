@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 
 import Emoji from '../../Emoji';
 import Bold from './Bold';
+import Image from './Image';
 import InlineCode from './InlineCode';
 import Italic from './Italic';
 import Link from './Link';
@@ -11,13 +12,12 @@ import Plain from './Plain';
 import Strike from './Strike';
 import { UserMention } from './definitions/UserMention';
 
-const Inline: FC<{ value: ASTParagraph['value']; mentions?: UserMention[] }> = ({
-	value = [],
-	mentions = [],
-}) => (
+const Inline: FC<{ value: ASTParagraph['value']; mentions?: UserMention[] }> = ({ value = [], mentions = [] }) => (
 	<>
 		{value.map((block, idx) => {
 			switch (block.type) {
+				case 'IMAGE':
+					return <Image key={idx} value={block.value} />;
 				case 'PLAIN_TEXT':
 					return block.value;
 				case 'BOLD':

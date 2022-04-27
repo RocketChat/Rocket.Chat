@@ -1,7 +1,7 @@
 import { Link as ASTLink } from '@rocket.chat/message-parser';
 import React, { FC } from 'react';
 
-import { baseURI } from '../../../lib/baseuri';
+import { baseURI } from '../../../lib/baseURI';
 import Bold from './Bold';
 import Italic from './Italic';
 import Strike from './Strike';

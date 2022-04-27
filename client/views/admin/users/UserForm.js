@@ -12,20 +12,12 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { isEmail } from '../../../../app/utils/lib/isEmail.js';
+import { validateEmail } from '../../../../lib/emailValidator';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export default function UserForm({
-	formValues,
-	formHandlers,
-	availableRoles,
-	append,
-	prepend,
-	errors,
-	...props
-}) {
+export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, ...props }) {
 	const t = useTranslation();
 	const [hasCustomFields, setHasCustomFields] = useState(false);
 
@@ -63,17 +55,10 @@ export default function UserForm({
 		handleSendWelcomeEmail,
 	} = formHandlers;
 
-	const onLoadCustomFields = useCallback(
-		(hasCustomFields) => setHasCustomFields(hasCustomFields),
-		[],
-	);
+	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
 
 	return (
-		<VerticalBar.ScrollableContent
-			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
-			{...props}
-		>
+		<VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} {...props}>
 			<FieldGroup>
 				{prepend}
 				{useMemo(
@@ -81,12 +66,7 @@ export default function UserForm({
 						<Field>
 							<Field.Label>{t('Name')}</Field.Label>
 							<Field.Row>
-								<TextInput
-									error={errors && errors.name}
-									flexGrow={1}
-									value={name}
-									onChange={handleName}
-								/>
+								<TextInput error={errors && errors.name} flexGrow={1} value={name} onChange={handleName} />
 							</Field.Row>
 							{errors && errors.name && <Field.Error>{errors.name}</Field.Error>}
 						</Field>
@@ -120,21 +100,14 @@ export default function UserForm({
 									error={errors && errors.email}
 									flexGrow={1}
 									value={email}
-									error={!isEmail(email) && email.length > 0 ? 'error' : undefined}
+									error={!validateEmail(email) && email.length > 0 ? 'error' : undefined}
 									onChange={handleEmail}
 									addon={<Icon name='mail' size='x20' />}
 								/>
 							</Field.Row>
 							{errors && errors.email && <Field.Error>{errors.email}</Field.Error>}
 							<Field.Row>
-								<Box
-									flexGrow={1}
-									display='flex'
-									flexDirection='row'
-									alignItems='center'
-									justifyContent='space-between'
-									mbs='x4'
-								>
+								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>
 									<Box>{t('Verified')}</Box>
 									<ToggleSwitch checked={verified} onChange={handleVerified} />
 								</Box>
@@ -148,12 +121,7 @@ export default function UserForm({
 						<Field>
 							<Field.Label>{t('StatusMessage')}</Field.Label>
 							<Field.Row>
-								<TextInput
-									flexGrow={1}
-									value={statusText}
-									onChange={handleStatusText}
-									addon={<Icon name='edit' size='x20' />}
-								/>
+								<TextInput flexGrow={1} value={statusText} onChange={handleStatusText} addon={<Icon name='edit' size='x20' />} />
 							</Field.Row>
 						</Field>
 					),
@@ -215,13 +183,7 @@ export default function UserForm({
 					() => (
 						<Field>
 							<Field.Row>
-								<Box
-									flexGrow={1}
-									display='flex'
-									flexDirection='row'
-									alignItems='center'
-									justifyContent='space-between'
-								>
+								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 									<Box>{t('Require_password_change')}</Box>
 									<ToggleSwitch
 										disabled={setRandomPassword}
@@ -238,13 +200,7 @@ export default function UserForm({
 					() => (
 						<Field>
 							<Field.Row>
-								<Box
-									flexGrow={1}
-									display='flex'
-									flexDirection='row'
-									alignItems='center'
-									justifyContent='space-between'
-								>
+								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 									<Box>{t('Set_random_password_and_send_by_email')}</Box>
 									<ToggleSwitch checked={setRandomPassword} onChange={handleSetRandomPassword} />
 								</Box>
@@ -275,18 +231,9 @@ export default function UserForm({
 						handleJoinDefaultChannels && (
 							<Field>
 								<Field.Row>
-									<Box
-										flexGrow={1}
-										display='flex'
-										flexDirection='row'
-										alignItems='center'
-										justifyContent='space-between'
-									>
+									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 										<Box>{t('Join_default_channels')}</Box>
-										<ToggleSwitch
-											checked={joinDefaultChannels}
-											onChange={handleJoinDefaultChannels}
-										/>
+										<ToggleSwitch checked={joinDefaultChannels} onChange={handleJoinDefaultChannels} />
 									</Box>
 								</Field.Row>
 							</Field>
@@ -298,13 +245,7 @@ export default function UserForm({
 						handleSendWelcomeEmail && (
 							<Field>
 								<Field.Row>
-									<Box
-										flexGrow={1}
-										display='flex'
-										flexDirection='row'
-										alignItems='center'
-										justifyContent='space-between'
-									>
+									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 										<Box>{t('Send_welcome_email')}</Box>
 										<ToggleSwitch checked={sendWelcomeEmail} onChange={handleSendWelcomeEmail} />
 									</Box>
@@ -316,14 +257,10 @@ export default function UserForm({
 				{hasCustomFields && (
 					<>
 						<Divider />
-						<Box fontScale='s2'>{t('Custom_Fields')}</Box>
+						<Box fontScale='h4'>{t('Custom_Fields')}</Box>
 					</>
 				)}
-				<CustomFieldsForm
-					onLoadFields={onLoadCustomFields}
-					customFieldsData={customFields}
-					setCustomFieldsData={handleCustomFields}
-				/>
+				<CustomFieldsForm onLoadFields={onLoadCustomFields} customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 				{append}
 			</FieldGroup>
 		</VerticalBar.ScrollableContent>

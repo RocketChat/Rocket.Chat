@@ -6,6 +6,7 @@ import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { UiKitBannerPayload } from '../../../definition/UIKit';
 import { Banner } from '../../sdk';
 import { IBanner, BannerPlatform } from '../../../definition/IBanner';
+import { SystemLogger } from '../../lib/logger/system';
 
 type NpsSurveyData = {
 	id: string;
@@ -32,14 +33,14 @@ export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNp
 	const npsUrl = settings.get('Nps_Url');
 
 	try {
-		const result = HTTP.get(`${ npsUrl }/v1/surveys/${ npsId }`, {
+		const result = HTTP.get(`${npsUrl}/v1/surveys/${npsId}`, {
 			headers: {
-				Authorization: `Bearer ${ token }`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 
 		if (result.statusCode !== 200) {
-			console.log('invalid response from the nps service:', result);
+			SystemLogger.error({ msg: 'invalid response from the nps service:', result });
 			return;
 		}
 
@@ -62,7 +63,7 @@ export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNp
 
 		await Banner.create(banner);
 	} catch (e) {
-		console.error(e);
+		SystemLogger.error(e);
 		return false;
 	}
 });

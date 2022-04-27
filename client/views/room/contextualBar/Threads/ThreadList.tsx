@@ -3,20 +3,16 @@ import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.cha
 import React, { FC, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
 import { IMessage } from '../../../../../definition/IMessage';
 import { IRoom } from '../../../../../definition/IRoom';
 import { IUser } from '../../../../../definition/IUser';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import {
-	useRoute,
-	useCurrentRoute,
-	useQueryStringParameter,
-} from '../../../../contexts/RouterContext';
+import { useRoute, useCurrentRoute, useQueryStringParameter } from '../../../../contexts/RouterContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTabContext } from '../../providers/ToolboxProvider';
+import ThreadComponent from '../../threads/ThreadComponent';
 import Row from './Row';
 import { withData } from './withData';
 
@@ -64,7 +60,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const t = useTranslation();
-	const inputRef = useAutoFocus(true);
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
 	const [name] = useCurrentRoute();
 
 	if (!name) {
@@ -91,7 +87,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 		[t],
 	);
 
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
 	});
 
@@ -125,13 +121,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 								addon={<Icon name='magnifier' size='x20' />}
 								ref={inputRef}
 							/>
-							<Select
-								flexGrow={0}
-								width='110px'
-								onChange={setType}
-								value={type}
-								options={options}
-							/>
+							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 						</Margins>
 					</Box>
 				</Box>
@@ -162,11 +152,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 								width: inlineSize,
 							}}
 							totalCount={total}
-							endReached={
-								loading
-									? (): void => undefined
-									: (start): unknown => loadMoreItems(start, Math.min(50, total - start))
-							}
+							endReached={loading ? (): void => undefined : (start): unknown => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={25}
 							data={threads}
 							components={{ Scroller: ScrollableContentWrapper as any }}

@@ -5,7 +5,6 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
-import { getValidRoomName } from '../../../utils';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -26,20 +25,27 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
+		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
 
-		this.tryEnsureIndex({
-			teamId: 1,
-			teamDefault: 1,
-		}, { sparse: true });
+		this.tryEnsureIndex(
+			{
+				teamId: 1,
+				teamDefault: 1,
+			},
+			{ sparse: true },
+		);
 	}
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 
 		return this.findOne(query, options);
@@ -53,6 +59,35 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				jitsiTimeout: time,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setCallStatus(_id, status) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				callStatus: status,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setCallStatusAndCallStartTime(_id, status) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				callStatus: status,
+				webRtcCallStartTime: new Date(),
 			},
 		};
 
@@ -139,7 +174,7 @@ export class Rooms extends Base {
 	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
 		const query = { _id: roomId };
 
-		const msg = `\`\`\`${ message.msg }\`\`\``;
+		const msg = `\`\`\`${message.msg}\`\`\``;
 
 		const update = {
 			$set: {
@@ -169,13 +204,16 @@ export class Rooms extends Base {
 	}
 
 	setLastMessageAsRead(roomId) {
-		return this.update({
-			_id: roomId,
-		}, {
-			$unset: {
-				'lastMessage.unread': 1,
+		return this.update(
+			{
+				_id: roomId,
 			},
-		});
+			{
+				$unset: {
+					'lastMessage.unread': 1,
+				},
+			},
+		);
 	}
 
 	setSentiment(roomId, sentiment) {
@@ -213,10 +251,7 @@ export class Rooms extends Base {
 		return this.update({ _id }, update);
 	}
 
-	setReadOnlyById(_id, readOnly, hasPermission) {
-		if (!hasPermission) {
-			throw new Error('You must provide "hasPermission" function to be able to call this method');
-		}
+	setReadOnlyById(_id, readOnly) {
 		const query = {
 			_id,
 		};
@@ -235,7 +270,7 @@ export class Rooms extends Base {
 				$size: 2,
 				$in: [_id],
 			},
-			...ids && Array.isArray(ids) ? { _id: { $in: ids } } : {},
+			...(ids && Array.isArray(ids) ? { _id: { $in: ids } } : {}),
 			t: 'd',
 		};
 
@@ -253,7 +288,7 @@ export class Rooms extends Base {
 		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
 	}
 
-	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
+	setAllowReactingWhenReadOnlyById = function (_id, allowReacting) {
 		const query = {
 			_id,
 		};
@@ -263,7 +298,7 @@ export class Rooms extends Base {
 			},
 		};
 		return this.update(query, update);
-	}
+	};
 
 	setAvatarData(_id, origin, etag) {
 		const update = {
@@ -289,22 +324,25 @@ export class Rooms extends Base {
 		return this.update({ _id }, update);
 	}
 
-	setSystemMessagesById = function(_id, systemMessages) {
+	setSystemMessagesById = function (_id, systemMessages) {
 		const query = {
 			_id,
 		};
-		const update = systemMessages && systemMessages.length > 0 ? {
-			$set: {
-				sysMes: systemMessages,
-			},
-		} : {
-			$unset: {
-				sysMes: '',
-			},
-		};
+		const update =
+			systemMessages && systemMessages.length > 0
+				? {
+						$set: {
+							sysMes: systemMessages,
+						},
+				  }
+				: {
+						$unset: {
+							sysMes: '',
+						},
+				  };
 
 		return this.update(query, update);
-	}
+	};
 
 	setE2eKeyId(_id, e2eKeyId, options) {
 		const query = {
@@ -334,6 +372,8 @@ export class Rooms extends Base {
 
 		let channelName = s.trim(name);
 		try {
+			// TODO evaluate if this function call should be here
+			const { getValidRoomName } = Promise.await(import('../../../utils/lib/getValidRoomName'));
 			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);
@@ -427,18 +467,21 @@ export class Rooms extends Base {
 			_id: {
 				$in: data,
 			},
-			$or: [{
-				teamId: {
-					$exists: false,
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
 				},
-			}, {
-				teamId: {
-					$exists: true,
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: data,
+					},
 				},
-				_id: {
-					$in: data,
-				},
-			}],
+			],
 		};
 
 		return this.find(query, options);
@@ -473,18 +516,21 @@ export class Rooms extends Base {
 			_updatedAt: {
 				$gt: _updatedAt,
 			},
-			$or: [{
-				teamId: {
-					$exists: false,
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
 				},
-			}, {
-				teamId: {
-					$exists: true,
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: ids,
+					},
 				},
-				_id: {
-					$in: ids,
-				},
-			}],
+			],
 		};
 
 		return this.find(query, options);
@@ -541,11 +587,14 @@ export class Rooms extends Base {
 			teamId: {
 				$exists: false,
 			},
-			$or: [{
-				name,
-			}, {
-				fname: name,
-			}],
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
 		};
 
 		// do not use cache
@@ -569,20 +618,31 @@ export class Rooms extends Base {
 							t: 'c',
 							teamId: { $in: teamIds },
 						},
-						...roomIds?.length > 0 ? [{
-							_id: {
-								$in: roomIds,
-							},
-						}] : [],
+						...(roomIds?.length > 0
+							? [
+									{
+										_id: {
+											$in: roomIds,
+										},
+									},
+							  ]
+							: []),
 					],
 				},
-				...searchTerm ? [{
-					$or: [{
-						name: searchTerm,
-					}, {
-						fname: searchTerm,
-					}],
-				}] : [],
+				...(searchTerm
+					? [
+							{
+								$or: [
+									{
+										name: searchTerm,
+									},
+									{
+										fname: searchTerm,
+									},
+								],
+							},
+					  ]
+					: []),
 			],
 		};
 
@@ -592,27 +652,35 @@ export class Rooms extends Base {
 	findContainingNameOrFNameInIdsAsTeamMain(text, rids, options) {
 		const query = {
 			teamMain: true,
-			$and: [{
-				$or: [{
-					t: 'p',
-					_id: {
-						$in: rids,
-					},
-				}, {
-					t: 'c',
-				}],
-			}],
+			$and: [
+				{
+					$or: [
+						{
+							t: 'p',
+							_id: {
+								$in: rids,
+							},
+						},
+						{
+							t: 'c',
+						},
+					],
+				},
+			],
 		};
 
 		if (text) {
 			const regex = new RegExp(text, 'i');
 
 			query.$and.push({
-				$or: [{
-					name: regex,
-				}, {
-					fname: regex,
-				}],
+				$or: [
+					{
+						name: regex,
+					},
+					{
+						fname: regex,
+					},
+				],
 			});
 		}
 
@@ -679,7 +747,7 @@ export class Rooms extends Base {
 	}
 
 	findChannelAndPrivateByNameStarting(name, sIds, options) {
-		const nameRegex = new RegExp(`^${ s.trim(escapeRegExp(name)) }`, 'i');
+		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {
@@ -689,18 +757,21 @@ export class Rooms extends Base {
 			teamMain: {
 				$exists: false,
 			},
-			$or: [{
-				teamId: {
-					$exists: false,
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
 				},
-			}, {
-				teamId: {
-					$exists: true,
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: sIds,
+					},
 				},
-				_id: {
-					$in: sIds,
-				},
-			}],
+			],
 		};
 
 		return this.find(query, options);
@@ -792,17 +863,27 @@ export class Rooms extends Base {
 	}
 
 	findGroupDMsByUids(uids, options) {
-		return this.find({
-			usersCount: { $gt: 2 },
-			uids,
-		}, options);
+		return this.find(
+			{
+				usersCount: { $gt: 2 },
+				uids,
+			},
+			options,
+		);
 	}
 
 	find1On1ByUserId(userId, options) {
-		return this.find({
-			uids: userId,
-			usersCount: 2,
-		}, options);
+		return this.find(
+			{
+				uids: userId,
+				usersCount: 2,
+			},
+			options,
+		);
+	}
+
+	findByCreatedOTR() {
+		return this.find({ createdOTR: true });
 	}
 
 	// UPDATE
@@ -969,15 +1050,17 @@ export class Rooms extends Base {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
-		const update = lastMessage ? {
-			$set: {
-				lastMessage,
-			},
-		} : {
-			$unset: {
-				lastMessage: 1,
-			},
-		};
+		const update = lastMessage
+			? {
+					$set: {
+						lastMessage,
+					},
+			  }
+			: {
+					$unset: {
+						lastMessage: 1,
+					},
+			  };
 
 		return this.update(query, update);
 	}
@@ -1168,8 +1251,8 @@ export class Rooms extends Base {
 		const query = { _id };
 
 		const update = {
-			...favorite && defaultValue && { $set: { favorite } },
-			...(!favorite || !defaultValue) && { $unset: { favorite: 1 } },
+			...(favorite && defaultValue && { $set: { favorite } }),
+			...((!favorite || !defaultValue) && { $unset: { favorite: 1 } }),
 		};
 
 		return this.update(query, update);
@@ -1352,7 +1435,7 @@ export class Rooms extends Base {
 	// ############################
 	// Discussion
 	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ s.trim(escapeRegExp(name)) }`, 'i');
+		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {
@@ -1382,6 +1465,18 @@ export class Rooms extends Base {
 
 	countDiscussions() {
 		return this.find({ prid: { $exists: true } }).count();
+	}
+
+	setOTRForDMByRoomID(rid) {
+		const query = { _id: rid, t: 'd' };
+
+		const update = {
+			$set: {
+				createdOTR: true,
+			},
+		};
+
+		return this.update(query, update);
 	}
 }
 

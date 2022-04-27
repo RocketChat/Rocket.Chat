@@ -1,4 +1,4 @@
-import { getConfig } from '../../ui-utils/client/config';
+import { getConfig } from '../../../client/lib/utils/getConfig';
 
 let debug: boolean | undefined = undefined;
 
@@ -11,9 +11,9 @@ const isDebugEnabled = (): boolean => {
 };
 
 export const log = (context: string, ...msg: unknown[]): void => {
-	isDebugEnabled() && console.log(`[${ context }]`, ...msg);
+	isDebugEnabled() && console.log(`[${context}]`, ...msg);
 };
 
 export const logError = (context: string, ...msg: unknown[]): void => {
-	isDebugEnabled() && console.error(`[${ context }]`, ...msg);
+	isDebugEnabled() && console.error(`[${context}]`, ...msg);
 };

@@ -7,15 +7,14 @@ import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
 import { hasPermission } from '../../app/authorization/client';
-import hljs from '../../app/markdown/lib/hljs';
-import { fireGlobalEvent } from '../../app/ui-utils/client';
+import { register } from '../../app/markdown/lib/hljs';
+import { settings } from '../../app/settings/client';
 import { getUserPreference, t } from '../../app/utils/client';
 import 'highlight.js/styles/github.css';
 import { UserStatus } from '../../definition/UserStatus';
 import * as banners from '../lib/banners';
-import { synchronizeUserData } from '../lib/userData';
-
-hljs.initHighlightingOnLoad();
+import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
+import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 if (window.DISABLE_ANIMATION) {
 	toastr.options.timeOut = 1;
@@ -40,6 +39,7 @@ Meteor.startup(() => {
 	Tracker.autorun(async () => {
 		const uid = Meteor.userId();
 		if (!uid) {
+			removeLocalUserData();
 			return;
 		}
 		if (!Meteor.status().connected) {
@@ -78,25 +78,30 @@ Meteor.startup(() => {
 			return;
 		}
 
-		Meteor.call(
-			'cloud:checkRegisterStatus',
-			(err: unknown, data: { connectToCloud?: boolean; workspaceRegistered?: boolean }) => {
-				if (err) {
-					console.log(err);
-					return;
-				}
+		Meteor.call('cloud:checkRegisterStatus', (err: unknown, data: { connectToCloud?: boolean; workspaceRegistered?: boolean }) => {
+			if (err) {
+				console.log(err);
+				return;
+			}
 
-				c.stop();
-				const { connectToCloud = false, workspaceRegistered = false } = data;
-				if (connectToCloud === true && workspaceRegistered !== true) {
-					banners.open({
-						id: 'cloud-registration',
-						title: t('Cloud_registration_pending_title'),
-						html: t('Cloud_registration_pending_html'),
-						modifiers: ['large', 'danger'],
-					});
-				}
-			},
-		);
+			c.stop();
+			const { connectToCloud = false, workspaceRegistered = false } = data;
+			if (connectToCloud === true && workspaceRegistered !== true) {
+				banners.open({
+					id: 'cloud-registration',
+					title: t('Cloud_registration_pending_title'),
+					html: t('Cloud_registration_pending_html'),
+					modifiers: ['large', 'danger'],
+				});
+			}
+		});
+	});
+});
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		const code = settings.get('Message_Code_highlight') as string | undefined;
+		code?.split(',').forEach((language: string) => {
+			language.trim() && register(language.trim());
+		});
 	});
 });

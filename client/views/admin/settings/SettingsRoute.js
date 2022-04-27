@@ -1,9 +1,9 @@
 import React from 'react';
 
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { useRouteParameter } from '../../../contexts/RouterContext';
 import { useIsPrivilegedSettingsContext } from '../../../contexts/SettingsContext';
 import EditableSettingsProvider from '../../../providers/EditableSettingsProvider';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import GroupSelector from './GroupSelector';
 
 export function SettingsRoute() {

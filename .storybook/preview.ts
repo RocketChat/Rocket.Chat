@@ -1,4 +1,4 @@
-import { DocsPage, DocsContainer } from '@storybook/addon-docs/blocks';
+import { DocsPage, DocsContainer } from '@storybook/addon-docs';
 import { addDecorator, addParameters } from '@storybook/react';
 
 import { rocketChatDecorator } from './decorators';
@@ -18,7 +18,9 @@ addParameters({
 		page: DocsPage,
 	},
 	options: {
-		storySort: ([, a], [, b]): number =>
-			a.kind.localeCompare(b.kind),
+		storySort: {
+			method: 'alphabetical',
+			order: ['Components', '*', 'Enterprise'],
+		},
 	},
 });
