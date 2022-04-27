@@ -1,4 +1,5 @@
 import { Box, Icon, Margins, Modal, Menu } from '@rocket.chat/fuselage';
+import { Meteor } from 'meteor/meteor';
 import React, { ReactElement } from 'react';
 
 type Props = {
@@ -48,7 +49,14 @@ const SingleBlogPost = ({
 							style={{ marginLeft: 'auto' }}
 							options={{
 								delete: {
-									action: function noRefCheck(): void {},
+									action: function noRefCheck(): void {
+										Meteor.call('deleteBlog', _id, (error, result) => {
+											if (result) {
+			// TODO: Add a success and error messages
+												console.log('Deleted successfully')
+											}
+										})
+									},
 									label: (
 										<Box alignItems='center' color='danger' display='flex'>
 											<Icon mie='x4' name='trash' size='x16' />

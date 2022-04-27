@@ -1,5 +1,6 @@
 import { Box, Icon, Tabs, Grid, Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import React, { ReactElement, useRef, useState, useEffect } from 'react';
 
 import Page from '../../components/Page';
