@@ -12,6 +12,8 @@ const PlainText: FC<PlainTextType> = ({ value: text }) => {
 	const highlights = useMessageListHighlights();
 	const katex = useMessageListKatex();
 
+	// TODO ENG DAY:
+	// Add style for empty paragraphs in fuselage
 	if (!text.trim()) {
 		return <br />;
 	}
