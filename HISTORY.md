@@ -1,6 +1,26 @@
 
 # 4.7.0 (Under Release Candidate Process)
 
+## 4.7.0-rc.3
+`2022-04-27  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Better MongoDB connection management for micro services ([#25323](https://github.com/RocketChat/Rocket.Chat/pull/25323))
+
+- Regression: Messages in new message template Crashing. ([#25327](https://github.com/RocketChat/Rocket.Chat/pull/25327))
+
+- Regression: Validate empty fields for Message template ([#25250](https://github.com/RocketChat/Rocket.Chat/pull/25250))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 4.7.0-rc.2
 `2022-04-27  ·  6 🔍  ·  7 👩‍💻👨‍💻`
 
