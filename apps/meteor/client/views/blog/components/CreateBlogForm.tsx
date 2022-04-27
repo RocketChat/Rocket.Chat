@@ -1,25 +1,76 @@
 import { Modal, TextInput, TextAreaInput, Label, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
 
 type Props = {
 	showModal: boolean;
 	setShowModal: Function;
+	blogId: string;
+	updateTitle?: string;
+	updateContent?: string;
+	updateTags?: string[];
+	clearUpdateFields?: Function;
 };
 
-const CreateBlogForm = ({ showModal, setShowModal }: Props): ReactElement => {
+const CreateBlogForm = ({
+	showModal,
+	setShowModal,
+	blogId,
+	updateTitle,
+	updateContent,
+	updateTags,
+	clearUpdateFields,
+}: Props): ReactElement => {
 	const [title, setTitle] = useState('');
 	const [content, setContent] = useState('');
 	const [tags, setTags] = useState('');
 	const [titleError, setTitleError] = useState(false);
 	const [contentError, setTContentError] = useState(false);
+
+	useEffect(() => {
+		if (blogId.length) {
+			setTitle(updateTitle);
+			setContent(updateContent);
+			// Since the tag field is optional, sometimes it will be empty
+			// hence we have to check it first
+			if (updateTags) {
+				setTags(updateTags.join(', '));
+			}
+		}
+	}, [blogId]);
+
+	const createBlog = (method: string, cleanedTags: string) => {
+		Meteor.call(method, { title, content, tags: [cleanedTags] }, (error, result) => {
+			// TODO: Add a success and error messages
+			if (result) {
+				clearFields();
+				setShowModal(false);
+				console.log(result, 'Created blog');
+			}
+		});
+	};
+
+	const updateBlog = (method: string, cleanedTags: string) => {
+		Meteor.call(method, blogId, { title, content, tags: [cleanedTags] }, (error, result) => {
+			// TODO: Add a success and error messages
+			if (result) {
+				clearFields();
+				clearUpdateFields();
+				setShowModal(false);
+				console.log(result, 'Updated blog');
+			}
+		});
+	};
+
 	const handleSubmit = () => {
 		const cleanedTags = tags.replace(/[, ]+/g, ',').trim();
 		if (title.length && content.length) {
-			Meteor.call('createBlog', { title, content, tags: [cleanedTags] }, (error, result) => {
-				// TODO: Add a success and error messages
-				console.log(result, 'Created blog');
-			});
+			// When it's an update then use the updateBlog method.
+			if (blogId.length) {
+				updateBlog('updateBlog', cleanedTags);
+			} else {
+				createBlog('createBlog', cleanedTags);
+			}
 		}
 
 		if (!title.length) {
@@ -29,6 +80,12 @@ const CreateBlogForm = ({ showModal, setShowModal }: Props): ReactElement => {
 		if (!content.length) {
 			setTContentError(true);
 		}
+	};
+
+	const clearFields = () => {
+		setTitle('');
+		setContent('');
+		setTags('');
 	};
 	return (
 		<Modal display={showModal ? 'block' : 'none'}>

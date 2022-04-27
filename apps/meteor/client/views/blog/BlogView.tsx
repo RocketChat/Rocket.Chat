@@ -13,6 +13,16 @@ const BlogView = (): ReactElement => {
 	const pageRef = useRef();
 	const [showModal, setShowModal] = useState(false);
 	const [blogResults, setBlogResults] = useState<Record<string, string>[]>([]);
+	const [updateTitle, setUpdateTitle] = useState('');
+	const [updateContent, setUpdateContent] = useState('');
+	const [updateTags, setUpdateTags] = useState<string[]>([]);
+	const [blogId, setBlogId] = useState('');
+
+	const clearUpdateFields = () => {
+		setUpdateTitle('');
+		setUpdateContent('');
+		setUpdateTags([]);
+	};
 
 	useEffect(() => {
 		Meteor.call('getBlogs', 10, (error, result) => {
@@ -39,13 +49,28 @@ const BlogView = (): ReactElement => {
 						</Tabs.Item>
 					</Tabs>
 				</Box>
-				<CreateBlogForm showModal={showModal} setShowModal={setShowModal} />
+				<CreateBlogForm
+					showModal={showModal}
+					setShowModal={setShowModal}
+					blogId={blogId}
+					updateTitle={updateTitle}
+					updateContent={updateContent}
+					updateTags={updateTags}
+					clearUpdateFields={clearUpdateFields}
+				/>
 				<Page.Content ref={pageRef}>
 					<Grid style={{ overflowY: 'auto', overflowX: 'hidden' }}>
 						{blogResults.length &&
 							blogResults.map((item, index) => (
 								<Grid.Item xs={4} md={4} lg={6} key={index}>
-									<SingleBlogPost {...item} />
+									<SingleBlogPost
+										{...item}
+										setModalShow={setShowModal}
+										setBlogId={setBlogId}
+										setUpdateTitle={setUpdateTitle}
+										setUpdateContent={setUpdateContent}
+										setUpdateTags={setUpdateTags}
+									/>
 								</Grid.Item>
 							))}
 					</Grid>
