@@ -35,8 +35,10 @@ export const MessageProvider = memo(function MessageProvider({
 	const dateAndTime = useFormatDateAndTime();
 	const context = useMemo(() => {
 		const openThread =
-			(tmid: string, jump?: string): (() => void) =>
-			(): void => {
+			(tmid: string, jump?: string): ((e: MouseEvent) => void) =>
+			(e: MouseEvent): void => {
+				e.stopPropagation();
+
 				router.replace(
 					{
 						...params,
