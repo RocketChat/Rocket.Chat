@@ -114,57 +114,6 @@ FlowRouter.route('/home', {
 	},
 });
 
-// New Routes
-FlowRouter.route('/blogs', {
-	name: 'blogs',
-	action: () => {
-		const BlogViewPage = createTemplateForComponent('BlogViewPage', () => import('../views/blog/BlogView'), {
-			attachment: 'at-parent',
-		});
-		appLayout.renderMainLayout({ center: BlogViewPage });
-	},
-});
-
-FlowRouter.route('/games', {
-	name: 'games',
-	action: () => {
-		const GamesViewPage = createTemplateForComponent('GamesViewPage', () => import('../views/games/GamesView'), {
-			attachment: 'at-parent',
-		});
-		appLayout.renderMainLayout({ center: GamesViewPage });
-	},
-});
-
-FlowRouter.route('/products', {
-	name: 'products',
-	action: () => {
-		const ProductsViewPage = createTemplateForComponent('ProductsViewPage', () => import('../views/products/ProductsView'), {
-			attachment: 'at-parent',
-		});
-		appLayout.renderMainLayout({ center: ProductsViewPage });
-	},
-});
-
-FlowRouter.route('/store', {
-	name: 'store',
-	action: () => {
-		const StoreViewPage = createTemplateForComponent('StoreViewPage', () => import('../views/store/StoreView'), {
-			attachment: 'at-parent',
-		});
-		appLayout.renderMainLayout({ center: StoreViewPage });
-	},
-});
-
-FlowRouter.route('/messages', {
-	name: 'messages',
-	action: () => {
-		const MessagesViewPage = createTemplateForComponent('MessagesViewPage', () => import('../views/messages/MessagesView'), {
-			attachment: 'at-parent',
-		});
-		appLayout.renderMainLayout({ center: MessagesViewPage });
-	},
-});
-
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
