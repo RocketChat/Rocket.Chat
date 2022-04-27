@@ -1,6 +1,46 @@
 
 # 4.7.0 (Under Release Candidate Process)
 
+## 4.7.0-rc.2
+`2022-04-27  ·  6 🔍  ·  7 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+
+  - data and test-failure should be ignored  
+  - ensure scripts use cross-env
+
+- Regression: Add eslint package to micro services Dockerfile ([#25311](https://github.com/RocketChat/Rocket.Chat/pull/25311))
+
+- Regression: Change preference to be default legacy messages ([#25255](https://github.com/RocketChat/Rocket.Chat/pull/25255))
+
+- Regression: Fix reply button not working when hideFlexTab is enabled ([#25306](https://github.com/RocketChat/Rocket.Chat/pull/25306))
+
+- Regression: Fix the alpine image and dev UX installing matrix-rust-sdk-bindings ([#25319](https://github.com/RocketChat/Rocket.Chat/pull/25319))
+
+  The package only included a few pre-built which caused all macs to have to compile every time they installed and also caused our alpine not to work.
+
+  This temporarily switches to a fork of the matrix-appservice-bridge package.
+
+  Made changes to one of its child dependencies `matrix-rust-sdk-bindings` that adds pre-built binaries for mac and musl (for alpine).
+
+- Regression: Revert Bugsnag version ([#25313](https://github.com/RocketChat/Rocket.Chat/pull/25313))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@souzaramon](https://github.com/souzaramon)
+
 ## 4.7.0-rc.1
 `2022-04-26  ·  4 🔍  ·  4 👩‍💻👨‍💻`
 

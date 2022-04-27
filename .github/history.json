@@ -74171,6 +74171,75 @@
           ]
         }
       ]
+    },
+    "4.7.0-rc.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25319",
+          "title": "Regression: Fix the alpine image and dev UX installing matrix-rust-sdk-bindings",
+          "userLogin": "geekgonecrazy",
+          "description": "The package only included a few pre-built which caused all macs to have to compile every time they installed and also caused our alpine not to work.\r\n\r\nThis temporarily switches to a fork of the matrix-appservice-bridge package.\r\n\r\nMade changes to one of its child dependencies `matrix-rust-sdk-bindings` that adds pre-built binaries for mac and musl (for alpine).",
+          "milestone": "4.7.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "25255",
+          "title": "Regression: Change preference to be default legacy messages",
+          "userLogin": "gabriellsh",
+          "milestone": "4.8.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "25306",
+          "title": "Regression: Fix reply button not working when hideFlexTab is enabled",
+          "userLogin": "filipemarins",
+          "contributors": [
+            "filipemarins",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "25311",
+          "title": "Regression: Add eslint package to micro services Dockerfile",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.7.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25218",
+          "title": "Chore: ensure scripts use cross-env and ignore some dirs (ROC-54)",
+          "userLogin": "souzaramon",
+          "description": "- data and test-failure should be ignored\r\n- ensure scripts use cross-env",
+          "contributors": [
+            "souzaramon"
+          ]
+        },
+        {
+          "pr": "25313",
+          "title": "Regression: Revert Bugsnag version",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
