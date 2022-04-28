@@ -58,11 +58,13 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 	const invitedUserIsRemote = invitedUserDomain && invitedUserDomain !== settings.get('Federation_Matrix_homeserver_domain');
 
 	// Find the invited user in Rocket.Chats users
+	// TODO: this should be refactored asap, since these variable value changes lead us to confusion
 	let invitedUser = Users.findOneByUsername(removeUselessCharsFromMatrixId(invitedId));
 
 	if (!invitedUser) {
 		// Create the invited user
-		invitedUser = await matrixClient.user.createLocal(invitedUserMatrixId);
+		const { uid } = await matrixClient.user.createLocal(invitedUserMatrixId);
+		invitedUser = Users.findOneById(uid);
 	}
 
 	// If the invited user is not remote, let's ensure it exists remotely
