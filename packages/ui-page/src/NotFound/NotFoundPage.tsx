@@ -1,5 +1,6 @@
 import { useTranslation, useRoute } from '@rc/ui-contexts';
 import { Box, Button, ButtonGroup, Flex, Margins } from '@rocket.chat/fuselage';
+import React from 'react';
 import type { ReactElement } from 'react';
 
 function NotFoundPage(): ReactElement {
@@ -60,4 +61,4 @@ function NotFoundPage(): ReactElement {
 	);
 }
 
-export default NotFoundPage;
+export { NotFoundPage };
