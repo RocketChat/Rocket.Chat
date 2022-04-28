@@ -64,25 +64,18 @@ const EmailInboxTable = () => {
 					<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
 						{t('Name')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'email'} onClick={setSort} sort='email' w='x200'>
+					<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
 						{t('Email')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='active'
-						direction={sortDirection}
-						active={sortBy === 'active'}
-						onClick={setSort}
-						sort='active'
-						w='x200'
-					>
+					<GenericTableHeaderCell key='active' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
 						{t('Active')}
 					</GenericTableHeaderCell>
 					<GenericTableHeaderCell
 						key='sendTest'
 						direction={sortDirection}
-						active={sortBy === 'sendTest'}
+						active={sortBy === 'name'}
 						onClick={setSort}
-						sort='sendTest'
+						sort='name'
 						w='x200'
 					></GenericTableHeaderCell>
 				</GenericTableHeader>
