@@ -13,6 +13,33 @@ const options = {
 	},
 };
 
+// In a previous version of the app, some values were being set to null.
+// This is a workaround to remove those null values.
+// A migration script should be created to remove this code.
+const removePossibleNullValues = ({
+	editedBy,
+	editedAt,
+	emoji,
+	avatar,
+	alias,
+	customFields,
+	groupable,
+	attachments,
+	reactions,
+	...message
+}: any): IMessage => ({
+	...message,
+	...(editedBy !== null && { editedBy }),
+	...(editedAt !== null && { editedAt }),
+	...(emoji !== null && { emoji }),
+	...(avatar !== null && { avatar }),
+	...(alias !== null && { alias }),
+	...(customFields !== null && { customFields }),
+	...(groupable !== null && { groupable }),
+	...(attachments !== null && { attachments }),
+	...(reactions !== null && { reactions }),
+});
+
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	const showInMainThread = useUserPreference<boolean>('showMessageInMainThread', false);
 	// const hideSettings = !!useSetting('Hide_System_Messages');
@@ -35,5 +62,5 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	// 	query.t = { $nin: Array.from(hideMessagesOfType.values()) };
 	// }
 
-	return useReactiveValue<IMessage[]>(useCallback(() => ChatMessage.find(query, options).fetch(), [query]));
+	return useReactiveValue<IMessage[]>(useCallback(() => ChatMessage.find(query, options).fetch().map(removePossibleNullValues), [query]));
 };
