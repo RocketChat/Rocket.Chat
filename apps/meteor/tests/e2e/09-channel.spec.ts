@@ -6,7 +6,6 @@ import SideNav from './utils/pageobjects/SideNav';
 import LoginPage from './utils/pageobjects/LoginPage';
 import Global from './utils/pageobjects/Global';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { LOCALHOST } from './utils/mocks/urlMock';
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';
 import { publicChannelName } from './utils/mocks/channel';
 import { targetUser } from './utils/mocks/interations';
@@ -20,12 +19,11 @@ test.describe.serial('[Channel]', () => {
 	let sideNav: SideNav;
 	let global: Global;
 
-	test.beforeAll(async ({ browser, baseURL }) => {
+	test.beforeAll(async ({ browser }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
-		const URL = baseURL || LOCALHOST;
 		loginPage = new LoginPage(page);
-		await loginPage.goto(URL);
+		await loginPage.goto('/');
 
 		await loginPage.login(adminLogin);
 		sideNav = new SideNav(page);

@@ -6,10 +6,9 @@ import { VALID_EMAIL, INVALID_EMAIL, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from 
 test.describe('[Forgot Password]', () => {
 	let loginPage: LoginPage;
 
-	test.beforeEach(async ({ page, baseURL }) => {
+	test.beforeEach(async ({ page }) => {
 		loginPage = new LoginPage(page);
-		const baseUrl = baseURL as string;
-		await loginPage.goto(baseUrl);
+		await loginPage.goto('/');
 		await loginPage.gotToForgotPassword();
 	});
 

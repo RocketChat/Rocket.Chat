@@ -15,9 +15,8 @@ test.describe('[Wizard]', () => {
 	});
 
 	test.describe('[Step 2]', async () => {
-		test.beforeEach(async ({ baseURL }) => {
-			const baseUrl = baseURL;
-			await setupWizard.goto(baseUrl as string);
+		test.beforeEach(async () => {
+			await setupWizard.goto('/');
 			await loginPage.login(adminLogin);
 		});
 

@@ -11,10 +11,9 @@ test.describe('[Channel]', async () => {
 
 	const HELLO = 'Hello';
 
-	test.beforeEach(async ({ page, baseURL }) => {
-		const baseUrl = baseURL as string;
+	test.beforeEach(async ({ page }) => {
 		loginPage = new LoginPage(page);
-		await loginPage.goto(baseUrl);
+		await loginPage.goto('/');
 		await loginPage.login(validUser);
 
 		channelCreation = new ChannelCreation(page);

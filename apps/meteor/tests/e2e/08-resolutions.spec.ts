@@ -26,10 +26,10 @@ async function initConfig(
 	return { loginPage, sideNav, mainContent };
 }
 
-test.describe('[Resolution]', function () {
+test.describe('[Resolution]', () => {
 	test.describe('[Mobile Render]', async () => {
-		test.beforeAll(async ({ browser, baseURL }) => {
-			await initConfig(browser, baseURL);
+		test.beforeAll(async ({ browser }) => {
+			await initConfig(browser, '/');
 		});
 
 		test.afterAll(async ({ browser, baseURL }) => {

@@ -10,12 +10,11 @@ test.describe('[Emoji]', function () {
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 
-	test.beforeAll(async ({ browser, baseURL }) => {
+	test.beforeAll(async ({ browser }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
-		const URL = baseURL as string;
 		loginPage = new LoginPage(page);
-		await loginPage.goto(URL);
+		await loginPage.goto('/');
 
 		await loginPage.login(adminLogin);
 		sideNav = new SideNav(page);

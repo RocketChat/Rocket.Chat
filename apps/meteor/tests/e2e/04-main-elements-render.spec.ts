@@ -12,12 +12,11 @@ test.describe('[Main Elements Render]', function () {
 	let sideNav: SideNav;
 	let flexTab: FlexTab;
 
-	test.beforeAll(async ({ browser, baseURL }) => {
+	test.beforeAll(async ({ browser }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
-		const URL = baseURL;
 		loginPage = new LoginPage(page);
-		await loginPage.goto(URL as string);
+		await loginPage.goto('/');
 
 		await loginPage.login(adminLogin);
 		sideNav = new SideNav(page);
