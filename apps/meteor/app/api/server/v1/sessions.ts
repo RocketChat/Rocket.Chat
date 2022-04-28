@@ -5,7 +5,7 @@ import { Users, Sessions } from '../../../models/server/raw/index';
 import { API } from '../api';
 
 API.v1.addRoute(
-	'sessions.list',
+	'sessions/list',
 	{ authRequired: true },
 	{
 		async get() {
@@ -31,7 +31,8 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'sessions.list.all',
+API.v1.addRoute(
+	'sessions/list.all',
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		async get() {

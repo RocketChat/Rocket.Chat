@@ -4,11 +4,17 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export type SessionsEndpoints = {
-	'sessions.list': {
+	'sessions/list': {
 		GET: (params: PaginatedRequest<{ search?: string }>) => PaginatedResult<{ sessions: ISession[] }>;
 	};
+	'sessions/logout.me': {
+		POST: (params: { sessionId: string }) => Pick<ISession, 'sessionId'>;
+	};
 
-	'sessions.list.all': {
+	'sessions/list.all': {
 		GET: (params: PaginatedRequest<{ search?: string }>) => PaginatedResult<{ sessions: ISession[] }>;
+	};
+	'sessions/logout': {
+		POST: (params: { sessionId: string }) => Pick<ISession, 'sessionId'>;
 	};
 };
