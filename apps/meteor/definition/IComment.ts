@@ -14,8 +14,6 @@ export type ICommentLean = Omit<IComment, 'createdAt' | '_updatedAt' | '_id'>;
 
 export type ICommentCreateParams = Omit<IComment, 'createdAt' | '_updatedAt' | '_id'>;
 
-export type ICommentCreateBody = Omit<IComment, '_id'>;
-
 export type ICommentUpdateParams = AtLeastOne<ICommentLean>;
 
 export type ICommentUpdateBody = ICommentUpdateParams & { _updatedAt: IComment['_updatedAt'] };

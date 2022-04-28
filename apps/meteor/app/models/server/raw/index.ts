@@ -68,9 +68,13 @@ import SubscriptionsModel from '../models/Subscriptions';
 import UsersModel from '../models/Users';
 import { PbxEventsRaw } from './PbxEvents';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
+import { BlogsRaw } from './Blogs';
+import { CommentsRaw } from './Comments';
+import { ProductsRaw } from './Products';
+import { TagsRaw } from './Tags';
+import { GamesRaw } from './Games';
 
 const trashCollection = trash.rawCollection();
-
 export const Users = new UsersRaw(UsersModel.model.rawCollection(), trashCollection);
 export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCollection(), { Users }, trashCollection);
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection(), trashCollection);
@@ -92,6 +96,12 @@ export const ImportData = new ImportDataRaw(ImportDataModel.model.rawCollection(
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 const prefix = 'rocketchat_';
+
+export const BlogModel = new BlogsRaw(db.collection('blogs'));
+export const CommentModel = new CommentsRaw(db.collection('comments'));
+export const ProductModel = new ProductsRaw(db.collection('products'));
+export const TagModel = new TagsRaw(db.collection('tags'));
+export const GameModel = new GamesRaw(db.collection('games'));
 
 export const Avatars = new AvatarsRaw(db.collection(`${prefix}avatars`), trashCollection);
 export const Analytics = new AnalyticsRaw(
