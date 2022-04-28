@@ -28,6 +28,7 @@ import type { StatisticsEndpoints } from "./v1/statistics";
 import type { TeamsEndpoints } from "./v1/teams";
 import type { UsersEndpoints } from "./v1/users";
 import type { VoipEndpoints } from "./v1/voip";
+import type { OAuthAppsEndpoints } from "./v1/oAuthApps";
 
 type CommunityEndpoints = BannersEndpoints &
   ChatEndpoints &
@@ -55,7 +56,8 @@ type CommunityEndpoints = BannersEndpoints &
   VoipEndpoints &
   InvitesEndpoints &
   E2eEndpoints &
-  CustomSoundEndpoint;
+  CustomSoundEndpoint &
+  OAuthAppsEndpoints;
 
 export interface Endpoints extends CommunityEndpoints {}
 // type Endpoints = CommunityEndpoints;

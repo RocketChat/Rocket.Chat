@@ -1,3 +1,4 @@
+import { IOAuthApps } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo, ReactElement, ComponentProps } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
@@ -10,21 +11,6 @@ import { useMethod, useAbsoluteUrl } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export type OAuthApp = {
-	_id: string;
-	active: boolean;
-	clientId: string;
-	clientSecret: string;
-	name: string;
-	redirectUri: string;
-	_createdAt: Date;
-	_createdBy: {
-		username: string;
-		_id: string;
-	};
-	_updatedAt: Date;
-};
-
 export type EditOAuthAddAppPayload = {
 	name: string;
 	active: boolean;
@@ -33,7 +19,7 @@ export type EditOAuthAddAppPayload = {
 
 export type EditOauthAppProps = {
 	onChange: () => void;
-	data: OAuthApp;
+	data: IOAuthApps;
 } & ComponentProps<typeof VerticalBar.ScrollableContent>;
 
 const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactElement => {
