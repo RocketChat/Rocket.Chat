@@ -1,3 +1,5 @@
+import { performance } from 'perf_hooks';
+
 import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
 
@@ -33,7 +35,10 @@ const transformLog = function (item: any): { id: string; string: string; ts: Dat
 logEntries.on('log', (item) => {
 	// TODO having this as 'emitWithoutBroadcast' will not sent this data to ddp-streamer, so this data
 	// won't be available when using micro services.
-	notifications.streamStdout.emitWithoutBroadcast('stdout', transformLog(item));
+	const timeStart = performance.now();
+	const strItem = transformLog(item);
+	const timeEnd = performance.now();
+	notifications.streamStdout.emitWithoutBroadcast('stdout', `[took-${timeEnd - timeStart}m]${strItem}`);
 });
 
 export function getLogs(): { id: string; string: string; ts: Date }[] {

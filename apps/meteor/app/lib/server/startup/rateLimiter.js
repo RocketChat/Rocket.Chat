@@ -9,6 +9,24 @@ import { Logger } from '../../../logger';
 
 const logger = new Logger('RateLimiter');
 
+const log = (() => {
+	const useLogger = Math.random() < 0.5;
+	const fn = useLogger
+		? ({ msg, reply, input }) => logger.info({ msg, reply, input })
+		: ({ msg, reply, input }) => {
+				console.warn('DDP RATE LIMIT:', msg);
+				console.warn(JSON.stringify({ ...reply, ...input }, null, 2));
+		  };
+
+	console.log('RATE LIMITER:', useLogger ? 'logger' : 'console');
+
+	return (input) => {
+		console.time(`rate-limiter-${useLogger}`);
+		fn(input);
+		console.timeEnd(`rate-limiter-${useLogger}`);
+	};
+})();
+
 // Get initial set of names already registered for rules
 const names = new Set(
 	Object.values(DDPRateLimiter.printRules())
@@ -112,7 +130,7 @@ const ruleIds = {};
 
 const callback = (msg, name) => (reply, input) => {
 	if (reply.allowed === false) {
-		logger.info({ msg, reply, input });
+		log({ msg, reply, input });
 		metrics.ddpRateLimitExceeded.inc({
 			limit_name: name,
 			user_id: input.userId,
