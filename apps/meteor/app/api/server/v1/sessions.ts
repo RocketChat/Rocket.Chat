@@ -31,6 +31,32 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'sessions/logout.me',
+	{ authRequired: true },
+	{
+		async post() {
+			check(this.bodyParams, {
+				sessionId: String,
+			});
+
+			try {
+				const { sessionId } = this.bodyParams;
+				const { loginToken } = await Sessions.findOneBySessionId(sessionId);
+
+				if (!loginToken) {
+					return API.v1.failure('Session not found');
+				}
+
+				await Users.unsetOneLoginToken(this.userId, loginToken);
+				await Sessions.updateMany({ userId: this.userId, loginToken }, { $set: { logoutAt: new Date() } });
+				return API.v1.success({ sessionId });
+			} catch (error) {
+				return API.v1.failure(`${error}`);
+			}
+		},
+	},
+);
+
 API.v1.addRoute(
 	'sessions/list.all',
 	{ authRequired: true, twoFactorRequired: true },
