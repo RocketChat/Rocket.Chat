@@ -69,6 +69,7 @@ export interface IRoom extends IRocketChatRecord {
 	unread?: number;
 	alert?: boolean;
 	hideUnreadStatus?: boolean;
+	hideMentionStatus?: boolean;
 
 	muted?: string[];
 	unmuted?: string[];

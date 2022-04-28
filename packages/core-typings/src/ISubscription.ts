@@ -21,6 +21,7 @@ export interface ISubscription extends IRocketChatRecord {
 	f?: true;
 	lr: Date;
 	hideUnreadStatus?: true;
+	hideMentionStatus?: true;
 	teamMain?: boolean;
 	teamId?: string;
 
