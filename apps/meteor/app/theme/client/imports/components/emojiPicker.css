@@ -284,7 +284,17 @@
 	image-rendering: auto;
 }
 
-.emoji.big {
+/* Move this style to fuselage */
+.emoji.big,
+.emojione.big {
 	width: 44px;
 	height: 44px;
+}
+
+.rcx-message-thread__message {
+	& .emoji,
+	& .emojione {
+		width: 1em;
+		height: 1em;
+	}
 }

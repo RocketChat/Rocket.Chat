@@ -1,16 +1,16 @@
-import React, { ReactElement, CSSProperties } from 'react';
+import React, { ReactElement } from 'react';
 
 import { getEmojiClassNameAndDataTitle } from '../lib/utils/renderEmoji';
 
 type EmojiProps = {
 	emojiHandle: string; // :emoji:
-	style?: CSSProperties;
+	className?: string;
 };
 
-function Emoji({ emojiHandle, style }: EmojiProps): ReactElement {
-	const { image: backgroundImage, ...emojiProps } = getEmojiClassNameAndDataTitle(emojiHandle);
+function Emoji({ emojiHandle, className }: EmojiProps): ReactElement {
+	const { image: backgroundImage, className: emojiClassName, ...emojiProps } = getEmojiClassNameAndDataTitle(emojiHandle);
 
-	return <span style={{ backgroundImage, ...style }} {...emojiProps} />;
+	return <span style={{ backgroundImage }} className={`${emojiClassName} ${className || ''}`} {...emojiProps} />;
 }
 
 export default Emoji;

@@ -7,7 +7,7 @@ import MessageBodyRender from '../../../../components/Message/MessageBodyRender'
 import { useMessageActions } from '../../contexts/MessageContext';
 import EncryptedMessageRender from './EncryptedMessageRender';
 
-const MessageRender: FC<{ message: IMessage; disableBigEmoji?: boolean }> = ({ message, disableBigEmoji = false }) => {
+const MessageRender: FC<{ message: IMessage }> = ({ message }) => {
 	const {
 		actions: { openRoom, openUserCard },
 	} = useMessageActions();
@@ -23,7 +23,6 @@ const MessageRender: FC<{ message: IMessage; disableBigEmoji?: boolean }> = ({ m
 					mentions={message?.mentions || []}
 					channels={message?.channels || []}
 					tokens={message.md}
-					disableBigEmoji={disableBigEmoji}
 				/>
 			)}
 
