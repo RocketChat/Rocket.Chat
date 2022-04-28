@@ -1,4 +1,4 @@
-import { IOAuthApps } from '@rocket.chat/core-typings';
+import { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo, ReactElement, ComponentProps } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
@@ -19,8 +19,8 @@ export type EditOAuthAddAppPayload = {
 
 export type EditOauthAppProps = {
 	onChange: () => void;
-	data: IOAuthApps;
-} & ComponentProps<typeof VerticalBar.ScrollableContent>;
+	data: Serialized<IOAuthApps>;
+} & Omit<ComponentProps<typeof VerticalBar.ScrollableContent>, 'data'>;
 
 const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactElement => {
 	const t = useTranslation();

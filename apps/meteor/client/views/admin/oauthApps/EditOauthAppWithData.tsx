@@ -6,7 +6,7 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditOauthApp from './EditOauthApp';
 
-const EditOauthAppWithData = ({ _id, ...props }: { _id: string | undefined }): ReactElement => {
+const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement => {
 	const t = useTranslation();
 
 	const params = useMemo(() => ({ appId: _id }), [_id]);

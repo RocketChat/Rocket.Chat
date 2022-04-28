@@ -35,7 +35,7 @@ const OAuthAppsPage = (): ReactElement => {
 				</Page.Header>
 				<Page.Content>
 					{!context && <OAuthAppsTable />}
-					{context === 'edit' && <EditOauthAppWithData _id={id} />}
+					{id && context === 'edit' && <EditOauthAppWithData _id={id} />}
 					{context === 'new' && <OAuthAddApp />}
 				</Page.Content>
 			</Page>

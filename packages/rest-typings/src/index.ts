@@ -29,7 +29,7 @@ import type { StatisticsEndpoints } from './v1/statistics';
 import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VoipEndpoints } from './v1/voip';
-import type { OAuthAppsEndpoints } from './v1/oAuthApps';
+import type { OAuthAppsEndpoint } from './v1/oauthapps';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
 	extends BannersEndpoints,
@@ -58,8 +58,8 @@ export interface Endpoints
 		VoipEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
-    OAuthAppsEndpoints,
-		CustomSoundEndpoint {}
+		CustomSoundEndpoint,
+		OAuthAppsEndpoint {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
@@ -127,6 +127,7 @@ export * from './v1/permissions';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
+export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
