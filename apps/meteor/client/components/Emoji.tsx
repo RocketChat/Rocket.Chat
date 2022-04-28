@@ -12,7 +12,7 @@ function Emoji({ emojiHandle, className }: EmojiProps): ReactElement {
 
 	return (
 		<span style={{ backgroundImage }} className={`${emojiClassName} ${className || ''}`} {...emojiProps}>
-			{!backgroundImage ? emojiHandle : ''}
+			{!emojiClassName ? emojiHandle : ''}
 		</span>
 	);
 }
