@@ -1,4 +1,4 @@
-import { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import type { MatchPathPattern, Method, OperationParams, OperationResult, Path, PathFor } from '@rocket.chat/rest-typings';
 import { action } from '@storybook/addon-actions';
 import { pathToRegexp } from 'path-to-regexp';

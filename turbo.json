@@ -9,6 +9,10 @@
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**"]
 		},
+		"jest": {
+			"dependsOn": ["build"],
+			"outputs": []
+		},
 		"testunit": {
 			"dependsOn": ["build"],
 			"outputs": []

@@ -1,18 +1,16 @@
+import { useTranslation, useRoute } from '@rc/ui-contexts';
 import { Box, Button, ButtonGroup, Flex, Margins } from '@rocket.chat/fuselage';
-import React from 'react';
+import type { ReactElement } from 'react';
 
-import { useRoute } from '../../contexts/RouterContext';
-import { useTranslation } from '../../contexts/TranslationContext';
-
-function NotFoundPage() {
+function NotFoundPage(): ReactElement {
 	const t = useTranslation();
 	const homeRoute = useRoute('home');
 
-	const handleGoToPreviousPageClick = () => {
+	const handleGoToPreviousPageClick = (): void => {
 		window.history.back();
 	};
 
-	const handleGoHomeClick = () => {
+	const handleGoHomeClick = (): void => {
 		homeRoute.push();
 	};
 
@@ -38,7 +36,7 @@ function NotFoundPage() {
 								404
 							</Box>
 
-							<Box role='heading' aria-level='1' fontScale='h2' color='alternative'>
+							<Box role='heading' aria-level={1} fontScale='h2' color='alternative'>
 								{t('Oops_page_not_found')}
 							</Box>
 

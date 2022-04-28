@@ -21,7 +21,7 @@ const CMSPage = lazy(() => import('../views/root/CMSPage'));
 const ResetPasswordPage = lazy(() => import('../views/login/ResetPassword/ResetPassword'));
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
-const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
+const NotFoundPage = lazy(async () => (await import('@rc/ui-page')).NotFoundPage);
 const MeetPage = lazy(() => import('../views/meet/MeetPage'));
 
 FlowRouter.wait();

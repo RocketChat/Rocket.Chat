@@ -1,3 +1,4 @@
+import { NotFoundPage } from '@rc/ui-page';
 import { Button, Box, Icon, Flex } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback, FC } from 'react';
@@ -5,7 +6,6 @@ import React, { useEffect, useState, useCallback, FC } from 'react';
 import { APIClient } from '../../../app/utils/client';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useRouteParameter, useQueryStringParameter } from '../../contexts/RouterContext';
-import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 import CallPage from './CallPage';
 import './styles.css';

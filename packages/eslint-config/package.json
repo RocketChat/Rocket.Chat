@@ -30,5 +30,10 @@
 		"/node",
 		"/style",
 		"/variables"
-	]
+	],
+	"dependencies": {
+		"eslint-plugin-react": "^7.29.4",
+		"eslint-plugin-react-hooks": "^4.5.0",
+		"eslint-plugin-testing-library": "^5.3.1"
+	}
 }

@@ -1,0 +1,5 @@
+{
+	"root": true,
+	"ignorePatterns": ["/dist/**", "node_modules/**"],
+	"extends": ["@rocket.chat/eslint-config/react", "@rocket.chat/eslint-config/jest", "prettier"]
+}

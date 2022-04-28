@@ -1,0 +1,51 @@
+{
+	"name": "@rc/ui-page",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@types/jest": "^27.4.1",
+		"@types/mongodb": "^3.6.10",
+		"@types/react": "^18",
+		"@types/react-dom": "^18",
+		"@types/testing-library__jest-dom": "^5.14.3",
+		"@types/use-subscription": "^1",
+		"eslint": "^8.12.0",
+		"jest": "^27.5.1",
+		"ts-jest": "^27.1.4",
+		"typescript": "~4.3.5"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"jest": "jest",
+		"build": "tsc -p tsconfig.json"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"dependencies": {
+		"@rc/ui-contexts": "workspace:^",
+		"@rocket.chat/fuselage": "^0.31.10",
+		"@rocket.chat/fuselage-hooks": "^0.31.10",
+		"@testing-library/jest-dom": "^5.16.4",
+		"@testing-library/react": "^13.1.1",
+		"ajv": "^8.11.0",
+		"jest-dom": "^4.0.0",
+		"react": "^18.1.0",
+		"react-dom": "^18.1.0",
+		"use-subscription": "^1.7.0"
+	},
+	"peerDependencies": {
+		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/fuselage-hooks": "*",
+		"ajv": "*",
+		"jest-dom": "*",
+		"react": "*",
+		"react-dom": "*",
+		"use-subscription": "*"
+	}
+}
