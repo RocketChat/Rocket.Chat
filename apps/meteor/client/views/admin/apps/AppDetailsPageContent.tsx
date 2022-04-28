@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { Box, Callout, Chip, Divider, Icon, Margins } from '@rocket.chat/fuselage';
+import { Box, Callout, Chip, Divider, Margins } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
-import { App } from './types';
 import ScreenshotCarouselAnchor from './components/ScreenshotCarouselAnchor';
+import { App } from './types';
 
 type AppDetailsPageContentProps = {
 	app: App;

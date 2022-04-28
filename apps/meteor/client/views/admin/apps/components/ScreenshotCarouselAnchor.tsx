@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import colors from '@rocket.chat/fuselage-tokens/colors';
-import { createPortal } from 'react-dom';
 import { Box, Icon } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/colors';
+import React, { ReactElement, useState } from 'react';
+import { createPortal } from 'react-dom';
+
 import ScreenshotCarousel from './ScreenshotCarousel';
 
-const ScreenshotCarouselAnchor = () => {
+const ScreenshotCarouselAnchor = (): ReactElement => {
 	const AppScreenshots = [
 		{
 			id: '61cc57c14c306b0001d87023',
@@ -43,7 +44,7 @@ const ScreenshotCarouselAnchor = () => {
 
 	const [viewCarousel, setViewCarousel] = useState(false);
 
-	const isCarouselVisible = AppScreenshots && AppScreenshots.length && viewCarousel;
+	const isCarouselVisible = AppScreenshots?.length && viewCarousel;
 
 	const carouselPortal = createPortal(
 		<ScreenshotCarousel AppScreenshots={AppScreenshots} setViewCarousel={setViewCarousel} />,
@@ -53,7 +54,7 @@ const ScreenshotCarouselAnchor = () => {
 	return (
 		<>
 			<Box
-				onClick={() => setViewCarousel(true)}
+				onClick={(): void => setViewCarousel(true)}
 				display='flex'
 				flexDirection='column'
 				maxWidth='x640'

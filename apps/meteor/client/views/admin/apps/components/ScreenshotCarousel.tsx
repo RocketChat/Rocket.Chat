@@ -1,6 +1,7 @@
-import { Box, Button, color, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
+
 import { Screenshot } from '../definitions/AppInfo';
 
 type ScreenshotCarouselProps = {
@@ -8,15 +9,15 @@ type ScreenshotCarouselProps = {
 	setViewCarousel: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ScreenshotCarousel = ({ AppScreenshots, setViewCarousel }: ScreenshotCarouselProps) => {
+const ScreenshotCarousel = ({ AppScreenshots, setViewCarousel }: ScreenshotCarouselProps): ReactElement => {
 	const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-	const length = AppScreenshots.length;
+	const { length } = AppScreenshots;
 
-	const handleNextSlide = () => {
+	const handleNextSlide = (): void => {
 		setCurrentSlideIndex(currentSlideIndex === length - 1 ? 0 : currentSlideIndex + 1);
 	};
 
-	const handlePrevSlide = () => {
+	const handlePrevSlide = (): void => {
 		setCurrentSlideIndex(currentSlideIndex === 0 ? length - 1 : currentSlideIndex - 1);
 	};
 
@@ -78,7 +79,7 @@ const ScreenshotCarousel = ({ AppScreenshots, setViewCarousel }: ScreenshotCarou
 			)}
 
 			<Box
-				onClick={() => setViewCarousel(false)}
+				onClick={(): void => setViewCarousel(false)}
 				onKeyDown={handleArrowKey}
 				position='fixed'
 				width='100%'
