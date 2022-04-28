@@ -18,8 +18,8 @@ import type {
 	IUser,
 	IPaginationOptions,
 } from '@rocket.chat/core-typings';
+import { PaginatedResult } from '@rocket.chat/rest-typings';
 
-import { IMDMSession } from '../../../../../../packages/rest-typings/src/v1/sessions/IMDMSession';
 import { BaseRaw, IndexSpecification, ModelOptionalId } from './BaseRaw';
 
 type DestructuredDate = { year: number; month: number; day: number };
@@ -785,7 +785,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		uid: string,
 		search?: string | null,
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
-	): Promise<IMDMSession> {
+	): Promise<PaginatedResult<{ sessions: ISession[] }>> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
 		const matchOperator = {
@@ -915,7 +915,10 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		return { sessions, total, count, offset };
 	}
 
-	async getAllSessions(search = '', { offset, count }: IPaginationOptions = { offset: 0, count: 10 }): Promise<IMDMSession> {
+	async getAllSessions(
+		search = '',
+		{ offset, count }: IPaginationOptions = { offset: 0, count: 10 },
+	): Promise<PaginatedResult<{ sessions: ISession[] }>> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
 		const matchOperator = {
