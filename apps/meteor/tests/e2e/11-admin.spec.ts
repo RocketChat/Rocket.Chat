@@ -178,35 +178,6 @@ test.describe('[Administration]', () => {
 				});
 			});
 		});
-
-		// TODO verify how is make o invite
-		// 	describe('[Flex Tab] ', () => {
-		// 		describe('send invitation:', () => {
-		// 			before(() => {
-		// 				flexTab.usersSendInvitationTab.waitForVisible(5000);
-		// 				flexTab.usersSendInvitationTab.click();
-		// 				flexTab.usersSendInvitationTextArea.waitForVisible(5000);
-		// 			});
-
-		// 			after(() => {
-		// 				flexTab.usersSendInvitationTab.waitForVisible(5000);
-		// 				flexTab.usersSendInvitationTab.click();
-		// 				flexTab.usersSendInvitationTextArea.waitForVisible(5000, true);
-		// 			});
-
-		// 			test('it should show the send invitation text area', () => {
-		// 				flexTab.usersSendInvitationTextArea.should('be.visible');
-		// 			});
-
-		// 			it('it should show the cancel button', () => {
-		// 				flexTab.usersButtonCancel.should('be.visible');
-		// 			});
-
-		// 			it('it should show the send button', () => {
-		// 				flexTab.usersSendInvitationSend.should('be.visible');
-		// 			});
-		// 		});
-
 		test.describe('[General Settings]', () => {
 			test.beforeAll(async () => {
 				await admin.settingsSearch().type('general');
