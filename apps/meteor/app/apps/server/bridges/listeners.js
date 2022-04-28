@@ -20,6 +20,7 @@ export class AppListenerBridge {
 				case AppInterface.IPreMessageUpdatedModify:
 				case AppInterface.IPostMessageUpdated:
 				case AppInterface.IPostMessageReacted:
+				case AppInterface.IPostMessageFollowed:
 					return 'messageEvent';
 				case AppInterface.IPreRoomCreatePrevent:
 				case AppInterface.IPreRoomCreateExtend:
@@ -62,12 +63,19 @@ export class AppListenerBridge {
 		const params = (() => {
 			switch (inte) {
 				case AppInterface.IPostMessageReacted:
-					const [user, reaction, isRemoved] = payload;
+					const [userReacted, reaction, isRemoved] = payload;
 					return {
 						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(user),
+						user: this.orch.getConverters().get('users').convertToApp(userReacted),
 						reaction,
 						isRemoved,
+					};
+				case AppInterface.IPostMessageFollowed:
+					const [userFollowed, isUnfollow] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userFollowed),
+						isUnfollow,
 					};
 				default:
 					return msg;
