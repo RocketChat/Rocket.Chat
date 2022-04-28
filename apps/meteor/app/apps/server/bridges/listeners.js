@@ -21,6 +21,7 @@ export class AppListenerBridge {
 				case AppInterface.IPostMessageUpdated:
 				case AppInterface.IPostMessageReacted:
 				case AppInterface.IPostMessageFollowed:
+				case AppInterface.IPostMessagePinned:
 					return 'messageEvent';
 				case AppInterface.IPreRoomCreatePrevent:
 				case AppInterface.IPreRoomCreateExtend:
@@ -76,6 +77,13 @@ export class AppListenerBridge {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userFollowed),
 						isUnfollow,
+					};
+				case AppInterface.IPostMessagePinned:
+					const [userPinned, isUnpinned] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userPinned),
+						isUnpinned,
 					};
 				default:
 					return msg;
