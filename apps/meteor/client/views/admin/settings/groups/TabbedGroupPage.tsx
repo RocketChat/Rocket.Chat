@@ -1,6 +1,6 @@
 import { ISetting } from '@rocket.chat/core-typings';
 import { Tabs } from '@rocket.chat/fuselage';
-import React, { memo, useState, useMemo } from 'react';
+import React, { memo, useState, useMemo, ReactElement } from 'react';
 
 import { useEditableSettingsGroupSections, useEditableSettingsGroupTabs } from '../../../../contexts/EditableSettingsContext';
 import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
@@ -8,7 +8,9 @@ import GroupPage from '../GroupPage';
 import Section from '../Section';
 import GenericGroupPage from './GenericGroupPage';
 
-type TabbedGroupPageProps = ISetting;
+type TabbedGroupPageProps = ISetting & {
+	headerButtons: ReactElement;
+};
 
 function TabbedGroupPage({ _id, ...group }: TabbedGroupPageProps): JSX.Element {
 	const t = useTranslation();
