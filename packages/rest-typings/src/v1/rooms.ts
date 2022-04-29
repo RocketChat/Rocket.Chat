@@ -1,5 +1,7 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
 export type RoomsEndpoints = {
 	'rooms.autocomplete.channelAndPrivate': {
 		GET: (params: { selector: string }) => {
@@ -52,5 +54,17 @@ export type RoomsEndpoints = {
 			missing?: [];
 			success: boolean;
 		};
+	};
+	'rooms.adminRooms': {
+		GET: (params: {
+			filter?: string;
+			types?: string[];
+			sort?: string;
+			count?: number;
+			offset?: number;
+		}) => PaginatedResult<{ rooms: IRoom[] }>;
+	};
+	'rooms.adminRooms.getRoom': {
+		GET: (params: { rid?: string }) => IRoom;
 	};
 };
