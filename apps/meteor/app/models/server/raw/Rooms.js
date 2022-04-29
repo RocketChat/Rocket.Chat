@@ -1,8 +1,7 @@
-import { MongoInternals } from 'meteor/mongo';
+import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 export class RoomsRaw extends BaseRaw {
 	findOneByRoomIdAndUserId(rid, uid, options = {}) {
@@ -302,7 +301,7 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
-		const readPreference = readSecondaryPreferred(MongoInternals.defaultRemoteCollectionDriver().mongo);
+		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
