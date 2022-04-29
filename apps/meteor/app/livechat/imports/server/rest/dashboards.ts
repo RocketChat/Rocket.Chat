@@ -13,13 +13,13 @@ import {
 	getAgentsProductivityMetrics,
 	getChatsMetrics,
 } from '../../../server/lib/analytics/dashboards';
-import { Users } from '../../../../models';
+import { Users } from '../../../../models/server';
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversation-totalizers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -52,7 +52,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/agents-productivity-totalizers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -85,7 +85,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/chats-totalizers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -106,7 +106,15 @@ API.v1.addRoute(
 			}
 			end = new Date(end);
 
-			const totalizers = getChatsMetrics({ start, end, departmentId });
+			const totalizers = getChatsMetrics({ start, end, departmentId }) as {
+				totalizers: Array<
+					| {
+							title: 'Avg_of_abandoned_chats' | 'Avg_of_chat_duration_time';
+							value: string;
+					  }
+					| { title: 'Total_abandoned_chats'; value: number }
+				>;
+			};
 			return API.v1.success(totalizers);
 		},
 	},
@@ -116,7 +124,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/productivity-totalizers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -150,7 +158,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -170,6 +178,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
+
 			const result = findAllChatsStatus({ start, end, departmentId });
 
 			return API.v1.success(result);
@@ -181,7 +190,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-agent',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -201,7 +210,14 @@ API.v1.addRoute(
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
-			const result = findAllChatMetricsByAgent({ start, end, departmentId });
+
+			const result = findAllChatMetricsByAgent({ start, end, departmentId }) as {
+				[agentId: string]: {
+					open: number;
+					closed: number;
+					onhold: number;
+				};
+			};
 
 			return API.v1.success(result);
 		},
@@ -212,13 +228,12 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/agents-status',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 
 			const { departmentId } = this.requestParams();
-			check(departmentId, Match.Maybe(String));
 
 			const result = findAllAgentsStatus({ departmentId });
 
@@ -231,7 +246,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-department',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -251,7 +266,13 @@ API.v1.addRoute(
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
-			const result = findAllChatMetricsByDepartment({ start, end, departmentId });
+
+			const result = findAllChatMetricsByDepartment({ start, end, departmentId }) as {
+				[departmentName: string]: {
+					open: number;
+					closed: number;
+				};
+			};
 
 			return API.v1.success(result);
 		},
@@ -262,7 +283,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/timings',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -282,6 +303,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
+
 			const result = findAllResponseTimeMetrics({ start, end, departmentId });
 
 			return API.v1.success(result);

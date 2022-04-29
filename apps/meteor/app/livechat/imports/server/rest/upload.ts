@@ -1,46 +1,35 @@
 import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
 
+import { FileUpload } from '../../../../file-upload/server/index.js';
 import { settings } from '../../../../settings/server';
-import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
-import { FileUpload } from '../../../../file-upload';
+import { LivechatRooms, LivechatVisitors } from '../../../../models/server/raw/index';
 import { API } from '../../../../api/server';
 import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
 
-let maxFileSize;
-
-settings.watch('FileUpload_MaxFileSize', function (value) {
-	try {
-		maxFileSize = parseInt(value);
-	} catch (e) {
-		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
-	}
-});
-
 API.v1.addRoute('livechat/upload/:rid', {
-	post() {
+	async post() {
+		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize');
 		if (!this.request.headers['x-visitor-token']) {
 			return API.v1.unauthorized();
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
-		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
+		const visitor = LivechatVisitors.getVisitorByToken(visitorToken, {});
 
 		if (!visitor) {
 			return API.v1.unauthorized();
 		}
 
-		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
+		const room = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken, {});
 		if (!room) {
 			return API.v1.unauthorized();
 		}
 
-		const { file, ...fields } = Promise.await(
-			getUploadFormData({
-				request: this.request,
-			}),
-		);
+		const { file, ...fields } = await getUploadFormData({
+			request: this.request,
+		});
 
 		if (!fileUploadIsValidContentType(file.mimetype)) {
 			return API.v1.failure({
@@ -68,7 +57,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 
 		const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
 		if (!uploadedFile) {
-			return API.v1.error('Invalid file');
+			return API.v1.failure('Invalid file');
 		}
 
 		uploadedFile.description = fields.description;

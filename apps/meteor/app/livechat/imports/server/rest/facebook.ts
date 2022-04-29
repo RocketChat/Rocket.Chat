@@ -3,8 +3,8 @@ import crypto from 'crypto';
 import { Random } from 'meteor/random';
 
 import { API } from '../../../../api/server';
-import { LivechatRooms, LivechatVisitors } from '../../../../models';
-import { settings } from '../../../../settings';
+import { LivechatRooms, LivechatVisitors } from '../../../../models/server';
+import { settings } from '../../../../settings/server';
 import { Livechat } from '../../../server/lib/Livechat';
 
 /**
@@ -19,51 +19,49 @@ import { Livechat } from '../../../server/lib/Livechat';
  * @apiParam {String} last_name Facebook user's last name
  * @apiParam {String} [text] Facebook message text
  * @apiParam {String} [attachments] Facebook message attachments
+ *
  */
 API.v1.addRoute('livechat/facebook', {
 	post() {
-		if (!this.bodyParams.text && !this.bodyParams.attachments) {
-			return {
-				success: false,
-			};
+		const { text, attachments, mid, token = '', page, first_name: firstName, last_name: lastName } = this.bodyParams;
+
+		if (!text && !attachments) {
+			// TODO: this won't return a 200, so check with gateway if they support these response codes (they should)
+			return API.v1.failure('No text or attachments provided');
 		}
 
 		if (!this.request.headers['x-hub-signature']) {
-			return {
-				success: false,
-			};
+			return API.v1.failure('Missing signature');
 		}
 
 		if (!settings.get('Livechat_Facebook_Enabled')) {
-			return {
-				success: false,
-				error: 'Integration disabled',
-			};
+			return API.v1.failure('Integration disabled');
 		}
 
 		// validate if request come from omni
 		const signature = crypto
-			.createHmac('sha1', settings.get('Livechat_Facebook_API_Secret'))
+			.createHmac('sha1', settings.get<string>('Livechat_Facebook_API_Secret'))
 			.update(JSON.stringify(this.request.body))
 			.digest('hex');
 		if (this.request.headers['x-hub-signature'] !== `sha1=${signature}`) {
-			return {
-				success: false,
-				error: 'Invalid signature',
-			};
+			return API.v1.failure('Invalid signature');
 		}
 
 		const sendMessage = {
 			message: {
-				_id: this.bodyParams.mid,
+				rid: mid,
+				token,
+				msg: text,
 			},
 			roomInfo: {
 				facebook: {
-					page: this.bodyParams.page,
+					page,
 				},
 			},
+			agent: undefined,
+			guest: undefined,
 		};
-		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
+		let visitor = LivechatVisitors.getVisitorByToken(token, {});
 		if (visitor) {
 			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
@@ -74,26 +72,30 @@ API.v1.addRoute('livechat/facebook', {
 			sendMessage.message.token = visitor.token;
 		} else {
 			sendMessage.message.rid = Random.id();
-			sendMessage.message.token = this.bodyParams.token;
+			sendMessage.message.token = token;
 
 			const userId = Livechat.registerGuest({
 				token: sendMessage.message.token,
-				name: `${this.bodyParams.first_name} ${this.bodyParams.last_name}`,
+				name: `${firstName} ${lastName}`,
+				email: undefined,
+				department: undefined,
+				phone: undefined,
+				username: undefined,
+				id: undefined,
+				connectionData: undefined,
 			});
 
 			visitor = LivechatVisitors.findOneById(userId);
 		}
 
-		sendMessage.message.msg = this.bodyParams.text;
+		sendMessage.message.msg = text;
 		sendMessage.guest = visitor;
 
 		try {
-			return {
-				sucess: true,
-				message: Livechat.sendMessage(sendMessage),
-			};
+			return API.v1.success(Livechat.sendMessage(sendMessage));
 		} catch (e) {
 			Livechat.logger.error('Error using Facebook ->', e);
+			return API.v1.failure(e);
 		}
 	},
 });

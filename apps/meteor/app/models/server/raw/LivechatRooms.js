@@ -1024,7 +1024,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (visitorId && visitorId !== 'undefined') {
 			query['v._id'] = visitorId;
 		}
-		if (createdAt) {
+		if (createdAt && Object.keys(closedAt).length) {
 			query.ts = {};
 			if (createdAt.start) {
 				query.ts.$gte = new Date(createdAt.start);
@@ -1033,7 +1033,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				query.ts.$lte = new Date(createdAt.end);
 			}
 		}
-		if (closedAt) {
+		if (closedAt && Object.keys(closedAt).length) {
 			query.closedAt = {};
 			if (closedAt.start) {
 				query.closedAt.$gte = new Date(closedAt.start);
@@ -1179,5 +1179,16 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 	setDepartmentByRoomId(roomId, departmentId) {
 		return this.update({ _id: roomId }, { $set: { departmentId } });
+	}
+
+	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
+		const query = {
+			't': 'l',
+			'_id': roomId,
+			'open': true,
+			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
 	}
 }

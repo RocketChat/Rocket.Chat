@@ -129,7 +129,7 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		return { items: [] };
 	}
-	const { exceptions = [], conditions = {} } = selector;
+	const { exceptions = [], conditions = {}, term } = selector;
 
 	const options = {
 		projection: {
@@ -143,7 +143,7 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 		},
 	};
 
-	const items = await LivechatVisitors.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
+	const items = await LivechatVisitors.findByNameRegexWithExceptionsAndConditions(term, exceptions, conditions, options).toArray();
 	return {
 		items,
 	};

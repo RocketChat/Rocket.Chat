@@ -5,9 +5,9 @@ API.v1.addRoute(
 	'livechat/business-hour',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { _id, type } = this.queryParams;
-			const { businessHour } = Promise.await(findLivechatBusinessHour(this.userId, _id, type));
+			const { businessHour } = await findLivechatBusinessHour(this.userId, _id, type);
 			return API.v1.success({
 				businessHour,
 			});
