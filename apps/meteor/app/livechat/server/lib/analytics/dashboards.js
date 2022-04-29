@@ -52,10 +52,10 @@ const getProductivityMetricsAsync = async ({ start, end, departmentId = undefine
 		acc += serviceTime.averageWaitingTimeInSeconds;
 		return acc;
 	}, 0);
-	const totalOfAvarageWaitingTime = totalOfWaitingTime === 0 ? 0 : sumOfWaitingTime / totalOfWaitingTime;
+	const totalOfAverageWaitingTime = totalOfWaitingTime === 0 ? 0 : sumOfWaitingTime / totalOfWaitingTime;
 
 	return {
-		totalizers: [...totalizers, { title: 'Avg_of_waiting_time', value: secondsToHHMMSS(totalOfAvarageWaitingTime) }],
+		totalizers: [...totalizers, { title: 'Avg_of_waiting_time', value: secondsToHHMMSS(totalOfAverageWaitingTime) }],
 	};
 };
 
@@ -279,20 +279,18 @@ const findAllResponseTimeMetricsAsync = async ({ start, end, departmentId = unde
 	};
 };
 
-export const findAllChatsStatus = ({ start, end, departmentId = undefined }) =>
-	Promise.await(findAllChatsStatusAsync({ start, end, departmentId }));
-export const getProductivityMetrics = ({ start, end, departmentId = undefined, user = {} }) =>
+export const findAllChatsStatus = ({ start, end, departmentId }) => Promise.await(findAllChatsStatusAsync({ start, end, departmentId }));
+export const getProductivityMetrics = ({ start, end, departmentId, user = {} }) =>
 	Promise.await(getProductivityMetricsAsync({ start, end, departmentId, user }));
-export const getAgentsProductivityMetrics = ({ start, end, departmentId = undefined, user = {} }) =>
+export const getAgentsProductivityMetrics = ({ start, end, departmentId, user = {} }) =>
 	Promise.await(getAgentsProductivityMetricsAsync({ start, end, departmentId, user }));
-export const getConversationsMetrics = ({ start, end, departmentId = undefined, user = {} }) =>
+export const getConversationsMetrics = ({ start, end, departmentId, user = {} }) =>
 	Promise.await(getConversationsMetricsAsync({ start, end, departmentId, user }));
-export const findAllChatMetricsByAgent = ({ start, end, departmentId = undefined }) =>
+export const findAllChatMetricsByAgent = ({ start, end, departmentId }) =>
 	Promise.await(findAllChatMetricsByAgentAsync({ start, end, departmentId }));
-export const findAllChatMetricsByDepartment = ({ start, end, departmentId = undefined }) =>
+export const findAllChatMetricsByDepartment = ({ start, end, departmentId }) =>
 	Promise.await(findAllChatMetricsByDepartmentAsync({ start, end, departmentId }));
-export const findAllResponseTimeMetrics = ({ start, end, departmentId = undefined }) =>
+export const findAllResponseTimeMetrics = ({ start, end, departmentId }) =>
 	Promise.await(findAllResponseTimeMetricsAsync({ start, end, departmentId }));
-export const getChatsMetrics = ({ start, end, departmentId = undefined }) =>
-	Promise.await(getChatsMetricsAsync({ start, end, departmentId }));
-export const findAllAgentsStatus = ({ departmentId = undefined }) => Promise.await(findAllAgentsStatusAsync({ departmentId }));
+export const getChatsMetrics = ({ start, end, departmentId }) => Promise.await(getChatsMetricsAsync({ start, end, departmentId }));
+export const findAllAgentsStatus = ({ departmentId }) => Promise.await(findAllAgentsStatusAsync({ departmentId }));
