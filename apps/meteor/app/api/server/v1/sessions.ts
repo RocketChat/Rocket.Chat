@@ -23,6 +23,7 @@ API.v1.addRoute(
 			try {
 				const { offset, count } = this.getPaginationItems();
 				const { search } = this.queryParams;
+
 				const sessions = await Sessions.getByUserId(this.userId, search, { offset, count });
 				return API.v1.success(sessions);
 			} catch (error) {
@@ -43,21 +44,21 @@ API.v1.addRoute(
 
 			try {
 				const { sessionId } = this.bodyParams;
-				const { loginToken } = await Sessions.findOneBySessionId(sessionId);
+				const sessionObj = await Sessions.findOneBySessionId(sessionId);
 
-				if (!loginToken) {
+				if (!sessionObj) {
 					return API.v1.notFound('Session not found');
 				}
 
 				Meteor.users.update(this.userId, {
 					$pull: {
 						'services.resume.loginTokens': {
-							hashedToken: loginToken,
+							hashedToken: sessionObj.loginToken,
 						},
 					},
 				});
 
-				await Sessions.updateOne({ userId: this.userId, sessionId }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
+				await Sessions.updateOne({ sessionId }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
 				return API.v1.success({ sessionId });
 			} catch (error) {
 				return API.v1.failure(`${error}`);
