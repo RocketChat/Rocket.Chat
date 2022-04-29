@@ -9,7 +9,6 @@ export class LivechatRooms extends Base {
 	constructor(...args) {
 		super(...args);
 
-		this.tryEnsureIndex({ _id: 1, t: 1 });
 		this.tryEnsureIndex({ open: 1 }, { sparse: true });
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.chatDuration': 1 }, { sparse: true });

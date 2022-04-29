@@ -86,38 +86,6 @@ const getUserIdsFromHighlights = (rid, message) => {
 		.map(({ u: { _id: uid } }) => uid);
 };
 
-/* export function updateUsersSubscriptions(message, room) {
-	// Don't increase unread counter on thread messages
-	if (room != null && !message.tmid) {
-		const { toAll, toHere, mentionIds } = getMentions(message);
-
-		const userIds = new Set(mentionIds);
-
-		const unreadSetting = room.t === 'd' ? 'Unread_Count_DM' : 'Unread_Count';
-		const unreadCount = settings.get(unreadSetting);
-
-		getUserIdsFromHighlights(room._id, message).forEach((uid) => userIds.add(uid));
-
-		// give priority to user mentions over group mentions
-		if (userIds.size > 0) {
-			incUserMentions(room._id, room.t, [...userIds], unreadCount);
-		} else if (toAll || toHere) {
-			incGroupMentions(room._id, room.t, message.u._id, unreadCount);
-		}
-
-		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
-		if (!toAll && !toHere && unreadCount === 'all_messages') {
-			Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
-		}
-	}
-
-	// Update all other subscriptions to alert their owners but without incrementing
-	// the unread counter, as it is only for mentions and direct messages
-	// We now set alert and open properties in two separate update commands. This proved to be more efficient on MongoDB - because it uses a more efficient index.
-	Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
-	Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id);
-} */
-
 export async function updateUsersSubscriptions(message, room) {
 	if (room != null && !message.tmid) {
 		const { toAll, toHere, mentionIds } = getMentions(message);

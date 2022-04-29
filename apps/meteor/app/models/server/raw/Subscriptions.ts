@@ -1,13 +1,4 @@
-import {
-	FindOneOptions,
-	Cursor,
-	UpdateQuery,
-	FilterQuery,
-	UpdateWriteOpResult,
-	Collection,
-	WithoutProjection,
-	WriteOpResult,
-} from 'mongodb';
+import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, Collection, WithoutProjection } from 'mongodb';
 import { compact } from 'lodash';
 import type { ISubscription, IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 
@@ -208,7 +199,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return !!found;
 	}
 
-	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<WriteOpResult> {
+	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateWriteOpResult> {
 		if (inc == null) {
 			inc = 1;
 		}
@@ -229,10 +220,10 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 			},
 		};
 
-		return this.update(query, update, { multi: true });
+		return this.updateMany(query, update);
 	}
 
-	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<WriteOpResult> {
+	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateWriteOpResult> {
 		const query = {
 			'rid': roomId,
 			'u._id': {
@@ -246,10 +237,10 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 				alert: true,
 			},
 		};
-		return this.update(query, update, { multi: true });
+		return this.updateMany(query, update);
 	}
 
-	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<WriteOpResult> {
+	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateWriteOpResult> {
 		const query = {
 			'rid': roomId,
 			'u._id': {
@@ -263,6 +254,6 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 				open: true,
 			},
 		};
-		return this.update(query, update, { multi: true });
+		return this.updateMany(query, update);
 	}
 }

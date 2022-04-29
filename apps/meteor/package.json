@@ -13,7 +13,7 @@
 		"chat"
 	],
 	"scripts": {
-		"start": "SERVER_NODE_OPTIONS=--max-semi-space-size=128 meteor",
+		"start": "meteor",
 		"build:ci": "meteor build --server-only",
 		"dev": "meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"ha": "meteor npm run ha:start",
