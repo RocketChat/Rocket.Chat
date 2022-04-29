@@ -10,7 +10,7 @@ type BigEmojiProps = {
 const BigEmoji: FC<BigEmojiProps> = ({ value }) => (
 	<>
 		{value.map((block, index) => (
-			<Emoji emojiHandle={`:${block.value.value}:`} className='big' key={index} />
+			<Emoji className='big' key={index} emojiHandle={`:${block.value.value}:`} />
 		))}
 	</>
 );
