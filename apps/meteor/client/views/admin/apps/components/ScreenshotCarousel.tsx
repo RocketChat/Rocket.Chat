@@ -7,33 +7,22 @@ import { Screenshot } from '../definitions/AppInfo';
 type ScreenshotCarouselProps = {
 	AppScreenshots: Array<Screenshot>;
 	setViewCarousel: React.Dispatch<React.SetStateAction<boolean>>;
+	handleNextSlide: () => void;
+	handlePrevSlide: () => void;
+	isFirstSlide: boolean;
+	isLastSlide: boolean;
+	currentSlideIndex: number;
 };
 
-const ScreenshotCarousel = ({ AppScreenshots, setViewCarousel }: ScreenshotCarouselProps): ReactElement => {
-	const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-	const { length } = AppScreenshots;
-
-	const handleNextSlide = (): void => {
-		setCurrentSlideIndex(currentSlideIndex === length - 1 ? 0 : currentSlideIndex + 1);
-	};
-
-	const handlePrevSlide = (): void => {
-		setCurrentSlideIndex(currentSlideIndex === 0 ? length - 1 : currentSlideIndex - 1);
-	};
-
-	const handleArrowKey = (onKeyDownEvent: React.KeyboardEvent<HTMLInputElement>): void => {
-		if (onKeyDownEvent.key === 'ArrowLeft') {
-			setCurrentSlideIndex(currentSlideIndex === 0 ? length - 1 : currentSlideIndex - 1);
-		}
-
-		if (onKeyDownEvent.key === 'ArrowRight') {
-			setCurrentSlideIndex(currentSlideIndex === length - 1 ? 0 : currentSlideIndex + 1);
-		}
-	};
-
-	const isFirstSlide = currentSlideIndex === 0;
-	const isLastSlide = currentSlideIndex === length - 1;
-
+const ScreenshotCarousel = ({
+	AppScreenshots,
+	setViewCarousel,
+	handleNextSlide,
+	handlePrevSlide,
+	isFirstSlide,
+	isLastSlide,
+	currentSlideIndex,
+}: ScreenshotCarouselProps): ReactElement => {
 	return (
 		<>
 			<Box position='fixed' w='100%' h='100vh' bg={colors.n800} opacity='0.7' zIndex='2' marginBlock='-0.75px' />
@@ -80,7 +69,6 @@ const ScreenshotCarousel = ({ AppScreenshots, setViewCarousel }: ScreenshotCarou
 
 			<Box
 				onClick={(): void => setViewCarousel(false)}
-				onKeyDown={handleArrowKey}
 				position='fixed'
 				width='100%'
 				height='100vh'
@@ -88,7 +76,6 @@ const ScreenshotCarousel = ({ AppScreenshots, setViewCarousel }: ScreenshotCarou
 				justifyContent='center'
 				alignItems='center'
 				zIndex='2'
-				tabIndex={0}
 				mi='x38'
 			>
 				{AppScreenshots.map((currentScreenshot, index) => {
