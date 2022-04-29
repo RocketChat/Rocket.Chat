@@ -744,10 +744,10 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		{ key: { instanceId: 1, sessionId: 1, userId: 1 } },
 		{ key: { instanceId: 1, sessionId: 1 } },
 		{ key: { sessionId: 1 } },
-		{ key: { sessionId: 1, userId: 1 } },
 		{ key: { userId: 1 } },
 		{ key: { userId: 1, loginToken: 1, logoutAt: 1 } },
 		{ key: { loginToken: 1, logoutAt: 1 } },
+		{ key: { loginToken: 1 } },
 		{ key: { year: 1, month: 1, day: 1, type: 1 } },
 		{ key: { type: 1 } },
 		{ key: { ip: 1, loginAt: 1 } },
@@ -819,29 +819,23 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const groupOperator = {
 			$group: {
 				_id: '$loginToken',
-				day: {
-					$first: '$day',
-				},
 				instanceId: {
 					$first: '$instanceId',
-				},
-				month: {
-					$first: '$month',
 				},
 				sessionId: {
 					$first: '$sessionId',
 				},
-				userId: {
-					$first: '$userId',
+				day: {
+					$first: '$day',
+				},
+				month: {
+					$first: '$month',
 				},
 				year: {
 					$first: '$year',
 				},
-				_updatedAt: {
-					$first: '$_updatedAt',
-				},
-				createdAt: {
-					$first: '$createdAt',
+				userId: {
+					$first: '$userId',
 				},
 				device: {
 					$first: '$device',
@@ -852,18 +846,26 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				ip: {
 					$first: '$ip',
 				},
-				loginAt: {
-					$first: '$loginAt',
-				},
 				mostImportantRole: {
 					$first: '$mostImportantRole',
 				},
 				roles: {
 					$first: '$roles',
 				},
+				type: {
+					$first: '$type',
+				},
+				_updatedAt: {
+					$first: '$_updatedAt',
+				},
+				createdAt: {
+					$first: '$createdAt',
+				},
+				loginAt: {
+					$first: '$loginAt',
+				},
 			},
 		};
-		const limitOperator = { $limit: count };
 
 		const [docTotal] = await this.col
 			.aggregate([
@@ -883,29 +885,26 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const total = docTotal?.count || 0; // amount of documents
 
 		const skipOperator = offset >= 1 ? [{ $skip: offset }] : [];
+		const limitOperator = { $limit: count };
 
 		const projectOperator = {
 			$project: {
 				_id: '$sessionId',
-				day: 1,
 				instanceId: 1,
-				month: 1,
 				sessionId: 1,
+				day: 1,
+				month: 1,
 				year: 1,
-				_updatedAt: 1,
-				createdAt: 1,
+				userId: 1,
 				device: 1,
-				devices: 1,
 				host: 1,
 				ip: 1,
-				loginAt: 1,
 				mostImportantRole: 1,
 				roles: 1,
-				userId: 1,
-				_user: {
-					name: 1,
-					username: 1,
-				},
+				type: 1,
+				_updatedAt: 1,
+				createdAt: 1,
+				loginAt: 1,
 			},
 		};
 
