@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { hasRole } from '../../../authorization/server';
@@ -47,7 +48,14 @@ API.v1.addRoute(
 					return API.v1.notFound('Session not found');
 				}
 
-				await Users.unsetOneLoginToken(this.userId, loginToken);
+				Meteor.users.update(this.userId, {
+					$pull: {
+						'services.resume.loginTokens': {
+							hashedToken: loginToken,
+						},
+					},
+				});
+
 				await Sessions.updateOne({ userId: this.userId, sessionId }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
 				return API.v1.success({ sessionId });
 			} catch (error) {
