@@ -15,7 +15,7 @@ Meteor.methods({
 	async addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration> {
 		const { userId } = this;
 
-		if (!userId || !hasPermission(userId, 'manage-incoming-integrations') && !hasPermission(userId, 'manage-own-incoming-integrations')) {
+		if (!userId || (!hasPermission(userId, 'manage-incoming-integrations') && !hasPermission(userId, 'manage-own-incoming-integrations'))) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', {
 				method: 'addIncomingIntegration',
 			});

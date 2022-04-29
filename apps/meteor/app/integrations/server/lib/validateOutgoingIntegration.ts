@@ -103,12 +103,16 @@ function _verifyRetryInformation(integration: IOutgoingIntegration): void {
 	}
 
 	// Don't allow negative retry counts
-	integration.retryCount = integration.retryCount && parseInt(String(integration.retryCount)) > 0 ? parseInt(String(integration.retryCount)) : 4;
+	integration.retryCount =
+		integration.retryCount && parseInt(String(integration.retryCount)) > 0 ? parseInt(String(integration.retryCount)) : 4;
 	integration.retryDelay =
 		!integration.retryDelay || !integration.retryDelay.trim() ? 'powers-of-ten' : integration.retryDelay.toLowerCase();
 }
 
-export const validateOutgoingIntegration = function (integration: INewOutgoingIntegration | IUpdateOutgoingIntegration, userId: IUser['_id']): IOutgoingIntegration {
+export const validateOutgoingIntegration = function (
+	integration: INewOutgoingIntegration | IUpdateOutgoingIntegration,
+	userId: IUser['_id'],
+): IOutgoingIntegration {
 	if (integration.channel && Match.test(integration.channel, String) && integration.channel.trim() === '') {
 		delete integration.channel;
 	}

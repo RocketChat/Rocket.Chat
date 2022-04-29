@@ -1,6 +1,9 @@
-import type { OutgoingIntegrationEvent } from "@rocket.chat/core-typings";
+import type { OutgoingIntegrationEvent } from '@rocket.chat/core-typings';
 
-export const outgoingEvents: Record<OutgoingIntegrationEvent, { label: string, value: OutgoingIntegrationEvent, use: { channel: boolean, triggerWords: boolean, targetRoom: boolean } }> = {
+export const outgoingEvents: Record<
+	OutgoingIntegrationEvent,
+	{ label: string; value: OutgoingIntegrationEvent; use: { channel: boolean; triggerWords: boolean; targetRoom: boolean } }
+> = {
 	sendMessage: {
 		label: 'Integrations_Outgoing_Type_SendMessage',
 		value: 'sendMessage',
