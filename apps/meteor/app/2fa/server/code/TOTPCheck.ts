@@ -20,7 +20,7 @@ export class TOTPCheck implements ICodeCheck {
 			return false;
 		}
 
-		if (!user.services?.totp?.secret) {	
+		if (!user.services?.totp?.secret) {
 			return false;
 		}
 
