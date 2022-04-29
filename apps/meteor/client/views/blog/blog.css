@@ -1,3 +1,7 @@
 .rcx-grid__wrapper {
 	overflow: hidden auto !important;
 }
+
+.single-blog-menu .rcx-icon--name-kebab {
+	display: block !important;
+}

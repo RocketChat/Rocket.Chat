@@ -16,8 +16,6 @@ export type IProductLean = Omit<IProduct, 'createdAt' | '_updatedAt' | '_id'>;
 
 export type IProductCreateParams = PartialBy<IProductLean, 'ranking'>;
 
-export type IProductCreateBody = PartialBy<Omit<IProduct, '_id'>, 'ranking'>;
-
 export type IProductUpdateParams = AtLeastOne<IProductLean>;
 
 export type IProductUpdateBody = IProductUpdateParams & { _updatedAt: IProduct['_updatedAt'] };

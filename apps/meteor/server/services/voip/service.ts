@@ -19,6 +19,7 @@ import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
 import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
+import { api } from '../../sdk/api';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';
@@ -26,6 +27,8 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 	private logger: Logger;
 
 	commandHandler: CommandHandler;
+
+	private active = false;
 
 	constructor(db: Db) {
 		super();
@@ -43,8 +46,15 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 	async init(): Promise<void> {
 		this.logger.info('Starting VoIP service');
+		if (this.active) {
+			this.logger.warn({ msg: 'VoIP service already started' });
+			return;
+		}
+
 		try {
 			await this.commandHandler.initConnection(CommandType.AMI);
+			this.active = true;
+			api.broadcast('connector.statuschanged', true);
 			this.logger.info('VoIP service started');
 		} catch (err) {
 			this.logger.error({ msg: 'Error initializing VOIP service', err });
@@ -53,8 +63,15 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 	async stop(): Promise<void> {
 		this.logger.info('Stopping VoIP service');
+		if (!this.active) {
+			this.logger.warn({ msg: 'VoIP service already stopped' });
+			return;
+		}
+
 		try {
 			this.commandHandler.stop();
+			this.active = false;
+			api.broadcast('connector.statuschanged', false);
 			this.logger.info('VoIP service stopped');
 		} catch (err) {
 			this.logger.error({ msg: 'Error stopping VoIP service', err });
@@ -63,8 +80,14 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 	async refresh(): Promise<void> {
 		this.logger.info('Restarting VoIP service due to settings changes');
-		await this.stop();
-		await this.init();
+		try {
+			// Disable voip service
+			await this.stop();
+			// To then restart it
+			await this.init();
+		} catch (err) {
+			this.logger.error({ msg: 'Error refreshing VoIP service', err });
+		}
 	}
 
 	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {

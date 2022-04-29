@@ -1,15 +1,9 @@
 import { BaseRaw } from './BaseRaw';
+import { IBlog as T } from '../../../../definition/IBlog';
+import { IRecordsWithTotal } from '../../../../definition/ITeam';
 
-export class BlogsRaw extends BaseRaw {
-	constructor(...args) {
-		super(...args);
-
-		this.defaultFields = {
-			tags: [],
-		};
-	}
-
-	async getBlogsWithComments(limit = 10) {
+export class BlogsRaw extends BaseRaw<T> {
+	async getBlogsWithComments(limit = 10): Promise<IRecordsWithTotal<T>> {
 		const pipeline = [
 			{
 				$lookup: {
@@ -31,7 +25,7 @@ export class BlogsRaw extends BaseRaw {
 		];
 		const cursor = this.col.aggregate(pipeline);
 		return {
-			total: await cursor.count(),
+			total: await (await cursor.toArray()).length,
 			records: await cursor.toArray(),
 		};
 	}

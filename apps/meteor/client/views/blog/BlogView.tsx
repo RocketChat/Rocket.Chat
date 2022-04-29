@@ -1,54 +1,35 @@
 import { Box, Icon, Tabs, Grid, Button } from '@rocket.chat/fuselage';
-import React, { ReactElement, useRef } from 'react';
+import { Meteor } from 'meteor/meteor';
+import React, { ReactElement, useState, useEffect } from 'react';
 
 import Page from '../../components/Page';
 import TopBar from '../../topbar/TopBar';
 import SingleBlogPost from './SingleBlogPost';
+import CreateBlogForm from './components/CreateBlogForm';
 
 import './blog.css';
 
 const BlogView = (): ReactElement => {
-	const pageRef = useRef();
-	const data = [
-		{
-			author: 'Tanjiro Kamado',
-			location: 'Japan',
-			content:
-				"Tanjiro Kamado is a fictional character and the main protagonist in Koyoharu Gotouge's manga Demon Slayer: Kimetsu no Yaiba.",
-			images: 'images/blog_images/Kimetsu_no_yaiba_1.jpg',
-			createdAt: 'April',
-		},
-		{
-			author: 'Zenitsu Agatsuma',
-			location: 'Japan',
-			content:
-				'is one of the main protagonists of Demon Slayer: Kimetsu no Yaiba and along with Inosuke Hashibira, a travelling companion of Tanjiro Kamado and Nezuko Kamado.',
-			images: 'images/blog_images/Kimetsu_no_yaiba_2.jpg',
-			createdAt: 'April',
-		},
-		{
-			author: 'Hashibira Inosuke',
-			location: 'Japan',
-			content:
-				'is one of the main protagonists of Demon Slayer: Kimetsu no Yaiba and along with Zenitsu Agatsuma, a traveling companion of Tanjiro Kamado and Nezuko Kamado.',
-			images: 'images/blog_images/Kimetsu_no_yaiba_3.png',
-			createdAt: 'April',
-		},
-		{
-			author: 'Nezuko Kamado',
-			location: 'Japan',
-			content: "Nezuko Kamado is a fictional character from Koyoharu Gotouge's manga Demon Slayer: Kimetsu no Yaiba.",
-			images: 'images/blog_images/Kimetsu_no_yaiba_4.jpg',
-			createdAt: 'April',
-		},
-		{
-			author: 'Tanjiro Kamado',
-			location: 'Japan',
-			content: 'is a major supporting character of Demon Slayer: Kimetsu no Yaiba and a major character in the Entertainment District Arc.',
-			images: 'images/blog_images/Kimetsu_no_yaiba_5.png',
-			createdAt: 'April',
-		},
-	];
+	const [showModal, setShowModal] = useState(false);
+	const [blogResults, setBlogResults] = useState<Record<string, string>[]>([]);
+	const [updateTitle, setUpdateTitle] = useState('');
+	const [updateContent, setUpdateContent] = useState('');
+	const [updateTags, setUpdateTags] = useState<string[]>([]);
+	const [blogId, setBlogId] = useState('');
+
+	const clearUpdateFields = (): void => {
+		setUpdateTitle('');
+		setUpdateContent('');
+		setUpdateTags([]);
+	};
+
+	useEffect(() => {
+		Meteor.call('getBlogs', 10, (error, result) => {
+			// TODO: Add a success and error messages
+			setBlogResults(result.records);
+		});
+	}, []);
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -67,18 +48,34 @@ const BlogView = (): ReactElement => {
 						</Tabs.Item>
 					</Tabs>
 				</Box>
-
-				<Page.Content ref={pageRef}>
+				<CreateBlogForm
+					showModal={showModal}
+					setShowModal={setShowModal}
+					blogId={blogId}
+					updateTitle={updateTitle}
+					updateContent={updateContent}
+					updateTags={updateTags}
+					clearUpdateFields={clearUpdateFields}
+				/>
+				<Page.Content>
 					<Grid style={{ overflowY: 'auto', overflowX: 'hidden' }}>
-						{data.map((item, index) => (
-							<Grid.Item xs={4} md={4} lg={6} key={index}>
-								<SingleBlogPost {...item} />
-							</Grid.Item>
-						))}
+						{blogResults.length &&
+							blogResults.map((item, index) => (
+								<Grid.Item xs={4} md={4} lg={6} key={index}>
+									<SingleBlogPost
+										{...item}
+										setModalShow={setShowModal}
+										setBlogId={setBlogId}
+										setUpdateTitle={setUpdateTitle}
+										setUpdateContent={setUpdateContent}
+										setUpdateTags={setUpdateTags}
+									/>
+								</Grid.Item>
+							))}
 					</Grid>
 					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '80px' }}>
 						<Button square primary>
-							<Icon name='plus' size='x20' />
+							<Icon name='plus' size='x20' onClick={(): void => setShowModal(true)} />
 						</Button>
 					</div>
 				</Page.Content>

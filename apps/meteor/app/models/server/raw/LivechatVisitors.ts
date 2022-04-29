@@ -89,7 +89,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		const query = {
 			$or: [
 				{
-					'visitorEmails.address': filter,
+					'visitorEmails.address': _emailOrPhoneOrNameOrUsername,
 				},
 				{
 					'phone.phoneNumber': _emailOrPhoneOrNameOrUsername,
