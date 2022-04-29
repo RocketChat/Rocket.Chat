@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
