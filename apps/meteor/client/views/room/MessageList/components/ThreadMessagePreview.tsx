@@ -59,7 +59,9 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
-					<ThreadMessageBody>{message.ignored ? t('Message_Ignored') : <MessageRender message={message} />}</ThreadMessageBody>
+					<ThreadMessageBody>
+						{message.ignored ? t('Message_Ignored') : <MessageRender isThreadPreview message={message} />}
+					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>
 		</ThreadMessageTemplate>

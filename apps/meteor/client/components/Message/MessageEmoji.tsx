@@ -12,9 +12,14 @@ type MessageEmojiProps = {
 function MessageEmoji({ emojiHandle, big, isThreadPreview }: MessageEmojiProps): ReactElement {
 	const emojiProps = getEmojiClassNameAndDataTitle(emojiHandle);
 
+	if (!emojiProps.className && !emojiProps.name) {
+		return <>{emojiHandle}</>;
+	}
+
 	if (isThreadPreview) {
 		return <ThreadMessageEmoji {...emojiProps}>{emojiHandle}</ThreadMessageEmoji>;
 	}
+
 	return (
 		<MessageEmojiBase big={big} {...emojiProps}>
 			{emojiHandle}

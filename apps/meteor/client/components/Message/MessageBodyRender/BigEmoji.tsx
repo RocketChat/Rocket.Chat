@@ -1,5 +1,5 @@
 import { BigEmoji as ASTBigEmoji } from '@rocket.chat/message-parser';
-import React, { FC } from 'react';
+import React, { ReactElement } from 'react';
 
 import MessageEmoji from '../MessageEmoji';
 
@@ -8,7 +8,7 @@ type BigEmojiProps = {
 	isThreadPreview?: boolean;
 };
 
-const BigEmoji: FC<BigEmojiProps> = ({ value, isThreadPreview }) => (
+const BigEmoji = ({ value, isThreadPreview }: BigEmojiProps): ReactElement => (
 	<>
 		{value.map((block, index) => (
 			<MessageEmoji isThreadPreview={isThreadPreview} big emojiHandle={`:${block.value.value}:`} key={index} />

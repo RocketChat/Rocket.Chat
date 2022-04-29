@@ -7,7 +7,7 @@ import MessageBodyRender from '../../../../components/Message/MessageBodyRender'
 import { useMessageActions } from '../../contexts/MessageContext';
 import EncryptedMessageRender from './EncryptedMessageRender';
 
-const MessageRender: FC<{ message: IMessage }> = ({ message }) => {
+const MessageRender: FC<{ message: IMessage; isThreadPreview?: boolean }> = ({ message, isThreadPreview }) => {
 	const {
 		actions: { openRoom, openUserCard },
 	} = useMessageActions();
@@ -23,6 +23,7 @@ const MessageRender: FC<{ message: IMessage }> = ({ message }) => {
 					mentions={message?.mentions || []}
 					channels={message?.channels || []}
 					tokens={message.md}
+					isThreadPreview={isThreadPreview}
 				/>
 			)}
 
