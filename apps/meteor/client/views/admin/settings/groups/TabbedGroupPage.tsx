@@ -9,7 +9,7 @@ import Section from '../Section';
 import GenericGroupPage from './GenericGroupPage';
 
 type TabbedGroupPageProps = ISetting & {
-	headerButtons: ReactElement;
+	headerButtons?: ReactElement;
 };
 
 function TabbedGroupPage({ _id, ...group }: TabbedGroupPageProps): JSX.Element {
