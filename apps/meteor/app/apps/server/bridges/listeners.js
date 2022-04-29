@@ -64,26 +64,26 @@ export class AppListenerBridge {
 		const params = (() => {
 			switch (inte) {
 				case AppInterface.IPostMessageReacted:
-					const [userReacted, reaction, isRemoved] = payload;
+					const [userReacted, reaction, isReacted] = payload;
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userReacted),
 						reaction,
-						isRemoved,
+						isReacted,
 					};
 				case AppInterface.IPostMessageFollowed:
-					const [userFollowed, isUnfollow] = payload;
+					const [userFollowed, isFollowed] = payload;
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userFollowed),
-						isUnfollow,
+						isFollowed,
 					};
 				case AppInterface.IPostMessagePinned:
-					const [userPinned, isUnpinned] = payload;
+					const [userPinned, isPinned] = payload;
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userPinned),
-						isUnpinned,
+						isPinned,
 					};
 				default:
 					return msg;

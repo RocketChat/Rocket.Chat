@@ -32,8 +32,8 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 		}
 
-		const messageUnfollow = true;
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, Meteor.user(), messageUnfollow));
+		const isFollowed = false;
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, Meteor.user(), isFollowed));
 
 		return unfollow({ rid: message.rid, tmid: message.tmid || message._id, uid });
 	},

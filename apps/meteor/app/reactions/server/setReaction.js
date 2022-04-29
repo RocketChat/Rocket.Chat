@@ -17,8 +17,8 @@ const removeUserReaction = (message, reaction, username) => {
 		delete message.reactions[reaction];
 	}
 
-	const reactionRemoved = true;
-	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, Meteor.user(), reaction, reactionRemoved));
+	const isReacted = false;
+	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, Meteor.user(), reaction, isReacted));
 
 	return message;
 };
@@ -90,8 +90,8 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		callbacks.run('setReaction', message._id, reaction);
 		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 
-		const reactionRemoved = false;
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, reactionRemoved));
+		const isReacted = true;
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted));
 	}
 
 	msgStream.emit(message.rid, message);
