@@ -15,7 +15,7 @@ const log = (() => {
 		? ({ msg, reply, input }) => logger.info({ msg, reply, input })
 		: ({ msg, reply, input }) => {
 				console.warn('DDP RATE LIMIT:', msg);
-				console.warn(JSON.stringify({ ...reply, ...input }, null, 2));
+				console.warn(JSON.stringify({ reply, input }, null, 2));
 		  };
 
 	console.log('RATE LIMITER:', useLogger ? 'logger' : 'console');
@@ -103,6 +103,7 @@ RateLimiter.prototype.check = function (input) {
 			callbackReply.timeToReset = ruleResult.timeToNextReset;
 			callbackReply.allowed = false;
 			callbackReply.numInvocationsLeft = 0;
+			callbackReply.numInvocationsExceeded = numInvocations - rule.options.numRequestsAllowed;
 			rule._executeCallback(callbackReply, input);
 			// ==== END OVERRIDE ====
 		} else {
@@ -139,6 +140,10 @@ const callback = (msg, name) => (reply, input) => {
 			name: input.name,
 			connection_id: input.connectionId,
 		});
+		// sleep before sending the error to slow down next requests
+		if (reply.numInvocationsExceeded) {
+			Meteor._sleepForMs(100 * reply.numInvocationsExceeded);
+		}
 		// } else {
 		// 	console.log('DDP RATE LIMIT:', message);
 		// 	console.log(JSON.stringify({ ...reply, ...input }, null, 2));
