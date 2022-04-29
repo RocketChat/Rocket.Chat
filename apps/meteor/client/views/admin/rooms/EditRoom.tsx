@@ -1,6 +1,7 @@
+import { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, ReactElement } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../components/GenericModal';
@@ -17,8 +18,14 @@ import { useForm } from '../../../hooks/useForm';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import DeleteTeamModal from '../../teams/contextualBar/info/Delete/DeleteTeamModal';
 
-const getInitialValues = (room) => ({
-	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomCoordinator.getRoomName(room.t, { type: room.t, ...room }),
+type EditRoomProps = {
+	room: Serialized<IRoom>;
+	onChange: () => void;
+	onDelete: () => void;
+};
+
+const getInitialValues = (room: IRoom) => ({
+	roomName: room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, { type: room.t, ...room }),
 	roomType: room.t,
 	readOnly: !!room.ro,
 	archived: !!room.archived,
@@ -31,7 +38,7 @@ const getInitialValues = (room) => ({
 	roomAvatar: undefined,
 });
 
-function EditRoom({ room, onChange, onDelete }) {
+const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => {
 	const t = useTranslation();
 
 	const [deleting, setDeleting] = useState(false);
@@ -301,6 +308,6 @@ function EditRoom({ room, onChange, onDelete }) {
 			</Field>
 		</VerticalBar.ScrollableContent>
 	);
-}
+};
 
 export default EditRoom;
