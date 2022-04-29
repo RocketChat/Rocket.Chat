@@ -67,9 +67,10 @@ const commands = {
 
 	'logout'() {
 		const user = Meteor.user();
+		const loginToken = localStorage.getItem('Meteor.loginToken');
 		Meteor.logout(() => {
 			callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user);
+			Meteor.call('logoutCleanUp', user, loginToken);
 			return FlowRouter.go('home');
 		});
 	},
