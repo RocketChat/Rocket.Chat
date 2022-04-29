@@ -1,5 +1,5 @@
-import type { IRocketChatRecord } from "./IRocketChatRecord";
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface IFederationServer extends IRocketChatRecord {
-  domain: string;
+	domain: string;
 }
