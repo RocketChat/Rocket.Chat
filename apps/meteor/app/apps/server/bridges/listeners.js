@@ -22,6 +22,7 @@ export class AppListenerBridge {
 				case AppInterface.IPostMessageReacted:
 				case AppInterface.IPostMessageFollowed:
 				case AppInterface.IPostMessagePinned:
+				case AppInterface.IPostMessageStarred:
 					return 'messageEvent';
 				case AppInterface.IPreRoomCreatePrevent:
 				case AppInterface.IPreRoomCreateExtend:
@@ -84,6 +85,14 @@ export class AppListenerBridge {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userPinned),
 						isUnpinned,
+					};
+				case AppInterface.IPostMessageStarred:
+					console.log({ inte, payload });
+					const [userStarred, isStarred] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userStarred),
+						isStarred,
 					};
 				default:
 					return msg;

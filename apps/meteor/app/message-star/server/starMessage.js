@@ -4,6 +4,7 @@ import { settings } from '../../settings/server';
 import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoom, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Rooms, Messages } from '../../models/server';
+import { Apps, AppEvents } from '../../apps/server/orchestrator';
 
 Meteor.methods({
 	starMessage(message) {
@@ -39,6 +40,8 @@ Meteor.methods({
 		if (isTheLastMessage(room, message)) {
 			Rooms.updateLastMessageStar(room._id, Meteor.userId(), message.starred);
 		}
+
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageStarred, message, Meteor.user(), message.starred));
 
 		return Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
 	},
