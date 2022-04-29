@@ -1,7 +1,7 @@
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { findEmailInboxes, findOneEmailInbox, insertOneOrUpdateEmailInbox } from '../lib/emailInbox';
+import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../../models/server/raw';
 import Users from '../../../models/server/models/Users';
@@ -31,34 +31,42 @@ API.v1.addRoute(
 			}
 			check(this.bodyParams, {
 				_id: Match.Maybe(String),
+				active: Boolean,
 				name: String,
 				email: String,
-				active: Boolean,
-				description: Match.Maybe(String),
-				senderInfo: Match.Maybe(String),
-				department: Match.Maybe(String),
+				description: String,
+				senderInfo: String,
+				department: String,
 				smtp: Match.ObjectIncluding({
-					password: String,
-					port: Number,
-					secure: Boolean,
 					server: String,
+					port: Number,
 					username: String,
+					password: String,
+					secure: Boolean,
 				}),
 				imap: Match.ObjectIncluding({
-					password: String,
-					port: Number,
-					secure: Boolean,
 					server: String,
+					port: Number,
 					username: String,
+					password: String,
+					secure: Boolean,
 				}),
 			});
+			if (!this.bodyParams._id) {
+				API.v1.failure('error-email-inbox-id-required');
+			}
 
 			const emailInboxParams = this.bodyParams;
 
-			const { _id } = emailInboxParams;
+			let _id: string;
 
-			await insertOneOrUpdateEmailInbox(this.userId, emailInboxParams);
-
+			if (!emailInboxParams?._id) {
+				const emailInbox = await insertOneEmailInbox(this.userId, emailInboxParams);
+				_id = emailInbox.insertedId.toString();
+			} else {
+				_id = emailInboxParams._id;
+				await updateEmailInbox(this.userId, { ...emailInboxParams, _id });
+			}
 			return API.v1.success({ _id });
 		},
 	},

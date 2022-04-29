@@ -50,19 +50,24 @@ export const findOneEmailInbox = async ({ userId, _id }: { userId: string; _id: 
 	}
 	return EmailInbox.findOneById(_id);
 };
-
-export const insertOneOrUpdateEmailInbox = async (
+export const insertOneEmailInbox = async (
 	userId: string,
-	emailInboxParams: IEmailInbox,
+	emailInboxParams: Pick<IEmailInbox, 'active' | 'name' | 'email' | 'description' | 'senderInfo' | 'department' | 'smtp' | 'imap'>,
+): Promise<InsertOneWriteOpResult<WithId<IEmailInbox>>> => {
+	const obj = {
+		...emailInboxParams,
+		_createdAt: new Date(),
+		_updatedAt: new Date(),
+		_createdBy: Users.findOne(userId, { fields: { username: 1 } }),
+	};
+	return EmailInbox.insertOne(obj);
+};
+
+export const updateEmailInbox = async (
+	userId: string,
+	emailInboxParams: Pick<IEmailInbox, '_id' | 'active' | 'name' | 'email' | 'description' | 'senderInfo' | 'department' | 'smtp' | 'imap'>,
 ): Promise<InsertOneWriteOpResult<WithId<IEmailInbox>> | UpdateWriteOpResult> => {
 	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailInboxParams;
-
-	if (!_id) {
-		emailInboxParams._createdAt = new Date();
-		emailInboxParams._updatedAt = new Date();
-		emailInboxParams._createdBy = Users.findOne(userId, { fields: { username: 1 } });
-		return EmailInbox.insertOne(emailInboxParams);
-	}
 
 	const emailInbox = await findOneEmailInbox({ userId, _id });
 
