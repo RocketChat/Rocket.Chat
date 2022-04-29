@@ -1,0 +1,6 @@
+.git
+.gitignore
+LICENSE
+README.md
+docker-compose.yml
+tests/e2e/test-failures/
