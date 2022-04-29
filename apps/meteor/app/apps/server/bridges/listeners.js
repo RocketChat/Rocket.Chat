@@ -65,6 +65,12 @@ export class AppListenerBridge {
 
 		const params = (() => {
 			switch (inte) {
+				case AppInterface.IPostMessageDeleted:
+					const [userDeleted] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userDeleted),
+					};
 				case AppInterface.IPostMessageReacted:
 					const [userReacted, reaction, isRemoved] = payload;
 					return {

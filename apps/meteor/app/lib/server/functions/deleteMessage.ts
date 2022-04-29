@@ -69,6 +69,6 @@ export const deleteMessage = async function (message: IMessage, user: IUser): Pr
 	}
 
 	if (bridges) {
-		bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg);
+		bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);
 	}
 };
