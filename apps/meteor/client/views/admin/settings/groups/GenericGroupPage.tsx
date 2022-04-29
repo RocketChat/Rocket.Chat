@@ -1,10 +1,13 @@
-import React, { memo } from 'react';
+import { ISetting } from '@rocket.chat/core-typings';
+import React, { memo, ReactElement } from 'react';
 
 import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 
-function GenericGroupPage({ _id, ...group }) {
+type GenericGroupPageProps = ISetting;
+
+function GenericGroupPage({ _id, ...group }: GenericGroupPageProps): ReactElement {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 

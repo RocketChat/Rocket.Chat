@@ -1,5 +1,6 @@
+import { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import React, { memo, ReactElement } from 'react';
 
 import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
 import { useMethod } from '../../../../contexts/ServerContext';
@@ -8,7 +9,9 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 
-function AssetsGroupPage({ _id, ...group }) {
+type AssetsGroupPageProps = ISetting;
+
+function AssetsGroupPage({ _id, ...group }: AssetsGroupPageProps): ReactElement {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 	const t = useTranslation();
@@ -16,7 +19,7 @@ function AssetsGroupPage({ _id, ...group }) {
 	const refreshClients = useMethod('refreshClients');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleApplyAndRefreshAllClientsButtonClick = async () => {
+	const handleApplyAndRefreshAllClientsButtonClick = async (): Promise<void> => {
 		try {
 			await refreshClients();
 			dispatchToastMessage({
@@ -24,7 +27,7 @@ function AssetsGroupPage({ _id, ...group }) {
 				message: t('Clients_will_refresh_in_a_few_seconds'),
 			});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	};
 
