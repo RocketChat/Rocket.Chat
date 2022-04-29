@@ -104,7 +104,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/logout',
-	{ authRequired: true },
+	{ authRequired: true, twoFactorRequired: true },
 	{
 		async post() {
 			if (!hasPermission(this.userId, 'logout-other-user') && !hasRole(this.userId, 'admin')) {
