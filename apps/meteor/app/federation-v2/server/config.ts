@@ -1,4 +1,4 @@
-import type { AppServiceOutput } from 'matrix-appservice-bridge';
+import type { AppServiceOutput } from '@rocket.chat/forked-matrix-appservice-bridge';
 
 import { settings } from '../../settings/server';
 

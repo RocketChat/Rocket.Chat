@@ -33,7 +33,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
 			isEditing={isMessageHighlight}
-			// highlight={isMessageHighlight}
+			isPending={message.temp}
 			data-qa-editing={isMessageHighlight}
 			data-qa-selected={isSelected}
 		>
