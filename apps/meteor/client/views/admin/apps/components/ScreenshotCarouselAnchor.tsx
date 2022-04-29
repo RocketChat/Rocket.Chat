@@ -1,10 +1,10 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { css } from '@rocket.chat/css-in-js';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Screenshot } from '../definitions/AppInfo';
 
+import { Screenshot } from '../definitions/AppInfo';
 import ScreenshotCarousel from './ScreenshotCarousel';
 
 type ScreenshotCarouselAnchorProps = {
@@ -35,15 +35,18 @@ const ScreenshotCarouselAnchor = ({ AppScreenshots }: ScreenshotCarouselAnchorPr
 		setCurrentSlideIndex(currentSlideIndex - 1);
 	};
 
-	const handleKeyboardKey = useCallback((onKeyDownEvent: KeyboardEvent): void => {
-		const keysObject: Record<string, voidFunction> = {
-			ArrowLeft: () => setCurrentSlideIndex((prevSlideIndex) => (prevSlideIndex !== 0 ? prevSlideIndex - 1 : 0)),
-			ArrowRight: () => setCurrentSlideIndex((prevSlideIndex) => (prevSlideIndex !== length - 1 ? prevSlideIndex + 1 : length - 1)),
-			Escape: () => setViewCarousel(false),
-		};
+	const handleKeyboardKey = useCallback(
+		(onKeyDownEvent: KeyboardEvent): void => {
+			const keysObject: Record<string, voidFunction> = {
+				ArrowLeft: () => setCurrentSlideIndex((prevSlideIndex) => (prevSlideIndex !== 0 ? prevSlideIndex - 1 : 0)),
+				ArrowRight: () => setCurrentSlideIndex((prevSlideIndex) => (prevSlideIndex !== length - 1 ? prevSlideIndex + 1 : length - 1)),
+				Escape: () => setViewCarousel(false),
+			};
 
-		keysObject[onKeyDownEvent.key]();
-	}, []);
+			keysObject[onKeyDownEvent.key]();
+		},
+		[length],
+	);
 
 	useEffect(() => {
 		const intervalId = setInterval(() => {
@@ -56,11 +59,11 @@ const ScreenshotCarouselAnchor = ({ AppScreenshots }: ScreenshotCarouselAnchorPr
 
 		document.addEventListener('keydown', handleKeyboardKey);
 
-		return () => {
+		return (): void => {
 			clearInterval(intervalId);
 			document.removeEventListener('keydown', handleKeyboardKey);
 		};
-	}, []);
+	}, [handleKeyboardKey, length]);
 
 	const carouselPortal = createPortal(
 		<ScreenshotCarousel
