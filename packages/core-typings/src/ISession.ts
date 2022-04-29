@@ -31,7 +31,9 @@ export interface ISession {
 	host: string;
 	ip: string;
 	loginAt: Date;
+	logoutAt?: Date;
 	closedAt?: Date;
+	logoutBy?: string;
 	count?: number;
 }
 

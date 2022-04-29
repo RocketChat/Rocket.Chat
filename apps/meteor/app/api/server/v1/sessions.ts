@@ -48,7 +48,7 @@ API.v1.addRoute(
 				}
 
 				await Users.unsetOneLoginToken(this.userId, loginToken);
-				await Sessions.updateMany({ userId: this.userId, loginToken }, { $set: { logoutAt: new Date() } });
+				await Sessions.updateOne({ userId: this.userId, sessionId }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
 				return API.v1.success({ sessionId });
 			} catch (error) {
 				return API.v1.failure(`${error}`);
