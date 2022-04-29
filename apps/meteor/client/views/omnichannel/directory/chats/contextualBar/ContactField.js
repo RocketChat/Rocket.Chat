@@ -39,12 +39,14 @@ const ContactField = ({ contact, room }) => {
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
-				{username && name && (
-					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-						({username})
-					</Box>
-				)}
+				<Box mbe='x4' withTruncatedText display='flex'>
+					<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
+					{username && (
+						<Box flexGrow={1} flexShrink={1} flexBasis={0} display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
+							({username})
+						</Box>
+					)}
+				</Box>
 			</Info>
 		</Field>
 	);

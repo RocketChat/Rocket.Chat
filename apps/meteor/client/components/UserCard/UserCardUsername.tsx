@@ -12,7 +12,7 @@ const UserCardUsername = ({ name, status = <UserStatus.Offline />, ...props }: U
 	<Box
 		display='flex'
 		title={name}
-		flexGrow={0}
+		flexGrow={2}
 		flexShrink={1}
 		flexBasis={0}
 		alignItems='center'
