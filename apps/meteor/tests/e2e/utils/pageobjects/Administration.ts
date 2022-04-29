@@ -71,9 +71,6 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('button.add');
 	}
 
-	// permissions grids checkboxes
-
-	// settings
 	public buttonSave(): Locator {
 		return this.getPage().locator('//h2[text()="General"]/following-sibling::div//button[text()="Save changes"]');
 	}
@@ -234,7 +231,6 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('[data-qa-setting-id="UTF8_Names_Slugify"]');
 	}
 
-	// accounts
 	public accountsSectionDefaultUserPreferences(): Locator {
 		return this.getPage().locator('[data-qa-section="Accounts_Default_User_Preferences"]');
 	}

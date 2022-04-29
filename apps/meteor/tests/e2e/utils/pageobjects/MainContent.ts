@@ -2,7 +2,7 @@ import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
 
-class MainContent extends BasePage {
+export default class MainContent extends BasePage {
 	public mainContent(): Locator {
 		return this.getPage().locator('.main-content');
 	}
@@ -57,14 +57,6 @@ class MainContent extends BasePage {
 		return this.getPage().locator('.popup-item.selected');
 	}
 
-	public mentionAllPopUp(): Locator {
-		return this.getPage().locator('.popup-item[data-id="all"]');
-	}
-
-	public joinChannelBtn(): Locator {
-		return this.getPage().locator('.button.join');
-	}
-
 	// Messages
 	public lastMessageUser(): Locator {
 		return this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "user-card-message")])[last()]');
@@ -74,16 +66,8 @@ class MainContent extends BasePage {
 		return this.getPage().locator('.message:last-child');
 	}
 
-	public lastMessageDesc(): Locator {
-		return this.getPage().locator('.message:last-child .body .attachment-description');
-	}
-
 	public lastMessageRoleAdded(): Locator {
 		return this.getPage().locator('.message:last-child.subscription-role-added .body');
-	}
-
-	public beforeLastMessage(): Locator {
-		return this.getPage().locator('.message:nth-last-child(2) .body');
 	}
 
 	public lastMessageUserTag(): Locator {
@@ -98,69 +82,6 @@ class MainContent extends BasePage {
 		return this.getPage().locator('.message:last-child .attachment-text');
 	}
 
-	public beforeLastMessageQuote(): Locator {
-		return this.getPage().locator('.message:nth-last-child(2)');
-	}
-
-	public lastMessageQuote(): Locator {
-		return this.getPage().locator('.message:last-child');
-	}
-
-	public messageOptionsBtn(): Locator {
-		return this.getPage().locator('.message:last-child .message-actions__menu');
-	}
-
-	public messageOptionsBtns(): Locator {
-		return this.getPage().locator('.message:last-child .message-actions');
-	}
-
-	public messageActionMenu(): Locator {
-		return this.getPage().locator('.rc-popover .rc-popover__content');
-	}
-
-	public messageReply(): Locator {
-		return this.getPage().locator('.message:last-child .message-actions__button[data-message-action="reply-in-thread"]');
-	}
-
-	public messageEdit(): Locator {
-		return this.getPage().locator('[data-id="edit-message"][data-type="message-action"]');
-	}
-
-	public messageDelete(): Locator {
-		return this.getPage().locator('[data-id="delete-message"][data-type="message-action"]');
-	}
-
-	public messagePermalink(): Locator {
-		return this.getPage().locator('[data-id="permalink"][data-type="message-action"]');
-	}
-
-	public messageCopy(): Locator {
-		return this.getPage().locator('[data-id="copy"][data-type="message-action"]');
-	}
-
-	public messageQuote(): Locator {
-		return this.getPage().locator('[data-id="quote-message"][data-type="message-action"]');
-	}
-
-	public messageStar(): Locator {
-		return this.getPage().locator('[data-id="star-message"][data-type="message-action"]');
-	}
-
-	public messageUnread(): Locator {
-		return this.getPage().locator('[data-id="mark-message-as-unread"][data-type="message-action"]');
-	}
-
-	public messageReplyInDM(): Locator {
-		return this.getPage().locator('[data-id="reply-directly"][data-type="message-action"]');
-	}
-
-	// public messageReaction(): Locator { return this.getPage().locator('.message-actions__button[data-message-action="reaction-message"]'); }
-	public messagePin(): Locator {
-		return this.getPage().locator('[data-id="pin-message"][data-type="message-action"]');
-	}
-	// public messageClose(): Locator { return this.getPage().locator('[data-id="rc-popover-close"][data-type="message-action"]'); }
-
-	// Emojis
 	public emojiPickerMainScreen(): Locator {
 		return this.getPage().locator('.emoji-picker');
 	}
@@ -197,10 +118,6 @@ class MainContent extends BasePage {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-flags")]');
 	}
 
-	public emojiPickerModifierIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-symbols")]');
-	}
-
 	public emojiPickerChangeTone(): Locator {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "change-tone")]');
 	}
@@ -209,16 +126,8 @@ class MainContent extends BasePage {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-rocket")]');
 	}
 
-	public emojiPickerRecentIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-recent")]');
-	}
-
 	public emojiPickerFilter(): Locator {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "js-emojipicker-search")]');
-	}
-
-	public emojiPickerEmojiContainer(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emojis")]');
 	}
 
 	public emojiGrinning(): Locator {
@@ -229,11 +138,6 @@ class MainContent extends BasePage {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-smile")]');
 	}
 
-	// Popover
-	public popoverWrapper(): Locator {
-		return this.getPage().locator('.rc-popover');
-	}
-
 	public async waitForLastMessageEqualsHtml(text: string): Promise<void> {
 		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
@@ -242,7 +146,6 @@ class MainContent extends BasePage {
 		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
 
-	// Sends a message and wait for the message to equal the text sent
 	public async sendMessage(text: any): Promise<void> {
 		await this.setTextToInput(text);
 		await this.sendBtn().click();
@@ -251,19 +154,15 @@ class MainContent extends BasePage {
 		).toContainText(text);
 	}
 
-	// adds text to the input
 	public async addTextToInput(text: any): Promise<void> {
 		await this.messageInput().type(text);
 	}
 
-	// Clear and sets the text to the input
 	public async setTextToInput(text: any): Promise<void> {
-		// cy.wait(200);
 		await this.messageInput().fill('');
+
 		if (text) {
 			await this.messageInput().type(text);
 		}
 	}
 }
-
-export default MainContent;

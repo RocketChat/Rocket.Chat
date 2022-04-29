@@ -2,28 +2,11 @@ import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
 import { reason, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from '../mocks/userAndPasswordMock';
-import { IRegister } from '../interfaces/Login';
 import { BACKSPACE } from '../mocks/keyboardKeyMock';
 
-class SetupWizard extends BasePage {
+export default class SetupWizard extends BasePage {
 	private nextStep(): Locator {
 		return this.getPage().locator('//button[contains(text(), "Next")]');
-	}
-
-	private fullName(): Locator {
-		return this.getPage().locator('[name="fullname"]');
-	}
-
-	private userName(): Locator {
-		return this.getPage().locator('[name="username"]');
-	}
-
-	private companyEmail(): Locator {
-		return this.getPage().locator('[name="companyEmail"]');
-	}
-
-	private password(): Locator {
-		return this.getPage().locator('[name="password"]');
 	}
 
 	public goToWorkspace(): Locator {
@@ -86,22 +69,6 @@ class SetupWizard extends BasePage {
 		return this.getPage().locator('//*[contains(text(), "Standalone Server Confirmation")]');
 	}
 
-	private fullNameInvalidText(): Locator {
-		return this.getPage().locator('//input[@name="fullname"]/../following-sibling::span');
-	}
-
-	private userNameInvalidText(): Locator {
-		return this.getPage().locator('//input[@name="username"]/../following-sibling::span');
-	}
-
-	private companyEmailInvalidText(): Locator {
-		return this.getPage().locator('//input[@name="companyEmail"]/../following-sibling::span');
-	}
-
-	private passwordInvalidText(): Locator {
-		return this.getPage().locator('//input[@name="password"]/../../../span[contains(@class, "rcx-field__error")]');
-	}
-
 	private industryInvalidSelect(): Locator {
 		return this.getPage().locator('//div[@name="organizationIndustry"]/../following-sibling::span');
 	}
@@ -147,26 +114,6 @@ class SetupWizard extends BasePage {
 		await this.standaloneServer().click();
 	}
 
-	public async stepOneFailedBlankFields(): Promise<void> {
-		await this.goNext();
-
-		await expect(this.fullNameInvalidText()).toBeVisible();
-		await expect(this.userNameInvalidText()).toBeVisible();
-		await expect(this.companyEmailInvalidText()).toBeVisible();
-		await expect(this.passwordInvalidText()).toBeVisible();
-	}
-
-	public async stepOneFailedWithInvalidEmail(adminCredentials: IRegister): Promise<void> {
-		await this.fullName().type(adminCredentials.name);
-		await this.userName().type(adminCredentials.name);
-		await this.companyEmail().type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
-		await this.password().type(adminCredentials.password);
-
-		await this.goNext();
-
-		await expect(this.companyEmail()).toBeFocused();
-	}
-
 	public async stepTwoFailedWithBlankFields(): Promise<void> {
 		await this.goNext();
 
@@ -183,10 +130,4 @@ class SetupWizard extends BasePage {
 
 		await expect(this.stepThreeInputInvalidMail()).toBeVisible();
 	}
-
-	async goToHome(): Promise<void> {
-		await this.goToWorkspace().click();
-	}
 }
-
-export default SetupWizard;

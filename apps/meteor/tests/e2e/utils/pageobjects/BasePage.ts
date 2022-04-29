@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-class BasePage {
+export default class BasePage {
 	private page: Page;
 
 	constructor(page: Page) {
@@ -23,4 +23,3 @@ class BasePage {
 		await this.page.keyboard.press(key);
 	}
 }
-export default BasePage;

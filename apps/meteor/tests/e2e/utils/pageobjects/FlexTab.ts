@@ -3,7 +3,7 @@ import { expect, Locator } from '@playwright/test';
 import BasePage from './BasePage';
 import Global from './Global';
 
-class FlexTab extends BasePage {
+export default class FlexTab extends BasePage {
 	private global = new Global(this.getPage());
 
 	public mainSideBar(): Locator {
@@ -92,7 +92,6 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('.info p');
 	}
 
-	// Search Tab
 	public searchTab(): Locator {
 		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-magnifier');
 	}
@@ -105,17 +104,14 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('#message-search');
 	}
 
-	// Notifications Tab
 	public notificationsTab(): Locator {
 		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Notifications Preferences")]');
-		// return this.getPage().locator('.rcx-option__content:contains("Notifications Preferences")');
 	}
 
 	public notificationsSettings(): Locator {
 		return this.getPage().locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-bell');
 	}
 
-	// Files Tab
 	public filesTab(): Locator {
 		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-clip');
 	}
@@ -367,5 +363,3 @@ class FlexTab extends BasePage {
 		await callFunctionTabs(desiredTab);
 	}
 }
-
-export default FlexTab;
