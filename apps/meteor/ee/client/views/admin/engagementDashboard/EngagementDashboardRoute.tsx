@@ -26,7 +26,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	}, [routeName, engagementDashboardRoute, tab]);
 
 	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
-		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count', timestamp: Date.now() }],
+		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count' }],
 	});
 
 	if (!isValidTab(tab)) {

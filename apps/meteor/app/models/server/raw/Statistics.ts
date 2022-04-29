@@ -1,13 +1,13 @@
-import type { IStatistic } from '@rocket.chat/core-typings';
+import type { IStats } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
-export class StatisticsRaw extends BaseRaw<IStatistic> {
+export class StatisticsRaw extends BaseRaw<IStats> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { createdAt: -1 } }];
 	}
 
-	async findLast(): Promise<IStatistic> {
+	async findLast(): Promise<IStats> {
 		const options = {
 			sort: {
 				createdAt: -1,

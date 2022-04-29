@@ -1,25 +1,36 @@
 import type { IStats } from '@rocket.chat/core-typings';
 
+type OTREnded = { rid: string };
+
+type SlashCommand = { command: string };
+
+type SettingsCounter = { settingsId: string };
+
+export type TelemetryMap = { otrStats: OTREnded; slashCommandsStats: SlashCommand; updateCounter: SettingsCounter };
+
+export type TelemetryEvents = keyof TelemetryMap;
+
+type Param = {
+	eventName: TelemetryEvents;
+} & (OTREnded | SlashCommand | SettingsCounter);
+
+export type TelemetryPayload = {
+	params: Param[];
+};
+
 export type StatisticsEndpoints = {
 	'statistics': {
-		GET: (params: { refresh?: boolean }) => IStats;
+		GET: (params: { refresh?: 'true' | 'false' }) => IStats;
+	};
+	'statistics.list': {
+		GET: (params: { offset?: number; count?: number; sort?: string; fields?: string; query?: string }) => {
+			statistics: IStats[];
+			count: number;
+			offset: number;
+			total: number;
+		};
 	};
 	'statistics.telemetry': {
 		POST: (params: TelemetryPayload) => any;
 	};
 };
-
-export type TelemetryBase = {
-	eventName: string;
-	timestamp: number;
-};
-
-type OTREnded = TelemetryBase & { rid: string };
-
-type SlashCommand = TelemetryBase & { command: string };
-
-export type StatsCounter = TelemetryBase & { settingsId: string };
-
-type Params = TelemetryBase | OTREnded | SlashCommand | StatsCounter;
-
-export type TelemetryPayload = { params: Params[] };
