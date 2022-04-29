@@ -44,7 +44,7 @@ API.v1.addRoute(
 				const { loginToken } = await Sessions.findOneBySessionId(sessionId);
 
 				if (!loginToken) {
-					return API.v1.failure('Session not found');
+					return API.v1.notFound('Session not found');
 				}
 
 				await Users.unsetOneLoginToken(this.userId, loginToken);
