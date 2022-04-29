@@ -22,6 +22,7 @@ import type { LicensesEndpoints } from './v1/licenses';
 import type { MiscEndpoints } from './v1/misc';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PermissionsEndpoints } from './v1/permissions';
+import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
 import type { SettingsEndpoints } from './v1/settings';
@@ -44,6 +45,7 @@ export interface Endpoints
 		ImEndpoints,
 		LDAPEndpoints,
 		RoomsEndpoints,
+		PushEndpoints,
 		RolesEndpoints,
 		TeamsEndpoints,
 		SettingsEndpoints,

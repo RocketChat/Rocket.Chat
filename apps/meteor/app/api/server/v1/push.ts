@@ -6,21 +6,21 @@ import { appTokensCollection } from '../../../push/server';
 import { API } from '../api';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
-import { Users, Messages, Rooms } from '../../../models/server';
+import { Users, Rooms } from '../../../models/server';
+import { Messages } from '../../../models/server/raw';
 
 API.v1.addRoute(
 	'push.token',
 	{ authRequired: true },
 	{
 		post() {
-			const { type, value, appName } = this.bodyParams;
-			let { id } = this.bodyParams;
+			const { id, type, value, appName } = this.bodyParams;
 
 			if (id && typeof id !== 'string') {
 				throw new Meteor.Error('error-id-param-not-valid', 'The required "id" body param is invalid.');
-			} else {
-				id = Random.id();
 			}
+
+			const deviceId = id || Random.id();
 
 			if (!type || (type !== 'apn' && type !== 'gcm')) {
 				throw new Meteor.Error('error-type-param-not-valid', 'The required "type" body param is missing or invalid.');
@@ -34,15 +34,14 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
 			}
 
-			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('raix:push-update', {
-					id,
+			const result = Meteor.runAsUser(this.userId, () =>
+				Meteor.call('raix:push-update', {
+					id: deviceId,
 					token: { [type]: value },
 					appName,
 					userId: this.userId,
-				});
-			});
+				}),
+			);
 
 			return API.v1.success({ result });
 		},
@@ -78,7 +77,7 @@ API.v1.addRoute(
 	'push.get',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const params = this.requestParams();
 			check(
 				params,
@@ -92,7 +91,7 @@ API.v1.addRoute(
 				throw new Error('error-user-not-found');
 			}
 
-			const message = Messages.findOneById(params.id);
+			const message = await Messages.findOneById(params.id);
 			if (!message) {
 				throw new Error('error-message-not-found');
 			}
