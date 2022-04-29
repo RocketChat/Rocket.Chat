@@ -1,6 +1,6 @@
-import { test } from '@playwright/test';
 import { v4 } from 'uuid';
 
+import { test } from './fixtures/test';
 import ChannelCreation from './utils/pageobjects/ChannelCreation';
 import LoginPage from './utils/pageobjects/LoginPage';
 import { validUser, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';

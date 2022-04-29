@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './fixtures/test';
 import { validUser } from './utils/mocks/userAndPasswordMock';
 import LoginPage from './utils/pageobjects/LoginPage';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';

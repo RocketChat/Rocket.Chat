@@ -1,5 +1,6 @@
-import { expect, Locator } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
+import { expect } from '../../fixtures/test';
 import BasePage from './BasePage';
 
 export default class SideNav extends BasePage {

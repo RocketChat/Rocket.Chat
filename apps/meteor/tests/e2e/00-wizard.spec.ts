@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './fixtures/test';
 import SetupWizard from './utils/pageobjects/SetupWizard';
 import { VALID_EMAIL, adminLogin } from './utils/mocks/userAndPasswordMock';
 import { setupWizardStepRegex } from './utils/mocks/urlMock';

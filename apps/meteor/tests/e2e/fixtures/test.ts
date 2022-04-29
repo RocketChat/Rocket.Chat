@@ -30,3 +30,5 @@ export const test = baseTest.extend({
 		);
 	},
 });
+
+export const { expect } = test;

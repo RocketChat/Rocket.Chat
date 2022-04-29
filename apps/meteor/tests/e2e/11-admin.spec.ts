@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './fixtures/test';
 import LoginPage from './utils/pageobjects/LoginPage';
 import SideNav from './utils/pageobjects/SideNav';
 import { adminLogin, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
