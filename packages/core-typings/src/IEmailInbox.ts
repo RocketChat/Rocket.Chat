@@ -20,10 +20,10 @@ export interface IEmailInbox {
 		password: string;
 		secure: boolean;
 	};
-	_createdAt: Date;
-	_createdBy: {
+	_createdAt?: Date;
+	_createdBy?: {
 		_id: string;
 		username: string;
 	};
-	_updatedAt: Date;
+	_updatedAt?: Date;
 }
