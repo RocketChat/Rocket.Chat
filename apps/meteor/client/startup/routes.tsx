@@ -89,6 +89,9 @@ FlowRouter.route('/home', {
 
 	action(_params, queryParams) {
 		KonchatNotification.getDesktopPermission();
+		const LandingViewPage = createTemplateForComponent('LandingViewPage', () => import('../views/landing/LandingView'), {
+			attachment: 'at-parent',
+		});
 		if (queryParams?.saml_idp_credentialToken !== undefined) {
 			const token = queryParams.saml_idp_credentialToken;
 			FlowRouter.setQueryParams({
@@ -104,16 +107,26 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				appLayout.renderMainLayout({ center: 'home' });
+				appLayout.renderMainLayout({ center: LandingViewPage });
 			});
 
 			return;
 		}
 
-		appLayout.renderMainLayout({ center: 'home' });
+		appLayout.renderMainLayout({ center: LandingViewPage });
 	},
 });
 
+
+FlowRouter.route('/blog/detail/:id', {
+	name: 'blog-detail',
+	action: () => {
+		const BlogDetailPageView = createTemplateForComponent('BlogDetailPage', () => import('../views/blog/BlogDetail'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: BlogDetailPageView });
+	},
+});
 
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',

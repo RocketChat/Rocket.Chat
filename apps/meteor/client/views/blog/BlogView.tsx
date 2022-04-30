@@ -3,9 +3,11 @@ import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useState, useEffect } from 'react';
 
 import Page from '../../components/Page';
+import BottomBar from '../../components/BottomBar';
 import TopBar from '../../topbar/TopBar';
 import CreateBlogForm from './components/CreateBlogForm';
 import SingleBlogPost from './SingleBlogPost';
+import CreateBlogForm from './components/CreateBlogForm';
 
 import './blog.css';
 
@@ -17,7 +19,8 @@ const BlogView = (): ReactElement => {
 	const [updateTags, setUpdateTags] = useState<string[]>([]);
 	const [blogId, setBlogId] = useState('');
 
-	const clearUpdateFields = () => {
+	const clearUpdateFields = (): void => {
+
 		setUpdateTitle('');
 		setUpdateContent('');
 		setUpdateTags([]);
@@ -73,12 +76,15 @@ const BlogView = (): ReactElement => {
 								</Grid.Item>
 							))}
 					</Grid>
-					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '80px' }}>
+					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
 						<Button square primary>
-							<Icon name='plus' size='x20' onClick={() => setShowModal(true)} />
+
+							<Icon name='plus' size='x20' onClick={(): void => setShowModal(true)} />
+
 						</Button>
 					</div>
 				</Page.Content>
+					<BottomBar />
 			</Page>
 		</Page>
 	);

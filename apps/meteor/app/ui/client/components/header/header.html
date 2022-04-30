@@ -1,9 +1,8 @@
 <template name="header">
-	<div>{{> React component=TopBar}}</div>
+	<!-- <div>{{> React component=TopBar}}</div> -->
 	<header class="rc-header">
 		<div class="rc-header__wrap">
-			<div style="width: 100%; margin-left: -20px">{{> React component=BottomBar}}</div>
-			<div class="rc-header__block rc-header--burger rc-header__navbar-item" style="margin-right: 40px">{{> burger}}</div>
+			<!-- <div>{{> React component=BottomBar}}</div> -->
 			{{#if Template.contentBlock}} {{> Template.contentBlock}} {{/if}} {{# unless hideHelp}}
 			<div class="rc-header__section-help"></div>
 			{{/unless}} {{#with toolbarButtons}}

@@ -1,8 +1,5 @@
-import { Db } from 'mongodb';
-
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { ICommentService, ICommentCreateParams, IComment, ICommentUpdateBody, ICommentUpdateParams } from '../../../definition/IComment';
-import { CommentsRaw } from '../../../app/models/server/raw/Comments';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
@@ -12,11 +9,6 @@ import { CommentModel } from '../../../app/models/server/raw';
 export class CommentService extends ServiceClassInternal implements ICommentService {
 	protected name = 'comment';
 
-	private CommentModel: CommentsRaw;
-
-	constructor(db: Db) {
-		super();
-	}
 
 	async create(params: ICommentCreateParams): Promise<IComment> {
 		const createData: InsertionModel<IComment> = {
@@ -50,7 +42,9 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 			...params,
 		};
 		const result = await CommentModel.updateOne(query, { $set: updateData });
-		return CommentModel.findOneById(result.upsertedId._id.toHexString());
+
+		return CommentModel.findOneById(commentId);
+
 	}
 
 	async list(

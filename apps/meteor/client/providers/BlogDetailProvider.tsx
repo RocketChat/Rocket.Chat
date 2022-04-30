@@ -1,8 +1,10 @@
-import React, { useReducer } from 'react';
-import { DispatchGlobalContext, GlobalContext } from '../contexts/BlogDetailContext/GlobalState';
-import { BlogDetailReducer, InitialState, StateInterface } from '../contexts/BlogDetailContext/BlogDetailReducer';
+import React, { ReactElement, useReducer } from 'react';
 
-const BlogDetailContextProvider = ({ children }) => {
+import { BlogDetailReducer, InitialState } from '../contexts/BlogDetailContext/BlogDetailReducer';
+import { DispatchGlobalContext, GlobalContext } from '../contexts/BlogDetailContext/GlobalState';
+
+const BlogDetailContextProvider = ({ children }): ReactElement => {
+
 	const [global, dispatch] = useReducer(BlogDetailReducer, InitialState);
 	return (
 		<DispatchGlobalContext.Provider value={{ dispatch }}>

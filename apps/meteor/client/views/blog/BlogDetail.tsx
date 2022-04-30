@@ -1,29 +1,72 @@
 import { Box, Icon, Menu, InputBox, Button } from '@rocket.chat/fuselage';
+import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useContext, useState } from 'react';
 
-import { GlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
+import Comment from './components/Comment';
 import Page from '../../components/Page';
+import { useRoute } from '../../contexts/RouterContext';
+import { DispatchGlobalContext, GlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
+import BottomBar from '../../components/BottomBar';
 
 const BlogView = (): ReactElement => {
 	const { value } = useContext(GlobalContext);
-	const { id, author, createdAt, title, content, image } = value;
+	const { id, author, createdAt, title, content, image, comments } = value;
 	const [comment, setComment] = useState('');
+	const [commentId, setCommentId] = useState('');
 
-	const handleSubmit = () => {};
+	const { dispatch } = useContext(DispatchGlobalContext);
+	const BlogsRoute = useRoute('blogs');
+
+	const handleSubmit = (): void => {
+		// When we are updating the commentId is usually set otherwise it'll be an empty string.
+		if (!commentId.length) {
+			Meteor.call('addComment', { content: comment, blogId: id, parentId: id }, (error, result) => {
+				if (result) {
+					setComment('');
+					console.log('Comment added successfully');
+				}
+			});
+		} else {
+			Meteor.call('updateComment', commentId, { content: comment, blogId: id, parentId: id }, (error, result) => {
+				if (result) {
+					setComment('');
+					setCommentId('');
+					console.log('Updated comment');
+				}
+			});
+		}
+	};
+
+	const goToPreviousPage = () => {
+		dispatch({ type: 'CLEAR_DETAILS' });
+		BlogsRoute.push({});
+	};
+
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', margin: '5px 5px' }}>
 					<div style={{ display: 'flex', alignItems: 'center' }}>
-						<Icon name='chevron-right' fontSize='32px' style={{ marginRight: '15px', cursor: 'pointer' }} />
+
+						<Icon
+							name='chevron-right'
+							fontSize='32px'
+							style={{ marginRight: '15px', cursor: 'pointer' }}
+							onClick={() => goToPreviousPage()}
+						/>
+
 						<h3>{title}</h3>
 					</div>
 					<Menu
 						className='single-blog-menu'
 						options={{
 							delete: {
-								action: function noRefCheck(): void {},
+
+								action: function noRefCheck(): void {
+									console.log('here');
+								},
+
 								label: (
 									<Box alignItems='center' color='danger' display='flex'>
 										<Icon mie='x4' name='trash' size='x16' />
@@ -32,7 +75,11 @@ const BlogView = (): ReactElement => {
 								),
 							},
 							update: {
-								action: function noRefCheck(): void {},
+
+								action: function noRefCheck(): void {
+									console.log('here');
+								},
+
 								label: (
 									<Box alignItems='center' display='flex'>
 										Update
@@ -57,7 +104,9 @@ const BlogView = (): ReactElement => {
 							placeholder='New Comment...'
 							width='full'
 							value={comment}
-							onChange={(e: any) => setComment(e.target.value)}
+
+							onChange={(e: any): void => setComment(e.target.value)}
+
 						/>
 						<Button primary style={{ float: 'right', marginTop: '5px' }} onClick={handleSubmit}>
 							Post
@@ -65,8 +114,22 @@ const BlogView = (): ReactElement => {
 					</div>
 					<div>
 						<h4>Previous comments</h4>
+
+						{comments.length &&
+							comments.map((comment, index) => (
+								<Comment
+									key={index}
+									blogId={comment.blogId}
+									commentId={comment._id}
+									content={comment.content}
+									setComment={setComment}
+									setCommentId={setCommentId}
+								/>
+							))}
 					</div>
 				</Page.Content>
+				<BottomBar />
+
 			</Page>
 		</Page>
 	);

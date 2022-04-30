@@ -5,9 +5,10 @@ import GameButton from './GameButton/GameButton';
 import HomeButton from './HomeButton/HomeButton';
 import MessagesButton from './MessagesButton/MessagesButton';
 import ProductButton from './ProductButton/ProductButton';
+import BurgerMenu from './BurgerMenu';
 
 const BottomBar = (): ReactElement => (
-	<div style={{ display: 'flex', width: '100%' }}>
+	<div style={{ display: 'flex', width: '100%', height: '70px' }}>
 		<div className='rc-header__navbar-item'>
 			<HomeButton />
 		</div>
@@ -22,6 +23,9 @@ const BottomBar = (): ReactElement => (
 		</div>
 		<div className='rc-header__navbar-item'>
 			<MessagesButton />
+		</div>
+		<div className='rc-header__navbar-item'>
+			<BurgerMenu />
 		</div>
 	</div>
 );
