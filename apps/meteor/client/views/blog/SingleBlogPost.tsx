@@ -2,8 +2,10 @@ import { Box, Icon, Margins, Modal, Menu } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useContext } from 'react';
 
+
 import { DispatchGlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
 import { useRoute } from '../../contexts/RouterContext';
+
 
 type Props = {
 	content?: string;
@@ -11,8 +13,10 @@ type Props = {
 	_id?: string;
 	title?: string;
 	tags?: string[];
+
 	comments?: Record<string, any>[];
 	setModalShow?: Function;
+
 	setBlogId?: Function;
 	setUpdateTitle?: Function;
 	setUpdateContent?: Function;
@@ -26,7 +30,9 @@ const SingleBlogPost = ({
 	setModalShow,
 	content = 'dummy content',
 	createdAt = '2022-04-18',
+
 	comments,
+
 	setBlogId,
 	setUpdateTitle,
 	setUpdateContent,
@@ -48,7 +54,9 @@ const SingleBlogPost = ({
 	// Use the random number to display random images and names.
 	const randNum = Math.floor(Math.random() * 5);
 
+
 	const handleDetailRoute = (id: string, author: string, createdAt: string, title: string, content: string, image: string): void => {
+
 		const payload = {
 			id,
 			author,
@@ -56,15 +64,19 @@ const SingleBlogPost = ({
 			title,
 			content,
 			image,
+
 			comments,
 		};
 		dispatch({ type: 'ADD_DETAILS', payload });
 		BlogDetailRoute.push({ id });
+
 	};
 
 	return (
 		<Margins block='15px'>
+
 			<Modal>
+
 				<Modal.Content>
 					<Box display='flex' justifyContent='flex-end' alignItems='center' flexDirection='column' style={{ margin: '13px 0px' }}>
 						<Menu
@@ -114,6 +126,7 @@ const SingleBlogPost = ({
 							<span>{createdAt.toString().slice(4, 10)}</span>
 						</Box>
 					</Box>
+
 					<div
 						onClick={(): void =>
 							handleDetailRoute(_id, authors[randNum], createdAt.toString().slice(4, 10), title, content, images[randNum])
@@ -124,6 +137,7 @@ const SingleBlogPost = ({
 						<div style={{ margin: '10px 0' }}>
 							<img style={{ height: '300px', width: '100%' }} src={images[randNum]} alt='blog image' />
 						</div>
+
 					</div>
 				</Modal.Content>
 				<Modal.Footer>

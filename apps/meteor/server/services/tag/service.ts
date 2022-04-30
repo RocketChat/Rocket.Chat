@@ -1,5 +1,6 @@
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { ITagService, ITagCreateParams, ITag, ITagUpdateBody, ITagUpdateParams } from '../../../definition/ITag';
+
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
@@ -8,6 +9,7 @@ import { TagModel } from '../../../app/models/server/raw';
 
 export class TagService extends ServiceClassInternal implements ITagService {
 	protected name = 'tag';
+
 
 	async create(params: ITagCreateParams): Promise<ITag> {
 		const createData: InsertionModel<ITag> = {

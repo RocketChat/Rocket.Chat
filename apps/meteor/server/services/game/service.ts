@@ -1,5 +1,6 @@
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IGameService, IGameCreateParams, IGame, IGameUpdateParams } from '../../../definition/IGame';
+
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
@@ -8,6 +9,7 @@ import { GameModel } from '../../../app/models/server/raw';
 
 export class GameService extends ServiceClassInternal implements IGameService {
 	protected name = 'game';
+
 
 	async create(params: IGameCreateParams): Promise<IGame> {
 		const createData: InsertionModel<IGame> = {
@@ -43,7 +45,9 @@ export class GameService extends ServiceClassInternal implements IGameService {
 			...params,
 		};
 		const result = await GameModel.updateOne(query, { $set: updateData });
+
 		return GameModel.findOneById(gameId);
+
 	}
 
 	async list(

@@ -4,6 +4,7 @@ import { BlogDetailReducer, InitialState } from '../contexts/BlogDetailContext/B
 import { DispatchGlobalContext, GlobalContext } from '../contexts/BlogDetailContext/GlobalState';
 
 const BlogDetailContextProvider = ({ children }): ReactElement => {
+
 	const [global, dispatch] = useReducer(BlogDetailReducer, InitialState);
 	return (
 		<DispatchGlobalContext.Provider value={{ dispatch }}>

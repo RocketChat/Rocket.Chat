@@ -42,26 +42,31 @@ const BlogView = (): ReactElement => {
 		BlogsRoute.push({});
 	};
 
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', margin: '5px 5px' }}>
 					<div style={{ display: 'flex', alignItems: 'center' }}>
+
 						<Icon
 							name='chevron-right'
 							fontSize='32px'
 							style={{ marginRight: '15px', cursor: 'pointer' }}
 							onClick={() => goToPreviousPage()}
 						/>
+
 						<h3>{title}</h3>
 					</div>
 					<Menu
 						className='single-blog-menu'
 						options={{
 							delete: {
+
 								action: function noRefCheck(): void {
 									console.log('here');
 								},
+
 								label: (
 									<Box alignItems='center' color='danger' display='flex'>
 										<Icon mie='x4' name='trash' size='x16' />
@@ -70,9 +75,11 @@ const BlogView = (): ReactElement => {
 								),
 							},
 							update: {
+
 								action: function noRefCheck(): void {
 									console.log('here');
 								},
+
 								label: (
 									<Box alignItems='center' display='flex'>
 										Update
@@ -97,7 +104,9 @@ const BlogView = (): ReactElement => {
 							placeholder='New Comment...'
 							width='full'
 							value={comment}
+
 							onChange={(e: any): void => setComment(e.target.value)}
+
 						/>
 						<Button primary style={{ float: 'right', marginTop: '5px' }} onClick={handleSubmit}>
 							Post
@@ -105,6 +114,7 @@ const BlogView = (): ReactElement => {
 					</div>
 					<div>
 						<h4>Previous comments</h4>
+
 						{comments.length &&
 							comments.map((comment, index) => (
 								<Comment
@@ -119,6 +129,7 @@ const BlogView = (): ReactElement => {
 					</div>
 				</Page.Content>
 				<BottomBar />
+
 			</Page>
 		</Page>
 	);
