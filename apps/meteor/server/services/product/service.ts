@@ -1,8 +1,6 @@
-import { Db } from 'mongodb';
-
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IProductService, IProductCreateParams, IProduct, IProductUpdateBody, IProductUpdateParams } from '../../../definition/IProduct';
-import { ProductsRaw } from '../../../app/models/server/raw/Products';
+
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
@@ -12,11 +10,6 @@ import { ProductModel } from '../../../app/models/server/raw';
 export class ProductService extends ServiceClassInternal implements IProductService {
 	protected name = 'product';
 
-	private ProductModel: ProductsRaw;
-
-	constructor(db: Db) {
-		super();
-	}
 
 	async create(params: IProductCreateParams): Promise<IProduct> {
 		const createData: InsertionModel<IProduct> = {
@@ -51,7 +44,9 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 			...params,
 		};
 		const result = await ProductModel.updateOne(query, { $set: updateData });
-		return ProductModel.findOneById(result.upsertedId._id.toHexString());
+
+		return ProductModel.findOneById(productId);
+
 	}
 
 	async list(

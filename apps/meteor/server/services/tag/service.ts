@@ -1,8 +1,6 @@
-import { Db } from 'mongodb';
-
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { ITagService, ITagCreateParams, ITag, ITagUpdateBody, ITagUpdateParams } from '../../../definition/ITag';
-import { TagsRaw } from '../../../app/models/server/raw/Tags';
+
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
@@ -12,11 +10,6 @@ import { TagModel } from '../../../app/models/server/raw';
 export class TagService extends ServiceClassInternal implements ITagService {
 	protected name = 'tag';
 
-	private TagModel: TagsRaw;
-
-	constructor(db: Db) {
-		super();
-	}
 
 	async create(params: ITagCreateParams): Promise<ITag> {
 		const createData: InsertionModel<ITag> = {
@@ -57,7 +50,7 @@ export class TagService extends ServiceClassInternal implements ITagService {
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
 		{ sort, query }: IQueryOptions<ITag> = { sort: {} },
 	): Promise<IRecordsWithTotal<ITag>> {
-		const result = this.TagModel.find(
+		const result = TagModel.find(
 			{ ...query },
 			{
 				...(sort && { sort }),

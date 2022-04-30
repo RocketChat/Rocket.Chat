@@ -37,9 +37,17 @@ const CreateBlogForm = ({
 				setTags(updateTags.join(', '));
 			}
 		}
-	}, [blogId]);
 
-	const createBlog = (method: string, cleanedTags: string) => {
+	}, [blogId, updateContent, updateTags, updateTitle]);
+
+	const clearFields = (): void => {
+		setTitle('');
+		setContent('');
+		setTags('');
+	};
+
+	const createBlog = (method: string, cleanedTags: string): void => {
+
 		Meteor.call(method, { title, content, tags: [cleanedTags] }, (error, result) => {
 			// TODO: Add a success and error messages
 			if (result) {
@@ -50,7 +58,9 @@ const CreateBlogForm = ({
 		});
 	};
 
-	const updateBlog = (method: string, cleanedTags: string) => {
+
+	const updateBlog = (method: string, cleanedTags: string): void => {
+
 		Meteor.call(method, blogId, { title, content, tags: [cleanedTags] }, (error, result) => {
 			// TODO: Add a success and error messages
 			if (result) {
@@ -62,7 +72,9 @@ const CreateBlogForm = ({
 		});
 	};
 
-	const handleSubmit = () => {
+
+	const handleSubmit = (): void => {
+
 		const cleanedTags = tags.replace(/[, ]+/g, ',').trim();
 		if (title.length && content.length) {
 			// When it's an update then use the updateBlog method.
@@ -82,23 +94,23 @@ const CreateBlogForm = ({
 		}
 	};
 
-	const clearFields = () => {
-		setTitle('');
-		setContent('');
-		setTags('');
-	};
+
 	return (
 		<Modal display={showModal ? 'block' : 'none'}>
 			<Modal.Header>
 				<Modal.Title>Create New Blog</Modal.Title>
-				<Modal.Close onClick={() => setShowModal(false)} />
+
+				<Modal.Close onClick={(): void => setShowModal(false)} />
+
 			</Modal.Header>
 			<Modal.Content>
 				<Label required>Title</Label>
 				<TextInput
 					value={title}
 					error={titleError ? 'error' : ''}
-					onChange={(e: any) => setTitle(e.target.value)}
+
+					onChange={(e: any): void => setTitle(e.target.value)}
+
 					placeholder='Add your title...'
 					width='full'
 					style={{ marginBottom: '8px' }}
@@ -107,17 +119,21 @@ const CreateBlogForm = ({
 				<TextAreaInput
 					value={content}
 					error={contentError ? 'error' : ''}
-					onChange={(e: any) => setContent(e.target.value)}
+
+					onChange={(e: any): void => setContent(e.target.value)}
+
 					placeholder='Add your content...'
 					width='full'
 					style={{ marginBottom: '8px' }}
 				/>
 				<Label>Tags eg. Technology, Blockchain</Label>
-				<TextInput value={tags} onChange={(e: any) => setTags(e.target.value)} placeholder='Add your tags...' width='full' />
+
+				<TextInput value={tags} onChange={(e: any): void => setTags(e.target.value)} placeholder='Add your tags...' width='full' />
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button onClick={() => setShowModal(false)}>Cancel</Button>
+					<Button onClick={(): void => setShowModal(false)}>Cancel</Button>
+
 					<Button primary onClick={handleSubmit}>
 						Submit
 					</Button>

@@ -1,17 +1,25 @@
-type StateInterface = {
-	value: { id: string; author: string; createdAt: string; title: string; content: string; image: string };
-};
+export interface IStateInterface {
+	value: { id: string; author: string; createdAt: string; title: string; content: string; image: string; comments: Record<string, any>[] };
+}
 
-type ActionInterface = {
+export interface IActionInterface {
 	type: string;
-	payload: { id: string; author: string; createdAt: string; title: string; content: string; image: string };
+	payload?: {
+		id: string;
+		author: string;
+		createdAt: string;
+		title: string;
+		content: string;
+		image: string;
+		comments: Record<string, any>[];
+	};
+}
+
+const InitialState: IStateInterface = {
+	value: { id: '', author: '', createdAt: '', title: '', content: '', image: '', comments: [] },
 };
 
-const InitialState: StateInterface = {
-	value: { id: '', author: '', createdAt: '', title: '', content: '', image: '' },
-};
-
-const BlogDetailReducer = (state, action) => {
+const BlogDetailReducer = (state, action): IStateInterface => {
 	switch (action.type) {
 		case 'ADD_DETAILS':
 			return {
@@ -28,4 +36,4 @@ const BlogDetailReducer = (state, action) => {
 	}
 };
 
-export { BlogDetailReducer, InitialState, StateInterface, ActionInterface };
+export { BlogDetailReducer, InitialState };
