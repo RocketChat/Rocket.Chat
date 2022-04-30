@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useState, useEffect } from 'react';
 
 import Page from '../../components/Page';
+import BottomBar from '../../components/BottomBar';
 import TopBar from '../../topbar/TopBar';
 import SingleBlogPost from './SingleBlogPost';
 import CreateBlogForm from './components/CreateBlogForm';
@@ -73,12 +74,13 @@ const BlogView = (): ReactElement => {
 								</Grid.Item>
 							))}
 					</Grid>
-					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '80px' }}>
+					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
 						<Button square primary>
 							<Icon name='plus' size='x20' onClick={(): void => setShowModal(true)} />
 						</Button>
 					</div>
 				</Page.Content>
+					<BottomBar />
 			</Page>
 		</Page>
 	);

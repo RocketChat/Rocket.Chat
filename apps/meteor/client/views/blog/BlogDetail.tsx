@@ -6,10 +6,11 @@ import Comment from './components/Comment';
 import Page from '../../components/Page';
 import { useRoute } from '../../contexts/RouterContext';
 import { DispatchGlobalContext, GlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
+import BottomBar from '../../components/BottomBar';
 
 const BlogView = (): ReactElement => {
 	const { value } = useContext(GlobalContext);
-	const { id, author, createdAt, title, content, image } = value;
+	const { id, author, createdAt, title, content, image, comments } = value;
 	const [comment, setComment] = useState('');
 
 	const { dispatch } = useContext(DispatchGlobalContext);
@@ -19,6 +20,7 @@ const BlogView = (): ReactElement => {
 		if (comment.length) {
 			Meteor.call('addComment', { content: comment, blogId: id, parentId: id }, (error, result) => {
 				if (result) {
+					setComment('');
 					console.log('Comment added successfully');
 				}
 			});
@@ -93,9 +95,13 @@ const BlogView = (): ReactElement => {
 					</div>
 					<div>
 						<h4>Previous comments</h4>
-						<Comment blogId='1' commentId='1' content='Testing' />
+						{comments.length &&
+							comments.map((comment, index) => (
+								<Comment key={index} blogId={comment.blogId} commentId={comment._id} content={comment.content} clearComment={setComment} />
+							))}
 					</div>
 				</Page.Content>
+				<BottomBar />
 			</Page>
 		</Page>
 	);

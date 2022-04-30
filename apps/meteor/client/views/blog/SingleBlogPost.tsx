@@ -11,6 +11,7 @@ type Props = {
 	_id?: string;
 	title?: string;
 	tags?: string[];
+	comments?: Record<string, any>[];
 	setModalShow: Function;
 	setBlogId?: Function;
 	setUpdateTitle?: Function;
@@ -25,6 +26,7 @@ const SingleBlogPost = ({
 	setModalShow,
 	content = 'dummy content',
 	createdAt = '2022-04-18',
+	comments,
 	setBlogId,
 	setUpdateTitle,
 	setUpdateContent,
@@ -54,6 +56,7 @@ const SingleBlogPost = ({
 			title,
 			content,
 			image,
+			comments,
 		};
 		dispatch({ type: 'ADD_DETAILS', payload });
 		BlogDetailRoute.push({});

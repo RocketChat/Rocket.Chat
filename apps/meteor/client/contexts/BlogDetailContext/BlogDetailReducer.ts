@@ -1,14 +1,22 @@
 export interface IStateInterface {
-	value: { id: string; author: string; createdAt: string; title: string; content: string; image: string };
+	value: { id: string; author: string; createdAt: string; title: string; content: string; image: string; comments: Record<string, any>[] };
 }
 
 export interface IActionInterface {
 	type: string;
-	payload?: { id: string; author: string; createdAt: string; title: string; content: string; image: string };
+	payload?: {
+		id: string;
+		author: string;
+		createdAt: string;
+		title: string;
+		content: string;
+		image: string;
+		comments: Record<string, any>[];
+	};
 }
 
 const InitialState: IStateInterface = {
-	value: { id: '', author: '', createdAt: '', title: '', content: '', image: '' },
+	value: { id: '', author: '', createdAt: '', title: '', content: '', image: '', comments: [] },
 };
 
 const BlogDetailReducer = (state, action): IStateInterface => {
