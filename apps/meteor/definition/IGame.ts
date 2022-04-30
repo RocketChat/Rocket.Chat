@@ -5,6 +5,7 @@ import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from './ITeam';
 import { AtLeastOne } from './AtLeastOne';
 
 export interface IGame extends IRocketChatRecord {
+	createdAt: Date;
 	title: string;
 	description: string;
 	tags: ITag['_id'][];

@@ -9,6 +9,7 @@ import SingleBlogPost from './SingleBlogPost';
 import CreateBlogForm from './components/CreateBlogForm';
 
 import './blog.css';
+import PageInlineNavbar from '../../components/PageInlineNavbar/PageInlineNavbar';
 
 const BlogView = (): ReactElement => {
 	const [showModal, setShowModal] = useState(false);
@@ -35,20 +36,7 @@ const BlogView = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page>
 				<TopBar />
-				<Box display='flex' justifyContent='space-between' style={{ marginTop: '20px' }}>
-					<Tabs>
-						<Tabs.Item>
-							<Icon name='chevron-right' />
-						</Tabs.Item>
-						<Tabs.Item>anime</Tabs.Item>
-						<Tabs.Item>art</Tabs.Item>
-						<Tabs.Item>cook</Tabs.Item>
-						<Tabs.Item>sports</Tabs.Item>
-						<Tabs.Item>
-							<Icon name='chevron-left' />
-						</Tabs.Item>
-					</Tabs>
-				</Box>
+				<PageInlineNavbar />
 				<CreateBlogForm
 					showModal={showModal}
 					setShowModal={setShowModal}
@@ -80,7 +68,7 @@ const BlogView = (): ReactElement => {
 						</Button>
 					</div>
 				</Page.Content>
-					<BottomBar />
+				<BottomBar />
 			</Page>
 		</Page>
 	);
