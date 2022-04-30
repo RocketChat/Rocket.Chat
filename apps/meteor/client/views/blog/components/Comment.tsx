@@ -7,10 +7,11 @@ type Props = {
 	blogId: string;
 	commentId: string;
 	content: string;
-	clearComment: Function
+	setComment: Function;
+	setCommentId: Function;
 };
 
-const Comment = ({ blogId, commentId, content, clearComment }: Props) => {
+const Comment = ({ blogId, commentId, content, setComment, setCommentId }: Props) => {
 	return (
 		<Box display='flex' justifyContent='space-between' alignItems='center'>
 			<div style={{ marginLeft: '20px' }}>{content}</div>
@@ -34,12 +35,8 @@ const Comment = ({ blogId, commentId, content, clearComment }: Props) => {
 					},
 					update: {
 						action: function noRefCheck(): void {
-							Meteor.call('updateComment', commentId, { content, blogId, parentId: blogId }, (error, result) => {
-								if (result) {
-									clearComment('')
-									console.log('Updated comment');
-								}
-							});
+							setComment(content);
+							setCommentId(commentId);
 						},
 						label: (
 							<Box alignItems='center' display='flex'>

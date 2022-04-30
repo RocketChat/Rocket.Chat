@@ -42,7 +42,7 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 			...params,
 		};
 		const result = await ProductModel.updateOne(query, { $set: updateData });
-		return ProductModel.findOneById(result.upsertedId._id.toHexString());
+		return ProductModel.findOneById(productId);
 	}
 
 	async list(

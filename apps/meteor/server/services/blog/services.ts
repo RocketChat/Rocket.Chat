@@ -42,7 +42,6 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 			...params,
 		};
 		const result = await BlogModel.updateOne(query, { $set: updateData });
-		console.log(result);
 		return BlogModel.findOneById(blogId);
 	}
 

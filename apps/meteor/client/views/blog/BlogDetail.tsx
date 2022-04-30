@@ -12,16 +12,26 @@ const BlogView = (): ReactElement => {
 	const { value } = useContext(GlobalContext);
 	const { id, author, createdAt, title, content, image, comments } = value;
 	const [comment, setComment] = useState('');
+	const [commentId, setCommentId] = useState('');
 
 	const { dispatch } = useContext(DispatchGlobalContext);
 	const BlogsRoute = useRoute('blogs');
 
 	const handleSubmit = (): void => {
-		if (comment.length) {
+		// When we are updating the commentId is usually set otherwise it'll be an empty string.
+		if (!commentId.length) {
 			Meteor.call('addComment', { content: comment, blogId: id, parentId: id }, (error, result) => {
 				if (result) {
 					setComment('');
 					console.log('Comment added successfully');
+				}
+			});
+		} else {
+			Meteor.call('updateComment', commentId, { content: comment, blogId: id, parentId: id }, (error, result) => {
+				if (result) {
+					setComment('');
+					setCommentId('');
+					console.log('Updated comment');
 				}
 			});
 		}
@@ -97,7 +107,14 @@ const BlogView = (): ReactElement => {
 						<h4>Previous comments</h4>
 						{comments.length &&
 							comments.map((comment, index) => (
-								<Comment key={index} blogId={comment.blogId} commentId={comment._id} content={comment.content} clearComment={setComment} />
+								<Comment
+									key={index}
+									blogId={comment.blogId}
+									commentId={comment._id}
+									content={comment.content}
+									setComment={setComment}
+									setCommentId={setCommentId}
+								/>
 							))}
 					</div>
 				</Page.Content>

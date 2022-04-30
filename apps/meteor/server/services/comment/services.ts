@@ -41,7 +41,7 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 			...params,
 		};
 		const result = await CommentModel.updateOne(query, { $set: updateData });
-		return CommentModel.findOneById(result.upsertedId._id.toHexString());
+		return CommentModel.findOneById(commentId);
 	}
 
 	async list(
