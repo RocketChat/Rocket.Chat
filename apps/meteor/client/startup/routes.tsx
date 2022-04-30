@@ -89,6 +89,9 @@ FlowRouter.route('/home', {
 
 	action(_params, queryParams) {
 		KonchatNotification.getDesktopPermission();
+		const LandingViewPage = createTemplateForComponent('LandingViewPage', () => import('../views/landing/LandingView'), {
+			attachment: 'at-parent',
+		});
 		if (queryParams?.saml_idp_credentialToken !== undefined) {
 			const token = queryParams.saml_idp_credentialToken;
 			FlowRouter.setQueryParams({
@@ -104,13 +107,13 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				appLayout.renderMainLayout({ center: 'home' });
+				appLayout.renderMainLayout({ center: LandingViewPage });
 			});
 
 			return;
 		}
 
-		appLayout.renderMainLayout({ center: 'home' });
+		appLayout.renderMainLayout({ center: LandingViewPage });
 	},
 });
 

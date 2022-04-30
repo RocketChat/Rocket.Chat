@@ -13,6 +13,7 @@ const LandingView = ({ title, body }: Props): ReactElement => (
 	<Page flexDirection='row'>
 		<Page>
 			<TopBar />
+			<h3>Top 10 Blog Posts</h3>
 			<Page.Content>
 				<Margins block='15px'>
 					<Modal height='400px' width='350px'>
