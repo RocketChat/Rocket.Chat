@@ -178,6 +178,7 @@ API.v1.addRoute(
 let onlineCache = 0;
 let onlineCacheDate = 0;
 const cacheInvalid = 60000; // 1 minute
+
 API.v1.addRoute(
 	'shield.svg',
 	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 60, intervalTimeInMS: 60000 } },
@@ -197,7 +198,7 @@ API.v1.addRoute(
 				types !== '*' &&
 				!types
 					.split(',')
-					.map((t) => t.trim())
+					.map((t: string) => t.trim())
 					.includes(type)
 			) {
 				throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', {
@@ -412,7 +413,7 @@ API.v1.addRoute(
 	},
 );
 
-const mountResult = ({ id, error, result }) => ({
+const mountResult = ({ id, error, result }: { id: string, error?: unknown, result: unknown } | { id: string, error: unknown, result?: unknown }) => ({
 	message: EJSON.stringify({
 		msg: 'result',
 		id,
@@ -456,7 +457,11 @@ const methodCall = () => ({
 			const result = Meteor.call(method, ...params);
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
-			SystemLogger.error(`Exception while invoking method ${method}`, error.message);
+			if(error instanceof Error)
+				SystemLogger.error(`Exception while invoking method ${method}`, error.message);
+			else
+				SystemLogger.error(`Exception while invoking method ${method}`, error);
+
 			if (settings.get('Log_Level') === '2') {
 				Meteor._debug(`Exception while invoking method ${method}`, error);
 			}

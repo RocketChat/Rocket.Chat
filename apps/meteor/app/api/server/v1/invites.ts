@@ -9,8 +9,8 @@ API.v1.addRoute(
 	'listInvites',
 	{ authRequired: true },
 	{
-		get() {
-			const result = Promise.await(listInvites(this.userId));
+		async get() {
+			const result = await listInvites(this.userId);
 			return API.v1.success(result);
 		},
 	},
@@ -20,9 +20,9 @@ API.v1.addRoute(
 	'findOrCreateInvite',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { rid, days, maxUses } = this.bodyParams;
-			const result = Promise.await(findOrCreateInvite(this.userId, { rid, days, maxUses }));
+			const result = await findOrCreateInvite(this.userId, { rid, days, maxUses });
 
 			return API.v1.success(result);
 		},
@@ -33,9 +33,9 @@ API.v1.addRoute(
 	'removeInvite/:_id',
 	{ authRequired: true },
 	{
-		delete() {
+		async delete() {
 			const { _id } = this.urlParams;
-			const result = Promise.await(removeInvite(this.userId, { _id }));
+			const result = await removeInvite(this.userId, { _id });
 
 			return API.v1.success(result);
 		},
@@ -46,10 +46,10 @@ API.v1.addRoute(
 	'useInviteToken',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { token } = this.bodyParams;
 			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const result = Promise.await(useInviteToken(this.userId, token));
+			const result = await useInviteToken(this.userId, token);
 
 			return API.v1.success(result);
 		},
@@ -60,12 +60,12 @@ API.v1.addRoute(
 	'validateInviteToken',
 	{ authRequired: false },
 	{
-		post() {
+		async post() {
 			const { token } = this.bodyParams;
 
 			let valid = true;
 			try {
-				Promise.await(validateInviteToken(token));
+				await validateInviteToken(token);
 			} catch (e) {
 				valid = false;
 			}

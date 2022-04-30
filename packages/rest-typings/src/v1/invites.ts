@@ -1,24 +1,33 @@
-import type { IInvite, IRoom } from '@rocket.chat/core-typings';
+import type { IUser, IInvite } from '@rocket.chat/core-typings';
 
-export type InvitesEndpoints = {
-	'listInvites': {
-		GET: () => Array<IInvite>;
-	};
-	'removeInvite/:_id': {
-		DELETE: () => void;
-	};
-	'/v1/useInviteToken': {
-		POST: (params: { token: string }) => {
-			room: {
-				rid: IRoom['_id'];
-				prid: IRoom['prid'];
-				fname: IRoom['fname'];
-				name: IRoom['name'];
-				t: IRoom['t'];
-			};
-		};
-	};
-	'/v1/validateInviteToken': {
-		POST: (params: { token: string }) => { valid: boolean };
-	};
+export type invitesEndpoints = {
+   'listInvites': {
+      GET: (params: { userId: IUser['_id'], rid: string }) => {
+         invites: IInvite[];
+      };
+   };
+
+   'findOrCreateInvite': {
+      POST: (params: { userId: IUser['_id'], rid: IInvite['rid'], days: IInvite['days'], maxUses: IInvite['maxUses'] }) => {
+         invite: IInvite;
+      };
+   };
+
+   'removeInvite': {
+      DELETE: (params: { userId: IUser['_id'], _id: IInvite['_id'] }) => {
+         removed: boolean;
+      };
+   };
+
+   'useInviteToken': {
+      POST: (params: { userId: IUser['_id'], token: IInvite['token'] }) => {
+         invite: IInvite;
+      };
+   };
+
+   'validateInviteToken': {
+      POST: (params: { userId: IUser['_id'], token: IInvite['token'] }) => {
+         invite: IInvite;
+      };
+   };
 };

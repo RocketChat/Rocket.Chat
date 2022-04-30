@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Subscriptions } from '../../../models';
+import { Subscriptions } from '../../../models/server';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -11,7 +11,7 @@ API.v1.addRoute(
 		get() {
 			const { updatedSince } = this.queryParams;
 
-			let updatedSinceDate;
+			let updatedSinceDate: Date;
 			if (updatedSince) {
 				if (isNaN(Date.parse(updatedSince))) {
 					throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
