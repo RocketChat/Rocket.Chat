@@ -28,6 +28,8 @@ addAction('bbb_video', ({ room }) => {
 	const username = user ? user.username : '';
 	const enableOption = enabled && (!username || !room.muted?.includes(username));
 
+	const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
+
 	return useMemo(
 		() =>
 			enableOption
@@ -36,7 +38,7 @@ addAction('bbb_video', ({ room }) => {
 						id: 'bbb_video',
 						title: 'BBB_Video_Call',
 						icon: 'phone',
-						template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB')),
+						template: templateBBB,
 						order: live ? -1 : 4,
 						renderAction: (props): ReactNode => (
 							<Header.ToolBoxAction {...props}>
@@ -59,6 +61,8 @@ addAction('bbb_video', ({ room }) => {
 		[enableOption, groups, live, t],
 	);
 });
+
+const templateJitsi = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/Jitsi'));
 
 addAction('video', ({ room }) => {
 	const enabled = useSetting('Jitsi_Enabled');
@@ -89,7 +93,7 @@ addAction('video', ({ room }) => {
 						id: 'video',
 						title: 'Call',
 						icon: 'phone',
-						template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/Jitsi')),
+						template: templateJitsi,
 						full: true,
 						order: live ? -1 : 4,
 						renderAction: (props): ReactNode => (
