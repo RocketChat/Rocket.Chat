@@ -12,7 +12,7 @@ type Props = {
 	title?: string;
 	tags?: string[];
 	comments?: Record<string, any>[];
-	setModalShow: Function;
+	setModalShow?: Function;
 	setBlogId?: Function;
 	setUpdateTitle?: Function;
 	setUpdateContent?: Function;
@@ -59,7 +59,7 @@ const SingleBlogPost = ({
 			comments,
 		};
 		dispatch({ type: 'ADD_DETAILS', payload });
-		BlogDetailRoute.push({});
+		BlogDetailRoute.push({ id });
 	};
 
 	return (

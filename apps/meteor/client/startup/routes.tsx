@@ -168,7 +168,7 @@ FlowRouter.route('/messages', {
 	},
 });
 
-FlowRouter.route('/blog/detail', {
+FlowRouter.route('/blog/detail/:id', {
 	name: 'blog-detail',
 	action: () => {
 		const BlogDetailPageView = createTemplateForComponent('BlogDetailPage', () => import('../views/blog/BlogDetail'), {
