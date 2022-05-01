@@ -4,15 +4,18 @@ import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
+import { Document, OplogEntry, OplogOperations } from './OplogEntry';
+
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 import { metrics } from '../../../metrics/server/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
-const baseName = 'rocketchat_';
+const baseName: string = 'rocketchat_';
 
 export const trash = new Mongo.Collection(`${baseName}_trash`);
+
 try {
 	trash._ensureIndex({ __collection__: 1 });
 	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
@@ -26,23 +29,22 @@ const actions = {
 	i: 'insert',
 	u: 'update',
 	d: 'remove',
-};
+} as const;
 
 export class BaseDbWatch extends EventEmitter {
-	constructor(collectionName) {
+	constructor(protected collectionName: string) {
 		super();
-		this.collectionName = collectionName;
 
 		if (!isRunningMs()) {
-			this.initDbWatch();
+			Promise.await(this.initDbWatch());
 		}
 	}
 
-	initDbWatch() {
-		const _oplogHandle = Promise.await(getOplogHandle());
+	async initDbWatch() {
+		const _oplogHandle = await getOplogHandle();
 
 		// When someone start listening for changes we start oplog if available
-		const handleListener = async (event /* , listener*/) => {
+		const handleListener = (event: string /* , listener*/): void => {
 			if (event !== 'change') {
 				return;
 			}
@@ -54,6 +56,7 @@ export class BaseDbWatch extends EventEmitter {
 			};
 
 			if (!_oplogHandle) {
+				// TODO: point to docs
 				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
 				1. Start your mongodb in a replicaset mode: mongod --smallfiles --oplogSize 128 --replSet rs0\n
 				2. Start the replicaset via mongodb shell: mongo mongo/meteor --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"\n
@@ -73,52 +76,52 @@ export class BaseDbWatch extends EventEmitter {
 		}
 	}
 
-	processOplogRecord({ id, op }) {
-		const action = actions[op.op];
+	processOplogRecord({ id, entry }: { id: string, entry: OplogEntry }) {
+		if (entry.op === OplogOperations.COMMAND || entry.op === OplogOperations.NOOP) {
+			return;
+		}
+
+		const action = actions[entry.op];
+
 		metrics.oplog.inc({
 			collection: this.collectionName,
 			op: action,
 		});
 
-		if (action === 'insert') {
+		if (entry.op === OplogOperations.INSERT) {
 			this.emit('change', {
 				action,
 				clientAction: 'inserted',
-				id: op.o._id,
-				data: op.o,
+				id: (entry.o as Document)._id,
+				data: entry.o,
 				oplog: true,
 			});
 			return;
 		}
 
-		if (action === 'update') {
-			if (!op.o.$set && !op.o.$unset) {
+		if (entry.op === OplogOperations.UPDATE) {
+			if (!entry.o.$set && !entry.o.$unset) {
 				this.emit('change', {
 					action,
 					clientAction: 'updated',
 					id,
-					data: op.o,
+					data: entry.o,
 					oplog: true,
 				});
 				return;
 			}
 
 			const diff = {};
-			if (op.o.$set) {
-				for (const key in op.o.$set) {
-					if (op.o.$set.hasOwnProperty(key)) {
-						diff[key] = op.o.$set[key];
-					}
-				}
+			if (entry.o.$set) {
+				Object.assign(diff, entry.o.$set);
 			}
-			const unset = {};
-			if (op.o.$unset) {
-				for (const key in op.o.$unset) {
-					if (op.o.$unset.hasOwnProperty(key)) {
-						diff[key] = undefined;
-						unset[key] = 1;
-					}
-				}
+
+			const unset: {[k: string]: 1} = {};
+			if (entry.o.$unset) {
+				Object.keys(entry.o.$unset).forEach(key => {
+					Object.defineProperty(diff, key, {value: undefined});
+					unset[key] = 1;
+				});
 			}
 
 			this.emit('change', {
@@ -132,7 +135,7 @@ export class BaseDbWatch extends EventEmitter {
 			return;
 		}
 
-		if (action === 'remove') {
+		if (entry.op === OplogOperations.DELETE) {
 			this.emit('change', {
 				action,
 				clientAction: 'removed',
