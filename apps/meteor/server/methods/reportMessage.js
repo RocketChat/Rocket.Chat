@@ -42,7 +42,7 @@ Meteor.methods({
 
 		await Reports.createWithMessageDescriptionAndUserId(message, description, uid);
 
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReported, message, Meteor.user()));
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReported, message, Meteor.user(), description));
 
 		return true;
 	},

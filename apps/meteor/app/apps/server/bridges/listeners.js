@@ -101,10 +101,11 @@ export class AppListenerBridge {
 						isStarred,
 					};
 				case AppInterface.IPostMessageReported:
-					const [userReported] = payload;
+					const [userReported, reason] = payload;
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userReported),
+						reason,
 					};
 				default:
 					return msg;
