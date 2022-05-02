@@ -277,6 +277,12 @@ jobs:
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
+          npm run test:playwright:coverage
+
+      - name: Publish to coveralls.io
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ github.token }}
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -594,38 +600,6 @@ jobs:
 
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
-
-  services-image-build-check:
-    runs-on: ubuntu-20.04
-    if: github.event.pull_request.head.repo.full_name == github.repository
-
-    strategy:
-      matrix:
-        service:
-          ["ddp-streamer"]
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v3
-        with:
-          node-version: "14.18.3"
-
-      - name: Build Docker images
-        env:
-          IMAGE_TAG: check
-        run: |
-          yarn
-          yarn build:services
-
-          echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
-
-          docker build \
-            --build-arg SERVICE=${{ matrix.service }} \
-            -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
-            -f ./apps/meteor/ee/server/services/Dockerfile \
-            .
 
   release-versions:
     runs-on: ubuntu-latest

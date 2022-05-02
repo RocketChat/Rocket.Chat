@@ -32,7 +32,7 @@
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"testci": "node .scripts/start.js",
 		"test:playwright": "playwright test",
-		"test:playwright:coverage": "nyc report --reporter=html",
+		"test:playwright:coverage": "nyc report --reporter=lcov",
 		"test:playwright:ee": "cross-env ENTERPRISE=true yarn test:playwright",
 		"testui": "cypress run",
 		"testui-pass": "cypress run --spec ./tests/cypress/integration/01-pass/**/*.spec.js",
