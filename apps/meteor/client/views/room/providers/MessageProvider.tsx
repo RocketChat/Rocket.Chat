@@ -1,8 +1,8 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
-import { IMessage } from '../../../../definition/IMessage';
 import { useLayout } from '../../../contexts/LayoutContext';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -35,8 +35,10 @@ export const MessageProvider = memo(function MessageProvider({
 	const dateAndTime = useFormatDateAndTime();
 	const context = useMemo(() => {
 		const openThread =
-			(tmid: string, jump?: string): (() => void) =>
-			(): void => {
+			(tmid: string, jump?: string): ((e: MouseEvent) => void) =>
+			(e: MouseEvent): void => {
+				e.stopPropagation();
+
 				router.replace(
 					{
 						...params,

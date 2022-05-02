@@ -59,29 +59,35 @@ jobs:
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
-
-      # - name: Cache node modules
-      #   id: cache-nodemodules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ./node_modules
-      #       ./ee/server/services/node_modules
-      #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
       # TODO change to use turbo cache
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
           path: ./apps/meteor/.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions', '.github/workflows/build_and_test.yml') }}
-
+          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions') }}
+          restore-keys: |
+            ${{ runner.os }}-meteor_cache-
+            ${{ runner.os }}-
       - name: Cache meteor
         uses: actions/cache@v2
         with:
           path: ~/.meteor
-          key: ${{ runner.OS }}-meteor-${{ hashFiles('apps/meteor/.meteor/release', '.github/workflows/build_and_test.yml') }}
-
+          key: ${{ runner.OS }}-meteor-${{ hashFiles('apps/meteor/.meteor/release') }}
+          restore-keys: |
+            ${{ runner.os }}-meteor-
+            ${{ runner.os }}-
       - name: Install Meteor
         run: |
           # Restore bin from cache
@@ -111,13 +117,9 @@ jobs:
           meteor node -v
           git version
 
-      - name: npm install
+      - name: yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
-        run: |
-          yarn
-          cd ./apps/meteor/ee/server/services
-          npm install
-          cd -
+        run: yarn
 
       - run: yarn lint
 
@@ -126,8 +128,6 @@ jobs:
       - name: TS typecheck
         run: |
           yarn turbo run typecheck
-          cd ./apps/meteor/ee/server/services
-          meteor npm run typecheck
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -218,22 +218,32 @@ jobs:
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-cypress-
+            ${{ runner.os }}-
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
-      # - name: Cache node modules
-      #   id: cache-nodemodules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ./node_modules
-      #       ./apps/meteor/ee/server/services/node_modules
-      #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
-
-      - name: NPM install
+      - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
         run: yarn
 
       - name: Unit Test
         run: yarn testunit
+
+      - name: Install Playwright
+        run: |
+          cd ./apps/meteor
+          npx playwright install --with-deps
 
       - name: E2E Test API
         env:
@@ -246,7 +256,7 @@ jobs:
           Xvfb -screen 0 1024x768x24 :99 &
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-      - name: E2E Test UI
+      - name: E2E Test UI (Legacy - Cypress)
         env:
           TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
@@ -256,6 +266,24 @@ jobs:
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
           for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
+
+      - name: E2E Test UI
+        env:
+          TEST_MODE: "true"
+          MONGO_URL: mongodb://localhost:27017/rocketchat
+          MONGO_OPLOG_URL: mongodb://localhost:27017/local
+        run: |
+          cd ./apps/meteor
+          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+          Xvfb -screen 0 1024x768x24 :99 &
+          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
+
+      - name: Store playwright test trace
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: playwright-test-trace
+          path: ./apps/meteor/tests/e2e/test-failures*
 
       - name: Store cypress test screenshots
         uses: actions/upload-artifact@v2
@@ -323,27 +351,24 @@ jobs:
         with:
           path: /home/runner/.cache/Cypress
           key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
-      # - name: Cache node modules
-      #   id: cache-nodemodules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ./node_modules
-      #       ./apps/meteor/ee/server/services/node_modules
-      #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
-
-      - name: NPM install
+      - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
-        run: |
-          yarn
-          cd ./apps/meteor/ee/server/services
-          npm install
+        run: yarn
 
       - name: Build micro services
-        run: |
-          cd ./apps/meteor/ee/server/services
-          npm run build
+        run: yarn build:services
 
       - name: E2E Test API
         env:
@@ -361,7 +386,7 @@ jobs:
 
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-      - name: E2E Test UI
+      - name: E2E Test UI (Legacy - Cypress)
         env:
           TEST_MODE: "true"
           MONGO_URL: mongodb://localhost:27017/rocketchat
@@ -380,19 +405,50 @@ jobs:
 
           for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
 
+      - name: Install Playwright
+        run: |
+          cd ./apps/meteor/
+          npx playwright install --with-deps
+
+      - name: E2E Test UI
+        env:
+          TEST_MODE: "true"
+          MONGO_URL: mongodb://localhost:27017/rocketchat
+          MONGO_OPLOG_URL: mongodb://localhost:27017/local
+          ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
+          TRANSPORTER: nats://localhost:4222
+          CYPRESS_BASE_URL: http://localhost:4000
+          CYPRESS_TEST_API_URL: http://localhost:4000
+          OVERWRITE_SETTING_Site_Url: http://localhost:4000
+          SKIP_PROCESS_EVENT_REGISTRATION: "true"
+        run: |
+          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+          Xvfb -screen 0 1024x768x24 :99 &
+
+          cd ./apps/meteor
+
+          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright:ee
+
+      - name: Store playwright test trace
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ee-playwright-test-trace
+          path: ./apps/meteor/tests/e2e/test-failures*
+
       - name: Store cypress test screenshots
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ee-cypress-test-screenshots
-          path: apps/meteor/tests/cypress/screenshots*
+          path: ./apps/meteor/tests/cypress/screenshots*
 
       - name: Store cypress test videos
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ee-cypress-test-videos
-          path: apps/meteor/tests/cypress/videos*
+          path: ./apps/meteor/tests/cypress/videos*
   #   notification:
   #     runs-on: ubuntu-20.04
   #     needs: test
@@ -432,28 +488,34 @@ jobs:
           sudo apt clean
           docker rmi $(docker image ls -aq)
           df -h
-
-      # - name: Cache node modules
-      #   id: cache-nodemodules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ./node_modules
-      #       ./apps/meteor/ee/server/services/node_modules
-      #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
           path: ./apps/meteor/.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
-
+          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}
+          restore-keys: |
+            ${{ runner.os }}-meteor_cache-
+            ${{ runner.os }}-
       - name: Cache meteor
         uses: actions/cache@v2
         with:
           path: ~/.meteor
-          key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
-
+          key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}
+          restore-keys: |
+            ${{ runner.os }}-meteor-
+            ${{ runner.os }}-
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
@@ -488,7 +550,7 @@ jobs:
           meteor node -v
           git version
 
-      - name: npm install
+      - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true'
         run: yarn
 
@@ -533,10 +595,67 @@ jobs:
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
+  services-image-build-check:
+    runs-on: ubuntu-20.04
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    strategy:
+      matrix:
+        service:
+          ["ddp-streamer"]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 14.18.3
+        uses: actions/setup-node@v3
+        with:
+          node-version: "14.18.3"
+
+      - name: Build Docker images
+        env:
+          IMAGE_TAG: check
+        run: |
+          yarn
+          yarn build:services
+
+          echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
+
+          docker build \
+            --build-arg SERVICE=${{ matrix.service }} \
+            -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
+            -f ./apps/meteor/ee/server/services/Dockerfile \
+            .
+
+  release-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.by-tag.outputs.release }}
+      latest-release: ${{ steps.latest.outputs.latest-release }}
+    steps:
+      - id: by-tag
+        run: |
+          if echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+            RELEASE="latest"
+          elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+            RELEASE="release-candidate"
+          fi
+          echo "RELEASE: ${RELEASE}"
+          echo "::set-output name=release::${RELEASE}"
+
+      - id: latest
+        run: |
+          LATEST_RELEASE="$(
+            git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname "https://github.com/$GITHUB_REPOSITORY" '*' |
+              sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
+          )"
+          echo "LATEST_RELEASE: ${LATEST_RELEASE}"
+          echo "::set-output name=latest-release::${LATEST_RELEASE}"
+
   deploy:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: test
+    needs: [test, release-versions]
 
     steps:
       - uses: actions/checkout@v3
@@ -564,10 +683,10 @@ jobs:
             ARTIFACT_NAME="${REPO_VERSION}"
             RC_VERSION=$GIT_TAG
 
-            if [[ $GIT_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+ ]]; then
+            if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
               SNAP_CHANNEL=candidate
               RC_RELEASE=candidate
-            elif [[ $GIT_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
               SNAP_CHANNEL=stable
               RC_RELEASE=stable
             fi
@@ -614,7 +733,7 @@ jobs:
 
   image-build:
     runs-on: ubuntu-20.04
-    needs: deploy
+    needs: [deploy, release-versions]
 
     strategy:
       matrix:
@@ -677,11 +796,7 @@ jobs:
             DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
           fi;
 
-          if echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-            RELEASE="latest"
-          elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-            RELEASE="release-candidate"
-          fi
+          RELEASE="${{ needs.release-versions.outputs.release }}"
 
           if [[ '${{ matrix.release }}' = 'alpine' ]]; then
             RELEASE="${RELEASE}-${{ matrix.release }}"
@@ -696,12 +811,7 @@ jobs:
           docker push $IMAGE_NAME:$DOCKER_TAG
 
           if [[ $RELEASE == 'latest' ]]; then
-            CURRENT_LATEST="$(
-              git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname "https://github.com/$GITHUB_REPOSITORY" '*' |
-                sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
-            )"
-            echo "CURRENT_LATEST: $CURRENT_LATEST"
-            if [[ $CURRENT_LATEST == $GITHUB_REF_NAME ]]; then
+            if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
               docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
               docker push $IMAGE_NAME:$RELEASE
             fi
@@ -730,7 +840,7 @@ jobs:
 
   services-image-build:
     runs-on: ubuntu-20.04
-    needs: deploy
+    needs: [deploy, release-versions]
 
     strategy:
       matrix:
@@ -762,25 +872,28 @@ jobs:
 
           # first install repo dependencies
           yarn
-
-          # then micro services dependencies
-          cd ./apps/meteor/ee/server/services
-          npm i
-          npm run build
+          yarn build:services
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
 
-          docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
+          docker build \
+            --build-arg SERVICE=${{ matrix.service }} \
+            -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
+            -f ./apps/meteor/ee/server/services/Dockerfile \
+            .
 
           docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            if echo "$IMAGE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-              RELEASE="latest"
-            elif echo "$IMAGE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-              RELEASE="release-candidate"
-            fi
+            RELEASE="${{ needs.release-versions.outputs.release }}"
 
-            docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
-            docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
+            if [[ $RELEASE == 'latest' ]]; then
+              if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
+                docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
+                docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
+              fi
+            else
+              docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
+              docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
+            fi
           fi

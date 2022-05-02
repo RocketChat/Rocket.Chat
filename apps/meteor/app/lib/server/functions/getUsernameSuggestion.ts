@@ -1,6 +1,6 @@
 import limax from 'limax';
+import type { IUser } from '@rocket.chat/core-typings';
 
-import { IUser } from '../../../../definition/IUser';
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 

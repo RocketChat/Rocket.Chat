@@ -1,4 +1,5 @@
-import { UserStatus } from '../../../definition/UserStatus';
+import { UserStatus } from '@rocket.chat/core-typings';
+
 import { IServiceClass } from './ServiceClass';
 
 export interface IPresence extends IServiceClass {
