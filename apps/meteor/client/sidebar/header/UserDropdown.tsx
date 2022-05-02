@@ -224,7 +224,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 							});
 						};
 						return (
-							// On label property is setting as any because the interface the it considers is too big for adding an interface to it
+							// We use the type assertion to any in the `label` property as i18n strings that come from apps are not known in compile time
 							<>
 								<Option label={t(item.name as any)} key={item.actionId + key} onClick={action} />
 							</>
