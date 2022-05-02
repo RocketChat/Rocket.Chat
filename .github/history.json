@@ -74279,6 +74279,74 @@
           ]
         }
       ]
+    },
+    "4.7.0-rc.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25336",
+          "title": "Chore: Add options to debug stdout and rate limiter",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25368",
+          "title": "Regression: Fix English i18n react text",
+          "userLogin": "d-gubert",
+          "description": "Incorrect text in reaction tooltip has been fixed",
+          "milestone": "4.7.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "25349",
+          "title": "Regression: Rocket.Chat Webapp not loading.",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "25317",
+          "title": "Regression: Fix multi line is not showing an empty line between lines",
+          "userLogin": "filipemarins",
+          "milestone": "4.7.0",
+          "contributors": [
+            "filipemarins",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "25320",
+          "title": "Regression: bump onboarding-ui version",
+          "userLogin": "guijun13",
+          "description": "- Bump to 'next' the onboarding-ui package from fuselage.\r\n- Update from 'companyEmail' to 'email' adminData usage types",
+          "contributors": [
+            "guijun13"
+          ]
+        },
+        {
+          "pr": "25335",
+          "title": "Chore: Create README.md for Rest Typings",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
