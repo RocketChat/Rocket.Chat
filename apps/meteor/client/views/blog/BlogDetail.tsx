@@ -4,12 +4,12 @@ import React, { ReactElement, useContext, useState } from 'react';
 
 import Comment from './components/Comment';
 import Page from '../../components/Page';
-import { DispatchGlobalContext, GlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
+import { DispatchBlogGlobalContext, BlogGlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
 import BottomBar from '../../components/BottomBar';
 import DetailPageHeader from '../../components/DetailPageHeader/DetailPageHeader';
 
 const BlogView = (): ReactElement => {
-	const { value } = useContext(GlobalContext);
+	const { value } = useContext(BlogGlobalContext);
 	const { id, author, createdAt, title, content, image, comments } = value;
 	const [comment, setComment] = useState('');
 	const [commentId, setCommentId] = useState('');
@@ -37,7 +37,7 @@ const BlogView = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<DetailPageHeader title={title} route='blogs' context={DispatchGlobalContext} />
+				<DetailPageHeader title={title} route='blogs' context={DispatchBlogGlobalContext} />
 				<Page.Content>
 					<div style={{ margin: '10px 0' }}>
 						<img style={{ height: '300px', width: '100%' }} src={image} alt='blog image' />

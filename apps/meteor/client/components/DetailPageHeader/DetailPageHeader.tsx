@@ -1,6 +1,5 @@
 import { Icon, Menu, Box } from '@rocket.chat/fuselage';
 import React, { useContext, Dispatch as ReactDispatch, Context } from 'react';
-import { IActionInterface } from '../../contexts/BlogDetailContext/BlogDetailReducer';
 
 import { useRoute } from '../../contexts/RouterContext';
 
@@ -11,9 +10,8 @@ const DetailPageHeader = ({
 }: {
 	title: string;
 	route: string;
-	context?: Context<{
-		dispatch: ReactDispatch<IActionInterface>;
-	}>;
+	// Chose the type of any because it was becoming too complex to state the interface type.
+	context: any;
 }) => {
 	const { dispatch } = useContext(context);
 	const PreviousRoute = useRoute(route);

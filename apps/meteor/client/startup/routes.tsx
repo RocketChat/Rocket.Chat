@@ -178,6 +178,16 @@ FlowRouter.route('/blog/detail/:id', {
 	},
 });
 
+FlowRouter.route('/games/detail/:id', {
+	name: 'games-detail',
+	action: () => {
+		const GameDetailPageView = createTemplateForComponent('GameDetailPage', () => import('../views/games/SingleGameDetails'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: GameDetailPageView });
+	},
+});
+
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {

@@ -2,7 +2,7 @@ import { Box, Icon, Margins, Modal, Menu } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useContext } from 'react';
 
-import { DispatchGlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
+import { DispatchBlogGlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
 import { useRoute } from '../../contexts/RouterContext';
 
 type Props = {
@@ -32,7 +32,7 @@ const SingleBlogPost = ({
 	setUpdateContent,
 	setUpdateTags,
 }: Props): ReactElement => {
-	const { dispatch } = useContext(DispatchGlobalContext);
+	const { dispatch } = useContext(DispatchBlogGlobalContext);
 
 	const authors = ['Tanjiro Kamado', 'Zenitsu Agatsuma', 'Hashibira Inosuke', 'Nezuko Kamado', 'Tanjiro Kamado'];
 	const images = [

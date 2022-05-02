@@ -1,4 +1,4 @@
-import { Box, Icon, Tabs, Grid, Button } from '@rocket.chat/fuselage';
+import { Icon, Grid, Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useState, useEffect } from 'react';
 

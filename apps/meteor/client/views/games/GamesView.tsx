@@ -1,4 +1,5 @@
-import React, { ReactElement } from 'react';
+import { Meteor } from 'meteor/meteor';
+import React, { ReactElement, useEffect, useState } from 'react';
 
 import SingleGame from './SingleGame';
 import Page from '../../components/Page';
@@ -6,9 +7,10 @@ import BottomBar from '../../components/BottomBar';
 import TopBar from '../../topbar/TopBar';
 import { IGame } from '../../../definition/IGame';
 import PageInlineNavbar from '../../components/PageInlineNavbar/PageInlineNavbar';
-import { Grid, Button, Icon } from '@rocket.chat/fuselage';
+import { Grid } from '@rocket.chat/fuselage';
 
 const GamesView = (): ReactElement => {
+	const [gamesResults, setGamesResults] = useState([]);
 	const data: IGame[] = [
 		{
 			_id: 'firstgame',
@@ -38,6 +40,42 @@ const GamesView = (): ReactElement => {
 			tags: ['3D', 'online'],
 		},
 	];
+
+	const getGames = () => {
+		Meteor.call('getGames', { count: 10 }, {}, (error, result) => {
+			if (result) {
+				setGamesResults(result.records);
+				console.log('Games were fetched');
+			} else {
+				data.map((game, index) => {
+					// The server requires us to wait atleast 2 seconds before sending in a new request.
+					if (index > 0) {
+						setTimeout(() => {
+							Meteor.call(
+								'createGame',
+								{ title: game.title, description: game.description, ranking: game.ranking, tags: game.tags },
+								(error, result) => {
+									if (result) {
+										console.log('Games were created');
+									}
+								},
+							);
+						}, 3000);
+					}
+
+					// Refetch the games once its done adding.
+					if (index === data.length - 1) {
+						getGames();
+					}
+				});
+			}
+		});
+	};
+	useEffect(() => {
+		if (!gamesResults.length) {
+			getGames();
+		}
+	}, []);
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -45,8 +83,10 @@ const GamesView = (): ReactElement => {
 				<PageInlineNavbar />
 				<Page.Content>
 					<Grid style={{ overflowY: 'auto', overflowX: 'hidden' }}>
-						{data.map((item, index) => (
-							<SingleGame key={index} {...item} />
+						{gamesResults.map((item, index) => (
+							<Grid.Item xs={4} md={4} lg={6} key={index}>
+								<SingleGame {...item} />
+							</Grid.Item>
 						))}
 					</Grid>
 				</Page.Content>

@@ -4,6 +4,7 @@ import AttachmentProvider from '../components/Message/Attachments/providers/Atta
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import BlogDetailContextProvider from './BlogDetailProvider';
+import GameDetailContextProvider from './GameDetailProvider';
 import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
@@ -38,9 +39,11 @@ const MeteorProvider: FC = ({ children }) => (
 															<CallProvider>
 																<OmnichannelProvider>
 																	<ModalProvider>
-																		<BlogDetailContextProvider>
-																			<AttachmentProvider>{children}</AttachmentProvider>
-																		</BlogDetailContextProvider>
+																		<GameDetailContextProvider>
+																			<BlogDetailContextProvider>
+																				<AttachmentProvider>{children}</AttachmentProvider>
+																			</BlogDetailContextProvider>
+																		</GameDetailContextProvider>
 																	</ModalProvider>
 																</OmnichannelProvider>
 															</CallProvider>
