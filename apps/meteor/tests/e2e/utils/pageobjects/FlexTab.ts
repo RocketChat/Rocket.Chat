@@ -101,6 +101,10 @@ export default class FlexTab extends BasePage {
 		return this.getPage().locator('.rocket-search-result');
 	}
 
+	public chooseUserSearch(): Locator {
+		return this.getPage().locator('//label[contains(text(), "Choose users")]/..//input');
+	}
+
 	public messageSearchBar(): Locator {
 		return this.getPage().locator('#message-search');
 	}
@@ -273,6 +277,16 @@ export default class FlexTab extends BasePage {
 		const userEl = this.getUserEl(user);
 		await userEl.waitFor();
 		await userEl.click();
+	}
+
+	public async addPeopleToChannel(user: any): Promise<void> {
+		await this.addUserButton().click();
+		await this.chooseUserSearch().type(user);
+		await this.getPage().waitForTimeout(3000);
+		await this.chooseUserOptions().click();
+		await this.addUserButtonAfterChoose().click();
+		// await this.getPage().waitForSelector('.-autocomplete-item');
+		// await this.getPage().click('.-autocomplete-item');
 	}
 
 	public async operateFlexTab(desiredTab: string, desiredState: boolean): Promise<void> {
