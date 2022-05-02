@@ -1,0 +1,38 @@
+FROM node:14.18.3-alpine3.15
+
+RUN apk add --no-cache ttf-dejavu
+
+ADD . /app
+
+LABEL maintainer="buildmaster@rocket.chat"
+
+RUN set -x \
+    && apk add --no-cache --virtual .fetch-deps python3 make g++ libc6-compat \
+    && cd /app/bundle/programs/server \
+    && npm install --production \
+    # Start hack for sharp...
+    && rm -rf npm/node_modules/sharp \
+    && npm install sharp@0.29.3 \
+    && mv node_modules/sharp npm/node_modules/sharp \
+    # End hack for sharp
+    && cd npm \
+    && npm rebuild bcrypt --build-from-source \
+    && npm cache clear --force \
+    && apk del .fetch-deps
+
+# needs a mongo instance - defaults to container linking with alias 'mongo'
+ENV DEPLOY_METHOD=docker \
+    NODE_ENV=production \
+    MONGO_URL=mongodb://mongo:27017/rocketchat \
+    HOME=/tmp \
+    PORT=3000 \
+    ROOT_URL=http://localhost:3000 \
+    Accounts_AvatarStorePath=/app/uploads
+
+VOLUME /app/uploads
+
+WORKDIR /app/bundle
+
+EXPOSE 3000
+
+CMD ["node", "main.js"]
