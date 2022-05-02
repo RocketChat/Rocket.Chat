@@ -381,10 +381,11 @@ class MainContent extends BasePage {
 			case 'quote':
 				await this.messageQuote().click();
 				await this.messageInput().type('this is a quote message');
+				await this.keyboardPress('Enter');
 				break;
 			case 'star':
 				await this.messageStar().click();
-				await expect(this.getPage().locator('div.toast-message')).toHaveText('Message has been starred');
+				await expect(this.getPage().locator('div.toast-message:has-text("Message has been starred")')).toBeVisible();
 				break;
 			case 'unread':
 				await this.messageUnread().click();

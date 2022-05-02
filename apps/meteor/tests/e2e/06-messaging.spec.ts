@@ -7,8 +7,6 @@ import FlexTab from './utils/pageobjects/FlexTab';
 import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
 import { ChatContext } from './utils/types/ChatContext';
 
-import { t } from '/app/utils/server';
-
 const createBrowserContextForChat = async (browser: Browser, baseURL: string): Promise<ChatContext> => {
 	const page = await browser.newPage();
 
@@ -22,7 +20,7 @@ const createBrowserContextForChat = async (browser: Browser, baseURL: string): P
 	return { mainContent, sideNav };
 };
 
-test.describe.only('[Messaging]', () => {
+test.describe('[Messaging]', () => {
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
@@ -56,8 +54,8 @@ test.describe.only('[Messaging]', () => {
 				await anotherContext.mainContent.getPage().close();
 			});
 			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
-				const mainUserMessage = anotherContext.mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
+				const anotherUserMessage = mainContent.getPage().locator('li.message[data-own="false"]').last();
+				const mainUserMessage = anotherContext.mainContent.getPage().locator('li.message[data-own="false"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
@@ -75,14 +73,14 @@ test.describe.only('[Messaging]', () => {
 				await anotherContext.mainContent.getPage().close();
 			});
 			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
-				const mainUserMessage = anotherContext.mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
+				const anotherUserMessage = mainContent.getPage().locator('li.message[data-own="false"]').last();
+				const mainUserMessage = anotherContext.mainContent.getPage().locator('li.message[data-own="false"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
 			});
 		});
-		// TODO: Verify intermitences
+
 		test.describe('[Private channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
@@ -95,14 +93,14 @@ test.describe.only('[Messaging]', () => {
 				await anotherContext.mainContent.getPage().close();
 			});
 			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
-				const mainUserMessage = anotherContext.mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
+				const anotherUserMessage = mainContent.getPage().locator('li.message[data-own="false"]').last();
+				const mainUserMessage = anotherContext.mainContent.getPage().locator('li.message[data-own="false"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
 			});
 		});
-		// TODO: Verify intermitences
+
 		test.describe('[Direct Message]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
@@ -115,8 +113,8 @@ test.describe.only('[Messaging]', () => {
 				await anotherContext.mainContent.getPage().close();
 			});
 			test('expect received message is visible for two context', async () => {
-				const anotherUserMessage = mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
-				const mainUserMessage = anotherContext.mainContent.getPage().locator('//div[@class="rcx-message" and @data-own="false"][last()]');
+				const anotherUserMessage = mainContent.getPage().locator('li.message[data-own="false"]').last();
+				const mainUserMessage = anotherContext.mainContent.getPage().locator('li.message[data-own="false"]').last();
 
 				await expect(anotherUserMessage).toBeVisible();
 				await expect(mainUserMessage).toBeVisible();
@@ -182,7 +180,7 @@ test.describe.only('[Messaging]', () => {
 			});
 		});
 
-		test.describe.only('[Messaging actions]', async () => {
+		test.describe('[Messaging actions]', async () => {
 			test.describe('[Usage]', async () => {
 				test.beforeAll(async () => {
 					await sideNav.general().click();
@@ -229,12 +227,11 @@ test.describe.only('[Messaging]', () => {
 					test.beforeAll(async () => {
 						await mainContent.sendMessage(message);
 						await mainContent.openMessageActionMenu();
-						await expect(mainContent.waitForLastMessageTextAttachmentEqualsText()).toHaveText(message);
 					});
 
 					test('it should quote the message', async () => {
 						await mainContent.selectAction('quote');
-						await mainContent.sendBtn().click();
+						await expect(mainContent.waitForLastMessageTextAttachmentEqualsText()).toHaveText(message);
 					});
 				});
 
