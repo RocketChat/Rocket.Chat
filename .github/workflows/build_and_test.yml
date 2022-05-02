@@ -280,9 +280,10 @@ jobs:
           npm run test:playwright:coverage
 
       - name: Publish to coveralls.io
+        if: ${{ matrix.mongodb-version == "5.0" }}
         uses: coverallsapp/github-action@v1.1.2
-        if: ${{ matrix.mongodb-version }} == "5.0"
         with:
+          base-path: apps/meteor
           github-token: ${{ github.token }}
 
       - name: Store playwright test coverage
