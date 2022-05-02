@@ -51,32 +51,6 @@ export class AccountBox {
 		AccountBox.status = 0;
 	}
 
-	public static async onAdded(button: IUIActionButton): Promise<void> {
-		const { appId, actionId, labelI18n, context } = button;
-		await AccountBox.addItem({
-			...button,
-			name: button.labelI18n,
-			appId,
-			actionId,
-			labelI18n,
-			context,
-			isAppButtonItem: true,
-		});
-	}
-
-	public static async onRemoved(button: IUIActionButton): Promise<void> {
-		const { appId, actionId, labelI18n, context } = button;
-		AccountBox.deleteItem({
-			...button,
-			name: button.labelI18n,
-			appId,
-			actionId,
-			labelI18n,
-			context,
-			isAppButtonItem: true,
-		});
-	}
-
 	public static async addItem(newItem: IAccountBoxItem): Promise<void> {
 		Tracker.nonreactive(function () {
 			const actual = AccountBox.items.get();

@@ -5,7 +5,7 @@ import { APIClient } from '../../utils/client';
 import * as TabBar from './actionButtons/tabbar';
 import * as MessageAction from './actionButtons/messageAction';
 import * as MessageBox from './actionButtons/messageBox';
-import { AccountBox } from '../../ui-utils/client/lib/AccountBox';
+import * as DropdownAction from './actionButtons/dropdownAction'
 
 let registeredButtons: Array<IUIActionButton> = [];
 
@@ -21,7 +21,7 @@ export const addButton = (button: IUIActionButton): void => {
 			MessageBox.onAdded(button);
 			break;
 		case UIActionButtonContext.USER_DROPDOWN_ACTION:
-			AccountBox.onAdded(button);
+			DropdownAction.onAdded(button);
 			break;
 	}
 
@@ -40,7 +40,7 @@ export const removeButton = (button: IUIActionButton): void => {
 			MessageBox.onRemoved(button);
 			break;
 		case UIActionButtonContext.USER_DROPDOWN_ACTION:
-			AccountBox.onRemoved(button);
+			DropdownAction.onRemoved(button);
 			break;
 	}
 };
