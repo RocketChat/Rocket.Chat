@@ -30,7 +30,7 @@ const FilterByText: FilterByTextPropTypes = ({ register, control, reset, ...prop
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
-	const canViewCustomFields = usePermission(['view-livechat-room-customfields']);
+	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 
 	const statusOptions: [string, string][] = [
 		['all', t('All')],

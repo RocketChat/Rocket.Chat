@@ -1,10 +1,9 @@
 // TODO
 // DONE Add Router Usage
-// Create REF for the "save" state
 // DONE Move the logic from FilterByText to this component
 // DONE Convert CustomFieldAssembler to ts and expose it
-// Review the logic of this file
-// Create a hook for the convertCustomFieldsToValidJSONFormat and rename it to something more appropriate
+// DONE Review the logic of this file
+// NO NEED Create a hook for the convertCustomFieldsToValidJSONFormat and rename it to something more appropriate
 // Implement interfaces for different custom Fields
 
 import React, { FC } from 'react';
