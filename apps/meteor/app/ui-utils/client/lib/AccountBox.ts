@@ -42,9 +42,9 @@ export class AccountBox {
 
 	public static toggle(): Window | null | void {
 		if (AccountBox.status) {
-			return close();
+			return AccountBox.close();
 		}
-		return open();
+		return AccountBox.open();
 	}
 
 	public static openFlex(): void {
