@@ -21,7 +21,7 @@ const Roles = Object.assign(new Mongo.Collection(null), {
 	 * @param {IRole['_id'][]} roles the list of role ids
 	 * @param {IRoom['_id']} scope the value for the role scope (room id)
 	 * @param {boolean} ignoreSubscriptions ignore the subscription role scope
- 	 */
+	 */
 	isUserInRoles(userId, roles, scope, ignoreSubscriptions = false) {
 		roles = [].concat(roles);
 		return roles.some((roleId) => {

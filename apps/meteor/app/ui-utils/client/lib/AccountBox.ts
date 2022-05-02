@@ -98,8 +98,7 @@ export class AccountBox {
 		return AccountBox.items.get().filter((item: IAccountBoxItem) => applyDropdownActionButtonFilters(item));
 	}
 
-
-	public static addRoute(newRoute: any, router: any, wait = async () => null): Router {
+	public static addRoute(newRoute: any, router: any, wait = async (): Promise<null> => null): Router {
 		if (router == null) {
 			router = FlowRouter;
 		}
@@ -127,7 +126,7 @@ export class AccountBox {
 				appLayout.renderMainLayout(routeConfig);
 			},
 			triggersEnter: [
-				function () {
+				function (): void {
 					if (newRoute.sideNav != null) {
 						SideNav.setFlex(newRoute.sideNav);
 						SideNav.openFlex();
