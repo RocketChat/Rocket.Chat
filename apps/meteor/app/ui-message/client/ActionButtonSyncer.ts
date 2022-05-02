@@ -5,7 +5,7 @@ import { APIClient } from '../../utils/client';
 import * as TabBar from './actionButtons/tabbar';
 import * as MessageAction from './actionButtons/messageAction';
 import * as MessageBox from './actionButtons/messageBox';
-import * as DropdownAction from './actionButtons/dropdownAction'
+import * as DropdownAction from './actionButtons/dropdownAction';
 
 let registeredButtons: Array<IUIActionButton> = [];
 
