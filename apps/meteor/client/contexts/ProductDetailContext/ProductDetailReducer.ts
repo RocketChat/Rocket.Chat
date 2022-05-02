@@ -1,8 +1,8 @@
-export interface IGameStateInterface {
+export interface IProductStateInterface {
 	value: { id: string; title: string; description: string };
 }
 
-export interface IGameActionInterface {
+export interface IProductActionInterface {
 	type: string;
 	payload?: {
 		id: string;
@@ -11,18 +11,20 @@ export interface IGameActionInterface {
 	};
 }
 
-const InitialState: IGameStateInterface = {
+const InitialState: IProductStateInterface = {
 	value: { id: '', title: '', description: '' },
 };
 
-const GameDetailReducer = (state, action): IGameStateInterface => {
+const ProductDetailReducer = (state, action): IProductStateInterface => {
 	switch (action.type) {
 		case 'ADD_DETAILS':
+			console.log(action.payload, 'inside the reducer');
 			return {
 				...state,
 				value: action.payload,
 			};
 		case 'CLEAR_DETAILS':
+			console.log('Clearing the reducer');
 			return {
 				...state,
 				value: { id: '', title: '', description: '' },
@@ -32,4 +34,4 @@ const GameDetailReducer = (state, action): IGameStateInterface => {
 	}
 };
 
-export { GameDetailReducer, InitialState };
+export { ProductDetailReducer, InitialState };

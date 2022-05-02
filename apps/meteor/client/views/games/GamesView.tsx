@@ -44,30 +44,32 @@ const GamesView = (): ReactElement => {
 	const getGames = () => {
 		Meteor.call('getGames', { count: 10 }, {}, (error, result) => {
 			if (result) {
-				setGamesResults(result.records);
-				console.log('Games were fetched');
-			} else {
-				data.map((game, index) => {
-					// The server requires us to wait atleast 2 seconds before sending in a new request.
-					if (index > 0) {
-						setTimeout(() => {
-							Meteor.call(
-								'createGame',
-								{ title: game.title, description: game.description, ranking: game.ranking, tags: game.tags },
-								(error, result) => {
-									if (result) {
-										console.log('Games were created');
-									}
-								},
-							);
-						}, 3000);
-					}
+				if (result.records.length) {
+					setGamesResults(result.records);
+					console.log('Games were fetched');
+				} else {
+					data.map((game, index) => {
+						// The server requires us to wait atleast 2 seconds before sending in a new request.
+						if (index > 0) {
+							setTimeout(() => {
+								Meteor.call(
+									'createGame',
+									{ title: game.title, description: game.description, ranking: game.ranking, tags: game.tags },
+									(error, result) => {
+										if (result) {
+											console.log('Games were created');
+										}
+									},
+								);
+							}, 3000);
+						}
 
-					// Refetch the games once its done adding.
-					if (index === data.length - 1) {
-						getGames();
-					}
-				});
+						// Refetch the games once its done adding.
+						if (index === data.length - 1) {
+							getGames();
+						}
+					});
+				}
 			}
 		});
 	};

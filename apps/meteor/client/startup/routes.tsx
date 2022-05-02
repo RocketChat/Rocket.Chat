@@ -188,6 +188,16 @@ FlowRouter.route('/games/detail/:id', {
 	},
 });
 
+FlowRouter.route('/products/detail/:id', {
+	name: 'products-detail',
+	action: () => {
+		const ProductDetailPageView = createTemplateForComponent('ProductDetailPage', () => import('../views/products/SIngleProductDetails'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: ProductDetailPageView });
+	},
+});
+
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {

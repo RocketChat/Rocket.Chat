@@ -20,6 +20,7 @@ import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
+import ProductDetailContextProvider from './ProductDetailProvider';
 
 const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
@@ -41,7 +42,9 @@ const MeteorProvider: FC = ({ children }) => (
 																	<ModalProvider>
 																		<GameDetailContextProvider>
 																			<BlogDetailContextProvider>
-																				<AttachmentProvider>{children}</AttachmentProvider>
+																				<ProductDetailContextProvider>
+																					<AttachmentProvider>{children}</AttachmentProvider>
+																				</ProductDetailContextProvider>
 																			</BlogDetailContextProvider>
 																		</GameDetailContextProvider>
 																	</ModalProvider>
