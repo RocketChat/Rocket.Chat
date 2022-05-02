@@ -284,7 +284,6 @@ jobs:
         if: ${{ matrix.mongodb-version }} == "5.0"
         with:
           github-token: ${{ github.token }}
-          path-to-lcov: ./apps/meteor/coverage/lcov.info
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
