@@ -205,7 +205,7 @@
 		"@rocket.chat/memo": "~0.31.10",
 		"@rocket.chat/message-parser": "~0.31.10",
 		"@rocket.chat/mp3-encoder": "^0.24.0",
-		"@rocket.chat/onboarding-ui": "~0.31.10",
+		"@rocket.chat/onboarding-ui": "next",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.10",
 		"@rocket.chat/ui-kit": "~0.31.10",
