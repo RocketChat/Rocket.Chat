@@ -1,13 +1,11 @@
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, Margins, Select, Accordion } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
+import { outgoingEvents } from '../../../../app/integrations/lib/outgoingEvents';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
 import { useExampleData } from './exampleIncomingData';
-
-const { outgoingEvents } = eventList;
 
 export default function OutgoingWebhookForm({ formValues, formHandlers, append, ...props }) {
 	const t = useTranslation();
