@@ -6,7 +6,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement } from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
-import { AccountBox, messageArgs, SideNav } from '../../../app/ui-utils/client';
+import { AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { IAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { userStatus } from '../../../app/user-status/client';
 import { callbacks } from '../../../lib/callbacks';
@@ -215,18 +215,18 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					</Box>
 					{appBoxItems().map((item, key) => {
 						const action = (): void => {
-							const { msg } = messageArgs(item.context);
 							triggerActionButtonAction({
-								rid: msg ? msg.rid : '',
-								mid: msg ? msg._id : '',
+								rid: '',
+								mid: '',
 								actionId: item.actionId,
 								appId: item.appId,
 								payload: { context: item.context },
 							});
 						};
 						return (
+							// On label property is setting as any because the interface the it considers is too big for adding an interface to it
 							<>
-								<Option label={t(item.name as any)} key={item.actionId + key} onClick={action as any} />
+								<Option label={t(item.name as any)} key={item.actionId + key} onClick={action} />
 							</>
 						);
 					})}

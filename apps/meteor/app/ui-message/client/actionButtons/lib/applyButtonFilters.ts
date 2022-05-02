@@ -26,7 +26,7 @@ export const applyAuthFilter = (button: IUIActionButton, room?: IRoom, ignoreSub
 	const hasAllRolesResult = hasAllRoles
 		? !!userId && hasAllRoles.every((role) => hasRole(userId, role, room?._id, ignoreSubscriptions))
 		: true;
-	const hasOneRoleResult = hasOneRole ? !!userId && hasAnyRole(userId, hasOneRole, room?._id) : true;
+	const hasOneRoleResult = hasOneRole ? !!userId && hasAnyRole(userId, hasOneRole, room?._id, ignoreSubscriptions) : true;
 
 	return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;
 };

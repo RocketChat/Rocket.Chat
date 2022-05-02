@@ -21,16 +21,7 @@ export const addButton = (button: IUIActionButton): void => {
 			MessageBox.onAdded(button);
 			break;
 		case UIActionButtonContext.USER_DROPDOWN_ACTION:
-			const { appId, actionId, labelI18n, context } = button;
-			AccountBox.addItem({
-				...button,
-				name: button.labelI18n,
-				appId,
-				actionId,
-				labelI18n,
-				context,
-				isAppButtonItem: true,
-			});
+			AccountBox.onAdded(button);
 			break;
 	}
 
@@ -49,16 +40,7 @@ export const removeButton = (button: IUIActionButton): void => {
 			MessageBox.onRemoved(button);
 			break;
 		case UIActionButtonContext.USER_DROPDOWN_ACTION:
-			const { appId, actionId, labelI18n, context } = button;
-			AccountBox.deleteItem({
-				...button,
-				name: button.labelI18n,
-				appId,
-				actionId,
-				labelI18n,
-				context,
-				isAppButtonItem: true,
-			});
+			AccountBox.onRemoved(button);
 			break;
 	}
 };

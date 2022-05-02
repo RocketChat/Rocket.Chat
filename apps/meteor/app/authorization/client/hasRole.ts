@@ -10,10 +10,10 @@ export const hasRole = (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoo
 	return Roles.isUserInRoles(userId, [roleId], scope, ignoreSubscriptions);
 };
 
-export const hasAnyRole = (userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): boolean => {
+export const hasAnyRole = (userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id'], ignoreSubscriptions = false): boolean => {
 	if (!Array.isArray(roleIds)) {
 		throw new Error('error-invalid-arguments');
 	}
 
-	return Roles.isUserInRoles(userId, roleIds, scope);
+	return Roles.isUserInRoles(userId, roleIds, scope, ignoreSubscriptions);
 };

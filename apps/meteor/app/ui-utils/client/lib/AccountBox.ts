@@ -51,6 +51,32 @@ export class AccountBox {
 		AccountBox.status = 0;
 	}
 
+	public static async onAdded(button: IUIActionButton): Promise<void> {
+		const { appId, actionId, labelI18n, context } = button;
+		await AccountBox.addItem({
+			...button,
+			name: button.labelI18n,
+			appId,
+			actionId,
+			labelI18n,
+			context,
+			isAppButtonItem: true,
+		});
+	}
+
+	public static async onRemoved(button: IUIActionButton): Promise<void> {
+		const { appId, actionId, labelI18n, context } = button;
+		AccountBox.deleteItem({
+			...button,
+			name: button.labelI18n,
+			appId,
+			actionId,
+			labelI18n,
+			context,
+			isAppButtonItem: true,
+		});
+	}
+
 	public static async addItem(newItem: IAccountBoxItem): Promise<void> {
 		Tracker.nonreactive(function () {
 			const actual = AccountBox.items.get();
@@ -72,7 +98,7 @@ export class AccountBox {
 		return AccountBox.items.get().filter((item: IAccountBoxItem) => applyDropdownActionButtonFilters(item));
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+
 	public static addRoute(newRoute: any, router: any, wait = async () => null): Router {
 		if (router == null) {
 			router = FlowRouter;
@@ -101,7 +127,6 @@ export class AccountBox {
 				appLayout.renderMainLayout(routeConfig);
 			},
 			triggersEnter: [
-				// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 				function () {
 					if (newRoute.sideNav != null) {
 						SideNav.setFlex(newRoute.sideNav);

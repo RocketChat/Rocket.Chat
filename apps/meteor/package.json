@@ -187,7 +187,7 @@
 		"@nivo/heatmap": "0.73.0",
 		"@nivo/line": "0.62.0",
 		"@nivo/pie": "0.73.0",
-		"@rocket.chat/apps-engine": "^1.31.0",
+		"@rocket.chat/apps-engine": "alpha",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.10",
 		"@rocket.chat/emitter": "~0.31.10",
