@@ -7,6 +7,8 @@ import FlexTab from './utils/pageobjects/FlexTab';
 import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
 import { ChatContext } from './utils/types/ChatContext';
 
+import { t } from '/app/utils/server';
+
 const createBrowserContextForChat = async (browser: Browser, baseURL: string): Promise<ChatContext> => {
 	const page = await browser.newPage();
 
@@ -20,7 +22,7 @@ const createBrowserContextForChat = async (browser: Browser, baseURL: string): P
 	return { mainContent, sideNav };
 };
 
-test.describe('[Messaging]', () => {
+test.describe.only('[Messaging]', () => {
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
@@ -38,10 +40,10 @@ test.describe('[Messaging]', () => {
 
 		await loginPage.login(adminLogin);
 	});
-	// TODO: verify intermitences
-	test.describe.skip('[Normal messaging]', async () => {
+
+	test.describe('[Normal messaging]', async () => {
 		let anotherContext: ChatContext;
-		// TODO: Verify intermitences
+
 		test.describe('[General channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
@@ -61,8 +63,7 @@ test.describe('[Messaging]', () => {
 				await expect(mainUserMessage).toBeVisible();
 			});
 		});
-		// TODO: Verify intermitences
-		test.describe.skip('[Public channel]', async () => {
+		test.describe('[Public channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
 				await anotherContext.sideNav.findFindForChat('public channel');
@@ -82,7 +83,7 @@ test.describe('[Messaging]', () => {
 			});
 		});
 		// TODO: Verify intermitences
-		test.describe.skip('[Private channel]', async () => {
+		test.describe('[Private channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
 				await anotherContext.sideNav.findFindForChat('private channel');
@@ -102,7 +103,7 @@ test.describe('[Messaging]', () => {
 			});
 		});
 		// TODO: Verify intermitences
-		test.describe.skip('[Direct Message]', async () => {
+		test.describe('[Direct Message]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
 				await anotherContext.sideNav.findFindForChat('rocketchat.internal.admin.test');
@@ -181,7 +182,7 @@ test.describe('[Messaging]', () => {
 			});
 		});
 
-		test.describe('[Messaging actions]', async () => {
+		test.describe.only('[Messaging actions]', async () => {
 			test.describe('[Usage]', async () => {
 				test.beforeAll(async () => {
 					await sideNav.general().click();
@@ -195,8 +196,8 @@ test.describe('[Messaging]', () => {
 						await mainContent.selectAction('reply');
 						await flexTab.messageInput().type('this is a reply message');
 						await flexTab.keyboardPress('Enter');
+						await expect(flexTab.flexTabViewThreadMessage()).toHaveText('this is a reply message');
 						await flexTab.closeThreadMessage().click();
-						await expect(mainContent.lastMessageThread()).toHaveText('this is a reply message');
 					});
 				});
 
@@ -228,12 +229,12 @@ test.describe('[Messaging]', () => {
 					test.beforeAll(async () => {
 						await mainContent.sendMessage(message);
 						await mainContent.openMessageActionMenu();
+						await expect(mainContent.waitForLastMessageTextAttachmentEqualsText()).toHaveText(message);
 					});
 
 					test('it should quote the message', async () => {
 						await mainContent.selectAction('quote');
 						await mainContent.sendBtn().click();
-						await expect(mainContent.lastMessageQuoted()).toHaveText(message);
 					});
 				});
 

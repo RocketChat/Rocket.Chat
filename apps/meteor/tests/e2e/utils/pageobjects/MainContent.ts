@@ -73,7 +73,7 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessageFileName(): Locator {
-		return this.getPage().locator('//div[@class="rcx-message" and @data-own="true"][last()]//div[4]//a[1]');
+		return this.getPage().locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div a:nth-child(1)');
 	}
 
 	public lastMessage(): Locator {
@@ -113,7 +113,7 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessageForMessageTest(): Locator {
-		return this.getPage().locator('//div[@class="rcx-message" and @data-own="true"][last()][last()]//div[2]//div//p');
+		return this.getPage().locator('[data-qa-type="message"]:last-child div.message-body-wrapper div:nth-child(2)');
 	}
 
 	public beforeLastMessageQuote(): Locator {
@@ -137,7 +137,7 @@ class MainContent extends BasePage {
 	}
 
 	public messageReply(): Locator {
-		return this.getPage().locator('#reply-in-thread');
+		return this.getPage().locator('[data-qa-id="reply-in-thread"]');
 	}
 
 	public reply(): Locator {
@@ -145,27 +145,27 @@ class MainContent extends BasePage {
 	}
 
 	public messageEdit(): Locator {
-		return this.getPage().locator('#edit-message');
+		return this.getPage().locator('[data-qa-id="edit-message"]');
 	}
 
 	public messageDelete(): Locator {
-		return this.getPage().locator('#delete-message');
+		return this.getPage().locator('[data-qa-id="delete-message"]');
 	}
 
 	public messagePermalink(): Locator {
-		return this.getPage().locator('#permalink');
+		return this.getPage().locator('[data-qa-id="permalink"]');
 	}
 
 	public messageCopy(): Locator {
-		return this.getPage().locator('#copy');
+		return this.getPage().locator('[data-qa-id="copy"]');
 	}
 
 	public messageQuote(): Locator {
-		return this.getPage().locator('#quote-message');
+		return this.getPage().locator('[data-qa-id="quote-message"]');
 	}
 
 	public messageStar(): Locator {
-		return this.getPage().locator('#star-message');
+		return this.getPage().locator('[data-qa-id="star-message"]');
 	}
 
 	public messageUnread(): Locator {
@@ -353,7 +353,7 @@ class MainContent extends BasePage {
 	}
 
 	public getFileDescription(): Locator {
-		return this.getPage().locator('//div[@class="rcx-message" and @data-own="true"][last()]//div[4]//div//p');
+		return this.getPage().locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div p');
 	}
 
 	public async selectAction(action: string): Promise<void> {
@@ -384,7 +384,7 @@ class MainContent extends BasePage {
 				break;
 			case 'star':
 				await this.messageStar().click();
-				await expect(this.starredMessage()).toBeVisible();
+				await expect(this.getPage().locator('div.toast-message')).toHaveText('Message has been starred');
 				break;
 			case 'unread':
 				await this.messageUnread().click();
@@ -401,9 +401,9 @@ class MainContent extends BasePage {
 	}
 
 	public async openMessageActionMenu(): Promise<void> {
-		await this.getPage().locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-		await this.getPage().locator('.messages-box [data-qa-id="menu"]').waitFor({ state: 'visible' });
-		await this.getPage().locator('.messages-box [data-qa-id="menu"]').click();
+		await this.getPage().locator('.messages-box [data-qa-type="message"]:last-child').hover();
+		await this.getPage().locator('[data-qa-type="message"]:last-child div.message-actions__menu').waitFor();
+		await this.getPage().locator('[data-qa-type="message"]:last-child div.message-actions__menu').click();
 	}
 
 	public async acceptDeleteMessage(): Promise<void> {
@@ -414,16 +414,8 @@ class MainContent extends BasePage {
 		return this.getPage().locator('.toast-message');
 	}
 
-	public async waitForLastMessageTextAttachmentEqualsText(text: string): Promise<void> {
-		await expect(this.getQuotedMessage()).toHaveText(text);
-	}
-
 	public getQuotedMessage(): Locator {
 		return this.getPage().locator('//li[@data-username="rocketchat.internal.admin.test"][last()]//blockquote//div[2]');
-	}
-
-	public starredMessage(): Locator {
-		return this.getPage().locator('//div[@class="rcx-message"][last()]//div//div[@class="rcx-message-status-indicator"]');
 	}
 
 	public lastMessageThread(): Locator {
@@ -432,6 +424,10 @@ class MainContent extends BasePage {
 
 	public lastMessageQuoted(): Locator {
 		return this.getPage().locator('//div[@class="rcx-message"][last()]//blockquote//div[2]');
+	}
+
+	public waitForLastMessageTextAttachmentEqualsText(): Locator {
+		return this.getPage().locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
 	}
 }
 
