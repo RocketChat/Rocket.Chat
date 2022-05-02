@@ -1600,7 +1600,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			instanceId,
 			sessionId,
 			userId,
-			logoutAt: { $exists: 0 },
+			logoutAt: { $exists: false },
 		};
 
 		const logoutAt = new Date();
