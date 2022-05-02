@@ -245,6 +245,23 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 		{ maxAge: 1000, cacheKey: JSON.stringify },
 	);
 
+	const convertAsciiEmoji = mem(
+		function (entire, m1, m2, m3) {
+			const mappedUnicode = ns.mapUnicodeToShort();
+
+			if (typeof m3 === 'undefined' || m3 === '' || !(ns.unescapeHTML(m3) in ns.asciiList)) {
+				// if the ascii doesnt exist just return the entire match
+				return entire;
+			}
+
+			m3 = ns.unescapeHTML(m3);
+			const unicode = ns.asciiList[m3];
+			const shortname = mappedUnicode[unicode];
+			return shortname;
+		},
+		{ maxAge: 1000, cacheKey: JSON.stringify },
+	);
+
 	ns.shortnameToImage = function (str) {
 		// replace regular shortnames first
 		str = str.replace(ns.regShortNames, convertShortName);
@@ -254,6 +271,16 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 			const asciiRX = ns.riskyMatchAscii ? ns.regAsciiRisky : ns.regAscii;
 
 			return str.replace(asciiRX, convertUnicode);
+		}
+
+		return str;
+	};
+
+	ns.asciiToShort = function (str) {
+		if (ns.ascii) {
+			const asciiRX = ns.riskyMatchAscii ? ns.regAsciiRisky : ns.regAscii;
+
+			return str.replace(asciiRX, convertAsciiEmoji);
 		}
 
 		return str;
