@@ -1,5 +1,5 @@
-import { FindOneOptions, MongoDistinctPreferences } from 'mongodb';
-import { ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { FindOneOptions, MongoDistinctPreferences, UpdateWriteOpResult } from 'mongodb';
+import { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -29,5 +29,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> {
 	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | undefined> {
 		const updated = await this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
 		return updated.value;
+	}
+
+	async setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateWriteOpResult> {
+		return this.updateOne({ rid }, { $set: { lastMessage: message } });
 	}
 }
