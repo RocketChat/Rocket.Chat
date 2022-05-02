@@ -83,7 +83,8 @@ Template.livechatReadOnly.onCreated(async function () {
 			// this will force to refresh the room
 			// since the client wont get notified of room changes when chats are on queue (no one assigned)
 			// a better approach should be performed when refactoring these templates to use react
-			FlowRouter.go('/omnichannel/current');
+			if (window.location.pathname.includes('current')) FlowRouter.go('/omnichannel/current');
+			else FlowRouter.go('/');
 			ChatRoom.remove(this.rid);
 			CachedChatRoom.save();
 		}

@@ -166,7 +166,8 @@ export const useQuickActions = (
 					throw new Error(departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'));
 				}
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
-				FlowRouter.go('/omnichannel/current');
+				if (window.location.pathname.includes('current')) FlowRouter.go('/omnichannel/current');
+				else FlowRouter.go('/');
 				closeModal();
 			} catch (error: any) {
 				handleError(error);
