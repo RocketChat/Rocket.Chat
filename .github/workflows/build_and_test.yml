@@ -279,18 +279,18 @@ jobs:
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
           npm run test:playwright:coverage
 
-      - name: Publish to coveralls.io
-        if: ${{ matrix.mongodb-version == "5.0" }}
-        uses: coverallsapp/github-action@v1.1.2
-        with:
-          base-path: apps/meteor
-          github-token: ${{ github.token }}
-
       - name: Store playwright test coverage
         uses: actions/upload-artifact@v2
         with:
           name: playwright-test-coverage
           path: ./apps/meteor/coverage*
+
+      - name: Publish to coveralls.io
+        if: ${{ matrix.mongodb-version }} == "5.0"
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          base-path: apps/meteor
+          github-token: ${{ github.token }}
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
