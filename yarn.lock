@@ -3628,6 +3628,7 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.10
     "@rocket.chat/ui-kit": ~0.31.10
+    "@rocket.chat/ui-video-conf": "workspace:^"
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/client": ^4.12.0
     "@storybook/addon-essentials": ~6.4.19
@@ -4000,6 +4001,27 @@ __metadata:
   checksum: 02282b0c2f20a34c60865bd376c3a53fd7b4dc7ab7f8a14b68660262da17c07aa14b1f818f311b8ca74dcf5d4ef5ba037b631b6098bf37bdd0f9e3e31edcec0c
   languageName: node
   linkType: hard
+
+"@rocket.chat/ui-video-conf@workspace:^, @rocket.chat/ui-video-conf@workspace:packages/ui-video-conf":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
+  dependencies:
+    "@rocket.chat/fuselage": ~0.31.10
+    "@types/jest": ^27.4.1
+    "@types/react": ^18.0.8
+    "@types/react-dom": ^18.0.3
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    ts-jest: ^27.1.4
+    typescript: ~4.3.5
+  peerDependencies:
+    "@rocket.chat/fuselage": "*"
+    react: "*"
+    react-dom: "*"
+  languageName: unknown
+  linkType: soft
 
 "@selderee/plugin-htmlparser2@npm:^0.6.0":
   version: 0.6.0
@@ -6172,6 +6194,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-dom@npm:^18.0.3":
+  version: 18.0.3
+  resolution: "@types/react-dom@npm:18.0.3"
+  dependencies:
+    "@types/react": "*"
+  checksum: 5c87fb610e212f0942ebbf522dfca4c9dc2ac8afa4c601454415e7c42f993518868207faff7658d11974142937ba7af2f80e274c3a3f5e0e697bdd5547dbe1b0
+  languageName: node
+  linkType: hard
+
 "@types/react-syntax-highlighter@npm:11.0.5":
   version: 11.0.5
   resolution: "@types/react-syntax-highlighter@npm:11.0.5"
@@ -6189,6 +6220,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 981b0993f5b3ea9d3488b8cc883201e8ae47ba7732929f788f450a79fd72829e658080d5084e67caa008e58d989b0abc1d5f36ff0a1cda09315ea3a3c0c9dc11
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.0.8":
+  version: 18.0.8
+  resolution: "@types/react@npm:18.0.8"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 12d0e6bc390709926d8eaeb7d2edb4ef9c9fbe8eac41cb0619d958386700547bff91c880c2a12a9eb1e0d09afa4f1e86fd1b93164c627824465b72123f149f3b
   languageName: node
   linkType: hard
 

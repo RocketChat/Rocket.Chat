@@ -204,6 +204,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.10",
 		"@rocket.chat/ui-kit": "~0.31.10",
+		"@rocket.chat/ui-video-conf": "workspace:^",
 		"@slack/client": "^4.12.0",
 		"@types/cookie": "^0.4.1",
 		"@types/lodash": "^4.14.177",
