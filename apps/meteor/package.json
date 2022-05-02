@@ -344,7 +344,7 @@
 		"underscore.string": "^3.3.6",
 		"universal-perf-hooks": "^1.0.1",
 		"url-polyfill": "^1.1.12",
-		"use-subscription": "^1.6.0",
+		"use-subscription": "~1.6.0",
 		"uuid": "^3.4.0",
 		"webdav": "^2.10.2",
 		"xml-crypto": "^2.1.3",
