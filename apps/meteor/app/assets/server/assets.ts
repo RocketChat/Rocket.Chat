@@ -7,12 +7,12 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 import { Request, Response, NextFunction } from 'express';
-import type { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
+import { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
 
 import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
-import { hasPermission } from '../../authorization';
+import { hasPermission } from '../../authorization/server';
 import { RocketChatFile } from '../../file';
 import { Settings } from '../../models/server';
 
@@ -188,6 +188,10 @@ const assets: IRocketChatAssets = {
 	},
 };
 
+function getAssetByKey(key: string): IRocketChatAsset {
+	return assets[key as keyof IRocketChatAssets];
+}
+
 class RocketChatAssetsClass {
 	get mime(): any {
 		return mime;
@@ -198,14 +202,14 @@ class RocketChatAssetsClass {
 	}
 
 	public setAsset(binaryContent: BufferEncoding, contentType: string, asset: string): void {
-		if (!assets[asset]) {
+		if (!getAssetByKey(asset)) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
 				function: 'RocketChat.Assets.setAsset',
 			});
 		}
 
 		const extension = mime.extension(contentType);
-		if (assets[asset].constraints.extensions.includes(extension) === false) {
+		if (getAssetByKey(asset).constraints.extensions.includes(extension as string) === false) {
 			throw new Meteor.Error(contentType, `Invalid file type: ${contentType}`, {
 				function: 'RocketChat.Assets.setAsset',
 				errorTitle: 'error-invalid-file-type',
@@ -213,14 +217,14 @@ class RocketChatAssetsClass {
 		}
 
 		const file = Buffer.from(binaryContent, 'binary');
-		if (assets[asset].constraints.width || assets[asset].constraints.height) {
+		if (getAssetByKey(asset).constraints.width || getAssetByKey(asset).constraints.height) {
 			const dimensions = sizeOf(file);
-			if (assets[asset].constraints.width && assets[asset].constraints.width !== dimensions.width) {
+			if (getAssetByKey(asset).constraints.width && getAssetByKey(asset).constraints.width !== dimensions.width) {
 				throw new Meteor.Error('error-invalid-file-width', 'Invalid file width', {
 					function: 'Invalid file width',
 				});
 			}
-			if (assets[asset].constraints.height && assets[asset].constraints.height !== dimensions.height) {
+			if (getAssetByKey(asset).constraints.height && getAssetByKey(asset).constraints.height !== dimensions.height) {
 				throw new Meteor.Error('error-invalid-file-height');
 			}
 		}
@@ -236,7 +240,7 @@ class RocketChatAssetsClass {
 					const key = `Assets_${asset}`;
 					const value = {
 						url: `assets/${asset}.${extension}`,
-						defaultUrl: assets[asset].defaultUrl,
+						defaultUrl: getAssetByKey(asset).defaultUrl,
 					};
 
 					Settings.updateValueById(key, value);
@@ -250,7 +254,7 @@ class RocketChatAssetsClass {
 	}
 
 	public unsetAsset(asset: string): void {
-		if (!assets[asset]) {
+		if (!getAssetByKey(asset)) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
 				function: 'RocketChat.Assets.unsetAsset',
 			});
@@ -259,7 +263,7 @@ class RocketChatAssetsClass {
 		RocketChatAssetsInstance.deleteFile(asset);
 		const key = `Assets_${asset}`;
 		const value = {
-			defaultUrl: assets[asset].defaultUrl,
+			defaultUrl: getAssetByKey(asset).defaultUrl,
 		};
 
 		Settings.updateValueById(key, value);
@@ -279,7 +283,7 @@ class RocketChatAssetsClass {
 		}
 
 		const assetKey = settingKey.replace(/^Assets_/, '');
-		const assetValue = assets[assetKey];
+		const assetValue = getAssetByKey(assetKey);
 
 		if (!assetValue) {
 			return;
@@ -318,7 +322,7 @@ class RocketChatAssetsClass {
 	}
 
 	public getURL(assetName: string, options = { cdn: false, full: true }): string {
-		const asset = settings.get(assetName);
+		const asset = settings.get<Record<string, any>>(assetName);
 		const url = asset.url || asset.defaultUrl;
 
 		return getURL(url, options);
@@ -351,19 +355,19 @@ function addAssetToSetting(asset: string, value: IRocketChatAsset): void {
 			asset,
 			public: true,
 			wizard: value.wizard,
-		},
+		} as Record<string, any>,
 	);
 
-	const currentValue = settings.get(key);
+	const currentValue = settings.get<Record<string, any>>(key);
 
-	if (typeof currentValue === 'object' && currentValue.defaultUrl !== assets[asset].defaultUrl) {
-		currentValue.defaultUrl = assets[asset].defaultUrl;
+	if (typeof currentValue === 'object' && currentValue.defaultUrl !== getAssetByKey(asset).defaultUrl) {
+		currentValue.defaultUrl = getAssetByKey(asset).defaultUrl;
 		Settings.updateValueById(key, currentValue);
 	}
 }
 
 for (const key of Object.keys(assets)) {
-	const value = assets[key];
+	const value = getAssetByKey(key);
 	addAssetToSetting(key, value);
 }
 
@@ -381,7 +385,7 @@ const { calculateClientHash } = WebAppHashing;
 
 WebAppHashing.calculateClientHash = function (manifest: Record<string, any>, includeFilter: Function, runtimeConfigOverride: any): string {
 	for (const key of Object.keys(assets)) {
-		const value = assets[key];
+		const value = getAssetByKey(key);
 		if (!value.cache && !value.defaultUrl) {
 			continue;
 		}
@@ -399,7 +403,7 @@ WebAppHashing.calculateClientHash = function (manifest: Record<string, any>, inc
 				hash: value.cache.hash,
 			};
 		} else {
-			const extension = value.defaultUrl.split('.').pop();
+			const extension = value.defaultUrl?.split('.').pop();
 			cache = {
 				path: `assets/${key}.${extension}`,
 				cacheable: false,
@@ -434,7 +438,7 @@ Meteor.methods({
 			});
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
+		const _hasPermission = hasPermission(Meteor.userId() as string, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'refreshClients',
@@ -452,7 +456,7 @@ Meteor.methods({
 			});
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
+		const _hasPermission = hasPermission(Meteor.userId() as string, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'unsetAsset',
@@ -470,7 +474,7 @@ Meteor.methods({
 			});
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
+		const _hasPermission = hasPermission(Meteor.userId() as string, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'setAsset',
@@ -489,20 +493,20 @@ WebApp.connectHandlers.use(
 			asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(/\.[^.]*$/, ''),
 		};
 
-		const file = assets[params.asset] && assets[params.asset].cache;
+		const file = getAssetByKey(params.asset) && getAssetByKey(params.asset).cache;
 
 		const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
 
 		if (
-			assets[params.asset] &&
-			Array.isArray(assets[params.asset].constraints.extensions) &&
-			!assets[params.asset].constraints.extensions.includes(format)
+			getAssetByKey(params.asset) &&
+			Array.isArray(getAssetByKey(params.asset).constraints.extensions) &&
+			!getAssetByKey(params.asset).constraints.extensions.includes(format)
 		) {
 			res.writeHead(403);
 			return res.end();
 		}
 		if (!file) {
-			const defaultUrl = assets[params.asset] && assets[params.asset].defaultUrl;
+			const defaultUrl = getAssetByKey(params.asset) && getAssetByKey(params.asset).defaultUrl;
 			if (defaultUrl) {
 				const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
 				req.url = `/${assetUrl}`;

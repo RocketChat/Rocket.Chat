@@ -10,11 +10,27 @@ export interface IRocketChatAssetWizard {
 	order: number;
 }
 
+export interface IRocketChatAssetCache {
+	path: string;
+	cacheable: boolean;
+	where: string;
+	type: string;
+	content: Buffer;
+	extension: string;
+	url: string;
+	size: number;
+	uploadDate: Date;
+	contentType: string;
+	hash: string;
+	sourceMapUrl?: string;
+}
+
 export interface IRocketChatAsset {
 	label: string;
 	constraints: IRocketChatAssetConstraint;
 	defaultUrl?: string;
 	wizard?: IRocketChatAssetWizard;
+	cache?: IRocketChatAssetCache;
 }
 
 export interface IRocketChatAssets {

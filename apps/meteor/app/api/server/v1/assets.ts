@@ -41,7 +41,7 @@ API.v1.addRoute(
 	{
 		post() {
 			const { assetName, refreshAllClients } = this.bodyParams;
-			const isValidAsset = Object.keys(RocketChatAssets.assets).includes(assetName);
+			const isValidAsset = Object.keys(RocketChatAssets.assets).includes(assetName as string);
 			if (!isValidAsset) {
 				throw new Meteor.Error('error-invalid-asset', 'Invalid asset');
 			}

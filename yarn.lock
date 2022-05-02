@@ -3837,6 +3837,7 @@ __metadata:
     "@types/bad-words": ^3.0.1
     "@types/bcrypt": ^5.0.0
     "@types/body-parser": ^1.19.0
+    "@types/busboy": ^1.5.0
     "@types/chai": ^4.2.22
     "@types/chai-datetime": 0.0.37
     "@types/chai-dom": 0.0.11
@@ -5690,6 +5691,15 @@ __metadata:
   dependencies:
     bson: "*"
   checksum: 55abf60c57b7f05655c210b386392636a299a7df18b89cec2cde0aa87374d97dd4ac9632226b0f6fe135d16ad4296ae5ddc782f6e9132d38c53dd26a6df8e704
+  languageName: node
+  linkType: hard
+
+"@types/busboy@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@types/busboy@npm:1.5.0"
+  dependencies:
+    "@types/node": "*"
+  checksum: ffa7bf25c0395f6927526b7d97e70cd2df789e4ca0d231e41855fb08542fa236891ce457d83cc50cac6e5cef6be092ab80597070dcf1413f736462690a23e987
   languageName: node
   linkType: hard
 
