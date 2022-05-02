@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
-import { hasRole } from '../../../authorization/server';
-import { Users, Sessions } from '../../../models/server/raw/index';
-import { API } from '../api';
-import { hasPermission } from '../../../authorization/server/functions/hasPermission';
+import { hasRole } from '../../../app/authorization/server';
+import { Users, Sessions } from '../../../app/models/server/raw/index';
+import { API } from '../../../app/api/server/api';
+import { hasPermission } from '../../../app/authorization/server/functions/hasPermission';
 
 API.v1.addRoute(
 	'sessions/list',

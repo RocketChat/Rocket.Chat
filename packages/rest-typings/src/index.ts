@@ -24,7 +24,6 @@ import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PermissionsEndpoints } from './v1/permissions';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
-import type { SessionsEndpoints } from './v1/sessions/sessions';
 import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { TeamsEndpoints } from './v1/teams';
@@ -59,8 +58,7 @@ export interface Endpoints
 		VoipEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
-		CustomSoundEndpoint,
-		SessionsEndpoints {}
+		CustomSoundEndpoint {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
