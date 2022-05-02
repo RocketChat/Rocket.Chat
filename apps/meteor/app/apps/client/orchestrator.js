@@ -160,6 +160,8 @@ class AppClientOrchestrator {
 		return effectiveStatus;
 	};
 
+	screenshots = async (appId) => APIClient.get(`apps/${appId}/screenshots`);
+
 	enableApp = (appId) => this.setAppStatus(appId, 'manually_enabled');
 
 	disableApp = (appId) => this.setAppStatus(appId, 'manually_disabled');

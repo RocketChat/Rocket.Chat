@@ -591,6 +591,29 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
+			':id/screenshots',
+			{ authRequired: false },
+			{
+				get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const appId = this.urlParams.id;
+					const headers = getDefaultHeaders();
+
+					try {
+						const { data } = HTTP.get(`${baseUrl}/v1/apps/${appId}/screenshots`, { headers });
+
+						return API.v1.success({
+							screenshots: data,
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the screenshots from the Marketplace:', e.message);
+						return API.v1.failure(e.message);
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
 			':id/languages',
 			{ authRequired: false },
 			{
