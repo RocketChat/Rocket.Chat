@@ -6,7 +6,7 @@ import { Log } from 'meteor/logging';
 import notifications from '../../app/notifications/server/lib/Notifications';
 import { getQueuedLogs, logEntries } from '../lib/logger/logQueue';
 
-const processString = function (string: string, date: Date): string {
+function processString(string: string, date: Date): string {
 	let obj;
 	try {
 		if (string[0] === '{') {
@@ -22,24 +22,32 @@ const processString = function (string: string, date: Date): string {
 	} catch (error) {
 		return string;
 	}
-};
+}
 
-const transformLog = function (item: any): { id: string; string: string; ts: Date; time?: number } {
+function rawTransformLog(item: any): { id: string; string: string; ts: Date; time?: number } {
 	return {
 		id: item.id,
 		string: processString(item.data, item.ts),
 		ts: item.ts,
 	};
-};
+}
+
+function timedTransformLog(log: any): { id: string; string: string; ts: Date; time?: number } {
+	const timeStart = performance.now();
+	const item = rawTransformLog(log);
+	const timeEnd = performance.now();
+
+	item.time = timeEnd - timeStart;
+
+	return item;
+}
+
+const transformLog = process.env.STDOUT_METRICS === 'true' ? timedTransformLog : rawTransformLog;
 
 logEntries.on('log', (item) => {
 	// TODO having this as 'emitWithoutBroadcast' will not sent this data to ddp-streamer, so this data
 	// won't be available when using micro services.
-	const timeStart = performance.now();
-	const transformed = transformLog(item);
-	const timeEnd = performance.now();
-	transformed.time = timeEnd - timeStart;
-	notifications.streamStdout.emitWithoutBroadcast('stdout', transformed);
+	notifications.streamStdout.emitWithoutBroadcast('stdout', transformLog(item));
 });
 
 export function getLogs(): { id: string; string: string; ts: Date }[] {
