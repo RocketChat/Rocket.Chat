@@ -3,6 +3,7 @@ import type { KeyOfEach } from '@rocket.chat/core-typings';
 
 import type { AppsEndpoints } from './apps';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
+import type { AssetsEndpoints } from './v1/assets';
 import type { BannersEndpoints } from './v1/banners';
 import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
@@ -58,6 +59,7 @@ export interface Endpoints
 		VoipEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
+		AssetsEndpoints,
 		CustomSoundEndpoint {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Request } from 'express';
 
 import { RocketChatAssets } from '../../../assets/server';
 import { API } from '../api';
@@ -8,12 +9,8 @@ API.v1.addRoute(
 	'assets.setAsset',
 	{ authRequired: true },
 	{
-		post() {
-			const { refreshAllClients, ...files } = Promise.await(
-				getUploadFormData({
-					request: this.request,
-				}),
-			);
+		async post() {
+			const { refreshAllClients, ...files } = await getUploadFormData({ request: this.request as Request });
 
 			const assetsKeys = Object.keys(RocketChatAssets.assets);
 
