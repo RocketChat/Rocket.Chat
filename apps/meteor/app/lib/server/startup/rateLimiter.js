@@ -4,10 +4,12 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { RateLimiter } from 'meteor/rate-limit';
 
 import { settings } from '../../../settings/server';
-import { metrics } from '../../../metrics';
-import { Logger } from '../../../logger';
+import { metrics } from '../../../metrics/server';
+import { Logger } from '../../../logger/server';
 
 const logger = new Logger('RateLimiter');
+
+const slowDownRate = parseInt(process.env.RATE_LIMITER_SLOWDOWN_RATE);
 
 const rateLimiterConsoleLog = ({ msg, reply, input }) => {
 	console.warn('DDP RATE LIMIT:', msg);
@@ -132,8 +134,8 @@ const callback = (msg, name) => (reply, input) => {
 			connection_id: input.connectionId,
 		});
 		// sleep before sending the error to slow down next requests
-		if (reply.numInvocationsExceeded) {
-			Meteor._sleepForMs(100 * reply.numInvocationsExceeded);
+		if (slowDownRate > 0 && reply.numInvocationsExceeded) {
+			Meteor._sleepForMs(slowDownRate * reply.numInvocationsExceeded);
 		}
 		// } else {
 		// 	console.log('DDP RATE LIMIT:', message);
