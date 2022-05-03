@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import type { INewOutgoingIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../../authorization/server';
-import { Users } from '../../../../models/server';
 import { Integrations } from '../../../../models/server/raw';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
@@ -14,10 +14,34 @@ Meteor.methods({
 			throw new Meteor.Error('not_authorized');
 		}
 
-		const integrationData = validateOutgoingIntegration(integration, userId);
+		check(
+			integration,
+			Match.ObjectIncluding({
+				type: String,
+				name: String,
+				enabled: Boolean,
+				username: String,
+				channel: String,
+				alias: Match.Maybe(String),
+				emoji: Match.Maybe(String),
+				scriptEnabled: Boolean,
+				script: Match.Maybe(String),
+				urls: Match.Maybe([String]),
+				event: Match.Maybe(String),
+				triggerWords: Match.Maybe([String]),
+				avatar: Match.Maybe(String),
+				token: Match.Maybe(String),
+				impersonateUser: Match.Maybe(Boolean),
+				retryCount: Match.Maybe(Number),
+				retryDelay: Match.Maybe(String),
+				retryFailedCalls: Match.Maybe(Boolean),
+				runOnEdits: Match.Maybe(Boolean),
+				targetRoom: Match.Maybe(String),
+				triggerWordAnywhere: Match.Maybe(Boolean),
+			}),
+		);
 
-		integrationData._createdAt = new Date();
-		integrationData._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
+		const integrationData = validateOutgoingIntegration(integration, userId);
 
 		const result = await Integrations.insertOne(integrationData);
 		integrationData._id = result.insertedId;

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
@@ -14,6 +15,22 @@ const validChannelChars = ['@', '#'];
 Meteor.methods({
 	async addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration> {
 		const { userId } = this;
+
+		check(
+			integration,
+			Match.ObjectIncluding({
+				type: String,
+				name: String,
+				enabled: Boolean,
+				username: String,
+				channel: String,
+				alias: Match.Maybe(String),
+				emoji: Match.Maybe(String),
+				scriptEnabled: Boolean,
+				script: Match.Maybe(String),
+				avatarUrl: Match.Maybe(String),
+			}),
+		);
 
 		if (!userId || (!hasPermission(userId, 'manage-incoming-integrations') && !hasPermission(userId, 'manage-own-incoming-integrations'))) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', {
@@ -49,9 +66,22 @@ Meteor.methods({
 			});
 		}
 
+		const user = Users.findOne({ username: integration.username });
+
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'addIncomingIntegration',
+			});
+		}
+
 		const integrationData: IIncomingIntegration = {
 			...integration,
-			channel: [],
+			type: 'webhook-incoming',
+			channel: channels,
+			token: Random.id(48),
+			userId: user._id,
+			_createdAt: new Date(),
+			_createdBy: Users.findOne(userId, { fields: { username: 1 } }),
 		};
 
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
@@ -93,30 +123,13 @@ Meteor.methods({
 
 			if (
 				!hasAllPermission(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
-				!Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })
+				!Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { fields: { _id: 1 } })
 			) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
 					method: 'addIncomingIntegration',
 				});
 			}
 		}
-
-		const user = Users.findOne({ username: integration.username });
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addIncomingIntegration',
-			});
-		}
-
-		const token = Random.id(48);
-
-		integrationData.type = 'webhook-incoming';
-		integrationData.token = token;
-		integrationData.channel = channels;
-		integrationData.userId = user._id;
-		integrationData._createdAt = new Date();
-		integrationData._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 
 		await Roles.addUserRoles(user._id, ['bot']);
 

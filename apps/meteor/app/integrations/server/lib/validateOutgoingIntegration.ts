@@ -143,9 +143,19 @@ export const validateOutgoingIntegration = function (
 		});
 	}
 
+	const user = Users.findOne({ username: integration.username });
+
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user (did you delete the `rocket.cat` user?)', { function: 'validateOutgoing' });
+	}
+
 	const integrationData: IOutgoingIntegration = {
 		...integration,
+		type: 'webhook-outgoing',
 		channel: channels,
+		userId: user._id,
+		_createdAt: new Date(),
+		_createdBy: Users.findOne(userId, { fields: { username: 1 } }),
 	};
 
 	if (outgoingEvents[integration.event].use.triggerWords && integration.triggerWords) {
@@ -183,16 +193,6 @@ export const validateOutgoingIntegration = function (
 
 	_verifyUserHasPermissionForChannels(userId, channels);
 	_verifyRetryInformation(integrationData);
-
-	const user = Users.findOne({ username: integration.username });
-
-	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user (did you delete the `rocket.cat` user?)', { function: 'validateOutgoing' });
-	}
-
-	integrationData.type = 'webhook-outgoing';
-	integrationData.userId = user._id;
-	integrationData.channel = channels;
 
 	return integrationData;
 };

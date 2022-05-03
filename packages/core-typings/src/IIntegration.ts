@@ -17,6 +17,10 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 
 	name: string;
 	enabled: boolean;
+
+	alias?: string;
+	avatarUrl?: string;
+	emoji?: string;
 }
 
 export type OutgoingIntegrationEvent =
@@ -40,6 +44,8 @@ export interface IOutgoingIntegration extends IRocketChatRecord {
 	targetRoom?: string;
 	urls?: string[];
 	triggerWords?: string[];
+	triggerWordAnywhere?: boolean;
+	token: string;
 
 	scriptEnabled: boolean;
 	script: string;
@@ -50,27 +56,33 @@ export interface IOutgoingIntegration extends IRocketChatRecord {
 	retryFailedCalls?: boolean;
 	retryCount?: number;
 	retryDelay?: string;
+	impersonateUser?: boolean;
 
 	name: string;
 	enabled: boolean;
+
+	alias?: string;
+	avatar?: string;
+	emoji?: string;
 }
 
 export type IIntegration = IIncomingIntegration | IOutgoingIntegration;
 
-export type INewIncomingIntegration = Omit<IIncomingIntegration, 'channel' | 'scriptCompiled' | 'scriptError'> & {
+export type INewIncomingIntegration = Omit<
+	IIncomingIntegration,
+	'channel' | 'scriptCompiled' | 'scriptError' | '_createdBy' | '_createdAt' | 'userId' | 'token'
+> & {
 	channel: string;
 };
 
-export type INewOutgoingIntegration = Omit<IOutgoingIntegration, 'channel' | 'scriptCompiled' | 'scriptError'> & {
+export type INewOutgoingIntegration = Omit<
+	IOutgoingIntegration,
+	'channel' | 'scriptCompiled' | 'scriptError' | '_createdAt' | '_createdBy' | 'userId'
+> & {
 	channel?: string;
+	token?: string;
 };
 
 export type IUpdateOutgoingIntegration = Omit<IOutgoingIntegration, 'channel'> & {
 	channel?: string | string[];
 };
-
-// alias: Match.Maybe(String),
-// avatar: Match.Maybe(String),
-// emoji: Match.Maybe(String),
-// token: Match.Maybe(String),
-// targetChannel: Match.Maybe(String),
