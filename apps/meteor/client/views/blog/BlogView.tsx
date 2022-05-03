@@ -5,6 +5,7 @@ import React, { ReactElement, useState, useEffect } from 'react';
 import Page from '../../components/Page';
 import BottomBar from '../../components/BottomBar';
 import TopBar from '../../topbar/TopBar';
+import CreateBlogForm from './components/CreateBlogForm';
 import SingleBlogPost from './SingleBlogPost';
 import CreateBlogForm from './components/CreateBlogForm';
 
@@ -20,6 +21,7 @@ const BlogView = (): ReactElement => {
 	const [blogId, setBlogId] = useState('');
 
 	const clearUpdateFields = (): void => {
+
 		setUpdateTitle('');
 		setUpdateContent('');
 		setUpdateTags([]);
@@ -64,7 +66,9 @@ const BlogView = (): ReactElement => {
 					</Grid>
 					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
 						<Button square primary>
+
 							<Icon name='plus' size='x20' onClick={(): void => setShowModal(true)} />
+
 						</Button>
 					</div>
 				</Page.Content>

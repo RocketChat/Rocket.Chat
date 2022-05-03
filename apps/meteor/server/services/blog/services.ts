@@ -1,5 +1,6 @@
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IBlogService, IBlogCreateParams, IBlog, IBlogUpdateBody, IBlogUpdateParams } from '../../../definition/IBlog';
+
 import { IRecordsWithTotal } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
@@ -8,6 +9,7 @@ import { BlogModel } from '../../../app/models/server/raw';
 
 export class BlogService extends ServiceClassInternal implements IBlogService {
 	protected name = 'blog';
+
 
 	async create(params: IBlogCreateParams): Promise<IBlog> {
 		const createData: InsertionModel<IBlog> = {
@@ -42,6 +44,7 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 			...params,
 		};
 		const result = await BlogModel.updateOne(query, { $set: updateData });
+
 		return BlogModel.findOneById(blogId);
 	}
 

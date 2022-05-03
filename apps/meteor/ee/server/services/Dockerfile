@@ -1,4 +1,4 @@
-FROM node:14 as build
+FROM node:14.18.3 as build
 
 WORKDIR /app
 
@@ -12,6 +12,7 @@ COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
 
 COPY ./packages/core-typings packages/core-typings
+COPY ./packages/eslint-config packages/eslint-config
 COPY ./packages/rest-typings packages/rest-typings
 
 COPY ./apps/meteor/ee/server/services apps/meteor/ee/server/services
@@ -23,7 +24,7 @@ COPY ./tsconfig.base.json .
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:14-alpine
+FROM node:14.18.3-alpine
 
 ARG SERVICE
 
