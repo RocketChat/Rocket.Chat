@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/jest": "^27.4.1",
 		"@types/react": "^18.0.8",
 		"@types/react-dom": "^18.0.3",
@@ -13,11 +14,13 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/fuselage-hooks": "*",
 		"react": "*",
 		"react-dom": "*"
 	},
 	"dependencies": {
 		"@rocket.chat/fuselage": "~0.31.10",
+		"@rocket.chat/fuselage-hooks": "^0.31.11",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2"
 	},
