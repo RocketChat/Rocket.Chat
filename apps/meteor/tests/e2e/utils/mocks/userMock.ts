@@ -1,4 +1,53 @@
-export const userMock = {
+export interface IUserMock {
+	_id: string;
+	createdAt: Date;
+	services: {
+		password: {
+			bcrypt: string;
+			enroll: {
+				token: string;
+				email: string;
+				when: Date;
+				reason: string;
+			};
+		};
+		email2fa: {
+			enabled: true;
+			changedAt: Date;
+		};
+		email: {
+			verificationTokens: [
+				{
+					token: string;
+					address: string;
+					when: Date;
+				},
+			];
+		};
+		resume: {
+			loginTokens: string[];
+		};
+	};
+	emails: [
+		{
+			address: string;
+			verified: boolean;
+		},
+	];
+	type: string;
+	status: string;
+	active: boolean;
+	_updatedAt: Date;
+	roles: string[];
+	name: string;
+	lastLogin: Date;
+	statusConnection: string;
+	utcOffset: number;
+	username: string;
+	__rooms: string[];
+}
+
+export const userMock: IUserMock = {
 	_id: 'vvsKGW5tKKqP9vj54',
 	createdAt: new Date(),
 	services: {

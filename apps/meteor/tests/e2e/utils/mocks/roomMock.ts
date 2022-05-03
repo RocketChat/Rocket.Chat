@@ -1,4 +1,26 @@
-export const roomMock = [
+export interface IRoomMock {
+	_id: string;
+	fname: string;
+	customFields: {};
+	description: string;
+	broadcast: boolean;
+	encrypted: boolean;
+	name: string;
+	t: string;
+	msgs: number;
+	usersCount: number;
+	u: {
+		_id: string;
+		username: string;
+	};
+	ts: Date;
+	ro: boolean;
+	default: boolean;
+	sysMes: boolean;
+	_updatedAt: Date;
+}
+
+export const roomMock: IRoomMock[] = [
 	{
 		_id: '9kc9F8BghhCp5bc3T',
 		fname: 'private channel',
