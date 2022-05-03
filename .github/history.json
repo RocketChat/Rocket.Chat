@@ -74347,6 +74347,45 @@
           ]
         }
       ]
+    },
+    "4.7.0-rc.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25380",
+          "title": "Regression: Fix clicking on visitor's chat in the sidebar does not display the chat window",
+          "userLogin": "filipemarins",
+          "description": "Fix: livechat room not opening.",
+          "contributors": [
+            "filipemarins"
+          ]
+        },
+        {
+          "pr": "25314",
+          "title": "Regression: Fix size of custom emoji and render emoji on thread message preview",
+          "userLogin": "filipemarins",
+          "contributors": [
+            "filipemarins",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "25371",
+          "title": "Chore: Bump fuselage",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
