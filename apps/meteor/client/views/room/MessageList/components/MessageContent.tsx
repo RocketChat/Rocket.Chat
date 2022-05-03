@@ -3,10 +3,8 @@ import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } fro
 import { MessageBody } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
-import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
-import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
 import DiscussionMetric from '../../../../components/Message/Metrics/Discussion';
 import ThreadMetric from '../../../../components/Message/Metrics/Thread';
@@ -19,9 +17,9 @@ import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
-import EncryptedMessageRender from './EncryptedMessageRender';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
+import MessageRender from './MessageRender';
 import PreviewList from './UrlPreview';
 
 const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
@@ -30,7 +28,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 }) => {
 	const {
 		broadcast,
-		actions: { openRoom, openThread, openUserCard, replyBroadcast },
+		actions: { openRoom, openThread, replyBroadcast },
 	} = useMessageActions();
 
 	const runActionLink = useMessageRunActionLink();
@@ -38,7 +36,6 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 	const oembedIsEnabled = useMessageOembedIsEnabled();
 	const shouldShowReadReceipt = useMessageListShowReadReceipt();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
-	const isEncryptedMessage = isE2EEMessage(message);
 
 	const shouldShowReactionList = message.reactions && Object.keys(message.reactions).length;
 
@@ -47,19 +44,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 	return (
 		<>
 			<MessageBody data-qa-type='message-body'>
-				{!isEncryptedMessage && !message.blocks && message.md && (
-					<MessageBodyRender
-						onUserMentionClick={openUserCard}
-						onChannelMentionClick={openRoom}
-						mentions={message?.mentions || []}
-						channels={message?.channels || []}
-						tokens={message.md}
-					/>
-				)}
-
-				{!isEncryptedMessage && !message.blocks && !message.md && message.msg}
-
-				{isEncryptedMessage && <EncryptedMessageRender message={message} />}
+				<MessageRender message={message} />
 			</MessageBody>
 			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}

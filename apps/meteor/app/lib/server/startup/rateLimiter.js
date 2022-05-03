@@ -4,10 +4,21 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { RateLimiter } from 'meteor/rate-limit';
 
 import { settings } from '../../../settings/server';
-import { metrics } from '../../../metrics';
-import { Logger } from '../../../logger';
+import { metrics } from '../../../metrics/server';
+import { Logger } from '../../../logger/server';
 
 const logger = new Logger('RateLimiter');
+
+const slowDownRate = parseInt(process.env.RATE_LIMITER_SLOWDOWN_RATE);
+
+const rateLimiterConsoleLog = ({ msg, reply, input }) => {
+	console.warn('DDP RATE LIMIT:', msg);
+	console.warn(JSON.stringify({ reply, input }, null, 2));
+};
+
+const rateLimiterLogger = ({ msg, reply, input }) => logger.info({ msg, reply, input });
+
+const rateLimiterLog = String(process.env.RATE_LIMITER_LOGGER) === 'console' ? rateLimiterConsoleLog : rateLimiterLogger;
 
 // Get initial set of names already registered for rules
 const names = new Set(
@@ -85,6 +96,7 @@ RateLimiter.prototype.check = function (input) {
 			callbackReply.timeToReset = ruleResult.timeToNextReset;
 			callbackReply.allowed = false;
 			callbackReply.numInvocationsLeft = 0;
+			callbackReply.numInvocationsExceeded = numInvocations - rule.options.numRequestsAllowed;
 			rule._executeCallback(callbackReply, input);
 			// ==== END OVERRIDE ====
 		} else {
@@ -112,7 +124,7 @@ const ruleIds = {};
 
 const callback = (msg, name) => (reply, input) => {
 	if (reply.allowed === false) {
-		logger.info({ msg, reply, input });
+		rateLimiterLog({ msg, reply, input });
 		metrics.ddpRateLimitExceeded.inc({
 			limit_name: name,
 			user_id: input.userId,
@@ -121,6 +133,10 @@ const callback = (msg, name) => (reply, input) => {
 			name: input.name,
 			connection_id: input.connectionId,
 		});
+		// sleep before sending the error to slow down next requests
+		if (slowDownRate > 0 && reply.numInvocationsExceeded) {
+			Meteor._sleepForMs(slowDownRate * reply.numInvocationsExceeded);
+		}
 		// } else {
 		// 	console.log('DDP RATE LIMIT:', message);
 		// 	console.log(JSON.stringify({ ...reply, ...input }, null, 2));

@@ -6,6 +6,7 @@ import { UserMention } from '../definitions/UserMention';
 type MessageBodyContextType = {
 	mentions?: UserMention[];
 	channels?: ChannelMention[];
+	isThreadPreview?: boolean;
 	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
 	onChannelMentionClick?: (id: string) => (e: MouseEvent<HTMLDivElement>) => void;
 };
@@ -16,6 +17,9 @@ export const MessageBodyContext = createContext<MessageBodyContextType>({
 });
 
 export const useMessageBodyContext = (): MessageBodyContextType => useContext(MessageBodyContext);
+
+export const useMessageBodyIsThreadPreview = (): MessageBodyContextType['isThreadPreview'] =>
+	useContext(MessageBodyContext).isThreadPreview;
 
 export const useMessageBodyUserMentions = (): UserMention[] => {
 	const { mentions = [] } = useMessageBodyContext();

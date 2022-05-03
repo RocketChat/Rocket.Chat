@@ -125,7 +125,7 @@ function CustomSoundsRoute(): ReactElement {
 												small
 												square
 												aria-label={t('Play')}
-												onClick={(e) => {
+												onClick={(e): void => {
 													e.preventDefault();
 													e.stopPropagation();
 													handlePlay(sound._id);
