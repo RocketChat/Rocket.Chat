@@ -128,6 +128,26 @@ FlowRouter.route('/blog/detail/:id', {
 	},
 });
 
+FlowRouter.route('/games/detail/:id', {
+	name: 'games-detail',
+	action: () => {
+		const GameDetailPageView = createTemplateForComponent('GameDetailPage', () => import('../views/games/SingleGameDetails'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: GameDetailPageView });
+	},
+});
+
+FlowRouter.route('/products/detail/:id', {
+	name: 'products-detail',
+	action: () => {
+		const ProductDetailPageView = createTemplateForComponent('ProductDetailPage', () => import('../views/products/SIngleProductDetails'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: ProductDetailPageView });
+	},
+});
+
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {

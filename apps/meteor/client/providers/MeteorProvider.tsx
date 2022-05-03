@@ -5,6 +5,7 @@ import { DispatchGlobalContext } from '../contexts/BlogDetailContext/GlobalState
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import BlogDetailContextProvider from './BlogDetailProvider';
+import GameDetailContextProvider from './GameDetailProvider';
 import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
@@ -20,6 +21,7 @@ import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
+import ProductDetailContextProvider from './ProductDetailProvider';
 
 const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
@@ -39,9 +41,13 @@ const MeteorProvider: FC = ({ children }) => (
 															<CallProvider>
 																<OmnichannelProvider>
 																	<ModalProvider>
-																		<BlogDetailContextProvider>
-																			<AttachmentProvider>{children}</AttachmentProvider>
-																		</BlogDetailContextProvider>
+																		<GameDetailContextProvider>
+																			<BlogDetailContextProvider>
+																				<ProductDetailContextProvider>
+																					<AttachmentProvider>{children}</AttachmentProvider>
+																				</ProductDetailContextProvider>
+																			</BlogDetailContextProvider>
+																		</GameDetailContextProvider>
 																	</ModalProvider>
 																</OmnichannelProvider>
 															</CallProvider>

@@ -4,6 +4,7 @@ import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from './ITeam';
 import { AtLeastOne } from './AtLeastOne';
 
 export interface IProduct extends IRocketChatRecord {
+	createdAt: Date;
 	title: string;
 	description: string;
 	price: number;
