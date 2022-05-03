@@ -286,7 +286,6 @@ jobs:
           path: ./apps/meteor/coverage*
 
       - name: Publish to coveralls.io
-        if: ${{ matrix.mongodb-version }} == "5.0"
         uses: coverallsapp/github-action@v1.1.2
         with:
           base-path: apps/meteor
