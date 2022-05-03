@@ -12,6 +12,7 @@ COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
 
 COPY ./packages/core-typings packages/core-typings
+COPY ./packages/eslint-config packages/eslint-config
 COPY ./packages/rest-typings packages/rest-typings
 
 COPY ./apps/meteor/ee/server/services apps/meteor/ee/server/services
