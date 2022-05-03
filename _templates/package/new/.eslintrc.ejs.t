@@ -1,0 +1,15 @@
+---
+to: packages/<%= name %>/.eslintrc
+---
+{
+	"extends": ["@rocket.chat/eslint-config"],
+	"overrides": [
+		{
+			"files": ["**/*.spec.js", "**/*.spec.jsx"],
+			"env": {
+				"jest": true
+			}
+		}
+	],
+	"ignorePatterns": ["**/dist"]
+}

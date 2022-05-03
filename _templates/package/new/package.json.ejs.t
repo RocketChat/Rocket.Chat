@@ -7,6 +7,7 @@ to: packages/<%= name %>/package.json
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/jest": "^27.4.1",
 		"eslint": "^8.12.0",
 		"jest": "^27.5.1",
