@@ -3,17 +3,22 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
 import UserAutoComplete from '../../../components/UserAutoComplete';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
-function AddManager({ reload, ...props }) {
+function AddManager({ reload, data, ...props }) {
 	const t = useTranslation();
 	const [username, setUsername] = useState();
-
+	const dispatchToastMessage = useToastMessageDispatch();
 	const saveAction = useEndpointAction('POST', 'livechat/users/manager', { username });
 
 	const handleSave = useMutableCallback(async () => {
 		if (!username) {
+			return;
+		}
+		if (data?.users.find((user) => user.username === username)) {
+			dispatchToastMessage({ type: 'error', message: t('Username_already_exist') });
 			return;
 		}
 		const result = await saveAction();

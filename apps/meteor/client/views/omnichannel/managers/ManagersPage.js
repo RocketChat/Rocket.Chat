@@ -10,7 +10,7 @@ function ManagersPage({ data, reload, header, setParams, params, title, renderRo
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={title} />
-				<AddManager reload={reload} pi='x24' />
+				<AddManager data={data} reload={reload} pi='x24' />
 				<Page.Content>
 					<GenericTable
 						header={header}

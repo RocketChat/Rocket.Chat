@@ -10,7 +10,7 @@ function AgentsPage({ data, reload, header, setParams, params, title, renderRow,
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={title} />
-				<AddAgent reload={reload} pi='x24' />
+				<AddAgent data={data} reload={reload} pi='x24' />
 				<Page.Content>
 					<GenericTable
 						header={header}
