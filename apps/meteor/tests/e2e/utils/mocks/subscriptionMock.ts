@@ -1,27 +1,6 @@
-export interface ISubscriptionMock {
-	_id: string;
-	open: boolean;
-	alert: boolean;
-	unread: number;
-	userMentions: number;
-	groupMentions: number;
-	ts: Date;
-	rid: string;
-	name: string;
-	fname?: string;
-	t: string;
-	customFields?: unknown;
-	u: {
-		_id: string;
-		username?: string;
-		name?: string;
-	};
-	ls?: Date;
-	_updatedAt: Date;
-	roles?: string[];
-}
+import type { ISubscription } from '@rocket.chat/core-typings';
 
-export const subscriptionMock: ISubscriptionMock[] = [
+export const subscriptionMock: ISubscription[] = [
 	{
 		_id: 'zjHWmhH4go9NoGwTP',
 		open: true,
