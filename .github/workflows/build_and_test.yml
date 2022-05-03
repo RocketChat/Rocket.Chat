@@ -448,6 +448,7 @@ jobs:
       - name: Calculate playwright coverage
         uses: romeovs/lcov-reporter-action@v0.2.16
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           lcov-file: ./apps/meteor/coverage/lcov.info
 
       - name: Store playwright test trace
