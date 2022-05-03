@@ -7,18 +7,27 @@ import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 import NotFoundPage from '../../../../../client/views/notFound/NotFoundPage';
 
 describe('views/notFound/NotFoundPage', () => {
-	it('should look good', () => {
+	it('should look good #1', () => {
 		render(<NotFoundPage />);
 
 		expect(screen.getByRole('heading', { level: 1, name: 'Oops_page_not_found' })).to.exist;
+	});
+	it('should look good #2', () => {
+		render(<NotFoundPage />);
 
 		expect(
 			screen.getByRole('status', {
 				name: 'Sorry_page_you_requested_does_not_exist_or_was_deleted',
 			}),
 		).to.exist;
+	});
+	it('should look good #3', () => {
+		render(<NotFoundPage />);
 
 		expect(screen.getByRole('button', { name: 'Return_to_previous_page' })).to.exist.and.to.not.match(':disabled');
+	});
+	it('should look good #4', () => {
+		render(<NotFoundPage />);
 
 		expect(screen.getByRole('button', { name: 'Return_to_home' })).to.exist.and.to.not.match(':disabled');
 	});
