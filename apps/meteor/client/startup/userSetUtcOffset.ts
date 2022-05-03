@@ -19,7 +19,7 @@ Meteor.startup(() => {
 
 		const utcOffset = moment().utcOffset() / 60;
 
-		if (user.utcOffset !== utcOffset) {
+		if (user?.utcOffset !== utcOffset) {
 			Meteor.call('userSetUtcOffset', utcOffset);
 		}
 		c.stop();
