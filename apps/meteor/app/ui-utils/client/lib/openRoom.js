@@ -37,7 +37,7 @@ export const openRoom = async function (type, name, render = true) {
 		}
 
 		try {
-			const room = (await roomCoordinator.getRoomDirectives(type)?.findRoom(name)) || (await call('getRoomByTypeAndName', type, name));
+			const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (room._id !== name && type === 'd') {
@@ -72,7 +72,7 @@ export const openRoom = async function (type, name, render = true) {
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({ rid: room._id });
 			if (sub && sub.open === false) {
-				callWithErrorHandling('openRoom', room._id);
+				await callWithErrorHandling('openRoom', room._id);
 			}
 
 			if (FlowRouter.getQueryParam('msg')) {

@@ -934,16 +934,18 @@ Meteor.startup(() => {
 		}, 500);
 
 		this.autorun(() => {
-			if (rid !== Session.get('openedRoom')) {
-				return;
-			}
+			Tracker.afterFlush(() => {
+				if (rid !== Session.get('openedRoom')) {
+					return;
+				}
 
-			let room = Rooms.findOne({ _id: rid }, { fields: { t: 1 } });
+				let room = Rooms.findOne({ _id: rid }, { fields: { t: 1 } });
 
-			if (room?.t === 'l') {
-				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
-				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(this, room, room.v.username);
-			}
+				if (room?.t === 'l') {
+					room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
+					roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(this, room, room.v.username);
+				}
+			});
 		});
 
 		this.autorun(() => {
