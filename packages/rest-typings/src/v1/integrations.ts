@@ -1,4 +1,4 @@
-import type { IIntegration, IIntegrationHistory, IIncomingIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
+import type { IIntegration, IIntegrationHistory, IIncomingIntegration, IOutgoingIntegration, IUser } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -61,5 +61,26 @@ export type IntegrationsEndpoints = {
 		GET: (params: PaginatedRequest<{}>) => PaginatedResult<{
 			integrations: IIntegration[];
 		}>;
+	};
+
+	'integrations.remove': {
+		POST: (
+			params: {
+				type: IIntegration['type'];
+			} & (
+				| {
+						target_url?: string;
+				  }
+				| {
+						integrationId?: string;
+				  }
+			),
+		) => {
+			integration: IIntegration;
+		};
+	};
+
+	'integrations.get': {
+		GET: (params: { integrationId: string; createdBy: IUser['_id'] }) => { integration: IIntegration };
 	};
 };
