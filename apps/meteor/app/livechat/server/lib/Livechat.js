@@ -43,6 +43,7 @@ import notifications from '../../../notifications/server/lib/Notifications';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
+import { validateEmailDomain } from '../../../lib/server';
 
 const logger = new Logger('Livechat');
 
@@ -290,7 +291,7 @@ export const Livechat = {
 
 		if (email) {
 			email = email.trim().toLowerCase();
-			validateEmail(email);
+			if (settings.get('Omnichannel_validate_emails')) validateEmailDomain(email);
 			updateUser.$set.visitorEmails = [{ address: email }];
 		}
 
@@ -1316,7 +1317,8 @@ export const Livechat = {
 			fromEmail = settings.get('From_Email');
 		}
 
-		if (settings.get('Livechat_validate_offline_email')) {
+		if (settings.get('Omnichannel_validate_emails')) {
+			validateEmail(email);
 			const emailDomain = email.substr(email.lastIndexOf('@') + 1);
 
 			try {

@@ -65,12 +65,11 @@ Meteor.startup(function () {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		this.add('Livechat_validate_offline_email', true, {
+		this.add('Omnichannel_validate_emails', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
 			public: true,
-			section: 'Livechat',
-			i18nLabel: 'Validate_email_address',
+			i18nLabel: 'Omnichannel_validate_email_address',
 			enableQuery: omnichannelEnabledQuery,
 		});
 

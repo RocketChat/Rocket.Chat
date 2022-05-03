@@ -2714,6 +2714,8 @@
   "Omnichannel_onHold_Chat": "Colocar conversa em espera",
   "Livechat_online": "Omnichannel online",
   "Omnichannel_placed_chat_on_hold": "Conversa em espera: __comment__",
+  "Omnichannel_validate_emails": "Validar formularios de registro de e-mail e contato offline",
+  "Omnichannel_validate_email_address": "Validar formularios de registro de e-mail e contato offline",
   "Livechat_Queue": "Fila omnichannel",
   "Livechat_registration_form": "Formulário de registro",
   "Livechat_registration_form_message": "Mensagem do formulário de registro",

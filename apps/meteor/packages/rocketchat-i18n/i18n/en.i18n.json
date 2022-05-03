@@ -2736,6 +2736,8 @@
   "Omnichannel_onHold_Chat": "Place chat On-Hold",
   "Livechat_online": "Omnichannel on-line",
   "Omnichannel_placed_chat_on_hold": "Chat On Hold: __comment__",
+  "Omnichannel_validate_emails": "Validate Registration form and Offline form emails",
+  "Omnichannel_validate_email_address": "Validate Registration form and Offline form emails",
   "Livechat_Queue": "Omnichannel Queue",
   "Livechat_registration_form": "Registration Form",
   "Livechat_registration_form_message": "Registration Form Message",
