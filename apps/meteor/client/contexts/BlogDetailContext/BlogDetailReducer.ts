@@ -20,6 +20,7 @@ const InitialState: IStateInterface = {
 };
 
 const BlogDetailReducer = (state, action): IStateInterface => {
+	console.log(action.payload, 'inside the reducer');
 	switch (action.type) {
 		case 'ADD_DETAILS':
 			return {
@@ -29,7 +30,7 @@ const BlogDetailReducer = (state, action): IStateInterface => {
 		case 'CLEAR_DETAILS':
 			return {
 				...state,
-				value: {},
+				value: { id: '', author: '', createdAt: '', title: '', content: '', image: '', comments: [] },
 			};
 		default:
 			return state;
