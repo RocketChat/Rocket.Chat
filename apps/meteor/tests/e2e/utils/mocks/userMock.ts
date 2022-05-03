@@ -1,17 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-export const userMock: IUser = {
+interface IUserMock extends IUser {
+	__rooms: string[];
+}
+
+export const userMock: IUserMock = {
 	_id: 'vvsKGW5tKKqP9vj54',
 	createdAt: new Date(),
 	services: {
 		password: {
 			bcrypt: '$2b$10$EMxaeQQbSw9JLL.YvOVPaOW8MKta6pgmp2BcN5Op4cC9bJiOqmUS.',
-			enroll: {
-				token: 'NukGmrDVtX3AoiGS9TxWlkPa-rJhssOT-aliirvMHTb',
-				email: 'user.name.test@email.com',
-				when: new Date(),
-				reason: 'enroll',
-			},
 		},
 		email2fa: {
 			enabled: true,
@@ -29,6 +27,7 @@ export const userMock: IUser = {
 		resume: {
 			loginTokens: [],
 		},
+		emailCode: [{ code: '', expire: new Date() }],
 	},
 	emails: [
 		{
@@ -37,7 +36,7 @@ export const userMock: IUser = {
 		},
 	],
 	type: 'user',
-	status: 'offline',
+
 	active: true,
 	_updatedAt: new Date(),
 	roles: ['user'],

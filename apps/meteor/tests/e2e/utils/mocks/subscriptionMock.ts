@@ -11,6 +11,8 @@ export const subscriptionMock: ISubscription[] = [
 		ts: new Date(),
 		rid: 'GENERAL',
 		name: 'general',
+		ls: new Date(),
+		lr: new Date(),
 		t: 'c',
 		u: {
 			_id: 'vvsKGW5tKKqP9vj54',
@@ -30,7 +32,7 @@ export const subscriptionMock: ISubscription[] = [
 		rid: 'fWJChTFjhQLXZrusq',
 		name: 'public channel',
 		fname: 'public channel',
-		customFields: {},
+		lr: new Date(),
 		t: 'c',
 		u: {
 			_id: 'vvsKGW5tKKqP9vj54',
@@ -51,7 +53,7 @@ export const subscriptionMock: ISubscription[] = [
 		rid: '9kc9F8BghhCp5bc3T',
 		name: 'private channel',
 		fname: 'private channel',
-		customFields: {},
+		lr: new Date(),
 		t: 'p',
 		u: {
 			_id: 'vvsKGW5tKKqP9vj54',
@@ -72,7 +74,7 @@ export const subscriptionMock: ISubscription[] = [
 		rid: '9kc9F8BghhCp5bc3T',
 		name: 'private channel',
 		fname: 'private channel',
-		customFields: {},
+		lr: new Date(),
 		t: 'p',
 		u: {
 			_id: 'rocketchat.internal.admin.test',
