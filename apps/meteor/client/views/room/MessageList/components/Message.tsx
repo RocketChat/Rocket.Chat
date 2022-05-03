@@ -13,7 +13,7 @@ import MessageHeader from './MessageHeader';
 import { MessageIndicators } from './MessageIndicators';
 import Toolbox from './Toolbox';
 
-const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
+const Message: FC<{ message: IMessage & { temp?: boolean }; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
 	message,
 	sequential,
 	subscription,
@@ -33,7 +33,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
 			isEditing={isMessageHighlight}
-			isPending={message.temp}
+			isPending={message?.temp}
 			data-qa-editing={isMessageHighlight}
 			data-qa-selected={isSelected}
 		>
