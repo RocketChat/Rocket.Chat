@@ -288,7 +288,7 @@ jobs:
       - name: Publish to coveralls.io
         uses: coverallsapp/github-action@v1.1.2
         with:
-          base-path: apps/meteor
+          path-to-lcov: ./apps/meteor/coverage/lcov.info
           github-token: ${{ github.token }}
 
       - name: Store playwright test trace
