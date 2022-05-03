@@ -29,7 +29,7 @@ API.v1.addRoute(
 
 			try {
 				const { offset, count } = this.getPaginationItems();
-				const { search } = this.queryParams;
+				const search: string = this.queryParams?.search || '';
 
 				const sessions = await Sessions.getByUserId(this.userId, search, { offset, count });
 				return API.v1.success(sessions);
@@ -106,7 +106,7 @@ API.v1.addRoute(
 
 			try {
 				const { offset, count } = this.getPaginationItems();
-				let search = this.queryParams?.search || '';
+				let search: string = this.queryParams?.search || '';
 
 				const searchUser = await Users.findUserBySearchOperator(search);
 				if (searchUser?.length) {
