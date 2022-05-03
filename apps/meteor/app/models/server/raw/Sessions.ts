@@ -745,6 +745,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		{ key: { instanceId: 1, sessionId: 1 } },
 		{ key: { sessionId: 1 } },
 		{ key: { userId: 1 } },
+		{ key: { userId: 1, sessionId: 1 } },
 		{ key: { userId: 1, loginToken: 1, logoutAt: 1 } },
 		{ key: { loginToken: 1, logoutAt: 1 } },
 		{ key: { loginToken: 1 } },
@@ -1113,6 +1114,10 @@ export class SessionsRaw extends BaseRaw<ISession> {
 
 	findOneBySessionId(sessionId: string): Promise<ISession | null> {
 		return this.findOne({ sessionId });
+	}
+
+	findOneBySessionIdAndUserID(sessionId: string, userId: string): Promise<ISession | null> {
+		return this.findOne({ sessionId, userId });
 	}
 
 	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
