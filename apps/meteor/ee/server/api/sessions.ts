@@ -5,12 +5,19 @@ import { hasRole } from '../../../app/authorization/server';
 import { Users, Sessions } from '../../../app/models/server/raw/index';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server/functions/hasPermission';
+import { hasLicense } from '../../app/license/server/license';
 
 API.v1.addRoute(
 	'sessions/list',
 	{ authRequired: true },
 	{
 		async get() {
+			if (!this.userId) {
+				API.v1.failure('error-invalid-user');
+			}
+			if (!hasLicense('device-management')) {
+				return API.v1.unauthorized();
+			}
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
@@ -38,6 +45,13 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
+			if (!this.userId) {
+				API.v1.failure('error-invalid-user');
+			}
+
+			if (!hasLicense('device-management')) {
+				return API.v1.unauthorized();
+			}
 			check(this.bodyParams, {
 				sessionId: String,
 			});
@@ -72,7 +86,13 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		async get() {
+			if (!this.userId) {
+				API.v1.failure('error-invalid-user');
+			}
 			if (!hasRole(this.userId, 'admin')) {
+				return API.v1.unauthorized();
+			}
+			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
 			check(
@@ -107,7 +127,13 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		async post() {
+			if (!this.userId) {
+				API.v1.failure('error-invalid-user');
+			}
 			if (!hasPermission(this.userId, 'logout-other-user') && !hasRole(this.userId, 'admin')) {
+				return API.v1.unauthorized();
+			}
+			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
 
