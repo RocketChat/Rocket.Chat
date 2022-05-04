@@ -30,7 +30,9 @@ import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
+import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
 	extends BannersEndpoints,
@@ -61,6 +63,7 @@ export interface Endpoints
 		InvitesEndpoints,
 		E2eEndpoints,
 		CustomSoundEndpoint,
+		WebdavEndpoints,
 		OAuthAppsEndpoint {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
