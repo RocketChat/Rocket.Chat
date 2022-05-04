@@ -1,5 +1,5 @@
 import { Table } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, ReactElement } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -7,19 +7,16 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-export function OAuthAppsTable() {
+const OAuthAppsTable = (): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const { value: data } = useEndpointData(
-		'oauth-apps.list',
-		useMemo(() => ({}), []),
-	);
+	const { value: data } = useEndpointData('oauth-apps.list');
 
 	const router = useRoute('admin-oauth-apps');
 
 	const onClick = useCallback(
-		(_id) => () =>
+		(_id) => (): void =>
 			router.push({
 				context: 'edit',
 				id: _id,
@@ -49,7 +46,7 @@ export function OAuthAppsTable() {
 		[formatDateAndTime, onClick],
 	);
 
-	return <GenericTable header={header} renderRow={renderRow} results={data && data.oauthApps} />;
-}
+	return <GenericTable header={header} renderRow={renderRow} results={data?.oauthApps} />;
+};
 
 export default OAuthAppsTable;
