@@ -1,16 +1,28 @@
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useMemo, useState } from 'react';
-import { Controller } from 'react-hook-form';
+import React, { memo, useMemo, useState, ReactElement, forwardRef } from 'react';
+import { Controller, Control } from 'react-hook-form';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';
 
-const AutoCompleteTagMultiple = (props) => {
-	const { value, onlyMyTags = false, onChange = () => {}, control, name } = props;
+type AutoCompleteTagsProps = {
+	value: string;
+	onlyMyTags?: boolean;
+	onchange: () => void;
+	control: Control;
+	name: string;
+};
 
+const AutoCompleteTagMultiple = forwardRef(function AutoCompleteTagMultiple({
+	value,
+	onlyMyTags = false,
+	onChange = () => {},
+	control,
+	name,
+}: AutoCompleteTagsProps): ReactElement {
 	const t = useTranslation();
 	const [tagsFilter, setTagsFilter] = useState('');
 
@@ -23,10 +35,10 @@ const AutoCompleteTagMultiple = (props) => {
 	const { phase: tagsPhase, items: tagsItems, itemCount: tagsTotal } = useRecordList(tagsList);
 
 	const sortedByName = tagsItems.sort((a, b) => {
-		if (a.name > b.name) {
+		if (a.label > b.label) {
 			return 1;
 		}
-		if (a.name < b.name) {
+		if (a.label < b.label) {
 			return -1;
 		}
 
@@ -41,31 +53,38 @@ const AutoCompleteTagMultiple = (props) => {
 				<PaginatedMultiSelectFiltered
 					{...field}
 					filter={tagsFilter}
-					setFilter={setTagsFilter}
+					setFilter={setTagsFilter as (value: string | number | undefined) => void}
 					options={sortedByName}
 					width='100%'
 					flexShrink={0}
 					flexGrow={0}
 					placeholder={t('Select_an_option')}
-					endReached={tagsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreTags(start, Math.min(50, tagsTotal))}
+					endReached={
+						tagsPhase === AsyncStatePhase.LOADING
+							? (): void => undefined
+							: (start: number): void => loadMoreTags(start, Math.min(50, tagsTotal))
+					}
 				/>
 			)}
 		/>
 	) : (
 		<PaginatedMultiSelectFiltered
-			withTitle
 			value={value}
 			onChange={onChange}
 			filter={tagsFilter}
-			setFilter={setTagsFilter}
+			setFilter={setTagsFilter as (value: string | number | undefined) => void}
 			options={sortedByName}
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
-			endReached={tagsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreTags(start, Math.min(50, tagsTotal))}
+			endReached={
+				tagsPhase === AsyncStatePhase.LOADING
+					? (): void => undefined
+					: (start: number): void => loadMoreTags(start, Math.min(50, tagsTotal))
+			}
 		/>
 	);
-};
+});
 
 export default memo(AutoCompleteTagMultiple);
