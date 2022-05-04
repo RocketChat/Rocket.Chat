@@ -25,7 +25,8 @@ main() {
   debug "Executing: ${cmd:5:-1}"
   local out=$(mongodb_execute_print_output "$MONGODB_ROOT_USER" "$MONGODB_ROOT_PASSWORD" "admin" "" "" "--quiet" <<< "$cmd")
   # local ok=$(perl -MJSON -0ne 'print decode_json($_)->{"ok"}' <<< "$out")
-  [[ -z $out ]] || error_and_abort "failed to add role clusterMonitor to user \"$MONGODB_USERNAME\"; Error: $out"
+  local ok=$(awk '/ok:/ { print $2 }' <<< ${out/,/})
+  ((ok)) || error_and_abort "failed to add role clusterMonitor to user \"$MONGODB_USERNAME\"; Error: $out"
   info "clusterMonitor role added to $MONGODB_USERNAME"
 }
 
