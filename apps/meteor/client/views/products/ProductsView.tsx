@@ -43,10 +43,8 @@ const ProductsView = (): ReactElement => {
 	const getBackendProducts = () => {
 		Meteor.call('getProducts', { count: 10 }, {}, (error, result) => {
 			if (result) {
-				console.log(result, 'result in products');
-				const documents = result.toArray();
-				if (documents.length) {
-					setProductResults(result.records);
+				if (result.length) {
+					setProductResults(result);
 					console.log('Products were fetched');
 				} else {
 					data.map((product, index) => {
@@ -74,11 +72,11 @@ const ProductsView = (): ReactElement => {
 			}
 		});
 	};
-	useEffect(() => {
+	Meteor.startup(() => {
 		if (!productResults.length) {
 			getBackendProducts();
 		}
-	}, []);
+	});
 	return (
 		<Page flexDirection='row'>
 			<Page>

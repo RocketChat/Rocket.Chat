@@ -44,9 +44,8 @@ const GamesView = (): ReactElement => {
 	const getGames = () => {
 		Meteor.call('getGames', { count: 10 }, {}, (error, result) => {
 			if (result) {
-				const documents = result.toArray();
-				if (documents.length) {
-					setGamesResults(result.records);
+				if (result.length) {
+					setGamesResults(result);
 					console.log('Games were fetched');
 				} else {
 					data.map((game, index) => {
@@ -74,11 +73,11 @@ const GamesView = (): ReactElement => {
 			}
 		});
 	};
-	useEffect(() => {
+	Meteor.startup(() => {
 		if (!gamesResults.length) {
 			getGames();
 		}
-	}, []);
+	});
 	return (
 		<Page flexDirection='row'>
 			<Page>

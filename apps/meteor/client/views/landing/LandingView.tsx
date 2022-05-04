@@ -13,19 +13,23 @@ type Props = {
 
 const LandingView = ({ title, body }: Props): ReactElement => {
 	const [blogResults, setBlogResults] = useState([]);
-	useEffect(() => {
-		Meteor.call('getBlogs', 10, (error, result) => {
-			console.log(result, 'result');
-			// TODO: Add a success and error messages
-			// setBlogResults(ressult.records);
-		});
-	}, []);
+	Meteor.startup(() => {
+		if (!blogResults.length)
+			Meteor.call('getBlogs', 10, (error, result) => {
+				// TODO: Add a success and error messages
+				if (result) {
+					setBlogResults(result);
+				} else {
+					console.log(error, 'error');
+				}
+			});
+	});
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<TopBar />
 				<h3 style={{ marginLeft: '20px', marginTop: '10px', fontSize: '20px' }}>Top 10 Blog Posts</h3>
-				<Page.Content>{blogResults.length && blogResults.map((result, index) => <SingleBlogPost {...result} />)}</Page.Content>
+				<Page.Content>{blogResults.length && blogResults.map((result, index) => <SingleBlogPost key={index} {...result} />)}</Page.Content>
 				<BottomBar />
 			</Page>
 		</Page>

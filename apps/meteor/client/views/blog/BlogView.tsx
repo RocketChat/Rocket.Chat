@@ -28,25 +28,17 @@ const BlogView = (): ReactElement => {
 
 	Meteor.startup(() => {
 		Tracker.autorun(() => {
-			Meteor.subscribe('getPublishedBlogs');
+			Meteor.subscribe('blogs.getList');
 			return Meteor.call('getBlogs', 10, (error, result) => {
 				// TODO: Add a success and error messages
 				if (result) {
-					const documents = result.toArray();
-					setBlogResults(documents);
+					setBlogResults(result);
 				} else {
 					console.log(error, 'error');
 				}
 			});
 		});
 	});
-
-	// useEffect(() => {
-	// 	Meteor.call('getBlogs', 10, (error, result) => {
-	// 		// TODO: Add a success and error messages
-	// 		setBlogResults(result.records);
-	// 	});
-	// }, []);
 
 	return (
 		<Page flexDirection='row'>
