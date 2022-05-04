@@ -53,6 +53,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 	private hooks: (() => void)[] = [];
 
+	private mutedCalls: Set<string>;
+
 	private incomingDirectCalls: Map<string, IncomingDirectCall>;
 
 	private acceptingCallId: string | undefined;
@@ -62,6 +64,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	constructor() {
 		super();
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
+		this.mutedCalls = new Set<string>();
 	}
 
 	public isBusy(): boolean {
@@ -116,6 +119,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 			clearTimeout(callData.timeout);
 		}
 
+		// Mute this call Id so any lingering notifications don't trigger it again
+		this.muteIncomingCall(callId);
+
 		this.acceptingCallId = callId;
 		this.acceptingCallTimeout = setTimeout(() => {
 			if (this.acceptingCallId !== callId) {
@@ -134,6 +140,14 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		debug && console.log(`[VideoConf] Notifying user ${callData.uid} that we accept their call.`);
 		Notifications.notifyUser(callData.uid, 'video-conference.accepted', { callId, uid: this.userId, rid: callData.rid });
+	}
+
+	public muteIncomingCall(callId: string): void {
+		// Muting will stop a callId from ringing, but it doesn't affect any part of the existing workflow
+
+		this.mutedCalls.add(callId);
+		// Remove it from the muted list once enough time has passed
+		setTimeout(() => this.mutedCalls.delete(callId), CALL_TIMEOUT * 20);
 	}
 
 	public updateUser(): void {
@@ -268,6 +282,44 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.emit('direct/lost', { callId, uid: lostCall.uid, rid: lostCall.rid });
 	}
 
+	private createAbortTimeout(callId: string): number {
+		return setTimeout(() => this.abortIncomingCall(callId), CALL_TIMEOUT) as unknown as number;
+	}
+
+	private startNewIncomingCall({ callId, uid, rid }: DirectCallParams): void {
+		if (this.mutedCalls.has(callId)) {
+			debug && console.log(`[VideoConf] Ignoring muted call.`);
+			return;
+		}
+
+		debug && console.log(`[VideoConf] Storing this new call information.`);
+		this.incomingDirectCalls.set(callId, {
+			callId,
+			uid,
+			rid,
+			timeout: this.createAbortTimeout(callId),
+		});
+
+		this.emit('direct/ringing', { callId, uid, rid });
+	}
+
+	private refreshExistingIncomingCall({ callId, uid, rid }: DirectCallParams): void {
+		const existingData = this.incomingDirectCalls.get(callId);
+		if (!existingData) {
+			throw new Error('Video Conference Manager State Error');
+		}
+
+		debug && console.log(`[VideoConf] Resetting call timeout.`);
+		if (existingData.timeout) {
+			clearTimeout(existingData.timeout);
+		}
+		existingData.timeout = this.createAbortTimeout(callId);
+
+		if (!this.mutedCalls.has(callId)) {
+			this.emit('direct/ringing', { callId, uid, rid });
+		}
+	}
+
 	private onDirectCall({ callId, uid, rid }: DirectCallParams): void {
 		// If we already accepted this call, then don't ring again
 		if (this.acceptingCallId === callId) {
@@ -275,26 +327,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		}
 
 		debug && console.log(`[VideoConf] User ${uid} is ringing with call ${callId}.`);
-		const existingData = this.incomingDirectCalls.get(callId);
-		const timeout = setTimeout(() => this.abortIncomingCall(callId), CALL_TIMEOUT) as unknown as number;
-
-		if (existingData) {
-			debug && console.log(`[VideoConf] Resetting call timeout.`);
-			if (existingData.timeout) {
-				clearTimeout(existingData.timeout);
-			}
-			existingData.timeout = timeout;
+		if (this.incomingDirectCalls.has(callId)) {
+			this.refreshExistingIncomingCall({ callId, uid, rid });
 		} else {
-			debug && console.log(`[VideoConf] Storing this new call information.`);
-			this.incomingDirectCalls.set(callId, {
-				callId,
-				uid,
-				rid,
-				timeout,
-			});
+			this.startNewIncomingCall({ callId, uid, rid });
 		}
-
-		this.emit('direct/ringing', { callId, uid, rid });
 	}
 
 	private onDirectCallCanceled({ callId }: DirectCallParams): void {
