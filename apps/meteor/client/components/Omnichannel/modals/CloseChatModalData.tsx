@@ -1,4 +1,4 @@
-import { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import React, { ReactElement } from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
@@ -15,20 +15,30 @@ const CloseChatModalData = ({
 	onCancel: () => void;
 	onConfirm: (comment?: string, tags?: string[]) => Promise<void>;
 }): ReactElement => {
-	const { value: data, phase: state } = useEndpointData(`livechat/department/${departmentId}?includeAgents=false`);
-
-	// // TODO: This is necessery because of a weird problem
-	// // There is an endpoint livechat/department/${departmentId}/agents
-	// // that is causing the problem. type A | type B | undefined
-	const castingData = data as unknown as {
-		department: ILivechatDepartment | null;
-		agents?: any[];
-	};
+	const { value: data, phase: state } = useEndpointData(`livechat/department/${departmentId}`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
-	return <CloseChatModal onCancel={onCancel} onConfirm={onConfirm} department={castingData?.department} />;
+	// TODO: chapter day: fix issue with rest typing
+	// TODO: This is necessary because of a weird problem
+	// There is an endpoint livechat/department/${departmentId}/agents
+	// that is causing the problem. type A | type B | undefined
+
+	return (
+		<CloseChatModal
+			onCancel={onCancel}
+			onConfirm={onConfirm}
+			department={
+				(
+					data as {
+						department: ILivechatDepartment | null;
+						agents?: ILivechatDepartmentAgents[];
+					}
+				).department
+			}
+		/>
+	);
 };
 export default CloseChatModalData;
