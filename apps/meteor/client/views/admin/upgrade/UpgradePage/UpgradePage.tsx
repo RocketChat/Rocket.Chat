@@ -95,7 +95,15 @@ const UpgradePage = (): ReactElement => {
 			{isMobile && <PageHeader title='' />}
 			{!hasConnection && <UpgradePageError />}
 			{hasConnection && isLoading && (
-				<Box pb='x24'>
+				<Box
+					width={'100%'}
+					height={'100%'}
+					position={'absolute'}
+					display={'flex'}
+					justifyContent={'center'}
+					alignItems={'center'}
+					backgroundColor={'Window'}
+				>
 					<Throbber />
 				</Box>
 			)}
