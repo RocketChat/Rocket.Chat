@@ -22,7 +22,7 @@ Meteor.methods({
 
 		const Games = new GameService();
 
-		const results = await Games.list(paginationOptions, queryOptions);
+		const results = await Games.list(paginationOptions, queryOptions).toArray();
 
 		return results;
 	},

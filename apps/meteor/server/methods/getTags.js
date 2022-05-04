@@ -22,7 +22,7 @@ Meteor.methods({
 
 		const Tags = new TagService();
 
-		const results = await Tags.list(paginationOptions, queryOptions);
+		const results = await Tags.list(paginationOptions, queryOptions).toArray();
 
 		return results;
 	},

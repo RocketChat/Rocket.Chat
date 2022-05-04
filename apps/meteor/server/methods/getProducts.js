@@ -23,7 +23,7 @@ Meteor.methods({
 
 		const Products = new ProductService();
 
-		const results = await Products.list(paginationOptions, queryOptions);
+		const results = await Products.list(paginationOptions, queryOptions).toArray();
 
 		return results;
 	},
