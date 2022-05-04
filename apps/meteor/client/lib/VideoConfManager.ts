@@ -251,7 +251,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		const timeout = setTimeout(() => this.abortIncomingCall(callId), CALL_TIMEOUT) as unknown as number;
 
 		if (existingData) {
-			debug && console.log(`[VideoConf] Updating existing information about this call.`);
+			debug && console.log(`[VideoConf] Resetting call timeout.`);
 			if (existingData.timeout) {
 				clearTimeout(existingData.timeout);
 			}
