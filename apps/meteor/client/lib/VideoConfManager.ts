@@ -89,7 +89,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		const data = await tryAssignmentAsync<VideoConferenceInstructions>(
 			async () => (await APIClient.v1.post('video-conference.start', {}, { roomId })).data,
 			(e) => {
-				debug && console.error(`[VideoConf] Failed to start new call on rom ${roomId}`);
+				debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
 				this.startingNewCall = false;
 				throw e;
 			},
