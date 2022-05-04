@@ -17,6 +17,7 @@ env:
   CI: true
   MONGO_URL: mongodb://localhost:27017
   TOOL_NODE_FLAGS: --max_old_space_size=4096
+  NODE_COVERALLS_DEBUG: 1
 
 jobs:
   build:
