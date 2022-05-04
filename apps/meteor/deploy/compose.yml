@@ -22,7 +22,7 @@ services:
         -mongodb://${MONGODB_ROOT_USER:-root}:${MONGODB_ROOT_PASSWORD}@${MONGODB_ADVERTISED_HOSTNAME:-mongodb}:\
           ${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}/\
           local?authSource=admin&replicaSet=${MONGODB_REPLICA_SET_NAME:-rs0}}"
-      ROOT_URL: ${ROOT_URL:-http://localhost:${HOST_PORT}}
+      ROOT_URL: ${ROOT_URL:-http://localhost:${HOST_PORT:-3000}}
       PORT: ${PORT:-3000}
     depends_on: [mongodb]
     expose:
@@ -41,8 +41,8 @@ services:
       - mongodb_data:/bitnami/mongodb
       # using the long format to avoid docker automatically creating the source on host
       - type: bind
-        source: ./user_set_role_cluster_admin.sh
-        target: /docker-entrypoint-initdb.d/user_set_role_cluster_admin.sh
+        source: ./user_set_role_cluster_monitor.sh
+        target: /docker-entrypoint-initdb.d/user_set_role_cluster_monitor.sh
         read_only: true
     environment:
       BITNAMI_DEBUG: 'true'
@@ -59,4 +59,4 @@ services:
       MONGODB_USERNAME: ${MONGODB_USERNAME:-rocketchat}
       MONGODB_PASSWORD: ${MONGODB_PASSWORD?must pass database user password}
       MONGODB_DATABASE: ${MONGODB_DATABASE:-rocketchat}
-      MONGODB_REPLICA_SET_KEY: ${MONGODB_REPLICA_SET_KEY?must pass a key; key length >=5}
+      MONGODB_REPLICA_SET_KEY: ${MONGODB_REPLICA_SET_KEY:-replaceme}

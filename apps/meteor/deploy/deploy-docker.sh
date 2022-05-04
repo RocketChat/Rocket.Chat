@@ -52,7 +52,7 @@ _substitute_or_inject_variable() {
   local variable=${1?} value=${2?} file=${3?}
   ((DRY_RUN)) && { info "$variable=$value"; return; }
   if grep -Eq "^$variable=.+" $file && ! ((FORCE)); then
-    warn "value for \"$variable\" already exists; skipping"
+    warn "value for \"$variable\" already exists; skipping; use --force to overwrite"
     return
   fi
   # comment out the existing value and put the new value in
@@ -134,17 +134,11 @@ install_docker_compose() {
   local distro="$(. /etc/os-release; echo $ID)"
 
   case $distro in
-    'ubuntu'|'debian')
-      if [[ -n "$(apt search docker-compose-plugin -qqq)" ]]; then
-        run apt install docker-compose-plugin -yqqq || error "failed to install compose v2"
-        success_msg "compose v2 successfully installed"
-        return
-      fi
-    ;;
-    'centos')
-      # do stuff
-    ;;
+    'ubuntu'|'debian') [[ -n "$(apt search docker-compose-plugin -qqq)" ]] && run apt install docker-compose-plugin -yqqq || error "failed to install compose v2" ;;
+    'centos') [[ -n "$(yum -C -e0 -q search docker-compose-plugin)" ]] && run yum install -y docker-compose-plugin || error "failed to install compose v2" ;;
   esac
+  &>/dev/null docker compose version && { success_msg "compose v2 sucessfully installed"; return; }
+  # well if we're here compose isn't in the repo or something else went wrong; manual install may still work
   warn "compose v2 not found on the repos...attempting manual install"
   do_install_compose
 }
@@ -198,6 +192,8 @@ deploy() {
     read -p "please enter your domain name (without the 'https://'): " domain
     _substitute_or_inject_variable DOMAIN $domain .env
     _substitute_or_inject_variable ROOT_URL "https://$domain" .env
+    read -p "please enter your email address for TLS certificate renewal: " email
+    _substitute_or_inject_variable LETSENCRYPT_EMAIL $email .env
   fi
 
   info "pulling docker images"
