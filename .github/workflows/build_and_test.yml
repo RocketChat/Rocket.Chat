@@ -624,7 +624,7 @@ jobs:
           docker build \
             --build-arg SERVICE=${{ matrix.service }} \
             -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
-            -f ./apps/meteor/ee/server/services/Dockerfile \
+            -f ./ee/apps/ddp-streamer/Dockerfile \
             .
 
   release-versions:
@@ -876,12 +876,16 @@ jobs:
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
 
-          # TODO missing ddp-streamer
+          if [[ "${{ matrix.service }}" == "ddp-streamer" ]]; then
+            DOCKERFILE_PATH="./ee/apps/ddp-streamer/Dockerfile"
+          else
+            DOCKERFILE_PATH="./apps/meteor/ee/server/services/Dockerfile"
+          fi
 
           docker build \
             --build-arg SERVICE=${{ matrix.service }} \
             -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
-            -f ./apps/meteor/ee/server/services/Dockerfile \
+            -f ${DOCKERFILE_PATH} \
             .
 
           docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
