@@ -4124,6 +4124,7 @@ __metadata:
     typescript: ~4.3.5
   peerDependencies:
     "@rocket.chat/fuselage": "*"
+    "@rocket.chat/fuselage-hooks": "*"
     react: "*"
     react-dom: "*"
   languageName: unknown
