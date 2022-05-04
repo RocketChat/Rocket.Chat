@@ -6,7 +6,7 @@ import { GameService } from '../services/game/service';
 if (Meteor.isServer) {
 	const Games = new GameService();
 
-	Meteor.publish('getPublishedGames', function (paginationOptions, queryOptions) {
+	Meteor.publish('games.getList', function (paginationOptions, queryOptions) {
 		check(
 			paginationOptions,
 			Match.ObjectIncluding({
