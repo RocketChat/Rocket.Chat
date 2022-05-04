@@ -1,6 +1,8 @@
+import { Cursor } from 'mongodb';
+
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { PartialBy } from './PartialBy';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from './ITeam';
+import { IPaginationOptions, IQueryOptions } from './ITeam';
 import { AtLeastOne } from './AtLeastOne';
 
 export interface IProduct extends IRocketChatRecord {
@@ -23,7 +25,7 @@ export type IProductUpdateBody = IProductUpdateParams & { _updatedAt: IProduct['
 
 export interface IProductService {
 	create(params: IProductCreateParams): Promise<IProduct>;
-	list(paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<IProduct>): Promise<IRecordsWithTotal<IProduct>>;
+	list(paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<IProduct>): Cursor<IProduct>;
 	update(productId: string, params: IProductUpdateParams): Promise<IProduct>;
 	delete(productId: string): Promise<void>;
 	getProduct(productId: string): Promise<IProduct>;

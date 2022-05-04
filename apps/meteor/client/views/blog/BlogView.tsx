@@ -1,5 +1,6 @@
 import { Icon, Grid, Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import React, { ReactElement, useState, useEffect } from 'react';
 
 import Page from '../../components/Page';
@@ -25,12 +26,26 @@ const BlogView = (): ReactElement => {
 		setUpdateTags([]);
 	};
 
-	useEffect(() => {
-		Meteor.call('getBlogs', 10, (error, result) => {
-			// TODO: Add a success and error messages
-			setBlogResults(result.records);
+	Meteor.startup(() => {
+		Tracker.autorun(() => {
+			Meteor.subscribe('allBlogs');
+			return Meteor.call('getBlogs', 10, (error, result) => {
+				// TODO: Add a success and error messages
+				if (result) {
+					setBlogResults(result.records);
+				} else {
+					console.log(error, 'error');
+				}
+			});
 		});
-	}, []);
+	});
+
+	// useEffect(() => {
+	// 	Meteor.call('getBlogs', 10, (error, result) => {
+	// 		// TODO: Add a success and error messages
+	// 		setBlogResults(result.records);
+	// 	});
+	// }, []);
 
 	return (
 		<Page flexDirection='row'>

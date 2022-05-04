@@ -1,13 +1,18 @@
+import { Cursor } from 'mongodb';
+
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IProductService, IProductCreateParams, IProduct, IProductUpdateBody, IProductUpdateParams } from '../../../definition/IProduct';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
+import { IPaginationOptions, IQueryOptions } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 import { ProductModel } from '../../../app/models/server/raw';
+import { ProductsRaw } from '../../../app/models/server/raw/Products';
 
 export class ProductService extends ServiceClassInternal implements IProductService {
 	protected name = 'product';
+
+	private ProductModel: ProductsRaw = ProductModel;
 
 	async create(params: IProductCreateParams): Promise<IProduct> {
 		const createData: InsertionModel<IProduct> = {
@@ -15,17 +20,17 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 			...params,
 			...(params.ranking ? { ranking: params.ranking } : { ranking: 0 }),
 		};
-		const result = await ProductModel.insertOne(createData);
-		return ProductModel.findOneById(result.insertedId);
+		const result = await this.ProductModel.insertOne(createData);
+		return this.ProductModel.findOneById(result.insertedId);
 	}
 
 	async delete(productId: string): Promise<void> {
 		await this.getProduct(productId);
-		await ProductModel.removeById(productId);
+		await this.ProductModel.removeById(productId);
 	}
 
 	async getProduct(productId: string): Promise<IProduct> {
-		const product = ProductModel.findOneById(productId);
+		const product = this.ProductModel.findOneById(productId);
 		if (!product) {
 			throw new Error('product-does-not-exist');
 		}
@@ -41,15 +46,15 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 			...new UpdateObject(),
 			...params,
 		};
-		const result = await ProductModel.updateOne(query, { $set: updateData });
-		return ProductModel.findOneById(productId);
+		const result = await this.ProductModel.updateOne(query, { $set: updateData });
+		return this.ProductModel.findOneById(productId);
 	}
 
-	async list(
+	list(
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
 		{ sort, query }: IQueryOptions<IProduct> = { sort: {} },
-	): Promise<IRecordsWithTotal<IProduct>> {
-		const result = ProductModel.find(
+	): Cursor<IProduct> {
+		const result = this.ProductModel.find(
 			{ ...query },
 			{
 				...(sort && { sort }),
@@ -57,9 +62,13 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 				skip: offset,
 			},
 		);
-		return {
-			total: await result.count(),
-			records: await result.toArray(),
-		};
+		return this.ProductModel.find(
+			{ ...query },
+			{
+				...(sort && { sort }),
+				limit: count,
+				skip: offset,
+			},
+		);
 	}
 }

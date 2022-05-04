@@ -3,12 +3,12 @@ import { check, Match } from 'meteor/check';
 
 import { BlogService } from '../services/blog/services';
 
-Meteor.methods({
-	async getBlogs(limit) {
+if (Meteor.isServer) {
+	const Blogs = new BlogService();
+
+	Meteor.publish('getBlogs', function (limit) {
 		check(limit, Match.Optional(Number));
 
-		const Blogs = new BlogService();
-
 		return Blogs.list(limit);
-	},
-});
+	});
+}
