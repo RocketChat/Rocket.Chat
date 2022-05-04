@@ -183,7 +183,6 @@ generate_passwords() {
 
   declare -A secrets=([MONGODB_PASSWORD]="$(random_password)" [MONGODB_ROOT_PASSWORD]="$(random_password)" [MONGODB_REPLICA_SET_KEY]="$(random_password 8)")
 
-  # https://www.youtube.com/watch?v=Sv_kEdNwYtQ
   [[ -f .env ]] || touch .env
 
   info "generating passwords and secret keys for deployment"

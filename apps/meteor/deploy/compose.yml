@@ -25,7 +25,8 @@ services:
       ROOT_URL: ${ROOT_URL:-http://localhost:${HOST_PORT}}
       PORT: ${PORT:-3000}
     depends_on: [mongodb]
-    expose: [${PORT:-3000}]
+    expose:
+      - ${PORT:-3000}
     ports:
       - host_ip: ${BIND_IP:-0.0.0.0}
         target: ${PORT:-3000}
