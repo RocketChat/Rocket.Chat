@@ -738,7 +738,7 @@ jobs:
     strategy:
       matrix:
         # this is current a mix of variants and different images
-        release: ["official", "preview", "alpine"]
+        release: ["official", "preview"]
 
     env:
       IMAGE_NAME: "rocketchat/rocket.chat"
