@@ -1,5 +1,6 @@
+import { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import React, { memo, ReactElement } from 'react';
 import s from 'underscore.string';
 
 import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
@@ -10,16 +11,18 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 
-function OAuthGroupPage({ _id, ...group }) {
+type OAuthGroupPageProps = ISetting;
+
+function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 	const t = useTranslation();
 
-	const sectionIsCustomOAuth = (sectionName) => sectionName && /^Custom OAuth:\s.+/.test(sectionName);
+	const sectionIsCustomOAuth = (sectionName: string): string | boolean => sectionName && /^Custom OAuth:\s.+/.test(sectionName);
 
 	const getAbsoluteUrl = useAbsoluteUrl();
 
-	const callbackURL = (sectionName) => {
+	const callbackURL = (sectionName: string): string => {
 		const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
 		return getAbsoluteUrl(`_oauth/${id}`);
 	};
@@ -30,17 +33,17 @@ function OAuthGroupPage({ _id, ...group }) {
 	const removeOAuthService = useMethod('removeOAuthService');
 	const modal = useModal();
 
-	const handleRefreshOAuthServicesButtonClick = async () => {
+	const handleRefreshOAuthServicesButtonClick = async (): Promise<void> => {
 		dispatchToastMessage({ type: 'info', message: t('Refreshing') });
 		try {
 			await refreshOAuthService();
 			dispatchToastMessage({ type: 'success', message: t('Done') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	};
 
-	const handleAddCustomOAuthButtonClick = () => {
+	const handleAddCustomOAuthButtonClick = (): void => {
 		modal.open(
 			{
 				title: t('Add_custom_oauth'),
@@ -50,7 +53,7 @@ function OAuthGroupPage({ _id, ...group }) {
 				closeOnConfirm: true,
 				inputPlaceholder: t('Custom_oauth_unique_name'),
 			},
-			async (inputValue) => {
+			async (inputValue: unknown) => {
 				if (inputValue === false) {
 					return false;
 				}
@@ -61,7 +64,7 @@ function OAuthGroupPage({ _id, ...group }) {
 				try {
 					await addOAuthService(inputValue);
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
+					dispatchToastMessage({ type: 'error', message: String(error) });
 				}
 			},
 		);
@@ -82,7 +85,7 @@ function OAuthGroupPage({ _id, ...group }) {
 				if (sectionIsCustomOAuth(sectionName)) {
 					const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
 
-					const handleRemoveCustomOAuthButtonClick = () => {
+					const handleRemoveCustomOAuthButtonClick = (): void => {
 						modal.open(
 							{
 								title: t('Are_you_sure'),
@@ -97,7 +100,7 @@ function OAuthGroupPage({ _id, ...group }) {
 								try {
 									await removeOAuthService(id);
 								} catch (error) {
-									dispatchToastMessage({ type: 'error', message: error });
+									dispatchToastMessage({ type: 'error', message: String(error) });
 								}
 							},
 						);
