@@ -9,10 +9,12 @@ import BottomBar from '../../components/BottomBar';
 import DetailPageHeader from '../../components/DetailPageHeader/DetailPageHeader';
 
 const BlogView = (): ReactElement => {
+	const { dispatch } = useContext(DispatchBlogGlobalContext);
 	const { value } = useContext(BlogGlobalContext);
 	const { id, author, createdAt, title, content, image, comments } = value;
 	const [comment, setComment] = useState('');
 	const [commentId, setCommentId] = useState('');
+	console.log(value, 'value');
 
 	const handleSubmit = (): void => {
 		// When we are updating the commentId is usually set otherwise it'll be an empty string.
@@ -20,7 +22,7 @@ const BlogView = (): ReactElement => {
 			Meteor.call('addComment', { content: comment, blogId: id, parentId: id }, (error, result) => {
 				if (result) {
 					setComment('');
-					console.log('Comment added successfully');
+					dispatch({ type: 'ADD_COMMENT', payload: result });
 				}
 			});
 		} else {
@@ -29,6 +31,7 @@ const BlogView = (): ReactElement => {
 					setComment('');
 					setCommentId('');
 					console.log('Updated comment');
+					dispatch({ type: 'UPDATE_COMMENT', payload: result });
 				}
 			});
 		}

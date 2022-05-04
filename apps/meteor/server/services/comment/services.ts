@@ -1,13 +1,19 @@
+import { Cursor } from 'mongodb';
+
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { ICommentService, ICommentCreateParams, IComment, ICommentUpdateBody, ICommentUpdateParams } from '../../../definition/IComment';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from '../../../definition/ITeam';
+import { IPaginationOptions, IQueryOptions } from '../../../definition/ITeam';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 import { CommentModel } from '../../../app/models/server/raw';
+import { CommentsRaw } from '../../../app/models/server/raw/Comments';
 
 export class CommentService extends ServiceClassInternal implements ICommentService {
 	protected name = 'comment';
+
+
+	private CommentModel: CommentsRaw = CommentModel;
 
 
 	async create(params: ICommentCreateParams): Promise<IComment> {
@@ -47,11 +53,11 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 
 	}
 
-	async list(
+	list(
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
 		{ sort, query }: IQueryOptions<IComment> = { sort: {} },
-	): Promise<IRecordsWithTotal<IComment>> {
-		const result = CommentModel.find(
+	): Cursor<IComment> {
+		return CommentModel.find(
 			{ ...query },
 			{
 				...(sort && { sort }),
@@ -59,9 +65,5 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 				skip: offset,
 			},
 		);
-		return {
-			total: await result.count(),
-			records: await result.toArray(),
-		};
 	}
 }

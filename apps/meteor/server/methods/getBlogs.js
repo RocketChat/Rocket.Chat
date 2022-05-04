@@ -9,8 +9,8 @@ Meteor.methods({
 
 		const Blogs = new BlogService();
 
-		const results = await Blogs.list(limit);
+		const result = await Blogs.list(limit).toArray();
 
-		return results;
+		return result;
 	},
 });

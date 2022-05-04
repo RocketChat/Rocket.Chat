@@ -1,5 +1,7 @@
+import { Cursor } from 'mongodb';
+
 import { IRocketChatRecord } from './IRocketChatRecord';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from './ITeam';
+import { IPaginationOptions, IQueryOptions } from './ITeam';
 import { AtLeastOne } from './AtLeastOne';
 
 export interface ITag extends IRocketChatRecord {
@@ -19,7 +21,7 @@ export type ITagUpdateBody = ITagUpdateParams & { _updatedAt: ITag['_updatedAt']
 
 export interface ITagService {
 	create(params: ITagCreateParams): Promise<ITag>;
-	list(paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<ITag>): Promise<IRecordsWithTotal<ITag>>;
+	list(paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<ITag>): Cursor<ITag>;
 	update(tagId: string, params: ITagUpdateParams): Promise<ITag>;
 	delete(tagId: string): Promise<void>;
 	getTag(tagId: string): Promise<ITag>;

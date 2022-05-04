@@ -1,9 +1,10 @@
+import { AggregationCursor } from 'mongodb';
+
 import { BaseRaw } from './BaseRaw';
 import { IBlog as T } from '../../../../definition/IBlog';
-import { IRecordsWithTotal } from '../../../../definition/ITeam';
 
 export class BlogsRaw extends BaseRaw<T> {
-	async getBlogsWithComments(limit = 10): Promise<IRecordsWithTotal<T>> {
+	getBlogsWithComments(limit = 10): AggregationCursor<T> {
 		const pipeline = [
 			{
 				$lookup: {
@@ -23,10 +24,6 @@ export class BlogsRaw extends BaseRaw<T> {
 				},
 			},
 		];
-		const cursor = this.col.aggregate(pipeline);
-		return {
-			total: await (await cursor.toArray()).length,
-			records: await cursor.toArray(),
-		};
+		return this.col.aggregate(pipeline);
 	}
 }
