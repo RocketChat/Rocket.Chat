@@ -1,4 +1,4 @@
-import type { IRoom, IUser, VideoConferenceInstructions } from '@rocket.chat/core-typings';
+import type { IRoom, VideoConferenceInstructions } from '@rocket.chat/core-typings';
 
 import type { VideoConfStartProps } from './VideoConfStartProps';
 
@@ -11,7 +11,7 @@ export type VideoConferenceEndpoints = {
 		};
 	};
 
-	'video-conference/start': {
+	'video-conference.start': {
 		POST: (params: VideoConfStartProps) => { data: VideoConferenceInstructions };
 	};
 };

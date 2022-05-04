@@ -28,7 +28,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'video-conference/start',
+	'video-conference.start',
 	{ authRequired: true },
 	{
 		async post() {
