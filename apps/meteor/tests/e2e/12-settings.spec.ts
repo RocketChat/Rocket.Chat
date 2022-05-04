@@ -487,13 +487,9 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
-		test.skip('(API) expect register a user', () => {
-			//
-		});
-
-		test.describe.serial('(UI) expect activate/deactivate flow as admin', () => {
-			test.skip('expect open /users as admin', async () => {
-				//
+		test.describe.skip('(UI) expect activate/deactivate flow as admin', () => {
+			test('expect open /users as admin', async () => {
+				// await sideNav.logout().click();
 			});
 
 			test.skip('expect find registered user', async () => {
