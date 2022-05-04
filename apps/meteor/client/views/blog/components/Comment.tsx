@@ -1,9 +1,8 @@
 import { Box, Menu, Icon } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { DispatchBlogGlobalContext } from '../../../contexts/BlogDetailContext/GlobalState';
-
 
 type Props = {
 	blogId: string;
@@ -26,9 +25,8 @@ const Comment = ({ commentId, content, setComment, setCommentId }: Props) => {
 						action: function noRefCheck(): void {
 							Meteor.call('deleteComment', commentId, (error, result) => {
 								if (result) {
-									console.log('Deleted comment');
-					dispatch({ type: 'UPDATE_COMMENT', payload: result });
-
+									console.log('Deleted comment', result);
+									dispatch({ type: 'DELETE_COMMENT', payload: { commentId } });
 								}
 							});
 						},
