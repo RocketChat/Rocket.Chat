@@ -3600,7 +3600,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage@npm:^0.31.11, @rocket.chat/fuselage@npm:~0.31.10, @rocket.chat/fuselage@npm:~0.31.11":
+"@rocket.chat/fuselage@npm:^0.31.11, @rocket.chat/fuselage@npm:~0.31.11":
   version: 0.31.11
   resolution: "@rocket.chat/fuselage@npm:0.31.11"
   dependencies:
@@ -3739,6 +3739,7 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.11
     "@rocket.chat/ui-kit": ~0.31.11
+    "@rocket.chat/ui-video-conf": "workspace:^"
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/client": ^4.12.0
     "@storybook/addon-essentials": ~6.4.19
@@ -4114,12 +4115,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf":
+"@rocket.chat/ui-video-conf@workspace:^, @rocket.chat/ui-video-conf@workspace:packages/ui-video-conf":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
   dependencies:
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ~0.31.10
+    "@rocket.chat/fuselage": ~0.31.11
     "@rocket.chat/fuselage-hooks": ^0.31.11
     "@types/jest": ^27.4.1
     "@types/react": ^18.0.8

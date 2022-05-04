@@ -6,6 +6,9 @@ import VideoConfModalControllers from './VideoConfModalControllers';
 import VideoConfModalFooter from './VideoConfModalFooter';
 import VideoConfModalInfo from './VideoConfModalInfo';
 import VideoConfModalTitle from './VideoConfModalTitle';
+import VideoConfModalControllerButton from './VideoConfModalControllerButton';
+import VideoConfModalFooterButton from './VideoConfModalFooterButton';
+
 
 export {
   VideoConfModal,
@@ -15,5 +18,7 @@ export {
   VideoConfModalControllers,
   VideoConfModalFooter,
   VideoConfModalInfo,
-  VideoConfModalTitle
+  VideoConfModalTitle,
+  VideoConfModalControllerButton,
+  VideoConfModalFooterButton
 };

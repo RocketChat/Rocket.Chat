@@ -1,5 +1,5 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { Box, Button, Icon, TextInput, Skeleton } from '@rocket.chat/fuselage';
+import { Box, TextInput, Skeleton } from '@rocket.chat/fuselage';
 import {
 	VideoConfModal,
 	VideoConfModalContent,
@@ -9,6 +9,8 @@ import {
 	VideoConfModalController,
 	VideoConfModalFooter,
 	VideoConfModalField,
+	VideoConfModalControllerButton,
+	VideoConfModalFooterButton,
 } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement, useState, ChangeEvent, useMemo } from 'react';
 
@@ -56,25 +58,22 @@ const StartVideoConfModal = ({ room, onClose }: { room: IRoom; onClose: () => vo
 				</VideoConfModalInfo>
 				<VideoConfModalControllers>
 					<VideoConfModalController>
-						<Button title={startCallConfig.mic ? t('Mic_on') : t('Mic_off')} square primary={startCallConfig.mic} onClick={handleToggleMic}>
-							<Icon size='x20' name={startCallConfig.mic ? 'mic' : 'mic-off'} />
-						</Button>
-						<Box mbs='x8' fontScale='c1' color='neutral-700'>
-							{startCallConfig.mic ? t('Mic_on') : t('Mic_off')}
-						</Box>
+						<VideoConfModalControllerButton
+							primary={startCallConfig.mic}
+							text={startCallConfig.mic ? t('Mic_on') : t('Mic_off')}
+							title={startCallConfig.mic ? t('Mic_on') : t('Mic_off')}
+							icon={startCallConfig.mic ? 'mic' : 'mic-off'}
+							onClick={handleToggleMic}
+						/>
 					</VideoConfModalController>
 					<VideoConfModalController>
-						<Button
-							title={startCallConfig.video ? t('Cam_on') : t('Cam_off')}
-							square
+						<VideoConfModalControllerButton
 							primary={startCallConfig.video}
+							text={startCallConfig.video ? t('Cam_on') : t('Cam_off')}
+							title={startCallConfig.video ? t('Cam_on') : t('Cam_off')}
+							icon={startCallConfig.video ? 'video' : 'video-off'}
 							onClick={handleToggleVideo}
-						>
-							<Icon size='x20' name={startCallConfig.video ? 'video' : 'video-off'} />
-						</Button>
-						<Box mbs='x8' fontScale='c1' color='neutral-700'>
-							{startCallConfig.video ? t('Cam_on') : t('Cam_off')}
-						</Box>
+						/>
 					</VideoConfModalController>
 				</VideoConfModalControllers>
 				{!isDirect && (
@@ -89,10 +88,10 @@ const StartVideoConfModal = ({ room, onClose }: { room: IRoom; onClose: () => vo
 				)}
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
-				<Button primary>
-					<Icon size='x20' name='phone' /> {t('Start_call')}
-				</Button>
-				<Button onClick={onClose}>{t('Cancel')}</Button>
+				<VideoConfModalFooterButton primary icon='phone'>
+					{t('Start_call')}
+				</VideoConfModalFooterButton>
+				<VideoConfModalFooterButton onClick={onClose}>{t('Cancel')}</VideoConfModalFooterButton>
 			</VideoConfModalFooter>
 		</VideoConfModal>
 	);
