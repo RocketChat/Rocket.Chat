@@ -49,5 +49,9 @@
 			"apps/meteor/.docker/Dockerfile.rhel",
 			"apps/meteor/app/utils/rocketchat.info"
 		]
+	},
+	"volta": {
+		"node": "14.18.3",
+		"yarn": "1.22.18"
 	}
 }
