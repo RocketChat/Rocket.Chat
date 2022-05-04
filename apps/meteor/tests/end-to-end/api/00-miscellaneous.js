@@ -152,7 +152,7 @@ describe('miscellaneous', function () {
 					'desktopNotifications',
 					'pushNotifications',
 					'enableAutoAway',
-					'enableLegacyMessages',
+					'enableNewMessageTemplate',
 					// 'highlights',
 					'showMessageInMainThread',
 					'desktopNotificationRequireInteraction',

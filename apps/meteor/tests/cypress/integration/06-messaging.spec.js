@@ -177,27 +177,27 @@ function messageActionsTest(currentTest, testChannel) {
 			});
 
 			it('it should show the edit action', () => {
-				mainContent.messageEdit.should('be.visible');
+				mainContent.messageEdit.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the delete action', () => {
-				mainContent.messageDelete.should('be.visible');
+				mainContent.messageDelete.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the permalink action', () => {
-				mainContent.messagePermalink.should('be.visible');
+				mainContent.messagePermalink.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the copy action', () => {
-				mainContent.messageCopy.should('be.visible');
+				mainContent.messageCopy.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the quote the action', () => {
-				mainContent.messageQuote.should('be.visible');
+				mainContent.messageQuote.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the star action', () => {
-				mainContent.messageStar.should('be.visible');
+				mainContent.messageStar.scrollIntoView().should('be.visible');
 			});
 
 			if (currentTest === 'general') {
@@ -244,8 +244,8 @@ function messageActionsTest(currentTest, testChannel) {
 						before(() => grantCreateDPermission());
 
 						before(() => {
-							sideNav.spotlightSearchIcon.click();
 							mainContent.closeMessageActionMenu();
+							sideNav.spotlightSearchIcon.click();
 							sideNav.searchChannel(testDMUsername);
 						});
 
