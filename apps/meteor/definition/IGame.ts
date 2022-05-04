@@ -1,7 +1,9 @@
+import { Cursor } from 'mongodb';
+
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { ITag } from './ITag';
 import { PartialBy } from './PartialBy';
-import { IPaginationOptions, IQueryOptions, IRecordsWithTotal } from './ITeam';
+import { IPaginationOptions, IQueryOptions } from './ITeam';
 import { AtLeastOne } from './AtLeastOne';
 
 export interface IGame extends IRocketChatRecord {
@@ -24,7 +26,7 @@ export type IGameUpdateBody = IGameUpdateParams & { _updatedAt: IGame['_updatedA
 
 export interface IGameService {
 	create(params: IGameCreateParams): Promise<IGame>;
-	list(paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<IGame>): Promise<IRecordsWithTotal<IGame>>;
+	list(paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<IGame>): Cursor<IGame>;
 	update(gameId: string, params: IGameUpdateParams): Promise<IGame>;
 	delete(gameId: string): Promise<void>;
 	getGame(gameId: string): Promise<IGame>;

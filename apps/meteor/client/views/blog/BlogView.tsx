@@ -1,6 +1,8 @@
 import { Icon, Grid, Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
-import React, { ReactElement, useState, useEffect } from 'react';
+import { Tracker } from 'meteor/tracker';
+import { isMobile } from 'react-device-detect';
+import React, { ReactElement, useState } from 'react';
 
 import Page from '../../components/Page';
 import BottomBar from '../../components/BottomBar';
@@ -27,12 +29,19 @@ const BlogView = (): ReactElement => {
 		setUpdateTags([]);
 	};
 
-	useEffect(() => {
-		Meteor.call('getBlogs', 10, (error, result) => {
-			// TODO: Add a success and error messages
-			setBlogResults(result.records);
+	Meteor.startup(() => {
+		Tracker.autorun(() => {
+			Meteor.subscribe('blogs.getList');
+			return Meteor.call('getBlogs', 10, (error, result) => {
+				// TODO: Add a success and error messages
+				if (result) {
+					setBlogResults(result);
+				} else {
+					console.log(error, 'error');
+				}
+			});
 		});
-	}, []);
+	});
 
 	return (
 		<Page flexDirection='row'>
@@ -55,6 +64,8 @@ const BlogView = (): ReactElement => {
 								<Grid.Item xs={4} md={4} lg={6} key={index}>
 									<SingleBlogPost
 										{...item}
+										blogResults={blogResults}
+										setBlogResults={setBlogResults}
 										setModalShow={setShowModal}
 										setBlogId={setBlogId}
 										setUpdateTitle={setUpdateTitle}
@@ -72,7 +83,7 @@ const BlogView = (): ReactElement => {
 						</Button>
 					</div>
 				</Page.Content>
-				<BottomBar />
+				{isMobile ? <BottomBar /> : null}
 			</Page>
 		</Page>
 	);

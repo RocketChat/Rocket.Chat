@@ -8,6 +8,7 @@ import TopBar from '../../topbar/TopBar';
 import { IGame } from '../../../definition/IGame';
 import PageInlineNavbar from '../../components/PageInlineNavbar/PageInlineNavbar';
 import { Grid } from '@rocket.chat/fuselage';
+import { isMobile } from 'react-device-detect';
 
 const GamesView = (): ReactElement => {
 	const [gamesResults, setGamesResults] = useState([]);
@@ -44,8 +45,8 @@ const GamesView = (): ReactElement => {
 	const getGames = () => {
 		Meteor.call('getGames', { count: 10 }, {}, (error, result) => {
 			if (result) {
-				if (result.records.length) {
-					setGamesResults(result.records);
+				if (result.length) {
+					setGamesResults(result);
 					console.log('Games were fetched');
 				} else {
 					data.map((game, index) => {
@@ -73,11 +74,11 @@ const GamesView = (): ReactElement => {
 			}
 		});
 	};
-	useEffect(() => {
+	Meteor.startup(() => {
 		if (!gamesResults.length) {
 			getGames();
 		}
-	}, []);
+	});
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -92,7 +93,7 @@ const GamesView = (): ReactElement => {
 						))}
 					</Grid>
 				</Page.Content>
-				<BottomBar />
+				{isMobile ? <BottomBar /> : null}
 			</Page>
 		</Page>
 	);

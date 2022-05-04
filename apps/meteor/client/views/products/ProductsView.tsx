@@ -1,5 +1,6 @@
 import { Grid } from '@rocket.chat/fuselage';
 import React, { ReactElement, useEffect, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import { IProduct } from '../../../definition/IProduct';
 
 import BottomBar from '../../components/BottomBar';
@@ -43,8 +44,8 @@ const ProductsView = (): ReactElement => {
 	const getBackendProducts = () => {
 		Meteor.call('getProducts', { count: 10 }, {}, (error, result) => {
 			if (result) {
-				if (result.records.length) {
-					setProductResults(result.records);
+				if (result.length) {
+					setProductResults(result);
 					console.log('Products were fetched');
 				} else {
 					data.map((product, index) => {
@@ -72,11 +73,11 @@ const ProductsView = (): ReactElement => {
 			}
 		});
 	};
-	useEffect(() => {
+	Meteor.startup(() => {
 		if (!productResults.length) {
 			getBackendProducts();
 		}
-	}, []);
+	});
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -91,7 +92,7 @@ const ProductsView = (): ReactElement => {
 						))}
 					</Grid>
 				</Page.Content>
-				<BottomBar />
+				{isMobile ? <BottomBar /> : null}
 			</Page>
 		</Page>
 	);

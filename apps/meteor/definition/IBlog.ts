@@ -1,3 +1,5 @@
+import { AggregationCursor } from 'mongodb';
+
 import { ITag } from './ITag';
 import { PartialBy } from './PartialBy';
 import { IRecordsWithTotal } from './ITeam';
@@ -25,7 +27,7 @@ export type IBlogUpdateBody = IBlogUpdateParams & { _updatedAt: IBlog['_updatedA
 
 export interface IBlogService {
 	create(params: IBlogCreateParams): Promise<IBlog>;
-	list(limit?: number): Promise<IRecordsWithTotal<IBlog>>;
+	list(limit?: number): AggregationCursor<IBlog>;
 	update(blogId: string, params: IBlogUpdateParams): Promise<IBlog>;
 	delete(blogId: string): Promise<void>;
 	getBlog(blogId: string): Promise<IBlog>;

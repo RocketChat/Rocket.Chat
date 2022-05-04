@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
-import { TagService } from '../services/tag/service';
+import { GameService } from '../services/game/service';
 
-Meteor.methods({
-	async getTags(paginationOptions, queryOptions) {
+if (Meteor.isServer) {
+	const Games = new GameService();
+
+	Meteor.publish('games.getList', function (paginationOptions, queryOptions) {
 		check(
 			paginationOptions,
 			Match.ObjectIncluding({
@@ -20,10 +22,6 @@ Meteor.methods({
 			}),
 		);
 
-		const Tags = new TagService();
-
-		const results = await Tags.list(paginationOptions, queryOptions).toArray();
-
-		return results;
-	},
-});
+		return Games.list(paginationOptions, queryOptions);
+	});
+}
