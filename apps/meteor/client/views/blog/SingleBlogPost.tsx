@@ -17,6 +17,8 @@ type Props = {
 	setUpdateTitle?: Function;
 	setUpdateContent?: Function;
 	setUpdateTags?: Function;
+	blogResults: Record<string, any>[];
+	setBlogResults: Function;
 };
 
 const SingleBlogPost = ({
@@ -31,6 +33,8 @@ const SingleBlogPost = ({
 	setUpdateTitle,
 	setUpdateContent,
 	setUpdateTags,
+	blogResults,
+	setBlogResults,
 }: Props): ReactElement => {
 	const { dispatch } = useContext(DispatchBlogGlobalContext);
 
@@ -77,6 +81,8 @@ const SingleBlogPost = ({
 											if (result) {
 												// TODO: Add a success and error messages
 												console.log('Deleted successfully');
+												const removedBlog = blogResults.filter((item) => item._id !== result._id);
+												setBlogResults(removedBlog);
 											}
 										});
 									},

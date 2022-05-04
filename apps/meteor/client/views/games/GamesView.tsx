@@ -8,6 +8,7 @@ import TopBar from '../../topbar/TopBar';
 import { IGame } from '../../../definition/IGame';
 import PageInlineNavbar from '../../components/PageInlineNavbar/PageInlineNavbar';
 import { Grid } from '@rocket.chat/fuselage';
+import { isMobile } from 'react-device-detect';
 
 const GamesView = (): ReactElement => {
 	const [gamesResults, setGamesResults] = useState([]);
@@ -92,7 +93,7 @@ const GamesView = (): ReactElement => {
 						))}
 					</Grid>
 				</Page.Content>
-				<BottomBar />
+				{isMobile ? <BottomBar /> : null}
 			</Page>
 		</Page>
 	);

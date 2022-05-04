@@ -1,5 +1,6 @@
 import { Modal, Button, ButtonGroup, Box, Margins } from '@rocket.chat/fuselage';
 import React, { ReactElement, useEffect, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 
 import BottomBar from '../../components/BottomBar';
 import Page from '../../components/Page';
@@ -30,7 +31,7 @@ const LandingView = ({ title, body }: Props): ReactElement => {
 				<TopBar />
 				<h3 style={{ marginLeft: '20px', marginTop: '10px', fontSize: '20px' }}>Top 10 Blog Posts</h3>
 				<Page.Content>{blogResults.length && blogResults.map((result, index) => <SingleBlogPost key={index} {...result} />)}</Page.Content>
-				<BottomBar />
+				{isMobile ? <BottomBar /> : null}
 			</Page>
 		</Page>
 	);

@@ -15,6 +15,11 @@ export interface IActionInterface {
 	};
 }
 
+export interface IActionCommentInterface {
+	type: string;
+	payload: Record<string, any>;
+}
+
 const InitialState: IStateInterface = {
 	value: { id: '', author: '', createdAt: '', title: '', content: '', image: '', comments: [] },
 };

@@ -1,7 +1,9 @@
 import { Box, Menu, Icon } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 
-import React from 'react';
+import React, {useContext} from 'react';
+import { DispatchBlogGlobalContext } from '../../../contexts/BlogDetailContext/GlobalState';
+
 
 type Props = {
 	blogId: string;
@@ -11,7 +13,9 @@ type Props = {
 	setCommentId: Function;
 };
 
-const Comment = ({ blogId, commentId, content, setComment, setCommentId }: Props) => {
+const Comment = ({ commentId, content, setComment, setCommentId }: Props) => {
+	const { dispatch } = useContext(DispatchBlogGlobalContext);
+
 	return (
 		<Box display='flex' justifyContent='space-between' alignItems='center'>
 			<div style={{ marginLeft: '20px' }}>{content}</div>
@@ -23,6 +27,8 @@ const Comment = ({ blogId, commentId, content, setComment, setCommentId }: Props
 							Meteor.call('deleteComment', commentId, (error, result) => {
 								if (result) {
 									console.log('Deleted comment');
+					dispatch({ type: 'UPDATE_COMMENT', payload: result });
+
 								}
 							});
 						},

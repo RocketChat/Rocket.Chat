@@ -1,5 +1,6 @@
 import { Grid } from '@rocket.chat/fuselage';
 import React, { ReactElement, useEffect, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import { IProduct } from '../../../definition/IProduct';
 
 import BottomBar from '../../components/BottomBar';
@@ -91,7 +92,7 @@ const ProductsView = (): ReactElement => {
 						))}
 					</Grid>
 				</Page.Content>
-				<BottomBar />
+				{isMobile ? <BottomBar /> : null}
 			</Page>
 		</Page>
 	);
