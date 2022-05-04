@@ -396,6 +396,7 @@ jobs:
 
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
+
       - name: E2E Test UI (Legacy - Cypress)
         env:
           TEST_MODE: "true"
@@ -438,6 +439,7 @@ jobs:
           cd ./apps/meteor
 
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright:ee
+          npm run test:playwright:coverage
 
       - name: Store playwright test coverage
         uses: actions/upload-artifact@v2
