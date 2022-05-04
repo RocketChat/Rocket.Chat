@@ -37,10 +37,12 @@ const BlogView = (): ReactElement => {
 		}
 	};
 
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<DetailPageHeader title={title} route='blogs' context={DispatchBlogGlobalContext} />
+
 				<Page.Content>
 					<div style={{ margin: '10px 0' }}>
 						<img style={{ height: '300px', width: '100%' }} src={image} alt='blog image' />
@@ -56,7 +58,9 @@ const BlogView = (): ReactElement => {
 							placeholder='New Comment...'
 							width='full'
 							value={comment}
+
 							onChange={(e: any): void => setComment(e.target.value)}
+
 						/>
 						<Button primary style={{ float: 'right', marginTop: '5px' }} onClick={handleSubmit}>
 							Post
@@ -64,6 +68,7 @@ const BlogView = (): ReactElement => {
 					</div>
 					<div>
 						<h4>Previous comments</h4>
+
 						{comments.length &&
 							comments.map((comment, index) => (
 								<Comment
@@ -78,6 +83,7 @@ const BlogView = (): ReactElement => {
 					</div>
 				</Page.Content>
 				<BottomBar />
+
 			</Page>
 		</Page>
 	);

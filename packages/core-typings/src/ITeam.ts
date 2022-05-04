@@ -1,67 +1,68 @@
-import type { SortOptionObject, FilterQuery, SchemaMember } from "mongodb";
+import type { SortOptionObject, FilterQuery, SchemaMember } from 'mongodb';
 
-import type { IRocketChatRecord } from "./IRocketChatRecord";
-import type { IUser, IRole } from "./IUser";
+import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRole } from './IRole';
+import type { IUser } from './IUser';
 
 export enum TEAM_TYPE {
-  PUBLIC = 0,
-  PRIVATE = 1,
+	PUBLIC = 0,
+	PRIVATE = 1,
 }
 
 export type SortType = -1 | 1;
 
 export interface ITeam extends IRocketChatRecord {
-  name: string;
-  type: TEAM_TYPE;
-  roomId: string;
-  createdBy: Pick<IUser, "_id" | "username">;
-  createdAt: Date;
+	name: string;
+	type: TEAM_TYPE;
+	roomId: string;
+	createdBy: Pick<IUser, '_id' | 'username'>;
+	createdAt: Date;
 }
 
 export interface ITeamMember extends IRocketChatRecord {
-  teamId: string;
-  userId: string;
-  roles?: Array<IRole["_id"]>;
-  createdBy: Pick<IUser, "_id" | "username">;
-  createdAt: Date;
+	teamId: string;
+	userId: string;
+	roles?: Array<IRole['_id']>;
+	createdBy: Pick<IUser, '_id' | 'username'>;
+	createdAt: Date;
 }
 
 // TODO move this definition to a more broader file
 export interface IPaginationOptions {
-  offset: number;
-  count: number;
+	offset: number;
+	count: number;
 }
 
 // TODO move this definition to a more broader file
 export interface IQueryOptions<T> {
-  sort?: SortOptionObject<T>;
-  query?: FilterQuery<T>;
-  fields?: SchemaMember<T, number | boolean>;
+	sort?: SortOptionObject<T>;
+	query?: FilterQuery<T>;
+	fields?: SchemaMember<T, number | boolean>;
 }
 
 // TODO move this definition to a more broader file
 export interface IRecordsWithTotal<T> {
-  records: Array<T>;
-  total: number;
+	records: Array<T>;
+	total: number;
 }
 
 export interface ITeamStatData {
-  teamId: string;
-  mainRoom: string;
-  totalRooms: number;
-  totalMessages: number;
-  totalPublicRooms: number;
-  totalPrivateRooms: number;
-  totalDefaultRooms: number;
-  totalMembers: number;
+	teamId: string;
+	mainRoom: string;
+	totalRooms: number;
+	totalMessages: number;
+	totalPublicRooms: number;
+	totalPrivateRooms: number;
+	totalDefaultRooms: number;
+	totalMembers: number;
 }
 export interface ITeamStats {
-  totalTeams: number;
-  teamStats: Array<ITeamStatData>;
+	totalTeams: number;
+	teamStats: Array<ITeamStatData>;
 }
 
 // TODO: move to service sdk package
 export interface ITeamMemberParams {
-  userId: string;
-  roles?: Array<IRole["_id"]> | null;
+	userId: string;
+	roles?: Array<IRole['_id']> | null;
 }

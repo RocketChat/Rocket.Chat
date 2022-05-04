@@ -23,7 +23,7 @@ export function validate(soundData, soundFile) {
 
 export function createSoundData(soundFile, name = '', previousData) {
 	const soundData = {
-		extension: soundFile.name.split('.').pop(),
+		extension: soundFile?.name.split('.').pop(),
 	};
 
 	if (previousData) {

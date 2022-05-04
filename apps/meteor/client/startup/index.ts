@@ -20,6 +20,7 @@ import './renderNotification';
 import './roomObserve';
 import './rootUrlChange';
 import './routes';
+import './routesGso';
 import './setupWizard';
 import './slashCommands';
 import './startup';

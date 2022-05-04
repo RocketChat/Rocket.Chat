@@ -2,7 +2,9 @@ import { Cursor } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IProductService, IProductCreateParams, IProduct, IProductUpdateBody, IProductUpdateParams } from '../../../definition/IProduct';
+
 import { IPaginationOptions, IQueryOptions } from '../../../definition/ITeam';
+
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
@@ -12,7 +14,9 @@ import { ProductsRaw } from '../../../app/models/server/raw/Products';
 export class ProductService extends ServiceClassInternal implements IProductService {
 	protected name = 'product';
 
+
 	private ProductModel: ProductsRaw = ProductModel;
+
 
 	async create(params: IProductCreateParams): Promise<IProduct> {
 		const createData: InsertionModel<IProduct> = {
@@ -46,8 +50,10 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 			...new UpdateObject(),
 			...params,
 		};
+
 		const result = await this.ProductModel.updateOne(query, { $set: updateData });
 		return this.ProductModel.findOneById(productId);
+
 	}
 
 	list(

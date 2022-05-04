@@ -27,7 +27,7 @@ addAction('otr', () => {
 						groups: ['direct'],
 						id: 'otr',
 						title: 'OTR',
-						icon: 'shredder',
+						icon: 'stopwatch',
 						template,
 						order: 13,
 						full: true,

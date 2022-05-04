@@ -1,17 +1,17 @@
-import type { IStats } from "@rocket.chat/core-typings";
+import type { IStats } from '@rocket.chat/core-typings';
 
 export type StatisticsEndpoints = {
-  statistics: {
-    GET: (params: { refresh?: boolean }) => IStats;
-  };
-  "statistics.telemetry": {
-    POST: (params: TelemetryPayload) => any;
-  };
+	'statistics': {
+		GET: (params: { refresh?: boolean }) => IStats;
+	};
+	'statistics.telemetry': {
+		POST: (params: TelemetryPayload) => any;
+	};
 };
 
 export type TelemetryBase = {
-  eventName: string;
-  timestamp: number;
+	eventName: string;
+	timestamp: number;
 };
 
 type OTREnded = TelemetryBase & { rid: string };

@@ -130,4 +130,5 @@ export type EventSignatures = {
 	'queue.queuememberremoved'(userid: string, queuename: string, queuedcalls: string): void;
 	'queue.callabandoned'(userid: string, queuename: string, queuedcallafterabandon: string): void;
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
+	'connector.statuschanged'(enabled: boolean): void;
 };

@@ -12,7 +12,9 @@ import { CommentsRaw } from '../../../app/models/server/raw/Comments';
 export class CommentService extends ServiceClassInternal implements ICommentService {
 	protected name = 'comment';
 
+
 	private CommentModel: CommentsRaw = CommentModel;
+
 
 	async create(params: ICommentCreateParams): Promise<IComment> {
 		const createData: InsertionModel<IComment> = {
@@ -46,7 +48,9 @@ export class CommentService extends ServiceClassInternal implements ICommentServ
 			...params,
 		};
 		const result = await CommentModel.updateOne(query, { $set: updateData });
+
 		return CommentModel.findOneById(commentId);
+
 	}
 
 	list(

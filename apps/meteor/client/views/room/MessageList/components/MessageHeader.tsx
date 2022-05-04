@@ -40,11 +40,16 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 				title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
 				data-username={user.username}
 				onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+				style={{ cursor: 'pointer' }}
 			>
 				{getUserDisplayName(user.name, user.username, showRealName)}
 			</MessageName>
 			{showUsername && (
-				<MessageUsername data-username={user.username} onClick={user.username !== undefined ? openUserCard(user.username) : undefined}>
+				<MessageUsername
+					data-username={user.username}
+					onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+					style={{ cursor: 'pointer' }}
+				>
 					@{user.username}
 				</MessageUsername>
 			)}

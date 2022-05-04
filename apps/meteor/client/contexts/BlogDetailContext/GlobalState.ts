@@ -4,6 +4,8 @@ import { InitialState, IActionInterface, IActionCommentInterface } from './BlogD
 
 export const BlogGlobalContext = createContext(InitialState);
 
+
 export const DispatchBlogGlobalContext = createContext<{ dispatch: ReactDispatch<IActionInterface | IActionCommentInterface | string> }>({
+
 	dispatch: () => undefined,
 });

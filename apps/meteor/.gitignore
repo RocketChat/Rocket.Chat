@@ -82,3 +82,5 @@ tests/end-to-end/temporary_staged_test
 /tests/cypress/videos
 coverage
 .nyc_output
+data/
+tests/e2e/test-failures/

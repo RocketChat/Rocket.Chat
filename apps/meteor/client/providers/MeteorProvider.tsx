@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 
 import AttachmentProvider from '../components/Message/Attachments/providers/AttachmentProvider';
+import { DispatchGlobalContext } from '../contexts/BlogDetailContext/GlobalState';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import BlogDetailContextProvider from './BlogDetailProvider';
