@@ -1,6 +1,6 @@
 import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import React, { ChangeEvent, ReactElement, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -10,30 +10,48 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 import { formsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 
-const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }) => {
-	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list');
+const Tags = ({
+	tags,
+	handler,
+	error,
+	tagRequired,
+}: {
+	tags?: string[];
+	handler: (value: string[]) => void;
+	error?: string;
+	tagRequired?: boolean;
+}): ReactElement => {
 	const t = useTranslation();
-	const forms = useSubscription(formsSubscription);
+	const forms = useSubscription<any>(formsSubscription);
 
-	const { useCurrentChatTags = () => {} } = forms;
-	const Tags = useCurrentChatTags();
+	const { value: tagsResult, phase: stateTags } = useEndpointData('livechat/tags.list');
+
+	const { useCurrentChatTags } = forms;
+	const EETagsComponent = useCurrentChatTags();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [tagValue, handleTagValue] = useState('');
-	const [paginatedTagValue, handlePaginatedTagValue] = useState(tags);
+	const [paginatedTagValue, handlePaginatedTagValue] = useState<{ label: string; value: string }[]>();
 
-	const removeTag = (tag) => {
-		const tagsFiltered = tags.filter((tagArray) => tagArray !== tag);
-		handler(tagsFiltered);
+	const removeTag = (tagToRemove: string): void => {
+		if (tags) {
+			const tagsFiltered = tags.filter((tag: string) => tag !== tagToRemove);
+			handler(tagsFiltered);
+		}
 	};
 
 	const handleTagTextSubmit = useMutableCallback(() => {
+		if (!tags) {
+			return;
+		}
+
 		if (!tagValue || tagValue.trim() === '') {
 			dispatchToastMessage({ type: 'error', message: t('Enter_a_tag') });
 			handleTagValue('');
 			return;
 		}
+
 		if (tags.includes(tagValue)) {
 			dispatchToastMessage({ type: 'error', message: t('Tag_already_exists') });
 			return;
@@ -46,18 +64,16 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }
 		return <FormSkeleton />;
 	}
 
-	const { tags: tagsList } = tagsResult;
-
 	return (
 		<>
 			<Field.Label required={tagRequired} mb='x4'>
 				{t('Tags')}
 			</Field.Label>
-			{Tags && tagsList && tagsList.length > 0 ? (
+			{EETagsComponent && tagsResult?.tags && tagsResult?.tags.length ? (
 				<Field.Row>
-					<Tags
+					<EETagsComponent
 						value={paginatedTagValue}
-						handler={(tags) => {
+						handler={(tags: { label: string; value: string }[]): void => {
 							handler(tags.map((tag) => tag.label));
 							handlePaginatedTagValue(tags);
 						}}
@@ -68,19 +84,19 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }
 					<Field.Row>
 						<TextInput
 							error={error}
-							value={tagValue?.value ? tagValue.value : tagValue}
-							onChange={(event) => handleTagValue(event.target.value)}
+							value={tagValue}
+							onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}
 							flexGrow={1}
 							placeholder={t('Enter_a_tag')}
 						/>
-						<Button disabled={!tagValue} mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
+						<Button disabled={!tagValue} mis='x8' title={t('Add')} onClick={handleTagTextSubmit}>
 							{t('Add')}
 						</Button>
 					</Field.Row>
 					<Field.Row justifyContent='flex-start'>
-						{tags.map((tag, i) => (
-							<Chip key={i} onClick={() => removeTag(tag)} mie='x8'>
-								{tag?.value ? tag.value : tag}
+						{tags?.map((tag, i) => (
+							<Chip key={i} onClick={(): void => removeTag(tag)} mie='x8'>
+								{tag}
 							</Chip>
 						))}
 					</Field.Row>
