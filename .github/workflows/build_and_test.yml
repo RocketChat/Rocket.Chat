@@ -370,9 +370,6 @@ jobs:
             ${{ runner.os }}-turbo-
             ${{ runner.os }}-
 
-      - name: Code Coverage Report
-        uses: romeovs/lcov-reporter-action@v0.2.11
-
       - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
         run: yarn
@@ -448,10 +445,12 @@ jobs:
           path: ./apps/meteor/coverage*
 
       - name: Calculate playwright coverage
-        uses: romeovs/lcov-reporter-action@v0.2.16
+        uses: webcraftmedia/coverage-check-action@master
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          lcov-file: ./apps/meteor/coverage/lcov.info
+          report_name: Coverage Frontend
+          type: lcov
+          token: ${{ secrets.GITHUB_TOKEN }}
+          result_path: ./apps/meteor/coverage/lcov.info
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
