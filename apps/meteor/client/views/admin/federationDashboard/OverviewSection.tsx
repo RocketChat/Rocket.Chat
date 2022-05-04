@@ -1,12 +1,12 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../components/data/CounterSet';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { usePolledMethodData } from '../../../hooks/usePolledMethodData';
 
-function OverviewSection() {
+function OverviewSection(): ReactElement {
 	const t = useTranslation();
 	const { value: overviewData, phase: overviewStatus } = usePolledMethodData(
 		'federation:getOverviewData',
