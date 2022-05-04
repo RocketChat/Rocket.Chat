@@ -18,9 +18,6 @@ const BlogView = (): ReactElement => {
 	const handleSubmit = (): void => {
 		// When we are updating the commentId is usually set otherwise it'll be an empty string.
 		if (!commentId.length) {
-			// Tracker.autorun(() => {
-			// 	Meteor.subscribe('')
-			// })
 			Meteor.call('addComment', { content: comment, blogId: id, parentId: id }, (error, result) => {
 				if (result) {
 					setComment('');
