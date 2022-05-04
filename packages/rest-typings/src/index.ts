@@ -30,6 +30,8 @@ import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/video-conference';
 import type { VoipEndpoints } from './v1/voip';
+import type { WebdavEndpoints } from './v1/webdav';
+import type { OAuthAppsEndpoint } from './v1/oauthapps';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
@@ -60,7 +62,9 @@ export interface Endpoints
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
-		CustomSoundEndpoint {}
+		CustomSoundEndpoint,
+		WebdavEndpoints,
+		OAuthAppsEndpoint {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
@@ -129,6 +133,7 @@ export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
 export * from './v1/video-conference';
+export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';

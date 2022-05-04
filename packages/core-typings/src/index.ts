@@ -65,7 +65,6 @@ export * from './IBaseData';
 export * from './IOAuthApps';
 export * from './Federation';
 export * from './ISmarshHistory';
-export * from './IStatistic';
 export * from './IReport';
 
 // export * from './IMethodConnection';
