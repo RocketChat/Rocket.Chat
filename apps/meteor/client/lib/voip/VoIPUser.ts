@@ -34,7 +34,7 @@ import {
 	SessionInviteOptions,
 	RequestPendingError,
 } from 'sip.js';
-import { OutgoingByeRequest, URI } from 'sip.js/lib/core';
+import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
 import { toggleMediaStreamTracks } from './Helper';
@@ -83,6 +83,18 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private onlineNetworkHandler: () => void;
 
+	private networkChangeHandler: () => void;
+
+	private optionsKeepaliveInterval = 5;
+
+	private optionsKeepAliveDebounceTimeInSec = 5;
+
+	private optionsKeepAliveDebounceCount = 3;
+
+	private pauseConnectivityCheck = true;
+
+	private attemptRegistration = false;
+
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
 		this.mediaStreamRendered = mediaRenderer;
@@ -91,6 +103,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.stop = false;
 		this.onlineNetworkHandler = this.onNetworkRestored.bind(this);
 		this.offlineNetworkHandler = this.onNetworkLost.bind(this);
+		this.networkChangeHandler = this.onNetworkChange.bind(this);
 	}
 
 	/**
@@ -128,20 +141,25 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			uri: UserAgent.makeURI(sipUri),
 			transportOptions,
 			sessionDescriptionHandlerFactoryOptions: sdpFactoryOptions,
-			logConfiguration: false,
-			logLevel: 'error',
+			logConfiguration: true,
+			logLevel: 'debug',
 		};
 
 		this.userAgent = new UserAgent(this.userAgentOptions);
 		this.userAgent.transport.isConnected();
 		this._opInProgress = Operation.OP_CONNECT;
 		try {
-			this.registerer = new Registerer(this.userAgent);
+			this.registerer = new Registerer(this.userAgent /* , { expires: 60 }*/);
+
 			this.userAgent.transport.onConnect = this.onConnected.bind(this);
 			this.userAgent.transport.onDisconnect = this.onDisconnected.bind(this);
 			window.addEventListener('online', this.onlineNetworkHandler);
 			window.addEventListener('offline', this.offlineNetworkHandler);
+			window.addEventListener('change', this.networkChangeHandler);
 			await this.userAgent.start();
+			if (this.config.enableKeeAliveUsingOptionsForFlakyNetworks) {
+				this.startOptionsPingForFlakyNetworks();
+			}
 		} catch (error) {
 			this._connectionState = 'ERROR';
 			throw error;
@@ -150,25 +168,29 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	async onConnected(): Promise<void> {
 		this._connectionState = 'SERVER_CONNECTED';
+		console.error('ROCKETCHAT_DEBUG onConnected');
 		this.state.isReady = true;
 		this.sendOptions();
 		this.networkEmitter.emit('connected');
+		this.pauseConnectivityCheck = false;
 		/**
 		 * Re-registration post network recovery should be attempted
 		 * if it was previously registered or incall/onhold
-		 * */
+		 */
 
 		if (this.registerer && this.callState !== 'INITIAL') {
-			this.attemptRegistrationPostRecovery();
+			this.attemptRegistration = true;
 		}
 	}
 
-	onDisconnected(error: any): void {
+	onDisconnected(_error: any): void {
+		console.error('ROCKETCHAT_DEBUG onDisconnected');
 		this._connectionState = 'SERVER_DISCONNECTED';
 		this._opInProgress = Operation.OP_NONE;
 		this.networkEmitter.emit('disconnected');
-		if (error) {
-			this.networkEmitter.emit('connectionerror', error);
+		if (_error) {
+			console.error('ROCKETCHAT_DEBUG onDisconnected 1');
+			this.networkEmitter.emit('connectionerror', _error);
 			this.state.isReady = false;
 			/**
 			 * Signalling socket reconnection should be attempted assuming
@@ -176,12 +198,15 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * In case of remote side disconnection, if config.connectionRetryCount is -1,
 			 * attemptReconnection attempts continuously. Else stops after |config.connectionRetryCount|
 			 *
-			 * */
-			this.attemptReconnection();
+			 */
+			// this.pauseConnectivityCheck = true;
+			// this.attemptReconnection();
+			this.attemptReconnection(0, false);
 		}
 	}
 
 	onNetworkRestored(): void {
+		console.error('ROCKETCHAT_DEBUG onNetworkRestored');
 		this.networkEmitter.emit('localnetworkonline');
 		if (this._connectionState === 'WAITING_FOR_NETWORK') {
 			/**
@@ -193,13 +218,23 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * the code will check if the endpoint was previously registered before the disconnection.
 			 * If such is the case, it will first unregister and then reregister.
 			 * */
-			this.attemptReconnection(1, true);
+			// this.pauseConnectivityCheck = true;
+			this.attemptReconnection();
+			this.attemptRegistration = true;
 		}
 	}
 
 	onNetworkLost(): void {
 		this.networkEmitter.emit('localnetworkoffline');
 		this._connectionState = 'WAITING_FOR_NETWORK';
+	}
+
+	onNetworkChange(): void {
+		/*
+		if (this._connectionState !== 'INITIAL') {
+			this.attemptReconnection(1, true);
+		}
+		*/
 	}
 
 	get callState(): CallStates {
@@ -528,11 +563,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 * there is a UA using this socket. This is implemented below
 	 */
 
-	sendOptions(): void {
+	sendOptions(outgoingRequestDelegate?: OutgoingRequestDelegate): void {
 		const uri = new URI('sip', this.config.authUserName, this.config.sipRegistrarHostnameOrIP);
 		const outgoingMessage = this.userAgent?.userAgentCore.makeOutgoingRequestMessage('OPTIONS', uri, uri, uri, {});
 		if (outgoingMessage) {
-			this.userAgent?.userAgentCore.request(outgoingMessage);
+			this.userAgent?.userAgentCore.request(outgoingMessage, outgoingRequestDelegate);
 		}
 	}
 	/**
@@ -758,6 +793,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			this.userAgent.transport.onDisconnect = undefined;
 			window.removeEventListener('online', this.onlineNetworkHandler);
 			window.removeEventListener('offline', this.offlineNetworkHandler);
+			window.removeEventListener('change', this.onNetworkChange);
 		}
 	}
 
@@ -804,7 +840,8 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 * In case of computer waking from sleep or asterisk getting restored, connect and disconnect events are generated.
 	 * In this case, re-registration should be triggered (by calling) only when onConnected gets called and not otherwise.
 	 */
-	attemptReconnection(reconnectionAttempt = 0, checkRegistration = false): void {
+
+	async attemptReconnection(reconnectionAttempt = 0, checkRegistration = false): Promise<void> {
 		const reconnectionAttempts = this.connectionRetryCount;
 		this._connectionState = 'SERVER_RECONNECTING';
 		if (!this.userAgent) {
@@ -820,6 +857,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		}
 
 		const reconnectionDelay = Math.pow(2, reconnectionAttempt % 4);
+
 		console.error(`Attempting to reconnect with backoff due to network loss. Backoff time [${reconnectionDelay}]`);
 		setTimeout(() => {
 			if (this.stop) {
@@ -832,10 +870,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				?.reconnect()
 				.then(() => {
 					this._connectionState = 'SERVER_CONNECTED';
-					if (!checkRegistration || !this.registerer || this.callState === 'INITIAL') {
-						return;
-					}
-					this.attemptRegistrationPostRecovery();
+					this.pauseConnectivityCheck = false;
 				})
 				.catch(() => {
 					this.attemptReconnection(++reconnectionAttempt, checkRegistration);
@@ -843,7 +878,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		}, reconnectionDelay * 1000);
 	}
 
-	async attemptRegistrationPostRecovery(): Promise<void> {
+	async attemptPostRecoveryRoutine(): Promise<void> {
 		/**
 		 * It might happen that the whole network loss can happen
 		 * while there is ongoing call. In that case, we want to maintain
@@ -851,8 +886,103 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		 *
 		 * So after re-registration, it should remain in the same state.
 		 * */
+		console.error('ROCKETCHAT_DEBUG attemptPostRecoveryRoutine 1');
+		this.sendOptions({
+			onAccept: (): void => {
+				console.error('ROCKETCHAT_DEBUG attemptPostRecoveryRoutine 2');
+				this.attemptPostRecoveryRegistrationRoutine();
+			},
+			onReject: (error: unknown): void => {
+				console.error('ROCKETCHAT_DEBUG attemptPostRecoveryRoutine 2');
+				console.error(`[${error}] Failed to do options in attemptPostRecoveryRoutine()`);
+			},
+		});
+	}
 
+	async sendKeepAliveAndWaitForResponse(withDebounce = false): Promise<boolean> {
+		const promise = new Promise<boolean>((resolve) => {
+			console.error(`ROCKETCHAT_DEBUG Checking connection [${new Date().getTime() / 1000}]`);
+			let keepAliveAccepted = false;
+			let responseWaitTime = this.optionsKeepaliveInterval / 2;
+			if (withDebounce) {
+				responseWaitTime += this.optionsKeepAliveDebounceTimeInSec;
+			}
+
+			this.sendOptions({
+				onAccept: (): void => {
+					keepAliveAccepted = true;
+				},
+				onReject: (error: unknown): void => {
+					console.error(`[${error}] Failed to do options.`);
+				},
+			});
+			setTimeout(async () => {
+				if (!keepAliveAccepted) {
+					resolve(false);
+				} else {
+					if (this.attemptRegistration) {
+						this.attemptPostRecoveryRoutine();
+						this.attemptRegistration = false;
+					}
+					resolve(true);
+				}
+			}, responseWaitTime * 1000);
+		});
+		return promise;
+	}
+
+	async startOptionsPingForFlakyNetworks(): Promise<void> {
+		setTimeout(async () => {
+			if (!this.userAgent || this.stop) {
+				return;
+			}
+			if (!this.pauseConnectivityCheck && this._connectionState !== 'SERVER_RECONNECTING') {
+				let keepAliveResponse = await this.sendKeepAliveAndWaitForResponse();
+				if (!keepAliveResponse) {
+					// this.pauseConnectivityCheck = true;
+					const connectivityArray = [];
+					for (let i = 0; i < this.optionsKeepAliveDebounceCount; i++) {
+						connectivityArray.push(this.sendKeepAliveAndWaitForResponse(true));
+					}
+					const values = await Promise.all(connectivityArray);
+					for (let i = 0; i < values.length; i++) {
+						if (values[i]) {
+							keepAliveResponse = values[i];
+							break;
+						}
+					}
+					if (!keepAliveResponse) {
+						this.networkEmitter.emit('disconnected');
+					}
+				}
+				/**
+				 * Either we got connected and managed to send keep-alive
+				 * or while attempting keepAlive with debounce, we got connected at moment,
+				 * |keepAliveResponse| will be turned on. In that case, we want to emit
+				 * |connected| only when this.pauseConnectivityCheck was true which means
+				 * it was earlier disconnected and now connected
+				 * Also set pauseConnectivityCheck to false so that the keepAlive check is resumed back.
+				 */
+				if (keepAliveResponse) {
+					// this.pauseConnectivityCheck = false;
+					this.networkEmitter.emit('connected');
+				}
+			}
+			this.startOptionsPingForFlakyNetworks();
+		}, this.optionsKeepaliveInterval * 1000);
+	}
+
+	async attemptPostRecoveryRegistrationRoutine(): Promise<void> {
+		/**
+		 * It might happen that the whole network loss can happen
+		 * while there is ongoing call. In that case, we want to maintain
+		 * the call.
+		 *
+		 * So after re-registration, it should remain in the same state.
+		 * */
+		console.error('ROCKETCHAT_DEBUT Attempting registration 1');
 		const promise = new Promise<void>((_resolve, _reject) => {
+			console.error('ROCKETCHAT_DEBUT Attempting registration 2');
 			this.registerer?.unregister({
 				all: true,
 				requestDelegate: {
@@ -867,13 +997,23 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				},
 			});
 		});
-		await promise;
+		try {
+			console.error('ROCKETCHAT_DEBUT Attempting registration 3');
+			await promise;
+		} catch (error) {
+			console.error(`[${error}] While waiting for unregister promise`);
+		}
+		console.error('ROCKETCHAT_DEBUT Attempting registration 4');
 		this.registerer?.register({
 			requestDelegate: {
 				onReject: (error): void => {
+					console.error('ROCKETCHAT_DEBUT Attempting registration 5');
 					this._callState = 'UNREGISTERED';
 					this.emit('registrationerror', error);
 					this.emit('stateChanged');
+				},
+				onAccept: (): void => {
+					console.error('ROCKETCHAT_DEBUT Registration accepted');
 				},
 			},
 		});

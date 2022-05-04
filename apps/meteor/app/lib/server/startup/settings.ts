@@ -3217,6 +3217,15 @@ settingsRegistry.addGroup('Call_Center', function () {
 					value: true,
 				},
 			});
+			this.add('VoIP_Enable_Keep_Alive_For_Flaky_Networks', false, {
+				type: 'boolean',
+				public: true,
+				i18nDescription: 'VoIP_Enable_Keep_Alive_For_Flaky_Networks_Description',
+				enableQuery: {
+					_id: 'Livechat_enabled',
+					value: true,
+				},
+			});
 		});
 
 		this.section('Management_Server', function () {
