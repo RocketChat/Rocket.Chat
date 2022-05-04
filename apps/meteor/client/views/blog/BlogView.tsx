@@ -28,11 +28,12 @@ const BlogView = (): ReactElement => {
 
 	Meteor.startup(() => {
 		Tracker.autorun(() => {
-			Meteor.subscribe('allBlogs');
+			Meteor.subscribe('getPublishedBlogs');
 			return Meteor.call('getBlogs', 10, (error, result) => {
 				// TODO: Add a success and error messages
 				if (result) {
-					setBlogResults(result.records);
+					const documents = result.toArray();
+					setBlogResults(documents);
 				} else {
 					console.log(error, 'error');
 				}

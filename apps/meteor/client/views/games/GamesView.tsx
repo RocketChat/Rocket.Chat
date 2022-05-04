@@ -44,7 +44,8 @@ const GamesView = (): ReactElement => {
 	const getGames = () => {
 		Meteor.call('getGames', { count: 10 }, {}, (error, result) => {
 			if (result) {
-				if (result.records.length) {
+				const documents = result.toArray();
+				if (documents.length) {
 					setGamesResults(result.records);
 					console.log('Games were fetched');
 				} else {

@@ -6,7 +6,7 @@ import { BlogService } from '../services/blog/services';
 if (Meteor.isServer) {
 	const Blogs = new BlogService();
 
-	Meteor.publish('getBlogs', function (limit) {
+	Meteor.publish('getPublishedBlogs', function (limit) {
 		check(limit, Match.Optional(Number));
 
 		return Blogs.list(limit);

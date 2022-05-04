@@ -6,7 +6,7 @@ import { TagService } from '../services/tag/service';
 if (Meteor.isServer) {
 	const Tags = new TagService();
 
-	Meteor.publish('getTags', function (paginationOptions, queryOptions) {
+	Meteor.publish('getPublishedTags', function (paginationOptions, queryOptions) {
 		check(
 			paginationOptions,
 			Match.ObjectIncluding({

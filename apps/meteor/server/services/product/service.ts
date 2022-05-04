@@ -54,14 +54,6 @@ export class ProductService extends ServiceClassInternal implements IProductServ
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
 		{ sort, query }: IQueryOptions<IProduct> = { sort: {} },
 	): Cursor<IProduct> {
-		const result = this.ProductModel.find(
-			{ ...query },
-			{
-				...(sort && { sort }),
-				limit: count,
-				skip: offset,
-			},
-		);
 		return this.ProductModel.find(
 			{ ...query },
 			{

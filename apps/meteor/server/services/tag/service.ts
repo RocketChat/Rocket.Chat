@@ -53,14 +53,6 @@ export class TagService extends ServiceClassInternal implements ITagService {
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
 		{ sort, query }: IQueryOptions<ITag> = { sort: {} },
 	): Cursor<ITag> {
-		const result = this.TagModel.find(
-			{ ...query },
-			{
-				...(sort && { sort }),
-				limit: count,
-				skip: offset,
-			},
-		);
 		return this.TagModel.find(
 			{ ...query },
 			{

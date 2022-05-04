@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { ProductService } from '../services/product/service';
+import { ProductModel } from '../../app/models/server/raw';
 
 Meteor.methods({
 	async getProducts(paginationOptions, queryOptions) {

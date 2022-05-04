@@ -55,14 +55,6 @@ export class GameService extends ServiceClassInternal implements IGameService {
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
 		{ sort, query }: IQueryOptions<IGame> = { sort: {} },
 	): Cursor<IGame> {
-		const result = this.GameModel.find(
-			{ ...query },
-			{
-				...(sort && { sort }),
-				limit: count,
-				skip: offset,
-			},
-		);
 		return this.GameModel.find(
 			{ ...query },
 			{

@@ -6,7 +6,7 @@ import { ProductService } from '../services/product/service';
 if (Meteor.isServer) {
 	const Products = new ProductService();
 
-	Meteor.publish('getProducts', function (paginationOptions, queryOptions) {
+	Meteor.publish('getPublishedProducts', function (paginationOptions, queryOptions) {
 		check(
 			paginationOptions,
 			Match.ObjectIncluding({

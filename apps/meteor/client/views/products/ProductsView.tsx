@@ -43,7 +43,9 @@ const ProductsView = (): ReactElement => {
 	const getBackendProducts = () => {
 		Meteor.call('getProducts', { count: 10 }, {}, (error, result) => {
 			if (result) {
-				if (result.records.length) {
+				console.log(result, 'result in products');
+				const documents = result.toArray();
+				if (documents.length) {
 					setProductResults(result.records);
 					console.log('Products were fetched');
 				} else {

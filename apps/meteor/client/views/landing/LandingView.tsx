@@ -15,8 +15,9 @@ const LandingView = ({ title, body }: Props): ReactElement => {
 	const [blogResults, setBlogResults] = useState([]);
 	useEffect(() => {
 		Meteor.call('getBlogs', 10, (error, result) => {
+			console.log(result, 'result');
 			// TODO: Add a success and error messages
-			setBlogResults(result.records);
+			// setBlogResults(ressult.records);
 		});
 	}, []);
 	return (
