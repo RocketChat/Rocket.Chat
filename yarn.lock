@@ -3463,6 +3463,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.31.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.9
+    "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.9
     "@types/ejson": ^2.1.3
