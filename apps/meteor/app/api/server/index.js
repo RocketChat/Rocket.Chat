@@ -35,6 +35,8 @@ import './v1/stats';
 import './v1/subscriptions';
 import './v1/users';
 import './v1/video-conference';
+// #ToDo: Merge both video-conf files after PR 25278 is merged
+import './v1/video-conf';
 import './v1/autotranslate';
 import './v1/webdav';
 import './v1/oauthapps';
