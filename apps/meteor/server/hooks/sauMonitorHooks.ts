@@ -18,15 +18,20 @@ Accounts.onLogin(
 		const {
 			methodArguments,
 			connection: { httpHeaders },
+		user: { _id },
 		} = info;
 	const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
 
 		sauEvents.emit('accounts.login', {
-			userId: info.user._id,
-			connection: { loginToken, instanceId: InstanceStatus.id(), ...info.connection, httpHeaders: httpHeaders as IncomingHttpHeaders },
+		userId: _id,
+		connection: {
+			...info.connection,
+			loginToken,
+			instanceId: InstanceStatus.id(),
+			httpHeaders,
+		},
 		});
-	},
-);
+});
 
 Accounts.onLogout((info: { user: Meteor.User; connection: Meteor.Connection }) => {
 	const { httpHeaders } = info.connection;
