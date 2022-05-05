@@ -5,6 +5,8 @@ import { Random } from 'meteor/random';
 import { RawImports, Base, ProgressStep, Selection, SelectionUser } from '../../importer/server';
 import { RocketChatFile } from '../../file';
 import { Users } from '../../models';
+import { settings } from '../../settings';
+import { Settings as SettingsRaw } from '../../models/server/raw';
 
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {
@@ -154,6 +156,7 @@ export class SlackUsersImporter extends Base {
 								Users.setEmailVerified(userId, u.email);
 								u.rocketId = userId;
 							});
+							SettingsRaw.updateValueById('Slack_Users_Importer_Count', settings.get('Slack_Users_Importer_Count') + 1);
 						}
 
 						if (this.admins.includes(u.user_id)) {

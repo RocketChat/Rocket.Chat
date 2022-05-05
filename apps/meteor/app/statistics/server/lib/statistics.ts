@@ -18,6 +18,7 @@ import {
 	Statistics,
 	Sessions,
 	Integrations,
+	Invites,
 	Uploads,
 	LivechatDepartment,
 	EmailInbox,
@@ -27,6 +28,7 @@ import {
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
+import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Analytics } from '../../../../server/sdk';
@@ -395,6 +397,7 @@ export const statistics = {
 
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
+		statistics.importer = getImporterStatistics();
 
 		// If getSettingsStatistics() returns an error, save as empty object.
 		statsPms.push(
@@ -463,18 +466,27 @@ export const statistics = {
 		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable().count();
 		statistics.totalPinned = await MessagesRaw.findPinned().count();
 		statistics.totalStarred = await MessagesRaw.findStarred().count();
+		statistics.totalLinkInvitation = Invites.find().count();
+		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
-		statistics.roomsWithStarredMessages = await MessagesRaw.countRoomsWithStarredMessages();
-		statistics.roomsWithPinnedMessages = await MessagesRaw.countRoomsWithPinnedMessages();
 		statistics.totalE2ERooms = await RoomsRaw.findByE2E().count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
+		statistics.homeTitle = settings.get('Layout_Home_Title');
+		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
+		statistics.roomsInsideTeams = Rooms.countRoomsInsideTeams();
+		statistics.autojoinRoomsInsideTeams = Rooms.countAutojoinRoomsInsideTeams();
+		statistics.totalEncryptedMessages = await MessagesRaw.countE2EEMessages();
+		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
+
+		const homeBody = settings.get('Layout_Home_Body') as string;
+		statistics.homeBody = homeBody ? homeBody.split('\n')[0] : '';
 
 		const customCSS = settings.get('theme-custom-css') as string;
 		statistics.customCSSLines = customCSS ? customCSS.split('\n').length : 0;
 
 		statistics.customScriptLines = _.reduce(
 			['Custom_Script_On_Logout', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In'],
-			function _custonScript(num, setting) {
+			function _customScript(num, setting) {
 				const script = settings.get(setting) as string;
 				if (script !== '//Add your script') {
 					return num + script.split('\n').length;

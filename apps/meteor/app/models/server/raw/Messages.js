@@ -190,19 +190,23 @@ export class MessagesRaw extends BaseRaw {
 	}
 
 	async countRoomsWithStarredMessages() {
-		const queryResult = await this.col
+		const [queryResult] = await this.col
 			.aggregate([{ $match: { starred: { $exists: true } } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }])
 			.toArray();
 
-		return queryResult[0].total;
+		return queryResult?.total || 0;
 	}
 
 	async countRoomsWithPinnedMessages() {
-		const queryResult = await this.col
+		const [queryResult] = await this.col
 			.aggregate([{ $match: { pinned: true } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }])
 			.toArray();
 
-		return queryResult[0].total;
+		return queryResult?.total || 0;
+	}
+
+	async countE2EEMessages() {
+		return this.find({ t: 'e2e' }).count();
 	}
 
 	findPinned(options) {

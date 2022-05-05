@@ -5,6 +5,7 @@ import { Messages, ImportData } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { Settings as SettingsRaw } from '../../models/server/raw';
 
 export class SlackImporter extends Base {
 	parseData(data) {
@@ -155,6 +156,7 @@ export class SlackImporter extends Base {
 			}
 
 			this.converter.addUser(newUser);
+			SettingsRaw.updateValueById('Slack_Importer_Count', settings.get('Slack_Importer_Count') + 1);
 		}
 	}
 

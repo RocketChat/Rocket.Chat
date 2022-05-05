@@ -1467,6 +1467,19 @@ export class Rooms extends Base {
 		return this.find({ prid: { $exists: true } }).count();
 	}
 
+	countRoomsInsideTeams() {
+		return this.find({ teamId: { $exists: true }, teamMain: { $exists: false } }).count();
+	}
+
+	countAutojoinRoomsInsideTeams() {
+		const query = {
+			teamId: { $exists: true },
+			teamMain: { $exists: false },
+			teamDefault: true,
+		};
+		return this.find(query).count();
+	}
+
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
