@@ -99,14 +99,11 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(delete) not be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-
+			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-
-			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
-			await page.locator('.messages-box [data-qa-id="menu"]').click();
+			await mainContent.lastMessage().hover();
+			await mainContent.lastMessage().locator('[data-qa-id="menu"]').click();
+			await mainContent.messageActionMenu().waitFor();
 
 			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
 		});
@@ -123,14 +120,11 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(delete) be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-
+			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-
-			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
-			await page.locator('.messages-box [data-qa-id="menu"]').click();
+			await mainContent.lastMessage().hover();
+			await mainContent.lastMessage().locator('[data-qa-id="menu"]').click();
+			await mainContent.messageActionMenu().waitFor();
 
 			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeTruthy();
 		});
