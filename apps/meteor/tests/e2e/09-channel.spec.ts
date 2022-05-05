@@ -13,7 +13,7 @@ import { targetUser } from './utils/mocks/interations';
 
 let hasUserAddedInChannel = false;
 
-test.describe.serial('[Channel]', () => {
+test.describe.only('[Channel]', () => {
 	let flexTab: FlexTab;
 	let loginPage: LoginPage;
 	let mainContent: MainContent;

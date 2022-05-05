@@ -77,9 +77,7 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessage(): Locator {
-		return this.getPage().locator(
-			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//div[2]',
-		);
+		return this.getPage().locator('.message:last-child').last();
 	}
 
 	public lastMessageDesc(): Locator {
