@@ -1,4 +1,5 @@
 export { AttachmentContext, AttachmentContextValue } from './AttachmentContext';
+export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
 export { ConnectionStatusContext, ConnectionStatusContextValue } from './ConnectionStatusContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export { OmnichannelContext, OmnichannelContextValue } from './OmnichannelContext';
@@ -15,4 +16,6 @@ export { useOmnichannelEnabled } from './hooks/useOmnichannelEnabled';
 export { useOmnichannelRouteConfig } from './hooks/useOmnichannelRouteConfig';
 export { useOmnichannelShowQueueLink } from './hooks/useOmnichannelShowQueueLink';
 export { useQueuedInquiries } from './hooks/useQueuedInquiries';
+export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
 export { useSetModal } from './hooks/useSetModal';
+export { useUserAvatarPath } from './hooks/useUserAvatarPath';
