@@ -170,11 +170,11 @@ test.describe.only('[Channel]', () => {
 					}
 				});
 
-				test.skip('expect edit the announcement input', async () => {
+				test('expect edit the announcement input', async () => {
 					await flexTab.editAnnouncementTextInput().type('ANNOUNCEMENT EDITED');
 				});
 
-				test.skip('expect save the announcement', async () => {
+				test('expect save the announcement', async () => {
 					await flexTab.editNameSave().click();
 				});
 
