@@ -1,15 +1,15 @@
 import type { IRole } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
+import type { IEmitter } from '@rocket.chat/emitter';
 import { createContext } from 'react';
 import type { Subscription, Unsubscribe } from 'use-subscription';
 import type { ObjectId } from 'mongodb';
 
 export type IRoles = { [_id: string]: IRole };
 
-export class RoleStore extends Emitter<{
+export type RoleStore = IEmitter<{
 	change: IRoles;
-}> {
-	roles: IRoles = {};
+}> & {
+	roles: IRoles;
 }
 
 export type AuthorizationContextValue = {
@@ -37,5 +37,13 @@ export const AuthorizationContext = createContext<AuthorizationContextValue>({
 		getCurrentValue: (): boolean => false,
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
-	roleStore: new RoleStore(),
+	roleStore: {
+		roles: {},
+		emit: (): void => undefined,
+		on: () => (): void => undefined,
+		off: (): void => undefined,
+		events: () => ['change'],
+		has: () => false,
+		once: () => (): void => undefined,
+	},
 });

@@ -1,6 +1,7 @@
 import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
 import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
 import { Meta, Story } from '@storybook/react';
+import type { ObjectId } from 'mongodb';
 import React, { ContextType } from 'react';
 
 import RoomList from './RoomList/index';
@@ -86,7 +87,7 @@ const userContextValue: ContextType<typeof UserContext> = {
 		roles: ['admin'],
 		type: 'user',
 	},
-	queryPreference: <T,>(pref: string | Mongo.ObjectID, defaultValue: T) => ({
+	queryPreference: <T,>(pref: string | ObjectId, defaultValue: T) => ({
 		getCurrentValue: () => (typeof pref === 'string' ? (userPreferences[pref] as T) : defaultValue),
 		subscribe: () => () => undefined,
 	}),

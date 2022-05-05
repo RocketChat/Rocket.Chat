@@ -1,4 +1,6 @@
-import { AuthorizationContext, RoleStore } from '@rocket.chat/ui-contexts';
+import { IRole } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
+import { AuthorizationContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { FC, useCallback, useEffect } from 'react';
 
@@ -6,6 +8,12 @@ import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } fro
 import { Roles } from '../../app/models/client/models/Roles';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
+
+class RoleStore extends Emitter<{
+	change: { [_id: string]: IRole };
+}> {
+	roles: { [_id: string]: IRole } = {};
+}
 
 const contextValue = {
 	queryPermission: createReactiveSubscriptionFactory((permission, scope) => hasPermission(permission, scope)),

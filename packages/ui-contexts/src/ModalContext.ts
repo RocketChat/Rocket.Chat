@@ -2,13 +2,18 @@ import { createContext, ReactNode } from 'react';
 
 type ModalConfiguration = {
 	type?: 'rc-game' | 'success' | 'input' | 'warning' | 'error' | false;
+	title?: string;
+	text?: string;
+	inputPlaceholder?: string;
 	input?: boolean;
 	inputType?: HTMLInputElement['type'];
 	timer?: number;
 	confirmButtonText?: string;
+	confirmButtonColor?: string;
 	cancelButtonText?: string;
 	closeOnConfirm?: boolean;
 	showConfirmButton?: boolean;
+	showCancelButton?: boolean;
 	showFooter?: boolean;
 	confirmOnEnter?: boolean;
 	closeOnEscape?: boolean;
@@ -16,6 +21,7 @@ type ModalConfiguration = {
 		action: string;
 		label: string;
 	};
+	html?: boolean;
 };
 
 type ModalInstance = ModalConfiguration & {
