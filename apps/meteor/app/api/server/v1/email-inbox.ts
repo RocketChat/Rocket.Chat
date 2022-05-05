@@ -52,9 +52,6 @@ API.v1.addRoute(
 					secure: Boolean,
 				}),
 			});
-			if (!this.bodyParams._id) {
-				API.v1.failure('error-email-inbox-id-required');
-			}
 
 			const emailInboxParams = this.bodyParams;
 
