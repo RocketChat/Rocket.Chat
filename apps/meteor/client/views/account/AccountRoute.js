@@ -1,8 +1,7 @@
-import { useRouteParameter, useRoute, useCurrentRoute, useSetting } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, useCurrentRoute, useSetting, usePermission } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
-import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import AccountIntegrationsPage from './AccountIntegrationsPage';
 import AccountProfilePage from './AccountProfilePage';

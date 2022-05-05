@@ -3638,7 +3638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/emitter@npm:~0.31.11, @rocket.chat/emitter@npm:~0.31.9":
+"@rocket.chat/emitter@npm:^0.31.11, @rocket.chat/emitter@npm:~0.31.11, @rocket.chat/emitter@npm:~0.31.9":
   version: 0.31.11
   resolution: "@rocket.chat/emitter@npm:0.31.11"
   checksum: 12b008c350c11276a66901efbd2015be1c135e7604f20c261504207f2a5de5b6a83d91a11191cdc896d14f6147711b189f229a82fadceeeed419cfea200550bb
@@ -4340,6 +4340,7 @@ __metadata:
   resolution: "@rocket.chat/ui-contexts@workspace:packages/ui-contexts"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": ^0.31.11
     "@rocket.chat/fuselage-hooks": ^0.31.11
     "@types/jest": ^27.4.1
     "@types/mongodb": ~3.6.10

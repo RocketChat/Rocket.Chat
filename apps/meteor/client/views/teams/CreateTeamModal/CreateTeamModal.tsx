@@ -1,10 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';

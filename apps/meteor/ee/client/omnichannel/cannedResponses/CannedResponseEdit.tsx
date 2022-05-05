@@ -2,11 +2,10 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.ch
 import { Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useState, useMemo, useEffect, useCallback } from 'react';
 
 import Page from '../../../../client/components/Page';
-import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';

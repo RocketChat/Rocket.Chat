@@ -1,7 +1,6 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { getDifference, MINUTES } from '../lib/getDifference';
 
 export const useMessageDeletionIsAllowed = (rid, uid) => {

@@ -1,7 +1,6 @@
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, MouseEvent, MouseEventHandler } from 'react';
 
-import { usePermission } from '../../../../../../client/contexts/AuthorizationContext';
 import CreateCannedResponse from '../../CannedResponse/modals';
 import CannedResponse from './CannedResponse';
 

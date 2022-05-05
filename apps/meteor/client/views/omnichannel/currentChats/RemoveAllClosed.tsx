@@ -1,7 +1,7 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const RemoveAllClosed: FC<{

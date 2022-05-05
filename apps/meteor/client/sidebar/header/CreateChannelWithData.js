@@ -1,8 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
 import React, { memo, useCallback, useMemo } from 'react';
 
-import { usePermission } from '../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/utils/goToRoomById';

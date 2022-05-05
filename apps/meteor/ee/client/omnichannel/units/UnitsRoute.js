@@ -1,10 +1,9 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
-import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';

@@ -6,10 +6,10 @@ import {
 	useOmnichannelAgentAvailable,
 	useToastMessageDispatch,
 	useRoute,
+	usePermission,
 } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { usePermission } from '../../contexts/AuthorizationContext';
 import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';

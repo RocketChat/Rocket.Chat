@@ -1,12 +1,11 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+import { useSetModal, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { popover } from '../../../../app/ui-utils/client';
 import CreateDiscussion from '../../../components/CreateDiscussion';
 import ListItem from '../../../components/Sidebar/ListItem';
-import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import CreateTeamModal from '../../../views/teams/CreateTeamModal';
 import CreateChannelWithData from '../CreateChannelWithData';

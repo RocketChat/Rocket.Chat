@@ -1,4 +1,5 @@
 export { AttachmentContext, AttachmentContextValue } from './AttachmentContext';
+export { AuthorizationContext, AuthorizationContextValue } from './AuthorizationContext';
 export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
 export { ConnectionStatusContext, ConnectionStatusContextValue } from './ConnectionStatusContext';
 export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContext';
@@ -7,11 +8,13 @@ export { ModalContext, ModalContextValue } from './ModalContext';
 export { OmnichannelContext, OmnichannelContextValue } from './OmnichannelContext';
 export { RouterContext, RouterContextValue } from './RouterContext';
 export { SessionContext, SessionContextValue } from './SessionContext';
-export { SettingsContext, SettingsContextValue } from './SettingsContext';
+export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './SettingsContext';
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { UserContext, UserContextValue } from './UserContext';
 
+export { useAllPermissions } from './hooks/useAllPermissions';
+export { useAtLeastOnePermission } from './hooks/useAtLeastOnePermission';
 export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEmbedMedia';
 export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
 export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollapsedByDefault';
@@ -33,8 +36,11 @@ export { useOmnichannelAgentAvailable } from './hooks/useOmnichannelAgentAvailab
 export { useOmnichannelEnabled } from './hooks/useOmnichannelEnabled';
 export { useOmnichannelRouteConfig } from './hooks/useOmnichannelRouteConfig';
 export { useOmnichannelShowQueueLink } from './hooks/useOmnichannelShowQueueLink';
+export { usePermission } from './hooks/usePermission';
 export { useQueryStringParameter } from './hooks/useQueryStringParameter';
 export { useQueuedInquiries } from './hooks/useQueuedInquiries';
+export { useRole } from './hooks/useRole';
+export { useRolesDescription } from './hooks/useRolesDescription';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';

@@ -1,8 +1,7 @@
-import { SettingsContext, SettingsContextValue } from '@rocket.chat/ui-contexts';
+import { SettingsContext, SettingsContextValue, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import { Tracker } from 'meteor/tracker';
 import React, { useCallback, useEffect, useMemo, useState, FunctionComponent } from 'react';
 
-import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
 import { useMethod } from '../contexts/ServerContext';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
