@@ -7,7 +7,7 @@ import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../contexts/TranslationContext';
 
 type EditStatusModalProps = {

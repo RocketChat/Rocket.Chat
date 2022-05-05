@@ -3,7 +3,7 @@ import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from
 import { useCallback, useEffect } from 'react';
 
 import { useEndpoint } from '../contexts/ServerContext';
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { AsyncState, useAsyncState } from './useAsyncState';
 
 export const useEndpointData = <TPath extends PathFor<'GET'>>(

@@ -20,7 +20,7 @@ import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';

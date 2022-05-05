@@ -9,7 +9,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 // import { useEndpoint } from '../../contexts/ServerContext';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emptyFn = (_error: any, _result: UIKitInteractionType | void): void => undefined;

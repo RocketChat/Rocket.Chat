@@ -4,7 +4,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useMethod } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';

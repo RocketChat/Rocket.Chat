@@ -4,7 +4,7 @@ import React, { useState, ReactElement } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 type AddWebdavAccountModalPayload = IWebdavAccountPayload;

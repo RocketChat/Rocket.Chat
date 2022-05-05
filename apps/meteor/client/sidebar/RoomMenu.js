@@ -10,7 +10,7 @@ import { usePermission } from '../contexts/AuthorizationContext';
 import { useRoute } from '../contexts/RouterContext';
 import { useMethod } from '../contexts/ServerContext';
 import { useSetting } from '../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useUserSubscription } from '../contexts/UserContext';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';

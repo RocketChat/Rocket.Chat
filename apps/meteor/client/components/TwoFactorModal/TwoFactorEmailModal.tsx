@@ -3,7 +3,7 @@ import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useState, ChangeEvent } from 'react';
 
 import { useEndpoint } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../contexts/TranslationContext';
 import GenericModal from '../GenericModal';
 import { Method, OnConfirm } from './TwoFactorModal';

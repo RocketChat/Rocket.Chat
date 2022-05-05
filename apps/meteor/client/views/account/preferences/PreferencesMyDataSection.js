@@ -1,9 +1,8 @@
 import { Accordion, Field, FieldGroup, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import MyDataModal from './MyDataModal';
 

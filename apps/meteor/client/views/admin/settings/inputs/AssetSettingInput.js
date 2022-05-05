@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import React from 'react';
 
 import { useMethod } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import './AssetSettingInput.css';
 

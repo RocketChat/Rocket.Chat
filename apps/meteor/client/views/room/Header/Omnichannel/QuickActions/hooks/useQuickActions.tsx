@@ -15,7 +15,7 @@ import TranscriptModal from '../../../../../../components/Omnichannel/modals/Tra
 import { usePermission, useRole } from '../../../../../../contexts/AuthorizationContext';
 import { useEndpoint, useMethod } from '../../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../../../contexts/UserContext';
 import { handleError } from '../../../../../../lib/utils/handleError';

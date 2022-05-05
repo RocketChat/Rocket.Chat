@@ -1,5 +1,5 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
@@ -11,7 +11,6 @@ import {
 	GenericTableLoadingTable,
 } from '../../../components/GenericTable';
 import Page from '../../../components/Page';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';

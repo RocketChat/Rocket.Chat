@@ -1,4 +1,5 @@
 import { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 import { useQuery } from 'react-query';
 
@@ -6,7 +7,6 @@ import { APIClient } from '../../../app/utils/client';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useSessionDispatch } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserId } from '../../contexts/UserContext';
 import LoginPage from '../root/MainLayout/LoginPage';

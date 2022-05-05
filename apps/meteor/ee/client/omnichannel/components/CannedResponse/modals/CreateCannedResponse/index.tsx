@@ -3,7 +3,7 @@ import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'reac
 
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
 import { useEndpoint } from '../../../../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../../../client/contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../../../../client/hooks/useForm';
 import CreateCannedResponseModal from './CreateCannedResponseModal';

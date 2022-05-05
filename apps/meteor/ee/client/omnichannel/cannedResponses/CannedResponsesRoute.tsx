@@ -7,7 +7,7 @@ import PageSkeleton from '../../../../client/components/PageSkeleton';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';

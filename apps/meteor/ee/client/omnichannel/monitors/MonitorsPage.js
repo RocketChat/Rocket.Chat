@@ -5,7 +5,7 @@ import React, { useState, useMemo } from 'react';
 import Page from '../../../../client/components/Page';
 import UserAutoComplete from '../../../../client/components/UserAutoComplete';
 import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';

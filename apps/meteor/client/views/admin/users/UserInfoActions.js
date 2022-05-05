@@ -1,5 +1,5 @@
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
 import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
@@ -8,7 +8,6 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useActionSpread } from '../../hooks/useActionSpread';
 import UserInfo from '../../room/contextualBar/UserInfo';

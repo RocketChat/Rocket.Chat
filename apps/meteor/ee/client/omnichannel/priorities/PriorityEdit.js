@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 

@@ -3,7 +3,7 @@ import React, { FC, useEffect } from 'react';
 
 import { useRouteParameter } from '../../contexts/RouterContext';
 import { useAbsoluteUrl, useMethod } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { AsyncState, AsyncStatePhase, useAsyncState } from '../../hooks/useAsyncState';
 

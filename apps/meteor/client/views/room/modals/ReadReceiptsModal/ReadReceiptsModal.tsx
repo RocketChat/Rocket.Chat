@@ -3,7 +3,7 @@ import { Skeleton } from '@rocket.chat/fuselage';
 import React, { ReactElement, useMemo, useEffect } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useMethodData } from '../../../../hooks/useMethodData';
 import { AsyncStatePhase } from '../../../../lib/asyncState';

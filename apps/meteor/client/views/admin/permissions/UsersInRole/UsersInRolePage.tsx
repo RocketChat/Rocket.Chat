@@ -8,7 +8,7 @@ import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoComplete from '../../../../components/UserAutoComplete';
 import { useRoute } from '../../../../contexts/RouterContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import UsersInRoleTable from './UsersInRoleTable';
 

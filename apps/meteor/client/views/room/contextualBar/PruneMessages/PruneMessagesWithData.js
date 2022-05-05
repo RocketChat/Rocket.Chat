@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../contexts/UserContext';
 import { useForm } from '../../../../hooks/useForm';

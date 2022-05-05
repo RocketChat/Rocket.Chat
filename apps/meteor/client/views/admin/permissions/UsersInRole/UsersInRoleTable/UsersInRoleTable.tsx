@@ -8,7 +8,7 @@ import GenericModal from '../../../../../components/GenericModal';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import UsersInRoleTableRow from './UsersInRoleTableRow';
 

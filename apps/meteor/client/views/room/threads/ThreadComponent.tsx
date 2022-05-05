@@ -9,7 +9,7 @@ import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint, useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';

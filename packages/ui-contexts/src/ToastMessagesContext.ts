@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 type ToastMessagePayload = {
 	type: 'success' | 'info' | 'warning' | 'error';
@@ -7,12 +7,10 @@ type ToastMessagePayload = {
 	options?: object;
 };
 
-type ToastMessagesContextValue = {
+export type ToastMessagesContextValue = {
 	dispatch: (payload: ToastMessagePayload) => void;
 };
 
 export const ToastMessagesContext = createContext<ToastMessagesContextValue>({
 	dispatch: () => undefined,
 });
-
-export const useToastMessageDispatch = (): ToastMessagesContextValue['dispatch'] => useContext(ToastMessagesContext).dispatch;

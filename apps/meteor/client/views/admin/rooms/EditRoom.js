@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
@@ -10,7 +10,6 @@ import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint, useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';

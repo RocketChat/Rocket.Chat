@@ -7,7 +7,7 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { OmnichannelCallToggle } from './components/OmnichannelCallToggle';
 

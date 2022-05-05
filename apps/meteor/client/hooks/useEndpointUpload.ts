@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { UploadResult, useUpload } from '../contexts/ServerContext';
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
 export const useEndpointUpload = (
 	endpoint: string,

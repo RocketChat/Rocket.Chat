@@ -9,7 +9,7 @@ import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useRoute } from '../../../../../contexts/RouterContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';

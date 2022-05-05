@@ -6,7 +6,7 @@ import React from 'react';
 import GenericModal from '../../../../client/components/GenericModal';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 function RemoveUnitButton({ _id, reload }) {

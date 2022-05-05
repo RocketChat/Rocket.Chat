@@ -10,7 +10,7 @@ import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/
 import GenericModal from '../../../../../components/GenericModal';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSettings } from '../../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUser } from '../../../../../contexts/UserContext';
 import { useRoom } from '../../../contexts/RoomContext';

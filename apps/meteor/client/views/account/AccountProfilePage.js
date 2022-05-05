@@ -1,5 +1,5 @@
 import { ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { SHA256 } from 'meteor/sha';
 import React, { useMemo, useState, useCallback } from 'react';
 
@@ -8,7 +8,6 @@ import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeW
 import Page from '../../components/Page';
 import { useEndpoint, useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUser, useLogout } from '../../contexts/UserContext';
 import { useForm } from '../../hooks/useForm';

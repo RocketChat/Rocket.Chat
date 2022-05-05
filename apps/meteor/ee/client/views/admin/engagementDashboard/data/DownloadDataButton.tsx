@@ -1,7 +1,7 @@
 import { Box, ActionButton } from '@rocket.chat/fuselage';
 import React, { ComponentProps, ReactElement } from 'react';
 
-import { useToastMessageDispatch } from '../../../../../../client/contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 

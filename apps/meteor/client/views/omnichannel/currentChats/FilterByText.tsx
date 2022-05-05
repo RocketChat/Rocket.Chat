@@ -1,6 +1,6 @@
 import { TextInput, Box, MultiSelect, Select, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { Dispatch, FC, SetStateAction, useEffect, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
@@ -9,7 +9,6 @@ import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { formsSubscription } from '../additionalForms';

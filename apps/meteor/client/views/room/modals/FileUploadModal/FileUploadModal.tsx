@@ -2,7 +2,7 @@ import { Modal, Box, Field, FieldGroup, TextInput, ButtonGroup, Button } from '@
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect } from 'react';
 
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import FilePreview from './FilePreview';
 

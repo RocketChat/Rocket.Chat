@@ -3,7 +3,7 @@ import type { MatchPathPattern, Method, OperationParams, OperationResult, PathFo
 import { useCallback } from 'react';
 
 import { useEndpoint } from '../contexts/ServerContext';
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
 export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	method: TMethod,
