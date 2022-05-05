@@ -1,11 +1,11 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import MarkdownText from '../../../../components/MarkdownText';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRoute } from '../../../../contexts/RouterContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useSetting } from '../../../../contexts/SettingsContext';

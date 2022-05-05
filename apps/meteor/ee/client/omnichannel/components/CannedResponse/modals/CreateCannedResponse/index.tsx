@@ -1,7 +1,7 @@
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
-import { useSetModal } from '../../../../../../../client/contexts/ModalContext';
 import { useEndpoint } from '../../../../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
