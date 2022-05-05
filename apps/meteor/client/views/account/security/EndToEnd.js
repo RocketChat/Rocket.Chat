@@ -1,6 +1,6 @@
 import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.chat/fuselage';
 import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useUser } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useEffect } from 'react';
 
@@ -8,7 +8,6 @@ import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
 import { callbacks } from '../../../../lib/callbacks';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUser } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
 const EndToEnd = (props) => {

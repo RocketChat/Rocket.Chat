@@ -1,9 +1,9 @@
 import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Tooltip, Box } from '@rocket.chat/fuselage';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
 import { CustomSounds } from '../../../../app/custom-sounds/client';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
 const useCustomSoundsOptions = () =>

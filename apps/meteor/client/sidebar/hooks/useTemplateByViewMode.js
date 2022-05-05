@@ -1,6 +1,6 @@
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useUserPreference } from '../../contexts/UserContext';
 import Condensed from '../Item/Condensed';
 import Extended from '../Item/Extended';
 import Medium from '../Item/Medium';

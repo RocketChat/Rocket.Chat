@@ -1,11 +1,10 @@
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useMemo } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useUserId } from '../../../../contexts/UserContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useTabBarClose } from '../../providers/ToolboxProvider';

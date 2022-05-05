@@ -4340,7 +4340,9 @@ __metadata:
   resolution: "@rocket.chat/ui-contexts@workspace:packages/ui-contexts"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/fuselage-hooks": ^0.31.11
     "@types/jest": ^27.4.1
+    "@types/mongodb": ~3.6.10
     "@types/react": ^17
     "@types/use-subscription": ^1
     eslint: ^8.12.0
@@ -6630,7 +6632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mongodb@npm:^3.6.10, @types/mongodb@npm:^3.6.20":
+"@types/mongodb@npm:^3.6.10, @types/mongodb@npm:^3.6.20, @types/mongodb@npm:~3.6.10":
   version: 3.6.20
   resolution: "@types/mongodb@npm:3.6.20"
   dependencies:

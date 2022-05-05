@@ -1,8 +1,8 @@
 import { Accordion, Field, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
 const PreferencesUserPresenceSection = ({ onChange, commitRef, ...props }) => {

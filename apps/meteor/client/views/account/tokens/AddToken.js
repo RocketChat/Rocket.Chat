@@ -1,11 +1,10 @@
 import { Box, TextInput, Button, Field, FieldGroup, Margins, CheckBox } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserId } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 import InfoModal from './InfoModal';
 

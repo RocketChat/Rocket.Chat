@@ -1,6 +1,6 @@
 import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useEffect } from 'react';
 import qrcode from 'yaqrcode';
 
@@ -8,7 +8,6 @@ import TextCopy from '../../../components/TextCopy';
 import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUser } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 import BackupCodesModal from './BackupCodesModal';
 

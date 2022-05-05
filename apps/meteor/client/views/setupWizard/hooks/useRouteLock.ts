@@ -1,10 +1,9 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useUserId, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
 
 import { useRole } from '../../../contexts/AuthorizationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
-import { useUserId, useUser } from '../../../contexts/UserContext';
 
 export const useRouteLock = (): boolean => {
 	const [locked, setLocked] = useState(true);

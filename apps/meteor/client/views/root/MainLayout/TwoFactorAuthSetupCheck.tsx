@@ -1,10 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useLayout, useUser } from '@rocket.chat/ui-contexts';
 import React, { lazy, ReactElement, ReactNode, useCallback } from 'react';
 
 import { Roles } from '../../../../app/models/client';
 import { useSetting } from '../../../contexts/SettingsContext';
-import { useUser } from '../../../contexts/UserContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import LayoutWithSidebar from './LayoutWithSidebar';
 
