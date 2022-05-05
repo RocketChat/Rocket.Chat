@@ -41,7 +41,7 @@ export class RegisterContainer extends Component {
 
 		await dispatch({ loading: true, department });
 		try {
-			const user = await Livechat.grantVisitor({ visitor: { ...fields, token } });
+			const user = await Livechat.grantVisitor({ visitor: { ...fields, token } }).catch(() => null);
 			await dispatch({ user });
 			parentCall('callback', ['pre-chat-form-submit', fields]);
 			this.registerCustomFields(customFields);

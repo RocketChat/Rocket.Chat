@@ -174,6 +174,10 @@ class Register extends Component {
 	}
 
 	handleFieldChange = ({ target }) => {
+		const { dispatch, user } = this.props;
+		if (user === null) {
+			dispatch({ user: undefined });
+		}
 		const { name, value } = target;
 		const { regexp } = this.state[name];
 		const error = validate(this.props, { name, value, regexp });
@@ -239,7 +243,7 @@ class Register extends Component {
 								<FormField
 									required
 									label={t('email')}
-									error={email.showError && email.error}
+									error={(email.showError && email.error) || props.user === null}
 								>
 									<TextInput
 										name='email'

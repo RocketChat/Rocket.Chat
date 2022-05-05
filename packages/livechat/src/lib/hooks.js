@@ -11,7 +11,7 @@ import Triggers from './triggers';
 const createOrUpdateGuest = async (guest) => {
 	const { token } = guest;
 	token && await store.setState({ token });
-	const user = await Livechat.grantVisitor({ visitor: { ...guest } });
+	const user = await Livechat.grantVisitor({ visitor: { ...guest } }).catch(() => null);
 	store.setState({ user });
 };
 
@@ -137,7 +137,9 @@ const api = {
 			api.setDepartment(data.department);
 		}
 
-		createOrUpdateGuest(data);
+		createOrUpdateGuest(data).catch((e) => {
+			console.error(e);
+		});
 	},
 
 	async setLanguage(language) {

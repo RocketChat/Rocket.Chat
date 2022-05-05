@@ -112,7 +112,7 @@ class LeaveMessage extends Component {
 					<FormField
 						required
 						label={t('Email')}
-						error={email.showError && email.error}
+						error={(email.showError && email.error) || this.props.user === null}
 					>
 						<TextInput
 							name='email'
