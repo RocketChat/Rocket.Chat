@@ -1,12 +1,11 @@
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 function RemoveTagButton({ _id, reload }) {

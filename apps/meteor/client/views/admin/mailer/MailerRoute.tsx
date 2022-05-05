@@ -1,8 +1,8 @@
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import { Mailer } from './Mailer';

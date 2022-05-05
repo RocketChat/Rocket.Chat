@@ -4342,11 +4342,13 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@types/jest": ^27.4.1
     "@types/react": ^17
+    "@types/use-subscription": ^1
     eslint: ^8.12.0
     jest: ^27.5.1
     react: ~17.0.2
     ts-jest: ^27.1.4
     typescript: ~4.3.5
+    use-subscription: ^1.7.0
   peerDependencies:
     react: ~17.0.2
   languageName: unknown
@@ -7093,7 +7095,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/use-subscription@npm:^1.0.0":
+"@types/use-subscription@npm:^1, @types/use-subscription@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/use-subscription@npm:1.0.0"
   checksum: 47fff868682692ecda7110bd04ba4c5b1324854c0bcccc765606a42d4bd9be475207413c8829a883b98e7edd801100df53876da0ff89ac21a8f964e440636ef2
@@ -33026,12 +33028,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"use-subscription@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "use-subscription@npm:1.7.0"
+  dependencies:
+    use-sync-external-store: ^1.1.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: a70c1668cf91c700614381e689b38b974234798cae1f3c2ec185cd5ab56d525f0fd37bd0d048d7b3bf003bfed3f5652f7801214cabe10a4114efe2671acedc59
+  languageName: node
+  linkType: hard
+
 "use-subscription@npm:~1.6.0":
   version: 1.6.0
   resolution: "use-subscription@npm:1.6.0"
   peerDependencies:
     react: ^18.0.0
   checksum: 0ce15a3ed1f66f78cb2d7a83ff4980e2ac93054b0bcbdc4e492e77fed599233372aaaf9c9fd9b370484c491c5aee0b980859db1108ad63ee4cdba0f468c4f5d1
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "use-sync-external-store@npm:1.1.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 8993a0b642f91d7fcdbb02b7b3ac984bd3af4769686f38291fe7fcfe73dfb73d6c64d20dfb7e5e7fbf5a6da8f5392d6f8e5b00c243a04975595946e82c02b883
   languageName: node
   linkType: hard
 

@@ -1,9 +1,9 @@
 import { Serialized } from '@rocket.chat/core-typings';
 import type { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { useEndpoint } from '../contexts/ServerContext';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
 export const useEndpointActionExperimental = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	method: TMethod,

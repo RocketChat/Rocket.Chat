@@ -6,6 +6,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@types/jest": "^27.4.1",
 		"@types/react": "^17",
+		"@types/use-subscription": "^1",
 		"eslint": "^8.12.0",
 		"jest": "^27.5.1",
 		"react": "~17.0.2",
@@ -33,5 +34,8 @@
 		"ignorePatterns": [
 			"**/dist"
 		]
+	},
+	"dependencies": {
+		"use-subscription": "^1.7.0"
 	}
 }

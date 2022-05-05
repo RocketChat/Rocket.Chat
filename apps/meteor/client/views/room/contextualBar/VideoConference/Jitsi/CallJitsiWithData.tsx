@@ -2,7 +2,7 @@ import { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { clear } from '@rocket.chat/memo';
-import { useConnectionStatus, useSetModal } from '@rocket.chat/ui-contexts';
+import { useConnectionStatus, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useRef, useEffect, useState, useMemo, useLayoutEffect, memo } from 'react';
 
 import { Subscriptions } from '../../../../../../app/models/client';
@@ -10,7 +10,6 @@ import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/
 import GenericModal from '../../../../../components/GenericModal';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSettings } from '../../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUser } from '../../../../../contexts/UserContext';
 import { useRoom } from '../../../contexts/RoomContext';

@@ -1,7 +1,7 @@
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback } from 'react';
 
 import { useMethod } from '../contexts/ServerContext';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useEndpointAction } from './useEndpointAction';
 import { useEndpointUpload } from './useEndpointUpload';

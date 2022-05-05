@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
@@ -9,7 +9,6 @@ import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useRoute } from '../../../../contexts/RouterContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';

@@ -5,6 +5,7 @@ export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContex
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export { OmnichannelContext, OmnichannelContextValue } from './OmnichannelContext';
+export { SessionContext, SessionContextValue } from './SessionContext';
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 
@@ -26,6 +27,8 @@ export { useOmnichannelRouteConfig } from './hooks/useOmnichannelRouteConfig';
 export { useOmnichannelShowQueueLink } from './hooks/useOmnichannelShowQueueLink';
 export { useQueuedInquiries } from './hooks/useQueuedInquiries';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
+export { useSession } from './hooks/useSession';
+export { useSessionDispatch } from './hooks/useSessionDispatch';
 export { useSetModal } from './hooks/useSetModal';
 export { useToastMessageDispatch } from './hooks/useToastMessageDispatch';
 export { useTooltipClose } from './hooks/useTooltipClose';

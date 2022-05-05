@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
@@ -9,7 +9,6 @@ import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { usePermission, useAllPermissions } from '../../../contexts/AuthorizationContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserId, useUserSubscription, useUserRoom, useUserSubscriptionByName } from '../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';

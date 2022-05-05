@@ -11,7 +11,7 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -20,7 +20,6 @@ import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';

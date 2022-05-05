@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useCustomSound } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import { useCustomSound }
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserSubscription } from '../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';

@@ -1,9 +1,9 @@
 import { Box, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, ChangeEvent } from 'react';
 
 import { useEndpoint } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../contexts/TranslationContext';
 import GenericModal from '../GenericModal';
 import { Method, OnConfirm } from './TwoFactorModal';
