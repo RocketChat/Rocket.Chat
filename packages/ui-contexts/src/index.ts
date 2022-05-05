@@ -4,6 +4,7 @@ export { ConnectionStatusContext, ConnectionStatusContextValue } from './Connect
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export { OmnichannelContext, OmnichannelContextValue } from './OmnichannelContext';
+export { TooltipContext, TooltipContextValue } from './TooltipContext';
 
 export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEmbedMedia';
 export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
@@ -23,4 +24,6 @@ export { useOmnichannelShowQueueLink } from './hooks/useOmnichannelShowQueueLink
 export { useQueuedInquiries } from './hooks/useQueuedInquiries';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
 export { useSetModal } from './hooks/useSetModal';
+export { useTooltipClose } from './hooks/useTooltipClose';
+export { useTooltipOpen } from './hooks/useTooltipOpen';
 export { useUserAvatarPath } from './hooks/useUserAvatarPath';
