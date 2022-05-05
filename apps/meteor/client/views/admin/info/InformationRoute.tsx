@@ -33,7 +33,7 @@ const InformationRoute = (): ReactElement => {
 			setError(false);
 
 			try {
-				const [statistics, instances] = await Promise.all([getStatistics({ refresh }), getInstances()]);
+				const [statistics, instances] = await Promise.all([getStatistics({ refresh: refresh ? 'true' : 'false' }), getInstances()]);
 
 				if (didCancel) {
 					return;
