@@ -5,7 +5,7 @@ import React, { memo, ReactElement } from 'react';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useLayout } from '../../contexts/LayoutContext';
-import { useOmnichannelShowQueueLink, useOmnichannelAgentAvailable } from '../../contexts/OmnichannelContext';
+import { useOmnichannelShowQueueLink, useOmnichannelAgentAvailable } from '@rocket.chat/ui-contexts';
 import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';

@@ -13,7 +13,7 @@ import ForwardChatModal from '../../../../../../components/Omnichannel/modals/Fo
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
 import { usePermission, useRole } from '../../../../../../contexts/AuthorizationContext';
-import { useOmnichannelRouteConfig } from '../../../../../../contexts/OmnichannelContext';
+import { useOmnichannelRouteConfig } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useMethod } from '../../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../../../../contexts/ToastMessagesContext';

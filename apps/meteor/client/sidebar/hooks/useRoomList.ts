@@ -2,7 +2,7 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useEffect } from 'react';
 
-import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
+import { useQueuedInquiries, useOmnichannelEnabled } from '@rocket.chat/ui-contexts';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useQueryOptions } from './useQueryOptions';

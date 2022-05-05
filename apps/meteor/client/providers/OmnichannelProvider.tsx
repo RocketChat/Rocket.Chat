@@ -8,7 +8,7 @@ import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/s
 import { Notifications } from '../../app/notifications/client';
 import { ClientLogger } from '../../lib/ClientLogger';
 import { usePermission } from '../contexts/AuthorizationContext';
-import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
+import { OmnichannelContext, OmnichannelContextValue } from '@rocket.chat/ui-contexts';
 import { useMethod } from '../contexts/ServerContext';
 import { useSetting } from '../contexts/SettingsContext';
 import { useUser } from '../contexts/UserContext';
