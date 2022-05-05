@@ -244,8 +244,8 @@ export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 
 export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
 
 export interface IVideoConferenceMessage extends IMessage {
-	videoConference: {
-		name?: string;
+	videoConf: {
+		title?: string;
 	};
 }
 

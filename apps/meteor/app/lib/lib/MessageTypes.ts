@@ -352,7 +352,7 @@ Meteor.startup(function () {
 		message: 'video_conference_started',
 		data(message) {
 			return {
-				conference: (isVideoConferenceMessage(message) && message.videoConference.name) || '',
+				conference: (isVideoConferenceMessage(message) && message.videoConf.title) || '',
 				username: message.u.username,
 			};
 		},
@@ -363,7 +363,7 @@ Meteor.startup(function () {
 		message: 'video_conference_ended',
 		data(message) {
 			return {
-				conference: (isVideoConferenceMessage(message) && message.videoConference.name) || '',
+				conference: (isVideoConferenceMessage(message) && message.videoConf.title) || '',
 				username: message.u.username,
 			};
 		},
@@ -374,7 +374,7 @@ Meteor.startup(function () {
 		message: 'video_conference_item',
 		data(message) {
 			return {
-				conference: (isVideoConferenceMessage(message) && message.videoConference.name) || '',
+				conference: (isVideoConferenceMessage(message) && message.videoConf.title) || '',
 			};
 		},
 	});
