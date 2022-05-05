@@ -4,7 +4,7 @@ import { TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { Rooms, Subscriptions } from '../../../models';
 import { callbacks } from '../../../../lib/callbacks';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
@@ -255,8 +255,8 @@ const settingSavers = {
 	encrypted({ value, room, rid, user }) {
 		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
-	favorite({ value, rid }) {
-		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
+	favorite({ value, rid, user }) {
+		Subscriptions.setFavoriteByRoomIdAndUserId(rid, user._id, value.favorite);
 	},
 	async roomAvatar({ value, rid, user }) {
 		await setRoomAvatar(rid, value, user);
