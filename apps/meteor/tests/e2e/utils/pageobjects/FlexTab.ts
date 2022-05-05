@@ -384,6 +384,12 @@ export default class FlexTab extends BasePage {
 		await callFunctionTabs(desiredTab);
 	}
 
+	public closeThreadMessage(): Locator {
+		return this.getPage().locator(
+			'//html//body//div[1]//div//div[3]//div[1]//main//div//aside//div[2]//div//div//h3//div//div[2]//button[2]',
+		);
+	}
+
 	public flexTabViewThreadMessage(): Locator {
 		return this.getPage().locator(
 			'div.thread-list.js-scroll-thread ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',

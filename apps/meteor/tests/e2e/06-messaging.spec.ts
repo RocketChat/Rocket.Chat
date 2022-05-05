@@ -20,7 +20,7 @@ const createBrowserContextForChat = async (browser: Browser, baseURL: string): P
 	return { mainContent, sideNav };
 };
 
-test.describe('[Messaging]', () => {
+test.describe.only('[Messaging]', () => {
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
 	let sideNav: SideNav;

@@ -164,7 +164,7 @@ export default class SideNav extends BasePage {
 
 	public async findFindForChat(userName: string): Promise<void> {
 		await this.searchUser().click();
-		await this.searchInput().type(userName, { delay: 300 });
+		await this.searchInput().type(userName, { delay: 200 });
 		await this.getPage().keyboard.press('Enter');
 	}
 }
