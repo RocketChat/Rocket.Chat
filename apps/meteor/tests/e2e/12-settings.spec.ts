@@ -11,7 +11,6 @@ const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
 test.describe('[API Settings Change]', async () => {
 	let page: Page;
-
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
@@ -57,9 +56,7 @@ test.describe('[API Settings Change]', async () => {
 		test('(UI) expect option(edit) not be visible', async () => {
 			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.lastMessage().hover();
-			await mainContent.lastMessage().locator('[data-qa-id="menu"]').click();
-			await mainContent.messageActionMenu().waitFor();
+			await mainContent.openMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeFalsy();
 		});
@@ -78,9 +75,7 @@ test.describe('[API Settings Change]', async () => {
 		test('(UI) expect option(edit) be visible', async () => {
 			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.lastMessage().hover();
-			await mainContent.lastMessage().locator('[data-qa-id="menu"]').click();
-			await mainContent.messageActionMenu().waitFor();
+			await mainContent.openMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeTruthy();
 		});
@@ -101,9 +96,7 @@ test.describe('[API Settings Change]', async () => {
 		test('(UI) expect option(delete) not be visible', async () => {
 			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.lastMessage().hover();
-			await mainContent.lastMessage().locator('[data-qa-id="menu"]').click();
-			await mainContent.messageActionMenu().waitFor();
+			await mainContent.openMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
 		});
@@ -122,9 +115,7 @@ test.describe('[API Settings Change]', async () => {
 		test('(UI) expect option(delete) be visible', async () => {
 			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.lastMessage().hover();
-			await mainContent.lastMessage().locator('[data-qa-id="menu"]').click();
-			await mainContent.messageActionMenu().waitFor();
+			await mainContent.openMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeTruthy();
 		});
@@ -179,10 +170,8 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload video) not be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
-			await page.waitForSelector('.rc-popover__content');
+			await mainContent.reload();
+			await mainContent.openMoreActionMenu();
 
 			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeFalsy();
 		});
@@ -199,10 +188,8 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload video) be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
-			await page.waitForSelector('.rc-popover__content');
+			await mainContent.reload();
+			await mainContent.openMoreActionMenu();
 
 			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeTruthy();
 		});
@@ -234,8 +221,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect badword be censored', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
+			await mainContent.reload();
 
 			await mainContent.sendMessage(unauthorizedWord);
 			await mainContent.waitForLastMessageEqualsText('*'.repeat(unauthorizedWord.length));
@@ -253,8 +239,7 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect badword not be censored', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
+			await mainContent.reload();
 
 			await mainContent.sendMessage(unauthorizedWord);
 			await mainContent.waitForLastMessageEqualsText(unauthorizedWord);
@@ -274,14 +259,9 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(pin message) not be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-
+			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-
-			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
-			await page.locator('.messages-box [data-qa-id="menu"]').click();
+			await mainContent.openMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeFalsy();
 		});
@@ -298,14 +278,9 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test.skip('(UI) expect option(pin message) be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-
+			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-
-			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
-			await page.locator('.messages-box [data-qa-id="menu"]').click();
+			await mainContent.openMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeTruthy();
 		});
@@ -324,14 +299,9 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test.skip('(UI) expect option(star message) not be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-
+			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-
-			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
-			await page.locator('.messages-box [data-qa-id="menu"]').click();
+			await mainContent.openMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeFalsy();
 		});
@@ -348,14 +318,9 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(star message) be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-
+			await mainContent.reload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
-
-			await page.locator('.messages-box [data-qa-type="message"]:last-of-type').hover();
-			await page.locator('.messages-box [data-qa-id="menu"]').waitFor();
-			await page.locator('.messages-box [data-qa-id="menu"]').click();
+			await mainContent.openMessageActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeTruthy();
 		});
@@ -374,12 +339,10 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload file) not be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
-			await page.waitForSelector('.rc-popover__content');
+			await mainContent.reload();
+			await mainContent.openMoreActionMenu();
 
-			expect(await page.isVisible('.rc-popover__content [data-id="file-upload"]')).toBeFalsy();
+			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeFalsy();
 		});
 
 		test('(API) expect enable file upload', async ({ request }) => {
@@ -394,12 +357,10 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload file) be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
-			await page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
-			await page.waitForSelector('.rc-popover__content');
+			await mainContent.reload();
+			await mainContent.openMoreActionMenu();
 
-			expect(await page.isVisible('.rc-popover__content [data-id="file-upload"]')).toBeTruthy();
+			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeTruthy();
 		});
 	});
 

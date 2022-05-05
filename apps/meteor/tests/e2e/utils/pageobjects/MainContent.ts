@@ -402,6 +402,11 @@ export default class MainContent extends BasePage {
 		await this.getPage().locator('[data-qa-type="message"]:last-child div.message-actions__menu').click();
 	}
 
+	public async openMoreActionMenu(): Promise<void> {
+		await this.getPage().locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
+		await this.getPage().waitForSelector('.rc-popover__content');
+	}
+
 	public async acceptDeleteMessage(): Promise<void> {
 		await this.modalDeleteMessageButton().click();
 	}
