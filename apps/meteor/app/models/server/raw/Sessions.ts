@@ -1607,15 +1607,20 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			userId,
 			logoutAt: { $exists: false },
 		};
-
+		const session = await this.findOne(query);
 		const logoutAt = new Date();
 		const update = {
 			$set: {
 				logoutAt,
+				userId,
 			},
 		};
 
-		return this.updateMany(query, update);
+		if (!session?.loginToken) {
+			return this.updateOne(query, update);
+		}
+
+		return this.updateMany({ userId, loginToken: session?.loginToken }, update);
 	}
 
 	async createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteOpResultObject | undefined> {
