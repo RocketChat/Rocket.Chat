@@ -5,9 +5,9 @@ import { useSetModal, useToastMessageDispatch, useSetting } from '@rocket.chat/u
 import React, { FormEvent, memo, useMemo } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { useEditableSettings } from '../../../../contexts/EditableSettingsContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useEditableSettings } from '../../EditableSettingsContext';
 import TabbedGroupPage from './TabbedGroupPage';
 
 function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {

@@ -2,8 +2,8 @@ import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
-import { useEditableSettings, useEditableSettingsDispatch } from '../../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEditableSettings, useEditableSettingsDispatch } from '../EditableSettingsContext';
 import SectionSkeleton from './SectionSkeleton';
 import Setting from './Setting';
 

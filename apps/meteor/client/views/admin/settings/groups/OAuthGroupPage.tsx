@@ -4,9 +4,9 @@ import { useModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 import s from 'underscore.string';
 
-import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
 import { useAbsoluteUrl, useMethod } from '../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 

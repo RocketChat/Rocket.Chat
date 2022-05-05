@@ -5,8 +5,8 @@ import { useToastMessageDispatch, useUser, useSettingsDispatch, useSettings } fr
 import React, { useMemo, memo, FC, ReactNode, FormEvent, MouseEvent } from 'react';
 
 import Page from '../../../components/Page';
-import { useEditableSettingsDispatch, useEditableSettings, IEditableSetting } from '../../../contexts/EditableSettingsContext';
 import { useTranslation, useLoadLanguage, TranslationKey } from '../../../contexts/TranslationContext';
+import { useEditableSettingsDispatch, useEditableSettings, IEditableSetting } from '../EditableSettingsContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
 type GroupPageProps = {

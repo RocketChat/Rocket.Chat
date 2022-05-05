@@ -6,8 +6,8 @@ import { Tracker } from 'meteor/tracker';
 import { FilterQuery } from 'mongodb';
 import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
-import { EditableSettingsContext, IEditableSetting, EditableSettingsContextValue } from '../contexts/EditableSettingsContext';
-import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
+import { createReactiveSubscriptionFactory } from '../../../providers/createReactiveSubscriptionFactory';
+import { EditableSettingsContext, IEditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
 
 const defaultQuery: SettingsContextQuery = {};
 

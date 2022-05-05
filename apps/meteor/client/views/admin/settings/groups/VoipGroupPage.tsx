@@ -5,8 +5,8 @@ import React, { memo, useMemo, useState } from 'react';
 
 import NoResults from '../../../../components/GenericTable/NoResults';
 import Page from '../../../../components/Page';
-import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
 import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
+import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 import VoipExtensionsPage from './voip/VoipExtensionsPage';
