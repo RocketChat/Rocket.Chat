@@ -280,11 +280,11 @@ jobs:
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --test=test:playwright
           npm run test:playwright:coverage
 
-      - name: Store playwright test coverage
-        uses: actions/upload-artifact@v2
+      - name: Publish to coveralls.io
+        uses: coverallsapp/github-action@v1.1.2
         with:
-          name: playwright-test-coverage
-          path: ./apps/meteor/coverage*
+          path-to-lcov: ./apps/meteor/coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
