@@ -157,7 +157,7 @@ API.v1.addRoute(
 					},
 				});
 
-				await Sessions.updateOne({ loginToken: sessionObj.loginToken }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
+				await Sessions.updateMany({ loginToken: sessionObj.loginToken }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
 				return API.v1.success({ sessionId });
 			} catch (error) {
 				return API.v1.failure(`${error}`);
