@@ -1,6 +1,6 @@
+import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 
 type CMSPageProps = {

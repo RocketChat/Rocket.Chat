@@ -1,7 +1,7 @@
 import { Table } from '@rocket.chat/fuselage';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
-import { useRoute } from '../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import RemoveBusinessHourButton from './RemoveBusinessHourButton';
 

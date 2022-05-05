@@ -1,10 +1,9 @@
 import { Button, ButtonGroup, TextInput, Field, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 

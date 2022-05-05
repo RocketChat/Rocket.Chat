@@ -1,7 +1,6 @@
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useLayout, useCurrentRoute, useRoutePath } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ReactNode, useCallback } from 'react';
 
-import { useCurrentRoute, useRoutePath } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import BlazeTemplate from '../BlazeTemplate';

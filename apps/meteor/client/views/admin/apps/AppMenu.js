@@ -1,8 +1,7 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
-import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import CloudLoginModal from './CloudLoginModal';

@@ -5,6 +5,7 @@ export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContex
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export { OmnichannelContext, OmnichannelContextValue } from './OmnichannelContext';
+export { RouterContext, RouterContextValue } from './RouterContext';
 export { SessionContext, SessionContextValue } from './SessionContext';
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
@@ -13,6 +14,7 @@ export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEm
 export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
 export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollapsedByDefault';
 export { useConnectionStatus } from './hooks/useConnectionStatus';
+export { useCurrentRoute } from './hooks/useCurrentRoute';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useLayout } from './hooks/useLayout';
 export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarExpanded';
@@ -25,8 +27,13 @@ export { useOmnichannelAgentAvailable } from './hooks/useOmnichannelAgentAvailab
 export { useOmnichannelEnabled } from './hooks/useOmnichannelEnabled';
 export { useOmnichannelRouteConfig } from './hooks/useOmnichannelRouteConfig';
 export { useOmnichannelShowQueueLink } from './hooks/useOmnichannelShowQueueLink';
+export { useQueryStringParameter } from './hooks/useQueryStringParameter';
 export { useQueuedInquiries } from './hooks/useQueuedInquiries';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
+export { useRoute } from './hooks/useRoute';
+export { useRouteParameter } from './hooks/useRouteParameter';
+export { useRoutePath } from './hooks/useRoutePath';
+export { useRouteUrl } from './hooks/useRouteUrl';
 export { useSession } from './hooks/useSession';
 export { useSessionDispatch } from './hooks/useSessionDispatch';
 export { useSetModal } from './hooks/useSetModal';

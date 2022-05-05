@@ -1,11 +1,10 @@
 import { Box, Button, Icon, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import Page from '../../../components/Page';
-import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';

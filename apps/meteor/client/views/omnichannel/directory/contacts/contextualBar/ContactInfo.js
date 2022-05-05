@@ -1,6 +1,6 @@
 import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
@@ -9,7 +9,6 @@ import UserCard from '../../../../../components/UserCard/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import { useCurrentRoute, useRoute } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';

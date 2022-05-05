@@ -1,11 +1,16 @@
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useLayout, useOmnichannelShowQueueLink, useOmnichannelAgentAvailable, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import {
+	useLayout,
+	useOmnichannelShowQueueLink,
+	useOmnichannelAgentAvailable,
+	useToastMessageDispatch,
+	useRoute,
+} from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useIsCallEnabled } from '../../contexts/CallContext';
-import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { OmnichannelCallToggle } from './components/OmnichannelCallToggle';

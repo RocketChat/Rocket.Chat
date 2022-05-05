@@ -1,8 +1,8 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
 
 import { useRole } from '../../../contexts/AuthorizationContext';
-import { useRoute } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useUserId, useUser } from '../../../contexts/UserContext';
 

@@ -11,14 +11,13 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
-import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';

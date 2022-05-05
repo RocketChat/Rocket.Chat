@@ -1,8 +1,8 @@
+import { useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, FC } from 'react';
 
 import PageSkeleton from '../../../components/PageSkeleton';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';

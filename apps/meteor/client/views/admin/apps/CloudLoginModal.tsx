@@ -1,8 +1,7 @@
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
-import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const CloudLoginModal = (): ReactElement => {

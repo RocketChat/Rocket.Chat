@@ -1,9 +1,9 @@
 import { Tabs } from '@rocket.chat/fuselage';
+import { useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useCallback, useState, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useCurrentRoute, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ContextualBar from './ContextualBar';

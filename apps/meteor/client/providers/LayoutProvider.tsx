@@ -1,9 +1,8 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { LayoutContext } from '@rocket.chat/ui-contexts';
+import { LayoutContext, useQueryStringParameter } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
 import { menu } from '../../app/ui-utils/client';
-import { useQueryStringParameter } from '../contexts/RouterContext';
 import { useSetting } from '../contexts/SettingsContext';
 
 const LayoutProvider: FC = ({ children }) => {

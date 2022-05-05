@@ -1,11 +1,10 @@
 import { Field, TextInput, Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import AutoCompleteDepartmentMultiple from '../../../../client/components/AutoCompleteDepartmentMultiple';
 import Page from '../../../../client/components/Page';
-import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';

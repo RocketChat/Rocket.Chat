@@ -1,8 +1,8 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
+import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Page from '../../../components/Page';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import EmailInboxEditWithData from './EmailInboxEditWithData';
 import EmailInboxForm from './EmailInboxForm';

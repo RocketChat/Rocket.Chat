@@ -1,10 +1,9 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import { FilterQuery } from 'mongodb';
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
-
-import { useRoute } from './RouterContext';
 
 type SubscriptionQuery =
 	| {

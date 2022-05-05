@@ -1,9 +1,8 @@
 import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { useRoute } from '../../../../contexts/RouterContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';

@@ -1,7 +1,7 @@
 import { Box, ButtonGroup, Button, Banner } from '@rocket.chat/fuselage';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC, ReactElement } from 'react';
 
-import { useRoute } from '../../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 
 const InviteUsers: FC<{ onClose: () => void }> = ({ onClose }): ReactElement => {

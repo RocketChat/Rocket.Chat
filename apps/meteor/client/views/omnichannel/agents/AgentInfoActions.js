@@ -1,9 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import AgentInfo from './AgentInfo';
