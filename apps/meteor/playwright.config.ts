@@ -4,6 +4,8 @@ const config: PlaywrightTestConfig = {
 	outputDir: 'tests/e2e/test-failures',
 	reporter: [['list']],
 	workers: 1,
+	globalSetup: require.resolve('./tests/e2e/utils/configs/setup.ts'),
+	globalTeardown: require.resolve('./tests/e2e/utils/configs/teardown.ts'),
 	use: {
 		baseURL: process.env.ENTERPRISE ? 'http://localhost:4000' : 'http://localhost:3000',
 		headless: true,

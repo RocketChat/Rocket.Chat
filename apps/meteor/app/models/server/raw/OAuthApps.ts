@@ -1,12 +1,12 @@
-import { IOAuthApps as T } from '@rocket.chat/core-typings';
+import { IOAuthApps } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
-export class OAuthAppsRaw extends BaseRaw<T> {
-	findOneAuthAppByIdOrClientId({ clientId, appId }: { clientId: string; appId: string }): ReturnType<BaseRaw<T>['findOne']> {
+export class OAuthAppsRaw extends BaseRaw<IOAuthApps> {
+	findOneAuthAppByIdOrClientId(props: { clientId: string } | { appId: string }): Promise<IOAuthApps | null> {
 		return this.findOne({
-			...(appId && { _id: appId }),
-			...(clientId && { clientId }),
+			...('appId' in props && { _id: props.appId }),
+			...('clientId' in props && { _id: props.clientId }),
 		});
 	}
 }

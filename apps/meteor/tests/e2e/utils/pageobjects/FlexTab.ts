@@ -69,6 +69,17 @@ export default class FlexTab extends BasePage {
 		return this.getPage().locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-members');
 	}
 
+<<<<<<< HEAD
+=======
+	public userSearchBar(): Locator {
+		return this.getPage().locator('//*[@placeholder="Search by username"]');
+	}
+
+	public removeUserBtn(): Locator {
+		return this.getPage().locator('.remove-user');
+	}
+
+>>>>>>> develop
 	public setOwnerBtn(): Locator {
 		return this.getPage().locator('//main//aside//button[contains(text(), "Set as owner")]');
 	}
@@ -201,6 +212,12 @@ export default class FlexTab extends BasePage {
 		return this.getPage().locator('//label[text()="Roles"]/following-sibling::span//input');
 	}
 
+	public fileDescription(): Locator {
+		return this.getPage().locator(
+			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="js-block-wrapper"]/following-sibling::div//div//p',
+		);
+	}
+
 	public usersAddUserPassword(): Locator {
 		return this.getPage().locator('//label[text()="Password"]/following-sibling::span//input');
 	}
@@ -225,6 +242,35 @@ export default class FlexTab extends BasePage {
 		return this.getPage().locator('//div[text()="Set random password and send by email"]/following-sibling::label//input');
 	}
 
+<<<<<<< HEAD
+=======
+	public emojiNewAliases(): Locator {
+		return this.getPage().locator('#aliases');
+	}
+
+	public emojiNewImageInput(): Locator {
+		return this.getPage().locator('#image');
+	}
+
+	public usersView(): Locator {
+		return this.getPage().locator('.rcx-vertical-bar:contains("User Info")');
+	}
+
+	public usersActivate(): Locator {
+		return this.getPage().locator('.rcx-option__content:contains("Activate")');
+	}
+
+	public usersDeactivate(): Locator {
+		return this.getPage().locator('.rcx-option__content:contains("Deactivate")');
+	}
+
+	public closeThreadMessage(): Locator {
+		return this.getPage().locator(
+			'//html//body//div[1]//div//div[3]//div[1]//main//div//aside//div[2]//div//div//h3//div//div[2]//button[2]',
+		);
+	}
+
+>>>>>>> develop
 	public getUserEl(username: string): Locator {
 		return this.getPage().locator(`//li[@data-username="${username}"]`);
 	}
@@ -376,5 +422,11 @@ export default class FlexTab extends BasePage {
 		};
 
 		await callFunctionTabs(desiredTab);
+	}
+
+	public flexTabViewThreadMessage(): Locator {
+		return this.getPage().locator(
+			'div.thread-list.js-scroll-thread ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',
+		);
 	}
 }

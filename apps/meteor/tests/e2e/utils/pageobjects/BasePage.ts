@@ -12,14 +12,14 @@ export default class BasePage {
 	}
 
 	public async goto(path: string): Promise<void> {
-		await this.page.goto(path);
+		await this.getPage().goto(path);
 	}
 
 	public async waitForSelector(selector: string): Promise<void> {
-		await this.page.waitForSelector(selector);
+		await this.getPage().waitForSelector(selector);
 	}
 
 	public async keyboardPress(key: string): Promise<void> {
-		await this.page.keyboard.press(key);
+		await this.getPage().keyboard.press(key);
 	}
 }

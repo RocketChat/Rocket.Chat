@@ -137,6 +137,14 @@ export default class SideNav extends BasePage {
 		return this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
 	}
 
+	private searchUser(): Locator {
+		return this.getPage().locator('[data-qa="sidebar-search"]');
+	}
+
+	private searchInput(): Locator {
+		return this.getPage().locator('[data-qa="sidebar-search-input"]');
+	}
+
 	public async createChannel(channelName: any, isPrivate: any /* isReadOnly*/): Promise<void> {
 		await this.newChannelBtnToolbar().click();
 
@@ -152,5 +160,11 @@ export default class SideNav extends BasePage {
 
 		await this.saveChannelBtn().click();
 		await expect(this.channelType()).not.toBeVisible();
+	}
+
+	public async findFindForChat(userName: string): Promise<void> {
+		await this.searchUser().click();
+		await this.searchInput().type(userName, { delay: 300 });
+		await this.getPage().keyboard.press('Enter');
 	}
 }
