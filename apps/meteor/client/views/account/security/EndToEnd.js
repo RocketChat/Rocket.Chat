@@ -34,10 +34,9 @@ const EndToEnd = (props) => {
 	const canSave = keysExist && !passwordError && passwordConfirm.length > 0;
 
 	const handleLogout = useMutableCallback(() => {
-		const loginToken = localStorage.getItem('Meteor.loginToken');
 		Meteor.logout(() => {
 			callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user, loginToken);
+			Meteor.call('logoutCleanUp', user);
 			homeRoute.push({});
 		});
 	});

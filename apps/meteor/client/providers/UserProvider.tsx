@@ -33,10 +33,9 @@ const logout = (): Promise<void> =>
 			return resolve();
 		}
 
-		const loginToken = localStorage.getItem('Meteor.loginToken');
 		Meteor.logout(() => {
 			callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user, loginToken, resolve);
+			Meteor.call('logoutCleanUp', user, resolve);
 		});
 	});
 
