@@ -1,4 +1,4 @@
-import type { ISocketConnection } from "./ISocketConnection";
+import type { ISocketConnection } from './ISocketConnection';
 
 export interface IMethodConnection {
   id: string;
