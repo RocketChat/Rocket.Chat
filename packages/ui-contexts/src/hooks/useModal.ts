@@ -1,4 +1,5 @@
 import { useContext } from 'react';
-import { ModalContext, ModalContextValue } from '@rocket.chat/ui-contexts';
+
+import { ModalContext, ModalContextValue } from '../ModalContext';
 
 export const useModal = (): ModalContextValue => useContext(ModalContext);

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useAttachmentAutoLoadEmbedMedia } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useAttachmentAutoLoadEmbedMedia } from '../../../../../components/Message/Attachments/context/AttachmentContext';
 import { useCollapse } from '../../../../../components/Message/Attachments/hooks/useCollapse';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import type { UrlPreview as UrlPreviewType } from './PreviewList';
