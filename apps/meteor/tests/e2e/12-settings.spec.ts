@@ -143,10 +143,9 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload audio) not be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
+			await mainContent.reload();
 
-			expect(await page.isVisible('[data-qa-id="audio-record"]')).toBeFalsy();
+			expect(await mainContent.recordBtn().isVisible()).toBeFalsy();
 		});
 
 		test('(API) expect enable audio files', async ({ request }) => {
@@ -161,10 +160,9 @@ test.describe('[API Settings Change]', async () => {
 		});
 
 		test('(UI) expect option(upload audio) be visible', async () => {
-			await page.reload({ waitUntil: 'load' });
-			await page.waitForSelector('.messages-box');
+			await mainContent.reload();
 
-			expect(await page.isVisible('[data-qa-id="audio-record"]')).toBeTruthy();
+			expect(await mainContent.recordBtn().isVisible()).toBeTruthy();
 		});
 	});
 

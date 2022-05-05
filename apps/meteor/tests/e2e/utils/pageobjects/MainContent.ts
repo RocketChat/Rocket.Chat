@@ -36,7 +36,7 @@ export default class MainContent extends BasePage {
 	}
 
 	public recordBtn(): Locator {
-		return this.getPage().locator('.js-audio-message-record');
+		return this.getPage().locator('[data-qa-id="audio-record"]');
 	}
 
 	public emojiBtn(): Locator {
