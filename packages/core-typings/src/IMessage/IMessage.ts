@@ -47,7 +47,6 @@ type VideoConferenceTypes =
 	| 'video-direct-started'
 	| 'video-direct-ended'
 	| 'video-conference-started'
-	| 'video-conference-ended'
 	| 'video-conference';
 
 export type MessageTypesValues =

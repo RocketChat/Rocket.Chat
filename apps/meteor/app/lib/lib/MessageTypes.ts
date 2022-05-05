@@ -358,17 +358,6 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'video-conference-ended',
-		system: true,
-		message: 'video_conference_ended',
-		data(message) {
-			return {
-				conference: (isVideoConferenceMessage(message) && message.videoConf.title) || '',
-				username: message.u.username,
-			};
-		},
-	});
-	MessageTypes.registerType({
 		id: 'video-conference',
 		system: true,
 		message: 'video_conference_item',
