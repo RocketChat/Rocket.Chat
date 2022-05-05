@@ -19,11 +19,7 @@ Accounts.onLogin(
 			methodArguments,
 			connection: { httpHeaders },
 		} = info;
-		const { resume } = methodArguments.reduce((a, b) => Object.assign(a, b), {});
-		let loginToken = '';
-		if (resume) {
-			loginToken = Accounts._hashLoginToken(resume);
-		}
+	const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
 
 		sauEvents.emit('accounts.login', {
 			userId: info.user._id,
