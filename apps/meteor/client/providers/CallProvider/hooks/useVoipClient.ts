@@ -1,11 +1,10 @@
 import { IRegistrationInfo, WorkflowTypes } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useUser } from '@rocket.chat/ui-contexts';
+import { useUser, useSetting } from '@rocket.chat/ui-contexts';
 import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
 import { useEndpoint, useStream } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';

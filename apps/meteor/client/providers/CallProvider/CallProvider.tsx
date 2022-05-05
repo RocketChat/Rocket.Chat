@@ -1,6 +1,6 @@
 import type { IVoipRoom, IUser } from '@rocket.chat/core-typings';
 import { ICallerInfo } from '@rocket.chat/core-typings';
-import { useSetModal, useRoute, useUser } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRoute, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -11,7 +11,6 @@ import { getUserPreference } from '../../../app/utils/client';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useEndpoint, useStream } from '../../contexts/ServerContext';
-import { useSetting } from '../../contexts/SettingsContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { useVoipClient } from './hooks/useVoipClient';

@@ -1,5 +1,6 @@
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useRef } from 'react';
 
 import { Backdrop } from '../../../components/Backdrop';
@@ -7,7 +8,6 @@ import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { useRolesDescription } from '../../../contexts/AuthorizationContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';

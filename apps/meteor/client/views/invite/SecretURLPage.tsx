@@ -1,9 +1,8 @@
-import { useSessionDispatch, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useSessionDispatch, useRouteParameter, useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 import { useQuery } from 'react-query';
 
 import { KonchatNotification } from '../../../app/ui';
-import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { call } from '../../lib/utils/call';
 import LoginPage from '../root/MainLayout/LoginPage';

@@ -15,7 +15,7 @@ import {
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useRef } from 'react';
 
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
@@ -27,7 +27,6 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
-import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../../hooks/useForm';

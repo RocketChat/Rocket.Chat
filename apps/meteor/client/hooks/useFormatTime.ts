@@ -1,8 +1,6 @@
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import { useCallback } from 'react';
-
-import { useSetting } from '../contexts/SettingsContext';
 
 const dayFormat = ['h:mm A', 'H:mm'] as const;
 

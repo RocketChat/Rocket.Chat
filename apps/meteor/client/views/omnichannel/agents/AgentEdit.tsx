@@ -1,14 +1,13 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useSetting } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import VerticalBar from '../../../components/VerticalBar';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import UserInfo from '../../room/contextualBar/UserInfo';

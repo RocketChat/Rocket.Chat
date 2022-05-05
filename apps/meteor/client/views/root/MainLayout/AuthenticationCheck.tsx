@@ -1,7 +1,6 @@
-import { useSession, useUserId } from '@rocket.chat/ui-contexts';
+import { useSession, useUserId, useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ReactNode } from 'react';
 
-import { useSetting } from '../../../contexts/SettingsContext';
 import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
 

@@ -1,7 +1,5 @@
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
-
-import { useSetting } from '../../contexts/SettingsContext';
 
 export const useQueryOptions = () => {
 	const sortBy = useUserPreference('sidebarSortby');

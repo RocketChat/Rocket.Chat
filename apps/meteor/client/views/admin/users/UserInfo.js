@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
@@ -7,7 +8,6 @@ import { FormSkeleton } from '../../../components/Skeleton';
 import UserCard from '../../../components/UserCard';
 import { UserStatus } from '../../../components/UserStatus';
 import { useRolesDescription } from '../../../contexts/AuthorizationContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';

@@ -1,5 +1,11 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSessionDispatch, useLoginWithPassword } from '@rocket.chat/ui-contexts';
+import {
+	useToastMessageDispatch,
+	useSessionDispatch,
+	useLoginWithPassword,
+	useSettingSetValue,
+	useSettingsDispatch,
+} from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useMemo, useState, ReactElement, ContextType } from 'react';
 
@@ -7,7 +13,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { useRole } from '../../../contexts/AuthorizationContext';
 import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
-import { useSettingSetValue, useSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';

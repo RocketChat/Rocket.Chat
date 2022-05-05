@@ -1,10 +1,9 @@
 import { Button, ButtonGroup, Icon, Skeleton, Tabs } from '@rocket.chat/fuselage';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useSetting } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import AppsTable from './AppsTable';
 

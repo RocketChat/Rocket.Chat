@@ -1,9 +1,8 @@
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSettingSetValue } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useCallback } from 'react';
 
 import { useEndpoint } from '../../../contexts/ServerContext';
-import { useSettingSetValue } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 

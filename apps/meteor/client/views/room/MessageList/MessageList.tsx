@@ -1,10 +1,9 @@
 import { isThreadMessage, IThreadMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
-import { useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useUserSubscription, useSetting } from '@rocket.chat/ui-contexts';
 import React, { FC, Fragment, memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { MessageProvider } from '../providers/MessageProvider';

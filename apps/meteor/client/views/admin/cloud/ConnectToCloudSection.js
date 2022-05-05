@@ -1,11 +1,10 @@
 import { Box, Button, ButtonGroup, Throbber, Callout } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import Subtitle from '../../../components/Subtitle';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 function ConnectToCloudSection({ onRegisterStatusChange, ...props }) {

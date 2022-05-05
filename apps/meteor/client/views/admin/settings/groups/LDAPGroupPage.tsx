@@ -1,13 +1,12 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import React, { FormEvent, memo, useMemo } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useEditableSettings } from '../../../../contexts/EditableSettingsContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import TabbedGroupPage from './TabbedGroupPage';
 

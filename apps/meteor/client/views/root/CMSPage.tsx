@@ -1,7 +1,5 @@
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-import { useSetting } from '../../contexts/SettingsContext';
 
 type CMSPageProps = {
 	page: 'Layout_Terms_of_Service' | 'Layout_Privacy_Policy' | 'Layout_Legal_Notice';
