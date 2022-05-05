@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect, memo } from 'react';
+import React, { useCallback, useMemo, useEffect, memo, FC } from 'react';
 
 import { menu, SideNav } from '../../../../app/ui-utils/client';
 import PlanTag from '../../../components/PlanTag';
@@ -11,7 +11,7 @@ import SettingsProvider from '../../../providers/SettingsProvider';
 import AdminSidebarPages from './AdminSidebarPages';
 import AdminSidebarSettings from './AdminSidebarSettings';
 
-function AdminSidebar() {
+const AdminSidebar: FC = () => {
 	const t = useTranslation();
 
 	const canViewSettings = useAtLeastOnePermission(
@@ -28,7 +28,8 @@ function AdminSidebar() {
 	}, []);
 
 	const currentRoute = useCurrentRoute();
-	const currentPath = useRoutePath(...currentRoute);
+	const [currentRouteName, currentRouteParams, currentQueryStringParams] = currentRoute;
+	const currentPath = useRoutePath(currentRouteName || '', currentRouteParams, currentQueryStringParams);
 	const [, , , currentRouteGroupName] = currentRoute;
 
 	useEffect(() => {
@@ -50,12 +51,12 @@ function AdminSidebar() {
 					}
 				/>
 				<Sidebar.Content>
-					<AdminSidebarPages currentPath={currentPath} />
-					{canViewSettings && <AdminSidebarSettings currentPath={currentPath} />}
+					<AdminSidebarPages currentPath={currentPath || ''} />
+					{canViewSettings && <AdminSidebarSettings currentPath={currentPath || ''} />}
 				</Sidebar.Content>
 			</Sidebar>
 		</SettingsProvider>
 	);
-}
+};
 
 export default memo(AdminSidebar);
