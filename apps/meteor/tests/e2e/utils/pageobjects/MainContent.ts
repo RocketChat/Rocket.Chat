@@ -77,9 +77,7 @@ export default class MainContent extends BasePage {
 	}
 
 	public lastMessage(): Locator {
-		return this.getPage().locator(
-			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//div[2]',
-		);
+		return this.getPage().locator('.messages-box [data-qa-type="message"]').last();
 	}
 
 	public lastMessageDesc(): Locator {
@@ -133,7 +131,7 @@ export default class MainContent extends BasePage {
 	}
 
 	public messageActionMenu(): Locator {
-		return this.getPage().locator('.rc-popover .rc-popover__content');
+		return this.getPage().locator('[data-qa-type="message-action-menu-options"]');
 	}
 
 	public messageReply(): Locator {
@@ -395,9 +393,6 @@ export default class MainContent extends BasePage {
 				await this.emojiPickerPeopleIcon().click();
 				await this.emojiGrinning().click();
 				break;
-			// case 'close':
-			// 	await this.messageClose().click();
-			// 	break;
 		}
 	}
 
@@ -429,5 +424,10 @@ export default class MainContent extends BasePage {
 
 	public waitForLastMessageTextAttachmentEqualsText(): Locator {
 		return this.getPage().locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
+	}
+
+	public async reload(): Promise<void> {
+		await this.getPage().reload({ waitUntil: 'load' });
+		await this.getPage().waitForSelector('.messages-box');
 	}
 }
