@@ -3638,7 +3638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/emitter@npm:~0.31.11":
+"@rocket.chat/emitter@npm:~0.31.11, @rocket.chat/emitter@npm:~0.31.9":
   version: 0.31.11
   resolution: "@rocket.chat/emitter@npm:0.31.11"
   checksum: 12b008c350c11276a66901efbd2015be1c135e7604f20c261504207f2a5de5b6a83d91a11191cdc896d14f6147711b189f229a82fadceeeed419cfea200550bb
@@ -3971,7 +3971,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": ~0.31.11
     "@rocket.chat/fuselage-ui-kit": ~0.31.11
     "@rocket.chat/icons": ~0.31.11
-    "@rocket.chat/livechat": 1.13.3
+    "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": ~0.31.11
     "@rocket.chat/memo": ~0.31.11
     "@rocket.chat/message-parser": ~0.31.11
@@ -4341,7 +4341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/ui-kit@npm:^0.31.11, @rocket.chat/ui-kit@npm:~0.31.11":
+"@rocket.chat/ui-kit@npm:^0.31.11, @rocket.chat/ui-kit@npm:^0.31.6, @rocket.chat/ui-kit@npm:~0.31.11, @rocket.chat/ui-kit@npm:~0.31.9":
   version: 0.31.11
   resolution: "@rocket.chat/ui-kit@npm:0.31.11"
   checksum: 976ed0a00ec3b886667a1bc59429c9d4867e62cb04c4e762bd41320f602ae35560393b4d36b2460e0ea621f73fb71b4cc869fa17ad4c78da9c862df70b84d0e1
