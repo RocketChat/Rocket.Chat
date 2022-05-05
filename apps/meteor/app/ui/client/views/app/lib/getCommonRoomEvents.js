@@ -354,6 +354,7 @@ export const getCommonRoomEvents = () => ({
 			instance: template,
 			rid: template.data.rid,
 			data: this,
+			type: 'message-action-menu-options',
 			currentTarget: e.currentTarget,
 			activeElement: $(e.currentTarget).parents('.message')[0],
 			onRendered: () => new Clipboard('.rc-popover__item'),

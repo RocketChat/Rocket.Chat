@@ -4,7 +4,7 @@ import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
 
-class MainContent extends BasePage {
+export default class MainContent extends BasePage {
 	public mainContent(): Locator {
 		return this.getPage().locator('.main-content');
 	}
@@ -73,7 +73,7 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessageFileName(): Locator {
-		return this.getPage().locator('.message:last-child > div:nth-child(3) > div:nth-child(2) > div:nth-child(1)');
+		return this.getPage().locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div a:nth-child(1)');
 	}
 
 	public lastMessage(): Locator {
@@ -113,9 +113,7 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessageForMessageTest(): Locator {
-		return this.getPage().locator(
-			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//div[2]',
-		);
+		return this.getPage().locator('[data-qa-type="message"]:last-child div.message-body-wrapper div:nth-child(2)');
 	}
 
 	public beforeLastMessageQuote(): Locator {
@@ -139,7 +137,7 @@ class MainContent extends BasePage {
 	}
 
 	public messageReply(): Locator {
-		return this.getPage().locator('[data-id="reply-in-thread"][data-type="message-action"]');
+		return this.getPage().locator('[data-qa-id="reply-in-thread"]');
 	}
 
 	public reply(): Locator {
@@ -147,27 +145,27 @@ class MainContent extends BasePage {
 	}
 
 	public messageEdit(): Locator {
-		return this.getPage().locator('[data-type="message-action"][data-id="edit-message"]');
+		return this.getPage().locator('[data-qa-id="edit-message"]');
 	}
 
 	public messageDelete(): Locator {
-		return this.getPage().locator('[data-type="message-action"][data-id="delete-message"]');
+		return this.getPage().locator('[data-qa-id="delete-message"]');
 	}
 
 	public messagePermalink(): Locator {
-		return this.getPage().locator('[data-type="message-action"][data-id="permalink"]');
+		return this.getPage().locator('[data-qa-id="permalink"]');
 	}
 
 	public messageCopy(): Locator {
-		return this.getPage().locator('[data-id="copy"][data-type="message-action"]');
+		return this.getPage().locator('[data-qa-id="copy"]');
 	}
 
 	public messageQuote(): Locator {
-		return this.getPage().locator('[data-id="quote-message"][data-type="message-action"]');
+		return this.getPage().locator('[data-qa-id="quote-message"]');
 	}
 
 	public messageStar(): Locator {
-		return this.getPage().locator('[data-id="star-message"][data-type="message-action"]');
+		return this.getPage().locator('[data-qa-id="star-message"]');
 	}
 
 	public messageUnread(): Locator {
@@ -354,8 +352,11 @@ class MainContent extends BasePage {
 		await this.descriptionInput().type('any_description');
 	}
 
+	public getFileDescription(): Locator {
+		return this.getPage().locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div p');
+	}
+
 	public async selectAction(action: string): Promise<void> {
-		await this.openMessageActions();
 		switch (action) {
 			case 'edit':
 				await this.messageEdit().click();
@@ -380,10 +381,11 @@ class MainContent extends BasePage {
 			case 'quote':
 				await this.messageQuote().click();
 				await this.messageInput().type('this is a quote message');
+				await this.keyboardPress('Enter');
 				break;
 			case 'star':
 				await this.messageStar().click();
-				await expect(this.starredMessage()).toBeVisible();
+				await expect(this.getPage().locator('div.toast-message:has-text("Message has been starred")')).toBeVisible();
 				break;
 			case 'unread':
 				await this.messageUnread().click();
@@ -400,16 +402,9 @@ class MainContent extends BasePage {
 	}
 
 	public async openMessageActionMenu(): Promise<void> {
-		await this.messageOptionsBtn().hover();
-		await this.messageOptionsBtn().waitFor({ state: 'visible' });
-	}
-
-	public async openMessageActions(): Promise<void> {
-		await this.getPage()
-			.locator(
-				'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-actions"]//div[@class="message-actions__menu"]',
-			)
-			.click();
+		await this.getPage().locator('.messages-box [data-qa-type="message"]:last-child').hover();
+		await this.getPage().locator('[data-qa-type="message"]:last-child div.message-actions__menu').waitFor();
+		await this.getPage().locator('[data-qa-type="message"]:last-child div.message-actions__menu').click();
 	}
 
 	public async acceptDeleteMessage(): Promise<void> {
@@ -420,25 +415,19 @@ class MainContent extends BasePage {
 		return this.getPage().locator('.toast-message');
 	}
 
-	public async waitForLastMessageTextAttachmentEqualsText(text: string): Promise<void> {
-		await expect(this.getQuotedMessage()).toHaveText(text);
-	}
-
 	public getQuotedMessage(): Locator {
 		return this.getPage().locator('//li[@data-username="rocketchat.internal.admin.test"][last()]//blockquote//div[2]');
 	}
 
-	public starredMessage(): Locator {
-		return this.getPage().locator(
-			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//span[@class="starred"]',
-		);
+	public lastMessageThread(): Locator {
+		return this.getPage().locator('//div[@class="rcx-message rcx-message--thread"][last()]//div//div[2]');
 	}
 
 	public lastMessageQuoted(): Locator {
-		return this.getPage().locator(
-			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="thread-replied js-open-thread"]//span//span',
-		);
+		return this.getPage().locator('//div[@class="rcx-message"][last()]//blockquote//div[2]');
+	}
+
+	public waitForLastMessageTextAttachmentEqualsText(): Locator {
+		return this.getPage().locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
 	}
 }
-
-export default MainContent;

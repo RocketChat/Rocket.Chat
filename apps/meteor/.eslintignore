@@ -1,4 +1,6 @@
 node_modules
+data/
+tests/e2e/test-failures/
 packages/autoupdate/
 packages/meteor-streams/
 packages/meteor-timesync/
