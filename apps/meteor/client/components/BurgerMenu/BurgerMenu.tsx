@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { useLayout } from '../../contexts/LayoutContext';
 import { useSession } from '../../contexts/SessionContext';
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import BurgerMenuButton from './BurgerMenuButton';

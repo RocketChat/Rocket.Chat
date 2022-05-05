@@ -3,7 +3,7 @@ import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
-import { useLayout } from '../../../contexts/LayoutContext';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';

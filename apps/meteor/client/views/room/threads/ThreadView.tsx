@@ -1,9 +1,9 @@
 import { Modal, Box } from '@rocket.chat/fuselage';
+import { useLayoutContextualBarExpanded } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, useCallback, useMemo, forwardRef } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useLayoutContextualBarExpanded } from '../../../providers/LayoutProvider';
 
 type ThreadViewProps = ComponentProps<typeof Box> & {
 	title: string;

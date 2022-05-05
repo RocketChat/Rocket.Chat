@@ -1,9 +1,9 @@
 import { IRoom, IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '@rocket.chat/core-typings';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
-import { useLayout } from '../../../../contexts/LayoutContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useUser, useUserPreference, useUserSubscription } from '../../../../contexts/UserContext';

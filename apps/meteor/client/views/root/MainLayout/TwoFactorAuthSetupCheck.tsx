@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import React, { lazy, ReactElement, ReactNode, useCallback } from 'react';
 
 import { Roles } from '../../../../app/models/client';
-import { useLayout } from '../../../contexts/LayoutContext';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useUser } from '../../../contexts/UserContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';

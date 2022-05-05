@@ -2,7 +2,7 @@ import { Badge, Sidebar } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
-import { useLayout } from '../../contexts/LayoutContext';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';

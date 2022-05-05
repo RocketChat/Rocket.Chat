@@ -4,7 +4,7 @@ import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import type { UpgradeTabVariant } from '../../../../../lib/getUpgradeTabType';
 import Page from '../../../../components/Page';
 import PageHeader from '../../../../components/Page/PageHeader';
-import { useLayout } from '../../../../contexts/LayoutContext';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, useQueryStringParameter } from '../../../../contexts/RouterContext';
 import { useAbsoluteUrl } from '../../../../contexts/ServerContext';
 import { useLanguage } from '../../../../contexts/TranslationContext';

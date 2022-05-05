@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 export type SizeLayout = {
 	sidebar: string;
@@ -27,5 +27,3 @@ export const LayoutContext = createContext<LayoutContextValue>({
 	contextualBarPosition: 'relative',
 	contextualBarExpanded: false,
 });
-
-export const useLayout = (): LayoutContextValue => useContext(LayoutContext);

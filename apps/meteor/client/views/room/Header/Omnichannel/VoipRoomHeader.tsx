@@ -1,8 +1,8 @@
+import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
 import BurgerMenu from '../../../../components/BurgerMenu';
 import TemplateHeader from '../../../../components/Header';
-import { useLayout } from '../../../../contexts/LayoutContext';
 import { useCurrentRoute } from '../../../../contexts/RouterContext';
 import { ToolboxActionConfig } from '../../lib/Toolbox';
 import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';

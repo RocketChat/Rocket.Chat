@@ -12,7 +12,7 @@ import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
-import { useLayout } from '../../contexts/LayoutContext';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';

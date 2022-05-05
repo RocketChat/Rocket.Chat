@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 
 import BurgerMenu from '../../../../components/BurgerMenu';
 import TemplateHeader from '../../../../components/Header';
-import { useLayout } from '../../../../contexts/LayoutContext';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { RoomTemplate } from '../../components/RoomTemplate/RoomTemplate';
 
