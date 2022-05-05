@@ -103,7 +103,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		sauEvents.on('accounts.login', async ({ userId, connection }) => {
+		sauEvents.on('accounts.login', async ({ userId, connection }: { userId: string; connection: ISocketConnection }) => {
 			if (!this.isRunning()) {
 				return;
 			}

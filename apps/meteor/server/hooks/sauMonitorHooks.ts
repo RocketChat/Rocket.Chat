@@ -11,21 +11,14 @@ Accounts.onLogin((info: ILoginAttempt) => {
 	const {
 		methodArguments,
 		connection: { httpHeaders },
-		user: { _id },
 	} = info;
 
 	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
-
 	const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
 
 	sauEvents.emit('accounts.login', {
-		userId: _id,
-		connection: {
-			...info.connection,
-			loginToken,
-			instanceId: InstanceStatus.id(),
-			httpHeaders,
-		},
+		userId: info.user._id,
+		connection: { ...info.connection, loginToken, instanceId: InstanceStatus.id(), httpHeaders: httpHeaders as IncomingHttpHeaders },
 	});
 });
 
