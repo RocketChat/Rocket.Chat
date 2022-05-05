@@ -1,15 +1,10 @@
-<<<<<<< HEAD
-import { Locator } from '@playwright/test';
-=======
 import fs from 'fs';
 
 import { expect, Locator } from '@playwright/test';
->>>>>>> develop
 
-import { expect } from '../../fixtures/test';
 import BasePage from './BasePage';
 
-export default class MainContent extends BasePage {
+class MainContent extends BasePage {
 	public mainContent(): Locator {
 		return this.getPage().locator('.main-content');
 	}
@@ -64,6 +59,14 @@ export default class MainContent extends BasePage {
 		return this.getPage().locator('.popup-item.selected');
 	}
 
+	public mentionAllPopUp(): Locator {
+		return this.getPage().locator('.popup-item[data-id="all"]');
+	}
+
+	public joinChannelBtn(): Locator {
+		return this.getPage().locator('.button.join');
+	}
+
 	// Messages
 	public lastMessageUser(): Locator {
 		return this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "user-card-message")])[last()]');
@@ -79,8 +82,6 @@ export default class MainContent extends BasePage {
 		);
 	}
 
-<<<<<<< HEAD
-=======
 	public lastMessageDesc(): Locator {
 		return this.getPage().locator('.message:last-child .body .attachment-description');
 	}
@@ -91,9 +92,12 @@ export default class MainContent extends BasePage {
 		);
 	}
 
->>>>>>> develop
 	public lastMessageRoleAdded(): Locator {
 		return this.getPage().locator('.message:last-child.subscription-role-added .body');
+	}
+
+	public beforeLastMessage(): Locator {
+		return this.getPage().locator('.message:nth-last-child(2) .body');
 	}
 
 	public lastMessageUserTag(): Locator {
@@ -108,8 +112,6 @@ export default class MainContent extends BasePage {
 		return this.getPage().locator('.message:last-child .attachment-text');
 	}
 
-<<<<<<< HEAD
-=======
 	public lastMessageForMessageTest(): Locator {
 		return this.getPage().locator('[data-qa-type="message"]:last-child div.message-body-wrapper div:nth-child(2)');
 	}
@@ -181,7 +183,6 @@ export default class MainContent extends BasePage {
 	// public messageClose(): Locator { return this.getPage().locator('[data-id="rc-popover-close"][data-type="message-action"]'); }
 
 	// Emojis
->>>>>>> develop
 	public emojiPickerMainScreen(): Locator {
 		return this.getPage().locator('.emoji-picker');
 	}
@@ -218,6 +219,10 @@ export default class MainContent extends BasePage {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-flags")]');
 	}
 
+	public emojiPickerModifierIcon(): Locator {
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-symbols")]');
+	}
+
 	public emojiPickerChangeTone(): Locator {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "change-tone")]');
 	}
@@ -226,8 +231,16 @@ export default class MainContent extends BasePage {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-rocket")]');
 	}
 
+	public emojiPickerRecentIcon(): Locator {
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-recent")]');
+	}
+
 	public emojiPickerFilter(): Locator {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "js-emojipicker-search")]');
+	}
+
+	public emojiPickerEmojiContainer(): Locator {
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emojis")]');
 	}
 
 	public emojiGrinning(): Locator {
@@ -238,8 +251,6 @@ export default class MainContent extends BasePage {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-smile")]');
 	}
 
-<<<<<<< HEAD
-=======
 	public modalTitle(): Locator {
 		return this.getPage().locator('#modal-root .rcx-modal__title');
 	}
@@ -275,7 +286,6 @@ export default class MainContent extends BasePage {
 		return this.getPage().locator('.rc-popover');
 	}
 
->>>>>>> develop
 	public async waitForLastMessageEqualsHtml(text: string): Promise<void> {
 		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
@@ -284,26 +294,16 @@ export default class MainContent extends BasePage {
 		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
 
-<<<<<<< HEAD
-	public async sendMessage(text: any): Promise<void> {
-=======
 	public async sendMessage(text: string): Promise<void> {
->>>>>>> develop
 		await this.setTextToInput(text);
 		await this.keyboardPress('Enter');
 	}
 
+	// adds text to the input
 	public async addTextToInput(text: any): Promise<void> {
 		await this.messageInput().type(text);
 	}
 
-<<<<<<< HEAD
-	public async setTextToInput(text: any): Promise<void> {
-		await this.messageInput().fill('');
-
-		if (text) {
-			await this.messageInput().type(text);
-=======
 	// Clear and sets the text to the input
 	public async setTextToInput(text: string): Promise<void> {
 		await this.messageInput().type(text);
@@ -398,7 +398,6 @@ export default class MainContent extends BasePage {
 			// case 'close':
 			// 	await this.messageClose().click();
 			// 	break;
->>>>>>> develop
 		}
 	}
 
@@ -432,3 +431,5 @@ export default class MainContent extends BasePage {
 		return this.getPage().locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
 	}
 }
+
+export default MainContent;
