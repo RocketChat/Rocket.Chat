@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 export type ConnectionStatusContextValue = {
 	connected: boolean;
@@ -13,5 +13,3 @@ export const ConnectionStatusContext = createContext<ConnectionStatusContextValu
 	status: 'connected',
 	reconnect: () => undefined,
 });
-
-export const useConnectionStatus = (): ConnectionStatusContextValue => useContext(ConnectionStatusContext);

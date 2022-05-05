@@ -2,12 +2,12 @@ import { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { clear } from '@rocket.chat/memo';
+import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, memo, ReactElement } from 'react';
 
 import { Subscriptions } from '../../../../../../app/models/client';
 import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/constants';
 import GenericModal from '../../../../../components/GenericModal';
-import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSettings } from '../../../../../contexts/SettingsContext';

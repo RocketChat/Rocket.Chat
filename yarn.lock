@@ -3979,6 +3979,7 @@ __metadata:
     "@rocket.chat/onboarding-ui": ~0.31.11
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.11
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": ~0.31.11
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/client": ^4.12.0
@@ -4333,6 +4334,23 @@ __metadata:
   checksum: a711eb247c5911b03d67a2f1b66e6673f43a22c334e9ef29c283cd64251254f0596805bf8c6c91b89b3e504ed3b1659d42b0b4ed6632887b71b54ce402d74126
   languageName: node
   linkType: hard
+
+"@rocket.chat/ui-contexts@workspace:^, @rocket.chat/ui-contexts@workspace:packages/ui-contexts":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-contexts@workspace:packages/ui-contexts"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@types/jest": ^27.4.1
+    "@types/react": ^17
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    react: ~17.0.2
+    ts-jest: ^27.1.4
+    typescript: ~4.3.5
+  peerDependencies:
+    react: ~17.0.2
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/ui-kit@npm:^0.14.1":
   version: 0.14.1
@@ -6852,6 +6870,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 981b0993f5b3ea9d3488b8cc883201e8ae47ba7732929f788f450a79fd72829e658080d5084e67caa008e58d989b0abc1d5f36ff0a1cda09315ea3a3c0c9dc11
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^17":
+  version: 17.0.44
+  resolution: "@types/react@npm:17.0.44"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: ebee02778ca08f954c316dc907802264e0121c87b8fa2e7e0156ab0ef2a1b0a09d968c016a3600ec4c9a17dc09b4274f292d9b15a1a5369bb7e4072def82808f
   languageName: node
   linkType: hard
 
@@ -27784,7 +27813,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^17.0.2":
+"react@npm:^17.0.2, react@npm:~17.0.2":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
   dependencies:
