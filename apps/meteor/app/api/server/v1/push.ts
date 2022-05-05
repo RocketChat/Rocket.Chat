@@ -105,7 +105,7 @@ API.v1.addRoute(
 				throw new Error('error-not-allowed');
 			}
 
-			const data = PushNotification.getNotificationForMessageId({ receiver, room, message });
+			const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
 
 			return API.v1.success({ data });
 		},

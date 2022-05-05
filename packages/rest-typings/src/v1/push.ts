@@ -1,18 +1,16 @@
-import type { IMessage, IPushTokenTypes, IPushToken } from '@rocket.chat/core-typings';
-
-type PushPayload = {
-	id?: string;
-	type: IPushTokenTypes;
-	value: string;
-	appName: string;
-};
+import type { IMessage, IPushNotificationConfig, IPushTokenTypes, IPushToken } from '@rocket.chat/core-typings';
 
 export type PushEndpoints = {
 	'push.token': {
-		POST: (payload: PushPayload) => { result: IPushToken };
+		POST: (payload: { id?: string; type: IPushTokenTypes; value: string; appName: string }) => { result: IPushToken };
 		DELETE: (payload: { token: string }) => void;
 	};
 	'push.get': {
-		GET: (params: { id: string }) => { message: IMessage };
+		GET: (params: { id: string }) => {
+			data: {
+				message: IMessage;
+				notification: IPushNotificationConfig;
+			};
+		};
 	};
 };
