@@ -270,8 +270,8 @@ class FlexTab extends BasePage {
 		return this.getPage().locator(`//header//*[contains(text(), "${topic}")]`);
 	}
 
-	public thirdSetting(announcement: string): Locator {
-		return this.getPage().locator(`//main//div[contains(@class, "messages-container-main")]//div[contains(text(), "${announcement}")]`);
+	public thirdSetting(): Locator {
+		return this.getPage().locator('[data-qa="AnnouncementAnnoucementComponent"] div:nth-child(1)');
 	}
 
 	public fourthSetting(): Locator {
@@ -380,7 +380,7 @@ class FlexTab extends BasePage {
 	}
 
 	public getUserEl(username: string): Locator {
-		return this.getPage().locator(`//li[@data-username="${username}"]`);
+		return this.getPage().locator(`[data-qa="MemberItem-${username}"]`);
 	}
 
 	public addUserTable(): Locator {
