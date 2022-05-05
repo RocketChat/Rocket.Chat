@@ -6,3 +6,4 @@
 /.vscode/ @RocketChat/chat-engine
 /.github/ @RocketChat/chat-engine
 /_templates/ @RocketChat/chat-engine
+/apps/meteor/client/ @RocketChat/frontend

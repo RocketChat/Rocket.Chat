@@ -13,6 +13,8 @@ const options = {
 	},
 };
 
+const isNotNullOrUndefined = (value: unknown): boolean => value !== null && value !== undefined;
+
 // In a previous version of the app, some values were being set to null.
 // This is a workaround to remove those null values.
 // A migration script should be created to remove this code.
@@ -29,15 +31,15 @@ const removePossibleNullValues = ({
 	...message
 }: any): IMessage => ({
 	...message,
-	...(editedBy !== null && { editedBy }),
-	...(editedAt !== null && { editedAt }),
-	...(emoji !== null && { emoji }),
-	...(avatar !== null && { avatar }),
-	...(alias !== null && { alias }),
-	...(customFields !== null && { customFields }),
-	...(groupable !== null && { groupable }),
-	...(attachments !== null && { attachments }),
-	...(reactions !== null && { reactions }),
+	...(isNotNullOrUndefined(editedBy) && { editedBy }),
+	...(isNotNullOrUndefined(editedAt) && { editedAt }),
+	...(isNotNullOrUndefined(emoji) && { emoji }),
+	...(isNotNullOrUndefined(avatar) && { avatar }),
+	...(isNotNullOrUndefined(alias) && { alias }),
+	...(isNotNullOrUndefined(customFields) && { customFields }),
+	...(isNotNullOrUndefined(groupable) && { groupable }),
+	...(isNotNullOrUndefined(attachments) && { attachments }),
+	...(isNotNullOrUndefined(reactions) && { reactions }),
 });
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {

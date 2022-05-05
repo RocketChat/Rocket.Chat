@@ -22,13 +22,17 @@ import type { LicensesEndpoints } from './v1/licenses';
 import type { MiscEndpoints } from './v1/misc';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PermissionsEndpoints } from './v1/permissions';
+import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
 import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
+import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
+import type { WebdavEndpoints } from './v1/webdav';
+import type { OAuthAppsEndpoint } from './v1/oauthapps';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
@@ -44,6 +48,7 @@ export interface Endpoints
 		ImEndpoints,
 		LDAPEndpoints,
 		RoomsEndpoints,
+		PushEndpoints,
 		RolesEndpoints,
 		TeamsEndpoints,
 		SettingsEndpoints,
@@ -56,9 +61,12 @@ export interface Endpoints
 		PermissionsEndpoints,
 		InstancesEndpoints,
 		VoipEndpoints,
+		VideoConferenceEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
-		CustomSoundEndpoint {}
+		CustomSoundEndpoint,
+		WebdavEndpoints,
+		OAuthAppsEndpoint {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
@@ -126,6 +134,7 @@ export * from './v1/permissions';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
+export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';

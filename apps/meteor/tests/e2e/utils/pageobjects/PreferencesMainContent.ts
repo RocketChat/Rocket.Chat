@@ -52,6 +52,7 @@ class PreferencesMainContent extends BasePage {
 	}
 
 	public async saveChanges(): Promise<void> {
+		await this.submitBtn().waitFor({ state: 'visible', timeout: 100000 });
 		await expect(this.submitBtn()).toBeEnabled();
 		await this.submitBtn().click();
 	}
