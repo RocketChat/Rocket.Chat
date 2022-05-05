@@ -308,7 +308,8 @@ Meteor.methods({
 			settings = { encrypted: settings.encrypted };
 		}
 
-		if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
+		const checkReadOnly = Object.keys(settings).includes('readOnly') || Object.keys(settings).includes('reactWhenReadOnly');
+		if (room.broadcast && checkReadOnly) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
