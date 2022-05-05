@@ -617,7 +617,7 @@ jobs:
           IMAGE_TAG: check
         run: |
           yarn
-          yarn build:services
+          yarn build
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
 
