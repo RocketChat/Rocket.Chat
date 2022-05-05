@@ -15,7 +15,7 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useCustomSound } from '../../../contexts/CustomSoundContext';
+import { useCustomSound }
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';

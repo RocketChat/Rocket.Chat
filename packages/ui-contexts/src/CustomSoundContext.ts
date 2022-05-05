@@ -1,11 +1,9 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
-type CustomSoundContextValue = {
+export type CustomSoundContextValue = {
 	play: (sound: string, options?: { volume?: number; loop?: boolean }) => void;
 };
 
 export const CustomSoundContext = createContext<CustomSoundContextValue>({
 	play: () => undefined,
 });
-
-export const useCustomSound = (): CustomSoundContextValue => useContext(CustomSoundContext);

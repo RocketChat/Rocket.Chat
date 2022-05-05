@@ -1,6 +1,7 @@
 export { AttachmentContext, AttachmentContextValue } from './AttachmentContext';
 export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
 export { ConnectionStatusContext, ConnectionStatusContextValue } from './ConnectionStatusContext';
+export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export { OmnichannelContext, OmnichannelContextValue } from './OmnichannelContext';
@@ -11,6 +12,7 @@ export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEm
 export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';
 export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollapsedByDefault';
 export { useConnectionStatus } from './hooks/useConnectionStatus';
+export { useCustomSound } from './hooks/useCustomSound';
 export { useLayout } from './hooks/useLayout';
 export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarExpanded';
 export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPosition';
