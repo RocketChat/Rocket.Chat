@@ -17,6 +17,7 @@
 		"react-dom": "*"
 	},
 	"dependencies": {
+		"@rocket.chat/css-in-js": "~0.31.11",
 		"@rocket.chat/fuselage": "~0.31.11",
 		"@rocket.chat/fuselage-hooks": "^0.31.11",
 		"react": "^17.0.2",

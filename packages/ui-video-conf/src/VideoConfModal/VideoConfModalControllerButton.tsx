@@ -10,6 +10,11 @@ type VideoConfModalControllerButtonProps = {
 	text: string;
 } & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation'>;
 
+/**
+ * @deprecated
+ * In favor of CallController
+*/
+
 const VideoConfModalControllerButton = ({ primary, text, icon, ...props }: VideoConfModalControllerButtonProps): ReactElement => {
 	const id = useUniqueId();
 	return (

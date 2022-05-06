@@ -6,6 +6,8 @@ import { useUser, useSetting, useTranslation, useSetModal } from '@rocket.chat/u
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
+import RingingPopup from '../../../client/views/room/contextualBar/Call/RingingPopup/RingingPopup';
+import { useVideoConfCall } from '../../../client/contexts/VideoConfContext';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
@@ -135,6 +137,26 @@ addAction('video-conf', ({ room }) => {
 			action: handleOpenVideoConf,
 			full: true,
 			order: 999,
+		}),
+		[handleOpenVideoConf],
+	);
+});
+
+addAction('video-conf-popup', ({ room }) => {
+	const setPopup = useVideoConfCall();
+
+	const handleCloseVideoConf = useMutableCallback(() => setPopup(undefined));
+	const handleOpenVideoConf = useMutableCallback((): void => setPopup(<RingingPopup room={room} onClose={handleCloseVideoConf} />));
+
+	return useMemo(
+		() => ({
+			groups: ['direct', 'group', 'channel'],
+			id: 'video-popup',
+			title: 'popup',
+			icon: 'video',
+			action: handleOpenVideoConf,
+			full: true,
+			order: -1,
 		}),
 		[handleOpenVideoConf],
 	);

@@ -8,6 +8,11 @@ type VideoConfModalFooterButtonProps = {
 	children: ReactNode;
 } & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation'>;
 
+/**
+ * @deprecated
+ * In favor of CallButton
+*/
+
 const VideoConfModalFooterButton = ({ primary, icon, children, ...props }: VideoConfModalFooterButtonProps): ReactElement => {
 	return (
 		<Button primary={primary} {...props}>
