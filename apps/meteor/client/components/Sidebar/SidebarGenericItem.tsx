@@ -15,7 +15,14 @@ type SidebarGenericItemProps = {
 	textColor?: string;
 };
 
-const SidebarGenericItem = ({ href, active, children, customColors, textColor = 'default', ...props }: SidebarGenericItemProps): ReactElement => (
+const SidebarGenericItem = ({
+	href,
+	active,
+	children,
+	customColors,
+	textColor = 'default',
+	...props
+}: SidebarGenericItemProps): ReactElement => (
 	<Box
 		is='a'
 		color={textColor}

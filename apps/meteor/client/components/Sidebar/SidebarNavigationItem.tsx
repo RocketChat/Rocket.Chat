@@ -14,7 +14,15 @@ type SidebarNavigationItemProps = {
 	currentPath: string;
 };
 
-const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({ permissionGranted, pathGroup, pathSection, icon, label, currentPath, tag }) => {
+const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
+	permissionGranted,
+	pathGroup,
+	pathSection,
+	icon,
+	label,
+	currentPath,
+	tag,
+}) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
 	const path = useRoutePath(pathSection, params);
 	const isActive = path === currentPath || false;
