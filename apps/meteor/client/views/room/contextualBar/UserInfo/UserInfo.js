@@ -103,7 +103,7 @@ function UserInfo({
 					{name && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Full_Name')}</InfoPanel.Label>
-							<InfoPanel.Text>{name}</InfoPanel.Text>
+							<InfoPanel.Text data-qa='UserName'>{name}</InfoPanel.Text>
 						</InfoPanel.Field>
 					)}
 
