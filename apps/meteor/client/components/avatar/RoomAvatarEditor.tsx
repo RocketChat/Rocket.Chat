@@ -22,7 +22,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar }: RoomAvatarEditor
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onloadend = (): void => {
-			if (reader.result === 'string') {
+			if (typeof reader.result === 'string') {
 				onChangeAvatar(reader.result);
 			}
 		};
