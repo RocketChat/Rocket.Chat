@@ -6,9 +6,13 @@ export interface IProviderMetadata {
         apiEndPointUrl: string;
     };
 }
-export interface ITranslation {
+export interface IDeepLTranslation {
     detected_source_language: string;
     text: string;
+}
+
+export interface IGoogleTranslation {
+    translatedText: string;
 }
 
 export interface ISupportedLanguage {

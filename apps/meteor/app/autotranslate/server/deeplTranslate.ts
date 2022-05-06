@@ -7,7 +7,7 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import {
 	IMessage,
-	ITranslation,
+	IDeepLTranslation,
 	MessageAttachment,
 	IProviderMetadata,
 	ITranslationResult,
@@ -227,7 +227,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					// store translation only when the source and target language are different.
 					// multiple lines might contain different languages => Mix the text between source and detected target if neccessary
 					const translatedText = result.data.translations
-						.map((translation: ITranslation, index: number) =>
+						.map((translation: IDeepLTranslation, index: number) =>
 							translation.detected_source_language !== language ? translation.text : msgs[index],
 						)
 						.join('\n');
@@ -272,8 +272,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 					Array.isArray(result.data.translations) &&
 					result.data.translations.length > 0
 				) {
-					if (result.data.translations.map((translation: ITranslation) => translation.detected_source_language).join() !== language) {
-						translations[language] = result.data.translations.map((translation: ITranslation) => translation.text);
+					if (result.data.translations.map((translation: IDeepLTranslation) => translation.detected_source_language).join() !== language) {
+						translations[language] = result.data.translations.map((translation: IDeepLTranslation) => translation.text);
 					}
 				}
 			} catch (e) {
