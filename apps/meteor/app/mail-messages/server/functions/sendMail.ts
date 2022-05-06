@@ -53,7 +53,7 @@ export const sendMail = function (from: string, subject: string, body: string, d
 	}
 
 	return Meteor.users.find(userQuery).forEach(function (u) {
-		const user: Pick<IUser, '_id' | 'name' | 'emails'> & { createdAt?: Date } = u;
+		const user: Partial<IUser> & Pick<IUser, '_id'> = u;
 		if (user?.emails && Array.isArray(user.emails) && user.emails.length) {
 			const email = `${user.name} <${user.emails[0].address}>`;
 
