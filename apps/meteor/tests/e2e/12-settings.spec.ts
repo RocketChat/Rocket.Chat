@@ -6,10 +6,11 @@ import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock
 import LoginPage from './utils/pageobjects/LoginPage';
 import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';
+import Administration from './utils/pageobjects/Administration';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
-test.describe('[API Settings Change]', async () => {
+test.describe('[Settings]', async () => {
 	let page: Page;
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
@@ -246,46 +247,6 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe.serial('Message pin', () => {
-		test('(API) expect disable message pinning', async ({ request }) => {
-			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
-				headers: apiSessionHeaders,
-				data: { value: false },
-			});
-			const data = await response.json();
-
-			expect(response.status()).toBe(200);
-			expect(data).toHaveProperty('success', true);
-		});
-
-		test('(UI) expect option(pin message) not be visible', async () => {
-			await mainContent.reload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
-
-			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeFalsy();
-		});
-
-		test('(API) expect enable message pinning', async ({ request }) => {
-			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
-				headers: apiSessionHeaders,
-				data: { value: true },
-			});
-			const data = await response.json();
-
-			expect(response.status()).toBe(200);
-			expect(data).toHaveProperty('success', true);
-		});
-
-		test.skip('(UI) expect option(pin message) be visible', async () => {
-			await mainContent.reload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
-
-			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeTruthy();
-		});
-	});
-
 	test.describe.serial('Message star', () => {
 		test('(API) expect disable message starring', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowStarring`, {
@@ -364,61 +325,129 @@ test.describe('[API Settings Change]', async () => {
 		});
 	});
 
-	test.describe('Profile', () => {
-		test.describe.serial('Profile change', () => {
-			test('(API) expect disable profile change', async ({ request }) => {
-				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
-					headers: apiSessionHeaders,
-					data: { value: false },
-				});
-				const data = await response.json();
-
-				expect(response.status()).toBe(200);
-				expect(data).toHaveProperty('success', true);
+	test.describe.serial('Profile change', () => {
+		test('(API) expect disable profile change', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
+				headers: apiSessionHeaders,
+				data: { value: false },
 			});
+			const data = await response.json();
 
-			test.skip('(UI) expect option(update profile) not be visible', async () => {
-				//
-			});
-
-			test('(API) expect enable profile change', async ({ request }) => {
-				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
-					headers: apiSessionHeaders,
-					data: { value: true },
-				});
-				const data = await response.json();
-
-				expect(response.status()).toBe(200);
-				expect(data).toHaveProperty('success', true);
-			});
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
 		});
 
-		test.describe('Avatar change', () => {
-			test('(API) expect disable avatar change', async ({ request }) => {
-				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
-					headers: apiSessionHeaders,
-					data: { value: false },
-				});
-				const data = await response.json();
+		test.skip('(UI) expect option(update profile) not be visible', async () => {
+			//
+		});
 
-				expect(response.status()).toBe(200);
-				expect(data).toHaveProperty('success', true);
+		test('(API) expect enable profile change', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserProfileChange`, {
+				headers: apiSessionHeaders,
+				data: { value: true },
 			});
+			const data = await response.json();
 
-			test.skip('(UI) expect option(update avatar) not be visible', async () => {
-				//
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+	});
+
+	test.describe('Avatar change', () => {
+		test('(API) expect disable avatar change', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
+				headers: apiSessionHeaders,
+				data: { value: false },
 			});
+			const data = await response.json();
 
-			test('(API) expect enable avatar change', async ({ request }) => {
-				const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
-					headers: apiSessionHeaders,
-					data: { value: true },
-				});
-				const data = await response.json();
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
 
-				expect(response.status()).toBe(200);
-				expect(data).toHaveProperty('success', true);
+		test.skip('(UI) expect option(update avatar) not be visible', async () => {
+			//
+		});
+
+		test('(API) expect enable avatar change', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
+				headers: apiSessionHeaders,
+				data: { value: true },
 			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+	});
+});
+
+test.describe('[Settings (admin)]', async () => {
+	let page: Page;
+	let loginPage: LoginPage;
+	let mainContent: MainContent;
+	let sideNav: SideNav;
+	let admin: Administration;
+
+	test.beforeAll(async ({ browser }) => {
+		const context = await browser.newContext();
+		page = await context.newPage();
+
+		loginPage = new LoginPage(page);
+		mainContent = new MainContent(page);
+		sideNav = new SideNav(page);
+		admin = new Administration(page);
+
+		await loginPage.goto('/');
+		await loginPage.login(adminLogin);
+		await sideNav.general().click();
+	});
+
+	test.beforeAll(async ({ request }) => {
+		const response = await request.post(`${BASE_API_URL}/login`, { data: adminLogin });
+		const { userId, authToken } = (await response.json()).data;
+
+		apiSessionHeaders['X-Auth-Token'] = authToken;
+		apiSessionHeaders['X-User-Id'] = userId;
+	});
+
+	test.describe.serial('Message pin', () => {
+		test('(API) expect disable message pinning', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
+				headers: apiSessionHeaders,
+				data: { value: false },
+			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+
+		test('(UI) expect option(pin message) not be visible', async () => {
+			await mainContent.reload();
+			await mainContent.sendMessage(`any_message_${uuid()}`);
+			await mainContent.openMessageActionMenu();
+
+			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeFalsy();
+		});
+
+		test('(API) expect enable message pinning', async ({ request }) => {
+			const response = await request.post(`${BASE_API_URL}/settings/Message_AllowPinning`, {
+				headers: apiSessionHeaders,
+				data: { value: true },
+			});
+			const data = await response.json();
+
+			expect(response.status()).toBe(200);
+			expect(data).toHaveProperty('success', true);
+		});
+
+		test('(UI) expect option(pin message) be visible', async () => {
+			await mainContent.reload();
+			await mainContent.sendMessage(`any_message_${uuid()}`);
+			await mainContent.openMessageActionMenu();
+
+			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeTruthy();
 		});
 	});
 
@@ -434,16 +463,18 @@ test.describe('[API Settings Change]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
-		test.describe.skip('(UI) expect activate/deactivate flow as admin', () => {
+		test.describe.only('(UI) expect activate/deactivate flow as admin', () => {
 			test('expect open /users as admin', async () => {
-				// await sideNav.logout().click();
+				await admin.goto('/admin');
+				await admin.usersLink().click();
 			});
 
-			test.skip('expect find registered user', async () => {
-				//
+			test('expect find registered user', async () => {
+				await admin.usersFilter().type(validUserInserted.email, { delay: 200 });
+				await admin.userInTable(validUserInserted.email).click();
 			});
 
-			test.skip('expect activate registered user', async () => {
+			test('expect activate registered user', async () => {
 				//
 			});
 
