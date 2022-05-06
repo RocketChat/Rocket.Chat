@@ -6,6 +6,7 @@ import { AsyncStatePhase } from '../../lib/asyncState';
 import { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import { FollowMessageMethod } from './methods/followMessage';
 import { GetReadReceiptsMethod } from './methods/getReadReceipts';
+import { JoinRoomMethod } from './methods/joinRoom';
 import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import { RoomNameExistsMethod } from './methods/roomNameExists';
 import { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
@@ -80,6 +81,7 @@ export type ServerMethods = {
 	'instances/get': (...args: any[]) => any;
 	'jitsi:generateAccessToken': (...args: any[]) => any;
 	'jitsi:updateTimeout': (...args: any[]) => any;
+	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
 	'license:getModules': () => string[];
 	'license:getTags': () => ILicenseTag[];
