@@ -3,9 +3,13 @@ import { Meteor } from 'meteor/meteor';
 
 import { getMessageForUser } from '../../../../server/lib/messages/getMessageForUser';
 
-function getMessageById(messageId: string): IMessage | undefined {
+function getMessageById(messageId: IMessage['_id']): IMessage | undefined {
 	try {
-		return Promise.await(getMessageForUser(messageId, Meteor.userId()));
+		const user = Meteor.userId();
+		if (!user) {
+			return;
+		}
+		return Promise.await(getMessageForUser(messageId, user));
 	} catch (e) {
 		throw new Meteor.Error(e.message, 'Invalid message', {
 			function: 'actionLinks.getMessage',
@@ -13,13 +17,15 @@ function getMessageById(messageId: string): IMessage | undefined {
 	}
 }
 
+type ActionLinkHandler = (message: IMessage, params?: string, instance?: undefined) => void;
+
 // Action Links namespace creation.
 export const actionLinks = {
-	actions: {} as { [key: string]: Function },
-	register(name: string, funct: Function): void {
+	actions: {} as { [key: string]: ActionLinkHandler },
+	register(name: string, funct: ActionLinkHandler): void {
 		actionLinks.actions[name] = funct;
 	},
-	getMessage(name: string, messageId: string): IMessage | undefined {
+	getMessage(name: string, messageId: IMessage['_id']): IMessage | undefined {
 		const message = getMessageById(messageId);
 
 		if (!message) {
@@ -28,7 +34,7 @@ export const actionLinks = {
 			});
 		}
 
-		if (!message.actionLinks || !message.actionLinks.some((action) => action.method_id === name)) {
+		if (!message.actionLinks?.some((action) => action.method_id === name)) {
 			throw new Meteor.Error('error-invalid-actionlink', 'Invalid action link', {
 				function: 'actionLinks.getMessage',
 			});

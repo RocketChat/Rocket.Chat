@@ -16,7 +16,7 @@ Meteor.methods({
 		}
 
 		// NOTE: based on types (and how FE uses it) this should be the way of doing it
-		const actionLink = message.actionLinks && message.actionLinks.find((action) => action.method_id === name);
+		const actionLink = message.actionLinks?.find((action) => action.method_id === name);
 
 		if (!actionLink) {
 			throw new Meteor.Error('error-invalid-actionlink', 'Invalid action link', { method: 'actionLinkHandler' });
