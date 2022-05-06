@@ -1,5 +1,5 @@
 import { Box, Field, Flex, TextInput } from '@rocket.chat/fuselage';
-import React, { ReactElement, SyntheticEvent } from 'react';
+import React, { FormEventHandler, ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
@@ -27,7 +27,7 @@ function FontSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: FontSettingInputProps): ReactElement {
-	const handleChange = (event: SyntheticEvent<HTMLInputElement>): void => {
+	const handleChange: FormEventHandler<HTMLInputElement> = (event): void => {
 		onChangeValue?.(event.currentTarget.value);
 	};
 

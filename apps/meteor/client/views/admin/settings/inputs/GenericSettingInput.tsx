@@ -1,8 +1,20 @@
 import { Box, Field, Flex, TextInput } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FormEventHandler, ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
+type GenericSettingInputProps = {
+	_id: string;
+	label: string;
+	value: string;
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string) => void;
+	onResetButtonClick?: () => void;
+};
 function GenericSettingInput({
 	_id,
 	label,
@@ -14,9 +26,9 @@ function GenericSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}) {
-	const handleChange = (event) => {
-		onChangeValue && onChangeValue(event.currentTarget.value);
+}: GenericSettingInputProps): ReactElement {
+	const handleChange: FormEventHandler<HTMLInputElement> = (event): void => {
+		onChangeValue?.(event.currentTarget.value);
 	};
 
 	return (
