@@ -12,10 +12,10 @@ export const onAdded = async (button: IUIActionButton): Promise<void> => {
 		actionId,
 		labelI18n,
 		context,
-		isAppButtonItem: true,
 	});
 };
 export const onRemoved = async (button: IUIActionButton): Promise<void> => {
+	console.log(button);
 	// const { appId, actionId, labelI18n, context } = button;
 	// SidebarRoomAction.addItem()
 };
