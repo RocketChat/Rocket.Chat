@@ -8,8 +8,6 @@ import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useUser } from '../../../client/contexts/UserContext';
 import Header from '../../../client/components/Header';
 
-const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/Call/BBB'));
-
 addAction('bbb_video', ({ room }) => {
 	const enabled = useSetting('bigbluebutton_Enabled');
 	const t = useTranslation();
@@ -29,6 +27,8 @@ addAction('bbb_video', ({ room }) => {
 	const user = useUser();
 	const username = user ? user.username : '';
 	const enableOption = enabled && (!username || !room.muted?.includes(username));
+
+	const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
 	return useMemo(
 		() =>
@@ -62,7 +62,7 @@ addAction('bbb_video', ({ room }) => {
 	);
 });
 
-const templateJitsi = lazy(() => import('../../../client/views/room/contextualBar/Call/Jitsi'));
+const templateJitsi = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/Jitsi'));
 
 addAction('video', ({ room }) => {
 	const enabled = useSetting('Jitsi_Enabled');
