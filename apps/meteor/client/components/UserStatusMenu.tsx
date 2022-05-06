@@ -1,17 +1,17 @@
 import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
 import type { Placements } from '@rocket.chat/fuselage-hooks';
-import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
+import React, { ReactElement, ComponentProps, useRef, useCallback, useState, useMemo, useEffect } from 'react';
 
 import { useSetting } from '../contexts/SettingsContext';
 import { useTranslation } from '../contexts/TranslationContext';
 import { UserStatus } from './UserStatus';
 
 type UserStatusMenuProps = {
-	margin: string;
+	margin: ComponentProps<typeof Box>['margin'];
 	onChange: (type: UserStatusType) => void;
 	initialStatus?: UserStatusType;
-	optionWidth?: any;
+	optionWidth?: ComponentProps<typeof Box>['width'];
 	placement?: Placements;
 };
 
@@ -21,13 +21,13 @@ const UserStatusMenu = ({
 	initialStatus = UserStatusType.OFFLINE,
 	optionWidth = undefined,
 	placement = 'bottom-end',
-}: UserStatusMenuProps): React.ReactElement => {
+}: UserStatusMenuProps): ReactElement => {
 	const t = useTranslation();
 	const [status, setStatus] = useState<UserStatusType>(initialStatus);
 	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption') as boolean;
 
 	const options = useMemo(() => {
-		const renderOption = (status: UserStatusType, label: string): React.ReactElement => (
+		const renderOption = (status: UserStatusType, label: string): ReactElement => (
 			<Box display='flex' flexDirection='row' alignItems='center'>
 				<Box marginInlineEnd='x8'>
 					<UserStatus status={status} />
@@ -36,7 +36,7 @@ const UserStatusMenu = ({
 			</Box>
 		);
 
-		const statuses: Array<[value: UserStatusType, label: React.ReactElement]> = [
+		const statuses: Array<[value: UserStatusType, label: ReactElement]> = [
 			[UserStatusType.ONLINE, renderOption(UserStatusType.ONLINE, t('Online'))],
 			[UserStatusType.AWAY, renderOption(UserStatusType.AWAY, t('Away'))],
 			[UserStatusType.BUSY, renderOption(UserStatusType.BUSY, t('Busy'))],
