@@ -1,14 +1,14 @@
 import { Button, Box, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import React, { useState, ReactElement } from 'react';
 
 import UserAutoComplete from '../../../components/UserAutoComplete';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
-function AddManager({ reload, ...props }) {
+const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 	const t = useTranslation();
-	const [username, setUsername] = useState();
+	const [username, setUsername] = useState('');
 
 	const saveAction = useEndpointAction('POST', 'livechat/users/manager', { username });
 
@@ -17,14 +17,14 @@ function AddManager({ reload, ...props }) {
 			return;
 		}
 		const result = await saveAction();
-		if (!result.success) {
+		if (!result?.success) {
 			return;
 		}
 		reload();
-		setUsername();
+		setUsername('');
 	});
 	return (
-		<Box display='flex' alignItems='center' {...props}>
+		<Box display='flex' alignItems='center'>
 			<Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
@@ -36,6 +36,6 @@ function AddManager({ reload, ...props }) {
 			</Field>
 		</Box>
 	);
-}
+};
 
 export default AddManager;

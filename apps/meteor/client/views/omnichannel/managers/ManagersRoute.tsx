@@ -1,6 +1,6 @@
 import { Box, Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, ReactElement } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import UserAvatar from '../../../components/avatar/UserAvatar';
@@ -11,9 +11,20 @@ import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ManagersPage from './ManagersPage';
 import RemoveManagerButton from './RemoveManagerButton';
 
-const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
+const sortDir = (sortDir: string): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
+const useQuery = (
+	{
+		text,
+		itemsPerPage,
+		current,
+	}: {
+		text?: string;
+		itemsPerPage?: 25 | 50 | 100;
+		current?: number;
+	},
+	[column, direction]: string[],
+): { offset?: number | undefined; count?: 25 | 50 | 100 | undefined; fields: string; text: string | undefined; sort: string } =>
 	useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
@@ -28,7 +39,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 		[text, itemsPerPage, current, column, direction],
 	);
 
-function ManagersRoute() {
+const ManagersRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewManagers = usePermission('manage-livechat-managers');
 
@@ -52,6 +63,8 @@ function ManagersRoute() {
 	const query = useQuery(debouncedParams, debouncedSort);
 
 	const { value: data = {}, reload } = useEndpointData('livechat/users/manager', query);
+
+	console.log(data);
 
 	const header = useMemo(
 		() =>
@@ -115,7 +128,7 @@ function ManagersRoute() {
 						<Box mi='x4' />
 					</Table.Cell>
 				)}
-				<Table.Cell withTruncatedText>{emails && emails.length && emails[0].address}</Table.Cell>
+				<Table.Cell withTruncatedText>{emails?.length && emails[0].address}</Table.Cell>
 				<RemoveManagerButton _id={_id} reload={reload} />
 			</Table.Row>
 		),
@@ -139,6 +152,6 @@ function ManagersRoute() {
 			title={t('Managers')}
 		/>
 	);
-}
+};
 
 export default ManagersRoute;
