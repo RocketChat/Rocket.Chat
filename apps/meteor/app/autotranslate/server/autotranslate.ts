@@ -1,7 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { IMessage, IRoom, MessageAttachment } from '@rocket.chat/core-typings';
+import {
+	IMessage,
+	IRoom,
+	MessageAttachment,
+	ISupportedLanguages,
+	IProviderMetadata,
+	ISupportedLanguage,
+	ITranslationResult,
+} from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
@@ -112,7 +120,7 @@ export abstract class AutoTranslate {
 
 	languages: string[];
 
-	supportedLanguages: { [key: string]: string };
+	supportedLanguages: ISupportedLanguages;
 
 	/**
 	 * Encapsulate the api key and provider settings.
@@ -316,7 +324,7 @@ export abstract class AutoTranslate {
 	 * @returns { name, displayName, settings }
 		};
 	 */
-	_getProviderMetadata(): { name: string; displayName: string; settings: any } | void {
+	_getProviderMetadata(): IProviderMetadata | void {
 		translationLogger.warn('must be implemented by subclass!', '_getProviderMetadata');
 	}
 
@@ -327,7 +335,7 @@ export abstract class AutoTranslate {
 	 * @param {string} target - the language into which shall be translated
 	 * @returns [{ language, name }]
 	 */
-	getSupportedLanguages(target: string): { language: string; name: string }[] {
+	getSupportedLanguages(target: string): ISupportedLanguage[] {
 		translationLogger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
 		return [];
 	}
@@ -341,7 +349,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @return {object}
 	 */
-	_translateMessage(message: IMessage, targetLanguages: string[]): { [language: string]: string } {
+	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
 		translationLogger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
 		return {};
 	}
@@ -354,7 +362,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): { [language: string]: string } {
+	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
 		translationLogger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
 		return {};
 	}
