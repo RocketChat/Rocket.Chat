@@ -1,14 +1,15 @@
-import Busboy from 'busboy';
+import busboy from 'busboy';
 
 export const getUploadFormData = async ({ request }) =>
 	new Promise((resolve, reject) => {
-		const busboy = new Busboy({ headers: request.headers });
+		const bb = busboy({ headers: request.headers });
 
 		const fields = {};
 
-		busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+		bb.on('file', (fieldname, file, { filename, encoding, mimeType: mimetype }) => {
 			const fileData = [];
 
+			console.log(file);
 			file.on('data', (data) => fileData.push(data));
 
 			file.on('end', () => {
@@ -26,11 +27,11 @@ export const getUploadFormData = async ({ request }) =>
 			});
 		});
 
-		busboy.on('field', (fieldname, value) => {
+		bb.on('field', (fieldname, value) => {
 			fields[fieldname] = value;
 		});
 
-		busboy.on('finish', () => resolve(fields));
+		bb.on('finish', () => resolve(fields));
 
-		request.pipe(busboy);
+		request.pipe(bb);
 	});

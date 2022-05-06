@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { settingsRegistry, settings } from '../../../settings/server';
 import { updateStatus, updateEnabled, isRegisteringOrEnabled } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -10,10 +8,8 @@ import { setupLogger } from '../lib/logger';
 import { FederationKeys } from '../../../models/server/raw';
 import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
-Meteor.startup(async function () {
-	const federationPublicKey = await FederationKeys.getPublicKeyString();
-
-	settingsRegistry.addGroup('Federation', function () {
+settingsRegistry.addGroup('Federation', function () {
+	this.section('Rocket.Chat Federation', async function () {
 		this.add('FEDERATION_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
@@ -35,6 +31,8 @@ Meteor.startup(async function () {
 			alert: 'FEDERATION_Domain_Alert',
 			// disableReset: true,
 		});
+
+		const federationPublicKey = await FederationKeys.getPublicKeyString();
 
 		this.add('FEDERATION_Public_Key', federationPublicKey || '', {
 			readonly: true,
