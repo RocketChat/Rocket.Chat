@@ -61,3 +61,33 @@ FlowRouter.route('/messages', {
 		appLayout.renderMainLayout({ center: MessagesViewPage });
 	},
 });
+
+FlowRouter.route('/blog/detail/:id', {
+	name: 'blog-detail',
+	action: () => {
+		const BlogDetailPageView = createTemplateForComponent('BlogDetailPage', () => import('../views/blog/BlogDetail'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: BlogDetailPageView });
+	},
+});
+
+FlowRouter.route('/games/detail/:id', {
+	name: 'games-detail',
+	action: () => {
+		const GameDetailPageView = createTemplateForComponent('GameDetailPage', () => import('../views/games/SingleGameDetails'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: GameDetailPageView });
+	},
+});
+
+FlowRouter.route('/products/detail/:id', {
+	name: 'products-detail',
+	action: () => {
+		const ProductDetailPageView = createTemplateForComponent('ProductDetailPage', () => import('../views/products/SIngleProductDetails'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: ProductDetailPageView });
+	},
+});
