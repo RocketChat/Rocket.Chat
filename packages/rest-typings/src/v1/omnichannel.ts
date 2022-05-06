@@ -499,7 +499,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/transfer.history/:rid': {
-		GET: (params: { rid: string }) => { history: number[]; count: number; offset: number; total: number };
+		GET: (params: { rid: string }) => PaginatedResult<{ history: number[] }>;
 	};
 
 	'livechat/video.call/:token': {
@@ -555,8 +555,15 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/visitors.autocomplete': {
-		// selector object is of type => { exceptions?: string[]; conditions?: FilterQuery<ILivechatVisitor>; term: string } }
-		GET: (params: PaginatedRequest<{ selector: string }>) => {
+		// deprecated in version 5.0.0. Please use "livechat/visitors.autocompleteByName" instead
+		// selector is a Json stringified object of type => { exceptions?: string[]; conditions?: FilterQuery<ILivechatVisitor>; term: string } }
+		GET: (params: { selector: string }) => {
+			items: Array<Pick<ILivechatVisitor, '_id' | 'name' | 'username'>>;
+		};
+	};
+
+	'livechat/visitors.autocompleteByName': {
+		GET: (params: { term: string }) => {
 			items: Array<Pick<ILivechatVisitor, '_id' | 'name' | 'username'>>;
 		};
 	};

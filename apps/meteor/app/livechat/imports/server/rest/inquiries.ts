@@ -17,7 +17,7 @@ API.v1.addRoute(
 			const ourQuery: Partial<ILivechatInquiryRecord> = { status: LivechatInquiryStatus.QUEUED };
 
 			if (department) {
-				const departmentFromDB = LivechatDepartment.findOneByIdOrName(department, {});
+				const departmentFromDB = LivechatDepartment.findOneByIdOrName(department);
 				if (departmentFromDB) {
 					ourQuery.department = departmentFromDB._id;
 				}

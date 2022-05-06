@@ -13,7 +13,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		return this.findOne(query, options);
 	}
 
-	getVisitorByToken(token: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null> {
+	getVisitorByToken(token: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>> = {}): Promise<ILivechatVisitor | null> {
 		const query = {
 			token,
 		};
@@ -75,6 +75,11 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		) as Record<string, unknown>[];
 
 		return this.col.aggregate(params);
+	}
+
+	findByNameRegex(searchTerm: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>> = {}): Cursor<ILivechatVisitor> {
+		const nameRegex = new RegExp(`^${escapeRegExp(searchTerm).trim()}`, 'i');
+		return this.find({ name: nameRegex }, options);
 	}
 
 	/**

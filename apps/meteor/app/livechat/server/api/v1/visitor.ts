@@ -77,7 +77,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 			token: String,
 		});
 
-		const visitor = await VisitorsRaw.getVisitorByToken(this.urlParams.token, {});
+		const visitor = await VisitorsRaw.getVisitorByToken(this.urlParams.token);
 
 		if (!visitor) {
 			throw new Meteor.Error('invalid-token');
@@ -90,7 +90,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 			token: String,
 		});
 
-		const visitor = await VisitorsRaw.getVisitorByToken(this.urlParams.token, {});
+		const visitor = await VisitorsRaw.getVisitorByToken(this.urlParams.token);
 		if (!visitor) {
 			throw new Meteor.Error('invalid-token');
 		}

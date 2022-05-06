@@ -4,7 +4,7 @@ import filesize from 'filesize';
 import { FileUpload } from '../../../../file-upload/server/index.js';
 import { settings } from '../../../../settings/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
-import { LivechatRooms, LivechatVisitors } from '../../../../models/server/raw/index';
+import { LivechatRooms, LivechatVisitors } from '../../../../models/server/raw';
 import { API } from '../../../../api/server';
 import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
 
@@ -16,13 +16,13 @@ API.v1.addRoute('livechat/upload/:rid', {
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
-		const visitor = LivechatVisitors.getVisitorByToken(visitorToken, {});
+		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
 
 		if (!visitor) {
 			return API.v1.unauthorized();
 		}
 
-		const room = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken, {});
+		const room = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
 		if (!room) {
 			return API.v1.unauthorized();
 		}
