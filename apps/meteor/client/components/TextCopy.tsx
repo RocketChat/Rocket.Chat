@@ -6,7 +6,7 @@ import { useTranslation } from '../contexts/TranslationContext';
 
 type TextCopyProps = {
 	text: string;
-	wrapper: (text: string) => ReactElement;
+	wrapper?: (text: string) => ReactElement;
 } & ComponentProps<typeof Box>;
 
 const defaultWrapperRenderer = (text: string): ReactElement => (

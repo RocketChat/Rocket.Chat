@@ -1,6 +1,6 @@
 import { IRoom, isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
-import React, { ReactNode } from 'react';
+import React, { ReactElement } from 'react';
 
 import { Users } from '../../app/models/client';
 import { getUserAvatarURL } from '../../app/utils/client';
@@ -10,7 +10,7 @@ import { VoipRoomForeword } from './voip/room/VoipRoomForeword';
 
 type RoomForewordProps = { _id: IRoom['_id']; rid?: IRoom['_id'] } | { rid: IRoom['_id']; _id?: IRoom['_id'] };
 
-const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactNode => {
+const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
 	const roomId = _id || rid;
 	if (!roomId) {
 		throw new Error('Room id required - RoomForeword');
