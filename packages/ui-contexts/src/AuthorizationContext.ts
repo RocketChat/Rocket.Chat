@@ -10,7 +10,7 @@ export type RoleStore = IEmitter<{
 	change: IRoles;
 }> & {
 	roles: IRoles;
-}
+};
 
 export type AuthorizationContextValue = {
 	queryPermission(permission: string | ObjectId, scope?: string | ObjectId): Subscription<boolean>;
@@ -42,8 +42,8 @@ export const AuthorizationContext = createContext<AuthorizationContextValue>({
 		emit: (): void => undefined,
 		on: () => (): void => undefined,
 		off: (): void => undefined,
-		events: () => ['change'],
-		has: () => false,
+		events: (): 'change'[] => ['change'],
+		has: (): boolean => false,
 		once: () => (): void => undefined,
 	},
 });
