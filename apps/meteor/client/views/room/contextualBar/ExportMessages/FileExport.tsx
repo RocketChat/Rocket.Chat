@@ -1,9 +1,8 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Field, Select, ButtonGroup, Button, FieldGroup, SelectOption, InputBox } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, MouseEventHandler, useMemo } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 
 type MailExportFormValues = {

@@ -1,7 +1,7 @@
 import { PDFAttachmentProps } from '@rocket.chat/core-typings';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import { useCollapse } from '../hooks/useCollapse';

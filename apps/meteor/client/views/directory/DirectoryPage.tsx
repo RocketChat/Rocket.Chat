@@ -1,9 +1,8 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import { useCurrentRoute, useRoute, useRouteParameter, useSetting } from '@rocket.chat/ui-contexts';
+import { useCurrentRoute, useRoute, useRouteParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useCallback, ReactElement } from 'react';
 
 import Page from '../../components/Page';
-import { useTranslation } from '../../contexts/TranslationContext';
 import ChannelsTab from './ChannelsTab';
 import TeamsTab from './TeamsTab';
 import UserTab from './UserTab';

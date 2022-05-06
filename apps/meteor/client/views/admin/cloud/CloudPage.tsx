@@ -6,11 +6,11 @@ import {
 	useRoute,
 	useRouteParameter,
 	useMethod,
+	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import React, { useEffect, ReactNode } from 'react';
 
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useMethodData } from '../../../hooks/useMethodData';
 import ConnectToCloudSection from './ConnectToCloudSection';
 import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';

@@ -1,13 +1,12 @@
 import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
 
 import { ProgressStep, ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useErrorHandler } from './useErrorHandler';
 
 function ImportProgressPage() {

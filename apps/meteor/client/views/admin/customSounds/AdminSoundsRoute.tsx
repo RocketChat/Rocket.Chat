@@ -1,6 +1,6 @@
 import { Box, Button, Icon, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useCustomSound, useRoute, useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useCallback, ReactElement } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -15,7 +15,6 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';

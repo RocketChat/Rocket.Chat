@@ -12,7 +12,7 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { validateEmail } from '../../../lib/emailValidator';
@@ -21,7 +21,6 @@ import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
-import { useTranslation } from '../../contexts/TranslationContext';
 
 function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();

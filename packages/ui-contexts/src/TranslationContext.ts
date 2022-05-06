@@ -1,6 +1,6 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
-import type keys from '../../packages/rocketchat-i18n/i18n/en.i18n.json';
+import type keys from './en.json';
 
 export { keys };
 
@@ -36,11 +36,3 @@ export const TranslationContext = createContext<TranslationContextValue>({
 		has: () => true,
 	}),
 });
-
-export const useLanguages = (): TranslationContextValue['languages'] => useContext(TranslationContext).languages;
-
-export const useLanguage = (): TranslationContextValue['language'] => useContext(TranslationContext).language;
-
-export const useLoadLanguage = (): TranslationContextValue['loadLanguage'] => useContext(TranslationContext).loadLanguage;
-
-export const useTranslation = (): TranslationContextValue['translate'] => useContext(TranslationContext).translate;

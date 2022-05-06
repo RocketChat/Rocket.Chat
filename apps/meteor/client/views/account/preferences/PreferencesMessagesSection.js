@@ -1,8 +1,7 @@
 import { Accordion, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 
 const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {

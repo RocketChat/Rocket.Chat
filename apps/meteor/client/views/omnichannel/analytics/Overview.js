@@ -1,8 +1,7 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import CounterItem from '../realTimeMonitoring/counter/CounterItem';
 import CounterRow from '../realTimeMonitoring/counter/CounterRow';
 

@@ -9,6 +9,7 @@ import {
 	useRole,
 	useEndpoint,
 	useMethod,
+	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
@@ -21,7 +22,6 @@ import CloseChatModalData from '../../../../../../components/Omnichannel/modals/
 import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
-import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { handleError } from '../../../../../../lib/utils/handleError';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../../lib/QuickActions';

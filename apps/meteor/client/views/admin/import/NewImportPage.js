@@ -14,12 +14,11 @@ import {
 	UrlInput,
 } from '@rocket.chat/fuselage';
 import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useRouteParameter, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, useEffect } from 'react';
 
 import { Importers } from '../../../../app/importer/client/index';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import { useErrorHandler } from './useErrorHandler';
 

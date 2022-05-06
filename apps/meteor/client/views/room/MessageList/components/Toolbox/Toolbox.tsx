@@ -1,10 +1,9 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
-import { useUser, useUserRoom, useUserSubscription, useSettings } from '@rocket.chat/ui-contexts';
+import { useUser, useUserRoom, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useMemo } from 'react';
 
 import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { getTabBarContext } from '../../../lib/Toolbox/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
 import { MessageActionMenu } from './MessageActionMenu';

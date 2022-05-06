@@ -1,9 +1,8 @@
 import { Box, CheckBox, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import ConfirmationModal from './ConfirmationModal';

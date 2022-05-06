@@ -1,10 +1,9 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, FieldGroup } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useMemo, useEffect, FC, ChangeEvent } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useFileInput } from '../../../hooks/useFileInput';

@@ -1,11 +1,10 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Button, ButtonGroup, Icon, Box, Throbber } from '@rocket.chat/fuselage';
-import { useRoute, useCurrentRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useCurrentRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useRef, FC } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import APIsDisplay from './APIsDisplay';
 import AppDetailsPageContent from './AppDetailsPageContent';
 import LoadingDetails from './LoadingDetails';

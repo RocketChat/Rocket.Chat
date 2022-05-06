@@ -1,9 +1,8 @@
 import { Button, FieldGroup, Box, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import TriggersForm from './TriggersForm';
 

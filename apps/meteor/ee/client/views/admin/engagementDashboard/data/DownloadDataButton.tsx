@@ -2,7 +2,7 @@ import { Box, ActionButton } from '@rocket.chat/fuselage';
 import React, { ComponentProps, ReactElement } from 'react';
 
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useTranslation } from '@rocket.chat/ui-contexts'
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 type RowFor<THeaders extends readonly string[]> = readonly unknown[] & {

@@ -1,9 +1,8 @@
 import { Button, Field, Icon } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import './AssetSettingInput.css';
 
 function AssetSettingInput({ _id, label, value = {}, asset, fileConstraints = {} }) {

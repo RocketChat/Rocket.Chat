@@ -1,8 +1,7 @@
 import { ToggleSwitch, RadioButton, OptionTitle } from '@rocket.chat/fuselage';
-import { useUserPreference, useMethod } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import ListItem from '../Sidebar/ListItem';
 
 const style = {

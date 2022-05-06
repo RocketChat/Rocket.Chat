@@ -1,9 +1,8 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettingStructure } from '@rocket.chat/ui-contexts';
+import { useSettingStructure, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEditableSetting, useEditableSettingsDispatch } from '../EditableSettingsContext';
 import MemoizedSetting from './MemoizedSetting';
 import SettingSkeleton from './SettingSkeleton';

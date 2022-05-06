@@ -1,10 +1,9 @@
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useMethod } from '@rocket.chat/ui-contexts';
+import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
-import { useTranslation } from '../../contexts/TranslationContext';
 
 const CreateChannel = ({
 	values,

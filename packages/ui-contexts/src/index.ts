@@ -11,6 +11,7 @@ export { SessionContext, SessionContextValue } from './SessionContext';
 export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './SettingsContext';
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
+export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue } from './UserContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
@@ -25,10 +26,13 @@ export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
 export { useIsPrivilegedSettingsContext } from './hooks/useIsPrivilegedSettingsContext';
 export { useIsSettingsContextLoading } from './hooks/useIsSettingsContextLoading';
+export { useLanguage } from './hooks/useLanguage';
+export { useLanguages } from './hooks/useLanguages';
 export { useLayout } from './hooks/useLayout';
 export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarExpanded';
 export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPosition';
 export { useLayoutSizes } from './hooks/useLayoutSizes';
+export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLogout } from './hooks/useLogout';
 export { useMediaUrl } from './hooks/useMediaUrl';
@@ -56,6 +60,7 @@ export { useStream } from './hooks/useStream';
 export { useToastMessageDispatch } from './hooks/useToastMessageDispatch';
 export { useTooltipClose } from './hooks/useTooltipClose';
 export { useTooltipOpen } from './hooks/useTooltipOpen';
+export { useTranslation } from './hooks/useTranslation';
 export { useUpload } from './hooks/useUpload';
 export { useUser } from './hooks/useUser';
 export { useUserAvatarPath } from './hooks/useUserAvatarPath';
@@ -66,6 +71,6 @@ export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
 
-// TODO: remove it after moving some of the hooks to the new package
 export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
 export { UploadResult } from './ServerContext';
+export { TranslationKey, TranslationLanguage } from './TranslationContext';

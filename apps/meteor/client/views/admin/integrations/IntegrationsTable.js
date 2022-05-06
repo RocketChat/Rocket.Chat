@@ -1,9 +1,8 @@
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import FilterByTypeAndText from './FilterByTypeAndText';
 import IntegrationRow from './IntegrationRow';

@@ -1,8 +1,6 @@
 import { Box, Button, ButtonGroup, Flex, Margins } from '@rocket.chat/fuselage';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-
-import { useTranslation } from '../../contexts/TranslationContext';
 
 function NotFoundPage() {
 	const t = useTranslation();

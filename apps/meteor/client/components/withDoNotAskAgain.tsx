@@ -1,8 +1,7 @@
 import { Box, CheckBox } from '@rocket.chat/fuselage';
-import { useUserPreference, useMethod } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, FC, ReactElement, ComponentType } from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
 import { DontAskAgainList } from '../hooks/useDontAskAgain';
 
 type DoNotAskAgainProps = {

@@ -1,7 +1,6 @@
-import { useSetModal, useToastMessageDispatch, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../../../../client/hooks/useForm';
 import CreateCannedResponseModal from './CreateCannedResponseModal';
 

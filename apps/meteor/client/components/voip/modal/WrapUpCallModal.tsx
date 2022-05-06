@@ -1,10 +1,9 @@
 import { Button, ButtonGroup, Field, Modal, TextAreaInput } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { useCallCloseRoom } from '../../../contexts/CallContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import Tags from '../../Omnichannel/Tags';
 
 type WrapUpCallPayload = {

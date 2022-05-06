@@ -1,8 +1,8 @@
 import { ISetting } from '@rocket.chat/core-typings';
 import { Tabs } from '@rocket.chat/fuselage';
+import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { memo, useState, useMemo, ReactElement } from 'react';
 
-import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
 import { useEditableSettingsGroupSections, useEditableSettingsGroupTabs } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';

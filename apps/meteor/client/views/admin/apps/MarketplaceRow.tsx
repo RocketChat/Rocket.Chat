@@ -1,9 +1,8 @@
 import { Box, Table, Tag } from '@rocket.chat/fuselage';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, memo, FC, KeyboardEvent, MouseEvent } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
 import PriceDisplay from './PriceDisplay';

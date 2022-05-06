@@ -1,3 +1,4 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { CSSProperties, Dispatch, ReactElement, SetStateAction, useMemo } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -6,7 +7,6 @@ import { GenericTableCell } from '../../../components/GenericTable/V2/GenericTab
 import { GenericTableHeaderCell } from '../../../components/GenericTable/V2/GenericTableHeaderCell';
 import { GenericTableRow } from '../../../components/GenericTable/V2/GenericTableRow';
 import MarkdownText from '../../../components/MarkdownText';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 

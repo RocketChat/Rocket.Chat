@@ -1,8 +1,6 @@
 import { Table } from '@rocket.chat/fuselage';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, useState } from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const style = { width: '100%' };
 

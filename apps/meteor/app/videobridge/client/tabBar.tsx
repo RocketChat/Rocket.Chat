@@ -1,10 +1,9 @@
 import React, { useMemo, lazy, ReactNode } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
-import { useUser, useSetting } from '@rocket.chat/ui-contexts';
+import { useUser, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import Header from '../../../client/components/Header';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));

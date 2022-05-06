@@ -1,8 +1,6 @@
 import { Box, Icon, Button, Scrollable } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
-
-import { useTranslation } from '../contexts/TranslationContext';
 
 const defaultWrapperRenderer = (text) => (
 	<Box fontFamily='mono' alignSelf='center' fontScale='p2' style={{ wordBreak: 'break-all' }} mie='x4' flexGrow={1} maxHeight='x108'>

@@ -1,8 +1,7 @@
 import { Box, Button, Margins } from '@rocket.chat/fuselage';
-import { useUser } from '@rocket.chat/ui-contexts';
+import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 const TwoFactorEmail = (props) => {

@@ -1,11 +1,10 @@
 import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
 import { useMediaQuery, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, useMemo } from 'react';
 
 import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import ImportOperationSummary from './ImportOperationSummary';
 
 function ImportHistoryPage() {

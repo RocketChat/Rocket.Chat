@@ -8,13 +8,13 @@ import {
 	useSetting,
 	usePermission,
 	useMethod,
+	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
-import { useTranslation } from '../contexts/TranslationContext';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import WarningModal from '../views/admin/apps/WarningModal';

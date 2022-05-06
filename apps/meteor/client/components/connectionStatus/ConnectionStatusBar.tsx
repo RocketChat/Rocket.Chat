@@ -1,8 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
-import { useConnectionStatus } from '@rocket.chat/ui-contexts';
+import { useConnectionStatus, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useRef, useState, MouseEventHandler, FC } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import './ConnectionStatusBar.styles.css';
 
 // TODO: frontend chapter day - fix unknown translation keys

@@ -1,8 +1,7 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useLoadLanguage, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
-import { useLoadLanguage, useTranslation } from '../../../contexts/TranslationContext';
 import { filterLanguage } from '../../../lib/utils/filterLanguage';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

@@ -1,8 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useForm } from '../../../../../hooks/useForm';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import AddUsers from './AddUsers';

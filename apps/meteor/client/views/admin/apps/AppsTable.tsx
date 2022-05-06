@@ -14,7 +14,7 @@ import {
 	Icon,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -26,7 +26,6 @@ import {
 	GenericTableLoadingTable,
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';

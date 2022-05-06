@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useSession, useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useSession, useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
@@ -7,7 +7,6 @@ import { FormSkeleton } from '../../../../components/Skeleton';
 import UserCard from '../../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';

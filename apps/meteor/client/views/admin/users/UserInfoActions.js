@@ -7,12 +7,12 @@ import {
 	usePermission,
 	useMethod,
 	useEndpoint,
+	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
 import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
 import GenericModal from '../../../components/GenericModal';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useActionSpread } from '../../hooks/useActionSpread';
 import UserInfo from '../../room/contextualBar/UserInfo';
 

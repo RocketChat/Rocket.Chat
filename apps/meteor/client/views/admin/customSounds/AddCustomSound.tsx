@@ -1,9 +1,8 @@
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, ReactElement, FormEvent } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData, soundDataType } from './lib';
 
