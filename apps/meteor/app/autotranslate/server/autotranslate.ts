@@ -63,7 +63,7 @@ export class TranslationProviderRegistry {
 		return TranslationProviderRegistry[Providers][provider];
 	}
 
-	static getSupportedLanguages(target: string): { language: string; name: string }[] | undefined {
+	static getSupportedLanguages(target: string): ISupportedLanguage[] | undefined {
 		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(target) : undefined;
 	}
 
@@ -324,9 +324,7 @@ export abstract class AutoTranslate {
 	 * @returns { name, displayName, settings }
 		};
 	 */
-	_getProviderMetadata(): IProviderMetadata | void {
-		translationLogger.warn('must be implemented by subclass!', '_getProviderMetadata');
-	}
+	abstract _getProviderMetadata(): IProviderMetadata;
 
 	/**
 	 * Provides the possible languages _from_ which a message can be translated into a target language
@@ -335,10 +333,7 @@ export abstract class AutoTranslate {
 	 * @param {string} target - the language into which shall be translated
 	 * @returns [{ language, name }]
 	 */
-	getSupportedLanguages(target: string): ISupportedLanguage[] {
-		translationLogger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
-		return [];
-	}
+	abstract getSupportedLanguages(target: string): ISupportedLanguage[];
 
 	/**
 	 * Performs the actual translation of a message,
@@ -349,10 +344,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @return {object}
 	 */
-	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
-		translationLogger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
-		return {};
-	}
+	abstract _translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult;
 
 	/**
 	 * Performs the actual translation of an attachment (precisely its description),
@@ -362,10 +354,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
-		translationLogger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
-		return {};
-	}
+	abstract _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult;
 }
 
 Meteor.startup(() => {

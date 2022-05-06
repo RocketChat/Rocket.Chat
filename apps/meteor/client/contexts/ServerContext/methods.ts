@@ -1,4 +1,4 @@
-import type { IFederationServer, IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
+import type { IFederationServer, IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
 import type { DeleteWriteOpResultObject } from 'mongodb';
 
 import { ILicenseTag } from '../../../ee/app/license/definitions/ILicenseTag';
@@ -175,6 +175,8 @@ export type ServerMethods = {
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
 	'checkRegistrationSecretURL': (hash: string) => boolean;
+	'autoTranslate.getProviderUiMetadata': (...args: any[]) => [string, { name: string; displayName: string }];
+	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 };
 
 export type ServerMethodName = keyof ServerMethods;
