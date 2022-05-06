@@ -466,15 +466,13 @@ export const statistics = {
 		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable().count();
 		statistics.totalPinned = await MessagesRaw.findPinned().count();
 		statistics.totalStarred = await MessagesRaw.findStarred().count();
-		statistics.totalLinkInvitation = Invites.find().count();
+		statistics.totalLinkInvitation = await Invites.find().count();
 		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 		statistics.totalE2ERooms = await RoomsRaw.findByE2E().count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.homeTitle = settings.get('Layout_Home_Title');
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
-		statistics.roomsInsideTeams = Rooms.countRoomsInsideTeams();
-		statistics.autojoinRoomsInsideTeams = Rooms.countAutojoinRoomsInsideTeams();
 		statistics.totalEncryptedMessages = await MessagesRaw.countE2EEMessages();
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
 

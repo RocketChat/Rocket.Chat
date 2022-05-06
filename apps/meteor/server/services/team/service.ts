@@ -14,7 +14,7 @@ import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
-import { Messages } from '../../../app/models/server';
+import { Messages, Rooms } from '../../../app/models/server';
 import { Room, Authorization } from '../../sdk';
 import {
 	IListRoomsFilter,
@@ -963,6 +963,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const teamsArray = await teams.toArray();
 
 		stats.totalTeams = await teams.count();
+		stats.totalRoomsInsideTeams = Rooms.countRoomsInsideTeams();
+		stats.totalDefaultRoomsInsideTeams = Rooms.countAutojoinRoomsInsideTeams();
 		stats.teamStats = [];
 
 		for await (const team of teamsArray) {

@@ -58,6 +58,8 @@ export interface ITeamStatData {
 }
 export interface ITeamStats {
 	totalTeams: number;
+	totalRoomsInsideTeams: number;
+	totalDefaultRoomsInsideTeams: number;
 	teamStats: Array<ITeamStatData>;
 }
 
