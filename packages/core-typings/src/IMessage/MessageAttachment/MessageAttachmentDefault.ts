@@ -27,5 +27,5 @@ export type MessageAttachmentDefault = {
 
 	translations?: {
 		[language: string]: string;
-	}
+	};
 } & MessageAttachmentBase;
