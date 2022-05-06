@@ -122,11 +122,13 @@ export type OperationResult<TMethod extends Method, TPathPattern extends PathPat
 
 export type UrlParams<T extends string> = string extends T
 	? Record<string, string>
+	: T extends `${infer _Start}:${infer Param}`
+	? { [k in Param | keyof UrlParams<_Start>]: string }
 	: T extends `${infer _Start}:${infer Param}/${infer Rest}`
 	? { [k in Param | keyof UrlParams<Rest>]: string }
 	: T extends `${infer _Start}:${infer Param}`
 	? { [k in Param]: string }
-	: {};
+	: undefined | {};
 
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 

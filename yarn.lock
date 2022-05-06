@@ -3404,6 +3404,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/api-client@workspace:^, @rocket.chat/api-client@workspace:packages/api-client":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/api-client@workspace:packages/api-client"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.3.5
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/apps-engine@npm:^1.31.0":
   version: 1.31.0
   resolution: "@rocket.chat/apps-engine@npm:1.31.0"
@@ -3717,6 +3731,7 @@ __metadata:
     "@nivo/line": 0.62.0
     "@nivo/pie": 0.73.0
     "@playwright/test": ^1.21.0
+    "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps-engine": ^1.31.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.11

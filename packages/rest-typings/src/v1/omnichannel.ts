@@ -167,7 +167,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/visitor/:token': {
-		GET: (params: { token: string }) => { visitor: ILivechatVisitor };
+		GET: () => { visitor: ILivechatVisitor };
 		DELETE: (params: { token: string }) => {
 			visitor: { _id: string; ts: string };
 		};

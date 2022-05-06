@@ -29,7 +29,7 @@ const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
 ): Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>> => {
 	const api = path[0] === '/' ? APIClient : APIClient.v1;
-	const endpointPath = path[0] === '/' ? path.slice(1) : path;
+	const endpointPath = (path[0] === '/' ? path.slice(1) : path) as TPath;
 
 	switch (method) {
 		case 'GET':

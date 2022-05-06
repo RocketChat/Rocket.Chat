@@ -8,7 +8,7 @@ if (Meteor.isClient) {
 	settings = require('../../settings/server').settings;
 }
 
-const fileUploadMediaWhiteList = function (customWhiteList) {
+export const fileUploadMediaWhiteList = function (customWhiteList) {
 	const mediaTypeWhiteList = customWhiteList || settings.get('FileUpload_MediaTypeWhiteList');
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
@@ -19,7 +19,7 @@ const fileUploadMediaWhiteList = function (customWhiteList) {
 	});
 };
 
-const fileUploadMediaBlackList = function () {
+export const fileUploadMediaBlackList = function () {
 	const blacklist = settings.get('FileUpload_MediaTypeBlackList');
 	if (!blacklist) {
 		return;

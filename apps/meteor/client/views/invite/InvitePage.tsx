@@ -1,4 +1,3 @@
-import { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 import React, { ReactElement } from 'react';
 import { useQuery } from 'react-query';
 
@@ -32,11 +31,7 @@ const InvitePage = (): ReactElement => {
 			}
 
 			try {
-				const { valid } = await APIClient.v1.post<
-					OperationParams<'POST', '/v1/validateInviteToken'>,
-					never,
-					OperationResult<'POST', '/v1/validateInviteToken'>
-				>('validateInviteToken', { token });
+				const { valid } = await APIClient.post('/v1/validateInviteToken', { token });
 
 				return valid;
 			} catch (error) {
@@ -61,12 +56,9 @@ const InvitePage = (): ReactElement => {
 				}
 
 				try {
-					const result = await APIClient.v1.post<
-						OperationParams<'POST', '/v1/useInviteToken'>,
-						never,
-						OperationResult<'POST', '/v1/useInviteToken'>
-					>('useInviteToken', { token });
-					if (!result?.room.name) {
+					const result = await APIClient.v1.post('useInviteToken', { token });
+
+					if (!result.room.name) {
 						dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
 						homeRoute.push();
 						return;

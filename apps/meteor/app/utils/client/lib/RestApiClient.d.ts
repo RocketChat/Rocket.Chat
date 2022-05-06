@@ -1,4 +1,5 @@
 import { Serialized } from '@rocket.chat/core-typings';
+import { RestClientInterface } from '@rocket.chat/api-client';
 
 export declare const APIClient: {
 	delete<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
@@ -19,10 +20,6 @@ export declare const APIClient: {
 	};
 	_jqueryCall(method?: string, endpoint?: string, params?: any, body?: any, headers?: Record<string, string>, dataType?: string): any;
 	v1: {
-		delete<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
-		get<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
-		post<P, B, R = any>(endpoint: string, params?: Serialized<P>, body?: B): Promise<Serialized<R>>;
-		put<P, B, R = any>(endpoint: string, params?: Serialized<P>, body?: B): Promise<Serialized<R>>;
 		upload<P, B, R = any>(
 			endpoint: string,
 			params?: Serialized<P>,
@@ -32,5 +29,5 @@ export declare const APIClient: {
 				error: (ev: ProgressEvent<XMLHttpRequestEventTarget>) => void;
 			},
 		): { promise: Promise<Serialized<R>> };
-	};
+	} & RestClientInterface;
 };
