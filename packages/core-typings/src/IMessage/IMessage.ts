@@ -140,6 +140,14 @@ export interface IMessage extends IRocketChatRecord {
 
 	avatar?: string;
 	emoji?: string;
+
+	// AutoTranslate fields
+	tokens?: {
+		token: string;
+		text: string;
+		noHtml?: string;
+	}[];
+	html?: string;
 }
 
 export type MessageSystem = {

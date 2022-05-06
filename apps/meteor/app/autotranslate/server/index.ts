@@ -14,6 +14,6 @@ import './methods/translateMessage';
 import './googleTranslate.js';
 import './deeplTranslate.js';
 import './msTranslate.js';
-import './methods/getProviderUiMetadata.js';
+import './methods/getProviderUiMetadata';
 
 export { AutoTranslate, TranslationProviderRegistry };
