@@ -2,6 +2,8 @@ import type { IMessage } from "@rocket.chat/core-typings";
 import type { IRoom } from "@rocket.chat/core-typings";
 import type { ITeam } from "@rocket.chat/core-typings";
 import type { IGetRoomRoles, IUser } from "@rocket.chat/core-typings";
+import type { PaginatedRequest } from "../helpers/PaginatedRequest";
+import type { PaginatedResult } from "../helpers/PaginatedResult";
 
 export type ChannelsEndpoints = {
   "channels.files": {
@@ -126,13 +128,19 @@ export type ChannelsEndpoints = {
     };
   };
   "channels.addAll": {
-    POST: (params: { roomId: string; activeUserOnly?: boolean }) => {
+    POST: (
+      params: ({ roomId: string } | { roomName: string }) & {
+        activeUserOnly?: boolean;
+      }
+    ) => {
       channel: IRoom;
     };
   };
   "channels.anonymousread": {
-    GET: (params: { roomId?: string; roomName?: string }) => {
+    GET: (
+      params: PaginatedRequest<{ roomId: string } | { roomName: string }>
+    ) => PaginatedResult<{
       messages: IMessage[];
-    };
+    }>;
   };
 };
