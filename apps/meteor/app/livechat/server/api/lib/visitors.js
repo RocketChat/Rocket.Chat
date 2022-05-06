@@ -149,6 +149,29 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	};
 }
 
+export async function findVisitorsToAutocompleteByName({ userId, term }) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
+		return { items: [] };
+	}
+
+	const options = {
+		projection: {
+			_id: 1,
+			name: 1,
+			username: 1,
+		},
+		limit: 10,
+		sort: {
+			name: 1,
+		},
+	};
+
+	const items = await LivechatVisitors.findByNameRegex(term, options).toArray();
+	return {
+		items,
+	};
+}
+
 export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');

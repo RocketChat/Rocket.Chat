@@ -10,7 +10,7 @@ import '../imports/server/rest/appearance';
 import '../imports/server/rest/triggers';
 import '../imports/server/rest/integrations';
 import '../imports/server/rest/visitors';
-import '../imports/server/rest/messages.ts';
+import '../imports/server/rest/messages';
 import '../imports/server/rest/dashboards';
 import '../imports/server/rest/queue';
 import '../imports/server/rest/officeHour';

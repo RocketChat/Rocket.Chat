@@ -1,6 +1,7 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
+import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import {
 	findVisitorInfo,
 	findVisitedPages,
@@ -8,6 +9,7 @@ import {
 	searchChats,
 	findVisitorsToAutocomplete,
 	findVisitorsByEmailOrPhoneOrNameOrUsername,
+	findVisitorsToAutocompleteByName,
 } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute(
@@ -30,24 +32,22 @@ API.v1.addRoute(
 	'livechat/visitors.pagesVisited/:roomId',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				roomId: String,
 			});
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const pages = Promise.await(
-				findVisitedPages({
-					userId: this.userId,
-					roomId: this.urlParams.roomId,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const pages = await findVisitedPages({
+				userId: this.userId,
+				roomId: this.urlParams.roomId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 
 			return API.v1.success(pages);
 		},
@@ -58,25 +58,23 @@ API.v1.addRoute(
 	'livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				visitorId: String,
 				roomId: String,
 			});
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
-			const history = Promise.await(
-				findChatHistory({
-					userId: this.userId,
-					roomId: this.urlParams.roomId,
-					visitorId: this.urlParams.visitorId,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const history = await findChatHistory({
+				userId: this.userId,
+				roomId: this.urlParams.roomId,
+				visitorId: this.urlParams.visitorId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 
 			return API.v1.success(history);
 		},
@@ -87,7 +85,7 @@ API.v1.addRoute(
 	'livechat/visitors.searchChats/room/:roomId/visitor/:visitorId',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				visitorId: String,
 				roomId: String,
@@ -96,26 +94,25 @@ API.v1.addRoute(
 			const { searchText, closedChatsOnly, servedChatsOnly } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
-			const history = Promise.await(
-				searchChats({
-					userId: this.userId,
-					roomId,
-					visitorId,
-					searchText,
-					closedChatsOnly: closedChatsOnly === 'true',
-					servedChatsOnly: servedChatsOnly === 'true',
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const history = await searchChats({
+				userId: this.userId,
+				roomId,
+				visitorId,
+				searchText,
+				closedChatsOnly: closedChatsOnly === 'true',
+				servedChatsOnly: servedChatsOnly === 'true',
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 			return API.v1.success(history);
 		},
 	},
 );
 
+/* deprecated endpoint - "livechat/visitors.autocomplete", use "livechat/visitors.autocompleteByName" instead */
 API.v1.addRoute(
 	'livechat/visitors.autocomplete',
 	{ authRequired: true },
@@ -126,9 +123,33 @@ API.v1.addRoute(
 				return API.v1.failure("The 'selector' param is required");
 			}
 
-			const result = await findVisitorsToAutocomplete({
+			const response = await findVisitorsToAutocomplete({
 				userId: this.userId,
 				selector: JSON.parse(selector),
+			});
+
+			return API.v1.success(
+				deprecationWarning({
+					endpoint: 'livechat/visitors.autocomplete',
+					response,
+				}),
+			);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/visitors.autocompleteByName',
+	{ authRequired: true },
+	{
+		async get() {
+			const { term } = this.requestParams();
+
+			check(term, Match.Maybe(String));
+
+			const result = await findVisitorsToAutocompleteByName({
+				userId: this.userId,
+				term,
 			});
 
 			return API.v1.success(result);
@@ -140,7 +161,7 @@ API.v1.addRoute(
 	'livechat/visitors.search',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { term } = this.requestParams();
 
 			check(term, Match.Maybe(String));
@@ -149,17 +170,15 @@ API.v1.addRoute(
 			const { sort } = this.parseJsonQuery();
 
 			return API.v1.success(
-				Promise.await(
-					findVisitorsByEmailOrPhoneOrNameOrUsername({
-						userId: this.userId,
-						term,
-						pagination: {
-							offset,
-							count,
-							sort,
-						},
-					}),
-				),
+				await findVisitorsByEmailOrPhoneOrNameOrUsername({
+					userId: this.userId,
+					term,
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
 			);
 		},
 	},

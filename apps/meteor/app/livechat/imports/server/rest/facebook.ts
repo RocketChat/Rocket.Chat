@@ -61,7 +61,7 @@ API.v1.addRoute('livechat/facebook', {
 			agent: undefined,
 			guest: undefined,
 		};
-		let visitor = LivechatVisitors.getVisitorByToken(token, {});
+		let visitor = LivechatVisitors.getVisitorByToken(token);
 		if (visitor) {
 			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
@@ -91,11 +91,6 @@ API.v1.addRoute('livechat/facebook', {
 		sendMessage.message.msg = text;
 		sendMessage.guest = visitor;
 
-		try {
-			return API.v1.success(Livechat.sendMessage(sendMessage));
-		} catch (e) {
-			Livechat.logger.error('Error using Facebook ->', e);
-			return API.v1.failure(e);
-		}
+		return API.v1.success(Livechat.sendMessage(sendMessage));
 	},
 });

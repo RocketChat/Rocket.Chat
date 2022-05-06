@@ -93,7 +93,7 @@ API.v1.addRoute(
 			check(this.queryParams, defaultCheckParams);
 
 			const { token, rid, agentId } = this.queryParams;
-			const guest = await LivechatVisitors.getVisitorByToken(token, {});
+			const guest = await LivechatVisitors.getVisitorByToken(token);
 			if (!guest) {
 				return API.v1.failure('invalid-token');
 			}
@@ -223,7 +223,7 @@ API.v1.addRoute(
 			});
 			const { rid, token, comment, tags } = this.bodyParams;
 
-			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
+			const visitor = await LivechatVisitors.getVisitorByToken(token);
 			if (!visitor) {
 				return API.v1.failure('invalid-token');
 			}
