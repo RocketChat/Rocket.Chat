@@ -1,3 +1,4 @@
+import '../ee/definition/rest';
 import '../ee/client/ecdh';
 import './polyfills';
 

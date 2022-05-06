@@ -2,22 +2,24 @@ import { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { IUser } from '@rocket.chat/core-typings';
+import {
+	isTeamsConvertToChannelProps,
+	isTeamsRemoveRoomProps,
+	isTeamsUpdateMemberProps,
+	isTeamsRemoveMemberProps,
+	isTeamsAddMembersProps,
+	isTeamsDeleteProps,
+	isTeamsLeaveProps,
+	isTeamsUpdateProps,
+} from '@rocket.chat/rest-typings';
+import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
-import { API } from '../api';
-import { Team } from '../../../../server/sdk';
-import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { IUser } from '../../../../definition/IUser';
-import { isTeamsConvertToChannelProps } from '../../../../definition/rest/v1/teams/TeamsConvertToChannelProps';
-import { isTeamsRemoveRoomProps } from '../../../../definition/rest/v1/teams/TeamsRemoveRoomProps';
-import { isTeamsUpdateMemberProps } from '../../../../definition/rest/v1/teams/TeamsUpdateMemberProps';
-import { isTeamsRemoveMemberProps } from '../../../../definition/rest/v1/teams/TeamsRemoveMemberProps';
-import { isTeamsAddMembersProps } from '../../../../definition/rest/v1/teams/TeamsAddMembersProps';
-import { isTeamsDeleteProps } from '../../../../definition/rest/v1/teams/TeamsDeleteProps';
-import { isTeamsLeaveProps } from '../../../../definition/rest/v1/teams/TeamsLeaveProps';
-import { isTeamsUpdateProps } from '../../../../definition/rest/v1/teams/TeamsUpdateProps';
-import { ITeam, TEAM_TYPE } from '../../../../definition/ITeam';
+import { Users } from '../../../models/server';
+import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { Team } from '../../../../server/sdk';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'teams.list',

@@ -1,10 +1,9 @@
 import moment from 'moment';
+import type { ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 
-import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
 import { IWorkHoursCronJobsWrapper, LivechatBusinessHoursRaw } from '../../../models/server/raw/LivechatBusinessHours';
 import { UsersRaw } from '../../../models/server/raw/Users';
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
-import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;

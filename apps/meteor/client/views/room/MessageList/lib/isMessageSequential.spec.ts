@@ -1,7 +1,7 @@
 /* eslint-env mocha */
+import { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { IMessage } from '../../../../../definition/IMessage';
 import { isMessageSequential } from './isMessageSequential';
 
 const TIME_RANGE_IN_SECONDS = 300;

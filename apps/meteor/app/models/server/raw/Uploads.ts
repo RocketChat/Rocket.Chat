@@ -12,9 +12,9 @@ import {
 	WithId,
 	WriteOpResult,
 } from 'mongodb';
+import { IUpload as T } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification, InsertionModel } from './BaseRaw';
-import { IUpload as T } from '../../../../definition/IUpload';
 
 const fillTypeGroup = (fileData: Partial<T>): void => {
 	if (!fileData.type) {
@@ -25,7 +25,9 @@ const fillTypeGroup = (fileData: Partial<T>): void => {
 };
 
 export class UploadsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { rid: 1 } }, { key: { uploadedAt: 1 } }, { key: { typeGroup: 1 } }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { rid: 1 } }, { key: { uploadedAt: 1 } }, { key: { typeGroup: 1 } }];
+	}
 
 	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): Cursor<T> {
 		const fileQuery = {

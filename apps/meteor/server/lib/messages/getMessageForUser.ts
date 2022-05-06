@@ -1,5 +1,5 @@
-import type { IUser } from '../../../definition/IUser';
-import type { IMessage } from '../../../definition/IMessage/IMessage';
+import type { IUser, IMessage } from '@rocket.chat/core-typings';
+
 import { Messages } from '../../../app/models/server/raw';
 import { canAccessRoomId } from '../../../app/authorization/server';
 

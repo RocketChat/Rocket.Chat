@@ -1,7 +1,6 @@
+import type { ISetting } from '@rocket.chat/core-typings';
 import type { AdminInfoPage, OrganizationInfoPage, RegisteredServerPage } from '@rocket.chat/onboarding-ui';
 import { ComponentProps, createContext, useContext, Dispatch, SetStateAction } from 'react';
-
-import { ISetting } from '../../../../definition/ISetting';
 
 type SetupWizardData = {
 	adminData: Omit<Parameters<ComponentProps<typeof AdminInfoPage>['onSubmit']>[0], 'keepPosted'>;
@@ -38,7 +37,7 @@ type SetupWizarContextValue = {
 
 export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	setupWizardData: {
-		adminData: { fullname: '', username: '', companyEmail: '', password: '' },
+		adminData: { fullname: '', username: '', email: '', password: '' },
 		organizationData: {
 			organizationName: '',
 			organizationType: '',

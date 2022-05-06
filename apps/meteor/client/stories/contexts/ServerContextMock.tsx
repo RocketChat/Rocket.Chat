@@ -1,9 +1,9 @@
+import { Serialized } from '@rocket.chat/core-typings';
+import type { MatchPathPattern, Method, OperationParams, OperationResult, Path, PathFor } from '@rocket.chat/rest-typings';
 import { action } from '@storybook/addon-actions';
 import { pathToRegexp } from 'path-to-regexp';
 import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
 
-import { Serialized } from '../../../definition/Serialized';
-import { MatchPathPattern, Method, OperationParams, OperationResult, Path, PathFor } from '../../../definition/rest';
 import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '../../contexts/ServerContext';
 
 const logAction = action('ServerContext');

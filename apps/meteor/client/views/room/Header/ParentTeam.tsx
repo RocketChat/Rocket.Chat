@@ -1,7 +1,7 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import React, { ReactElement, useMemo } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
-import { TEAM_TYPE } from '../../../../definition/ITeam';
 import Header from '../../../components/Header';
 import { useUserId } from '../../../contexts/UserContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';

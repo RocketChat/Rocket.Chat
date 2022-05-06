@@ -28,11 +28,12 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 		try {
 			await assignAgent({ username: agent, extension });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error.message });
+			dispatchToastMessage({ type: 'error', message: (error as Error).message });
 		}
 		reload();
 		closeModal();
 	});
+	const handleAgentChange = useMutableCallback((e) => setAgent(e));
 
 	const { value: availableExtensions, phase: state } = useEndpointData('omnichannel/extension', query);
 
@@ -47,7 +48,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 					<Field>
 						<Field.Label>{t('Agent_Without_Extensions')}</Field.Label>
 						<Field.Row>
-							<AutoCompleteAgentWithoutExtension empty onChange={setAgent} currentExtension={extension} />
+							<AutoCompleteAgentWithoutExtension value={agent} onChange={handleAgentChange} currentExtension={extension} />
 						</Field.Row>
 					</Field>
 					<Field>

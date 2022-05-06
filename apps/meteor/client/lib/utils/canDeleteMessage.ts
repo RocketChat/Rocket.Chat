@@ -1,10 +1,9 @@
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import moment, { MomentInput } from 'moment';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { settings } from '../../../app/settings/client';
-import { IRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
 
 export const canDeleteMessage = ({ rid, ts, uid }: { rid: IRoom['_id']; ts: MomentInput; uid: IUser['_id'] }): boolean => {
 	const userId = Meteor.userId();

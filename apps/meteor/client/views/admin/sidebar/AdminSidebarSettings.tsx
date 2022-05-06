@@ -1,8 +1,8 @@
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Box, Icon, SearchInput, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useMemo, FC } from 'react';
 
-import { ISetting } from '../../../../definition/ISetting';
 import Sidebar from '../../../components/Sidebar';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';

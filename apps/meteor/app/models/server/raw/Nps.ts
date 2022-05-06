@@ -1,14 +1,12 @@
-import { UpdateWriteOpResult, Collection } from 'mongodb';
+import { UpdateWriteOpResult } from 'mongodb';
+import { INps, NPSStatus } from '@rocket.chat/core-typings';
 
-import { BaseRaw } from './BaseRaw';
-import { INps, NPSStatus } from '../../../../definition/INps';
+import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 type T = INps;
 export class NpsRaw extends BaseRaw<T> {
-	constructor(public readonly col: Collection<T>, trash?: Collection<T>) {
-		super(col, trash);
-
-		this.col.createIndexes([{ key: { status: 1, expireAt: 1 } }]);
+	modelIndexes(): IndexSpecification[] {
+		return [{ key: { status: 1, expireAt: 1 } }];
 	}
 
 	// get expired surveys still in progress

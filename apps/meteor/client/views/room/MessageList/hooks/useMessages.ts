@@ -1,8 +1,8 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import { IMessage } from '@rocket.chat/core-typings';
 import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
-import { IMessage } from '../../../../../definition/IMessage';
-import { IRoom } from '../../../../../definition/IRoom';
 // import { useSetting } from '../../../../contexts/SettingsContext';
 import { useUserPreference } from '../../../../contexts/UserContext';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -12,6 +12,35 @@ const options = {
 		ts: 1,
 	},
 };
+
+const isNotNullOrUndefined = (value: unknown): boolean => value !== null && value !== undefined;
+
+// In a previous version of the app, some values were being set to null.
+// This is a workaround to remove those null values.
+// A migration script should be created to remove this code.
+const removePossibleNullValues = ({
+	editedBy,
+	editedAt,
+	emoji,
+	avatar,
+	alias,
+	customFields,
+	groupable,
+	attachments,
+	reactions,
+	...message
+}: any): IMessage => ({
+	...message,
+	...(isNotNullOrUndefined(editedBy) && { editedBy }),
+	...(isNotNullOrUndefined(editedAt) && { editedAt }),
+	...(isNotNullOrUndefined(emoji) && { emoji }),
+	...(isNotNullOrUndefined(avatar) && { avatar }),
+	...(isNotNullOrUndefined(alias) && { alias }),
+	...(isNotNullOrUndefined(customFields) && { customFields }),
+	...(isNotNullOrUndefined(groupable) && { groupable }),
+	...(isNotNullOrUndefined(attachments) && { attachments }),
+	...(isNotNullOrUndefined(reactions) && { reactions }),
+});
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	const showInMainThread = useUserPreference<boolean>('showMessageInMainThread', false);
@@ -35,5 +64,5 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	// 	query.t = { $nin: Array.from(hideMessagesOfType.values()) };
 	// }
 
-	return useReactiveValue<IMessage[]>(useCallback(() => ChatMessage.find(query, options).fetch(), [query]));
+	return useReactiveValue<IMessage[]>(useCallback(() => ChatMessage.find(query, options).fetch().map(removePossibleNullValues), [query]));
 };

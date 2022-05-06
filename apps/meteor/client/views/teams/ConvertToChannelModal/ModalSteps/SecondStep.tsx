@@ -1,8 +1,8 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Serialized } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { IRoom } from '../../../../../definition/IRoom';
-import { Serialized } from '../../../../../definition/Serialized';
 import GenericModal from '../../../../components/GenericModal';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 

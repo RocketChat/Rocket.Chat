@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import { FileAttachmentProps, FileProp, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import Attachments from '.';
-import { FileAttachmentProps } from '../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
-import { FileProp } from '../../../../definition/IMessage/MessageAttachment/Files/FileProp';
-import { MessageAttachmentDefault } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentDefault';
 
 export default {
 	title: 'Message/Attachments',

@@ -1,10 +1,9 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
+import { useUserId, useUserRoom, useUserSubscription } from '../../../../contexts/UserContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useUserRoom } from '../../hooks/useUserRoom';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import { useDiscussionsList } from './useDiscussionsList';
 

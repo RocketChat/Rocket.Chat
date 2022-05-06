@@ -11,7 +11,7 @@ export const ToolboxDropdownDesktop = forwardRef<
 >(function ToolboxDropdownDesktop({ reference, children, ...rest }, ref) {
 	const { style: s } = usePosition(reference, ref as RefObject<HTMLElement>, {
 		watch: true,
-		placement: 'bottom-start',
+		placement: 'bottom-end',
 	});
 
 	return (

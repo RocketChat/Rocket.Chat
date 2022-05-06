@@ -1,8 +1,11 @@
+import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
+import { parser } from '@rocket.chat/message-parser';
+
 import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings } from '../../sdk/index';
-import { UserStatus } from '../../../definition/UserStatus';
-import { isSettingColor } from '../../../definition/ISetting';
+
+const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
 const STATUS_MAP: { [k: string]: number } = {
 	[UserStatus.OFFLINE]: 0,
@@ -32,6 +35,10 @@ export class ListenersModule {
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
+			if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
+				message.md = parser(message.msg);
+			}
+
 			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
@@ -324,6 +331,10 @@ export class ListenersModule {
 
 		service.onEvent('notify.updateCustomSound', (data): void => {
 			notifications.notifyAllInThisInstance('updateCustomSound', data);
+		});
+
+		service.onEvent('connector.statuschanged', (enabled): void => {
+			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
 		});
 	}
 }

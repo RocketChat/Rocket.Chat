@@ -1,11 +1,11 @@
 import { Cursor } from 'mongodb';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IMessage, IMessageDiscussion } from '@rocket.chat/core-typings';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
 import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { api } from '../../../../server/sdk/api';
-import { IMessage, IMessageDiscussion } from '../../../../definition/IMessage';
 
 export const cleanRoomHistory = function ({
 	rid = '',

@@ -11,12 +11,11 @@ import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserId, useUserSubscription, useUserSubscriptionByName } from '../../../contexts/UserContext';
+import { useUserId, useUserSubscription, useUserRoom, useUserSubscriptionByName } from '../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import RemoveUsersModal from '../../teams/contextualBar/members/RemoveUsersModal';
-import { useUserRoom } from './useUserRoom';
 import { useWebRTC } from './useWebRTC';
 
 const useUserHasRoomRole = (uid, rid, role) =>

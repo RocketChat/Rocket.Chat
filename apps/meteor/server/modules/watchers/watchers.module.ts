@@ -1,4 +1,23 @@
 import mem from 'mem';
+import type {
+	IMessage,
+	ISubscription,
+	IRole,
+	IRoom,
+	IBaseData,
+	IPermission,
+	ILivechatInquiryRecord,
+	IUserSession,
+	IUser,
+	ILoginServiceConfiguration,
+	IInstanceStatus,
+	IIntegrationHistory,
+	ILivechatDepartmentAgents,
+	IIntegration,
+	IEmailInbox,
+	IPbxEvent,
+} from '@rocket.chat/core-typings';
+import { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
@@ -7,36 +26,19 @@ import { PermissionsRaw } from '../../../app/models/server/raw/Permissions';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
-import { IMessage } from '../../../definition/IMessage';
-import { ISubscription } from '../../../definition/ISubscription';
-import { IRole } from '../../../definition/IRole';
-import { IRoom } from '../../../definition/IRoom';
 import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
-import { IBaseData } from '../../../definition/IBaseData';
-import { IPermission } from '../../../definition/IPermission';
-import { ISetting, SettingValue } from '../../../definition/ISetting';
-import { ILivechatInquiryRecord } from '../../../definition/IInquiry';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
-import { IUserSession } from '../../../definition/IUserSession';
 import { subscriptionFields, roomFields } from './publishFields';
-import { IUser } from '../../../definition/IUser';
 import { LoginServiceConfigurationRaw } from '../../../app/models/server/raw/LoginServiceConfiguration';
-import { ILoginServiceConfiguration } from '../../../definition/ILoginServiceConfiguration';
-import { IInstanceStatus } from '../../../definition/IInstanceStatus';
 import { InstanceStatusRaw } from '../../../app/models/server/raw/InstanceStatus';
 import { IntegrationHistoryRaw } from '../../../app/models/server/raw/IntegrationHistory';
-import { IIntegrationHistory } from '../../../definition/IIntegrationHistory';
 import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/LivechatDepartmentAgents';
-import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartmentAgents';
-import { IIntegration } from '../../../definition/IIntegration';
 import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
-import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
-import { IPbxEvent } from '../../../definition/IPbxEvent';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;

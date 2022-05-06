@@ -1,6 +1,6 @@
 module.exports = {
 	root: true,
-	extends: ['@rocket.chat/eslint-config', 'prettier'],
+	extends: ['@rocket.chat/eslint-config/original', 'prettier'],
 	parser: 'babel-eslint',
 	plugins: ['react', 'react-hooks', 'prettier', 'testing-library', 'anti-trojan-source'],
 	rules: {
@@ -54,7 +54,7 @@ module.exports = {
 			extends: [
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/eslint-recommended',
-				'@rocket.chat/eslint-config',
+				'@rocket.chat/eslint-config/original',
 				'prettier',
 			],
 			parser: '@typescript-eslint/parser',

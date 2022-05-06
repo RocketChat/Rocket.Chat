@@ -1,6 +1,6 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { IMessage } from '../../../definition/IMessage';
 import { callbacks } from '../../../lib/callbacks';
 
 export const renderMessageBody = <T extends Partial<IMessage> & { tokens?: { token: string; text: string }[]; html?: string }>(

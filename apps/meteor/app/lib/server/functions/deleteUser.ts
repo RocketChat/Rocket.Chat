@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { FileProp } from '@rocket.chat/core-typings';
 
 import { FileUpload } from '../../../file-upload/server';
 import { Users, Subscriptions, Messages, Rooms } from '../../../models/server';
@@ -10,7 +11,6 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { api } from '../../../../server/sdk/api';
-import { FileProp } from '../../../../definition/IMessage/MessageAttachment/Files/FileProp';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = Users.findOneById(userId, {

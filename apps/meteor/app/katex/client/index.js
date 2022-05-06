@@ -185,3 +185,7 @@ export const createKatexMessageRendering = (options) => {
 	const instance = new Katex(katex, options);
 	return (message) => instance.renderMessage(message);
 };
+
+export const getKatexHtml = (text, katex) => {
+	return createKatexMessageRendering({ dollarSyntax: katex.dollarSyntaxEnabled, parenthesisSyntax: katex.parenthesisSyntaxEnabled })(text);
+};

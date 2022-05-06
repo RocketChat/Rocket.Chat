@@ -1,12 +1,11 @@
 import { Db } from 'mongodb';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
 import { Authorization } from '../../sdk';
-import { IRoom } from '../../../definition/IRoom';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
-import { IUser } from '../../../definition/IUser';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';

@@ -1,11 +1,10 @@
 import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
+import { UiKitBannerPayload, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { UiKitBannerPayload } from '../../../definition/UIKit';
 import { Banner } from '../../sdk';
-import { IBanner, BannerPlatform } from '../../../definition/IBanner';
 import { SystemLogger } from '../../lib/logger/system';
 
 type NpsSurveyData = {

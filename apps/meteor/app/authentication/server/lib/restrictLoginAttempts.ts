@@ -1,8 +1,9 @@
 import moment from 'moment';
+import type { IServerEvent } from '@rocket.chat/core-typings';
+import { ServerEventType } from '@rocket.chat/core-typings';
 
 import { ILoginAttempt } from '../ILoginAttempt';
 import { ServerEvents, Users, Rooms, Sessions } from '../../../models/server/raw';
-import { IServerEventType, IServerEvent } from '../../../../definition/IServerEvent';
 import { settings } from '../../../settings/server';
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
@@ -138,7 +139,7 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 
 	await ServerEvents.insertOne({
 		ip: getClientAddress(login.connection),
-		t: IServerEventType.FAILED_LOGIN_ATTEMPT,
+		t: ServerEventType.FAILED_LOGIN_ATTEMPT,
 		ts: new Date(),
 		u: user,
 	});
@@ -152,7 +153,7 @@ export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> =
 
 	await ServerEvents.insertOne({
 		ip: getClientAddress(login.connection),
-		t: IServerEventType.LOGIN,
+		t: ServerEventType.LOGIN,
 		ts: new Date(),
 		u: user,
 	});

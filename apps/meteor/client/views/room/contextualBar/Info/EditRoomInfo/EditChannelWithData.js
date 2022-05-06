@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useUserRoom } from '../../../hooks/useUserRoom';
+import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import EditChannel from './EditChannel';
 

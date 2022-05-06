@@ -1,7 +1,7 @@
+import { IRoom } from '@rocket.chat/core-typings';
 import { Field, Select, ButtonGroup, Button, FieldGroup, SelectOption, InputBox } from '@rocket.chat/fuselage';
 import React, { FC, MouseEventHandler, useMemo } from 'react';
 
-import { IRoom } from '../../../../../definition/IRoom';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';

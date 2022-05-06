@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
@@ -11,10 +12,8 @@ import { Users } from '../../../app/models/server/raw/index';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server/functions/settings';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
-import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
-import { IUser } from '../../../definition/IUser';
 import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
@@ -22,6 +21,7 @@ import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 import { use } from '../../../app/settings/server/Middleware';
+import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
 type Callbacks = {
 	added(id: string, record: object): void;

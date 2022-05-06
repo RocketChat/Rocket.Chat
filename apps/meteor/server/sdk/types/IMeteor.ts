@@ -1,5 +1,5 @@
-import { IServiceClass } from './ServiceClass';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import { IServiceClass } from './ServiceClass';
 
 export type AutoUpdateRecord = {
 	_id: string;

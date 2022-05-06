@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import type { IRole } from '@rocket.chat/core-typings';
 
 import { Roles } from '../../../models/server/raw';
 import { hasPermission } from '../functions/hasPermission';
-import type { IRole } from '../../../../definition/IRole';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({

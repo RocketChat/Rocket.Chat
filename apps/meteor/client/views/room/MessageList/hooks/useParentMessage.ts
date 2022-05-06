@@ -1,7 +1,7 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import { useEffect } from 'react';
 
 import { findParentMessage } from '../../../../../app/ui-message/client/messageThread';
-import { IMessage } from '../../../../../definition/IMessage';
 import { AsyncState, useAsyncState } from '../../../../hooks/useAsyncState';
 
 export const useParentMessage = (mid: IMessage['_id']): AsyncState<IMessage> => {

@@ -1,6 +1,6 @@
+import { AudioAttachmentProps } from '@rocket.chat/core-typings';
 import React, { FC } from 'react';
 
-import { AudioAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/AudioAttachmentProps';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import { useMediaUrl } from '../context/AttachmentContext';

@@ -1,3 +1,4 @@
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
@@ -6,8 +7,6 @@ import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 're
 
 import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
-import { IMessage } from '../../../../definition/IMessage';
-import { IRoom } from '../../../../definition/IRoom';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint, useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';

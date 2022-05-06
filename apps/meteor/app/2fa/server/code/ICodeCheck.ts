@@ -1,4 +1,4 @@
-import { IUser } from '../../../../definition/IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export interface IProcessInvalidCodeResult {
 	codeGenerated: boolean;

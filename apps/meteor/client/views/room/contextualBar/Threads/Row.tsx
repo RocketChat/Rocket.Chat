@@ -1,6 +1,6 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import React, { FC, memo, MouseEvent } from 'react';
 
-import { IMessage } from '../../../../../definition/IMessage';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';

@@ -1,8 +1,7 @@
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useEffect } from 'react';
 
-import { IRoom } from '../../../definition/IRoom';
-import { ISubscription } from '../../../definition/ISubscription';
 import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';

@@ -70,8 +70,12 @@ export const EmojiPicker = {
 		const windowHeight = window.innerHeight;
 		const windowWidth = window.innerWidth;
 		const windowBorder = 10;
-		const sourcePos = $(this.source).offset();
-		const { left, top } = sourcePos;
+
+		// get the position of the source element
+		let { left, top } = this.source.getBoundingClientRect();
+		left += window.scrollX;
+		top += window.scrollY;
+
 		const cssProperties = { top, left };
 		const isLargerThanWindow = this.width + windowBorder > windowWidth;
 

@@ -1,5 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
+import {
+	isRoleAddUserToRoleProps,
+	isRoleCreateProps,
+	isRoleDeleteProps,
+	isRoleRemoveUserFromRoleProps,
+	isRoleUpdateProps,
+} from '@rocket.chat/rest-typings';
+import type { IRole } from '@rocket.chat/core-typings';
 
 import { Users } from '../../../models/server';
 import { API } from '../api';
@@ -9,17 +17,9 @@ import { api } from '../../../../server/sdk/api';
 import { Roles } from '../../../models/server/raw';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
-import {
-	isRoleAddUserToRoleProps,
-	isRoleCreateProps,
-	isRoleDeleteProps,
-	isRoleRemoveUserFromRoleProps,
-	isRoleUpdateProps,
-} from '../../../../definition/rest/v1/roles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { updateRole } from '../../../../server/lib/roles/updateRole';
 import { insertRole } from '../../../../server/lib/roles/insertRole';
-import type { IRole } from '../../../../definition/IRole';
 
 API.v1.addRoute(
 	'roles.list',
@@ -150,6 +150,8 @@ API.v1.addRoute(
 				username: 1,
 				emails: 1,
 				avatarETag: 1,
+				createdAt: 1,
+				_updatedAt: 1,
 			};
 
 			if (!role) {

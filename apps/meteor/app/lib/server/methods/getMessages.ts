@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { canAccessRoomId } from '../../../authorization/server';
 import { Messages } from '../../../models/server';
-import { IMessage } from '../../../../definition/IMessage';
 
 Meteor.methods({
 	getMessages(messages) {

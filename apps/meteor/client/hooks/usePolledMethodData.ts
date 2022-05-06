@@ -1,6 +1,6 @@
+import { Awaited } from '@rocket.chat/core-typings';
 import { useEffect } from 'react';
 
-import { Awaited } from '../../definition/utils';
 import { ServerMethodFunction, ServerMethodParameters, ServerMethods } from '../contexts/ServerContext';
 import { AsyncState } from './useAsyncState';
 import { useMethodData } from './useMethodData';

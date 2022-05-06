@@ -1,4 +1,4 @@
-import { IMethodConnection } from '../../definition/IMethodThisType';
+import type { IMethodConnection } from '@rocket.chat/core-typings';
 
 export function getClientAddress(connection: IMethodConnection): string {
 	if (!connection) {

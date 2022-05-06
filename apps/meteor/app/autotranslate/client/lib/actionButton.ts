@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { isTranslatedMessage } from '@rocket.chat/core-typings';
 
 import { AutoTranslate } from './autotranslate';
 import { settings } from '../../../settings/client';
@@ -7,7 +8,6 @@ import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { MessageAction } from '../../../ui-utils/client/lib/MessageAction';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { Messages } from '../../../models/client';
-import { isTranslatedMessage } from '../../../../definition/IMessage';
 
 Meteor.startup(() => {
 	AutoTranslate.init();

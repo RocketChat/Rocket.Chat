@@ -1,8 +1,9 @@
+import type { IInstanceStatus } from '@rocket.chat/core-typings';
+
 import { getInstanceConnection } from '../../../../server/stream/streamBroadcast';
 import { hasPermission } from '../../../authorization/server';
 import { API } from '../api';
 import { InstanceStatus } from '../../../models/server/raw';
-import { IInstanceStatus } from '../../../../definition/IInstanceStatus';
 
 API.v1.addRoute(
 	'instances.get',

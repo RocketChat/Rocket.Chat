@@ -1,6 +1,5 @@
+import { OmichannelRoutingConfig, Inquiries } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
-
-import { OmichannelRoutingConfig, Inquiries } from '../../definition/OmichannelRoutingConfig';
 
 export type OmnichannelContextValue = {
 	inquiries: Inquiries;

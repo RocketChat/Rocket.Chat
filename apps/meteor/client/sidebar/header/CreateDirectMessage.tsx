@@ -1,8 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useState, memo } from 'react';
 
-import { IUser } from '../../../definition/IUser';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';

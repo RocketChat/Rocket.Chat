@@ -1,7 +1,7 @@
 import { Cursor, FilterQuery, WithoutProjection, FindOneOptions } from 'mongodb';
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import { ILivechatDepartmentAgents } from '../../../../definition/ILivechatDepartmentAgents';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> {
 	findUsersInQueue(usersList: string[]): Cursor<ILivechatDepartmentAgents>;

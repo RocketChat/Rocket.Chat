@@ -1,7 +1,7 @@
 import { Cursor, FilterQuery, UpdateQuery, WriteOpResult } from 'mongodb';
+import type { ISetting, ISettingColor, ISettingSelectOption } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
-import { ISetting, ISettingColor, ISettingSelectOption } from '../../../../definition/ISetting';
 
 export class SettingsRaw extends BaseRaw<ISetting> {
 	async getValueById(_id: string): Promise<ISetting['value'] | undefined> {

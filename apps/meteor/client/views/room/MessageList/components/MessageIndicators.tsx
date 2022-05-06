@@ -1,7 +1,7 @@
+import { IMessage, isEditedMessage } from '@rocket.chat/core-typings';
 import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { IMessage, isEditedMessage } from '../../../../../definition/IMessage';
 import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';

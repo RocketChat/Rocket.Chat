@@ -1,9 +1,9 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { action } from '@storybook/addon-actions';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import Header from '.';
-import { IRoom } from '../../../definition/IRoom';
 import { SettingsContext } from '../../contexts/SettingsContext';
 import { useRoomIcon } from '../../hooks/useRoomIcon';
 import ToolBox from '../../views/room/Header/ToolBox';

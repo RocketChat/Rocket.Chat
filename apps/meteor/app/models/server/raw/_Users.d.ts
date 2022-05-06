@@ -1,6 +1,6 @@
 import { UpdateWriteOpResult } from 'mongodb';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 
-import { IRole, IUser } from '../../../../definition/IUser';
 import { BaseRaw } from './BaseRaw';
 
 export interface IUserRaw extends BaseRaw<IUser> {

@@ -1,7 +1,7 @@
+import { Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 import React, { useEffect, useRef, useState, useCallback, ReactElement } from 'react';
 
-import { Serialized } from '../../../../definition/Serialized';
 import { useEndpoint, useStream } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';

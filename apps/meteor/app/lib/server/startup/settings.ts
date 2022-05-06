@@ -509,11 +509,11 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_enableLegacyMessages', false, {
+		this.add('Accounts_Default_User_Preferences_enableNewMessageTemplate', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Enable_legacy_messages',
-			alert: 'Enable_legacy_messages_alert',
+			i18nLabel: 'Enable_New_Message_Template',
+			alert: 'Enable_New_Message_Template_alert',
 		});
 	});
 
@@ -3203,6 +3203,14 @@ settingsRegistry.addGroup('Call_Center', function () {
 			});
 			this.add('VoIP_Server_Websocket_Path', '', {
 				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Retry_Count', -1, {
+				type: 'int',
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',
