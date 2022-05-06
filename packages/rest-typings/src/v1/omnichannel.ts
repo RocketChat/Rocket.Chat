@@ -554,6 +554,7 @@ export type OmnichannelEndpoints = {
 		) => PaginatedResult<{ history: IMessage[] }>;
 	};
 
+	/* @deprecated */
 	'livechat/visitors.autocomplete': {
 		// deprecated in version 5.0.0. Please use "livechat/visitors.autocompleteByName" instead
 		// selector is a Json stringified object of type => { exceptions?: string[]; conditions?: FilterQuery<ILivechatVisitor>; term: string } }
