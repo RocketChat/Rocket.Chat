@@ -1,156 +1,132 @@
-import { Box, Table } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState, ReactElement } from 'react';
+import { Box, Pagination } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { ReactElement, useMemo } from 'react';
 
-import GenericTable from '../../../components/GenericTable';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableCell,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	GenericTableRow,
+} from '../../../components/GenericTable';
+import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../components/GenericTable/hooks/useSort';
+import Page from '../../../components/Page';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import ManagersPage from './ManagersPage';
+import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
 
-const sortDir = (sortDir: string): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
-
-const useQuery = (
-	{
-		text,
-		itemsPerPage,
-		current,
-	}: {
-		text?: string;
-		itemsPerPage?: 25 | 50 | 100;
-		current?: number;
-	},
-	[column, direction]: string[],
-): { offset?: number | undefined; count?: 25 | 50 | 100 | undefined; fields: string; text: string | undefined; sort: string } =>
-	useMemo(
-		() => ({
-			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
-			text,
-			sort: JSON.stringify({
-				[column]: sortDir(direction),
-				usernames: column === 'name' ? sortDir(direction) : undefined,
-			}),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[text, itemsPerPage, current, column, direction],
-	);
-
 const ManagersRoute = (): ReactElement => {
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address'>('name');
 	const t = useTranslation();
-	const canViewManagers = usePermission('manage-livechat-managers');
 
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['name', 'asc']);
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-
-	const onHeaderClick = useMutableCallback((id) => {
-		const [sortBy, sortDirection] = sort;
-
-		if (sortBy === id) {
-			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
-			return;
-		}
-		setSort([id, 'asc']);
-	});
-
-	const debouncedParams = useDebouncedValue(params, 500);
-	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
-
-	const { value: data = {}, reload } = useEndpointData('livechat/users/manager', query);
-
-	console.log(data);
-
-	const header = useMemo(
-		() =>
-			[
-				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
-					{t('Name')}
-				</GenericTable.HeaderCell>,
-				mediaQuery && (
-					<GenericTable.HeaderCell
-						key={'username'}
-						direction={sort[1]}
-						active={sort[0] === 'username'}
-						onClick={onHeaderClick}
-						sort='username'
-					>
-						{t('Username')}
-					</GenericTable.HeaderCell>
-				),
-				<GenericTable.HeaderCell
-					key={'email'}
-					direction={sort[1]}
-					active={sort[0] === 'emails.address'}
-					onClick={onHeaderClick}
-					sort='emails.address'
-				>
-					{t('Email')}
-				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key={'remove'} w='x60'>
-					{t('Remove')}
-				</GenericTable.HeaderCell>,
-			].filter(Boolean),
-		[sort, onHeaderClick, t, mediaQuery],
-	);
-
-	const renderRow = useCallback(
-		({ emails, _id, username, name, avatarETag }) => (
-			<Table.Row key={_id} tabIndex={0} qa-user-id={_id}>
-				<Table.Cell withTruncatedText>
-					<Box display='flex' alignItems='center'>
-						<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />
-						<Box display='flex' withTruncatedText mi='x8'>
-							<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-								<Box fontScale='p2m' withTruncatedText color='default'>
-									{name || username}
-								</Box>
-								{!mediaQuery && name && (
-									<Box fontScale='p2' color='hint' withTruncatedText>
-										{' '}
-										{`@${username}`}{' '}
-									</Box>
-								)}
-							</Box>
-						</Box>
-					</Box>
-				</Table.Cell>
-				{mediaQuery && (
-					<Table.Cell>
-						<Box fontScale='p2m' withTruncatedText color='hint'>
-							{username}
-						</Box>{' '}
-						<Box mi='x4' />
-					</Table.Cell>
-				)}
-				<Table.Cell withTruncatedText>{emails?.length && emails[0].address}</Table.Cell>
-				<RemoveManagerButton _id={_id} reload={reload} />
-			</Table.Row>
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				// text,
+				fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
+				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
+				count: itemsPerPage,
+				offset: current,
+			}),
+			[itemsPerPage, current, sortBy, sortDirection],
 		),
-		[mediaQuery, reload],
+		500,
 	);
+
+	const { value: data, reload, phase } = useEndpointData('livechat/users/manager', query);
+	const canViewManagers = usePermission('manage-livechat-managers');
 
 	if (!canViewManagers) {
 		return <NotAuthorizedPage />;
 	}
 
 	return (
-		<ManagersPage
-			setParams={setParams}
-			params={params}
-			onHeaderClick={onHeaderClick}
-			data={data}
-			useQuery={useQuery}
-			reload={reload}
-			header={header}
-			renderRow={renderRow}
-			title={t('Managers')}
-		/>
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={t('Managers')} />
+				<AddManager reload={reload} />
+				<Page.Content>
+					<GenericTable>
+						<GenericTableHeader>
+							<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+								{t('Name')}
+							</GenericTableHeaderCell>
+							<GenericTableHeaderCell
+								key={'username'}
+								direction={sortDirection}
+								active={sortBy === 'username'}
+								onClick={setSort}
+								sort='username'
+							>
+								{t('Username')}
+							</GenericTableHeaderCell>
+							<GenericTableHeaderCell
+								key={'email'}
+								direction={sortDirection}
+								active={sortBy === 'emails.address'}
+								onClick={setSort}
+								sort='emails.address'
+							>
+								{t('Email')}
+							</GenericTableHeaderCell>
+							<GenericTableHeaderCell key={'remove'} w='x60'>
+								{t('Remove')}
+							</GenericTableHeaderCell>
+						</GenericTableHeader>
+						<GenericTableBody>
+							{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
+							{phase === AsyncStatePhase.RESOLVED &&
+								data.users &&
+								data.users.length > 0 &&
+								data?.users.map((user) => (
+									<GenericTableRow key={user._id} tabIndex={0} qa-user-id={user._id}>
+										<GenericTableCell withTruncatedText>
+											<Box display='flex' alignItems='center'>
+												<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
+												<Box display='flex' withTruncatedText mi='x8'>
+													<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
+														<Box fontScale='p2m' withTruncatedText color='default'>
+															{user.name || user.username}
+														</Box>
+													</Box>
+												</Box>
+											</Box>
+										</GenericTableCell>
+										<GenericTableCell>
+											<Box fontScale='p2m' withTruncatedText color='hint'>
+												{user.username}
+											</Box>
+											<Box mi='x4' />
+										</GenericTableCell>
+										<GenericTableCell withTruncatedText>{user.emails?.length && user.emails[0].address}</GenericTableCell>
+										<RemoveManagerButton _id={user._id} reload={reload} />
+									</GenericTableRow>
+								))}
+						</GenericTableBody>
+					</GenericTable>
+					{phase === AsyncStatePhase.RESOLVED && (
+						<Pagination
+							current={current}
+							itemsPerPage={itemsPerPage}
+							count={data?.total || 0}
+							onSetItemsPerPage={onSetItemsPerPage}
+							onSetCurrent={onSetCurrent}
+							{...paginationProps}
+						/>
+					)}
+				</Page.Content>
+			</Page>
+		</Page>
 	);
 };
 

@@ -24,7 +24,7 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 		setUsername('');
 	});
 	return (
-		<Box display='flex' alignItems='center'>
+		<Box display='flex' alignItems='center' pi='x24'>
 			<Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
