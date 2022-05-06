@@ -55,12 +55,12 @@ const UserStatusMenu = ({
 		hide();
 	});
 
-	const ref = useRef<HTMLElement>(null);
+	const ref = useRef<HTMLButtonElement>(null);
 	const onClick = useCallback(() => {
 		if (!ref?.current) {
 			return;
 		}
-		(ref.current as HTMLButtonElement).focus();
+		ref.current.focus();
 		show();
 		ref.current.classList.add('focus-visible');
 	}, [show]);
