@@ -495,7 +495,7 @@ WebApp.connectHandlers.use(
 
 		const file = getAssetByKey(params.asset) && getAssetByKey(params.asset).cache;
 
-		const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
+		const format = req.url.split('.').pop() || '';
 
 		if (
 			getAssetByKey(params.asset) &&

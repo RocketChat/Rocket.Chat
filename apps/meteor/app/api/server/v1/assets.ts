@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Request } from 'express';
+import { isAssetsUnsetAssetProps } from '@rocket.chat/rest-typings';
 
 import { RocketChatAssets } from '../../../assets/server';
 import { API } from '../api';
@@ -41,6 +42,9 @@ API.v1.addRoute(
 	{
 		post() {
 			const { assetName, refreshAllClients } = this.bodyParams;
+			if (!isAssetsUnsetAssetProps(this.bodyParams)) {
+				return API.v1.failure('invalid-body-params', isAssetsUnsetAssetProps.errors?.map((e) => e.message).join('\n '));
+			}
 			const isValidAsset = Object.keys(RocketChatAssets.assets).includes(assetName as string);
 			if (!isValidAsset) {
 				throw new Meteor.Error('error-invalid-asset', 'Invalid asset');
