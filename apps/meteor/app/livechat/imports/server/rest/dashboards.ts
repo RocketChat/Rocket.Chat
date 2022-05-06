@@ -1,4 +1,5 @@
 import { Match, check } from 'meteor/check';
+import { OperationResult } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization/server';
@@ -106,15 +107,10 @@ API.v1.addRoute(
 			}
 			end = new Date(end);
 
-			const totalizers = getChatsMetrics({ start, end, departmentId }) as {
-				totalizers: Array<
-					| {
-							title: 'Avg_of_abandoned_chats' | 'Avg_of_chat_duration_time';
-							value: string;
-					  }
-					| { title: 'Total_abandoned_chats'; value: number }
-				>;
-			};
+			const totalizers = getChatsMetrics({ start, end, departmentId }) as OperationResult<
+				'GET',
+				'livechat/analytics/dashboards/chats-totalizers'
+			>;
 			return API.v1.success(totalizers);
 		},
 	},
@@ -211,13 +207,10 @@ API.v1.addRoute(
 			}
 			end = new Date(end);
 
-			const result = findAllChatMetricsByAgent({ start, end, departmentId }) as {
-				[agentId: string]: {
-					open: number;
-					closed: number;
-					onhold: number;
-				};
-			};
+			const result = findAllChatMetricsByAgent({ start, end, departmentId }) as OperationResult<
+				'GET',
+				'livechat/analytics/dashboards/charts/chats-per-agent'
+			>;
 
 			return API.v1.success(result);
 		},
@@ -267,12 +260,10 @@ API.v1.addRoute(
 			}
 			end = new Date(end);
 
-			const result = findAllChatMetricsByDepartment({ start, end, departmentId }) as {
-				[departmentName: string]: {
-					open: number;
-					closed: number;
-				};
-			};
+			const result = findAllChatMetricsByDepartment({ start, end, departmentId }) as OperationResult<
+				'GET',
+				'livechat/analytics/dashboards/charts/chats-per-department'
+			>;
 
 			return API.v1.success(result);
 		},
