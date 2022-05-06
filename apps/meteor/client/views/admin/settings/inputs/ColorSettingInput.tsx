@@ -1,9 +1,24 @@
 import { Box, Field, Flex, InputBox, Margins, TextInput, Select } from '@rocket.chat/fuselage';
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import ResetSettingButton from '../ResetSettingButton';
 
+type ColorSettingInputProps = {
+	_id: string;
+	label: string;
+	value: string;
+	editor: string;
+	allowedTypes?: [];
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string) => void;
+	onChangeEditor?: (value: string) => void;
+	onResetButtonClick?: () => void;
+};
 function ColorSettingInput({
 	_id,
 	label,
@@ -18,19 +33,19 @@ function ColorSettingInput({
 	onChangeValue,
 	onChangeEditor,
 	onResetButtonClick,
-}) {
+}: ColorSettingInputProps): ReactElement {
 	const t = useTranslation();
 
 	const handleChange = useCallback(
 		(event) => {
-			onChangeValue && onChangeValue(event.currentTarget.value);
+			onChangeValue?.(event.currentTarget.value);
 		},
 		[onChangeValue],
 	);
 
 	const handleEditorTypeChange = useCallback(
 		(value) => {
-			onChangeEditor && onChangeEditor(value);
+			onChangeEditor?.(value);
 		},
 		[onChangeEditor],
 	);
