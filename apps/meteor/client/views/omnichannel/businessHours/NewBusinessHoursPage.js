@@ -1,10 +1,9 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState } from 'react';
 
 import Page from '../../../components/Page';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { DAYS_OF_WEEK } from './BusinessHoursForm';
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';

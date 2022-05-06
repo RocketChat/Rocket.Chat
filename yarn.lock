@@ -4342,6 +4342,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ^0.31.11
     "@rocket.chat/fuselage-hooks": ^0.31.11
+    "@rocket.chat/rest-typings": "workspace:^"
     "@types/jest": ^27.4.1
     "@types/mongodb": ~3.6.10
     "@types/react": ^17
@@ -4353,6 +4354,8 @@ __metadata:
     typescript: ~4.3.5
     use-subscription: ^1.7.0
   peerDependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
     react: ~17.0.2
   languageName: unknown
   linkType: soft

@@ -1,9 +1,8 @@
 import { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { useMethod } from '../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';

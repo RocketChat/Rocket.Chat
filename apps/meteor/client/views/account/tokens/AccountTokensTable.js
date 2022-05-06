@@ -1,9 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import AccountTokensRow from './AccountTokensRow';

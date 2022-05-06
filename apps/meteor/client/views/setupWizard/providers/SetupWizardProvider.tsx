@@ -6,13 +6,14 @@ import {
 	useSettingSetValue,
 	useSettingsDispatch,
 	useRole,
+	useMethod,
+	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useMemo, useState, ReactElement, ContextType } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
-import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';

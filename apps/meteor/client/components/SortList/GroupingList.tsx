@@ -1,8 +1,7 @@
 import { CheckBox, OptionTitle } from '@rocket.chat/fuselage';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 
-import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import ListItem from '../Sidebar/ListItem';
 

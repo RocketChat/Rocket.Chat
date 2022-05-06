@@ -6,12 +6,14 @@ export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContex
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export { RouterContext, RouterContextValue } from './RouterContext';
+export { ServerContext, ServerContextValue } from './ServerContext';
 export { SessionContext, SessionContextValue } from './SessionContext';
 export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './SettingsContext';
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { UserContext, UserContextValue } from './UserContext';
 
+export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
 export { useAtLeastOnePermission } from './hooks/useAtLeastOnePermission';
 export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEmbedMedia';
@@ -20,6 +22,7 @@ export { useAttachmentIsCollapsedByDefault } from './hooks/useAttachmentIsCollap
 export { useConnectionStatus } from './hooks/useConnectionStatus';
 export { useCurrentRoute } from './hooks/useCurrentRoute';
 export { useCustomSound } from './hooks/useCustomSound';
+export { useEndpoint } from './hooks/useEndpoint';
 export { useIsPrivilegedSettingsContext } from './hooks/useIsPrivilegedSettingsContext';
 export { useIsSettingsContextLoading } from './hooks/useIsSettingsContextLoading';
 export { useLayout } from './hooks/useLayout';
@@ -29,6 +32,7 @@ export { useLayoutSizes } from './hooks/useLayoutSizes';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLogout } from './hooks/useLogout';
 export { useMediaUrl } from './hooks/useMediaUrl';
+export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
 export { usePermission } from './hooks/usePermission';
 export { useQueryStringParameter } from './hooks/useQueryStringParameter';
@@ -39,6 +43,7 @@ export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
 export { useRoutePath } from './hooks/useRoutePath';
 export { useRouteUrl } from './hooks/useRouteUrl';
+export { useServerInformation } from './hooks/useServerInformation';
 export { useSession } from './hooks/useSession';
 export { useSessionDispatch } from './hooks/useSessionDispatch';
 export { useSetModal } from './hooks/useSetModal';
@@ -47,9 +52,11 @@ export { useSettings } from './hooks/useSettings';
 export { useSettingsDispatch } from './hooks/useSettingsDispatch';
 export { useSettingSetValue } from './hooks/useSettingSetValue';
 export { useSettingStructure } from './hooks/useSettingStructure';
+export { useStream } from './hooks/useStream';
 export { useToastMessageDispatch } from './hooks/useToastMessageDispatch';
 export { useTooltipClose } from './hooks/useTooltipClose';
 export { useTooltipOpen } from './hooks/useTooltipOpen';
+export { useUpload } from './hooks/useUpload';
 export { useUser } from './hooks/useUser';
 export { useUserAvatarPath } from './hooks/useUserAvatarPath';
 export { useUserId } from './hooks/useUserId';
@@ -58,3 +65,7 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
+
+// TODO: remove it after moving some of the hooks to the new package
+export { ServerMethods, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethodFunction } from './ServerContext/methods';
+export { UploadResult } from './ServerContext';

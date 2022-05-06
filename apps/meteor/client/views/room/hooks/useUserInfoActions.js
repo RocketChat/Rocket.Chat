@@ -11,12 +11,12 @@ import {
 	useUserSubscriptionByName,
 	usePermission,
 	useAllPermissions,
+	useMethod,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';

@@ -1,3 +1,4 @@
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
@@ -10,7 +11,6 @@ import {
 	useQueueName,
 	useWrapUpModal,
 } from '../../../contexts/CallContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 

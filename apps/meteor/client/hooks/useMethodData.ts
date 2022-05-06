@@ -1,8 +1,7 @@
 import type { Awaited } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, ServerMethodFunction, ServerMethodParameters, ServerMethods, useMethod } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
-import { ServerMethodFunction, ServerMethodParameters, ServerMethods, useMethod } from '../contexts/ServerContext';
 import { AsyncState, useAsyncState } from './useAsyncState';
 
 export const useMethodData = <MethodName extends keyof ServerMethods, Result = Awaited<ReturnType<ServerMethodFunction<MethodName>>>>(

@@ -1,7 +1,7 @@
 import type { IOmnichannelAgent, IRoom } from '@rocket.chat/core-typings';
 import { OmichannelRoutingConfig } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useUser, useSetting, usePermission } from '@rocket.chat/ui-contexts';
+import { useUser, useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, FC, useMemo, useCallback, memo, useRef } from 'react';
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
@@ -9,7 +9,6 @@ import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/s
 import { Notifications } from '../../app/notifications/client';
 import { ClientLogger } from '../../lib/ClientLogger';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
-import { useMethod } from '../contexts/ServerContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const emptyContextValue: OmnichannelContextValue = {

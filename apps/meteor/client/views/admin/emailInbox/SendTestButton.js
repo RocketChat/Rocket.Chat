@@ -1,8 +1,7 @@
 import { Button, Table, Icon } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 function SendTestButton({ id }) {

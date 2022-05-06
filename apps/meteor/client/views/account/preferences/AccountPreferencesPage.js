@@ -1,9 +1,8 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetting, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';

@@ -1,10 +1,9 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import Header from '../../../../components/Header';
-import { useMethod } from '../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
 const Encrypted = ({ room }) => {

@@ -1,10 +1,9 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserRoom, useEndpoint } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 import PruneMessages from './PruneMessages';

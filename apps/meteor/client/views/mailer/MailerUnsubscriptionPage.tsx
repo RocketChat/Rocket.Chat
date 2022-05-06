@@ -1,8 +1,7 @@
 import { Box, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouteParameter, useAbsoluteUrl, useMethod } from '@rocket.chat/ui-contexts';
 import React, { FC, useEffect } from 'react';
 
-import { useAbsoluteUrl, useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { AsyncState, AsyncStatePhase, useAsyncState } from '../../hooks/useAsyncState';
 

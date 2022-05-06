@@ -7,6 +7,8 @@ import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/T
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import Header from '../../../client/components/Header';
 
+const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
+
 addAction('bbb_video', ({ room }) => {
 	const enabled = useSetting('bigbluebutton_Enabled');
 	const t = useTranslation();
@@ -26,8 +28,6 @@ addAction('bbb_video', ({ room }) => {
 	const user = useUser();
 	const username = user ? user.username : '';
 	const enableOption = enabled && (!username || !room.muted?.includes(username));
-
-	const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
 	return useMemo(
 		() =>

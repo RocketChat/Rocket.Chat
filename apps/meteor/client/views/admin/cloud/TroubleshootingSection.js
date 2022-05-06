@@ -1,10 +1,9 @@
 import { Box, Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import Subtitle from '../../../components/Subtitle';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { statusPageUrl } from './constants';
 

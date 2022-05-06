@@ -1,10 +1,9 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../app/utils/lib/timeConverter';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import Chart from '../realTimeMonitoring/charts/Chart';
 

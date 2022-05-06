@@ -1,6 +1,15 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useUserId, useSetting, usePermission, useRole } from '@rocket.chat/ui-contexts';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useUserId,
+	useSetting,
+	usePermission,
+	useRole,
+	useEndpoint,
+	useMethod,
+} from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
@@ -12,7 +21,6 @@ import CloseChatModalData from '../../../../../../components/Omnichannel/modals/
 import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
-import { useEndpoint, useMethod } from '../../../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { handleError } from '../../../../../../lib/utils/handleError';

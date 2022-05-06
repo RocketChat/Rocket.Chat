@@ -1,10 +1,9 @@
 import { Button, ButtonGroup, TextInput, Field, Select, Icon, SelectOption } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useMemo, useEffect, ReactElement, SyntheticEvent } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 type EditCustomUserStatusProps = {

@@ -1,9 +1,15 @@
 import { Box, Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useQueryStringParameter, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useQueryStringParameter,
+	useRoute,
+	useRouteParameter,
+	useMethod,
+} from '@rocket.chat/ui-contexts';
 import React, { useEffect, ReactNode } from 'react';
 
 import Page from '../../../components/Page';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useMethodData } from '../../../hooks/useMethodData';
 import ConnectToCloudSection from './ConnectToCloudSection';

@@ -1,10 +1,9 @@
 import { Field, TextInput, Button, PaginatedMultiSelectFiltered, Select, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState } from 'react';
 
 import Page from '../../../../client/components/Page';
-import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';

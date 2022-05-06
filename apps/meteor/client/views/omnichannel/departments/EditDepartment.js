@@ -13,14 +13,13 @@ import {
 	PaginatedSelectFiltered,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useRef } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import Page from '../../../components/Page';
 import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
-import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';

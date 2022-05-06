@@ -1,22 +1,21 @@
-import type { IFederationServer, IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
 import type { DeleteWriteOpResultObject } from 'mongodb';
 
-import { ILicenseTag } from '../../../ee/app/license/definitions/ILicenseTag';
-import { AsyncStatePhase } from '../../lib/asyncState';
-import { AddWebdavAccountMethod } from './methods/addWebdavAccount';
-import { FollowMessageMethod } from './methods/followMessage';
-import { GetReadReceiptsMethod } from './methods/getReadReceipts';
-import { JoinRoomMethod } from './methods/joinRoom';
-import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
-import { RoomNameExistsMethod } from './methods/roomNameExists';
-import { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
-import { SaveSettingsMethod } from './methods/saveSettings';
-import { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
-import { UnfollowMessageMethod } from './methods/unfollowMessage';
+import type { AddWebdavAccountMethod } from './methods/addWebdavAccount';
+import type { FollowMessageMethod } from './methods/followMessage';
+import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
+import type { JoinRoomMethod } from './methods/joinRoom';
+import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
+import type { RoomNameExistsMethod } from './methods/roomNameExists';
+import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
+import type { SaveSettingsMethod } from './methods/saveSettings';
+import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
+import type { UnfollowMessageMethod } from './methods/unfollowMessage';
 
 // TODO: frontend chapter day - define methods
 
-export type ServerMethods = {
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+export interface ServerMethods {
 	'2fa:checkCodesRemaining': (...args: any[]) => any;
 	'2fa:disable': (...args: any[]) => any;
 	'2fa:enable': (...args: any[]) => any;
@@ -64,8 +63,6 @@ export type ServerMethods = {
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
 	'eraseRoom': (...args: any[]) => any;
-	'federation:getServers': (...args: any[]) => { value: { data: IFederationServer[] }; phase: AsyncStatePhase };
-	'federation:getOverviewData': (...args: any[]) => (...args: any[]) => { value: { data: IFederationServer[] }; phase: AsyncStatePhase };
 	'followMessage': FollowMessageMethod;
 	'getAvatarSuggestion': (...args: any[]) => any;
 	'getSetupWizardParameters': () => {
@@ -83,55 +80,6 @@ export type ServerMethods = {
 	'jitsi:updateTimeout': (...args: any[]) => any;
 	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
-	'license:getModules': () => string[];
-	'license:getTags': () => ILicenseTag[];
-	'livechat:addMonitor': (...args: any[]) => any;
-	'livechat:changeLivechatStatus': (...args: any[]) => any;
-	'livechat:closeRoom': (...args: any[]) => any;
-	'livechat:discardTranscript': (...args: any[]) => any;
-
-	// TODO: chapter day backend - enhance/deprecate
-	'livechat:facebook':
-		| ((...args: [{ action: 'initialState' }]) => {
-				enabled: boolean;
-				hasToken: boolean;
-		  })
-		| ((...args: [{ action: 'list-pages' }]) => {
-				name: string;
-				subscribed: boolean;
-				id: string;
-		  }[])
-		| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => {})
-		| ((...args: [{ action: 'enable' }]) => { url: string } | undefined)
-		| ((...args: [{ action: 'disable' }]) => {});
-	'livechat:getAgentOverviewData': (...args: any[]) => any;
-	'livechat:getAnalyticsChartData': (...args: any[]) => any;
-	'livechat:getAnalyticsOverviewData': (...args: any[]) => any;
-	'livechat:getRoutingConfig': (...args: any[]) => any;
-	'livechat:removeAllClosedRooms': (...args: any[]) => any;
-	'livechat:removeBusinessHour': (...args: any[]) => any;
-	'livechat:removeCustomField': (...args: any[]) => any;
-	'livechat:removeMonitor': (...args: any[]) => any;
-	'livechat:removePriority': (...args: any[]) => any;
-	'livechat:removeRoom': (...args: any[]) => any;
-	'livechat:removeTag': (...args: any[]) => any;
-	'livechat:removeTrigger': (...args: any[]) => any;
-	'livechat:removeUnit': (...args: any[]) => any;
-	'livechat:requestTranscript': (...args: any[]) => any;
-	'livechat:returnAsInquiry': (...args: any[]) => any;
-	'livechat:sendTranscript': (...args: any[]) => any;
-	'livechat:transfer': (...args: any[]) => any;
-	'livechat:saveAgentInfo': (...args: any[]) => any;
-	'livechat:saveAppearance': (...args: any[]) => any;
-	'livechat:saveBusinessHour': (...args: any[]) => any;
-	'livechat:saveCustomField': (...args: any[]) => any;
-	'livechat:saveDepartment': (...args: any[]) => any;
-	'livechat:saveIntegration': (...args: any[]) => any;
-	'livechat:savePriority': (...args: any[]) => any;
-	'livechat:saveTag': (...args: any[]) => any;
-	'livechat:saveTrigger': (...args: any[]) => any;
-	'livechat:saveUnit': (...args: any[]) => any;
-	'livechat:webhookTest': (...args: any[]) => any;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
@@ -175,7 +123,7 @@ export type ServerMethods = {
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
 	'checkRegistrationSecretURL': (hash: string) => boolean;
-};
+}
 
 export type ServerMethodName = keyof ServerMethods;
 

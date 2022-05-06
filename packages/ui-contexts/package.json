@@ -4,6 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/jest": "^27.4.1",
 		"@types/mongodb": "~3.6.10",
 		"@types/react": "^17",
@@ -20,6 +21,8 @@
 		"use-subscription": "^1.7.0"
 	},
 	"peerDependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/rest-typings": "workspace:^",
 		"react": "~17.0.2"
 	},
 	"scripts": {
