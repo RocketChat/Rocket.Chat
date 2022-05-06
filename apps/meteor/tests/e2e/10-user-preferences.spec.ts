@@ -9,7 +9,7 @@ import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { clearMessage } from './utils/helpers/ClearMessage';
 
-test.describe('[User Preferences]', function () {
+test.describe('[User Preferences]', () => {
 	test.beforeAll(async () => {
 		await clearMessage(['GENERAL']);
 	});
