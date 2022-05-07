@@ -73,6 +73,8 @@ export default {
 			userLanguages: {},
 			teams: {
 				totalTeams: 0,
+				totalRoomsInsideTeams: 0,
+				totalDefaultRoomsInsideTeams: 0,
 				teamStats: [
 					{
 						teamId: '',
@@ -179,6 +181,7 @@ export default {
 				totalFailed: 0,
 			},
 			services: {},
+			importer: {},
 			settings: {},
 			integrations: {
 				totalIntegrations: 0,
@@ -228,6 +231,15 @@ export default {
 			messageAuditLoad: 0,
 			dashboardCount: 0,
 			joinJitsiButton: 0,
+			totalLinkInvitation: 0,
+			roomsWithPinnedMessages: 0,
+			roomsWithStarredMessages: 0,
+			customCSSLines: 0,
+			customScriptLines: 0,
+			roomsInsideTeams: 0,
+			totalEncryptedMessages: 0,
+			totalLinkInvitationUses: 0,
+			totalManuallyAddedUsers: 0,
 		},
 		instances: [],
 	},
