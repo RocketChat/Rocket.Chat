@@ -43,7 +43,7 @@ const ManagersRoute = (): ReactElement => {
 		500,
 	);
 
-	const { value: data, reload, phase } = useEndpointData('livechat/users/manager', query);
+	const { reload, ...result } = useEndpointData('livechat/users/manager', query);
 	const canViewManagers = usePermission('manage-livechat-managers');
 
 	if (!canViewManagers) {
@@ -84,11 +84,10 @@ const ManagersRoute = (): ReactElement => {
 							</GenericTableHeaderCell>
 						</GenericTableHeader>
 						<GenericTableBody>
-							{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
-							{phase === AsyncStatePhase.RESOLVED &&
-								data.users &&
-								data.users.length > 0 &&
-								data?.users.map((user) => (
+							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
+							{result.phase === AsyncStatePhase.RESOLVED &&
+								result.value.users.length > 0 &&
+								result.value.users.map((user) => (
 									<GenericTableRow key={user._id} tabIndex={0} qa-user-id={user._id}>
 										<GenericTableCell withTruncatedText>
 											<Box display='flex' alignItems='center'>
@@ -114,11 +113,11 @@ const ManagersRoute = (): ReactElement => {
 								))}
 						</GenericTableBody>
 					</GenericTable>
-					{phase === AsyncStatePhase.RESOLVED && (
+					{result.phase === AsyncStatePhase.RESOLVED && (
 						<Pagination
 							current={current}
 							itemsPerPage={itemsPerPage}
-							count={data?.total || 0}
+							count={result.value.total || 0}
 							onSetItemsPerPage={onSetItemsPerPage}
 							onSetCurrent={onSetCurrent}
 							{...paginationProps}
