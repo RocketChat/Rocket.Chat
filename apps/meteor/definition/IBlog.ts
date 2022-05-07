@@ -2,7 +2,6 @@ import { AggregationCursor } from 'mongodb';
 
 import { ITag } from './ITag';
 import { PartialBy } from './PartialBy';
-import { IRecordsWithTotal } from './ITeam';
 import { AtLeastOne } from './AtLeastOne';
 import { IPost } from './IPost';
 import { IComment } from './IComment';
