@@ -1,8 +1,12 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRef, useEffect } from 'react';
 
-export const useFileInput = (onSetFile, fileType = 'image/*', fileField = 'image') => {
-	const ref = useRef();
+export const useFileInput = (
+	onSetFile: (file: FileList[number], formData: FormData) => void,
+	fileType = 'image/*',
+	fileField = 'image',
+): [onClick: () => void, reset: () => void] => {
+	const ref = useRef<HTMLInputElement>();
 
 	useEffect(() => {
 		const fileInput = document.createElement('input');
@@ -11,8 +15,8 @@ export const useFileInput = (onSetFile, fileType = 'image/*', fileField = 'image
 		document.body.appendChild(fileInput);
 		ref.current = fileInput;
 
-		return () => {
-			ref.current = null;
+		return (): void => {
+			ref.current = undefined;
 			fileInput.remove();
 		};
 	}, []);
@@ -32,7 +36,10 @@ export const useFileInput = (onSetFile, fileType = 'image/*', fileField = 'image
 			return;
 		}
 
-		const handleFiles = () => {
+		const handleFiles = (): void => {
+			if (!fileInput?.files?.length) {
+				return;
+			}
 			const formData = new FormData();
 			formData.append(fileField, fileInput.files[0]);
 			onSetFile(fileInput.files[0], formData);
@@ -40,14 +47,16 @@ export const useFileInput = (onSetFile, fileType = 'image/*', fileField = 'image
 
 		fileInput.addEventListener('change', handleFiles, false);
 
-		return () => {
+		return (): void => {
 			fileInput.removeEventListener('change', handleFiles, false);
 		};
 	}, [fileField, fileType, onSetFile]);
 
-	const onClick = useMutableCallback(() => ref.current.click());
+	const onClick = useMutableCallback(() => ref?.current?.click());
 	const reset = useMutableCallback(() => {
-		ref.current.value = '';
+		if (ref.current) {
+			ref.current.value = '';
+		}
 	});
 	return [onClick, reset];
 };
