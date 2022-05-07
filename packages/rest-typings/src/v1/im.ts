@@ -1,4 +1,5 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 export type ImEndpoints = {
