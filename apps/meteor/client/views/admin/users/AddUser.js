@@ -2,7 +2,6 @@ import { Field, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
 
-import { Settings as SettingsRaw } from '../../../../app/models/server/raw';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -80,6 +79,9 @@ export function AddUser({ roles, onReload, ...props }) {
 	);
 
 	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
+	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+		params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
+	});
 
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
@@ -96,7 +98,7 @@ export function AddUser({ roles, onReload, ...props }) {
 
 		const result = await saveAction();
 		if (result.success) {
-			SettingsRaw.incrementValueById('Manual_Entry_User_Count');
+			eventStats();
 			goToUser(result.user._id);
 			onReload();
 		}
