@@ -1,7 +1,13 @@
 import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
+import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
+import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
+import type { ChannelsOpenProps } from './ChannelsOpenProps';
+import type { ChannelsSetAnnouncementProps } from './ChannelsSetAnnouncementProps';
+import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 
 export type ChannelsEndpoints = {
 	'channels.files': {
@@ -19,15 +25,23 @@ export type ChannelsEndpoints = {
 		};
 	};
 	'channels.history': {
-		GET: (params: { roomId: string; count: number; latest?: string }) => {
+		GET: (
+			params: PaginatedRequest<{
+				roomId: string;
+				latest?: string;
+				showThreadMessages?: 'false' | 'true';
+				oldest?: string;
+				inclusive?: 'false' | 'true';
+			}>,
+		) => PaginatedResult<{
 			messages: IMessage[];
-		};
+		}>;
 	};
 	'channels.archive': {
-		POST: (params: { roomId: string }) => void;
+		POST: (params: ChannelsArchiveProps) => void;
 	};
 	'channels.unarchive': {
-		POST: (params: { roomId: string }) => void;
+		POST: (params: ChannelsUnarchiveProps) => void;
 	};
 	'channels.create': {
 		POST: (params: {
@@ -63,7 +77,7 @@ export type ChannelsEndpoints = {
 		};
 	};
 	'channels.join': {
-		POST: (params: { roomId: string; joinCode: string | null }) => {
+		POST: (params: { roomId: string; joinCode?: string }) => {
 			channel: IRoom;
 		};
 	};
@@ -101,21 +115,28 @@ export type ChannelsEndpoints = {
 		GET: (params: { roomId: string }) => { roles: IGetRoomRoles[] };
 	};
 	'channels.messages': {
-		GET: (params: {
-			roomId: IRoom['_id'];
-			query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-			offset: number;
-			sort: { ts: number };
-		}) => {
+		GET: (
+			params: PaginatedRequest<
+				{
+					roomId: IRoom['_id'];
+					query: string; // { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+				},
+				'ts'
+			>,
+		) => PaginatedResult<{
 			messages: IMessage[];
+		}>;
+	};
+	'channels.open': {
+		POST: (params: ChannelsOpenProps) => void;
+	};
+	'channels.setReadOnly': {
+		POST: (params: { roomId: string; readOnly: boolean }) => {
+			channel: IRoom;
 		};
 	};
 	'channels.addAll': {
-		POST: (
-			params: ({ roomId: string } | { roomName: string }) & {
-				activeUserOnly?: boolean;
-			},
-		) => {
+		POST: (params: ChannelsAddAllProps) => {
 			channel: IRoom;
 		};
 	};
@@ -123,5 +144,16 @@ export type ChannelsEndpoints = {
 		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
+	};
+	'channels.setAnnouncement': {
+		POST: (params: ChannelsSetAnnouncementProps) => {};
+	};
+	'channels.getAllUserMentionsByChannel': {
+		GET: (params: ChannelsGetAllUserMentionsByChannelProps) => PaginatedResult<{
+			mentions: IUser[];
+		}>;
+	};
+	'channels.moderators': {
+		GET: (params: { roomId: string }) => { moderators: Pick<IUser, '_id' | 'name' | 'username'>[] };
 	};
 };
