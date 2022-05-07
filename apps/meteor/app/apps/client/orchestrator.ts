@@ -2,16 +2,27 @@
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { IApp } from '@rocket.chat/apps-engine/definition/IApp';
 import { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { App } from '../../../client/views/admin/apps/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { settings } from '../../settings/client';
 import { CachedCollectionManager } from '../../ui-cached-collection';
+import { createDeferredValue } from '../lib/misc/DeferredValue';
+import {
+	IPricingPlan,
+	EAppPurchaseType,
+	IAppFromMarketplace,
+	IAppLanguage,
+	IAppExternalURL,
+	ICategory,
+	IDeletedInstalledApp,
+	IAppSynced,
+} from './@types/IOrchestrator';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
@@ -26,24 +37,19 @@ class AppClientOrchestrator {
 
 	private isLoaded: boolean;
 
-	private deferredIsEnabled: boolean;
-
-	private enable: boolean;
-
 	private ws: AppWebsocketReceiver;
+
+	private setEnabled: (value: boolean | PromiseLike<boolean>) => void;
+
+	private deferredIsEnabled: Promise<boolean> | undefined;
 
 	constructor() {
 		this._appClientUIHost = new RealAppsEngineUIHost();
 		this._manager = new AppClientManager(this._appClientUIHost);
 		this.isLoaded = false;
-	}
-
-	private get isEnable(): boolean {
-		return this.enable;
-	}
-
-	private set isEnable(value: boolean) {
-		this.isEnable = value;
+		const { promise, resolve } = createDeferredValue<boolean>();
+		this.deferredIsEnabled = promise;
+		this.setEnabled = resolve;
 	}
 
 	public async load(isEnabled: boolean): Promise<void> {
@@ -53,7 +59,8 @@ class AppClientOrchestrator {
 		}
 
 		await handleI18nResources();
-		this.isEnable = isEnabled;
+
+		this.setEnabled(isEnabled);
 	}
 
 	public getWsListener(): AppWebsocketReceiver {
@@ -65,7 +72,6 @@ class AppClientOrchestrator {
 	}
 
 	public handleError(error: Error): void {
-		console.error(error);
 		if (hasAtLeastOnePermission(['manage-apps'])) {
 			dispatchToastMessage({
 				type: 'error',
@@ -74,43 +80,54 @@ class AppClientOrchestrator {
 		}
 	}
 
-	public isEnabled(): boolean {
+	public isEnabled(): Promise<boolean> | undefined {
 		return this.deferredIsEnabled;
 	}
 
-	public async getApps(): Promise<IApp[]> {
+	public async getApps(): Promise<App[]> {
 		const { apps } = await APIClient.get('apps');
 		return apps;
 	}
 
-	public async getAppsFromMarketplace(): Promise<IApp[]> {
-		const appsOverviews: any = await APIClient.get('apps', { marketplace: 'true' });
-		return appsOverviews.map(({ latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt }: any) => ({
-			...latest,
-			price,
-			pricingPlans,
-			purchaseType,
-			isEnterpriseOnly,
-			modifiedAt,
-		}));
+	public async getAppsFromMarketplace(): Promise<
+		{
+			price: number;
+			pricingPlans: IPricingPlan[];
+			purchaseType: EAppPurchaseType;
+			isEnterpriseOnly: boolean;
+			modifiedAt: Date;
+		}[]
+	> {
+		const appsOverviews: IAppFromMarketplace[] = await APIClient.get('apps', { marketplace: 'true' });
+		return appsOverviews.map((app: IAppFromMarketplace) => {
+			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt } = app;
+			return {
+				...latest,
+				price,
+				pricingPlans,
+				purchaseType,
+				isEnterpriseOnly,
+				modifiedAt,
+			};
+		});
 	}
 
-	public async getAppsOnBundle(bundleId: string): Promise<IApp[]> {
+	public async getAppsOnBundle(bundleId: string): Promise<App[]> {
 		const { apps } = await APIClient.get(`apps/bundles/${bundleId}/apps`);
 		return apps;
 	}
 
-	public async getAppsLanguages(): Promise<any> {
+	public async getAppsLanguages(): Promise<IAppLanguage> {
 		const { apps } = await APIClient.get('apps/languages');
 		return apps;
 	}
 
-	public async getApp(appId: string): Promise<IApp> {
+	public async getApp(appId: string): Promise<App> {
 		const { app } = await APIClient.get(`apps/${appId}`);
 		return app;
 	}
 
-	public async getAppFromMarketplace(appId: string, version: string): Promise<IApp> {
+	public async getAppFromMarketplace(appId: string, version: string): Promise<App> {
 		const { app } = await APIClient.get(`apps/${appId}`, {
 			marketplace: 'true',
 			version,
@@ -118,7 +135,7 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	public async getLatestAppFromMarketplace(appId: string, version: string): Promise<IApp> {
+	public async getLatestAppFromMarketplace(appId: string, version: string): Promise<App> {
 		const { app } = await APIClient.get(`apps/${appId}`, {
 			marketplace: 'true',
 			update: 'true',
@@ -147,7 +164,7 @@ class AppClientOrchestrator {
 		return languages;
 	}
 
-	public async installApp(appId: string, version: string, permissionsGranted: IPermission[]): Promise<IApp> {
+	public async installApp(appId: string, version: string, permissionsGranted: IPermission[]): Promise<IDeletedInstalledApp> {
 		const { app } = await APIClient.post('apps/', {
 			appId,
 			marketplace: true,
@@ -157,7 +174,7 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	public async updateApp(appId: string, version: string, permissionsGranted: IPermission[]): Promise<IApp> {
+	public async updateApp(appId: string, version: string, permissionsGranted: IPermission[]): Promise<App> {
 		const { app } = await APIClient.post(`apps/${appId}`, {
 			appId,
 			marketplace: true,
@@ -167,28 +184,28 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	public uninstallApp(appId: string): any {
+	public uninstallApp(appId: string): IDeletedInstalledApp {
 		return APIClient.delete(`apps/${appId}`);
 	}
 
-	public syncApp(appId: string): any {
+	public syncApp(appId: string): IAppSynced {
 		return APIClient.post(`apps/${appId}/sync`);
 	}
 
-	public async setAppStatus(appId: string, status: AppStatus): Promise<any> {
+	public async setAppStatus(appId: string, status: AppStatus): Promise<string> {
 		const { status: effectiveStatus } = await APIClient.post(`apps/${appId}/status`, { status });
 		return effectiveStatus;
 	}
 
-	public enableApp(appId: string): Promise<any> {
+	public enableApp(appId: string): Promise<string> {
 		return this.setAppStatus(appId, AppStatus.MANUALLY_ENABLED);
 	}
 
-	public disableApp(appId: string): Promise<any> {
+	public disableApp(appId: string): Promise<string> {
 		return this.setAppStatus(appId, AppStatus.MANUALLY_ENABLED);
 	}
 
-	public buildExternalUrl(appId: string, purchaseType = 'buy', details = false): any {
+	public buildExternalUrl(appId: string, purchaseType = 'buy', details = false): IAppExternalURL {
 		return APIClient.get('apps', {
 			buildExternalUrl: 'true',
 			appId,
@@ -197,7 +214,7 @@ class AppClientOrchestrator {
 		});
 	}
 
-	public async getCategories(): Promise<any> {
+	public async getCategories(): Promise<ICategory> {
 		const categories = await APIClient.get('apps', { categories: 'true' });
 		return categories;
 	}
