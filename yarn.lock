@@ -4186,8 +4186,8 @@ __metadata:
     psl: ^1.8.0
     queue-fifo: ^0.2.6
     rc-scrollbars: ^1.1.3
-    react: ^17.0.2
-    react-dom: ^17.0.2
+    react: ~17.0.2
+    react-dom: ~17.0.2
     react-hook-form: ^7.30.0
     react-i18next: ^11.16.7
     react-keyed-flatten-children: ^1.3.0
@@ -4352,11 +4352,14 @@ __metadata:
     react: ~17.0.2
     ts-jest: ^27.1.4
     typescript: ~4.3.5
-    use-subscription: ^1.7.0
+    use-subscription: ~1.6.0
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": "*"
+    "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/rest-typings": "workspace:^"
     react: ~17.0.2
+    use-subscription: "*"
   languageName: unknown
   linkType: soft
 
@@ -27437,19 +27440,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^17.0.2":
-  version: 17.0.2
-  resolution: "react-dom@npm:17.0.2"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    scheduler: ^0.20.2
-  peerDependencies:
-    react: 17.0.2
-  checksum: 1c1eaa3bca7c7228d24b70932e3d7c99e70d1d04e13bb0843bbf321582bc25d7961d6b8a6978a58a598af2af496d1cedcfb1bf65f6b0960a0a8161cb8dab743c
-  languageName: node
-  linkType: hard
-
 "react-dom@npm:^18.1.0":
   version: 18.1.0
   resolution: "react-dom@npm:18.1.0"
@@ -27459,6 +27449,19 @@ __metadata:
   peerDependencies:
     react: ^18.1.0
   checksum: bb0d48eeb0b297c79c2a03978baa29f5b3ff7ba3d070b21e34c9af1a6e7fdf0ca8b8d73e41f9214d91ad40eeb6d1f3559f884cbbc338713374a51320637c23df
+  languageName: node
+  linkType: hard
+
+"react-dom@npm:~17.0.2":
+  version: 17.0.2
+  resolution: "react-dom@npm:17.0.2"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    scheduler: ^0.20.2
+  peerDependencies:
+    react: 17.0.2
+  checksum: 1c1eaa3bca7c7228d24b70932e3d7c99e70d1d04e13bb0843bbf321582bc25d7961d6b8a6978a58a598af2af496d1cedcfb1bf65f6b0960a0a8161cb8dab743c
   languageName: node
   linkType: hard
 
@@ -27821,7 +27824,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^17.0.2, react@npm:~17.0.2":
+"react@npm:~17.0.2":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
   dependencies:
@@ -33034,32 +33037,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-subscription@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "use-subscription@npm:1.7.0"
-  dependencies:
-    use-sync-external-store: ^1.1.0
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: a70c1668cf91c700614381e689b38b974234798cae1f3c2ec185cd5ab56d525f0fd37bd0d048d7b3bf003bfed3f5652f7801214cabe10a4114efe2671acedc59
-  languageName: node
-  linkType: hard
-
 "use-subscription@npm:~1.6.0":
   version: 1.6.0
   resolution: "use-subscription@npm:1.6.0"
   peerDependencies:
     react: ^18.0.0
   checksum: 0ce15a3ed1f66f78cb2d7a83ff4980e2ac93054b0bcbdc4e492e77fed599233372aaaf9c9fd9b370484c491c5aee0b980859db1108ad63ee4cdba0f468c4f5d1
-  languageName: node
-  linkType: hard
-
-"use-sync-external-store@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "use-sync-external-store@npm:1.1.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 8993a0b642f91d7fcdbb02b7b3ac984bd3af4769686f38291fe7fcfe73dfb73d6c64d20dfb7e5e7fbf5a6da8f5392d6f8e5b00c243a04975595946e82c02b883
   languageName: node
   linkType: hard
 
