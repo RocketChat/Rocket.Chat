@@ -5,7 +5,6 @@ import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 
 import { Base, ProgressStep } from '../../importer/server';
-import { settings } from '../../settings';
 import { Settings as SettingsRaw } from '../../models/server/raw';
 
 export class HipChatEnterpriseImporter extends Base {
@@ -52,7 +51,7 @@ export class HipChatEnterpriseImporter extends Base {
 			}
 
 			this.converter.addUser(newUser);
-			SettingsRaw.updateValueById('Hipchat_Enterprise_Importer_Count', settings.get('Hipchat_Enterprise_Importer_Count') + 1);
+			SettingsRaw.incrementValueById('Hipchat_Enterprise_Importer_Count');
 		}
 
 		super.updateRecord({ 'count.users': count });

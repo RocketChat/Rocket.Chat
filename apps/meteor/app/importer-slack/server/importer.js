@@ -156,7 +156,7 @@ export class SlackImporter extends Base {
 			}
 
 			this.converter.addUser(newUser);
-			SettingsRaw.updateValueById('Slack_Importer_Count', settings.get('Slack_Importer_Count') + 1);
+			SettingsRaw.incrementValueById('Slack_Importer_Count');
 		}
 	}
 

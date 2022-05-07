@@ -48,7 +48,7 @@ Meteor.methods({
 					},
 				});
 
-				SettingsRaw.updateValueById('Invitation_Email_Count', settings.get('Invitation_Email_Count') + 1);
+				SettingsRaw.incrementValueById('Invitation_Email_Count');
 				return mailerResult;
 			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {

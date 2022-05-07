@@ -4,7 +4,6 @@ import React, { useMemo, useCallback, useState } from 'react';
 
 import { Settings as SettingsRaw } from '../../../../app/models/server/raw';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -13,7 +12,6 @@ import UserForm from './UserForm';
 
 export function AddUser({ roles, onReload, ...props }) {
 	const t = useTranslation();
-	const manualEntryUserCount = useSetting('Manual_Entry_User_Count');
 
 	const router = useRoute('admin-users');
 
@@ -98,7 +96,7 @@ export function AddUser({ roles, onReload, ...props }) {
 
 		const result = await saveAction();
 		if (result.success) {
-			SettingsRaw.updateValueById('Manual_Entry_User_Count', manualEntryUserCount + 1);
+			SettingsRaw.incrementValueById('Manual_Entry_User_Count');
 			goToUser(result.user._id);
 			onReload();
 		}
