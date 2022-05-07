@@ -167,3 +167,19 @@ export interface IAppSynced {
 	app: IAppFromMarketplace;
 	success: boolean;
 }
+
+export interface IScreenshot {
+	id: string;
+	appId: string;
+	fileName: string;
+	altText: string;
+	accessUrl: string;
+	thumbnailUrl: string;
+	createdAt: Date;
+	modifiedAt: Date;
+}
+
+export interface IAppScreenshots {
+	screenshots: IScreenshot[];
+	success: boolean;
+}

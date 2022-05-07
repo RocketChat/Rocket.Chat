@@ -22,6 +22,7 @@ import {
 	ICategory,
 	IDeletedInstalledApp,
 	IAppSynced,
+	IAppScreenshots,
 } from './@types/IOrchestrator';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
@@ -78,6 +79,10 @@ class AppClientOrchestrator {
 				message: error.message,
 			});
 		}
+	}
+
+	public screenshots(appId: string): IAppScreenshots {
+		return APIClient.get(`apps/${appId}/screenshots`);
 	}
 
 	public isEnabled(): Promise<boolean> | undefined {
