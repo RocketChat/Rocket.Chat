@@ -29,6 +29,7 @@ export interface IRocketChatAsset {
 	label: string;
 	constraints: IRocketChatAssetConstraint;
 	defaultUrl?: string;
+	url?: string;
 	wizard?: IRocketChatAssetWizard;
 	cache?: IRocketChatAssetCache;
 }

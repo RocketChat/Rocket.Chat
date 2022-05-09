@@ -36,7 +36,7 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.addRoute<'assets.unsetAsset', { authRequired: true }>(
 	'assets.unsetAsset',
 	{ authRequired: true },
 	{

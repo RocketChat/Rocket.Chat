@@ -22,7 +22,6 @@ export const getUploadFormData = async ({ request }: { request: Request }): Prom
 		bb.on('file', (fieldname: string, file: any, { filename, encoding, mimeType: mimetype }: Record<string, any>) => {
 			const fileData: any[] = [];
 
-			console.log(file);
 			file.on('data', (data: any) => fileData.push(data));
 
 			file.on('end', () => {
