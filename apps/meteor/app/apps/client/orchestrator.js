@@ -132,9 +132,9 @@ class AppClientOrchestrator {
 	};
 
 	getAppScreenshots = async (appId) => {
-		const appScreenshots = await APIClient.get(`apps/${appId}/screenshots`);
+		const { screenshots } = await APIClient.get(`apps/${appId}/screenshots`);
 
-		return appScreenshots;
+		return screenshots;
 	};
 
 	installApp = async (appId, version, permissionsGranted) => {
@@ -165,8 +165,6 @@ class AppClientOrchestrator {
 		const { status: effectiveStatus } = await APIClient.post(`apps/${appId}/status`, { status });
 		return effectiveStatus;
 	};
-
-	screenshots = (appId) => APIClient.get(`apps/${appId}/screenshots`);
 
 	enableApp = (appId) => this.setAppStatus(appId, 'manually_enabled');
 

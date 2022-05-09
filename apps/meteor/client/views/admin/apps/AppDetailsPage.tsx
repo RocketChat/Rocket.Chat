@@ -32,7 +32,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const { settings, apis } = { settings: {}, apis: [], ...data };
 
 	const showApis = apis.length;
-	const { installed } = data || {};
+	const { installed, screenshots } = data || {};
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
@@ -118,7 +118,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 								)}
 							</Tabs>
 
-							{isDetailsTabSelected && <AppDetailsPageContent app={data} />}
+							{isDetailsTabSelected && <AppDetailsPageContent app={data} screenshots={screenshots || []} />}
 							{areApisVisible && <APIsDisplay apis={apis} />}
 							{isLogsTabSelected && <AppLogsPage id={id} />}
 							{isSettingsTabSelected && (

@@ -8,24 +8,24 @@ import { Screenshot } from '../definitions/AppInfo';
 import ScreenshotCarousel from './ScreenshotCarousel';
 
 type ScreenshotCarouselAnchorProps = {
-	AppScreenshots: Screenshot[];
+	screenshots: Screenshot[];
 };
 
 type voidFunction = () => void;
 
-const ScreenshotCarouselAnchor = ({ AppScreenshots }: ScreenshotCarouselAnchorProps): ReactElement => {
+const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps): ReactElement => {
 	const [viewCarousel, setViewCarousel] = useState(false);
 
 	const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
 	const [currentPreviewIndex, setCurrentPreviewIndex] = useState(0);
 
-	const { length } = AppScreenshots;
+	const { length } = screenshots;
 
 	const isFirstSlide = currentSlideIndex === 0;
 	const isLastSlide = currentSlideIndex === length - 1;
 
-	const isCarouselVisible = viewCarousel && AppScreenshots?.length;
+	const isCarouselVisible = viewCarousel && screenshots?.length;
 
 	const handleNextSlide = (): void => {
 		setCurrentSlideIndex(currentSlideIndex + 1);
@@ -67,7 +67,7 @@ const ScreenshotCarouselAnchor = ({ AppScreenshots }: ScreenshotCarouselAnchorPr
 
 	const carouselPortal = createPortal(
 		<ScreenshotCarousel
-			AppScreenshots={AppScreenshots}
+			AppScreenshots={screenshots}
 			setViewCarousel={setViewCarousel}
 			handleNextSlide={handleNextSlide}
 			handlePrevSlide={handlePrevSlide}
@@ -93,13 +93,13 @@ const ScreenshotCarouselAnchor = ({ AppScreenshots }: ScreenshotCarouselAnchorPr
 			>
 				<Box
 					is='img'
-					src={AppScreenshots[currentPreviewIndex].accessUrl}
+					src={screenshots[currentPreviewIndex]?.accessUrl}
 					alt='App preview image'
 					className={[
 						css`
-							transition: opacity 0.2s ease;
+							transition: filter 0.2s ease;
 							&:hover {
-								opacity: 0.8;
+								filter: brightness(90%);
 							}
 						`,
 					]}
@@ -108,7 +108,7 @@ const ScreenshotCarouselAnchor = ({ AppScreenshots }: ScreenshotCarouselAnchorPr
 				<Box display='flex' flexDirection='row' bg={colors.n100} pi='x16' pb='x10' alignItems='center'>
 					<Icon name='image' size='x24' mie='x8' />{' '}
 					<Box is='span' fontWeight={500} fontSize='x14' color={colors.n800}>
-						{currentPreviewIndex + 1} of {AppScreenshots.length}
+						{currentPreviewIndex + 1} of {screenshots.length}
 					</Box>
 				</Box>
 			</Box>
