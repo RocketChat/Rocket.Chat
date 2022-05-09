@@ -10,6 +10,7 @@ import { API } from '../api';
 import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 
+// TODO: Refact or remove
 function findDirectMessageRoom(params, user, allowAdminOverride) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
@@ -66,8 +67,12 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-room-administration')) {
 				return API.v1.unauthorized();
 			}
+			const { roomId } = this.requestParams();
+			if (!roomId) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			}
 
-			const findResult = findDirectMessageRoom(this.requestParams(), this.user, true);
+			const findResult = findDirectMessageRoom({ roomId }, this.user, true);
 
 			Meteor.call('eraseRoom', findResult.room._id);
 
@@ -81,7 +86,12 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+			const { roomId } = this.requestParams();
+			if (!roomId) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			}
+
+			const findResult = findDirectMessageRoom({ roomId }, this.user);
 
 			if (!findResult.subscription.open) {
 				return API.v1.failure(`The direct message room, ${this.bodyParams.name}, is already closed to the sender`);
@@ -96,13 +106,17 @@ API.v1.addRoute(
 	},
 );
 
+// https://github.com/RocketChat/Rocket.Chat/pull/9679 as reference
 API.v1.addRoute(
 	['dm.counters', 'im.counters'],
 	{ authRequired: true },
 	{
 		get() {
 			const access = hasPermission(this.userId, 'view-room-administration');
-			const ruserId = this.requestParams().userId;
+			const { roomId, userId: ruserId } = this.requestParams();
+			if (!roomId) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			}
 			let user = this.userId;
 			let unreads = null;
 			let userMentions = null;
@@ -119,15 +133,15 @@ API.v1.addRoute(
 				}
 				user = ruserId;
 			}
-			const rs = findDirectMessageRoom(this.requestParams(), { _id: user });
+			const rs = findDirectMessageRoom({ roomId }, { _id: user });
 			const { room } = rs;
 			const dm = rs.subscription;
-			lm = room.lm ? room.lm : room._updatedAt;
+			lm = room.lm ? room.lm : room._updatedAt; // lm is the last message timestamp
 
 			if (typeof dm !== 'undefined' && dm.open) {
 				if (dm.ls && room.msgs) {
 					unreads = dm.unread;
-					unreadsFrom = dm.ls;
+					unreadsFrom = dm.ls; // last read timestamp
 				}
 				userMentions = dm.userMentions;
 				joined = true;
@@ -156,8 +170,16 @@ API.v1.addRoute(
 	['dm.files', 'im.files'],
 	{ authRequired: true },
 	{
-		get() {
-			const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+		async get() {
+			const { offset, count } = this.getPaginationItems();
+			const { sort, fields, query } = this.parseJsonQuery();
+			const { roomId } = this.requestParams();
+
+			if (!roomId) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			}
+
+			const findResult = findDirectMessageRoom({ roomId }, this.user);
 			const addUserObjectToEveryObject = (file) => {
 				if (file.userId) {
 					file = this.insertUserObject({ object: file, userId: file.userId });
@@ -165,67 +187,53 @@ API.v1.addRoute(
 				return file;
 			};
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
-
 			const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
-			const files = Promise.await(
-				Uploads.find(ourQuery, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-					fields,
-				}).toArray(),
-			);
-
+			const files = await Uploads.find(ourQuery, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				fields,
+			})
+				.map(addUserObjectToEveryObject)
+				.toArray();
+			const total = await Uploads.find(ourQuery).count();
 			return API.v1.success({
-				files: files.map(addUserObjectToEveryObject),
+				files,
 				count: files.length,
 				offset,
-				total: Promise.await(Uploads.find(ourQuery).count()),
+				total,
 			});
 		},
 	},
 );
 
+// https://github.com/xbolshe/docs/blob/cf09dff1b654ca861dac539aa01956a508df49aa/developer-guides/rest-api/im/history/README.md
 API.v1.addRoute(
 	['dm.history', 'im.history'],
 	{ authRequired: true },
 	{
 		get() {
-			const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+			const { offset = 0, count = 20 } = this.getPaginationItems();
+			const { roomId } = this.requestParams();
+			let { latest, oldest, inclusive, unreads, showThreadMessages } = this.queryParams;
 
-			let latestDate = new Date();
-			if (this.queryParams.latest) {
-				latestDate = new Date(this.queryParams.latest);
+			if (!roomId) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
 			}
+			const findResult = findDirectMessageRoom({ roomId }, this.user);
 
-			let oldestDate = undefined;
-			if (this.queryParams.oldest) {
-				oldestDate = new Date(this.queryParams.oldest);
-			}
+			latest = latest ? new Date(latest) : new Date();
 
-			const inclusive = this.queryParams.inclusive || false;
-
-			let count = 20;
-			if (this.queryParams.count) {
-				count = parseInt(this.queryParams.count);
-			}
-
-			let offset = 0;
-			if (this.queryParams.offset) {
-				offset = parseInt(this.queryParams.offset);
-			}
-
-			const unreads = this.queryParams.unreads || false;
-
-			const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
+			oldest = oldest && new Date(oldest);
+			inclusive = inclusive === 'true';
+			unreads = unreads === 'true';
+			showThreadMessages = showThreadMessages === 'true';
 
 			const result = Meteor.call('getChannelHistory', {
 				rid: findResult.room._id,
-				latest: latestDate,
-				oldest: oldestDate,
+				latest,
+				oldest,
 				inclusive,
 				offset,
 				count,
@@ -247,7 +255,12 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
-			const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+			const { roomId } = this.requestParams();
+
+			if (!roomId) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			}
+			const findResult = findDirectMessageRoom({ roomId }, this.user);
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
@@ -293,15 +306,20 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
-			const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+			const { roomId } = this.requestParams();
+
+			if (!roomId) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			}
+			const findResult = findDirectMessageRoom({ roomId }, this.user);
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
 			const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
-
+			const sortObj = sort?.ts ? { ts: sort.ts } : { ts: -1 };
 			const messages = Messages.find(ourQuery, {
-				sort: sort || { ts: -1 },
+				sort: sortObj,
 				skip: offset,
 				limit: count,
 				fields,
@@ -429,7 +447,12 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+			const { roomId } = this.requestParams();
+
+			if (!roomId) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			}
+			const findResult = findDirectMessageRoom({ roomId }, this.user);
 
 			if (!findResult.subscription.open) {
 				Meteor.runAsUser(this.userId, () => {
@@ -447,18 +470,23 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			if (!this.bodyParams.hasOwnProperty('topic')) {
+			const { roomId, topic } = this.requestParams();
+
+			if (!roomId) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			}
+			if (!topic) {
 				return API.v1.failure('The bodyParam "topic" is required');
 			}
 
-			const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+			const findResult = findDirectMessageRoom({ roomId }, this.user);
 
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult.room._id, 'roomTopic', this.bodyParams.topic);
+				Meteor.call('saveRoomSettings', findResult.room._id, 'roomTopic', topic);
 			});
 
 			return API.v1.success({
-				topic: this.bodyParams.topic,
+				topic,
 			});
 		},
 	},
