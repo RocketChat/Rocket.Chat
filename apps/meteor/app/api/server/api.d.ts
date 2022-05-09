@@ -85,6 +85,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	readonly bodyParams: TMethod extends 'GET' ? Record<string, unknown> : Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
 	requestParams(): OperationParams<TMethod, TPathPattern>;
+	getLoggedInUser(): IUser | undefined;
 	getPaginationItems(): {
 		readonly offset: number;
 		readonly count: number;
@@ -204,4 +205,9 @@ export declare const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
 	helperMethods: Map<string, (...args: any[]) => unknown>;
+};
+
+export declare const defaultRateLimiterOptions: {
+	numRequestsAllowed: number;
+	intervalTimeInMS: number;
 };

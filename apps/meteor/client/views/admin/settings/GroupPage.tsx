@@ -1,14 +1,19 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useToastMessageDispatch,
+	useUser,
+	useSettingsDispatch,
+	useSettings,
+	useTranslation,
+	useLoadLanguage,
+	TranslationKey,
+} from '@rocket.chat/ui-contexts';
 import React, { useMemo, memo, FC, ReactNode, FormEvent, MouseEvent } from 'react';
 
 import Page from '../../../components/Page';
-import { useEditableSettingsDispatch, useEditableSettings, IEditableSetting } from '../../../contexts/EditableSettingsContext';
-import { useSettingsDispatch, useSettings } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation, useLoadLanguage, TranslationKey } from '../../../contexts/TranslationContext';
-import { useUser } from '../../../contexts/UserContext';
+import { useEditableSettingsDispatch, useEditableSettings, IEditableSetting } from '../EditableSettingsContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
 type GroupPageProps = {

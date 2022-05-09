@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Option } from '@rocket.chat/fuselage';
+import { TranslationKey } from '@rocket.chat/ui-contexts';
 import { FC, LazyExoticComponent, ReactNode, MouseEvent, ComponentProps } from 'react';
 
-import { TranslationKey } from '../../../../contexts/TranslationContext';
 import { generator, Events as GeneratorEvents } from './generator';
 
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null;

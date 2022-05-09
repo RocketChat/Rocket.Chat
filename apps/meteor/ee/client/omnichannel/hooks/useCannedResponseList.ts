@@ -1,6 +1,6 @@
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { useScrollableRecordList } from '../../../../client/hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../../client/hooks/useComponentDidUpdate';
 import { CannedResponseList } from '../../../../client/lib/lists/CannedResponseList';

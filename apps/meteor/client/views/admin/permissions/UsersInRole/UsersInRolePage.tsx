@@ -1,15 +1,12 @@
 import { IRole } from '@rocket.chat/core-typings';
 import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useRef, ReactElement } from 'react';
 
 import Page from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoComplete from '../../../../components/UserAutoComplete';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import UsersInRoleTable from './UsersInRoleTable';
 
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {

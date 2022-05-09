@@ -1,13 +1,13 @@
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditCustomUserStatus from './EditCustomUserStatus';
 
 type EditCustomUserStatusWithDataProps = {
-	_id: string;
+	_id: string | undefined;
 	close: () => void;
 	onChange: () => void;
 };
