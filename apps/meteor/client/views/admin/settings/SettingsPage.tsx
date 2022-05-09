@@ -1,4 +1,4 @@
-import { Box, Icon, SearchInput, Skeleton, Grid } from '@rocket.chat/fuselage';
+import { Box, Icon, SearchInput, Skeleton, Grid, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, ReactElement } from 'react';
 
@@ -15,9 +15,6 @@ const SettingsPage = (): ReactElement => {
 
 	const groups = useSettingsGroups(useDebouncedValue(filter, 400));
 	const isLoadingGroups = useIsSettingsContextLoading();
-	// const isLoadingGroups = false; // TODO: get from PrivilegedSettingsContext
-
-	const isSmall = false;
 
 	return (
 		<Page backgroundColor='neutral-100'>
@@ -28,7 +25,7 @@ const SettingsPage = (): ReactElement => {
 			</Box>
 
 			<Page.ScrollableContentWithShadow p='0'>
-				<Box mi='x24' display='flex' flexDirection='column'>
+				<Box mb='x32' mi='x24'>
 					{isLoadingGroups && <Skeleton />}
 					<Grid width='full'>
 						{!isLoadingGroups &&
@@ -44,9 +41,10 @@ const SettingsPage = (): ReactElement => {
 							))}
 					</Grid>
 					{!isLoadingGroups && !groups.length && (
-						<Box pi='x28' mb='x4' color='hint'>
-							{t('Nothing_found')}
-						</Box>
+						<States>
+							<StatesIcon name='magnifier' />
+							<StatesTitle>{t('No_results_found')}</StatesTitle>
+						</States>
 					)}
 				</Box>
 			</Page.ScrollableContentWithShadow>
