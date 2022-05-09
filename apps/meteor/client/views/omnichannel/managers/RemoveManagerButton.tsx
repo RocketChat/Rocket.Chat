@@ -1,12 +1,12 @@
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
-function RemoveManagerButton({ _id, reload }) {
+const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void }): ReactElement => {
 	const t = useTranslation();
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/manager/${_id}`);
 	const setModal = useSetModal();
@@ -14,23 +14,31 @@ function RemoveManagerButton({ _id, reload }) {
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
-		if (result.success === true) {
+		if (result?.success === true) {
 			reload();
 		}
 	});
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
-		const onDeleteManager = async () => {
+		const onDeleteManager = async (): Promise<void> => {
 			try {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Manager_removed') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+			} catch (error: unknown) {
+				(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal();
 		};
 
-		setModal(<GenericModal variant='danger' onConfirm={onDeleteManager} onCancel={() => setModal()} confirmText={t('Delete')} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onDeleteManager}
+				onCancel={(): void => setModal()}
+				onClose={(): void => setModal()}
+				confirmText={t('Delete')}
+			/>,
+		);
 	});
 
 	return (
@@ -40,6 +48,6 @@ function RemoveManagerButton({ _id, reload }) {
 			</Button>
 		</Table.Cell>
 	);
-}
+};
 
 export default RemoveManagerButton;
