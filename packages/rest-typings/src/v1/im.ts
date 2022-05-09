@@ -1,4 +1,7 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, IUpload } from '@rocket.chat/core-typings';
+
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type ImEndpoints = {
 	'im.create': {
@@ -14,48 +17,77 @@ export type ImEndpoints = {
 				excludeSelf?: boolean;
 			},
 		) => {
-			room: IRoom;
+			room: IRoom & { rid: IRoom['_id'] };
 		};
-	};
-	'im.files': {
-		GET: (params: { roomId: IRoom['_id']; count: number; sort: string; query: string }) => {
-			files: IMessage[];
-			total: number;
-		};
-	};
-	'im.members': {
-		GET: (params: { roomId: IRoom['_id']; offset?: number; count?: number; filter?: string; status?: string[] }) => {
-			count: number;
-			offset: number;
-			members: IUser[];
-			total: number;
-		};
-	};
-	'im.history': {
-		GET: (params: { roomId: string; count: number; latest?: string }) => {
-			messages: IMessage[];
-		};
-	};
-	'im.close': {
-		POST: (params: { roomId: string }) => {};
-	};
-	'im.kick': {
-		POST: (params: { roomId: string; userId: string }) => {};
 	};
 	'im.delete': {
 		POST: (params: { roomId: string }) => {};
 	};
-	'im.leave': {
+	'im.close': {
 		POST: (params: { roomId: string }) => {};
 	};
-	'im.messages': {
-		GET: (params: {
-			roomId: IRoom['_id'];
-			query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-			offset: number;
-			sort: { ts: number };
-		}) => {
+	'im.counters': {
+		GET: (params: { roomId: string }) => {
+			joined: boolean;
+			unreads: number;
+			unreadsFrom: string;
+			msgs: number;
+			members: number;
+			latest: string;
+			userMentions: number;
+		};
+	};
+	'im.files': {
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query?: string; fields?: string }>) => PaginatedResult<{
+			files: IUpload[];
+		}>;
+	};
+	'im.history': {
+		GET: (
+			params: PaginatedRequest<{
+				roomId: string;
+				latest?: string;
+				oldest?: string;
+				inclusive?: string;
+				unreads?: string;
+				showThreadMessages?: string;
+			}>,
+		) => {
 			messages: IMessage[];
+		};
+	};
+
+	'im.members': {
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; filter?: string; status?: string[] }>) => PaginatedResult<{
+			members: IUser[];
+		}>;
+	};
+	'im.messages': {
+		GET: (
+			params: PaginatedRequest<{
+				roomId: IRoom['_id'];
+				query?: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+				fields?: string;
+			}>,
+		) => PaginatedResult<{
+			messages: IMessage[];
+		}>;
+	};
+	'im.messages.other': {
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query?: string; fields?: string }>) => PaginatedResult<{ message: IMessage[] }>;
+	};
+	'im.list': {
+		GET: (params: PaginatedRequest<{ fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;
+	};
+	'im.list.everyone': {
+		GET: (params: PaginatedRequest<{ query: string; fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;
+	};
+	'im.open': {
+		POST: (params: { roomId: string }) => void;
+	};
+	'im.setTopic': {
+		POST: (params: { roomId: string; topic: string }) => {
+			topic: string;
 		};
 	};
 };
