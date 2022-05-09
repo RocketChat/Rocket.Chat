@@ -25,7 +25,7 @@ const BackupCodesModal: FC<BackupCodesModalProps> = ({ codes, onClose, ...props 
 				<Box mb='x8' withRichContent>
 					{t('Make_sure_you_have_a_copy_of_your_codes_1')}
 				</Box>
-				<TextCopy text={codesText} wordBreak='break-word' mb='x8' />
+				<TextCopy text={codesText} mb='x8' />
 				<Box mb='x8' withRichContent>
 					{t('Make_sure_you_have_a_copy_of_your_codes_2')}
 				</Box>

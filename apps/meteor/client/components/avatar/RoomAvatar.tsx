@@ -7,7 +7,7 @@ import BaseAvatar from './BaseAvatar';
 
 type RoomAvatarProps = {
 	/* @deprecated */
-	size?: 'x16' | 'x20' | 'x28' | 'x36' | 'x40' | 'x124';
+	size?: 'x16' | 'x20' | 'x28' | 'x36' | 'x40' | 'x124' | 'x332';
 	/* @deprecated */
 	url?: string;
 
