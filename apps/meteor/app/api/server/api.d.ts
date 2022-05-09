@@ -95,6 +95,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		fields: Record<string, unknown>;
 		query: Record<string, unknown>;
 	};
+	/* @deprecated */
 	getUserFromParams(): IUser;
 } & (TOptions extends { authRequired: true }
 	? {
