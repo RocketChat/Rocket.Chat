@@ -1,9 +1,6 @@
 import { Button, Field } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 
 function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }) {
 	const t = useTranslation();

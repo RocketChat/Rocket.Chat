@@ -1,11 +1,10 @@
 import { IRoom, isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
+import { useUser, useUserRoom, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { Users } from '../../app/models/client';
 import { getUserAvatarURL } from '../../app/utils/client';
-import { useTranslation } from '../contexts/TranslationContext';
-import { useUser, useUserRoom } from '../contexts/UserContext';
 import { VoipRoomForeword } from './voip/room/VoipRoomForeword';
 
 type RoomForewordProps = { _id: IRoom['_id']; rid?: IRoom['_id'] } | { rid: IRoom['_id']; _id?: IRoom['_id'] };

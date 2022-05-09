@@ -1,8 +1,7 @@
 import { TextInput } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, ReactElement } from 'react';
-
-import { useTranslation } from '../../../../contexts/TranslationContext';
 
 const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: string) => void }): ReactElement => {
 	const t = useTranslation();

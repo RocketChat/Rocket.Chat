@@ -11,10 +11,10 @@ import {
 	ThreadMessageUnfollow,
 	CheckBox,
 } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
