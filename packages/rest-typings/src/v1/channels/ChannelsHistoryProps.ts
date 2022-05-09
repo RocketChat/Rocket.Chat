@@ -48,6 +48,8 @@ const channelsHistoryPropsSchema = {
 			type: 'string',
 		},
 	},
+	required: ['roomId'],
+	additionalProperties: false,
 };
 
 export const isChannelsHistoryProps = ajv.compile<ChannelsHistoryProps>(channelsHistoryPropsSchema);

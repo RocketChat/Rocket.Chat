@@ -26,7 +26,6 @@ const channelsUnarchivePropsSchema = {
 			additionalProperties: false,
 		},
 	],
-	additionalProperties: false,
 };
 
 export const isChannelsUnarchiveProps = ajv.compile<ChannelsUnarchiveProps>(channelsUnarchivePropsSchema);

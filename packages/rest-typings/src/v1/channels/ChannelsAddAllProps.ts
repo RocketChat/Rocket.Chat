@@ -36,7 +36,6 @@ const channelsAddAllPropsSchema = {
 			additionalProperties: false,
 		},
 	],
-	additionalProperties: false,
 };
 
 export const isChannelsAddAllProps = ajv.compile<ChannelsAddAllProps>(channelsAddAllPropsSchema);

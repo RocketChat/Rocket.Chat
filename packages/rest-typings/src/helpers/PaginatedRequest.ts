@@ -3,5 +3,5 @@ export type PaginatedRequest<T = {}, S extends string = string> = {
 	offset?: number;
 	sort?: `{ "${S}": ${1 | -1} }` | string;
 	/* deprecated */
-	query: string;
+	query?: string;
 } & T;

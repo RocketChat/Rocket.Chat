@@ -4,6 +4,7 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
+import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
 import type { ChannelsMessagesProps } from './ChannelsMessagesProps';
 import type { ChannelsOpenProps } from './ChannelsOpenProps';
@@ -85,7 +86,7 @@ export type ChannelsEndpoints = {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
 	'channels.delete': {
-		POST: (params: { roomId: string }) => {};
+		POST: (params: ChannelsDeleteProps) => void;
 	};
 	'channels.leave': {
 		POST: (params: { roomId: string }) => {};

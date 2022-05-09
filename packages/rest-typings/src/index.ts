@@ -149,6 +149,7 @@ export * from './v1/channels/ChannelsGetAllUserMentionsByChannelProps';
 export * from './v1/channels/ChannelsModeratorsProps';
 export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
+export * from './v1/channels/ChannelsDeleteProps';
 export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';

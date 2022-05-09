@@ -16,6 +16,7 @@ import {
 	isChannelsModeratorsProps,
 	isChannelsConvertToTeamProps,
 	isChannelsSetReadOnlyProps,
+	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
 
 import { Rooms, Subscriptions, Messages } from '../../../models/server';
@@ -440,6 +441,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				moderators,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'channels.delete',
+	{ authRequired: true },
+	{
+		post() {
+			if (!isChannelsDeleteProps(this.bodyParams)) {
+				throw new Meteor.Error('error-invalid-params', isChannelsDeleteProps.errors?.map((error: any) => error.message).join('\n '));
+			}
+			const room = findChannelByIdOrName({
+				params: this.bodyParams,
+				checkedArchived: false,
+			});
+
+			Meteor.call('eraseRoom', room._id);
+
+			return API.v1.success();
 		},
 	},
 );

@@ -11,6 +11,7 @@ const channelsSetReadOnlyPropsSchema = {
 		readOnly: { type: 'boolean' },
 	},
 	required: ['roomId', 'readOnly'],
+	additionalProperties: false,
 };
 
 export const isChannelsSetReadOnlyProps = ajv.compile<ChannelsSetReadOnlyProps>(channelsSetReadOnlyPropsSchema);

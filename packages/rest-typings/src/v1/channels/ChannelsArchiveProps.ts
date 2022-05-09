@@ -26,7 +26,6 @@ const channelsArchivePropsSchema = {
 			additionalProperties: false,
 		},
 	],
-	additionalProperties: false,
 };
 
 export const isChannelsArchiveProps = ajv.compile<ChannelsArchiveProps>(channelsArchivePropsSchema);

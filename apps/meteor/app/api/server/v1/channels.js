@@ -268,25 +268,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'channels.delete',
-	{ authRequired: true },
-	{
-		post() {
-			const room = findChannelByIdOrName({
-				params: this.requestParams(),
-				checkedArchived: false,
-			});
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('eraseRoom', room._id);
-			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
 	'channels.files',
 	{ authRequired: true },
 	{
@@ -419,9 +400,7 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');
 			}
 
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
-			});
+			Meteor.call('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
 
 			return API.v1.success({
 				channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),

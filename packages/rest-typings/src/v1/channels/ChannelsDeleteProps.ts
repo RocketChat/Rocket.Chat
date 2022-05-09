@@ -2,8 +2,9 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type ChannelsRolesProps = { roomId: string } | { roomName: string };
-const channelsRolesPropsSchema = {
+export type ChannelsDeleteProps = { roomId: string } | { roomName: string };
+
+const channelsDeletePropsSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -28,4 +29,4 @@ const channelsRolesPropsSchema = {
 	],
 };
 
-export const isChannelsRolesProps = ajv.compile<ChannelsRolesProps>(channelsRolesPropsSchema);
+export const isChannelsDeleteProps = ajv.compile<ChannelsDeleteProps>(channelsDeletePropsSchema);
