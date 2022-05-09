@@ -10,9 +10,14 @@ import { settings } from '../../app/settings/server';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
 import { Settings } from '../../app/models/server/raw';
 import { validateEmail } from '../../lib/emailValidator';
+import { SystemLogger } from '../lib/logger/system';
 
 Meteor.startup(async function () {
-	if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {
+	if ((settings.get('Show_Setup_Wizard') === 'pending' || process.env.FORCE_CREATE_GENERAL === 'true') && !Rooms.findOneById('GENERAL')) {
+		if (process.env.FORCE_CREATE_GENERAL === 'true') {
+			SystemLogger.info('FORCE_CREATE_GENERAL Set to true. Forcing channel creation if not already present');
+		}
+
 		Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 			default: true,
 		});
