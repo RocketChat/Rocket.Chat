@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
-import UserCard from '../../../../../components/UserCard/UserCard';
+import AgentOrContactCardUsername from '../../../../../components/Omnichannel/AgentOrContactCardUsername';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
@@ -106,14 +106,12 @@ const ContactInfo = ({ id, rid, route }) => {
 							<Label>{`${t('Name')} / ${t('Username')}`}</Label>
 							<Info style={{ display: 'flex' }}>
 								<UserAvatar size='x40' title={username} username={username} />
-								<Box mbe='x4' withTruncatedText display='flex'>
-									<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
-									{username && (
-										<Box flexGrow={1} flexShrink={1} flexBasis={0} display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-											({username})
-										</Box>
-									)}
-								</Box>
+								<AgentOrContactCardUsername mis='x10' name={displayName} status={<UserStatus status={status} />} />
+								{username && (
+									<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
+										({username})
+									</Box>
+								)}
 							</Info>
 						</Field>
 					)}

@@ -2,11 +2,12 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import UserCard from '../../../client/components/UserCard';
+import AgentOrContactCardUsername from '../../../client/components/Omnichannel/AgentOrContactCardUsername';
 import { UserStatus } from '../../../client/components/UserStatus';
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
+import Info from '../../../client/views/omnichannel/components/Info';
 
 const wordBreak = css`
 	word-break: break-word;
@@ -24,17 +25,17 @@ function ContactManagerInfo({ username }) {
 
 	return (
 		<>
-			<UserCard.Info className={wordBreak} flexShrink={0} style={{ display: 'flex' }}>
+			<Info className={wordBreak} flexShrink={0} style={{ display: 'flex' }}>
 				<UserAvatar title={username} username={username} />
 				<Box mbe='x4' withTruncatedText display='flex'>
-					<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
+					<AgentOrContactCardUsername mis='x10' name={username} status={<UserStatus status={status} />} />
 					{name && (
-						<Box flexGrow={1} flexShrink={1} flexBasis={0} mis='x7' mb='x9' align='center' justifyContent='center'>
+						<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
 							({name})
 						</Box>
 					)}
 				</Box>
-			</UserCard.Info>
+			</Info>
 		</>
 	);
 }

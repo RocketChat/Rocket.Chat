@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import UserCard from '../../../../../components/UserCard';
+import AgentOrContactCardUsername from '../../../../../components/Omnichannel/AgentOrContactCardUsername';
 import { UserStatus } from '../../../../../components/UserStatus';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
@@ -32,14 +32,12 @@ const AgentField = ({ agent, isSmall = false }) => {
 			<Label>{t('Agent')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<UserAvatar size={isSmall ? 'x28' : 'x40'} title={username} username={username} />
-				<Box mbe='x4' withTruncatedText display='flex'>
-					<UserCard.Username mis={isSmall ? 'x8' : 'x10'} name={displayName} status={<UserStatus status={status} />} />
-					{username && (
-						<Box flexGrow={1} flexShrink={1} flexBasis={0} mb='x9' mis='x4' align='center' justifyContent='center'>
-							({username})
-						</Box>
-					)}
-				</Box>
+				<AgentOrContactCardUsername mis={isSmall ? 'x8' : 'x10'} name={displayName} status={<UserStatus status={status} />} />
+				{username && (
+					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
+						({username})
+					</Box>
+				)}
 			</Info>
 		</Field>
 	);
