@@ -16,7 +16,7 @@ import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
 
 const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
-	adminData: { fullname: '', username: '', companyEmail: '', password: '' },
+	adminData: { fullname: '', username: '', email: '', password: '' },
 	organizationData: {
 		organizationName: '',
 		organizationType: '',
@@ -69,13 +69,13 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const registerAdminUser = useCallback(async (): Promise<void> => {
 		const {
-			adminData: { fullname, username, companyEmail, password },
+			adminData: { fullname, username, email, password },
 		} = setupWizardData;
-		await registerUser({ name: fullname, username, email: companyEmail, pass: password });
+		await registerUser({ name: fullname, username, email, pass: password });
 		callbacks.run('userRegistered', {});
 
 		try {
-			await loginWithPassword(companyEmail, password);
+			await loginWithPassword(email, password);
 		} catch (error) {
 			if (error instanceof Meteor.Error && error.error === 'error-invalid-email') {
 				dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
@@ -90,7 +90,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		setForceLogin(false);
 
 		await defineUsername(username);
-		await dispatchSettings([{ _id: 'Organization_Email', value: companyEmail }]);
+		await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
 		callbacks.run('usernameSet', {});
 	}, [defineUsername, dispatchToastMessage, loginWithPassword, registerUser, setForceLogin, dispatchSettings, setupWizardData, t]);
 
