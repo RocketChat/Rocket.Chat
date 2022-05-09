@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FileProp } from '@rocket.chat/core-typings';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Users, Subscriptions, Messages, Rooms } from '../../../models/server';
+import { Users, Subscriptions, Messages, Rooms, LivechatDepartmentAgents } from '../../../models/server';
 import { FederationServers, Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
@@ -60,6 +60,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions
+
+		LivechatDepartmentAgents.removeByAgentId(userId); // Remove user from livechat departments
 
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
