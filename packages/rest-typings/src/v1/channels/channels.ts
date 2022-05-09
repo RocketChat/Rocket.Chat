@@ -5,24 +5,21 @@ import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
+import type { ChannelsMessagesProps } from './ChannelsMessagesProps';
 import type { ChannelsOpenProps } from './ChannelsOpenProps';
 import type { ChannelsSetAnnouncementProps } from './ChannelsSetAnnouncementProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 
 export type ChannelsEndpoints = {
 	'channels.files': {
-		GET: (params: { roomId: IRoom['_id']; offset: number; count: number; sort: string; query: string }) => {
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id'] }>) => PaginatedResult<{
 			files: IMessage[];
-			total: number;
-		};
+		}>;
 	};
 	'channels.members': {
-		GET: (params: { roomId: IRoom['_id']; offset?: number; count?: number; filter?: string; status?: string[] }) => {
-			count: number;
-			offset: number;
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; filter?: string; status?: string[] }>) => PaginatedResult<{
 			members: IUser[];
-			total: number;
-		};
+		}>;
 	};
 	'channels.history': {
 		GET: (
@@ -115,15 +112,7 @@ export type ChannelsEndpoints = {
 		GET: (params: { roomId: string }) => { roles: IGetRoomRoles[] };
 	};
 	'channels.messages': {
-		GET: (
-			params: PaginatedRequest<
-				{
-					roomId: IRoom['_id'];
-					query: string; // { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-				},
-				'ts'
-			>,
-		) => PaginatedResult<{
+		GET: (params: ChannelsMessagesProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};

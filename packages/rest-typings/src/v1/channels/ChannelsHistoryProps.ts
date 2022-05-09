@@ -38,6 +38,15 @@ const channelsHistoryPropsSchema = {
 			type: 'string',
 			enum: ['true', 'false'],
 		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
 	},
 };
 

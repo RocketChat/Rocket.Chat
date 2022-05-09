@@ -1,24 +1,27 @@
 import Ajv from 'ajv';
 
+import type { IRoom } from '../../../../core-typings/dist';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+
 const ajv = new Ajv();
 
-export type ChannelsMessagesProps = {
-	roomId: string;
-	query?: string; // { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-	sort?: { ts: 1 | -1 };
-};
+export type ChannelsMessagesProps = PaginatedRequest<
+	{
+		roomId: IRoom['_id'];
+		// query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+	},
+	'ts'
+>;
 
 const channelsMessagesPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: { type: 'string' },
 		query: { type: 'string' },
+		count: { type: 'number' },
+		offset: { type: 'number' },
 		sort: {
-			type: 'object',
-			properties: {
-				ts: { type: 'number' },
-			},
-			required: ['ts'],
+			type: 'string',
 		},
 	},
 
