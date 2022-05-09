@@ -16,10 +16,10 @@ const SwitchDepartmentConnector = ({ ref, ...props }) => (
 					fontColor: customFontColor,
 					iconColor: customIconColor,
 				} = {},
+				guest,
 			} = {},
 			room,
 			loading = false,
-			department,
 			dispatch,
 			alerts,
 			token,
@@ -33,7 +33,8 @@ const SwitchDepartmentConnector = ({ ref, ...props }) => (
 					iconColor: customIconColor,
 				}}
 				loading={loading}
-				departments={departments.filter((dept) => dept.showOnRegistration && dept._id !== department)}
+				guest={guest}
+				departments={departments.filter((dept) => dept.showOnRegistration && dept._id !== guest?.department)}
 				dispatch={dispatch}
 				room={room}
 				alerts={alerts}

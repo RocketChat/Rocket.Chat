@@ -42,6 +42,7 @@ export const loadConfig = async () => {
 	const {
 		token,
 		businessUnit = null,
+		guest: { department } = {},
 	} = store.state;
 
 	Livechat.credentials.token = token;
@@ -56,6 +57,7 @@ export const loadConfig = async () => {
 	} = await Livechat.config({
 		token,
 		...businessUnit && { businessUnit },
+		...department && { department },
 	});
 
 	await store.setState({

@@ -19,7 +19,7 @@ class SwitchDepartmentContainer extends Component {
 	}
 
 	handleSubmit = async (fields) => {
-		const { alerts, dispatch, room, token, t } = this.props;
+		const { alerts, dispatch, room, token, t, guest } = this.props;
 		const { department } = fields;
 
 		const confirm = await this.confirmChangeDepartment();
@@ -42,7 +42,7 @@ class SwitchDepartmentContainer extends Component {
 				throw t('no_available_agents_to_transfer');
 			}
 
-			await dispatch({ department, loading: false });
+			await dispatch({ guest: { ...guest, department }, loading: false });
 			await loadConfig();
 
 			await ModalManager.alert({

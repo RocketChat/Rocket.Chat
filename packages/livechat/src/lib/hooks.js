@@ -60,13 +60,17 @@ const api = {
 		});
 	},
 
-	setDepartment(value) {
-		const { config: { departments = [] } } = store.state;
+	async setDepartment(value) {
+		const { config: { departments = [] }, department: existingDepartment } = store.state;
 
 		const dept = departments.find((dep) => dep._id === value || dep.name === value);
 		const department = (dept && dept._id) || '';
 
 		updateIframeGuestData({ department });
+
+		if (department !== existingDepartment) {
+			await loadConfig();
+		}
 	},
 
 	async setBusinessUnit(newBusinessUnit) {
