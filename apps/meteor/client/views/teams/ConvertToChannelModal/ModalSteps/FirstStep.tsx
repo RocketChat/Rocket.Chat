@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import ChannelDesertionTable from '../../ChannelDesertionTable';
 
 type FirstStepProps = {

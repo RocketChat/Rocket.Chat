@@ -1,18 +1,20 @@
 import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useRoute,
+	useUserSubscription,
+	useSetting,
+	usePermission,
+	useMethod,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
-import { usePermission } from '../contexts/AuthorizationContext';
-import { useSetModal } from '../contexts/ModalContext';
-import { useRoute } from '../contexts/RouterContext';
-import { useMethod } from '../contexts/ServerContext';
-import { useSetting } from '../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
-import { useTranslation } from '../contexts/TranslationContext';
-import { useUserSubscription } from '../contexts/UserContext';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import WarningModal from '../views/admin/apps/WarningModal';

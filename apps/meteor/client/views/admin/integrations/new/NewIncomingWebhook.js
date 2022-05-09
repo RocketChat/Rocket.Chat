@@ -1,8 +1,7 @@
 import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../hooks/useForm';
 import IncomingWebhookForm from '../IncomingWebhookForm';

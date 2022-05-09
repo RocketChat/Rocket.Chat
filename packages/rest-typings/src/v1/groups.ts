@@ -1,5 +1,8 @@
 import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser } from '@rocket.chat/core-typings';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
 export type GroupsEndpoints = {
 	'groups.files': {
 		GET: (params: { roomId: IRoom['_id']; count: number; sort: string; query: string }) => {
@@ -16,9 +19,9 @@ export type GroupsEndpoints = {
 		};
 	};
 	'groups.history': {
-		GET: (params: { roomId: string; count: number; latest?: string }) => {
+		GET: (params: PaginatedRequest<{ roomId: string; latest?: string }>) => PaginatedResult<{
 			messages: IMessage[];
-		};
+		}>;
 	};
 	'groups.archive': {
 		POST: (params: { roomId: string }) => void;

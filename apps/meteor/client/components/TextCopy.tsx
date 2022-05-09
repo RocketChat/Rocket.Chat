@@ -1,19 +1,17 @@
 import { Box, Icon, Button, Scrollable } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ComponentProps, ReactElement } from 'react';
-
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
-import { useTranslation } from '../contexts/TranslationContext';
-
-type TextCopyProps = {
-	text: string;
-	wrapper?: (text: string) => ReactElement;
-} & ComponentProps<typeof Box>;
 
 const defaultWrapperRenderer = (text: string): ReactElement => (
 	<Box fontFamily='mono' alignSelf='center' fontScale='p2' style={{ wordBreak: 'break-all' }} mie='x4' flexGrow={1} maxHeight='x108'>
 		{text}
 	</Box>
 );
+
+type TextCopyProps = {
+	text: string;
+	wrapper?: (text: string) => ReactElement;
+} & ComponentProps<typeof Box>;
 
 const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopyProps): ReactElement => {
 	const t = useTranslation();

@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Subtitle from '../../../components/Subtitle';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 function WhatIsItSection(props) {
 	const t = useTranslation();

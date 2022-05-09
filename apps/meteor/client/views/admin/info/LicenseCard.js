@@ -1,12 +1,10 @@
 import { ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Card from '../../../components/Card';
 import PlanTag from '../../../components/PlanTag';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import Feature from './Feature';
