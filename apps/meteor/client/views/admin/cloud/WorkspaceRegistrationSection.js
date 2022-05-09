@@ -1,10 +1,7 @@
 import { Box, Button, ButtonGroup, Field, Margins, TextInput } from '@rocket.chat/fuselage';
 import { useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
-
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 function WorkspaceRegistrationSection({ token: initialToken, workspaceId, uniqueId, onRegisterStatusChange, ...props }) {
 	const t = useTranslation();

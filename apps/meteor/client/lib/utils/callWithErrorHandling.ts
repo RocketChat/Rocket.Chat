@@ -1,4 +1,5 @@
-import { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '../../contexts/ServerContext';
+import { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ui-contexts';
+
 import { call } from './call';
 import { handleError } from './handleError';
 

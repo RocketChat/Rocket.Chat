@@ -1,12 +1,11 @@
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import MarkdownText from '../../../../components/MarkdownText';
 import UTCClock from '../../../../components/UTCClock';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import InfoPanel from '../../../InfoPanel';
 import Avatar from './Avatar';
