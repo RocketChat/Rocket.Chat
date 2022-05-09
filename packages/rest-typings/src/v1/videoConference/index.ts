@@ -2,8 +2,6 @@ import type { IRoom, VideoConferenceInstructions } from '@rocket.chat/core-typin
 
 import type { VideoConfStartProps } from './VideoConfStartProps';
 
-export * from './VideoConfStartProps';
-
 export type VideoConferenceEndpoints = {
 	'video-conference/jitsi.update-timeout': {
 		POST: (params: { roomId: IRoom['_id']; joiningNow?: boolean }) => {
