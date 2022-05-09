@@ -1,10 +1,12 @@
-import type { IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
+import type { IFederationServer, IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
 import type { DeleteWriteOpResultObject } from 'mongodb';
 
 import { ILicenseTag } from '../../../ee/app/license/definitions/ILicenseTag';
+import { AsyncStatePhase } from '../../lib/asyncState';
 import { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import { FollowMessageMethod } from './methods/followMessage';
 import { GetReadReceiptsMethod } from './methods/getReadReceipts';
+import { JoinRoomMethod } from './methods/joinRoom';
 import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import { RoomNameExistsMethod } from './methods/roomNameExists';
 import { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
@@ -62,6 +64,8 @@ export type ServerMethods = {
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
 	'eraseRoom': (...args: any[]) => any;
+	'federation:getServers': (...args: any[]) => { value: { data: IFederationServer[] }; phase: AsyncStatePhase };
+	'federation:getOverviewData': (...args: any[]) => (...args: any[]) => { value: { data: IFederationServer[] }; phase: AsyncStatePhase };
 	'followMessage': FollowMessageMethod;
 	'getAvatarSuggestion': (...args: any[]) => any;
 	'getSetupWizardParameters': () => {
@@ -77,6 +81,7 @@ export type ServerMethods = {
 	'instances/get': (...args: any[]) => any;
 	'jitsi:generateAccessToken': (...args: any[]) => any;
 	'jitsi:updateTimeout': (...args: any[]) => any;
+	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
 	'license:getModules': () => string[];
 	'license:getTags': () => ILicenseTag[];

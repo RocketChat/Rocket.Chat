@@ -178,7 +178,7 @@ export const useQuickActions = (
 	const closeChat = useMethod('livechat:closeRoom');
 
 	const handleClose = useCallback(
-		async (comment: string, tags: string[]) => {
+		async (comment?: string, tags?: string[]) => {
 			try {
 				await closeChat(rid, comment, { clientAction: true, tags });
 				closeModal();

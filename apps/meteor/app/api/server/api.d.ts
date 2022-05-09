@@ -205,3 +205,8 @@ export declare const API: {
 	default: APIClass;
 	helperMethods: Map<string, (...args: any[]) => unknown>;
 };
+
+export declare const defaultRateLimiterOptions: {
+	numRequestsAllowed: number;
+	intervalTimeInMS: number;
+};

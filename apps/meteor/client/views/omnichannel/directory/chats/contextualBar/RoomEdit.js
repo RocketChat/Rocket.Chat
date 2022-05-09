@@ -143,11 +143,9 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 						<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
 					</Field.Row>
 				</Field>
-				{Tags && (
-					<Field>
-						<Tags tags={tags} handler={handleTags} />
-					</Field>
-				)}
+				<Field>
+					<Tags tags={tags} handler={handleTags} />
+				</Field>
 				{PrioritiesSelect && priorities && priorities.length > 0 && (
 					<PrioritiesSelect value={priorityId} label={t('Priority')} options={priorities} handler={handlePriorityId} />
 				)}
