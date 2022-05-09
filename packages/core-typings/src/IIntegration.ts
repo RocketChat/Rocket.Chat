@@ -83,6 +83,17 @@ export type INewOutgoingIntegration = Omit<
 	token?: string;
 };
 
-export type IUpdateOutgoingIntegration = Omit<IOutgoingIntegration, 'channel'> & {
+export type IUpdateIncomingIntegration = Omit<
+	IOutgoingIntegration,
+	'type' | 'channel' | 'scriptCompiled' | 'scriptError' | '_createdBy' | '_createdAt' | 'userId' | 'token' | 'username'
+> & {
+	channel?: string;
+	avatar?: string;
+};
+
+export type IUpdateOutgoingIntegration = Omit<
+	IOutgoingIntegration,
+	'type' | 'channel' | 'scriptCompiled' | 'scriptError' | '_createdAt' | '_createdBy' | 'userId'
+> & {
 	channel?: string | string[];
 };

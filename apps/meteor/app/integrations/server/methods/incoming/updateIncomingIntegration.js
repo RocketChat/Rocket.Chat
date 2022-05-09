@@ -129,7 +129,7 @@ Meteor.methods({
 				$set: {
 					enabled: integration.enabled,
 					name: integration.name,
-					avatar: integration.avatar,
+					avatarUrl: integration.avatar ?? integration.avatarUrl,
 					emoji: integration.emoji,
 					alias: integration.alias,
 					channel: channels,
