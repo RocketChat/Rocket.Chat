@@ -22,7 +22,7 @@ const UserStatusMenu = ({
 	placement = 'bottom-end',
 }: UserStatusMenuProps): ReactElement => {
 	const t = useTranslation();
-	const [status, setStatus] = useState<UserStatusType>(initialStatus);
+	const [status, setStatus] = useState(initialStatus);
 	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption') as boolean;
 
 	const options = useMemo(() => {
