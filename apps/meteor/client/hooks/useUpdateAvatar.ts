@@ -1,3 +1,4 @@
+import { IUser } from '@rocket.chat/core-typings';
 import { useMemo, useCallback } from 'react';
 
 import { useMethod } from '../contexts/ServerContext';
@@ -6,9 +7,28 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { useEndpointAction } from './useEndpointAction';
 import { useEndpointUpload } from './useEndpointUpload';
 
-export const useUpdateAvatar = (avatarObj, userId) => {
+type AvatarUrlObj = {
+	avatarUrl: string;
+};
+
+type AvatarReset = 'reset';
+
+type AvatarServiceObject = {
+	blob: Blob;
+	contentType: string;
+	service: string;
+};
+
+type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
+
+const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => typeof avatarObj === 'string';
+const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObject => !isAvatarReset(avatarObj) && 'service' in avatarObj;
+const isAvatarUrl = (avatarObj: AvatarObject): avatarObj is AvatarUrlObj =>
+	!isAvatarReset(avatarObj) && 'service' && 'avatarUrl' in avatarObj;
+
+export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']): (() => void) => {
 	const t = useTranslation();
-	const avatarUrl = avatarObj?.avatarUrl;
+	const avatarUrl = isAvatarUrl(avatarObj) ? avatarObj.avatarUrl : '';
 
 	const successText = t('Avatar_changed_successfully');
 	const setAvatarFromService = useMethod('setAvatarFromService');
@@ -35,13 +55,13 @@ export const useUpdateAvatar = (avatarObj, userId) => {
 	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, successText);
 
 	const updateAvatar = useCallback(async () => {
-		if (avatarObj === 'reset') {
+		if (isAvatarReset(avatarObj)) {
 			return resetAvatarAction();
 		}
-		if (avatarObj.avatarUrl) {
+		if (isAvatarUrl(avatarObj)) {
 			return saveAvatarUrlAction();
 		}
-		if (avatarObj.service) {
+		if (isServiceObject(avatarObj)) {
 			const { blob, contentType, service } = avatarObj;
 			try {
 				await setAvatarFromService(blob, contentType, service);
