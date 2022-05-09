@@ -15,4 +15,10 @@ export type UsersEndpoints = {
 	'users.listTeams': {
 		GET: (params: { userId: IUser['_id'] }) => { teams: Array<ITeam> };
 	};
+	'users.setAvatar': {
+		POST: (params: { userId?: IUser['_id']; username?: IUser['username']; avatarUrl?: string }) => void;
+	};
+	'users.resetAvatar': {
+		POST: (params: { userId?: IUser['_id']; username?: IUser['username'] }) => void;
+	};
 };

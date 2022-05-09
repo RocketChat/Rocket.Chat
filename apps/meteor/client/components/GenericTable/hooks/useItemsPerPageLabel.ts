@@ -1,6 +1,5 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 export const useItemsPerPageLabel = (): (() => string) => {
 	const t = useTranslation();
