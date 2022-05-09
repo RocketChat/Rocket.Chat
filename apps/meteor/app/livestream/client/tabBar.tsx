@@ -1,8 +1,7 @@
 import React, { ReactNode, useMemo } from 'react';
 import { Option, Badge } from '@rocket.chat/fuselage';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 
-import { useSetting } from '../../../client/contexts/SettingsContext';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
 

@@ -1,9 +1,9 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/utils/goToRoomById';

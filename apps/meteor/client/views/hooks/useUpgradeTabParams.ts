@@ -1,9 +1,8 @@
+import { useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { format } from 'date-fns';
 import { useQuery } from 'react-query';
 
 import { UpgradeTabVariant, getUpgradeTabType } from '../../../lib/getUpgradeTabType';
-import { useEndpoint } from '../../contexts/ServerContext';
-import { useSetting } from '../../contexts/SettingsContext';
 
 export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; trialEndDate: string | undefined; isLoading: boolean } => {
 	const getRegistrationStatus = useEndpoint('GET', 'cloud.registrationStatus');

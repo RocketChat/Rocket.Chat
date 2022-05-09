@@ -1,10 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
 import GenericModal from '../../../../components/GenericModal';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import Reactions from './Reactions';
 
 type ReactionListProps = {

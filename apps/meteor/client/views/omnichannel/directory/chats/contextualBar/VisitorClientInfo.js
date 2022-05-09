@@ -1,7 +1,7 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import UAParser from 'ua-parser-js';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import Field from '../../../components/Field';
