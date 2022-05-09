@@ -1,11 +1,20 @@
 import { ISetting } from '@rocket.chat/core-typings';
-import { Button } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
 import Card from '../../../components/Card';
 import { useRoute } from '../../../contexts/RouterContext';
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
+
+const clampStyle = css`
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-line-clamp: 4;
+	-webkit-box-orient: vertical;
+	word-break: break-all;
+`;
 
 type SettingsGroupCard = {
 	id: ISetting['_id'];
@@ -26,9 +35,17 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCard): React
 	});
 
 	return (
-		<Card width='full' height='full' backgroundColor='white'>
-			<Card.Title>{t(title)}</Card.Title>
-			{description && t.has(description) && <Card.Body>{t(description)}</Card.Body>}
+		<Card borderRadius='x2' pb='x16' pi='x20' width='full' height='full' minHeight='x188' backgroundColor='white'>
+			<Card.Title>
+				<Box fontScale='h4'>{t(title)}</Box>
+			</Card.Title>
+			<Box height='x88'>
+				{description && t.has(description) && (
+					<Card.Body>
+						<Box className={clampStyle}>{t(description)}</Box>
+					</Card.Body>
+				)}
+			</Box>
 			<Card.Footer>
 				<Button small onClick={handleOpenGroup}>
 					{t('Open')}
