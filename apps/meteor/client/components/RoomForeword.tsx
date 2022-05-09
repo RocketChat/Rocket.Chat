@@ -1,24 +1,35 @@
+import { IRoom, isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
-import React, { useCallback } from 'react';
+import React, { ReactElement } from 'react';
 
-import { Rooms, Users } from '../../app/models/client';
+import { Users } from '../../app/models/client';
 import { getUserAvatarURL } from '../../app/utils/client';
 import { useTranslation } from '../contexts/TranslationContext';
-import { useUser } from '../contexts/UserContext';
-import { useReactiveValue } from '../hooks/useReactiveValue';
+import { useUser, useUserRoom } from '../contexts/UserContext';
 import { VoipRoomForeword } from './voip/room/VoipRoomForeword';
 
-const RoomForeword = ({ _id, rid = _id }) => {
+type RoomForewordProps = { _id: IRoom['_id']; rid?: IRoom['_id'] } | { rid: IRoom['_id']; _id?: IRoom['_id'] };
+
+const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
+	const roomId = _id || rid;
+	if (!roomId) {
+		throw new Error('Room id required - RoomForeword');
+	}
+
 	const t = useTranslation();
 
 	const user = useUser();
-	const room = useReactiveValue(useCallback(() => Rooms.findOne({ _id: rid }), [rid]));
+	const room = useUserRoom(roomId);
 
-	if (room?.t === 'v') {
+	if (!room) {
+		return null;
+	}
+
+	if (isVoipRoom(room)) {
 		return <VoipRoomForeword room={room} />;
 	}
 
-	if (room?.t !== 'd') {
+	if (!isDirectMessageRoom(room)) {
 		return (
 			<Box fontScale='c1' color='default' display='flex' justifyContent='center'>
 				{t('Start_of_conversation')}
@@ -26,8 +37,8 @@ const RoomForeword = ({ _id, rid = _id }) => {
 		);
 	}
 
-	const usernames = room.usernames.filter((username) => username !== user.username);
-	if (usernames.length < 1) {
+	const usernames = room.usernames?.filter((username) => username !== user?.username);
+	if (!usernames || usernames.length < 1) {
 		return null;
 	}
 
