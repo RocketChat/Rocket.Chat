@@ -397,7 +397,7 @@ export class APIClass extends Restivus {
 					try {
 						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
-						if (_options.validateParams && _options.validateParams(this.request.method === 'GET' ? this.queryParams : this.bodyParams)) {
+						if (_options.validateParams && !_options.validateParams(this.request.method === 'GET' ? this.queryParams : this.bodyParams)) {
 							throw new Meteor.Error('error-invalid-params', _options.validateParams.errors?.map((error) => error.message).join('\n '));
 						}
 						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, _options.permissionsRequired))) {

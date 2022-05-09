@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongodb';
+import type { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
