@@ -125,8 +125,8 @@ registerAdminRoute('/email-inboxes/:context?/:_id?', {
 });
 
 Meteor.startup(() => {
-	registerAdminRoute('/:group+', {
-		name: 'admin',
+	registerAdminRoute('/settings/:group?', {
+		name: 'admin-settings',
 		lazyRouteComponent: () => import('./settings/SettingsRoute'),
 	});
 });

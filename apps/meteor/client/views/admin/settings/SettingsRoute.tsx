@@ -5,14 +5,18 @@ import { useIsPrivilegedSettingsContext } from '../../../contexts/SettingsContex
 import EditableSettingsProvider from '../../../providers/EditableSettingsProvider';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import GroupSelector from './GroupSelector';
+import SettingsPage from './SettingsPage';
 
-export function SettingsRoute() {
+export const SettingsRoute = () => {
 	const hasPermission = useIsPrivilegedSettingsContext();
-
 	const groupId = useRouteParameter('group');
 
 	if (!hasPermission) {
 		return <NotAuthorizedPage />;
+	}
+
+	if (!groupId) {
+		return <SettingsPage />;
 	}
 
 	return (
@@ -20,6 +24,6 @@ export function SettingsRoute() {
 			<GroupSelector groupId={groupId} />
 		</EditableSettingsProvider>
 	);
-}
+};
 
 export default SettingsRoute;

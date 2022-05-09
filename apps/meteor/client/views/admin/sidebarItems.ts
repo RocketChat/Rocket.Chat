@@ -1,4 +1,4 @@
-import { hasPermission } from '../../../app/authorization/client';
+import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {
@@ -72,5 +72,12 @@ export const {
 		i18nLabel: 'Email_Inboxes',
 		tag: 'Alpha',
 		permissionGranted: (): boolean => hasPermission('manage-email-inbox'),
+	},
+	{
+		icon: 'customize',
+		href: 'admin-settings',
+		i18nLabel: 'Settings',
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
 ]);

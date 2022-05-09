@@ -52,7 +52,7 @@ const AdminSidebar: FC = () => {
 				/>
 				<Sidebar.Content>
 					<AdminSidebarPages currentPath={currentPath || ''} />
-					{canViewSettings && <AdminSidebarSettings currentPath={currentPath || ''} />}
+					{/* {canViewSettings && <AdminSidebarSettings currentPath={currentPath || ''} />} */}
 				</Sidebar.Content>
 			</Sidebar>
 		</SettingsProvider>
