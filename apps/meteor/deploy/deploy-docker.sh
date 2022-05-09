@@ -242,6 +242,8 @@ main() {
       }
     fi
   fi
+  
+  command_exists curl || error "please install curl first for this script to work"
 
   local project_directory="rocketchat"
 
@@ -261,3 +263,5 @@ main() {
   generate_passwords
   deploy
 }
+
+main "$@"
