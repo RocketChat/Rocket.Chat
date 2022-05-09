@@ -1,5 +1,6 @@
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -7,9 +8,6 @@ import { hasAtLeastOnePermission } from '../../../../../../app/authorization/cli
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import Tags from '../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useMethod } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
@@ -143,11 +141,9 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 						<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
 					</Field.Row>
 				</Field>
-				{Tags && (
-					<Field>
-						<Tags tags={tags} handler={handleTags} />
-					</Field>
-				)}
+				<Field>
+					<Tags tags={tags} handler={handleTags} />
+				</Field>
 				{PrioritiesSelect && priorities && priorities.length > 0 && (
 					<PrioritiesSelect value={priorityId} label={t('Priority')} options={priorities} handler={handlePriorityId} />
 				)}

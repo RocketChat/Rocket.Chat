@@ -10,12 +10,12 @@ import {
 	Divider,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import VerticalBar from '../../../components/VerticalBar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, ...props }) {
 	const t = useTranslation();

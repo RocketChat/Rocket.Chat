@@ -1,10 +1,9 @@
 import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
 import type { Placements } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ComponentProps, useRef, useCallback, useState, useMemo, useEffect } from 'react';
 
-import { useSetting } from '../contexts/SettingsContext';
-import { useTranslation } from '../contexts/TranslationContext';
 import { UserStatus } from './UserStatus';
 
 type UserStatusMenuProps = {
