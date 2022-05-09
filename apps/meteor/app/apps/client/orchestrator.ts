@@ -3,7 +3,6 @@ import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManag
 import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
-import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -23,6 +22,13 @@ import {
 	IDeletedInstalledApp,
 	IAppSynced,
 	IAppScreenshots,
+	IAuthor,
+	IDetailedChangelog,
+	IDetailedDescription,
+	ISubscriptionInfo,
+	ISettingsReturn,
+	ISettingsPayload,
+	ISettingsSetReturn,
 } from './@types/IOrchestrator';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
@@ -30,6 +36,42 @@ import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
 const { APIClient } = require('../../utils');
 const { hasAtLeastOnePermission } = require('../../authorization');
+
+export interface IAppsFromMarketplace {
+	price: number;
+	pricingPlans: IPricingPlan[];
+	purchaseType: EAppPurchaseType;
+	isEnterpriseOnly: boolean;
+	modifiedAt: Date;
+	internalId: string;
+	id: string;
+	name: string;
+	nameSlug: string;
+	version: string;
+	categories: string[];
+	description: string;
+	detailedDescription: IDetailedDescription;
+	detailedChangelog: IDetailedChangelog;
+	requiredApiVersion: string;
+	author: IAuthor;
+	classFile: string;
+	iconFile: string;
+	iconFileData: string;
+	status: string;
+	isVisible: boolean;
+	createdDate: Date;
+	modifiedDate: Date;
+	isPurchased: boolean;
+	isSubscribed: boolean;
+	subscriptionInfo: ISubscriptionInfo;
+	compiled: boolean;
+	compileJobId: string;
+	changesNote: string;
+	languages: string[];
+	privacyPolicySummary: string;
+	internalChangesNote: string;
+	permissions: IPermission[];
+}
 
 class AppClientOrchestrator {
 	private _appClientUIHost: RealAppsEngineUIHost;
@@ -94,15 +136,7 @@ class AppClientOrchestrator {
 		return apps;
 	}
 
-	public async getAppsFromMarketplace(): Promise<
-		{
-			price: number;
-			pricingPlans: IPricingPlan[];
-			purchaseType: EAppPurchaseType;
-			isEnterpriseOnly: boolean;
-			modifiedAt: Date;
-		}[]
-	> {
+	public async getAppsFromMarketplace(): Promise<IAppsFromMarketplace[]> {
 		const appsOverviews: IAppFromMarketplace[] = await APIClient.get('apps', { marketplace: 'true' });
 		return appsOverviews.map((app: IAppFromMarketplace) => {
 			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt } = app;
@@ -149,12 +183,12 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	public async getAppSettings(appId: string): Promise<{ [id: string]: ISetting }> {
+	public async getAppSettings(appId: string): Promise<ISettingsReturn> {
 		const { settings } = await APIClient.get(`apps/${appId}/settings`);
 		return settings;
 	}
 
-	public async setAppSettings(appId: string, settings: { [id: string]: ISetting }): Promise<IAppStorageItem> {
+	public async setAppSettings(appId: string, settings: ISettingsPayload): Promise<ISettingsSetReturn> {
 		const { updated } = await APIClient.post(`apps/${appId}/settings`, undefined, { settings });
 		return updated;
 	}
@@ -219,7 +253,7 @@ class AppClientOrchestrator {
 		});
 	}
 
-	public async getCategories(): Promise<ICategory> {
+	public async getCategories(): Promise<ICategory[]> {
 		const categories = await APIClient.get('apps', { categories: 'true' });
 		return categories;
 	}

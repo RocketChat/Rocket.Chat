@@ -1,4 +1,5 @@
 import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo';
+import { ISetting } from '@rocket.chat/apps-engine/definition/settings/ISetting';
 
 export interface IDetailedDescription {
 	raw: string;
@@ -181,5 +182,23 @@ export interface IScreenshot {
 
 export interface IAppScreenshots {
 	screenshots: IScreenshot[];
+	success: boolean;
+}
+
+export interface ISettings {
+	[key: string]: ISetting;
+}
+
+export interface ISettingsReturn {
+	settings: ISettings;
+	success: boolean;
+}
+
+export interface ISettingsPayload {
+	settings: ISetting[];
+}
+
+export interface ISettingsSetReturn {
+	updated: ISettings;
 	success: boolean;
 }
