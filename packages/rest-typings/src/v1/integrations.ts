@@ -15,9 +15,7 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type IntegrationsEndpoints = {
 	'integrations.create': {
-		POST:
-			| ((params: INewIncomingIntegration) => { integration: IIncomingIntegration })
-			| ((params: INewOutgoingIntegration) => { integration: IOutgoingIntegration });
+		POST: (params: INewIncomingIntegration | INewOutgoingIntegration) => { integration: IIntegration };
 	};
 
 	'integrations.history': {
@@ -27,12 +25,14 @@ export type IntegrationsEndpoints = {
 			}>,
 		) => PaginatedResult<{
 			history: IIntegrationHistory[];
+			items: number;
 		}>;
 	};
 
 	'integrations.list': {
 		GET: (params: PaginatedRequest<{}>) => PaginatedResult<{
 			integrations: IIntegration[];
+			items: number;
 		}>;
 	};
 
@@ -54,7 +54,7 @@ export type IntegrationsEndpoints = {
 	};
 
 	'integrations.get': {
-		GET: (params: { integrationId: string; createdBy: IUser['_id'] }) => { integration: IIntegration };
+		GET: (params: { integrationId: string; createdBy?: IUser['_id'] }) => { integration: IIntegration };
 	};
 
 	'integrations.update': {

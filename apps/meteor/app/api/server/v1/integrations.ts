@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { IIntegration, IOutgoingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 
 import { hasAtLeastOnePermission } from '../../../authorization/server';
 import { Integrations, IntegrationHistory } from '../../../models/server/raw';
@@ -17,49 +18,77 @@ API.v1.addRoute(
 		post() {
 			const { userId, bodyParams } = this;
 
-			check(
-				bodyParams,
-				Match.ObjectIncluding({
-					type: String,
-					name: String,
-					enabled: Boolean,
-					username: String,
-					urls: Match.Maybe([String]),
-					channel: String,
-					event: Match.Maybe(String),
-					triggerWords: Match.Maybe([String]),
-					alias: Match.Maybe(String),
-					avatar: Match.Maybe(String),
-					avatarUrl: Match.Maybe(String),
-					emoji: Match.Maybe(String),
-					token: Match.Maybe(String),
-					scriptEnabled: Boolean,
-					script: Match.Maybe(String),
-					targetRoom: Match.Maybe(String),
-					impersonateUser: Match.Maybe(Boolean),
-					retryCount: Match.Maybe(Number),
-					retryDelay: Match.Maybe(String),
-					retryFailedCalls: Match.Maybe(Boolean),
-					runOnEdits: Match.Maybe(Boolean),
-					triggerWordAnywhere: Match.Maybe(Boolean),
-				}),
-			);
-
-			let integration;
+			check(bodyParams, Match.ObjectIncluding({ type: String }));
 
 			switch (bodyParams.type) {
-				case 'webhook-outgoing':
-					Meteor.runAsUser(userId, () => {
-						integration = Meteor.call('addOutgoingIntegration', bodyParams);
-					});
-					break;
 				case 'webhook-incoming':
-					Meteor.runAsUser(userId, () => {
-						integration = Meteor.call('addIncomingIntegration', bodyParams);
-					});
+					check(
+						bodyParams,
+						Match.ObjectIncluding({
+							name: String,
+							enabled: Boolean,
+							username: String,
+							channel: String,
+							alias: Match.Maybe(String),
+							avatar: Match.Maybe(String),
+							avatarUrl: Match.Maybe(String),
+							emoji: Match.Maybe(String),
+							token: Match.Maybe(String),
+							scriptEnabled: Boolean,
+							script: Match.Maybe(String),
+						}),
+					);
 					break;
-				default:
-					return API.v1.failure('Invalid integration type.');
+				case 'webhook-outgoing':
+					check(
+						bodyParams,
+						Match.ObjectIncluding({
+							name: String,
+							enabled: Boolean,
+							username: String,
+							urls: Match.Maybe([String]),
+							channel: String,
+							event: String,
+							triggerWords: Match.Maybe([String]),
+							alias: Match.Maybe(String),
+							avatar: Match.Maybe(String),
+							emoji: Match.Maybe(String),
+							token: Match.Maybe(String),
+							scriptEnabled: Boolean,
+							script: Match.Maybe(String),
+							targetRoom: Match.Maybe(String),
+							impersonateUser: Match.Maybe(Boolean),
+							retryCount: Match.Maybe(Number),
+							retryDelay: Match.Maybe(String),
+							retryFailedCalls: Match.Maybe(Boolean),
+							runOnEdits: Match.Maybe(Boolean),
+							triggerWordAnywhere: Match.Maybe(Boolean),
+						}),
+					);
+					break;
+			}
+
+			const integration = ((): IIntegration | undefined => {
+				let integration: IIntegration | undefined;
+
+				switch (bodyParams.type) {
+					case 'webhook-outgoing':
+						Meteor.runAsUser(userId, () => {
+							integration = Meteor.call('addOutgoingIntegration', bodyParams);
+						});
+						break;
+					case 'webhook-incoming':
+						Meteor.runAsUser(userId, () => {
+							integration = Meteor.call('addIncomingIntegration', bodyParams);
+						});
+						break;
+				}
+
+				return integration;
+			})();
+
+			if (!integration) {
+				return API.v1.failure('Invalid integration type.');
 			}
 
 			return API.v1.success({ integration });
@@ -108,6 +137,7 @@ API.v1.addRoute(
 				history,
 				offset,
 				items: history.length,
+				count: history.length,
 				total,
 			});
 		},
@@ -149,6 +179,7 @@ API.v1.addRoute(
 				integrations,
 				offset,
 				items: integrations.length,
+				count: integrations.length,
 				total,
 			});
 		},
@@ -175,18 +206,25 @@ API.v1.addRoute(
 				this.bodyParams,
 				Match.ObjectIncluding({
 					type: String,
-					target_url: Match.Maybe(String),
-					integrationId: Match.Maybe(String),
 				}),
 			);
 
-			if (!this.bodyParams.target_url && !this.bodyParams.integrationId) {
-				return API.v1.failure('An integrationId or target_url needs to be provided.');
-			}
-
-			let integration;
+			let integration: IIntegration | null = null;
 			switch (this.bodyParams.type) {
 				case 'webhook-outgoing':
+					check(
+						this.bodyParams,
+						Match.ObjectIncluding({
+							// eslint-disable-next-line @typescript-eslint/camelcase
+							target_url: Match.Maybe(String),
+							integrationId: Match.Maybe(String),
+						}),
+					);
+
+					if (!this.bodyParams.target_url && !this.bodyParams.integrationId) {
+						return API.v1.failure('An integrationId or target_url needs to be provided.');
+					}
+
 					if (this.bodyParams.target_url) {
 						integration = Promise.await(Integrations.findOne({ urls: this.bodyParams.target_url }));
 					} else if (this.bodyParams.integrationId) {
@@ -197,22 +235,32 @@ API.v1.addRoute(
 						return API.v1.failure('No integration found.');
 					}
 
+					const outgoingId = integration._id;
+
 					Meteor.runAsUser(this.userId, () => {
-						Meteor.call('deleteOutgoingIntegration', integration._id);
+						Meteor.call('deleteOutgoingIntegration', outgoingId);
 					});
 
 					return API.v1.success({
 						integration,
 					});
 				case 'webhook-incoming':
+					check(
+						this.bodyParams,
+						Match.ObjectIncluding({
+							integrationId: String,
+						}),
+					);
+
 					integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
 
 					if (!integration) {
 						return API.v1.failure('No integration found.');
 					}
 
+					const incomingId = integration._id;
 					Meteor.runAsUser(this.userId, () => {
-						Meteor.call('deleteIncomingIntegration', integration._id);
+						Meteor.call('deleteIncomingIntegration', incomingId);
 					});
 
 					return API.v1.success({
@@ -272,6 +320,7 @@ API.v1.addRoute(
 					script: Match.Maybe(String),
 					targetChannel: Match.Maybe(String),
 					integrationId: Match.Maybe(String),
+					// eslint-disable-next-line @typescript-eslint/camelcase
 					target_url: Match.Maybe(String),
 				}),
 			);
@@ -292,7 +341,7 @@ API.v1.addRoute(
 					Meteor.call('updateOutgoingIntegration', integration._id, this.bodyParams);
 
 					return API.v1.success({
-						integration: Promise.await(Integrations.findOne({ _id: integration._id })),
+						integration: Promise.await(Integrations.findOne({ _id: integration._id })) as IOutgoingIntegration,
 					});
 				case 'webhook-incoming':
 					integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
@@ -304,7 +353,7 @@ API.v1.addRoute(
 					Meteor.call('updateIncomingIntegration', integration._id, this.bodyParams);
 
 					return API.v1.success({
-						integration: Promise.await(Integrations.findOne({ _id: integration._id })),
+						integration: Promise.await(Integrations.findOne({ _id: integration._id })) as IIncomingIntegration,
 					});
 				default:
 					return API.v1.failure('Invalid integration type.');
