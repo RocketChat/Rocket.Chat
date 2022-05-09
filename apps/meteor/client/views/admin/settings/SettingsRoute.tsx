@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { useRouteParameter } from '../../../contexts/RouterContext';
 import { useIsPrivilegedSettingsContext } from '../../../contexts/SettingsContext';
@@ -7,7 +7,7 @@ import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import GroupSelector from './GroupSelector';
 import SettingsPage from './SettingsPage';
 
-export const SettingsRoute = () => {
+export const SettingsRoute = (): ReactElement => {
 	const hasPermission = useIsPrivilegedSettingsContext();
 	const groupId = useRouteParameter('group');
 
@@ -20,7 +20,7 @@ export const SettingsRoute = () => {
 	}
 
 	return (
-		<EditableSettingsProvider>
+		<EditableSettingsProvider query={{}}>
 			<GroupSelector groupId={groupId} />
 		</EditableSettingsProvider>
 	);
