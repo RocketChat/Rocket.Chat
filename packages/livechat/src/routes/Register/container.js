@@ -40,11 +40,15 @@ export class RegisterContainer extends Component {
 		};
 
 		await dispatch({ loading: true, department });
+		let user = null;
 		try {
-			const user = await Livechat.grantVisitor({ visitor: { ...fields, token } }).catch(() => null);
+			user = await Livechat.grantVisitor({ visitor: { ...fields, token } });
 			await dispatch({ user });
 			parentCall('callback', ['pre-chat-form-submit', fields]);
 			this.registerCustomFields(customFields);
+		} catch (e) {
+			await dispatch({ user });
+			console.error(e);
 		} finally {
 			await dispatch({ loading: false });
 		}
