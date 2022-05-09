@@ -6,7 +6,7 @@ import { BaseRaw, IndexSpecification } from './BaseRaw';
 type T = INpsVote;
 export class NpsVoteRaw extends BaseRaw<T> {
 	modelIndexes(): IndexSpecification[] {
-		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 } }];
+		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}
 
 	findNotSentByNpsId(npsId: string, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
