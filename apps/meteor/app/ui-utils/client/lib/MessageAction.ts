@@ -6,11 +6,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Icon } from '@rocket.chat/fuselage';
 import { IMessage, IUser, ISubscription, IRoom, SettingValue } from '@rocket.chat/core-typings';
+import { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
-import { TranslationKey } from '../../../../client/contexts/TranslationContext';
 
 const call = (method: string, ...args: any[]): Promise<any> =>
 	new Promise((resolve, reject) => {

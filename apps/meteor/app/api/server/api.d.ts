@@ -85,6 +85,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	readonly bodyParams: TMethod extends 'GET' ? Record<string, unknown> : Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
 	requestParams(): OperationParams<TMethod, TPathPattern>;
+	getLoggedInUser(): IUser | undefined;
 	getPaginationItems(): {
 		readonly offset: number;
 		readonly count: number;

@@ -1,0 +1,22 @@
+@use 'sass:math';
+
+@import '../../../styles/variables';
+
+$message-content-gap: math.div($default-gap, 2);
+$message-content-margin: math.div(-$message-content-gap, 2) math.div($default-gap, 2);
+
+.message-content {
+	display: flex;
+	flex-direction: column;
+
+	margin: $message-content-margin;
+	align-items: flex-start;
+
+	> * {
+		margin: math.div($message-content-gap, 2) 0;
+	}
+
+	&--reverse {
+		align-items: flex-end;
+	}
+}
