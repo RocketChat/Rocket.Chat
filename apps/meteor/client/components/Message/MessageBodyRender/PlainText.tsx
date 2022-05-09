@@ -12,10 +12,10 @@ const PlainText: FC<PlainTextType> = ({ value: text }) => {
 	const highlights = useMessageListHighlights();
 	const katex = useMessageListKatex();
 
-	// TODO ENG DAY:
-	// Add style for empty paragraphs in fuselage
+	// TODO
+	// Add line break token in the parser
 	if (!text.trim()) {
-		return <br />;
+		return <></>;
 	}
 
 	if (highlights || katex) {
