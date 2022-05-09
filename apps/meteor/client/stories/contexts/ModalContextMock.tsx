@@ -1,7 +1,6 @@
+import { ModalContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
-
-import { ModalContext } from '../../contexts/ModalContext';
 
 const logAction = action('ModalContext');
 

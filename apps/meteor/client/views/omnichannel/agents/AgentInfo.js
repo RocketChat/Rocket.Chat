@@ -1,11 +1,11 @@
 import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import { UserStatus } from '../../../components/UserStatus';
 import VerticalBar from '../../../components/VerticalBar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import UserInfo from '../../room/contextualBar/UserInfo';

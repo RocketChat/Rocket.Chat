@@ -1,4 +1,5 @@
 import { Table } from '@rocket.chat/fuselage';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import {
@@ -8,8 +9,6 @@ import {
 	ImportingStartedStates,
 	ProgressStep,
 } from '../../../../app/importer/lib/ImporterProgressStep';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
 

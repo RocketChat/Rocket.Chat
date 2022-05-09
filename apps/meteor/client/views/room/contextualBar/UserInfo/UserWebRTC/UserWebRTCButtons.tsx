@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useWebRTCProps } from '../../../hooks/useWebRTC';
 
 const UserWebRTCButtons = ({ webRTCData }: { webRTCData: useWebRTCProps }): ReactElement => {
