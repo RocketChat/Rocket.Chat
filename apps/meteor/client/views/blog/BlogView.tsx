@@ -7,7 +7,6 @@ import React, { ReactElement, useState } from 'react';
 import Page from '../../components/Page';
 import BottomBar from '../../components/BottomBar';
 import TopBar from '../../topbar/TopBar';
-import CreateBlogForm from './components/CreateBlogForm';
 import SingleBlogPost from './SingleBlogPost';
 import CreateBlogForm from './components/CreateBlogForm';
 

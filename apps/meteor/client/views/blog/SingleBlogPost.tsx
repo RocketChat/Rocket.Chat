@@ -1,11 +1,9 @@
 import { Box, Icon, Margins, Modal, Menu } from '@rocket.chat/fuselage';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useContext } from 'react';
 
-
 import { DispatchBlogGlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
-
-import { useRoute } from '../../contexts/RouterContext';
 
 
 type Props = {

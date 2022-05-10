@@ -5,7 +5,7 @@ import GameButton from './GameButton/GameButton';
 import HomeButton from './HomeButton/HomeButton';
 import MessagesButton from './MessagesButton/MessagesButton';
 import ProductButton from './ProductButton/ProductButton';
-import BurgerMenu from './BurgerMenu';
+import BurgerMenu from '../BurgerMenu';
 
 const BottomBar = (): ReactElement => (
 	<div style={{ display: 'flex', width: '100%', height: '70px' }}>

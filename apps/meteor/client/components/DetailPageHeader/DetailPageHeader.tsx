@@ -1,7 +1,6 @@
 import { Icon, Menu, Box } from '@rocket.chat/fuselage';
+import {  useRoute } from '@rocket.chat/ui-contexts';
 import React, { useContext, Dispatch as ReactDispatch, Context } from 'react';
-
-import { useRoute } from '../../contexts/RouterContext';
 
 const DetailPageHeader = ({
 	title,

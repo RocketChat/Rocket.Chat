@@ -1,9 +1,9 @@
 import { Icon, Margins, Box, Flex } from '@rocket.chat/fuselage';
+import {  useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useContext } from 'react';
 
 import { DispatchGameGlobalContext } from '../../contexts/GameDetailContext/GlobalState';
 import { IGame } from '../../../definition/IGame';
-import { useRoute } from '../../contexts/RouterContext';
 
 const SingleGame = ({ _id, title, description }: Partial<IGame>): ReactElement => {
 	const { dispatch } = useContext(DispatchGameGlobalContext);
