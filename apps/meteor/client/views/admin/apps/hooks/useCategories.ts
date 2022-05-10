@@ -1,8 +1,8 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ICategory } from '../../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../../app/apps/client/orchestrator';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 import { handleAPIError } from '../helpers';
 import { useCategoryFlatList } from './useCategoryFlatList';

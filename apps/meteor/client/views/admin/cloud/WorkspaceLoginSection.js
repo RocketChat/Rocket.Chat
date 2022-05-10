@@ -1,10 +1,7 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect } from 'react';
-
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 function WorkspaceLoginSection({ onRegisterStatusChange, ...props }) {
 	const t = useTranslation();

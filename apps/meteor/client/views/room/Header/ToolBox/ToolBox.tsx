@@ -1,12 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Menu, Option, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactNode, useRef, ComponentProps, ReactElement } from 'react';
 
 // used to open the menu option by keyboard
 import Header from '../../../../components/Header';
-import { useLayout } from '../../../../contexts/LayoutContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 import { useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
