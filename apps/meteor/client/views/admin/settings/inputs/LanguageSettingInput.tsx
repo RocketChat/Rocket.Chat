@@ -7,7 +7,7 @@ import ResetSettingButton from '../ResetSettingButton';
 type LanguageSettingInputProps = {
 	_id: string;
 	label: string;
-	value: string;
+	value: string | number | string[];
 	placeholder?: string;
 	readonly?: boolean;
 	autocomplete?: boolean;
