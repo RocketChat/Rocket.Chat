@@ -25,16 +25,14 @@ function ContactManagerInfo({ username }) {
 
 	return (
 		<>
-			<Info className={wordBreak} flexShrink={0} style={{ display: 'flex' }}>
+			<Info className={wordBreak} style={{ display: 'flex' }}>
 				<UserAvatar title={username} username={username} />
-				<Box mbe='x4' withTruncatedText display='flex'>
-					<AgentOrContactCardUsername mis='x10' name={username} status={<UserStatus status={status} />} />
-					{name && (
-						<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-							({name})
-						</Box>
-					)}
-				</Box>
+				<AgentOrContactCardUsername mis='x10' name={username} status={<UserStatus status={status} />} />
+				{name && (
+					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
+						({name})
+					</Box>
+				)}
 			</Info>
 		</>
 	);
