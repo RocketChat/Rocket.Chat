@@ -1,3 +1,4 @@
+import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
@@ -300,6 +301,7 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
+		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -403,7 +405,7 @@ export class RoomsRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { allowDiskUse: true, readPreference });
 	}
 
 	findOneByName(name, options = {}) {
