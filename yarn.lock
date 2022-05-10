@@ -6438,6 +6438,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/js-yaml@npm:^4.0.5":
+  version: 4.0.5
+  resolution: "@types/js-yaml@npm:4.0.5"
+  checksum: 7dcac8c50fec31643cc9d6444b5503239a861414cdfaa7ae9a38bc22597c4d850c4b8cec3d82d73b3fbca408348ce223b0408d598b32e094470dfffc6d486b4d
+  languageName: node
+  linkType: hard
+
 "@types/jsdom-global@npm:^3.0.2":
   version: 3.0.2
   resolution: "@types/jsdom-global@npm:3.0.2"
@@ -28889,6 +28896,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocket.chat@workspace:."
   dependencies:
+    "@types/js-yaml": ^4.0.5
     husky: ^7.0.4
     turbo: 1.2.5
   languageName: unknown
