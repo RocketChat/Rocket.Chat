@@ -21,6 +21,7 @@ createTemplateForComponent('DiscussionMetric', () => import('./components/Messag
 });
 
 createTemplateForComponent('MessageList', () => import('./views/room/MessageList/MessageList'));
+createTemplateForComponent('ThreadMessageList', () => import('./views/room/MessageList/ThreadMessageList'));
 createTemplateForComponent('MessageBody', () => import('./components/Message/MessageBodyRender'));
 
 createTemplateForComponent('BroadCastMetric', () => import('./components/Message/Metrics/Broadcast'));

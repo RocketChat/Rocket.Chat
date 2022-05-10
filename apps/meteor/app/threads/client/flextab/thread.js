@@ -117,6 +117,12 @@ Template.thread.helpers({
 			onChange: () => instance.state.set('sendToChannel', !checked),
 		};
 	},
+	tmid() {
+		return Template.instance().state.get('tmid');
+	},
+	rid() {
+		return Template.instance().state.get('rid');
+	},
 });
 
 Template.thread.onRendered(function () {

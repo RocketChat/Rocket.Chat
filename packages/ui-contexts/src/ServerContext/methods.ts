@@ -11,6 +11,7 @@ import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import type { SaveSettingsMethod } from './methods/saveSettings';
 import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
 import type { UnfollowMessageMethod } from './methods/unfollowMessage';
+import type { GetThreadMessagesMethod } from './methods/getThreadMessages';
 
 // TODO: frontend chapter day - define methods
 
@@ -123,6 +124,7 @@ export interface ServerMethods {
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
 	'checkRegistrationSecretURL': (hash: string) => boolean;
+	'getThreadMessages': GetThreadMessagesMethod;
 }
 
 export type ServerMethodName = keyof ServerMethods;
