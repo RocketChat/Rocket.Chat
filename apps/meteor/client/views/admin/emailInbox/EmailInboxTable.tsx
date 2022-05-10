@@ -59,7 +59,7 @@ const EmailInboxTable = (): ReactElement => {
 		[router],
 	);
 
-	const { ...result } = useEndpointData('email-inbox.list', query);
+	const { phase, value: { emailInboxes = [], count = 0 } = {} } = useEndpointData('email-inbox.list', query);
 
 	return (
 		<>
@@ -84,11 +84,10 @@ const EmailInboxTable = (): ReactElement => {
 					></GenericTableHeaderCell>
 				</GenericTableHeader>
 				<GenericTableBody>
-					{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
-					{result.phase === AsyncStatePhase.RESOLVED &&
-						result.value &&
-						result.value.count > 0 &&
-						result.value.emailInboxes.map((emailInbox) => (
+					{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
+					{phase === AsyncStatePhase.RESOLVED &&
+						count > 0 &&
+						emailInboxes.map((emailInbox) => (
 							<GenericTableRow
 								key={emailInbox._id}
 								onKeyDown={onClick(emailInbox._id)}
@@ -112,11 +111,11 @@ const EmailInboxTable = (): ReactElement => {
 						))}
 				</GenericTableBody>
 			</GenericTable>
-			{result.phase === AsyncStatePhase.RESOLVED && (
+			{phase === AsyncStatePhase.RESOLVED && (
 				<Pagination
 					current={current}
 					itemsPerPage={itemsPerPage}
-					count={result.value.count || 0}
+					count={count}
 					onSetItemsPerPage={onSetItemsPerPage}
 					onSetCurrent={onSetCurrent}
 					{...paginationProps}
