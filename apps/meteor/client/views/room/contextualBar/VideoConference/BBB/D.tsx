@@ -1,11 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 import React, { FC, useEffect } from 'react';
 
 import { popout } from '../../../../../../app/ui-utils/client';
-import { usePermission } from '../../../../../contexts/AuthorizationContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
-import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import CallBBB from './CallBBB';

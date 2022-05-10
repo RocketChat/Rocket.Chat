@@ -1,11 +1,9 @@
+import { useRoutePath, useCurrentRoute, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useEffect, memo, FC } from 'react';
 
 import { menu, SideNav } from '../../../../app/ui-utils/client';
 import PlanTag from '../../../components/PlanTag';
 import Sidebar from '../../../components/Sidebar';
-import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
-import { useRoutePath, useCurrentRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { isLayoutEmbedded } from '../../../lib/utils/isLayoutEmbedded';
 import SettingsProvider from '../../../providers/SettingsProvider';
 import AdminSidebarPages from './AdminSidebarPages';

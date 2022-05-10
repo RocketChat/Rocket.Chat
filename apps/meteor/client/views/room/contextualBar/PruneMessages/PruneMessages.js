@@ -1,10 +1,10 @@
 import { Field, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import DateTimeRow from './DateTimeRow';
 
 const PruneMessages = ({

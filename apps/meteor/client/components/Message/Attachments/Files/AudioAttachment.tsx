@@ -1,9 +1,9 @@
 import { AudioAttachmentProps } from '@rocket.chat/core-typings';
+import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import { useMediaUrl } from '../context/AttachmentContext';
 import { useCollapse } from '../hooks/useCollapse';
 
 export const AudioAttachment: FC<AudioAttachmentProps> = ({

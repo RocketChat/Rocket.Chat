@@ -1,7 +1,6 @@
+import { useCurrentRoute, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect } from 'react';
 
-import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
-import { useCurrentRoute, useRoute } from '../../../../../client/contexts/RouterContext';
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
 import EngagementDashboardPage from './EngagementDashboardPage';

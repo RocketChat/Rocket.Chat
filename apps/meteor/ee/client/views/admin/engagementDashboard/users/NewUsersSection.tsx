@@ -2,11 +2,11 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/data/CounterSet';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';

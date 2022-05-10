@@ -16,7 +16,6 @@ import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
 import SessionProvider from './SessionProvider';
 import SettingsProvider from './SettingsProvider';
-import SidebarProvider from './SidebarProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
@@ -29,37 +28,29 @@ const MeteorProvider: FC = ({ children }) => (
 			<RouterProvider>
 				<TranslationProvider>
 					<SessionProvider>
-						<SidebarProvider>
-							<TooltipProvider>
-								<ToastMessagesProvider>
-									<SettingsProvider>
-										<LayoutProvider>
-											<AvatarUrlProvider>
-												<CustomSoundProvider>
-													<UserProvider>
-														<AuthorizationProvider>
-															<CallProvider>
-																<OmnichannelProvider>
-																	<ModalProvider>
-																		<GameDetailContextProvider>
-																			<BlogDetailContextProvider>
-																				<ProductDetailContextProvider>
-																					<AttachmentProvider>{children}</AttachmentProvider>
-																				</ProductDetailContextProvider>
-																			</BlogDetailContextProvider>
-																		</GameDetailContextProvider>
-																	</ModalProvider>
-																</OmnichannelProvider>
-															</CallProvider>
-														</AuthorizationProvider>
-													</UserProvider>
-												</CustomSoundProvider>
-											</AvatarUrlProvider>
-										</LayoutProvider>
-									</SettingsProvider>
-								</ToastMessagesProvider>
-							</TooltipProvider>
-						</SidebarProvider>
+						<TooltipProvider>
+							<ToastMessagesProvider>
+								<SettingsProvider>
+									<LayoutProvider>
+										<AvatarUrlProvider>
+											<CustomSoundProvider>
+												<UserProvider>
+													<AuthorizationProvider>
+														<CallProvider>
+															<OmnichannelProvider>
+																<ModalProvider>
+																	<AttachmentProvider>{children}</AttachmentProvider>
+																</ModalProvider>
+															</OmnichannelProvider>
+														</CallProvider>
+													</AuthorizationProvider>
+												</UserProvider>
+											</CustomSoundProvider>
+										</AvatarUrlProvider>
+									</LayoutProvider>
+								</SettingsProvider>
+							</ToastMessagesProvider>
+						</TooltipProvider>
 					</SessionProvider>
 				</TranslationProvider>
 			</RouterProvider>

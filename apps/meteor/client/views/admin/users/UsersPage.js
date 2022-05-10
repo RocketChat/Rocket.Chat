@@ -1,12 +1,11 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AddUser } from './AddUser';
 import EditUserWithData from './EditUserWithData';
