@@ -71688,6 +71688,1577 @@
           ]
         }
       ]
+    },
+    "4.6.0-rc.0": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24052",
+          "title": "[FIX] Several issues related to custom roles",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "- Throw an error when trying to delete a role (User or Subscription role) that are still being used;\r\n- Fix \"Invalid Role\" error for custom roles in Role Editing sidebar;\r\n- Fix \"Users in Role\" screen for custom roles.",
+          "milestone": "4.6.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24781",
+          "title": "[NEW] Telemetry Events",
+          "userLogin": "eduardofcabrera",
+          "contributors": [
+            "eduardofcabrera",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24887",
+          "title": "[IMPROVE] Adding new statistics related to voip and omnichannel",
+          "userLogin": "cauefcr",
+          "description": "- Total of Canned response messages sent\r\n- Total of tags used\r\n- Last-Chatted Agent Preferred (enabled/disabled)\r\n- Assign new conversations to the contact manager (enabled/disabled)\r\n- How to handle Visitor Abandonment setting\r\n- Amount of chats placed on hold\r\n- VoIP Enabled\r\n- Amount of VoIP Calls\r\n- Amount of VoIP Extensions connected\r\n- Amount of Calls placed on hold (1x per call)\r\n- Fixed Session Aggregation type definitions",
+          "milestone": "4.6.0",
+          "contributors": [
+            "cauefcr",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24911",
+          "title": "Chore: Remove old scripts",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24898",
+          "title": "[FIX] DDP Rate Limiter Translation key",
+          "userLogin": "gabriellsh",
+          "description": "Before:\r\n<img width=\"267\" alt=\"image\" src=\"https://user-images.githubusercontent.com/40830821/159324037-b17e2492-e007-49fd-bfd1-f1d009301c44.png\">\r\n\r\n\r\nNow:\r\n<img width=\"611\" alt=\"image\" src=\"https://user-images.githubusercontent.com/40830821/159323594-10cf69a8-57dd-4e01-b4d3-31c92667a754.png\">",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "24831",
+          "title": "[FIX][ENTERPRISE] Notifications not being sent by ddp-streamer",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24606",
+          "title": "[FIX] Push privacy config to not show username not being respected",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24901",
+          "title": "[FIX] Custom script not being fired",
+          "userLogin": "ggazzo",
+          "milestone": "4.5.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "24896",
+          "title": "[FIX] Wrong business hour behavior",
+          "userLogin": "murtaza98",
+          "milestone": "4.6.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24845",
+          "title": "[FIX] Ignore customClass on messages",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24879",
+          "title": "[FIX] Apple OAuth",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24895",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-03-21Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "24749",
+          "title": "[IMPROVE] New omnichannel statistics and async statistics processing.",
+          "userLogin": "cauefcr",
+          "description": "https://app.clickup.com/t/1z4zg4e",
+          "contributors": [
+            "cauefcr"
+          ]
+        },
+        {
+          "pr": "24882",
+          "title": "[FIX] Missing dependency on useEffect at CallProvider",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24877",
+          "title": "Chore: Fix MongoDB versions on release notes",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.5.3",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24779",
+          "title": "[FIX] auto-join team channels not honoring user preferences",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "24869",
+          "title": "Bump pino from 7.8.1 to 7.9.1 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24870",
+          "title": "Bump pino-pretty from 7.5.3 to 7.5.4 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24864",
+          "title": "[FIX] Disable voip button when call is in progress",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24863",
+          "title": "[FIX] Broken build caused by PRs modifying same file differently",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24850",
+          "title": "Regression: Role Sync not always working",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24838",
+          "title": "[FIX] [VOIP] SidebarFooter component ",
+          "userLogin": "tiagoevanp",
+          "description": "- Improve the CallProvider code;\r\n- Adjust the text case of the VoIP component on the FooterSidebar;\r\n- Fix the bad behavior with the changes in queue's name.",
+          "milestone": "4.5.3",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24837",
+          "title": "[IMPROVE] Standarize queue behavior for managers and agents when subscribing",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24789",
+          "title": "[FIX] VoIP button gets disabled whenever user status changes",
+          "userLogin": "amolghode1981",
+          "milestone": "4.5.3",
+          "contributors": [
+            "amolghode1981"
+          ]
+        },
+        {
+          "pr": "24799",
+          "title": "[FIX] Wrong param usage on queue summary call",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24829",
+          "title": "[FIX] Show only enabled departments on forward",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24823",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-03-14Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24833",
+          "title": "Bump @types/mailparser from 3.0.2 to 3.4.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24832",
+          "title": "Bump @types/clipboard from 2.0.1 to 2.0.7",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24822",
+          "title": "Bump @types/nodemailer from 6.4.2 to 6.4.4",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24821",
+          "title": "Bump body-parser from 1.19.0 to 1.19.2",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24820",
+          "title": "Bump @types/ws from 8.5.2 to 8.5.3 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24764",
+          "title": "Chore: Add E2E tests for livechat/visitor",
+          "userLogin": "Muramatsu2602",
+          "description": "- Create a new test suite file under tests/end-to-end/api/livechat\r\n- Create tests for the following endpoints:\r\n   + livechat/visitor (create visitor, update visitor, add custom fields to visitors)",
+          "contributors": [
+            "Muramatsu2602",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24729",
+          "title": "Chore: Add E2E tests for livechat/room.close",
+          "userLogin": "Muramatsu2602",
+          "description": "* Create a new test suite file under tests/end-to-end/api/livechat\r\n  * Create tests for the following endpoint:\r\n\t  + ivechat/room.close",
+          "contributors": [
+            "Muramatsu2602",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24785",
+          "title": "[FIX] German translation for Monitore",
+          "userLogin": "JMoVS",
+          "contributors": [
+            "JMoVS",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24812",
+          "title": "[FIX] Revert AutoComplete",
+          "userLogin": "juliajforesti",
+          "milestone": "4.5.2",
+          "contributors": [
+            "juliajforesti",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "24747",
+          "title": "Chore: APIClass types",
+          "userLogin": "felipe-rod123",
+          "description": "This pull request creates a new `restivus` module (.d.ts) for the `api.js` file.",
+          "contributors": [
+            "felipe-rod123",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "24801",
+          "title": "Bump is-svg from 4.3.1 to 4.3.2",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24803",
+          "title": "Bump prometheus-gc-stats from 0.6.2 to 0.6.3",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24810",
+          "title": "Chore: Skip local services changes when shutting down duplicated services",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24629",
+          "title": "[FIX] \"Match error\" when converting a team to a channel",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix \"Match error\"  when trying to convert a channel to a team;",
+          "milestone": "4.6.0",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24809",
+          "title": "Regression: Fix ParentRoomWithEndpointData in loop",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.5.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24397",
+          "title": "Chore: Get Settings Statistics",
+          "userLogin": "albuquerquefabio",
+          "contributors": [
+            "albuquerquefabio"
+          ]
+        },
+        {
+          "pr": "24732",
+          "title": "[FIX] `PaginatedSelectFiltered` not handling changes",
+          "userLogin": "tassoevan",
+          "milestone": "4.5.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24628",
+          "title": "Chore: converted more hooks to typescript",
+          "userLogin": "felipe-rod123",
+          "description": "Converted some functions on `client/hooks/` from JavaScript to Typescript.",
+          "contributors": [
+            "felipe-rod123",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "24506",
+          "title": "Chore: added settings endpoint types",
+          "userLogin": "felipe-rod123",
+          "description": "Created typing for endpoint definitions on `settings.ts`.",
+          "contributors": [
+            "felipe-rod123",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24226",
+          "title": "[FIX] Handle Other Formats inside Upload Avatar",
+          "userLogin": "nishant23122000",
+          "description": "After resolving issue #24213 : \r\n\r\n\r\nhttps://user-images.githubusercontent.com/53515714/150325012-91413025-786e-4ce0-ae75-629f6b05b024.mp4",
+          "milestone": "4.6.0",
+          "contributors": [
+            "nishant23122000",
+            "debdutdeb",
+            "web-flow",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24424",
+          "title": "[FIX] Prune Message issue",
+          "userLogin": "nishant23122000",
+          "milestone": "4.6.0",
+          "contributors": [
+            "nishant23122000",
+            "debdutdeb",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24805",
+          "title": "[FIX] Critical: Incorrect visitor getting assigned to a chat from apps",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24804",
+          "title": "[FIX] \"livechat/webrtc.call\" endpoint not working",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24507",
+          "title": "Chore: added Server Instances endpoint types",
+          "userLogin": "felipe-rod123",
+          "description": "Created typing for endpoint definitions on `instances.ts`.",
+          "contributors": [
+            "felipe-rod123"
+          ]
+        },
+        {
+          "pr": "24758",
+          "title": "[FIX] Prevent call button toggle when user is on call",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24800",
+          "title": "Regression: Register services right away",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24792",
+          "title": "[FIX] VoipExtensionsPage component call",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24384",
+          "title": "Chore: Convert server functions from javascript to typescript",
+          "userLogin": "felipe-rod123",
+          "description": "This pull request will be used to rewrite some functions on the Chat Engine to Typescript, in order to increase security and specify variable types on the code.",
+          "contributors": [
+            "felipe-rod123",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "24705",
+          "title": "[FIX] Broken multiple OAuth integrations",
+          "userLogin": "debdutdeb",
+          "milestone": "4.5.2",
+          "contributors": [
+            "debdutdeb"
+          ]
+        },
+        {
+          "pr": "24793",
+          "title": "[FIX][ENTERPRISE] Auto reload feature of ddp-streamer micro service",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24783",
+          "title": "Bump pino from 7.8.0 to 7.8.1 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23121",
+          "title": "Bump jschardet from 1.6.0 to 3.0.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24752",
+          "title": "[FIX] Show call icon only when user has extension associated",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.3",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24623",
+          "title": "[FIX] Opening a new DM from user card",
+          "userLogin": "tassoevan",
+          "description": "A race condition on `useRoomIcon` -- delayed merge of rooms and subscriptions -- was causing a UI crash whenever someone tried to open a DM from the user card component.",
+          "milestone": "4.5.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24750",
+          "title": "[IMPROVE] Voip Extensions disabled state",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24748",
+          "title": "[IMPROVE] UX - VoIP Call Component",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.5.3",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24753",
+          "title": "Chore: Micro services fixes and cleanup",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24756",
+          "title": "Regression: Improve Sidenav open/close handling and fixed codeql configs and E2E tests",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "24760",
+          "title": "[FIX] Apple login script being loaded even when Apple Login is disabled.",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.5.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24754",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24683",
+          "title": "[FIX] no id of room closer in livechat-close message",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "4.5.1",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "24771",
+          "title": "Chore: fix grammatical errors in Features",
+          "userLogin": "aadishJ01",
+          "contributors": [
+            "aadishJ01",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24759",
+          "title": "Chore: Fix grammatical errors in Code of Conduct",
+          "userLogin": "aadishJ01",
+          "contributors": [
+            "aadishJ01",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23795",
+          "title": "[FIX] Reload roomslist after successful deletion of a room from admin panel.",
+          "userLogin": "Aman-Maheshwari",
+          "description": "Removed the logic for calling the `rooms.adminRooms` endPoint from the `RoomsTable` Component and moved it to its parent component `RoomsPage`.\r\nThis allows to call the endPoint `rooms.adminRooms` from `EditRoomContextBar` Component which is also has `RoomPage` Component as its parent.\r\n\r\nAlso added a succes toast message after the successful deletion of room.",
+          "milestone": "4.5.1",
+          "contributors": [
+            "Aman-Maheshwari",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24743",
+          "title": "[FIX] System messages are sent when adding or removing a group from a team",
+          "userLogin": "matheusbsilva137",
+          "description": "- Do not send system messages when adding or removing a new or existing _group_ from a team.",
+          "milestone": "4.5.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "24544",
+          "title": "Chore: Fix Cypress tests",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "tassoevan",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "24737",
+          "title": "[FIX] Typo and placeholder on wrap up call modal",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24739",
+          "title": "[IMPROVE][ENTERPRISE] Don't start presence monitor when running micro services",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24738",
+          "title": "[FIX][ENTERPRISE] DDP streamer not sending data to all clients",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24680",
+          "title": "[FIX] Show only available agents on extension association modal",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.1",
+          "contributors": [
+            "KevLehman",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24710",
+          "title": "[FIX] DDP streamer errors",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24724",
+          "title": "[FIX][ENTERPRISE] Presence micro service logic",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24717",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-03-07Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24607",
+          "title": "[FIX] VoIP Enable/Disable setting on CallContext/CallProvider Notifications",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.5.1",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24726",
+          "title": "Chore: Improve logger to allow log of `unknown` values",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24677",
+          "title": "[FIX] Components for user search",
+          "userLogin": "juliajforesti",
+          "milestone": "4.5.1",
+          "contributors": [
+            "juliajforesti",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24542",
+          "title": "[FIX] Date Message Export Filter Fix",
+          "userLogin": "eduardofcabrera",
+          "description": "Fix message export filter to get all messages between \"from date\" and \"to date\", including \"to date\".",
+          "contributors": [
+            "eduardofcabrera",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24709",
+          "title": "[FIX] API Error preventing adding an email to users without one (like bot/app users)",
+          "userLogin": "debdutdeb",
+          "contributors": [
+            "debdutdeb"
+          ]
+        },
+        {
+          "pr": "24716",
+          "title": "Bump ts-node from 10.6.0 to 10.7.0 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24476",
+          "title": "[FIX] Nextcloud OAuth for incomplete token URL",
+          "userLogin": "debdutdeb",
+          "milestone": "4.6.0",
+          "contributors": [
+            "debdutdeb"
+          ]
+        },
+        {
+          "pr": "24657",
+          "title": "[FIX] Voip Stream Reinitialization Error",
+          "userLogin": "amolghode1981",
+          "milestone": "4.5.1",
+          "contributors": [
+            "amolghode1981"
+          ]
+        },
+        {
+          "pr": "24698",
+          "title": "Bump pino-pretty from 7.5.2 to 7.5.3 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24696",
+          "title": "[FIX] Room's message count not being incremented on import",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix rooms' message counter not being incremented on message import.",
+          "milestone": "4.5.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23824",
+          "title": "Chore: Improvements on role syncing (ldap, oauth and saml)",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24689",
+          "title": "Bump pino-pretty from 7.5.1 to 7.5.2 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24674",
+          "title": "[FIX] Missing username on messages imported from Slack",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix missing sender's username on messages imported from Slack.",
+          "milestone": "4.5.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "24642",
+          "title": "Bump actions/setup-node from 2 to 3",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24644",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-02-28Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24590",
+          "title": "[FIX] Duplicated 'name' log key",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.5.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24668",
+          "title": "Bump actions/checkout from 2 to 3",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24574",
+          "title": "Chore(deps-dev): Bump @types/mock-require from 2.0.0 to 2.0.1",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24667",
+          "title": "Bump ts-node from 10.5.0 to 10.6.0 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24666",
+          "title": "Bump @types/ws from 8.2.3 to 8.5.2 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24640",
+          "title": "Bump url-parse from 1.5.7 to 1.5.10",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24653",
+          "title": "Merge master into develop & Set version to 4.6.0-develop",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24661",
+          "title": "[FIX] Typo in wrap-up term",
+          "userLogin": "renatobecker",
+          "milestone": "4.5.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "24028",
+          "title": "[IMPROVE] Updated links in readme",
+          "userLogin": "aswinidev",
+          "contributors": [
+            "aswinidev",
+            "web-flow",
+            "debdutdeb"
+          ]
+        }
+      ]
+    },
+    "4.5.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24938",
+          "title": "Release 4.5.4",
+          "userLogin": "AllanPazRibeiro",
+          "contributors": [
+            "geekgonecrazy",
+            "AllanPazRibeiro"
+          ]
+        },
+        {
+          "pr": "24930",
+          "title": "[FIX] SAML Force name to string",
+          "userLogin": "geekgonecrazy",
+          "milestone": "4.5.4",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "4.6.0-rc.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24320",
+          "title": "[FIX] LDAP avatars being rotated according to metadata even if the setting to rotate uploads is off",
+          "userLogin": "matheusbsilva137",
+          "description": "- Use the `FileUpload_RotateImages` setting (**Administration > File Upload > Rotate images on upload**) to control whether avatars should be rotated automatically based on their data (XEIF);\r\n- Display the avatar image preview (orientation) according to the `FileUpload_RotateImages` setting.",
+          "milestone": "4.6.0",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24930",
+          "title": "[FIX] SAML Force name to string",
+          "userLogin": "geekgonecrazy",
+          "milestone": "4.5.4",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24908",
+          "title": "Regression: Call doesn't stop ringing after agent unregistration",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.6.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24920",
+          "title": "Regression: Fix account service login expiration",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24867",
+          "title": "[FIX] Duplicated \"jump to message\" button on starred messages",
+          "userLogin": "Himanshu664",
+          "contributors": [
+            "Himanshu664"
+          ]
+        },
+        {
+          "pr": "24860",
+          "title": "[FIX] External search providers not working",
+          "userLogin": "tkurz",
+          "contributors": [
+            "tkurz"
+          ]
+        }
+      ]
+    },
+    "4.6.0-rc.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24955",
+          "title": "[FIX] room message not load when is a new message",
+          "userLogin": "filipemarins",
+          "description": "When the room object is searched for the first time, it does not exist on the front object yet (subscription), adding a fallback search for room list will guarantee to search the room details.\r\n\r\nbefore:\r\nhttps://user-images.githubusercontent.com/9275105/160223241-d2319f3e-82c5-47d6-867f-695ab2361a17.mp4\r\n\r\nafter:\r\nhttps://user-images.githubusercontent.com/9275105/160223244-84d0d2a1-3d95-464d-8b8a-e264b0d4d690.mp4",
+          "milestone": "4.5.5",
+          "contributors": [
+            "filipemarins",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24969",
+          "title": "Chore: Storybook mocking and examples improved",
+          "userLogin": "tassoevan",
+          "description": "- Stories from `ee/` included;\r\n- Differentiate root story kinds;\r\n- Mocking of `ServerContext` via Storybook parameters.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24990",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.5",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24897",
+          "title": "[FIX] Room archived/unarchived system messages aren't sent when editing room settings",
+          "userLogin": "matheusbsilva137",
+          "description": "- Send the \"Room archived\" and \"Room unarchived\" system messages when editing room settings (and not only when rooms are archived/unarchived with the slash-command);\r\n- Fix the \"Hide System Messages\" option for the \"Room archived\" and \"Room unarchived\" system messages;",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "24925",
+          "title": "Chore: add some missing REST definitions",
+          "userLogin": "gerzonc",
+          "description": "On the [mobile client](https://github.com/RocketChat/Rocket.Chat.ReactNative), we made an effort to collect more `REST API` definitions that are missing on the server side during our migration to TypeScript. Since we're both migrating to TypeScript, we thought it would be a good idea to share those so you guys can benefit from our initiative.",
+          "contributors": [
+            "gerzonc"
+          ]
+        },
+        {
+          "pr": "24971",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-03-28Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "24921",
+          "title": "[FIX] Register with Secret URL",
+          "userLogin": "yash-rajpal",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "24948",
+          "title": "Regression: Fix unexpected errors breaking ddp-streamer",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.6.0-rc.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24994",
+          "title": "[FIX]  High CPU usage caused by CallProvider",
+          "userLogin": "tiagoevanp",
+          "description": "Remove infinity loop inside useVoipClient hook.\r\n\r\n#closes #24970",
+          "milestone": "4.5.5",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        }
+      ]
+    },
+    "4.5.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24998",
+          "title": "Release 4.5.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "MartinSchoeler",
+            "sampaiodiego",
+            "filipemarins",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24994",
+          "title": "[FIX]  High CPU usage caused by CallProvider",
+          "userLogin": "tiagoevanp",
+          "description": "Remove infinity loop inside useVoipClient hook.\r\n\r\n#closes #24970",
+          "milestone": "4.5.5",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24955",
+          "title": "[FIX] Multiple issues starting a new DM",
+          "userLogin": "filipemarins",
+          "description": "When the room object is searched for the first time, it does not exist on the front object yet (subscription), adding a fallback search for room list will guarantee to search the room details.\r\n\r\nbefore:\r\nhttps://user-images.githubusercontent.com/9275105/160223241-d2319f3e-82c5-47d6-867f-695ab2361a17.mp4\r\n\r\nafter:\r\nhttps://user-images.githubusercontent.com/9275105/160223244-84d0d2a1-3d95-464d-8b8a-e264b0d4d690.mp4",
+          "milestone": "4.5.5",
+          "contributors": [
+            "filipemarins",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24990",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.5",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "4.6.0-rc.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25017",
+          "title": "Regression: Add createdOTR index",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25015",
+          "title": "Chore: Bump Fuselage packages",
+          "userLogin": "dougfabris",
+          "description": "It uses the last stable version of Fuselage packages.",
+          "milestone": "4.6.0",
+          "contributors": [
+            "dougfabris",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24999",
+          "title": "Regression: Custom roles displaying ID instead of name on some admin screens",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "![image](https://user-images.githubusercontent.com/55164754/160981416-555bcaa1-c075-4260-937c-64523472da43.png)\r\n![image](https://user-images.githubusercontent.com/55164754/160981452-6eae4e74-8425-4073-8256-472aba72b9db.png)",
+          "milestone": "4.6.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24835",
+          "title": "[NEW] Upgrade Tab",
+          "userLogin": "gabriellsh",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/160172260-c656282e-a487-4092-948d-d11c9bacb598.png)",
+          "milestone": "4.6.0",
+          "contributors": [
+            "gabriellsh",
+            "dougfabris",
+            "web-flow",
+            "tassoevan",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24980",
+          "title": "Regression: Error is raised when there's no Asterisk queue available yet",
+          "userLogin": "amolghode1981",
+          "milestone": "4.7.0",
+          "contributors": [
+            "amolghode1981"
+          ]
+        }
+      ]
+    },
+    "4.6.0-rc.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25021",
+          "title": "Bump @rocket.chat/emitter from 0.31.4 to 0.31.9 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25020",
+          "title": "Bump @rocket.chat/ui-kit from 0.31.4 to 0.31.9 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25019",
+          "title": "Bump @rocket.chat/message-parser from 0.31.4 to 0.31.9 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25018",
+          "title": "Bump @rocket.chat/string-helpers from 0.31.4 to 0.31.9 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.6.0": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.6.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25022",
+          "title": "[FIX] Proxy settings being ignored",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "Modify Meteor's `HTTP.call` to add back proxy support",
+          "milestone": "4.6.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25082",
+          "title": "[FIX] Invitation links don't redirect to the registration form",
+          "userLogin": "yash-rajpal",
+          "milestone": "4.6.1",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "25069",
+          "title": "[FIX] FormData uploads not working",
+          "userLogin": "gabriellsh",
+          "milestone": "4.6.1",
+          "contributors": [
+            "gabriellsh",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "25067",
+          "title": "[FIX] NPS never finishing sending results",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.6.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25050",
+          "title": "[FIX] Upgrade Tab showing for a split second",
+          "userLogin": "gabriellsh",
+          "milestone": "4.6.1",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "25055",
+          "title": "[FIX] UserAutoComplete not rendering UserAvatar correctly",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![Screen Shot 2022-04-04 at 16 50 21](https://user-images.githubusercontent.com/27704687/161620921-800bf66a-806d-4f83-b2e1-073c34215001.png)\r\n\r\n### after\r\n![Screen Shot 2022-04-04 at 16 49 00](https://user-images.githubusercontent.com/27704687/161620720-3e27774d-c241-46ca-b764-932a9295d709.png)",
+          "milestone": "4.6.1",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
+    },
+    "4.4.3": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25022",
+          "title": "[FIX] Proxy settings being ignored",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "Modify Meteor's `HTTP.call` to add back proxy support",
+          "milestone": "4.6.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25067",
+          "title": "[FIX] NPS never finishing sending results",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.6.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.5.6": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25022",
+          "title": "[FIX] Proxy settings being ignored",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "Modify Meteor's `HTTP.call` to add back proxy support",
+          "milestone": "4.6.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "25067",
+          "title": "[FIX] NPS never finishing sending results",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.6.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.6.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25101",
+          "title": "[FIX] Database indexes not being created",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.6.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24933",
+          "title": "[FIX] Deactivating user breaks if user is the only room owner",
+          "userLogin": "sidmohanty11",
+          "description": "## Before\r\n\r\nhttps://user-images.githubusercontent.com/73601258/160000871-cfc2f2a5-2a59-4d27-8049-7754d003dd48.mp4\r\n\r\n\r\n\r\n## After\r\nhttps://user-images.githubusercontent.com/73601258/159998287-681ab475-ff33-4282-82ff-db751c59a392.mp4",
+          "milestone": "4.6.2",
+          "contributors": [
+            "sidmohanty11",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.6.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25220",
+          "title": "[FIX] Desktop notification on multi-instance environments",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.6.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
