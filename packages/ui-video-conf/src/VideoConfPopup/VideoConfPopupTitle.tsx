@@ -1,8 +1,14 @@
 import React, { useEffect, useState, ComponentProps } from 'react';
 import { Box, Icon } from '@rocket.chat/fuselage';
 
-const VideoConfPopupTitle = ({ text, counter, icon }: { text: string; counter: boolean; icon: ComponentProps<typeof Icon>['name'] }) => {
-  const [dots, setDots] = useState(['.']);
+type VideoConfPopupTitleProps = {
+  text: string;
+  counter?: boolean; 
+  icon: ComponentProps<typeof Icon>['name'];
+};
+
+const VideoConfPopupTitle = ({ text, counter = false, icon }: VideoConfPopupTitleProps) => {
+  const [dots, setDots] = useState(['']);
 
   useEffect(() => {
     if (counter) {

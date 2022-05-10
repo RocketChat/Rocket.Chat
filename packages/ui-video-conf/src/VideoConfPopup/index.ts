@@ -4,6 +4,7 @@ import VideoConfPopupBackdrop from './VideoConfPopupBackdrop';
 import VideoConfPopupControllers from './VideoConfPopupControllers';
 import VideoConfPopupFooter from './VideoConfPopupFooter';
 import VideoConfPopupTitle from './VideoConfPopupTitle';
+import VideoConfPopupIndicators from './VideoConfPopupIndicators';
 
 export {
   VideoConfPopup,
@@ -11,5 +12,6 @@ export {
   VideoConfPopupTitle,
   VideoConfPopupBackdrop,
   VideoConfPopupControllers,
+  VideoConfPopupIndicators,
   VideoConfPopupFooter
 }

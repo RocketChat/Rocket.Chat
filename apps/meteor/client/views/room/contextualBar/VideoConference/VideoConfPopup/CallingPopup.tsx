@@ -1,5 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupContent,
@@ -14,10 +15,8 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUserId } from '../../../../../contexts/UserContext';
 
-const RingingPopup = ({ room, onClose }: { room: IRoom; onClose: () => void }): ReactElement => {
+const CallingPopup = ({ room, onClose }: { room: IRoom; onClose: () => void }): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
@@ -28,7 +27,7 @@ const RingingPopup = ({ room, onClose }: { room: IRoom; onClose: () => void }): 
 			<VideoConfPopupContent>
 				{/* Design Team has planned x48 */}
 				<RoomAvatar room={room} size='x40' />
-				<VideoConfPopupTitle />
+				<VideoConfPopupTitle text='Calling' icon='phone-out' counter />
 				{directUserId && (
 					<Box display='flex' alignItems='center' mbs='x8'>
 						<ReactiveUserStatus uid={directUserId} />
@@ -66,4 +65,4 @@ const RingingPopup = ({ room, onClose }: { room: IRoom; onClose: () => void }): 
 	);
 };
 
-export default RingingPopup;
+export default CallingPopup;
