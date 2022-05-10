@@ -1,4 +1,3 @@
-import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
@@ -7,14 +6,6 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EmailInboxForm from './EmailInboxForm';
 import { FormSkeleton } from './Skeleton';
-
-declare module '@rocket.chat/rest-typings' {
-	interface IEndpoints {
-		'email-inbox/:_id': {
-			GET: () => IEmailInbox;
-		};
-	}
-}
 
 type EmailInboxEditWithDataProps = {
 	id: string;
