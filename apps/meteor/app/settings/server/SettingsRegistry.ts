@@ -164,14 +164,12 @@ export class SettingsRegistry {
 				},
 			);
 
-			this.store.set(settingOverwritten);
 			return;
 		}
 
 		if (settingStored && isOverwritten) {
 			if (settingStored.value !== settingOverwritten.value) {
 				this.model.upsert({ _id }, settingProps);
-				this.store.set(settingOverwritten);
 			}
 			return;
 		}
