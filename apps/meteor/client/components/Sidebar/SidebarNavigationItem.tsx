@@ -8,10 +8,10 @@ type SidebarNavigationItemProps = {
 	permissionGranted?: () => boolean;
 	pathGroup: string;
 	pathSection: string;
-	icon: IconProps['name'];
-	label: string;
-	tag: string;
-	currentPath: string;
+	icon?: IconProps['name'];
+	label?: string;
+	tag?: string;
+	currentPath?: string;
 };
 
 const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({

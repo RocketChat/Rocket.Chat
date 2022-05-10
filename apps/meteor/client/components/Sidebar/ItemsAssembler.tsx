@@ -1,11 +1,23 @@
+import { IconProps } from '@rocket.chat/fuselage';
 import React, { memo, FC } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import { TranslationKey, useTranslation } from '../../contexts/TranslationContext';
 import SidebarNavigationItem from './SidebarNavigationItem';
 
+type Item = {
+	name: string;
+	pathSection: string;
+	pathGroup?: string;
+	href?: string;
+	i18nLabel?: any;
+	icon?: IconProps['name'];
+	permissionGranted?: () => boolean;
+	tag?: TranslationKey;
+};
+
 type ItemsAssemblerProps = {
-	items: [];
-	currentPath: string;
+	items: Item[];
+	currentPath?: string;
 };
 
 const ItemsAssembler: FC<ItemsAssemblerProps> = ({ items, currentPath }) => {
@@ -21,7 +33,7 @@ const ItemsAssembler: FC<ItemsAssemblerProps> = ({ items, currentPath }) => {
 					label={t(i18nLabel || name)}
 					key={i18nLabel || name}
 					currentPath={currentPath}
-					tag={t(tag)}
+					tag={tag && t(tag)}
 				/>
 			))}
 			;

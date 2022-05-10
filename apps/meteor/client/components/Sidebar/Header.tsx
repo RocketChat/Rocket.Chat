@@ -1,10 +1,10 @@
 import { Box, ActionButton } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { FC, ReactElement } from 'react';
 
 type HeaderProps = {
-	children: React.ReactNode;
-	title: string;
-	onClose: () => void;
+	children?: React.ReactNode;
+	title?: ReactElement | string;
+	onClose?: () => void;
 };
 
 const Header: FC<HeaderProps> = ({ title, onClose, children = undefined, ...props }) => (
