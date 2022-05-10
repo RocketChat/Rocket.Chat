@@ -2,11 +2,10 @@ import { ISetting } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import Card from '../../../components/Card';
-import { useRoute } from '../../../contexts/RouterContext';
-import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 
 const clampStyle = css`
 	display: -webkit-box;

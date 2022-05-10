@@ -1,10 +1,9 @@
 import { Box, Icon, SearchInput, Skeleton, Grid, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useIsSettingsContextLoading, TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
-import { useIsSettingsContextLoading } from '../../../contexts/SettingsContext';
-import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 import SettingsGroupCard from './SettingsGroupCard';
 import { useSettingsGroups } from './hooks/useSettingsGroups';
 

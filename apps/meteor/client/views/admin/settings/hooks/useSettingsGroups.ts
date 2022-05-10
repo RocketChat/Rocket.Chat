@@ -1,8 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
+import { useSettings, TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
-
-import { useSettings } from '../../../../contexts/SettingsContext';
-import { TranslationKey, useTranslation } from '../../../../contexts/TranslationContext';
 
 export const useSettingsGroups = (filter: string): ISetting[] => {
 	const settings = useSettings();
