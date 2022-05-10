@@ -15,7 +15,7 @@ export type ConferenceInstructions = {
 };
 
 export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'];
-export interface IVideoConferenceUser extends Pick<IUser, '_id' | 'username' | 'name'> {
+export interface IVideoConferenceUser extends Required<Pick<IUser, '_id' | 'username' | 'name'>> {
 	ts: Date;
 }
 
@@ -38,12 +38,13 @@ export interface IVideoConference extends IRocketChatRecord {
 		ended?: IMessage['_id'];
 	};
 	status: ValueOf<typeof VideoConferenceStatus>;
+	url?: string;
 
-	createdBy: Pick<IUser, '_id' | 'username' | 'name'>;
+	createdBy: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
 	createdAt: Date;
 
-	endedBy: Pick<IUser, '_id' | 'username' | 'name'>;
-	endedAt: Date;
+	endedBy?: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
+	endedAt?: Date;
 }
 
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions;
