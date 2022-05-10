@@ -1,26 +1,36 @@
-import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { IUserStatus } from '@rocket.chat/core-typings';
+import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC } from 'react';
+import React, { useMemo, ReactElement } from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import EditCustomUserStatus from './EditCustomUserStatus';
+import CustomUserStatusForm from './CustomUserStatusForm';
 
-type EditCustomUserStatusWithDataProps = {
-	_id: string | undefined;
-	close: () => void;
-	onChange: () => void;
+type CustomUserStatusFormWithDataProps = {
+	_id?: IUserStatus['_id'];
+	onClose: () => void;
+	onReload: () => void;
 };
 
-export const EditCustomUserStatusWithData: FC<EditCustomUserStatusWithDataProps> = ({ _id, onChange, ...props }) => {
+const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStatusFormWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
 	const { value: data, phase: state, error, reload } = useEndpointData('custom-user-status.list', query);
 
+	const handleReload = (): void => {
+		onReload?.();
+		reload?.();
+	};
+
+	if (!_id) {
+		return <CustomUserStatusForm onReload={handleReload} onClose={onClose} />;
+	}
+
 	if (state === AsyncStatePhase.LOADING) {
 		return (
-			<Box pb='x20'>
+			<Box p='x20'>
 				<Skeleton mbs='x8' />
 				<InputBox.Skeleton w='full' />
 				<Skeleton mbs='x8' />
@@ -44,18 +54,13 @@ export const EditCustomUserStatusWithData: FC<EditCustomUserStatusWithDataProps>
 
 	if (error || !data || data.statuses.length < 1) {
 		return (
-			<Box fontScale='h2' pb='x20'>
-				{t('Custom_User_Status_Error_Invalid_User_Status')}
+			<Box p='x20'>
+				<Callout type='danger'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Callout>
 			</Box>
 		);
 	}
 
-	const handleChange = (): void => {
-		onChange?.();
-		reload?.();
-	};
-
-	return <EditCustomUserStatus data={data.statuses[0]} onChange={handleChange} {...props} />;
+	return <CustomUserStatusForm status={data.statuses[0]} onReload={handleReload} onClose={onClose} />;
 };
 
-export default EditCustomUserStatusWithData;
+export default CustomUserStatusFormWithData;
