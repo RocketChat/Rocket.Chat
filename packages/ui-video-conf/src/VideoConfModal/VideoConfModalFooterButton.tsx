@@ -1,6 +1,5 @@
-import type React from 'react';
-import type { AllHTMLAttributes, ButtonHTMLAttributes, ComponentProps, HTMLAttributes } from 'react';
-import type { ReactNode, ReactElement } from 'react';
+import React from 'react';
+import type { ReactNode, ReactElement, ButtonHTMLAttributes } from 'react';
 import { Button, Icon, IconProps } from '@rocket.chat/fuselage';
 
 type VideoConfModalFooterButtonProps = {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export const useVideoConfControllers = () => {
   const [controllersConfig, setControllersConfig] = useState({ mic: true, video: false });

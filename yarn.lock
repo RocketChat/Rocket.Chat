@@ -4741,8 +4741,6 @@ __metadata:
     "@rocket.chat/fuselage": ~0.31.11
     "@rocket.chat/fuselage-hooks": ^0.31.11
     "@types/jest": ^27.4.1
-    "@types/react": ^18.0.8
-    "@types/react-dom": ^18.0.3
     eslint: ^8.12.0
     jest: ^27.5.1
     react: ^17.0.2
@@ -8068,7 +8066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18, @types/react-dom@npm:^18.0.3":
+"@types/react-dom@npm:^18":
   version: 18.0.3
   resolution: "@types/react-dom@npm:18.0.3"
   dependencies:
@@ -8105,17 +8103,6 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 3cc13a02824c13f6fa4807a83abd065ac1d9943359e76bd995cc7cd2b4148c1176ebd54a30a9f4eb8a0f141ff359d712876f256c4fee707e4290607ef8410b3e
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^18.0.8":
-  version: 18.0.8
-  resolution: "@types/react@npm:18.0.8"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: 12d0e6bc390709926d8eaeb7d2edb4ef9c9fbe8eac41cb0619d958386700547bff91c880c2a12a9eb1e0d09afa4f1e86fd1b93164c627824465b72123f149f3b
   languageName: node
   linkType: hard
 

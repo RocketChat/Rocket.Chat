@@ -1,6 +1,5 @@
-import type React from 'react';
-import type { ButtonHTMLAttributes } from 'react';
-import type { ReactNode, ReactElement } from 'react';
+import React from 'react';
+import type { ReactElement, ButtonHTMLAttributes } from 'react';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import type { IconProps } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
