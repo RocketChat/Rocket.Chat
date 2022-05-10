@@ -1,9 +1,9 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useState } from 'react';
 
 import { useCallClient, useCallerInfo, useCallActions } from '../../../contexts/CallContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 type NetworkState = 'online' | 'offline';
 export const OmnichannelCallToggleReady = (): ReactElement => {

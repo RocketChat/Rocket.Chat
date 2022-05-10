@@ -1,7 +1,7 @@
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
+import { useRoutePath } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
-import { useRoutePath } from '../../contexts/RouterContext';
 import Sidebar from './Sidebar';
 
 const NavigationItem = ({ permissionGranted, pathGroup, pathSection, icon, label, currentPath, tag }) => {

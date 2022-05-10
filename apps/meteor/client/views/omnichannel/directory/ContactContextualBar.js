@@ -1,8 +1,7 @@
+import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import ContactEditWithData from './contacts/contextualBar/ContactEditWithData';
 import ContactInfo from './contacts/contextualBar/ContactInfo';
 import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';
