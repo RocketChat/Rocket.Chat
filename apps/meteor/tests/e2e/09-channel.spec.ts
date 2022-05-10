@@ -36,7 +36,6 @@ test.describe('[Channel]', () => {
 		if (!publicChannelCreated) {
 			await sideNav.createChannel(publicChannelName, false);
 			await setPublicChannelCreated(true);
-			console.log('public channel not found, creating one...');
 		}
 		await sideNav.openChannel('general');
 	});

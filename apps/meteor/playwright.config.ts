@@ -2,7 +2,7 @@ import { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
 	outputDir: 'tests/e2e/test-failures',
-	reporter: [['dot']],
+	reporter: [['list']],
 	workers: 1,
 	globalSetup: require.resolve('./tests/e2e/utils/configs/setup.ts'),
 	globalTeardown: require.resolve('./tests/e2e/utils/configs/teardown.ts'),

@@ -179,7 +179,7 @@ class FlexTab extends BasePage {
 	}
 
 	public memberRealName(): Locator {
-		return this.getPage().locator('[data-qa="UserName"]');
+		return this.getPage().locator('[data-qa="UserInfoUserName"]');
 	}
 
 	// Search Tab

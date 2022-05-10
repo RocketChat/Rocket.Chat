@@ -7,11 +7,11 @@ import LoginPage from './utils/pageobjects/LoginPage';
 import FlexTab from './utils/pageobjects/FlexTab';
 import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
-import { clearMessage } from './utils/helpers/ClearMessage';
+import { clearMessages } from './utils/helpers/clearMessages';
 
 test.describe('[User Preferences]', () => {
 	test.beforeAll(async () => {
-		await clearMessage(['GENERAL']);
+		await clearMessages(['GENERAL']);
 	});
 	test.describe('default', () => {
 		let flexTab: FlexTab;
