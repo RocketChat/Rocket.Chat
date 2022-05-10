@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { useUserId, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
-import { useUserId, useUserRoom, useUserSubscription } from '../contexts/UserContext';
 import { useAsyncState } from '../hooks/useAsyncState';
 import { AsyncState } from './asyncState';
 import { getConfig } from './utils/getConfig';

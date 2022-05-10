@@ -2,10 +2,10 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Skeleton } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useHourlyChatActivity } from './useHourlyChatActivity';
 
 type ContentForHoursProps = {

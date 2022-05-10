@@ -1,9 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, ComponentProps } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import ImageBox from './ImageBox';
 
 type RetryProps = ComponentProps<typeof Box> & { retry: () => void };

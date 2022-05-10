@@ -1,14 +1,12 @@
 import React, { useMemo, lazy, ReactNode } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
+import { useUser, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 
-import { useSetting } from '../../../client/contexts/SettingsContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
-import { useUser } from '../../../client/contexts/UserContext';
 import Header from '../../../client/components/Header';
 
-const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/Call/BBB'));
+const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
 addAction('bbb_video', ({ room }) => {
 	const enabled = useSetting('bigbluebutton_Enabled');
@@ -62,7 +60,7 @@ addAction('bbb_video', ({ room }) => {
 	);
 });
 
-const templateJitsi = lazy(() => import('../../../client/views/room/contextualBar/Call/Jitsi'));
+const templateJitsi = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/Jitsi'));
 
 addAction('video', ({ room }) => {
 	const enabled = useSetting('Jitsi_Enabled');

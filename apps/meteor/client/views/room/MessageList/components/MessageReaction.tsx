@@ -1,8 +1,7 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
+import { useTooltipClose, useTooltipOpen, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, useRef } from 'react';
 
-import { useTooltipClose, useTooltipOpen } from '../../../../contexts/TooltipContext';
-import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 
 type TranslationRepliesKey =
@@ -15,9 +14,9 @@ type TranslationRepliesKey =
 
 //   "You": "You",
 //   "You_user_have_reacted": "You have reacted",
-//   "Users_and_more_reacted_with": "__users__ and __count__ more have react with __emoji__",
-//   "You_and_more_Reacted_with": "You, __users__ and __count__ more have react with __emoji__",
-//   "You_and_Reacted_with": "You and __count__ more have react with __emoji__",
+//   "Users_and_more_reacted_with": "__users__ and __count__ more have reacted with __emoji__",
+//   "You_and_more_Reacted_with": "You, __users__ and __count__ more have reacted with __emoji__",
+//   "You_and_Reacted_with": "You and __count__ more have reacted with __emoji__",
 
 const getTranslationKey = (users: string[], mine: boolean): TranslationRepliesKey => {
 	if (users.length === 0) {
