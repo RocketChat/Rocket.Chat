@@ -85,7 +85,9 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 		const indexes = this.modelIndexes();
 		if (indexes?.length) {
-			this.col.createIndexes(indexes);
+			this.col.createIndexes(indexes).catch((e) => {
+				console.warn(`Error creating indexes for ${this.name}`, e);
+			});
 		}
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;

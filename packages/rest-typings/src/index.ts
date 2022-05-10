@@ -22,6 +22,7 @@ import type { LicensesEndpoints } from './v1/licenses';
 import type { MiscEndpoints } from './v1/misc';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PermissionsEndpoints } from './v1/permissions';
+import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
 import type { SettingsEndpoints } from './v1/settings';
@@ -35,9 +36,9 @@ import type { OAuthAppsEndpoint } from './v1/oauthapps';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
-	extends BannersEndpoints,
+	extends ChannelsEndpoints,
+		BannersEndpoints,
 		ChatEndpoints,
-		ChannelsEndpoints,
 		CloudEndpoints,
 		CustomUserStatusEndpoints,
 		DmEndpoints,
@@ -47,6 +48,7 @@ export interface Endpoints
 		ImEndpoints,
 		LDAPEndpoints,
 		RoomsEndpoints,
+		PushEndpoints,
 		RolesEndpoints,
 		TeamsEndpoints,
 		SettingsEndpoints,
@@ -132,6 +134,23 @@ export * from './v1/permissions';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
+export * from './v1/videoConference';
+export * from './v1/channels/ChannelsAddAllProps';
+export * from './v1/channels/ChannelsArchiveProps';
+export * from './v1/channels/ChannelsUnarchiveProps';
+export * from './v1/channels/ChannelsHistoryProps';
+export * from './v1/channels/ChannelsRolesProps';
+export * from './v1/channels/ChannelsJoinProps';
+export * from './v1/channels/ChannelsKickProps';
+export * from './v1/channels/ChannelsLeaveProps';
+export * from './v1/channels/ChannelsMessagesProps';
+export * from './v1/channels/ChannelsOpenProps';
+export * from './v1/channels/ChannelsSetAnnouncementProps';
+export * from './v1/channels/ChannelsGetAllUserMentionsByChannelProps';
+export * from './v1/channels/ChannelsModeratorsProps';
+export * from './v1/channels/ChannelsConvertToTeamProps';
+export * from './v1/channels/ChannelsSetReadOnlyProps';
+export * from './v1/channels/ChannelsDeleteProps';
 export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';

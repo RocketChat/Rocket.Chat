@@ -1,7 +1,7 @@
 import { Field, Flex, Box, MultiSelectFiltered, MultiSelect } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import ResetSettingButton from '../ResetSettingButton';
 
 function MultiSelectSettingInput({

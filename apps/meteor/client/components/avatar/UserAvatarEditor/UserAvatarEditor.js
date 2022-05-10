@@ -1,9 +1,7 @@
 import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback } from 'react';
 
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';

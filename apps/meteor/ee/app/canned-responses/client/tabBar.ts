@@ -1,7 +1,7 @@
 import { lazy, useMemo } from 'react';
+import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { useHasLicense } from '../../../client/hooks/useHasLicense';
-import { useSetting } from '../../../../client/contexts/SettingsContext';
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 
 addAction('canned-responses', () => {
