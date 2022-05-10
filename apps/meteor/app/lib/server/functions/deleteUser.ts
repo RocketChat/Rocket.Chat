@@ -16,7 +16,7 @@ import { LivechatUnitMonitors } from '../../../../ee/app/models/server';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = Users.findOneById(userId, {
-		fields: { username: 1, avatarOrigin: 1, federation: 1 },
+		fields: { username: 1, avatarOrigin: 1, federation: 1, roles: 1 },
 	});
 
 	if (!user) {
