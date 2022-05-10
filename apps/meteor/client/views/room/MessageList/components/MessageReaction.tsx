@@ -1,8 +1,7 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
+import { useTooltipClose, useTooltipOpen, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, useRef } from 'react';
 
-import { useTooltipClose, useTooltipOpen } from '../../../../contexts/TooltipContext';
-import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 
 type TranslationRepliesKey =

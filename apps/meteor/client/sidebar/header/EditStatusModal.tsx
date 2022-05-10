@@ -1,14 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Field, TextInput, FieldGroup, Modal, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
 
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';
-import { useMethod } from '../../contexts/ServerContext';
-import { useSetting } from '../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../contexts/TranslationContext';
 
 type EditStatusModalProps = {
 	onClose: () => void;

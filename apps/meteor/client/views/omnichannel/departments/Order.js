@@ -1,8 +1,7 @@
 import { Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 function Order({ agentId, setAgentList, agentList }) {
 	const t = useTranslation();

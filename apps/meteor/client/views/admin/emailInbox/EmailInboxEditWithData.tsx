@@ -1,8 +1,8 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EmailInboxForm from './EmailInboxForm';
@@ -20,7 +20,7 @@ type EmailInboxEditWithDataProps = {
 	id: string;
 };
 
-const EmailInboxEditWithData = ({ id }: EmailInboxEditWithDataProps) => {
+const EmailInboxEditWithData = ({ id }: EmailInboxEditWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const { value: data, error, phase: state } = useEndpointData(`email-inbox/${id}`);
 

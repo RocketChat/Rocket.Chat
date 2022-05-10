@@ -1,6 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { EventHandlerOf } from '@rocket.chat/emitter';
-import { createContext, MouseEventHandler, useContext } from 'react';
+import { createContext, useContext } from 'react';
 
 import { actions, listen, ToolboxActionConfig, ToolboxAction, Events } from '.';
 import './defaultActions';
@@ -14,7 +14,7 @@ export type ToolboxContextValue = {
 	context?: any;
 	open: Function;
 	openUserInfo: (username: string) => void;
-	close: MouseEventHandler<HTMLOrSVGElement>;
+	close: () => void;
 	activeTabBar?: ToolboxActionConfig;
 };
 

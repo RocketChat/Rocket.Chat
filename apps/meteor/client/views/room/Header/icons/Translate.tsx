@@ -1,10 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import colors from '@rocket.chat/fuselage-tokens/colors';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
 import Header from '../../../../components/Header';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 
 type TranslateProps = {
 	room: IRoom;

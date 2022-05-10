@@ -1,11 +1,11 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { UserContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useMemo, FC } from 'react';
 
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
 import { callbacks } from '../../lib/callbacks';
-import { UserContext } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 

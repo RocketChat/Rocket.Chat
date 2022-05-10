@@ -1,15 +1,12 @@
-import { Button, Icon, Table } from '@rocket.chat/fuselage';
-import React from 'react';
-
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { Button, Icon, TableCell } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement } from 'react';
 
 type SendTestButtonProps = {
 	id: string;
 };
 
-const SendTestButton = ({ id }: SendTestButtonProps) => {
+const SendTestButton = ({ id }: SendTestButtonProps): ReactElement => {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -24,12 +21,13 @@ const SendTestButton = ({ id }: SendTestButtonProps) => {
 			message: t('Email_sent'),
 		});
 	};
+
 	return (
-		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Send_Test_Email')} onClick={(e) => handleOnClick(e)}>
+		<TableCell fontScale='p2' color='hint' withTruncatedText>
+			<Button small ghost title={t('Send_Test_Email')} onClick={handleOnClick}>
 				<Icon name='send' size='x20' />
 			</Button>
-		</Table.Cell>
+		</TableCell>
 	);
 };
 

@@ -1,5 +1,6 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback } from 'react';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useMemo, useCallback, ReactElement } from 'react';
 
 import {
 	GenericTable,
@@ -12,8 +13,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import SendTestButton from './SendTestButton';
@@ -27,7 +26,11 @@ const useQuery = (
 		current: number;
 	},
 	[column, direction]: string[],
-) =>
+): {
+	offset?: number;
+	count?: number;
+	sort: string;
+} =>
 	useMemo(
 		() => ({
 			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
@@ -37,7 +40,7 @@ const useQuery = (
 		[column, current, direction, itemsPerPage],
 	);
 
-const EmailInboxTable = () => {
+const EmailInboxTable = (): ReactElement => {
 	const t = useTranslation();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -47,11 +50,12 @@ const EmailInboxTable = () => {
 	const router = useRoute('admin-email-inboxes');
 
 	const onClick = useCallback(
-		(_id) => () =>
+		(_id) => (): void => {
 			router.push({
 				context: 'edit',
 				_id,
-			}),
+			});
+		},
 		[router],
 	);
 
