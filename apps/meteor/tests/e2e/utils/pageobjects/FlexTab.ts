@@ -430,7 +430,9 @@ class FlexTab extends BasePage {
 	}
 
 	public async enterUserView(user: string): Promise<void> {
-		this.getUserEl(user).click();
+		const userEl = this.getUserEl(user);
+		await userEl.waitFor();
+		await userEl.click();
 	}
 
 	public async archiveChannel(): Promise<void> {
