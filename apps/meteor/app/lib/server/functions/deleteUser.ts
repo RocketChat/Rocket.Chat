@@ -63,12 +63,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
-		if (user.roles.find('livechat-agent') !== undefined || hasRole(userId, 'livechat-agent')) {
+		if (user.roles.find((r: string) => r === 'livechat-agent') !== undefined || hasRole(userId, 'livechat-agent')) {
 			// Remove user as livechat agent
 			LivechatDepartmentAgents.removeByAgentId(userId);
 		}
 
-		if (user.roles.find('livechat-monitor') !== undefined || hasRole(userId, 'livechat-monitor')) {
+		if (user.roles.find((r: string) => r === 'livechat-monitor') !== undefined || hasRole(userId, 'livechat-monitor')) {
 			// Remove user as Unit Monitor
 			LivechatUnitMonitors.removeByMonitorId(userId);
 		}
