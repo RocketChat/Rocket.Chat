@@ -1,12 +1,12 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 export type RoomsEndpoints = {
-	'rooms.autocomplete.channelAndPrivate': {
+	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: { selector: string }) => {
 			items: IRoom[];
 		};
 	};
-	'rooms.autocomplete.channelAndPrivate.withPagination': {
+	'/v1/rooms.autocomplete.channelAndPrivate.withPagination': {
 		GET: (params: { selector: string; offset?: number; count?: number; sort?: string }) => {
 			items: IRoom[];
 			count: number;
@@ -14,17 +14,17 @@ export type RoomsEndpoints = {
 			total: number;
 		};
 	};
-	'rooms.autocomplete.availableForTeams': {
+	'/v1/rooms.autocomplete.availableForTeams': {
 		GET: (params: { name: string }) => {
 			items: IRoom[];
 		};
 	};
-	'rooms.info': {
+	'/v1/rooms.info': {
 		GET: (params: { roomId: string } | { roomName: string }) => {
 			room: IRoom;
 		};
 	};
-	'rooms.createDiscussion': {
+	'/v1/rooms.createDiscussion': {
 		POST: (params: {
 			prid: IRoom['_id'];
 			pmid?: IMessage['_id'];
@@ -36,7 +36,7 @@ export type RoomsEndpoints = {
 			discussion: IRoom;
 		};
 	};
-	'rooms.export': {
+	'/v1/rooms.export': {
 		POST: (params: {
 			rid: IRoom['_id'];
 			type: 'email' | 'file';

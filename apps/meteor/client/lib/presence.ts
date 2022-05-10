@@ -81,7 +81,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 					ids: [...currentUids],
 				};
 
-				const { users } = (await APIClient.v1.get('users.presence', params)) as UsersPresencePayload;
+				const { users } = (await APIClient.get('/v1/users.presence', params)) as UsersPresencePayload;
 
 				users.forEach((user) => {
 					if (!store.has(user._id)) {

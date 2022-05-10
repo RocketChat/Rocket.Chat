@@ -1,7 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 export type DmEndpoints = {
-	'dm.create': {
+	'/v1/dm.create': {
 		POST: (
 			params: (
 				| {

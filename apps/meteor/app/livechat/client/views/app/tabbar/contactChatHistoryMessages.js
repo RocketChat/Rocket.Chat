@@ -86,7 +86,7 @@ Template.contactChatHistoryMessages.onCreated(function () {
 		const offset = this.offset.get();
 
 		try {
-			const { messages, total } = await APIClient.v1.get(url);
+			const { messages, total } = await APIClient.get(url);
 			this.messages.set(offset === 0 ? messages : this.messages.get().concat(messages));
 			this.hasMore.set(total > this.messages.get().length);
 		} catch (e) {
@@ -103,10 +103,12 @@ Template.contactChatHistoryMessages.onCreated(function () {
 		const searchTerm = this.searchTerm.get();
 
 		if (searchTerm !== '') {
-			return this.loadMessages(`chat.search/?roomId=${this.rid}&searchText=${searchTerm}&count=${limit}&offset=${offset}&sort={"ts": 1}`);
+			return this.loadMessages(
+				`/v1/chat.search/?roomId=${this.rid}&searchText=${searchTerm}&count=${limit}&offset=${offset}&sort={"ts": 1}`,
+			);
 		}
 
-		this.loadMessages(`livechat/${this.rid}/messages?count=${limit}&offset=${offset}&sort={"ts": 1}`);
+		this.loadMessages(`/v1/livechat/${this.rid}/messages?count=${limit}&offset=${offset}&sort={"ts": 1}`);
 	});
 
 	this.autorun(() => {

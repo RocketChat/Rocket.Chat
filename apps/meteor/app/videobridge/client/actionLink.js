@@ -29,7 +29,7 @@ actionLinks.register('joinJitsiCall', function (message, params, instance) {
 	const clickTime = new Date();
 	const jitsiTimeout = new Date(room.jitsiTimeout);
 
-	APIClient.v1.post('statistics.telemetry', {
+	APIClient.post('/v1/statistics.telemetry', {
 		params: [{ eventName: 'updateCounter', timestamp: Date.now(), settingsId: 'Jitsi_Click_To_Join_Count' }],
 	});
 

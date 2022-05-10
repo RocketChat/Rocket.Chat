@@ -19,6 +19,7 @@ export declare const APIClient: {
 		'X-Auth-Token': string;
 	};
 	_jqueryCall(method?: string, endpoint?: string, params?: any, body?: any, headers?: Record<string, string>, dataType?: string): any;
+	/* @deprecated */
 	v1: {
 		upload<P, B, R = any>(
 			endpoint: string,

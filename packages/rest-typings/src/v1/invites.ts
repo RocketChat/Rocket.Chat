@@ -1,10 +1,10 @@
 import type { IInvite, IRoom } from '@rocket.chat/core-typings';
 
 export type InvitesEndpoints = {
-	'listInvites': {
+	'/v1/listInvites': {
 		GET: () => Array<IInvite>;
 	};
-	'removeInvite/:_id': {
+	'/v1/removeInvite/:_id': {
 		DELETE: () => void;
 	};
 	'/v1/useInviteToken': {

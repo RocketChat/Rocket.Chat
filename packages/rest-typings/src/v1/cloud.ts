@@ -1,20 +1,20 @@
 import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
 
 export type CloudEndpoints = {
-	'cloud.manualRegister': {
+	'/v1/cloud.manualRegister': {
 		POST: (params: { cloudBlob: string }) => void;
 	};
-	'cloud.createRegistrationIntent': {
+	'/v1/cloud.createRegistrationIntent': {
 		POST: (params: { resend: boolean; email: string }) => {
 			intentData: CloudRegistrationIntentData;
 		};
 	};
-	'cloud.confirmationPoll': {
+	'/v1/cloud.confirmationPoll': {
 		GET: (params: { deviceCode: string; resend?: boolean }) => {
 			pollData: CloudConfirmationPollData;
 		};
 	};
-	'cloud.registrationStatus': {
+	'/v1/cloud.registrationStatus': {
 		GET: (params: void) => { registrationStatus: CloudRegistrationStatus };
 	};
 };

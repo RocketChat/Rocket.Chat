@@ -9,7 +9,7 @@ import * as banners from '../lib/banners';
 const fetchInitialBanners = async (): Promise<void> => {
 	const response: Serialized<{
 		banners: IBanner[];
-	}> = await APIClient.get('v1/banners', {
+	}> = await APIClient.get('/v1/banners', {
 		platform: BannerPlatform.Web,
 	});
 
@@ -24,7 +24,7 @@ const fetchInitialBanners = async (): Promise<void> => {
 const handleBanner = async (event: { bannerId: string }): Promise<void> => {
 	const response: Serialized<{
 		banners: IBanner[];
-	}> = await APIClient.get(`v1/banners/${event.bannerId}`, {
+	}> = await APIClient.get(`/v1/banners/${event.bannerId}`, {
 		platform: BannerPlatform.Web,
 	});
 

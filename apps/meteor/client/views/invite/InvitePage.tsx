@@ -59,7 +59,7 @@ const InvitePage = (): ReactElement => {
 				}
 
 				try {
-					const result = await APIClient.v1.post('useInviteToken', { token });
+					const result = await APIClient.post('/v1/useInviteToken', { token });
 
 					if (!result.room.name) {
 						dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });

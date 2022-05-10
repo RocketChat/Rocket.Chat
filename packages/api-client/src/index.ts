@@ -5,60 +5,97 @@ export { RestClientInterface };
 export class RestClient implements RestClientInterface {
 	private readonly baseUrl: string;
 
-	private readonly headers: Record<string, string> = {};
+	private headers: Record<string, string> = {};
+
+	private credentials:
+		| {
+				'X-User-Id': string;
+				'X-Auth-Token': string;
+		  }
+		| undefined;
 
 	constructor({
 		baseUrl,
 		credentials,
+		headers = {},
 	}: {
 		baseUrl: string;
 		credentials?: {
 			'X-User-Id': string;
 			'X-Auth-Token': string;
 		};
+		headers?: Record<string, string>;
 	}) {
 		this.baseUrl = `${baseUrl}/api`;
-		if (credentials) {
-			this.headers['X-User-Id'] = credentials['X-User-Id'];
-			this.headers['X-Auth-Token'] = credentials['X-Auth-Token'];
-		}
+		this.setCredentials(credentials);
+		this.headers = headers;
 	}
 
-	getCredentials: RestClientInterface['getCredentials'] = () => {
-		return undefined;
+	getCredentials(): ReturnType<RestClientInterface['getCredentials']> {
+		return this.credentials;
+	}
+
+	setCredentials: RestClientInterface['setCredentials'] = (credentials) => {
+		this.credentials = credentials;
 	};
 
 	get: RestClientInterface['get'] = (endpoint, params, options) => {
 		return this.send(`${endpoint}?${this.getParams(params)}`, 'GET', options);
 	};
 
-	post: RestClientInterface['post'] = (endpoint, params, options) => {
-		return this.send(endpoint, 'POST', options);
+	post: RestClientInterface['post'] = (endpoint, params, { headers, ...options } = {}) => {
+		return this.send(endpoint, 'POST', {
+			body: JSON.stringify(params),
+
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				...headers,
+			},
+
+			...options,
+		});
 	};
 
-	put: RestClientInterface['put'] = (endpoint, params, options) => {
-		return this.send(endpoint, 'PUT', options);
+	put: RestClientInterface['put'] = (endpoint, params, { headers, ...options } = {}) => {
+		return this.send(endpoint, 'PUT', {
+			body: JSON.stringify(params),
+
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				...headers,
+			},
+
+			...options,
+		});
 	};
 
 	delete: RestClientInterface['delete'] = (endpoint, params, options) => {
 		return this.send(endpoint, 'DELETE', options);
 	};
 
+	protected getCredentialsAsHeaders(): Record<string, string> {
+		const credentials = this.getCredentials();
+		return credentials
+			? {
+					'X-User-Id': credentials['X-User-Id'],
+					'X-Auth-Token': credentials['X-Auth-Token'],
+			  }
+			: {};
+	}
+
 	protected send<T>(endpoint: string, method: string, { headers, ...options }: Omit<RequestInit, 'method'> = {}): Promise<T> {
 		return fetch(`${this.baseUrl}${endpoint}`, {
 			...options,
-			headers: { ...this.headers, ...headers },
+			headers: { ...this.getCredentialsAsHeaders(), ...this.headers, ...headers },
 			method,
 		}).then(function (response) {
 			return response.json();
 		}) as Promise<T>;
 	}
 
-	protected getHeaders(headers: Record<string, string>): Record<string, string> {
-		return { ...this.headers, ...headers };
-	}
-
-	private getParams(data: Record<string, object | number | string | boolean> | void): string {
+	protected getParams(data: Record<string, object | number | string | boolean> | void): string {
 		return data
 			? Object.entries(data)
 					.map(function ([k, data]) {

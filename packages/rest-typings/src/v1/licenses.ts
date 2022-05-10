@@ -1,16 +1,16 @@
 import type { ILicense } from '@rocket.chat/core-typings';
 
 export type LicensesEndpoints = {
-	'licenses.get': {
+	'/v1/licenses.get': {
 		GET: () => { licenses: Array<ILicense> };
 	};
-	'licenses.add': {
+	'/v1/licenses.add': {
 		POST: (params: { license: string }) => void;
 	};
-	'licenses.maxActiveUsers': {
+	'/v1/licenses.maxActiveUsers': {
 		GET: () => { maxActiveUsers: number | null; activeUsers: number };
 	};
-	'licenses.requestSeatsLink': {
+	'/v1/licenses.requestSeatsLink': {
 		GET: () => { url: string };
 	};
 };

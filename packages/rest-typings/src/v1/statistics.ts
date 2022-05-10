@@ -19,10 +19,10 @@ export type TelemetryPayload = {
 };
 
 export type StatisticsEndpoints = {
-	'statistics': {
+	'/v1/statistics': {
 		GET: (params: { refresh?: 'true' | 'false' }) => IStats;
 	};
-	'statistics.list': {
+	'/v1/statistics.list': {
 		GET: (params: { offset?: number; count?: number; sort?: string; fields?: string; query?: string }) => {
 			statistics: IStats[];
 			count: number;
@@ -30,7 +30,7 @@ export type StatisticsEndpoints = {
 			total: number;
 		};
 	};
-	'statistics.telemetry': {
+	'/v1/statistics.telemetry': {
 		POST: (params: TelemetryPayload) => any;
 	};
 };

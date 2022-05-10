@@ -3,7 +3,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type DirectoryEndpoint = {
-	directory: {
+	'/v1/directory': {
 		GET: (params: {
 			query: { [key: string]: string };
 			count: number;

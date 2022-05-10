@@ -32,4 +32,5 @@ export interface RestClientInterface {
 				'X-Auth-Token': string;
 		  }
 		| undefined;
+	setCredentials(credentials: undefined | { 'X-User-Id': string; 'X-Auth-Token': string }): void;
 }

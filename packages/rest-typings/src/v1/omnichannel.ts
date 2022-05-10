@@ -20,12 +20,12 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 type booleanString = 'true' | 'false';
 
 export type OmnichannelEndpoints = {
-	'livechat/appearance': {
+	'/v1/livechat/appearance': {
 		GET: () => {
 			appearance: ISetting[];
 		};
 	};
-	'livechat/visitors.info': {
+	'/v1/livechat/visitors.info': {
 		GET: (params: { visitorId: string }) => {
 			visitor: {
 				visitorEmails: Array<{
@@ -34,23 +34,23 @@ export type OmnichannelEndpoints = {
 			};
 		};
 	};
-	'livechat/room.onHold': {
+	'/v1/livechat/room.onHold': {
 		POST: (params: { roomId: IRoom['_id'] }) => void;
 	};
-	'livechat/room.join': {
+	'/v1/livechat/room.join': {
 		GET: (params: { roomId: IRoom['_id'] }) => { success: boolean };
 	};
-	'livechat/monitors.list': {
+	'/v1/livechat/monitors.list': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			monitors: ILivechatMonitor[];
 		}>;
 	};
-	'livechat/tags.list': {
+	'/v1/livechat/tags.list': {
 		GET: (params: PaginatedRequest<{ text: string }, 'name'>) => PaginatedResult<{
 			tags: ILivechatTag[];
 		}>;
 	};
-	'livechat/department': {
+	'/v1/livechat/department': {
 		GET: (
 			params: PaginatedRequest<{
 				text: string;
@@ -66,7 +66,7 @@ export type OmnichannelEndpoints = {
 			agents: any[];
 		};
 	};
-	'livechat/department/:_id': {
+	'/v1/livechat/department/:_id': {
 		GET: (params: { onlyMyDepartments?: booleanString; includeAgents?: booleanString }) => {
 			department: ILivechatDepartmentRecord | null;
 			agents?: ILivechatDepartmentAgents[];
@@ -77,39 +77,39 @@ export type OmnichannelEndpoints = {
 		};
 		DELETE: () => void;
 	};
-	'livechat/department.autocomplete': {
+	'/v1/livechat/department.autocomplete': {
 		GET: (params: { selector: string; onlyMyDepartments: booleanString }) => {
 			items: ILivechatDepartment[];
 		};
 	};
-	'livechat/department/:departmentId/agents': {
+	'/v1/livechat/department/:departmentId/agents': {
 		GET: (params: { sort: string }) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
 		POST: (params: { upsert: string[]; remove: string[] }) => void;
 	};
-	'livechat/departments.available-by-unit/:id': {
+	'/v1/livechat/departments.available-by-unit/:id': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 	};
-	'livechat/departments.by-unit/': {
-		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
-			departments: ILivechatDepartment[];
-		}>;
-	};
-
-	'livechat/departments.by-unit/:id': {
+	'/v1/livechat/departments.by-unit/': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 	};
 
-	'livechat/department.listByIds': {
+	'/v1/livechat/departments.by-unit/:id': {
+		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
+			departments: ILivechatDepartment[];
+		}>;
+	};
+
+	'/v1/livechat/department.listByIds': {
 		GET: (params: { ids: string[]; fields?: Record<string, unknown> }) => {
 			departments: ILivechatDepartment[];
 		};
 	};
 
-	'livechat/custom-fields': {
+	'/v1/livechat/custom-fields': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			customFields: [
 				{
@@ -119,7 +119,7 @@ export type OmnichannelEndpoints = {
 			];
 		}>;
 	};
-	'livechat/rooms': {
+	'/v1/livechat/rooms': {
 		GET: (params: {
 			guest: string;
 			fname: string;
@@ -136,12 +136,12 @@ export type OmnichannelEndpoints = {
 			rooms: IOmnichannelRoom[];
 		}>;
 	};
-	'livechat/:rid/messages': {
+	'/v1/livechat/:rid/messages': {
 		GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
-	'livechat/users/agent': {
+	'/v1/livechat/users/agent': {
 		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
 			users: {
 				_id: string;
@@ -160,49 +160,49 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	'livechat/users/manager/:_id': {
+	'/v1/livechat/users/manager/:_id': {
 		DELETE: () => { success: boolean };
 	};
 
-	'livechat/users/manager': {
+	'/v1/livechat/users/manager': {
 		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
 			users: ILivechatAgent[];
 		}>;
 		POST: (params: { username: string }) => { success: boolean };
 	};
 
-	'livechat/visitor': {
+	'/v1/livechat/visitor': {
 		POST: (params: { visitor: ILivechatVisitorDTO }) => {
 			visitor: ILivechatVisitor;
 		};
 	};
 
-	'livechat/visitor/:token': {
+	'/v1/livechat/visitor/:token': {
 		GET: () => { visitor: ILivechatVisitor };
 		DELETE: (params: { token: string }) => {
 			visitor: { _id: string; ts: string };
 		};
 	};
 
-	'livechat/visitor/:token/room': {
+	'/v1/livechat/visitor/:token/room': {
 		GET: (params: { token: string }) => { rooms: IOmnichannelRoom[] };
 	};
 
-	'livechat/visitor.callStatus': {
+	'/v1/livechat/visitor.callStatus': {
 		POST: (params: { token: string; callStatus: string; rid: string; callId: string }) => {
 			token: string;
 			callStatus: string;
 		};
 	};
 
-	'livechat/visitor.status': {
+	'/v1/livechat/visitor.status': {
 		POST: (params: { token: string; status: string }) => {
 			token: string;
 			status: string;
 		};
 	};
 
-	'livechat/queue': {
+	'/v1/livechat/queue': {
 		GET: (params: {
 			agentId?: ILivechatAgent['_id'];
 			includeOfflineAgents?: boolean;
@@ -221,7 +221,7 @@ export type OmnichannelEndpoints = {
 			total: number;
 		};
 	};
-	'livechat/agents/:uid/departments?enabledDepartmentsOnly=true': {
+	'/v1/livechat/agents/:uid/departments?enabledDepartmentsOnly=true': {
 		GET: () => { departments: ILivechatDepartment[] };
 	};
 
