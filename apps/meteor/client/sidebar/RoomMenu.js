@@ -12,7 +12,10 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
+import { Rooms } from '../../app/models/client/index';
+import { applyButtonFilters } from '../../app/ui-message/client/actionButtons/lib/applyButtonFilters';
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
+import { SidebarRoomAction } from '../../app/ui-utils/client/lib/SidebarRoomAction';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
@@ -149,8 +152,20 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		}
 	});
 
+	const room = Rooms.findOne({ _id: rid });
+
+	const actionButtons = SidebarRoomAction.actions
+		.getCurrentValue()
+		.filter((action) => applyButtonFilters(action, room))
+		.reduce((result, item) => {
+			const key = Object.keys(item)[0];
+			result[key] = item[key];
+			return result;
+		}, {});
+
 	const menuOptions = useMemo(
 		() => ({
+			...actionButtons,
 			hideRoom: {
 				label: { label: t('Hide'), icon: 'eye-off' },
 				action: handleHide,
@@ -175,7 +190,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				},
 			}),
 		}),
-		[t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
+		[actionButtons, t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
 	);
 
 	return (

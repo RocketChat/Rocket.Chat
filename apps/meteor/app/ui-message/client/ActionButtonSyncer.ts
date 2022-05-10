@@ -6,6 +6,7 @@ import * as TabBar from './actionButtons/tabbar';
 import * as MessageAction from './actionButtons/messageAction';
 import * as MessageBox from './actionButtons/messageBox';
 import * as DropdownAction from './actionButtons/dropdownAction';
+import * as RoomSideBarAction from './actionButtons/roomSidebarAction';
 
 let registeredButtons: Array<IUIActionButton> = [];
 
@@ -22,6 +23,9 @@ export const addButton = (button: IUIActionButton): void => {
 			break;
 		case UIActionButtonContext.USER_DROPDOWN_ACTION:
 			DropdownAction.onAdded(button);
+			break;
+		case UIActionButtonContext.ROOM_SIDEBAR_ACTION:
+			RoomSideBarAction.onAdded(button);
 			break;
 	}
 
@@ -41,6 +45,9 @@ export const removeButton = (button: IUIActionButton): void => {
 			break;
 		case UIActionButtonContext.USER_DROPDOWN_ACTION:
 			DropdownAction.onRemoved(button);
+			break;
+		case UIActionButtonContext.ROOM_SIDEBAR_ACTION:
+			RoomSideBarAction.onRemoved(button);
 			break;
 	}
 };
