@@ -1,11 +1,8 @@
 import type { IWebdavAccountPayload } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, TextInput, PasswordInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, ReactElement } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 type AddWebdavAccountModalPayload = IWebdavAccountPayload;
 

@@ -1,9 +1,9 @@
 import { Button, Box, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, ReactElement } from 'react';
 
 import UserAutoComplete from '../../../components/UserAutoComplete';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 const AddManager = ({ reload }: { reload: () => void }): ReactElement => {

@@ -18,7 +18,7 @@ export const send = async (message: IMessage): Promise<IMessage> => {
 		throw new Error(`Could not find room matrix id for ${message.rid}`);
 	}
 
-	const intent = matrixBridge.getIntent(userMatrixId);
+	const intent = matrixBridge.getInstance().getIntent(userMatrixId);
 	await intent.sendText(roomMatrixId, message.msg || '...not-supported...');
 
 	return message;

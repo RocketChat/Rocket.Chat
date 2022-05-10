@@ -1,9 +1,9 @@
 import { Field, Button } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 const AddUsers = ({ onClickClose, onClickBack, onClickSave, value, onChange }) => {
 	const t = useTranslation();

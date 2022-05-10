@@ -1,10 +1,9 @@
 import { Box, Button, ButtonGroup, Field, FieldGroup, Modal, Select, SelectOption, Tabs, TextInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useSettingSetValue, useTranslation } from '@rocket.chat/ui-contexts';
 import { parse as parseDomain, ParsedDomain } from 'psl';
 import React, { FC, ReactElement, useCallback, useState } from 'react';
 
-import { useSetting, useSettingSetValue } from '../../../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useForm } from '../../../../../../hooks/useForm';
 import { DNSRecords } from './DNSRecords';
 import InviteUsers from './InviteUsers';

@@ -1,9 +1,7 @@
 import { IUser } from '@rocket.chat/core-typings';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback } from 'react';
 
-import { useMethod } from '../contexts/ServerContext';
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
-import { useTranslation } from '../contexts/TranslationContext';
 import { useEndpointAction } from './useEndpointAction';
 import { useEndpointUpload } from './useEndpointUpload';
 

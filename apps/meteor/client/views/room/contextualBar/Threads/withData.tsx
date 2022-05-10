@@ -1,7 +1,7 @@
 import { useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useUserId, useUserSubscription, useUserRoom } from '@rocket.chat/ui-contexts';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import { useUserId, useUserSubscription, useUserRoom } from '../../../../contexts/UserContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';

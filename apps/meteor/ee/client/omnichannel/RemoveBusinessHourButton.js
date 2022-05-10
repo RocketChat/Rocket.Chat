@@ -1,12 +1,9 @@
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../client/components/GenericModal';
-import { useSetModal } from '../../../client/contexts/ModalContext';
-import { useMethod } from '../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 
 function RemoveBusinessHourButton({ _id, type, reload }) {
 	const removeBusinessHour = useMethod('livechat:removeBusinessHour');
