@@ -1962,7 +1962,7 @@
   "FEDERATION_Unique_Id_Description": "This is your federation unique ID, used to identify your peer on the mesh.",
   "Federation_Matrix": "Federation V2",
   "Federation_Matrix_enabled": "Enabled",
-  "Federation_Matrix_Enabled_Alert": "Matrix Federation Support is in alpha. Use on a production system is not recommended at this time.  RESTART CURRENTLY REQUIRED AFTER ALL SETTING CHANGES.  <a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\">More Information about Matrix Federation support can be found here</>",
+  "Federation_Matrix_Enabled_Alert": "Matrix Federation Support is in alpha. Use on a production system is not recommended at this time. <a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\">More Information about Matrix Federation support can be found here</>",
   "Federation_Matrix_id": "AppService ID",
   "Federation_Matrix_hs_token": "Homeserver Token",
   "Federation_Matrix_as_token": "AppService Token",
