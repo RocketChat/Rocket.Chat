@@ -398,7 +398,7 @@ export class APIClass extends Restivus {
 						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
 						if (_options.validateParams && !_options.validateParams(this.request.method === 'GET' ? this.queryParams : this.bodyParams)) {
-							return API.v1.failure('error-invalid-params', _options.validateParams.errors?.map((error) => error.message).join('\n '));
+							return API.v1.failure('invalid-params', _options.validateParams.errors?.map((error) => error.message).join('\n '));
 						}
 						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, _options.permissionsRequired))) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
