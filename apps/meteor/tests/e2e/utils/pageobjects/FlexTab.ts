@@ -404,9 +404,7 @@ class FlexTab extends BasePage {
 	}
 
 	public userMoreActions(): Locator {
-		return this.getPage().locator(
-			'//main//aside//button[contains(text(), "Direct Message")]/..//i[contains(@class, "rcx-icon--name-kebab")]/..',
-		);
+		return this.getPage().locator('[data-qa="UserUserInfo-menu"]');
 	}
 
 	public async setUserOwner(user: string): Promise<void> {
@@ -432,9 +430,7 @@ class FlexTab extends BasePage {
 	}
 
 	public async enterUserView(user: string): Promise<void> {
-		const userEl = this.getUserEl(user);
-		await userEl.waitFor();
-		await userEl.click();
+		this.getUserEl(user).click();
 	}
 
 	public async archiveChannel(): Promise<void> {
@@ -445,7 +441,7 @@ class FlexTab extends BasePage {
 		await this.archiveSave().click();
 	}
 
-	public async addPeopleToChannel(user: any): Promise<void> {
+	public async addPeopleToChannel(user: string): Promise<void> {
 		await this.addUserButton().click();
 		await this.chooseUserSearch().type(user);
 		await this.getPage().waitForTimeout(3000);
