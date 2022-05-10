@@ -24,7 +24,7 @@ test.describe('[Message Popup]', () => {
 		await sideNav.general().click();
 	});
 
-	test.describe.serial('User mentions', () => {
+	test.describe('User mentions', () => {
 		test('expect show message popup', async () => {
 			await mainContent.setTextToInput('@');
 			expect(await mainContent.messagePopUp().isVisible()).toBeTruthy();
