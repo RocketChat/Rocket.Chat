@@ -674,4 +674,8 @@ export default class Administration extends BasePage {
 	public async adminSaveChanges(): Promise<void> {
 		await this.buttonSave().click();
 	}
+
+	public userInfoActions(): Locator {
+		return this.getPage().locator('[data-qa-id="UserInfoActions"]');
+	}
 }

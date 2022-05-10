@@ -315,7 +315,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 	}, [actionsDefinition, menu]);
 
 	return (
-		<ButtonGroup flexGrow={0} justifyContent='center'>
+		<ButtonGroup flexGrow={0} justifyContent='center' data-qa-id='UserInfoActions'>
 			{actions}
 		</ButtonGroup>
 	);

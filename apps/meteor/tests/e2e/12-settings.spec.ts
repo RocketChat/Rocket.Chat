@@ -2,11 +2,12 @@ import { test, expect, Page } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL } from './utils/mocks/urlMock';
-import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
+import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
 import LoginPage from './utils/pageobjects/LoginPage';
 import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';
 import Administration from './utils/pageobjects/Administration';
+import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
@@ -15,6 +16,7 @@ test.describe('[Settings]', async () => {
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
+	let userPreferences: PreferencesMainContent;
 
 	test.beforeAll(async ({ browser }) => {
 		const context = await browser.newContext();
@@ -23,6 +25,7 @@ test.describe('[Settings]', async () => {
 		loginPage = new LoginPage(page);
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
+		userPreferences = new PreferencesMainContent(page);
 
 		await loginPage.goto('/');
 		await loginPage.login(validUserInserted);
@@ -337,8 +340,14 @@ test.describe('[Settings]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
-		test.skip('(UI) expect option(update profile) not be visible', async () => {
-			//
+		test.skip('(UI) expect options(update profile) be disabled', async () => {
+			await sideNav.sidebarUserMenu().click();
+			await sideNav.account().click();
+
+			expect(userPreferences.avatarFileInput().isDisabled()).toBeTruthy();
+			expect(userPreferences.emailTextInput().isDisabled()).toBeTruthy();
+			expect(userPreferences.realNameTextInput().isDisabled()).toBeTruthy();
+			expect(userPreferences.userNameTextInput().isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable profile change', async ({ request }) => {
@@ -353,7 +362,7 @@ test.describe('[Settings]', async () => {
 		});
 	});
 
-	test.describe('Avatar change', () => {
+	test.describe.only('Avatar change', () => {
 		test('(API) expect disable avatar change', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
 				headers: apiSessionHeaders,
@@ -365,8 +374,11 @@ test.describe('[Settings]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
-		test.skip('(UI) expect option(update avatar) not be visible', async () => {
-			//
+		test.skip('(UI) expect option(update avatar) be disabled', async () => {
+			await sideNav.sidebarUserMenu().click();
+			await sideNav.account().click();
+
+			expect(userPreferences.avatarFileInput().isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable avatar change', async ({ request }) => {
@@ -451,7 +463,7 @@ test.describe('[Settings (admin)]', async () => {
 		});
 	});
 
-	test.describe('Manual new users approve', () => {
+	test.describe.serial('Manual new users approve', () => {
 		test('(API) expect enable manually approve new users', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Accounts_ManuallyApproveNewUsers`, {
 				headers: apiSessionHeaders,
@@ -463,23 +475,25 @@ test.describe('[Settings (admin)]', async () => {
 			expect(data).toHaveProperty('success', true);
 		});
 
-		test.describe.only('(UI) expect activate/deactivate flow as admin', () => {
+		test.describe('(UI) expect activate/deactivate flow as admin', () => {
 			test('expect open /users as admin', async () => {
 				await admin.goto('/admin');
 				await admin.usersLink().click();
 			});
 
 			test('expect find registered user', async () => {
-				await admin.usersFilter().type(validUserInserted.email, { delay: 200 });
-				await admin.userInTable(validUserInserted.email).click();
+				await admin.usersFilter().type(registerUser.email, { delay: 200 });
+				await admin.userInTable(registerUser.email).click();
 			});
 
 			test('expect activate registered user', async () => {
-				//
+				await admin.userInfoActions().locator('button:nth-child(3)').click();
+				await admin.getPage().locator('[value="changeActiveStatus"]').click();
 			});
 
-			test.skip('expect deactivate registered user', async () => {
-				//
+			test('expect deactivate registered user', async () => {
+				await admin.userInfoActions().locator('button:nth-child(3)').click();
+				await admin.getPage().locator('[value="changeActiveStatus"]').click();
 			});
 		});
 
