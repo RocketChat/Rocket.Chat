@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { IDirectMessageRoom, IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
@@ -19,7 +19,7 @@ import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUse
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 
 type StartDirectVideoConfModalProps = {
-	room: IRoom;
+	room: IDirectMessageRoom;
 	uid: IUser['_id'];
 	onClose: () => void;
 };
@@ -35,7 +35,7 @@ const StartDirectVideoConfModal = ({ room, uid, onClose }: StartDirectVideoConfM
 				<VideoConfModalTitle>{t('Start_a_call_with')}</VideoConfModalTitle>
 				<VideoConfModalInfo>
 					<ReactiveUserStatus uid={uid} />
-					<Box mis='x8'>{room.name}</Box>
+					<Box mis='x8'>{room.fname}</Box>
 				</VideoConfModalInfo>
 				<VideoConfModalControllers>
 					<VideoConfModalController>
