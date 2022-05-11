@@ -41,6 +41,14 @@ type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-c
 
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
+type VideoConferenceTypes =
+	| 'video-direct-calling'
+	| 'video-direct-missed'
+	| 'video-direct-started'
+	| 'video-direct-ended'
+	| 'video-conference-started'
+	| 'video-conference';
+
 export type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
@@ -72,7 +80,8 @@ export type MessageTypesValues =
 	| TeamMessageTypes
 	| VoipMessageTypesValues
 	| OmnichannelTypesValues
-	| OtrSystemMessages;
+	| OtrSystemMessages
+	| VideoConferenceTypes;
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -232,3 +241,11 @@ export type IMessageInbox = IMessage & {
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
 export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
+
+export interface IVideoConferenceMessage extends IMessage {
+	videoConf: {
+		title: string;
+	};
+}
+
+export const isVideoConferenceMessage = (message: IMessage): message is IVideoConferenceMessage => 'videoConference' in message;

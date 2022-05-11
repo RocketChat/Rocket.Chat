@@ -633,7 +633,7 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.then(() => done())
 				.catch(done);
@@ -773,7 +773,7 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.then(() => done())
 				.catch(done);

@@ -29,23 +29,21 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.start',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isVideoConfStartProps },
 	{
 		async post() {
-			if (!isVideoConfStartProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isVideoConfStartProps.errors?.map((e) => e.message).join('\n '));
-			}
+			const { roomId } = this.bodyParams;
 
 			// #ToDo: Validate if there is an active provider
 
 			const { userId } = this;
 
-			if (!userId || !(await canAccessRoomIdAsync(this.bodyParams.roomId, userId))) {
+			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
 				return API.v1.failure('invalid-params');
 			}
 
 			return API.v1.success({
-				data: await startVideoConference(userId, this.bodyParams.roomId),
+				data: await startVideoConference(userId, roomId),
 			});
 		},
 	},
