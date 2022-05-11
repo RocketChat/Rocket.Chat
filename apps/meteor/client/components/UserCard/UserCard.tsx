@@ -70,7 +70,7 @@ const UserCard = forwardRef(function UserCard(
 	const t = useTranslation();
 
 	return (
-		<UserCardContainer className={className} ref={ref} style={style}>
+		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style}>
 			<Box>
 				{!username ? <Skeleton width='x124' height='x124' variant='rect' /> : <UserAvatar username={username} etag={etag} size='x124' />}
 				{actions && (
