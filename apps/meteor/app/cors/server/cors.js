@@ -5,12 +5,16 @@ import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
 import { settings } from '../../settings/server';
-import { Logger } from '../../logger';
+import { Logger } from '../../logger/server';
 
 const logger = new Logger('CORS');
 
-settings.watch('Enable_CSP', (enabled) => {
+const setInlineScriptsAllowed = Meteor.bindEnvironment(function _setInlineScriptsAllowed(enabled) {
 	WebAppInternals.setInlineScriptsAllowed(!enabled);
+});
+
+settings.watch('Enable_CSP', (enabled) => {
+	setInlineScriptsAllowed(!enabled);
 });
 
 WebApp.rawConnectHandlers.use(function (req, res, next) {
