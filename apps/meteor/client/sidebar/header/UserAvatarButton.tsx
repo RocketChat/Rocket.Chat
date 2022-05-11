@@ -8,9 +8,9 @@ import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import UserDropdown from './UserDropdown';
 import { useDropdownVisibility } from './hooks/useDropdownVisibility';
+import { IUser } from '@rocket.chat/core-typings';
 
-const UserAvatarButton = function UserAvatarButton(): ReactElement {
-	let user;
+const UserAvatarButton = function UserAvatarButton({user}: {user: IUser}): ReactElement {
 	const {
 		status = !user ? 'online' : 'offline',
 		username,
@@ -18,7 +18,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 		statusText,
 	} = user || {
 		_id: '',
-		username: 'Anonymous',
+		username: 'Red',
 		status: 'online',
 		statusText: '',
 	};

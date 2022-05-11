@@ -10,6 +10,7 @@ import {
 	Button,
 	Grid,
 	Margins,
+	Flex,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
@@ -21,6 +22,7 @@ import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
+import AccountInfo from './AccountInfo';
 
 function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();
@@ -145,8 +147,12 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		e.preventDefault();
 	}, []);
 
+	const items = [
+		{icon: 'user', content: 'Employee/er/broker'}
+	]
+
 	return (
-		<FieldGroup is='form' autoComplete='off' onSubmit={handleSubmit} {...props}>
+		<FieldGroup is='form' style={{marginTop: '0px !important'}} autoComplete='off' onSubmit={handleSubmit} {...props}>
 			{useMemo(
 				() => (
 					<Field>
@@ -162,6 +168,10 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				),
 				[username, user.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag],
 			)}
+				<Box style={{ margin: '0px auto', fontSize: '16px' }}>I'm a fullstack developer with interests in the NFT space and E-commerce space.</Box>
+			<Box display='flex' flexDirection='column' style={{marginTop: '30px'}}>
+				<AccountInfo title='Career' items={items} />
+			</Box>
 			<Box display='flex' flexDirection='row' justifyContent='space-between'>
 				{useMemo(
 					() => (
