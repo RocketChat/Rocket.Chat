@@ -153,6 +153,19 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		{icon: 'trust-score', content: 'Trust score: 60/100', rc: false},
 	]
 
+	const privateInfo = [
+		{icon: 'mail', content: 'ryan@gmail.com', rc: true},
+		{icon: 'phone', content: '+254 730430234', rc: true},
+		{icon: 'gender', content: 'Male', rc: false},
+	]
+
+	const services = [
+		{icon: 'lock', content: 'Update profile/Chan', rc: true},
+		{icon: 'info', content: 'Customer support', rc: false},
+		{icon: 'credit-card', content: 'Verify identity', rc: false},
+		{icon: 'info', content: 'About us', rc: false},
+	]
+
 	return (
 		<FieldGroup is='form' style={{marginTop: '0px !important'}} autoComplete='off' onSubmit={handleSubmit} {...props}>
 			{useMemo(
@@ -173,6 +186,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				<Box style={{ margin: '0px auto', fontSize: '16px' }}>I'm a fullstack developer with interests in the NFT space and E-commerce space.</Box>
 			<Box display='flex' flexDirection='column' style={{marginTop: '30px'}}>
 				<AccountInfo title='Career' items={careerItems} />
+				<AccountInfo title='Private Information' items={privateInfo} />
+				<AccountInfo title='Services' items={services} />
 			</Box>
 			<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 		</FieldGroup>
