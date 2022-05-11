@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
+import { IUser } from '@rocket.chat/core-typings';
 
 import { Users, Sessions } from '../../../app/models/server/raw/index';
 import { API } from '../../../app/api/server/api';
@@ -99,7 +100,11 @@ API.v1.addRoute(
 				const { offset, count } = this.getPaginationItems();
 				let search: string = this.queryParams?.search || '';
 
-				const searchUser = await Users.findUserBySearchOperator(search);
+				const searchUser = await Users.find<Pick<IUser, '_id'>>(
+					{ $text: { $search: search }, active: true },
+					{ projection: { _id: 1 }, limit: 10 },
+				).toArray();
+				console.log(searchUser);
 				if (searchUser?.length) {
 					search += ` ${searchUser.map((user) => user._id).join(' ')}`;
 				}
