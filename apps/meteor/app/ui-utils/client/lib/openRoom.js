@@ -72,7 +72,7 @@ export const openRoom = async function (type, name, render = true) {
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({ rid: room._id });
 			if (sub && sub.open === false) {
-				callWithErrorHandling('openRoom', room._id);
+				await callWithErrorHandling('openRoom', room._id);
 			}
 
 			if (FlowRouter.getQueryParam('msg')) {
