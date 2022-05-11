@@ -51,7 +51,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 			data-qa='system-message'
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && <UserAvatar username={message.u.username} etag={user?.avatarETag} size='x18' />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
