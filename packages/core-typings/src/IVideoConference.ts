@@ -1,7 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 import type { IMessage } from './IMessage';
-import type { ValueOf } from './utils';
 
 export type DirectCallInstructions = {
 	type: 'direct';
@@ -19,11 +18,11 @@ export interface IVideoConferenceUser extends Required<Pick<IUser, '_id' | 'user
 	ts: Date;
 }
 
-export const VideoConferenceStatus = {
-	CALLING: 0,
-	STARTED: 1,
-	ENDED: 2,
-} as const;
+export enum VideoConferenceStatus {
+	CALLING,
+	STARTED,
+	ENDED,
+}
 
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;
@@ -37,7 +36,7 @@ export interface IVideoConference extends IRocketChatRecord {
 		started?: IMessage['_id'];
 		ended?: IMessage['_id'];
 	};
-	status: ValueOf<typeof VideoConferenceStatus>;
+	status: VideoConferenceStatus;
 	url?: string;
 
 	createdBy: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
