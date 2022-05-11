@@ -2,22 +2,23 @@ import { SHA256 } from 'meteor/sha';
 import { Random } from 'meteor/random';
 import speakeasy from 'speakeasy';
 
+// @ts-expect-error
 import { Users } from '../../../models';
 import { settings } from '../../../settings/server';
 
 export const TOTP = {
-	generateSecret() {
+	generateSecret(): speakeasy.GeneratedSecret {
 		return speakeasy.generateSecret();
 	},
 
-	generateOtpauthURL(secret, username) {
+	generateOtpauthURL(secret: speakeasy.GeneratedSecret, username: string): string {
 		return speakeasy.otpauthURL({
 			secret: secret.ascii,
 			label: `Rocket.Chat:${username}`,
 		});
 	},
 
-	verify({ secret, token, backupTokens, userId }) {
+	verify({ secret, token, backupTokens, userId }: { secret: string; token: string; backupTokens?: string[]; userId?: string }): boolean {
 		// validates a backup code
 		if (token.length === 8 && backupTokens) {
 			const hashedCode = SHA256(token);
@@ -34,7 +35,7 @@ export const TOTP = {
 			return false;
 		}
 
-		const maxDelta = settings.get('Accounts_TwoFactorAuthentication_MaxDelta');
+		const maxDelta = settings.get<number>('Accounts_TwoFactorAuthentication_MaxDelta');
 		if (maxDelta) {
 			const verifiedDelta = speakeasy.totp.verifyDelta({
 				secret,
@@ -53,7 +54,7 @@ export const TOTP = {
 		});
 	},
 
-	generateCodes() {
+	generateCodes(): { codes: string[]; hashedCodes: string[] } {
 		// generate 12 backup codes
 		const codes = [];
 		const hashedCodes = [];

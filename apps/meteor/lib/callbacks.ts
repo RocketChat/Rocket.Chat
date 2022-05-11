@@ -14,6 +14,7 @@ import type {
 import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import { getRandomId } from './random';
+import { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -54,6 +55,7 @@ type EventLikeCallbackSignatures = {
 	'beforeJoinDefaultChannels': (user: IUser) => void;
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
+	'onValidateLogin': (login: ILoginAttempt) => void;
 };
 
 /**

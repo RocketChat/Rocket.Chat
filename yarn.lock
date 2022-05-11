@@ -4037,6 +4037,7 @@ __metadata:
     "@types/rewire": ^2.5.28
     "@types/semver": ^7.3.6
     "@types/sharp": ^0.29.4
+    "@types/speakeasy": ^2.0.7
     "@types/string-strip-html": ^5.0.0
     "@types/supertest": ^2.0.11
     "@types/toastr": ^2.1.39
@@ -6981,6 +6982,15 @@ __metadata:
   version: 0.1.2
   resolution: "@types/source-list-map@npm:0.1.2"
   checksum: fda8f37537aca9d3ed860d559289ab1dddb6897e642e6f53e909bbd18a7ac3129a8faa2a7d093847c91346cf09c86ef36e350c715406fba1f2271759b449adf6
+  languageName: node
+  linkType: hard
+
+"@types/speakeasy@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@types/speakeasy@npm:2.0.7"
+  dependencies:
+    "@types/node": "*"
+  checksum: 30152d950ea23654060ef596ea459935a9ea80ba4d9803b13fc9b02c7a27a7b5c96742f2cb00db51b19ba0e13ef9a16c1fd977042f61c9019b10c4191e2f1b97
   languageName: node
   linkType: hard
 
