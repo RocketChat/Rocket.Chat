@@ -25,7 +25,7 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 			<Option.Column>
 				<ReactiveUserStatus uid={_id} />
 			</Option.Column>
-			<OptionContent>
+			<OptionContent data-qa={`MemberItem-${username}`}>
 				{name} <Option.Description>({username})</Option.Description>
 			</OptionContent>
 			<Option.Menu onClick={onClick}>

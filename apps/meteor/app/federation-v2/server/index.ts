@@ -1,2 +1,4 @@
 import './settings';
-import './startup';
+import { startBridge } from './startup';
+
+startBridge();
