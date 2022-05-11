@@ -2,6 +2,7 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
+import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 import { isMessageSequential } from './isMessageSequential';
 
 const TIME_RANGE_IN_SECONDS = 300;
@@ -20,6 +21,13 @@ const baseMessage = {
 	_updatedAt: date,
 	urls: [],
 };
+
+// Register a system message
+MessageTypes.registerType({
+	id: 'au',
+	system: true,
+	message: 'User_added_by',
+});
 
 describe('isMessageSequential', () => {
 	it('should return false if no previous message', () => {
@@ -132,6 +140,17 @@ describe('isMessageSequential', () => {
 			...previous,
 			ts: new Date('2021-10-27T00:04:59.999Z'),
 			t: 'au',
+		};
+		expect(isMessageSequential(current, previous, TIME_RANGE_IN_SECONDS)).to.be.false;
+	});
+
+	it('should return false if previous message is tshow', () => {
+		const previous: IMessage = {
+			...baseMessage,
+			tshow: true,
+		};
+		const current: IMessage = {
+			...baseMessage,
 		};
 		expect(isMessageSequential(current, previous, TIME_RANGE_IN_SECONDS)).to.be.false;
 	});

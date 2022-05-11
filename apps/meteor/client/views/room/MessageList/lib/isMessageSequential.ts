@@ -28,5 +28,9 @@ export const isMessageSequential = (current: IMessage, previous: IMessage | unde
 		return false;
 	}
 
+	if (previous.tshow) {
+		return false;
+	}
+
 	return differenceInSeconds(current.ts, previous.ts) < groupingRange;
 };
