@@ -1,8 +1,7 @@
 import { Accordion, Field, Select, FieldGroup } from '@rocket.chat/fuselage';
+import { useUserPreference, useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useLanguages, useTranslation } from '../../../contexts/TranslationContext';
-import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
 const PreferencesLocalizationSection = ({ onChange, commitRef, ...props }) => {

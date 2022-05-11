@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
+import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
-
-import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 
 const NotificationStatus: FC<{
 	label: TranslationKey;
