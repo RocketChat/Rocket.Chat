@@ -1,4 +1,4 @@
-import type { ISession } from '@rocket.chat/core-typings';
+import type { ISession, IUser } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../../../../../../packages/rest-typings/src/helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../../../../../../packages/rest-typings/src/helpers/PaginatedResult';
@@ -14,7 +14,9 @@ declare module '@rocket.chat/rest-typings' {
 		};
 
 		'sessions/list.all': {
-			GET: (params: PaginatedRequest<{ search?: string }>) => PaginatedResult<{ sessions: ISession[] }>;
+			GET: (
+				params: PaginatedRequest<{ search?: string }>,
+			) => PaginatedResult<{ sessions: ISession & { _user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'> }[] }>;
 		};
 		'sessions/logout': {
 			POST: (params: { sessionId: string }) => Pick<ISession, 'sessionId'>;

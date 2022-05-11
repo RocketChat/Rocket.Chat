@@ -833,23 +833,6 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			},
 		};
 
-		const [docTotal] = await this.col
-			.aggregate([
-				matchOperator,
-				sortOperator,
-				{
-					$group: {
-						_id: '$loginToken',
-					},
-				},
-				{
-					$count: 'count',
-				},
-			])
-			.toArray();
-
-		const total = docTotal?.count || 0; // amount of documents
-
 		const skipOperator = offset >= 1 ? [{ $skip: offset }] : [];
 		const limitOperator = { $limit: count };
 
@@ -874,16 +857,33 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			},
 		};
 
-		const queryArray = [matchOperator, sortOperator, groupOperator, ...skipOperator, limitOperator, projectOperator];
+		const facetOperator = {
+			$facet: {
+				docs: [sortOperator, ...skipOperator, limitOperator],
+				count: [
+					{
+						$count: 'total',
+					},
+				],
+			},
+		};
 
-		const sessions = await this.col.aggregate(queryArray).toArray();
+		const queryArray = [matchOperator, sortOperator, groupOperator, projectOperator, facetOperator];
+
+		const [
+			{
+				docs: sessions,
+				count: [{ total } = { total: 0 }],
+			},
+		] = (await this.col.aggregate(queryArray).toArray()) as unknown as { docs: ISession[]; count: { total: number }[] }[];
+
 		return { sessions, total, count, offset };
 	}
 
 	async getAllSessions(
 		search = '',
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 10 },
-	): Promise<PaginatedResult<{ sessions: ISession[] }>> {
+	): Promise<PaginatedResult<{ sessions: ISession & { _user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'> }[] }>> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
 		const matchOperator = {
@@ -958,29 +958,13 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 		const limitOperator = { $limit: count };
 
-		const [docTotal] = await this.col
-			.aggregate([
-				matchOperator,
-				sortOperator,
-				{
-					$group: {
-						_id: '$loginToken',
-					},
-				},
-				{
-					$count: 'count',
-				},
-			])
-			.toArray();
-		const total = docTotal?.count || 0; // amount of documents
-
 		const skipOperator = offset >= 1 ? [{ $skip: offset }] : [];
 
 		const lookupOperator = {
 			$lookup: {
 				from: 'users',
 				localField: 'userId',
-				foreignField: 'loginToken',
+				foreignField: '_id',
 				as: '_user',
 			},
 		};
@@ -1018,18 +1002,29 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			},
 		};
 
-		const queryArray = [
-			matchOperator,
-			sortOperator,
-			groupOperator,
-			...skipOperator,
-			limitOperator,
-			lookupOperator,
-			unwindOperator,
-			projectOperator,
-		];
+		const facetOperator = {
+			$facet: {
+				docs: [sortOperator, ...skipOperator, limitOperator, lookupOperator, unwindOperator, projectOperator],
+				count: [
+					{
+						$count: 'total',
+					},
+				],
+			},
+		};
 
-		const sessions = await this.col.aggregate(queryArray).toArray();
+		const queryArray = [matchOperator, sortOperator, groupOperator, facetOperator];
+
+		const [
+			{
+				docs: sessions,
+				count: [{ total } = { total: 0 }],
+			},
+		] = (await this.col.aggregate(queryArray).toArray()) as unknown as {
+			docs: ISession & { _user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'> }[];
+			count: { total: number }[];
+		}[];
+
 		return { sessions, total, count, offset };
 	}
 
