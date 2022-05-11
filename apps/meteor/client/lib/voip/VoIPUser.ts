@@ -89,8 +89,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private optionsKeepAliveDebounceCount = 3;
 
-	private pauseConnectivityCheck = true;
-
 	private attemptRegistration = false;
 
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
@@ -138,8 +136,8 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			uri: UserAgent.makeURI(sipUri),
 			transportOptions,
 			sessionDescriptionHandlerFactoryOptions: sdpFactoryOptions,
-			logConfiguration: true,
-			logLevel: 'debug',
+			logConfiguration: false,
+			logLevel: 'error',
 		};
 
 		this.userAgent = new UserAgent(this.userAgentOptions);
@@ -167,7 +165,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.state.isReady = true;
 		this.sendOptions();
 		this.networkEmitter.emit('connected');
-		this.pauseConnectivityCheck = false;
 		/**
 		 * Re-registration post network recovery should be attempted
 		 * if it was previously registered or incall/onhold
@@ -192,7 +189,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * attemptReconnection attempts continuously. Else stops after |config.connectionRetryCount|
 			 *
 			 */
-			// this.pauseConnectivityCheck = true;
 			// this.attemptReconnection();
 			this.attemptReconnection(0, false);
 		}
@@ -210,7 +206,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * the code will check if the endpoint was previously registered before the disconnection.
 			 * If such is the case, it will first unregister and then reregister.
 			 * */
-			// this.pauseConnectivityCheck = true;
 			this.attemptReconnection();
 			this.attemptRegistration = true;
 		}
@@ -861,7 +856,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				?.reconnect()
 				.then(() => {
 					this._connectionState = 'SERVER_CONNECTED';
-					this.pauseConnectivityCheck = false;
 				})
 				.catch(() => {
 					this.attemptReconnection(++reconnectionAttempt, checkRegistration);
@@ -899,8 +893,8 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				onAccept: (): void => {
 					keepAliveAccepted = true;
 				},
-				onReject: (error: unknown): void => {
-					console.error(`[${error}] Failed to do options.`);
+				onReject: (_error: unknown): void => {
+					console.error('Failed to do options.');
 				},
 			});
 			setTimeout(async () => {
@@ -923,10 +917,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			if (!this.userAgent || this.stop) {
 				return;
 			}
-			if (!this.pauseConnectivityCheck && this._connectionState !== 'SERVER_RECONNECTING') {
+			if (this._connectionState !== 'SERVER_RECONNECTING') {
 				let keepAliveResponse = await this.sendKeepAliveAndWaitForResponse();
 				if (!keepAliveResponse) {
-					// this.pauseConnectivityCheck = true;
 					const connectivityArray = [];
 					for (let i = 0; i < this.optionsKeepAliveDebounceCount; i++) {
 						connectivityArray.push(this.sendKeepAliveAndWaitForResponse(true));
@@ -945,13 +938,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				/**
 				 * Either we got connected and managed to send keep-alive
 				 * or while attempting keepAlive with debounce, we got connected at moment,
-				 * |keepAliveResponse| will be turned on. In that case, we want to emit
-				 * |connected| only when this.pauseConnectivityCheck was true which means
-				 * it was earlier disconnected and now connected
-				 * Also set pauseConnectivityCheck to false so that the keepAlive check is resumed back.
+				 * |keepAliveResponse| will be turned on.
 				 */
 				if (keepAliveResponse) {
-					// this.pauseConnectivityCheck = false;
 					this.networkEmitter.emit('connected');
 				}
 			}
