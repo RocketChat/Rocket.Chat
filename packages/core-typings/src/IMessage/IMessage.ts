@@ -136,6 +136,7 @@ export interface IMessage extends IRocketChatRecord {
 	pinned?: boolean;
 	unread?: boolean;
 	temp?: boolean;
+	tshow?: boolean;
 	drid?: RoomID;
 	tlm?: Date;
 
