@@ -1,5 +1,5 @@
-import type { IUser, RoomType } from '@rocket.chat/core-typings';
-import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, ITeam, RoomType } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { Authorization } from '../../sdk';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
@@ -106,6 +106,10 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 	// if (!room || !user) {
 	// 	return false;
 	// }
+
+	if (room && user) {
+		if (!(await hasRoomViewPermission(room.t, user._id))) return false;
+	}
 
 	for await (const roomAccessValidator of roomAccessValidators) {
 		if (await roomAccessValidator(room, user, extraData)) {
