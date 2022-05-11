@@ -19,6 +19,7 @@ async function translationDiff(source, target) {
 				diff[key] = a[key];
 			}
 		});
+		
 
 		return diff;
 	}
