@@ -68,6 +68,7 @@ import SubscriptionsModel from '../models/Subscriptions';
 import UsersModel from '../models/Users';
 import { PbxEventsRaw } from './PbxEvents';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
+import { VideoConferenceRaw } from './VideoConference';
 
 const trashCollection = trash.rawCollection();
 
@@ -144,6 +145,7 @@ export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${prefix}webd
 export const VoipRoom = new VoipRoomsRaw(db.collection(`${prefix}room`), trashCollection);
 export const PbxEvent = new PbxEventsRaw(db.collection('pbx_events'), trashCollection);
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(db.collection(`${prefix}livechat_agent_activity`), trashCollection);
+export const VideoConference = new VideoConferenceRaw(db.collection(`${prefix}video_conference`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
