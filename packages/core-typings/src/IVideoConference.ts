@@ -19,9 +19,9 @@ export interface IVideoConferenceUser extends Required<Pick<IUser, '_id' | 'user
 }
 
 export enum VideoConferenceStatus {
-	CALLING,
-	STARTED,
-	ENDED,
+	CALLING = 0,
+	STARTED = 1,
+	ENDED = 2,
 }
 
 export interface IVideoConference extends IRocketChatRecord {
