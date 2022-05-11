@@ -1,3 +1,5 @@
+import type { Serialized } from '../../core-typings/dist';
+import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from '../../rest-typings/dist';
 import type { RestClientInterface } from './RestClientInterface';
 
 export { RestClientInterface };
@@ -39,9 +41,28 @@ export class RestClient implements RestClientInterface {
 		this.credentials = credentials;
 	};
 
-	get: RestClientInterface['get'] = (endpoint, params, options) => {
+	get<TPath extends PathFor<'GET'>>(
+		endpoint: TPath,
+		params: void extends OperationParams<'GET', MatchPathPattern<TPath>> ? void : OperationParams<'GET', MatchPathPattern<TPath>>,
+		options?: Omit<RequestInit, 'method'>,
+	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>>;
+
+	get<TPath extends string>(
+		endpoint: TPath,
+		...args: [params: Record<string, unknown> | void, options?: Omit<RequestInit, 'method'>] | []
+	): Promise<unknown>;
+
+	get<TPath extends PathFor<'GET'> | string>(
+		endpoint: TPath,
+		params: TPath extends PathFor<'GET'>
+			? void extends OperationParams<'GET', MatchPathPattern<TPath>>
+				? void
+				: OperationParams<'GET', MatchPathPattern<TPath>>
+			: Record<string, string>,
+		options?: Omit<RequestInit, 'method'>,
+	): Promise<TPath extends PathFor<'GET'> ? Serialized<OperationResult<'GET', MatchPathPattern<TPath>>> : unknown> {
 		return this.send(`${endpoint}?${this.getParams(params)}`, 'GET', options);
-	};
+	}
 
 	post: RestClientInterface['post'] = (endpoint, params, { headers, ...options } = {}) => {
 		return this.send(endpoint, 'POST', {

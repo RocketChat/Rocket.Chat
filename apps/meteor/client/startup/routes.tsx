@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
@@ -65,7 +65,7 @@ FlowRouter.route('/meet/:rid', {
 	async action(_params, queryParams) {
 		if (queryParams?.token !== undefined) {
 			// visitor login
-			const result = (await APIClient.get(`/v1/livechat/visitor/${queryParams.token}`, undefined)) as { visitor: ILivechatVisitor };
+			const result = await APIClient.get(`/v1/livechat/visitor/${queryParams.token}`);
 
 			if ('visitor' in result) {
 				appLayout.render(<MeetPage />);

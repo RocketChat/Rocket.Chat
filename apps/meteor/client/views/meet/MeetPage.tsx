@@ -37,7 +37,7 @@ const MeetPage: FC = () => {
 	}, [visitorToken, roomId]);
 
 	const setupCallForAgent = useCallback(async () => {
-		const room = await APIClient.get(`/v1/rooms.info?roomId=${roomId}`);
+		const room = await APIClient.get(`/v1/rooms.info`, { roomId });
 		if (room?.room?.servedBy?._id === Meteor.userId()) {
 			setVisitorName(room.room.fname);
 			room?.room?.responseBy?.username ? setAgentName(room.room.responseBy.username) : setAgentName(room.room.servedBy.username);

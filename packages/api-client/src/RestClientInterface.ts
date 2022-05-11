@@ -9,6 +9,11 @@ export interface RestClientInterface {
 		options?: Omit<RequestInit, 'method'>,
 	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>>;
 
+	get<TPath extends string>(
+		endpoint: TPath,
+		...args: [params: Record<string, unknown> | void, options?: Omit<RequestInit, 'method'>] | []
+	): Promise<unknown>;
+
 	post<TPath extends PathFor<'POST'>>(
 		endpoint: TPath,
 		params: void extends OperationParams<'POST', MatchPathPattern<TPath>> ? void : OperationParams<'POST', MatchPathPattern<TPath>>,

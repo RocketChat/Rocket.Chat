@@ -10,7 +10,7 @@ export const getFromRestApi =
 			? void
 			: Serialized<OperationParams<'GET', MatchPathPattern<TPath>>>,
 	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>> => {
-		const response = await APIClient.get(endpoint.replace(/^\/+/, ''), params);
+		const response = await APIClient.get(endpoint.replace(/^\/+/, '') as TPath, params);
 
 		if (typeof response === 'string') {
 			throw new Error('invalid response data type');
