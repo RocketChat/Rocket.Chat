@@ -5,6 +5,12 @@ import { settings } from '../../../settings/server';
 
 export let hostname: string;
 
+const generateBoilerplate = Meteor.bindEnvironment(function _generateBoilerplate(): void {
+	if (typeof WebAppInternals !== 'undefined' && WebAppInternals.generateBoilerplate) {
+		return WebAppInternals.generateBoilerplate();
+	}
+});
+
 settings.watch<string>('Site_Url', function (value) {
 	if (value == null || value.trim() === '') {
 		return;
@@ -25,7 +31,5 @@ settings.watch<string>('Site_Url', function (value) {
 	hostname = host.replace(/^https?:\/\//, '');
 	process.env.MOBILE_ROOT_URL = host;
 	process.env.MOBILE_DDP_URL = host;
-	if (typeof WebAppInternals !== 'undefined' && WebAppInternals.generateBoilerplate) {
-		return WebAppInternals.generateBoilerplate();
-	}
+	generateBoilerplate();
 });
