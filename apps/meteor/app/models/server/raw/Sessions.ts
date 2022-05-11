@@ -875,7 +875,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				docs: sessions,
 				count: [{ total } = { total: 0 }],
 			},
-		] = (await this.col.aggregate(queryArray).toArray()) as unknown as { docs: ISession[]; count: { total: number }[] }[];
+		] = await this.col.aggregate<{ docs: ISession[]; count: { total: number }[] }>(queryArray).toArray();
 
 		return { sessions, total, count, offset };
 	}
@@ -1020,10 +1020,12 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				docs: sessions,
 				count: [{ total } = { total: 0 }],
 			},
-		] = (await this.col.aggregate(queryArray).toArray()) as unknown as {
-			docs: ISession & { _user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'> }[];
-			count: { total: number }[];
-		}[];
+		] = await this.col
+			.aggregate<{
+				docs: ISession & { _user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'> }[];
+				count: { total: number }[];
+			}>(queryArray)
+			.toArray();
 
 		return { sessions, total, count, offset };
 	}
