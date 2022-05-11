@@ -38,23 +38,21 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'assets.unsetAsset',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isAssetsUnsetAssetProps,
+	},
 	{
 		post() {
 			const { assetName, refreshAllClients } = this.bodyParams;
-			if (!isAssetsUnsetAssetProps(this.bodyParams)) {
-				return API.v1.failure('invalid-body-params', isAssetsUnsetAssetProps.errors?.map((e) => e.message).join('\n '));
-			}
-			const isValidAsset = Object.keys(RocketChatAssets.assets).includes(assetName as string);
+			const isValidAsset = Object.keys(RocketChatAssets.assets).includes(assetName);
 			if (!isValidAsset) {
 				throw new Meteor.Error('error-invalid-asset', 'Invalid asset');
 			}
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('unsetAsset', assetName);
-				if (refreshAllClients) {
-					Meteor.call('refreshClients');
-				}
-			});
+			Meteor.call('unsetAsset', assetName);
+			if (refreshAllClients) {
+				Meteor.call('refreshClients');
+			}
 			return API.v1.success();
 		},
 	},
