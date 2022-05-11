@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Icon, Table } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MomentInput } from 'moment';
 import React, { useCallback, FC } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 type AccountTokensRowProps = {

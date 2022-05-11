@@ -1,7 +1,6 @@
 import { Box, ButtonGroup, Button, Icon, Modal } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, FC } from 'react';
-
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 type ConfirmationModalProps = {
 	onClose: () => void;

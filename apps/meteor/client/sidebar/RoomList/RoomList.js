@@ -1,11 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useSession, useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { useSession } from '../../contexts/SessionContext';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useUserPreference, useUserId } from '../../contexts/UserContext';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
