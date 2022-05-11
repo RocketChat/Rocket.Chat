@@ -1,14 +1,22 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement, ComponentProps, ReactNode } from 'react';
+import React, { FC } from 'react';
 
-type CardProps = ComponentProps<typeof Box> & {
-	children: ReactNode;
+type CardProps = {
+	variant?: 'light' | 'tint';
 };
 
-const Card = ({ children, ...props }: CardProps): ReactElement => (
-	<Box display='flex' flexDirection='column' pi='x16' pb='x8' backgroundColor='neutral-100' width='fit-content' {...props}>
-		{children}
-	</Box>
+const Card: FC<CardProps> = ({ variant, ...props }: CardProps) => (
+	<Box
+		borderRadius='x2'
+		pbs='x20'
+		pbe='x28'
+		pi='x20'
+		height='full'
+		display='flex'
+		flexDirection='column'
+		backgroundColor={variant === 'light' ? 'white' : 'neutral-100'}
+		{...props}
+	/>
 );
 
 export default Card;

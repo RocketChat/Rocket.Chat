@@ -19,7 +19,7 @@ export const SettingsRoute = (): ReactElement => {
 	}
 
 	return (
-		<EditableSettingsProvider query={{}}>
+		<EditableSettingsProvider>
 			<GroupSelector groupId={groupId} />
 		</EditableSettingsProvider>
 	);

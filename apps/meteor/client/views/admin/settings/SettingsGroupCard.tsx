@@ -12,7 +12,6 @@ const clampStyle = css`
 	overflow: hidden;
 	-webkit-line-clamp: 4;
 	-webkit-box-orient: vertical;
-	word-break: break-all;
 `;
 
 type SettingsGroupCard = {
@@ -34,17 +33,13 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCard): React
 	});
 
 	return (
-		<Card borderRadius='x2' pb='x16' pi='x20' width='full' height='full' minHeight='x188' backgroundColor='white'>
+		<Card variant='light'>
 			<Card.Title>
 				<Box fontScale='h4'>{t(title)}</Box>
 			</Card.Title>
-			<Box height='x88'>
-				{description && t.has(description) && (
-					<Card.Body>
-						<Box className={clampStyle}>{t(description)}</Box>
-					</Card.Body>
-				)}
-			</Box>
+			<Card.Body height='x88'>
+				<Box className={clampStyle}>{description && t.has(description) && t(description)}</Box>
+			</Card.Body>
 			<Card.Footer>
 				<Button small onClick={handleOpenGroup}>
 					{t('Open')}

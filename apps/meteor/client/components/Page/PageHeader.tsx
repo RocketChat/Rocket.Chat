@@ -8,14 +8,15 @@ import PageContext from './PageContext';
 
 type PageHeaderProps = {
 	title: ReactNode;
+	borderBlockEndColor?: string;
 };
 
-const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props }) => {
+const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, borderBlockEndColor, ...props }) => {
 	const [border] = useContext(PageContext);
 	const { isMobile } = useLayout();
 
 	return (
-		<Box borderBlockEndWidth='x2' borderBlockEndColor={border ? 'neutral-200' : 'transparent'}>
+		<Box borderBlockEndWidth='x2' borderBlockEndColor={borderBlockEndColor ?? border ? 'neutral-200' : 'transparent'}>
 			<Box
 				marginBlock='x16'
 				marginInline='x24'

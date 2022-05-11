@@ -1,9 +1,10 @@
-import { Box, Icon, SearchInput, Skeleton, Grid, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Icon, SearchInput, Skeleton, Grid, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useIsSettingsContextLoading, TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
+import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 import SettingsGroupCard from './SettingsGroupCard';
 import { useSettingsGroups } from './hooks/useSettingsGroups';
 
@@ -17,35 +18,33 @@ const SettingsPage = (): ReactElement => {
 
 	return (
 		<Page backgroundColor='neutral-100'>
-			<Page.Header title={t('Settings')} />
+			<Page.Header title={t('Settings')} borderBlockEndColor='' />
 
-			<Box mi='x24' display='flex' flexDirection='column'>
+			<PageBlockWithBorder>
 				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
-			</Box>
+			</PageBlockWithBorder>
 
 			<Page.ScrollableContentWithShadow p='0'>
-				<Box mb='x32' mi='x24'>
-					{isLoadingGroups && <Skeleton />}
-					<Grid width='full'>
-						{!isLoadingGroups &&
-							!!groups.length &&
-							groups.map((group) => (
-								<Grid.Item key={group._id} md={4} lg={4}>
-									<SettingsGroupCard
-										id={group._id}
-										title={group.i18nLabel as TranslationKey}
-										description={group.i18nDescription as TranslationKey}
-									/>
-								</Grid.Item>
-							))}
-					</Grid>
-					{!isLoadingGroups && !groups.length && (
-						<States>
-							<StatesIcon name='magnifier' />
-							<StatesTitle>{t('No_results_found')}</StatesTitle>
-						</States>
-					)}
-				</Box>
+				{isLoadingGroups && <Skeleton />}
+				<Grid mi='x16'>
+					{!isLoadingGroups &&
+						!!groups.length &&
+						groups.map((group) => (
+							<Grid.Item key={group._id} xs={4} sm={4} md={4} lg={4} xl={3}>
+								<SettingsGroupCard
+									id={group._id}
+									title={group.i18nLabel as TranslationKey}
+									description={group.i18nDescription as TranslationKey}
+								/>
+							</Grid.Item>
+						))}
+				</Grid>
+				{!isLoadingGroups && !groups.length && (
+					<States>
+						<StatesIcon name='magnifier' />
+						<StatesTitle>{t('No_results_found')}</StatesTitle>
+					</States>
+				)}
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);
