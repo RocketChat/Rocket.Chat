@@ -11,7 +11,6 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { api } from '../../../../server/sdk/api';
-import { hasRole } from '../../../authorization/server';
 import { LivechatUnitMonitors } from '../../../../ee/app/models/server';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
@@ -63,12 +62,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
-		if (user.roles.find((r: string) => r === 'livechat-agent') !== undefined || hasRole(userId, 'livechat-agent')) {
+		if (user.roles.find((r: string) => r === 'livechat-agent') !== undefined) {
 			// Remove user as livechat agent
 			LivechatDepartmentAgents.removeByAgentId(userId);
 		}
 
-		if (user.roles.find((r: string) => r === 'livechat-monitor') !== undefined || hasRole(userId, 'livechat-monitor')) {
+		if (user.roles.find((r: string) => r === 'livechat-monitor') !== undefined) {
 			// Remove user as Unit Monitor
 			LivechatUnitMonitors.removeByMonitorId(userId);
 		}
