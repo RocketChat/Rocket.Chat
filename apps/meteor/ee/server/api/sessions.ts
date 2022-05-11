@@ -27,15 +27,11 @@ API.v1.addRoute(
 				}),
 			);
 
-			try {
-				const { offset, count } = this.getPaginationItems();
-				const search: string = this.queryParams?.search || '';
+			const { offset, count } = this.getPaginationItems();
+			const search: string = this.queryParams?.search || '';
 
-				const sessions = await Sessions.getByUserId(this.userId, search, { offset, count });
-				return API.v1.success(sessions);
-			} catch (error) {
-				return API.v1.failure(error);
-			}
+			const sessions = await Sessions.getByUserId(this.userId, search, { offset, count });
+			return API.v1.success(sessions);
 		},
 	},
 );
@@ -56,27 +52,23 @@ API.v1.addRoute(
 				sessionId: String,
 			});
 
-			try {
-				const { sessionId } = this.bodyParams;
-				const sessionObj = await Sessions.findOneBySessionIdAndUserID(sessionId, this.userId);
+			const { sessionId } = this.bodyParams;
+			const sessionObj = await Sessions.findOneBySessionIdAndUserID(sessionId, this.userId);
 
-				if (!sessionObj) {
-					return API.v1.notFound('Session not found');
-				}
-
-				Meteor.users.update(this.userId, {
-					$pull: {
-						'services.resume.loginTokens': {
-							hashedToken: sessionObj.loginToken,
-						},
-					},
-				});
-
-				await Sessions.updateMany({ loginToken: sessionObj.loginToken }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
-				return API.v1.success({ sessionId });
-			} catch (error) {
-				return API.v1.failure(`${error}`);
+			if (!sessionObj) {
+				return API.v1.notFound('Session not found');
 			}
+
+			Meteor.users.update(this.userId, {
+				$pull: {
+					'services.resume.loginTokens': {
+						hashedToken: sessionObj.loginToken,
+					},
+				},
+			});
+
+			await Sessions.updateMany({ loginToken: sessionObj.loginToken }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
+			return API.v1.success({ sessionId });
 		},
 	},
 );
