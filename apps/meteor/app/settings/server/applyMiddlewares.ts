@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { use } from './Middleware';
-import { settings } from './index';
+import { settings } from './cached';
 
 const getProcessingTimeInMS = (time: [number, number]): number => time[0] * 1000 + time[1] / 1e6;
 

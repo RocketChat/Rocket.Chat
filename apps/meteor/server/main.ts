@@ -1,5 +1,5 @@
 import './services/startup';
-import '../app/settings/server/startup';
+import '../app/settings/server';
 import '../lib/oauthRedirectUri';
 import './overrides/http';
 import './lib/logger/startup';
