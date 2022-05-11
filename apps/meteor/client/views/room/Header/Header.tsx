@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement, useMemo } from 'react';
 
 import BurgerMenu from '../../../components/BurgerMenu';
 import TemplateHeader from '../../../components/Header';
-import { useLayout } from '../../../contexts/LayoutContext';
 import DirectRoomHeader from './DirectRoomHeader';
 import OmnichannelRoomHeader from './Omnichannel/OmnichannelRoomHeader';
 import VoipRoomHeader from './Omnichannel/VoipRoomHeader';

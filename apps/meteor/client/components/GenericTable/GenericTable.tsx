@@ -1,9 +1,9 @@
 import { Pagination, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, forwardRef, ReactNode, ReactElement, Key, useMemo, Ref } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericTable as GenericTableV2 } from './V2/GenericTable';
 import { GenericTableBody } from './V2/GenericTableBody';
 import { GenericTableHeader } from './V2/GenericTableHeader';

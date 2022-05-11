@@ -8,6 +8,7 @@ import type {
 	UrlParams,
 } from '@rocket.chat/rest-typings';
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
+import type { ValidateFunction } from 'ajv';
 
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
@@ -54,7 +55,7 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
-type Options =
+type Options = (
 	| {
 			permissionsRequired?: string[];
 			authRequired?: boolean;
@@ -64,7 +65,10 @@ type Options =
 			authRequired: true;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
-	  };
+	  }
+) & {
+	validateParams?: ValidateFunction;
+};
 
 type Request = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -80,11 +84,20 @@ type PartialThis = {
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	urlParams: UrlParams<TPathPattern>;
 	// TODO make it unsafe
-	readonly queryParams: TMethod extends 'GET' ? Partial<OperationParams<TMethod, TPathPattern>> : Record<string, string>;
+	readonly queryParams: TMethod extends 'GET'
+		? TOptions extends { validateParams: ValidateFunction<infer T> }
+			? T
+			: Partial<OperationParams<TMethod, TPathPattern>>
+		: Record<string, string>;
 	// TODO make it unsafe
-	readonly bodyParams: TMethod extends 'GET' ? Record<string, unknown> : Partial<OperationParams<TMethod, TPathPattern>>;
+	readonly bodyParams: TMethod extends 'GET'
+		? Record<string, unknown>
+		: TOptions extends { validateParams: ValidateFunction<infer T> }
+		? T
+		: Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
 	requestParams(): OperationParams<TMethod, TPathPattern>;
+	getLoggedInUser(): IUser | undefined;
 	getPaginationItems(): {
 		readonly offset: number;
 		readonly count: number;
@@ -94,6 +107,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		fields: Record<string, unknown>;
 		query: Record<string, unknown>;
 	};
+	/* @deprecated */
 	getUserFromParams(): IUser;
 } & (TOptions extends { authRequired: true }
 	? {

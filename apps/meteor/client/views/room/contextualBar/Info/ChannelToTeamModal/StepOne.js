@@ -1,8 +1,8 @@
 import { Box, Margins } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import TeamAutocomplete from '../../../../teams/contextualBar/TeamAutocomplete';
 
 const StepOne = ({ teamId = '', onChange, onClose, onCancel, onConfirm }) => {
