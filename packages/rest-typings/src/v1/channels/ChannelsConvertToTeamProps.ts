@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type ChannelsConvertToTeamProps = { channelId: string; channelName: string };
+export type ChannelsConvertToTeamProps = { channelId: string; channelName?: string } | { channelId?: string; channelName: string };
 
 const channelsConvertToTeamPropsSchema = {
 	oneOf: [

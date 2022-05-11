@@ -13,19 +13,26 @@ import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 
 export type ChannelsEndpoints = {
 	'channels.files': {
-		GET: (params: PaginatedRequest<{ roomId: IRoom['_id'] }>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id'] } | { roomName: IRoom['name'] }>) => PaginatedResult<{
 			files: IMessage[];
 		}>;
 	};
 	'channels.members': {
-		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; filter?: string; status?: string[] }>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; filter?: string; status?: string[] } | { roomName: IRoom['name']; filter?: string; status?: string[] }>) => PaginatedResult<{
 			members: IUser[];
 		}>;
 	};
 	'channels.history': {
 		GET: (
 			params: PaginatedRequest<{
-				roomId: string;
+				roomId: IRoom['_id'];
+				latest?: string;
+				showThreadMessages?: 'false' | 'true';
+				oldest?: string;
+				inclusive?: 'false' | 'true';
+			} | 
+			{
+				roomName: IRoom['name'];
 				latest?: string;
 				showThreadMessages?: 'false' | 'true';
 				oldest?: string;
@@ -61,10 +68,10 @@ export type ChannelsEndpoints = {
 		};
 	};
 	'channels.info': {
-		GET: (params: { roomId: string }) => { channel: IRoom };
+		GET: (params: { roomId: IRoom['_id'] } | { roomName: IRoom['name'] }) => { channel: IRoom };
 	};
 	'channels.counters': {
-		GET: (params: { roomId: string }) => {
+		GET: (params: { roomId: IRoom['_id'] } | { roomName: IRoom['name'] }) => {
 			joined: boolean;
 			members: number;
 			unreads: number;
@@ -75,42 +82,42 @@ export type ChannelsEndpoints = {
 		};
 	};
 	'channels.join': {
-		POST: (params: { roomId: string; joinCode?: string }) => {
+		POST: (params: { roomId: IRoom['_id']; joinCode?: string }  | { roomName: IRoom['name']; joinCode?: string }) => {
 			channel: IRoom;
 		};
 	};
 	'channels.close': {
-		POST: (params: { roomId: string }) => {};
+		POST: (params: { roomId: IRoom['_id'] } | { roomName: IRoom['name'] }) => {};
 	};
 	'channels.kick': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: IRoom['_id']; userId: IUser['_id'] } | { roomName: IRoom['name']; userId: IUser['_id'] }) => {};
 	};
 	'channels.delete': {
 		POST: (params: ChannelsDeleteProps) => void;
 	};
 	'channels.leave': {
-		POST: (params: { roomId: string }) => {};
+		POST: (params: { roomId: IRoom['_id'] } | { roomName: IRoom['name'] }) => {};
 	};
 	'channels.addModerator': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: IRoom['_id']; userId: IUser['_id'] } | { roomName: IRoom['name']; userId: IUser['_id'] }) => {};
 	};
 	'channels.removeModerator': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: IRoom['_id']; userId: IUser['_id'] | { roomName: IRoom['name']; userId: IUser['_id'] } }) => {};
 	};
 	'channels.addOwner': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: IRoom['_id']; userId: IUser['_id'] | { roomName: IRoom['name']; userId: IUser['_id'] } }) => {};
 	};
 	'channels.removeOwner': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: IRoom['_id']; userId: IUser['_id'] | { roomName: IRoom['name']; userId: IUser['_id'] } }) => {};
 	};
 	'channels.addLeader': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: IRoom['_id']; userId: IUser['_id'] | { roomName: IRoom['name']; userId: IUser['_id'] } }) => {};
 	};
 	'channels.removeLeader': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: IRoom['_id']; userId: IUser['_id'] | { roomName: IRoom['name']; userId: IUser['_id'] } }) => {};
 	};
 	'channels.roles': {
-		GET: (params: { roomId: string }) => { roles: IGetRoomRoles[] };
+		GET: (params: { roomId: IRoom['_id'] } | { roomName: IRoom['name'] }) => { roles: IGetRoomRoles[] };
 	};
 	'channels.messages': {
 		GET: (params: ChannelsMessagesProps) => PaginatedResult<{
@@ -121,7 +128,7 @@ export type ChannelsEndpoints = {
 		POST: (params: ChannelsOpenProps) => void;
 	};
 	'channels.setReadOnly': {
-		POST: (params: { roomId: string; readOnly: boolean }) => {
+		POST: (params: { roomId: IRoom['_id']; readOnly: boolean } | { roomName: IRoom['name']; readOnly: boolean }) => {
 			channel: IRoom;
 		};
 	};
@@ -131,7 +138,7 @@ export type ChannelsEndpoints = {
 		};
 	};
 	'channels.anonymousread': {
-		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id'] } | { roomName: string }>) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
@@ -144,6 +151,6 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'channels.moderators': {
-		GET: (params: { roomId: string }) => { moderators: Pick<IUser, '_id' | 'name' | 'username'>[] };
+		GET: (params: { roomId: IRoom['_id'] } | { roomName: string }) => { moderators: Pick<IUser, '_id' | 'name' | 'username'>[] };
 	};
 };

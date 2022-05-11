@@ -20,13 +20,13 @@ export type ImEndpoints = {
 		};
 	};
 	'im.files': {
-		GET: (params: { roomId: IRoom['_id']; count: number; sort: string; query: string }) => {
+		GET: (params: { roomId: IRoom['_id']; count: number; sort: string; query: string } | { roomName: IRoom['_id']; count: number; sort: string; query: string }) => {
 			files: IMessage[];
 			total: number;
 		};
 	};
 	'im.members': {
-		GET: (params: { roomId: IRoom['_id']; offset?: number; count?: number; filter?: string; status?: string[] }) => {
+		GET: (params: { roomId: IRoom['_id']; offset?: number; count?: number; filter?: string; status?: string[] } | { roomName: IRoom['name']; offset?: number; count?: number; filter?: string; status?: string[] }) => {
 			count: number;
 			offset: number;
 			members: IUser[];
@@ -34,25 +34,31 @@ export type ImEndpoints = {
 		};
 	};
 	'im.history': {
-		GET: (params: PaginatedRequest<{ roomId: string; latest?: string }>) => PaginatedRequest<{
+		GET: (params: PaginatedRequest<{ roomId: string; latest?: string } | { roomName: string; latest?: string }>) => PaginatedRequest<{
 			messages: IMessage[];
 		}>;
 	};
 	'im.close': {
-		POST: (params: { roomId: string }) => {};
+		POST: (params: { roomId: string } | { roomName: string }) => {};
 	};
 	'im.kick': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
 	};
 	'im.delete': {
-		POST: (params: { roomId: string }) => {};
+		POST: (params: { roomId: string } | { roomName: string }) => {};
 	};
 	'im.leave': {
-		POST: (params: { roomId: string }) => {};
+		POST: (params: { roomId: string } | { roomName: string }) => {};
 	};
 	'im.messages': {
 		GET: (params: {
 			roomId: IRoom['_id'];
+			query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+			offset: number;
+			sort: { ts: number };
+		} | 
+		{
+			roomName: IRoom['name'];
 			query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
 			offset: number;
 			sort: { ts: number };
