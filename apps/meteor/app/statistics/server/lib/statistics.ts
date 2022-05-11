@@ -457,6 +457,7 @@ export const statistics = {
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
 		statistics.totalOTRRooms = Rooms.findByCreatedOTR().count();
 		statistics.totalOTR = settings.get('OTR_Count');
+		statistics.totalBroadcastRooms = await RoomsRaw.findByBroadcast().count();
 
 		await Promise.all(statsPms).catch(log);
 

@@ -460,4 +460,13 @@ export class RoomsRaw extends BaseRaw {
 			},
 		]);
 	}
+
+	findByBroadcast(options) {
+		return this.find(
+			{
+				broadcast: true,
+			},
+			options,
+		);
+	}
 }
