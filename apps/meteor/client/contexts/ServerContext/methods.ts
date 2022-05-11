@@ -175,7 +175,7 @@ export type ServerMethods = {
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
 	'checkRegistrationSecretURL': (hash: string) => boolean;
-	'autoTranslate.getProviderUiMetadata': (...args: any[]) => [string, { name: string; displayName: string }];
+	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
 	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 };
 
