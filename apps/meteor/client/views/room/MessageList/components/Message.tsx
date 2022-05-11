@@ -5,6 +5,7 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { usePresence } from '../../../../hooks/usePresence';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsMessageHighlight } from '../contexts/MessageHighlightContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
@@ -25,6 +26,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();
+	const user = usePresence(message.u._id);
 
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
@@ -47,6 +49,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 					<UserAvatar
 						url={message.avatar}
 						username={message.u.username}
+						etag={user?.avatarETag}
 						size={'x36'}
 						onClick={openUserCard(message.u.username)}
 						style={{ cursor: 'pointer' }}
