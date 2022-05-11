@@ -147,8 +147,10 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		e.preventDefault();
 	}, []);
 
-	const items = [
-		{icon: 'user', content: 'Employee/er/broker'}
+	const careerItems = [
+		{icon: 'user', content: 'Employee/er/broker', rc: true},
+		{icon: 'credit', content: 'Credit point: 343', rc: false},
+		{icon: 'trust-score', content: 'Trust score: 60/100', rc: false},
 	]
 
 	return (
@@ -170,183 +172,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 			)}
 				<Box style={{ margin: '0px auto', fontSize: '16px' }}>I'm a fullstack developer with interests in the NFT space and E-commerce space.</Box>
 			<Box display='flex' flexDirection='column' style={{marginTop: '30px'}}>
-				<AccountInfo title='Career' items={items} />
+				<AccountInfo title='Career' items={careerItems} />
 			</Box>
-			<Box display='flex' flexDirection='row' justifyContent='space-between'>
-				{useMemo(
-					() => (
-						<Field mie='x8' flexShrink={1}>
-							<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
-							<Field.Row>
-								<TextInput error={nameError} disabled={!allowRealNameChange} flexGrow={1} value={realname} onChange={handleRealname} />
-							</Field.Row>
-							{!allowRealNameChange && <Field.Hint>{t('RealName_Change_Disabled')}</Field.Hint>}
-							<Field.Error>{nameError}</Field.Error>
-						</Field>
-					),
-					[t, realname, handleRealname, allowRealNameChange, nameError],
-				)}
-				{useMemo(
-					() => (
-						<Field mis='x8' flexShrink={1}>
-							<Field.Label flexGrow={0}>{t('Username')}</Field.Label>
-							<Field.Row>
-								<TextInput
-									error={usernameError}
-									disabled={!canChangeUsername}
-									flexGrow={1}
-									value={username}
-									onChange={handleUsername}
-									addon={<Icon name='at' size='x20' />}
-								/>
-							</Field.Row>
-							{!canChangeUsername && <Field.Hint>{t('Username_Change_Disabled')}</Field.Hint>}
-							<Field.Error>{usernameError}</Field.Error>
-						</Field>
-					),
-					[t, username, handleUsername, canChangeUsername, usernameError],
-				)}
-			</Box>
-			{useMemo(
-				() => (
-					<Field>
-						<Field.Label>{t('StatusMessage')}</Field.Label>
-						<Field.Row>
-							<TextInput
-								error={statusTextError}
-								disabled={!allowUserStatusMessageChange}
-								flexGrow={1}
-								value={statusText}
-								onChange={handleStatusText}
-								placeholder={t('StatusMessage_Placeholder')}
-								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType} />}
-							/>
-						</Field.Row>
-						{!allowUserStatusMessageChange && <Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
-						<Field.Error>{statusTextError}</Field.Error>
-					</Field>
-				),
-				[t, statusTextError, allowUserStatusMessageChange, statusText, handleStatusText, handleStatusType, statusType],
-			)}
-			{useMemo(
-				() => (
-					<Field>
-						<Field.Label>{t('Nickname')}</Field.Label>
-						<Field.Row>
-							<TextInput
-								flexGrow={1}
-								value={nickname}
-								onChange={handleNickname}
-								addon={<Icon name='edit' size='x20' alignSelf='center' />}
-							/>
-						</Field.Row>
-					</Field>
-				),
-				[nickname, handleNickname, t],
-			)}
-			{useMemo(
-				() => (
-					<Field>
-						<Field.Label>{t('Bio')}</Field.Label>
-						<Field.Row>
-							<TextAreaInput
-								rows={3}
-								flexGrow={1}
-								value={bio}
-								onChange={handleBio}
-								addon={<Icon name='edit' size='x20' alignSelf='center' />}
-							/>
-						</Field.Row>
-					</Field>
-				),
-				[bio, handleBio, t],
-			)}
-			<Field>
-				<Grid>
-					<Grid.Item>
-						<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
-							{useMemo(
-								() => (
-									<Field>
-										<Field.Label>{t('Email')}</Field.Label>
-										<Field.Row>
-											<TextInput
-												flexGrow={1}
-												value={email}
-												error={emailError}
-												onChange={handleEmail}
-												addon={<Icon name={verified ? 'circle-check' : 'mail'} size='x20' />}
-												disabled={!allowEmailChange}
-											/>
-										</Field.Row>
-										{!allowEmailChange && <Field.Hint>{t('Email_Change_Disabled')}</Field.Hint>}
-										<Field.Error>{t(emailError)}</Field.Error>
-									</Field>
-								),
-								[t, email, handleEmail, verified, allowEmailChange, emailError],
-							)}
-							{useMemo(
-								() =>
-									!verified && (
-										<Field>
-											<Margins blockEnd='x28'>
-												<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
-													{t('Resend_verification_email')}
-												</Button>
-											</Margins>
-										</Field>
-									),
-								[verified, t, email, previousEmail, handleSendConfirmationEmail],
-							)}
-						</FieldGroup>
-					</Grid.Item>
-					<Grid.Item>
-						<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
-							{useMemo(
-								() => (
-									<Field>
-										<Field.Label>{t('Password')}</Field.Label>
-										<Field.Row>
-											<PasswordInput
-												autoComplete='off'
-												disabled={!allowPasswordChange}
-												error={passwordError}
-												flexGrow={1}
-												value={password}
-												onChange={handlePassword}
-												addon={<Icon name='key' size='x20' />}
-											/>
-										</Field.Row>
-										{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
-									</Field>
-								),
-								[t, password, handlePassword, passwordError, allowPasswordChange],
-							)}
-							{useMemo(
-								() => (
-									<Field>
-										<AnimatedVisibility visibility={password ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}>
-											<Field.Label>{t('Confirm_password')}</Field.Label>
-											<Field.Row>
-												<PasswordInput
-													autoComplete='off'
-													error={passwordError}
-													flexGrow={1}
-													value={confirmationPassword}
-													onChange={handleConfirmationPassword}
-													addon={<Icon name='key' size='x20' />}
-												/>
-											</Field.Row>
-											{passwordError && <Field.Error>{passwordError}</Field.Error>}
-										</AnimatedVisibility>
-									</Field>
-								),
-								[t, confirmationPassword, handleConfirmationPassword, password, passwordError],
-							)}
-						</FieldGroup>
-					</Grid.Item>
-				</Grid>
-			</Field>
 			<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 		</FieldGroup>
 	);

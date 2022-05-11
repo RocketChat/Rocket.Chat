@@ -1,4 +1,4 @@
-import { Box, Flex, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Flex, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
 type Props = {
@@ -18,10 +18,17 @@ const AccountInfo = ({ title, items }: Props) => {
 							<Flex.Container key={index} alignItems='center'>
 								<Box>
 									<Flex.Item>
-										<Icon name={item.icon} fontSize='30px' />
+										{item.icon === 'credit' ? <img src='images/icons/icon-bank.png' alt='bank icon' /> : null}
+										{item.icon === 'trust-score' ? <img src='images/icons/icon-speed.png' alt='trust-score icon' /> : null}
+										{item.rc ? <Icon name={item.icon} fontSize='30px' /> : null}
 									</Flex.Item>
 									<Flex.Item>
 										<Box style={{ marginLeft: '8px' }}>{item.content}</Box>
+										{item.icon === 'credit' ? (
+											<Button style={{ marginLeft: 'auto' }} primary>
+												Top up
+											</Button>
+										) : null}
 									</Flex.Item>
 								</Box>
 							</Flex.Container>
