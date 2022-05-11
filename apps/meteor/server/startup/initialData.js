@@ -10,7 +10,6 @@ import { settings } from '../../app/settings/server';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
 import { Settings } from '../../app/models/server/raw';
 import { validateEmail } from '../../lib/emailValidator';
-import { SystemLogger } from '../lib/logger/system';
 
 Meteor.startup(async function () {
 	if (!settings.get('Initial_Channel_Created')) {
