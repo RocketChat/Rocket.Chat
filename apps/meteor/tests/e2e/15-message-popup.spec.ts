@@ -34,7 +34,7 @@ test.describe('[Message Popup]', () => {
 			expect(await mainContent.messagePopUpTitle().locator('text=People').isVisible()).toBeTruthy();
 		});
 
-		test('expect show "registerUser" in options', async () => {
+		test.skip('expect show "registerUser" in options', async () => {
 			expect(await mainContent.messagePopUpItems().locator(`text=${registerUser.name}`).isVisible()).toBeTruthy();
 		});
 
