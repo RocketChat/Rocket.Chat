@@ -37,6 +37,14 @@ test.describe('[User Preferences]', () => {
 			await sideNav.account().click();
 		});
 
+		test.afterAll(async () => {
+			await loginPage.closePage();
+			await mainContent.closePage();
+			await sideNav.closePage();
+			await flexTab.closePage();
+			await preferencesMainContent.closePage();
+		});
+
 		test.describe('render:', () => {
 			test('expect show the preferences link', async () => {
 				await expect(sideNav.preferences()).toBeVisible();

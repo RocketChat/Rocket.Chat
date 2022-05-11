@@ -24,6 +24,12 @@ test.describe('[Emoji]', function () {
 		await sideNav.openChannel('general');
 	});
 
+	test.afterAll(async () => {
+		await loginPage.closePage();
+		await mainContent.closePage();
+		await sideNav.closePage();
+	});
+
 	test.describe('Render:', () => {
 		test.beforeAll(async () => {
 			await mainContent.emojiBtn().click();

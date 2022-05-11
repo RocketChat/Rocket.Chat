@@ -25,6 +25,13 @@ test.describe('[Main Elements Render]', function () {
 		flexTab = new FlexTab(page);
 	});
 
+	test.afterAll(async () => {
+		await loginPage.closePage();
+		await mainContent.closePage();
+		await sideNav.closePage();
+		await flexTab.closePage();
+	});
+
 	test.describe('[Side Nav Bar]', () => {
 		test.describe('[Render]', () => {
 			test('expect show the new channel button', async () => {

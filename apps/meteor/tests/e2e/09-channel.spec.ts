@@ -39,6 +39,14 @@ test.describe('[Channel]', () => {
 		}
 		await sideNav.openChannel('general');
 	});
+
+	test.afterAll(async () => {
+		await loginPage.closePage();
+		await mainContent.closePage();
+		await sideNav.closePage();
+		await flexTab.closePage();
+		await global.closePage();
+	});
 	test.describe('[Search]', () => {
 		test.describe('[SpotlightSearch]', async () => {
 			test.describe('general:', () => {

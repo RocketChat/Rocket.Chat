@@ -25,18 +25,24 @@ test.describe('[Messaging]', () => {
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let flexTab: FlexTab;
-	test.beforeAll(async ({ browser, baseURL }) => {
+	test.beforeAll(async ({ browser }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
-
 		loginPage = new LoginPage(page);
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 		flexTab = new FlexTab(page);
 
-		await loginPage.goto(baseURL as string);
+		await loginPage.goto('/');
 
 		await loginPage.login(adminLogin);
+	});
+
+	test.afterAll(async () => {
+		await loginPage.closePage();
+		await mainContent.closePage();
+		await sideNav.closePage();
+		await flexTab.closePage();
 	});
 
 	test.describe('[Normal messaging]', async () => {
@@ -45,9 +51,9 @@ test.describe('[Messaging]', () => {
 		test.describe('[General channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
-				await anotherContext.sideNav.general().click();
+				await anotherContext.sideNav.findFindForChat('general');
 				await anotherContext.mainContent.sendMessage('Hello');
-				await sideNav.general().click();
+				await sideNav.findFindForChat('general');
 				await mainContent.sendMessage('Hello');
 			});
 			test.afterAll(async () => {

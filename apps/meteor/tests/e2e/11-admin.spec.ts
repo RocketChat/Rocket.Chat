@@ -24,6 +24,12 @@ test.describe('[Administration]', () => {
 		await loginPage.goto(baseURL as string);
 		await loginPage.login(adminLogin);
 	});
+
+	test.afterAll(async () => {
+		await loginPage.closePage();
+		await sideNav.closePage();
+		await flexTab.closePage();
+	});
 	test.describe('[Admin View]', () => {
 		test.beforeAll(async () => {
 			await sideNav.sidebarUserMenu().click();

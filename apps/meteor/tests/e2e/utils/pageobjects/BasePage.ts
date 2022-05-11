@@ -22,5 +22,9 @@ class BasePage {
 	public async keyboardPress(key: string): Promise<void> {
 		await this.getPage().keyboard.press(key);
 	}
+
+	public async closePage(): Promise<void> {
+		await this.getPage().close();
+	}
 }
 export default BasePage;
