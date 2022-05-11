@@ -13,7 +13,7 @@ import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {
 	if (!settings.get('Initial_Channel_Created')) {
-		const exists = !Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		const exists = Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
 		if (!exists) {
 			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				default: true,
