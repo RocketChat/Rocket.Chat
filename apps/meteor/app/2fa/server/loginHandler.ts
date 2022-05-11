@@ -6,11 +6,20 @@ import { check } from 'meteor/check';
 import { callbacks } from '../../../lib/callbacks';
 import { checkCodeForUser } from './code/index';
 
+const isMeteorError = (error: any): error is Meteor.Error => {
+	return error?.meteorError !== undefined;
+};
+
+const isCredentialWithError = (credential: any): credential is { error: Error } => {
+	return credential?.error !== undefined;
+};
+
 Accounts.registerLoginHandler('totp', function (options) {
 	if (!options.totp || !options.totp.code) {
 		return;
 	}
 
+	// @ts-expect-error - not sure how to type this yet
 	return Accounts._runLoginHandlers(this, options.totp.login);
 });
 
@@ -27,11 +36,15 @@ callbacks.add(
 			return login;
 		}
 
+		if (!login.user) {
+			return login;
+		}
+
 		const { totp } = loginArgs;
 
 		checkCodeForUser({
 			user: login.user,
-			code: totp && totp.code,
+			code: totp?.code,
 			options: { disablePasswordFallback: true },
 		});
 
@@ -41,24 +54,27 @@ callbacks.add(
 	'2fa',
 );
 
-const recreateError = (errorDoc) => {
-	let error;
-
-	if (errorDoc.meteorError) {
-		error = new Meteor.Error();
-		delete errorDoc.meteorError;
-	} else {
-		error = new Error();
-	}
-
-	Object.getOwnPropertyNames(errorDoc).forEach((key) => {
-		error[key] = errorDoc[key];
+const copyTo = <T extends Error>(from: T, to: T): T => {
+	Object.getOwnPropertyNames(to).forEach((key) => {
+		const idx: keyof T = key as keyof T;
+		to[idx] = from[idx];
 	});
-	return error;
+
+	return to;
 };
 
-OAuth._retrievePendingCredential = function (key, ...args) {
-	const credentialSecret = args.length > 0 && args[0] !== undefined ? args[0] : null;
+const recreateError = (errorDoc: Error | Meteor.Error): Error | Meteor.Error => {
+	if (isMeteorError(errorDoc)) {
+		const error = new Meteor.Error('');
+		return copyTo(errorDoc, error);
+	}
+
+	const error = new Error();
+	return copyTo(errorDoc, error);
+};
+
+OAuth._retrievePendingCredential = function (key, ...args): string | Error | void {
+	const credentialSecret = args.length > 0 && args[0] !== undefined ? args[0] : undefined;
 	check(key, String);
 
 	const pendingCredential = OAuth._pendingCredentials.findOne({
@@ -70,7 +86,7 @@ OAuth._retrievePendingCredential = function (key, ...args) {
 		return;
 	}
 
-	if (pendingCredential.credential.error) {
+	if (isCredentialWithError(pendingCredential.credential)) {
 		OAuth._pendingCredentials.remove({
 			_id: pendingCredential._id,
 		});
