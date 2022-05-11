@@ -13,17 +13,15 @@ import { validateEmail } from '../../lib/emailValidator';
 import { SystemLogger } from '../lib/logger/system';
 
 Meteor.startup(async function () {
-	if (
-		(settings.get('Show_Setup_Wizard') === 'pending' || settings.get('Force_Create_General_Channel') === true) &&
-		!Rooms.findOneById('GENERAL')
-	) {
-		if (settings.get('Force_Create_General_Channel')) {
-			SystemLogger.info('FORCE_CREATE_GENERAL Set to true. Forcing channel creation if not already present');
+	if (!settings.get('Initial_Channel_Created')) {
+		const exists = !Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		if (!exists) {
+			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
+				default: true,
+			});
 		}
 
-		Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
-			default: true,
-		});
+		Settings.updateValueById('Initial_Channel_Created', true);
 	}
 
 	if (!Users.findOneById('rocket.cat')) {

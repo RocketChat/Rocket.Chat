@@ -9,10 +9,9 @@ settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
 });
 
-settingsRegistry.add('Force_Create_General_Channel', 'false', {
+settingsRegistry.add('Initial_Channel_Created', false, {
 	type: 'boolean',
 	hidden: true,
-	secret: true,
 });
 
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
