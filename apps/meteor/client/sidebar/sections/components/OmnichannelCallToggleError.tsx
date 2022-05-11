@@ -1,7 +1,6 @@
 import { Sidebar } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 export const OmnichannelCallToggleError = (): ReactElement => {
 	const t = useTranslation();

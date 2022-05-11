@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+	<g fill="none" fill-rule="evenodd">
+		<path d="m10 5v10" stroke="currentColor" stroke-linecap="square" stroke-width="1.5" />
+		<path d="m15 10h-10" stroke="currentColor" stroke-linecap="square" stroke-width="1.5" />
+	</g>
+</svg>

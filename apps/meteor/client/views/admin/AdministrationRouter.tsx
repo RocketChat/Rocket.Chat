@@ -1,7 +1,7 @@
+import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
 import React, { Suspense, ReactElement, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
-import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { useUpgradeTabParams } from '../hooks/useUpgradeTabParams';
 import AdministrationLayout from './AdministrationLayout';

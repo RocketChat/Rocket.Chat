@@ -1,9 +1,9 @@
 import { Box, Icon, Margins, Pagination, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo, useState } from 'react';
 
 import Growth from '../../../../../../client/components/data/Growth';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
 import PeriodSelector from '../data/PeriodSelector';

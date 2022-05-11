@@ -1,8 +1,8 @@
 import { Box, Table } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import FilterDisplay from './FilterDisplay';
 
 const UserRow = ({ u, results, ts, _id, formatDateAndTime, formatDate, fields, mediaQuery }) => {

@@ -1,11 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, FC, useCallback } from 'react';
 
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useForm } from '../../../../../hooks/useForm';
 import RoomsInput from './RoomsInput';
 
