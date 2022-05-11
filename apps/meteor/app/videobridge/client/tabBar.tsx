@@ -6,9 +6,7 @@ import { useUser, useSetting, useTranslation, useSetModal } from '@rocket.chat/u
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
-// import CallingPopup from '../../../client/views/room/contextualBar/VideoConference/VideoConfPopup/CallingPopup';
-import ReceivingPopup from '../../../client/views/room/contextualBar/VideoConference/VideoConfPopup/ReceivingPopup';
-import { useVideoConfCall } from '../../../client/contexts/VideoConfContext';
+import { useVideoConfPopupDispatch } from '../../../client/contexts/VideoConfPopupContext';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
@@ -125,9 +123,18 @@ addAction('video', ({ room }) => {
 // TODO: fix mocked config
 addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
+	const dispatchPopup = useVideoConfPopupDispatch();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
-	const handleOpenVideoConf = useMutableCallback((): void => setModal(<StartVideoConfModal room={room} onClose={handleCloseVideoConf} />));
+
+	const handleStartConference = useMutableCallback(() => {
+		handleCloseVideoConf();
+		dispatchPopup({ room });
+	});
+
+	const handleOpenVideoConf = useMutableCallback((): void =>
+		setModal(<StartVideoConfModal onConfirm={handleStartConference} room={room} onClose={handleCloseVideoConf} />),
+	);
 
 	return useMemo(
 		() => ({
@@ -138,26 +145,6 @@ addAction('video-conf', ({ room }) => {
 			action: handleOpenVideoConf,
 			full: true,
 			order: 999,
-		}),
-		[handleOpenVideoConf],
-	);
-});
-
-addAction('video-conf-popup', ({ room }) => {
-	const setPopup = useVideoConfCall();
-
-	const handleCloseVideoConf = useMutableCallback(() => setPopup(undefined));
-	const handleOpenVideoConf = useMutableCallback((): void => setPopup(<ReceivingPopup room={room} onClose={handleCloseVideoConf} />));
-
-	return useMemo(
-		() => ({
-			groups: ['direct', 'group', 'channel'],
-			id: 'video-popup',
-			title: 'popup',
-			icon: 'video',
-			action: handleOpenVideoConf,
-			full: true,
-			order: -1,
 		}),
 		[handleOpenVideoConf],
 	);

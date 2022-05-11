@@ -5,7 +5,8 @@ import React, { ReactElement } from 'react';
 import StartDirectVideoConfModal from './StartDirectVideoConfModal';
 import StartGroupVideoConfModal from './StartGroupVideoConfModal';
 
-const StartVideoConfModal = ({ room, onClose }: { room: IRoom; onClose: () => void }): ReactElement => {
+// TODO: Replace controllers state by hook
+const StartVideoConfModal = ({ room, onClose, onConfirm }: { room: IRoom; onClose: () => void; onConfirm: () => void }): ReactElement => {
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 

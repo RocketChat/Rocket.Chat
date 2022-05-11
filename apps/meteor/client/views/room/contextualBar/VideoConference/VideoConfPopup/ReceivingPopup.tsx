@@ -17,18 +17,27 @@ import React, { ReactElement } from 'react';
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 
-const ReceivingPopup = ({ room, onClose }: { room: IRoom; onClose: () => void }): ReactElement => {
+type ReceivingPopupProps = {
+	id: string;
+	room: IRoom;
+	position: number;
+	current: number;
+	total: number;
+	onClose?: (id: string) => void;
+};
+
+const ReceivingPopup = ({ id, room, position, current, total, onClose }: ReceivingPopupProps): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleVideo } = useVideoConfControllers();
 
 	return (
-		<VideoConfPopup>
+		<VideoConfPopup position={position}>
 			<VideoConfPopupContent>
 				{/* Design Team has planned x48 */}
 				<RoomAvatar room={room} size='x40' />
-				<VideoConfPopupIndicators current={1} total={3} />
+				{current && total ? <VideoConfPopupIndicators current={current} total={total} /> : null}
 				<VideoConfPopupTitle text='Incoming call from' icon='phone-in' />
 				{directUserId && (
 					<Box display='flex' alignItems='center' mbs='x8'>
@@ -61,9 +70,11 @@ const ReceivingPopup = ({ room, onClose }: { room: IRoom; onClose: () => void })
 					<VideoConfButton primary onClick={(): void => console.log('accept call')}>
 						{t('Accept')}
 					</VideoConfButton>
-					<VideoConfButton danger onClick={onClose}>
-						{t('Decline')}
-					</VideoConfButton>
+					{onClose && (
+						<VideoConfButton danger onClick={(): void => onClose(id)}>
+							{t('Decline')}
+						</VideoConfButton>
+					)}
 				</VideoConfPopupFooter>
 			</VideoConfPopupContent>
 		</VideoConfPopup>

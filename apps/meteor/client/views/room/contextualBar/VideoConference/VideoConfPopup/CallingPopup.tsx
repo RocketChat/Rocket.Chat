@@ -16,7 +16,13 @@ import React, { ReactElement } from 'react';
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 
-const CallingPopup = ({ room, onClose }: { room: IRoom; onClose: () => void }): ReactElement => {
+type CallingPopupProps = {
+	id: string;
+	room: IRoom;
+	onClose: (id: string) => void;
+};
+
+const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
@@ -56,9 +62,11 @@ const CallingPopup = ({ room, onClose }: { room: IRoom; onClose: () => void }): 
 					/>
 				</VideoConfPopupControllers>
 				<VideoConfPopupFooter>
-					<VideoConfButton primary icon='phone-disabled' onClick={onClose}>
-						{t('Cancel')}
-					</VideoConfButton>
+					{onClose && (
+						<VideoConfButton primary icon='phone-disabled' onClick={(): void => onClose(id)}>
+							{t('Cancel')}
+						</VideoConfButton>
+					)}
 				</VideoConfPopupFooter>
 			</VideoConfPopupContent>
 		</VideoConfPopup>
