@@ -83,8 +83,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private onlineNetworkHandler: () => void;
 
-	private networkChangeHandler: () => void;
-
 	private optionsKeepaliveInterval = 5;
 
 	private optionsKeepAliveDebounceTimeInSec = 5;
@@ -103,7 +101,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.stop = false;
 		this.onlineNetworkHandler = this.onNetworkRestored.bind(this);
 		this.offlineNetworkHandler = this.onNetworkLost.bind(this);
-		this.networkChangeHandler = this.onNetworkChange.bind(this);
 	}
 
 	/**
@@ -155,7 +152,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			this.userAgent.transport.onDisconnect = this.onDisconnected.bind(this);
 			window.addEventListener('online', this.onlineNetworkHandler);
 			window.addEventListener('offline', this.offlineNetworkHandler);
-			window.addEventListener('change', this.networkChangeHandler);
 			await this.userAgent.start();
 			if (this.config.enableKeeAliveUsingOptionsForFlakyNetworks) {
 				this.startOptionsPingForFlakyNetworks();
@@ -168,7 +164,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	async onConnected(): Promise<void> {
 		this._connectionState = 'SERVER_CONNECTED';
-		console.error('ROCKETCHAT_DEBUG onConnected');
 		this.state.isReady = true;
 		this.sendOptions();
 		this.networkEmitter.emit('connected');
@@ -184,12 +179,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	onDisconnected(_error: any): void {
-		console.error('ROCKETCHAT_DEBUG onDisconnected');
 		this._connectionState = 'SERVER_DISCONNECTED';
 		this._opInProgress = Operation.OP_NONE;
 		this.networkEmitter.emit('disconnected');
 		if (_error) {
-			console.error('ROCKETCHAT_DEBUG onDisconnected 1');
 			this.networkEmitter.emit('connectionerror', _error);
 			this.state.isReady = false;
 			/**
@@ -206,7 +199,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	onNetworkRestored(): void {
-		console.error('ROCKETCHAT_DEBUG onNetworkRestored');
 		this.networkEmitter.emit('localnetworkonline');
 		if (this._connectionState === 'WAITING_FOR_NETWORK') {
 			/**
@@ -793,7 +785,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			this.userAgent.transport.onDisconnect = undefined;
 			window.removeEventListener('online', this.onlineNetworkHandler);
 			window.removeEventListener('offline', this.offlineNetworkHandler);
-			window.removeEventListener('change', this.onNetworkChange);
 		}
 	}
 
@@ -886,14 +877,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		 *
 		 * So after re-registration, it should remain in the same state.
 		 * */
-		console.error('ROCKETCHAT_DEBUG attemptPostRecoveryRoutine 1');
 		this.sendOptions({
 			onAccept: (): void => {
-				console.error('ROCKETCHAT_DEBUG attemptPostRecoveryRoutine 2');
 				this.attemptPostRecoveryRegistrationRoutine();
 			},
 			onReject: (error: unknown): void => {
-				console.error('ROCKETCHAT_DEBUG attemptPostRecoveryRoutine 2');
 				console.error(`[${error}] Failed to do options in attemptPostRecoveryRoutine()`);
 			},
 		});
@@ -901,7 +889,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	async sendKeepAliveAndWaitForResponse(withDebounce = false): Promise<boolean> {
 		const promise = new Promise<boolean>((resolve) => {
-			console.error(`ROCKETCHAT_DEBUG Checking connection [${new Date().getTime() / 1000}]`);
 			let keepAliveAccepted = false;
 			let responseWaitTime = this.optionsKeepaliveInterval / 2;
 			if (withDebounce) {
@@ -980,9 +967,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		 *
 		 * So after re-registration, it should remain in the same state.
 		 * */
-		console.error('ROCKETCHAT_DEBUT Attempting registration 1');
 		const promise = new Promise<void>((_resolve, _reject) => {
-			console.error('ROCKETCHAT_DEBUT Attempting registration 2');
 			this.registerer?.unregister({
 				all: true,
 				requestDelegate: {
@@ -998,22 +983,16 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			});
 		});
 		try {
-			console.error('ROCKETCHAT_DEBUT Attempting registration 3');
 			await promise;
 		} catch (error) {
 			console.error(`[${error}] While waiting for unregister promise`);
 		}
-		console.error('ROCKETCHAT_DEBUT Attempting registration 4');
 		this.registerer?.register({
 			requestDelegate: {
 				onReject: (error): void => {
-					console.error('ROCKETCHAT_DEBUT Attempting registration 5');
 					this._callState = 'UNREGISTERED';
 					this.emit('registrationerror', error);
 					this.emit('stateChanged');
-				},
-				onAccept: (): void => {
-					console.error('ROCKETCHAT_DEBUT Registration accepted');
 				},
 			},
 		});

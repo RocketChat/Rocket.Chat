@@ -216,11 +216,20 @@ export const CallProvider: FC = ({ children }) => {
 		if (!result.voipClient) {
 			return;
 		}
-		// Transitioning from offline -> online.
-		// If there is ongoing call, terminate it or if we are processing an incoming/outgoing call
-		// reject it.
 		if (networkStatus === 'offline') {
 			setNetworkStatus('online');
+		}
+	});
+
+	const onNetworkDisconnected = useMutableCallback((): void => {
+		if (!result.voipClient) {
+			return;
+		}
+		// Transitioning from online -> offline
+		// If there is ongoing call, terminate it or if we are processing an incoming/outgoing call
+		// reject it.
+		if (networkStatus === 'online') {
+			setNetworkStatus('offline');
 			switch (result.voipClient.callerInfo.state) {
 				case 'IN_CALL':
 				case 'ON_HOLD':
@@ -232,10 +241,6 @@ export const CallProvider: FC = ({ children }) => {
 					break;
 			}
 		}
-	});
-
-	const onNetworkDisconnected = useMutableCallback((): void => {
-		setNetworkStatus('offline');
 	});
 
 	useEffect(() => {
