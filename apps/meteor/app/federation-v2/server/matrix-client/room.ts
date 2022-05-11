@@ -23,7 +23,7 @@ export const create = async (user: IUser, room: IRoom): Promise<ICreateRoomResul
 		throw new Error(`Could not find user matrix id for ${user._id}`);
 	}
 
-	const intent = matrixBridge.getIntent(userMatrixId);
+	const intent = matrixBridge.getInstance().getIntent(userMatrixId);
 
 	const roomName = `@${room.name}`;
 
