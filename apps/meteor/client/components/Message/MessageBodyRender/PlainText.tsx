@@ -14,7 +14,7 @@ const PlainText: FC<PlainTextType> = ({ value: text }) => {
 
 	// TODO ENG DAY:
 	// Add style for empty paragraphs in fuselage
-	if (!text.trim()) {
+	if (!text.trim() && text === '') {
 		return <br />;
 	}
 
