@@ -1,8 +1,8 @@
+import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, Suspense, useEffect, FC } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
 import PageSkeleton from '../../components/PageSkeleton';
-import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 
 type OmnichannelRouterProps = {
 	renderRoute?: () => ReactNode;

@@ -20,6 +20,10 @@ export class TOTPCheck implements ICodeCheck {
 			return false;
 		}
 
+		if (!user.services?.totp?.secret) {
+			return false;
+		}
+
 		return TOTP.verify({
 			secret: user.services?.totp?.secret,
 			token: code,

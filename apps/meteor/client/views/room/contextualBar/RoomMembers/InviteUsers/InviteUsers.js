@@ -1,8 +1,8 @@
 import { Box, Field, UrlInput, Icon, Button, InputBox, Callout } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 
 const InviteUsers = ({ onClickBack, onClickClose, onClickEdit, captionText, linkText, error }) => {

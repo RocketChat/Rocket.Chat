@@ -1,11 +1,10 @@
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FilterByTypeAndText from './FilterByTypeAndText';

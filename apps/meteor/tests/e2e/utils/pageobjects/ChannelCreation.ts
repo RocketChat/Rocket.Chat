@@ -63,7 +63,7 @@ export default class ChannelCreation extends BasePage {
 
 	public async sendMessage(targetUser: string, message: string): Promise<void> {
 		await this.searchChannel().click();
-		await this.searchChannelInput().type(targetUser);
+		await this.searchChannelInput().type(targetUser, { delay: 200 });
 		await this.keyboardPress(ENTER);
 
 		await this.textArea().type(message);
