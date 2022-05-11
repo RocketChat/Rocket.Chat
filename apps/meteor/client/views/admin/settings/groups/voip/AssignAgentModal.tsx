@@ -1,11 +1,9 @@
 import { Button, ButtonGroup, Modal, Select, Field, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, useMemo } from 'react';
 
 import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 

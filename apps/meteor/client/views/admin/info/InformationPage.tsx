@@ -1,12 +1,12 @@
 import type { IInstanceStatus, IServerInfo, IStats } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
 import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import DeploymentCard from './DeploymentCard';
 import FederationCard from './FederationCard';
 import LicenseCard from './LicenseCard';

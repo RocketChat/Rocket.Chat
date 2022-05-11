@@ -1,8 +1,8 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 type CallBBBProps = {
 	startCall: () => void;

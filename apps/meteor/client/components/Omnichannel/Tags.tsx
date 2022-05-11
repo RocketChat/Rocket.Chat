@@ -1,10 +1,9 @@
 import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ChangeEvent, ReactElement, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { formsSubscription } from '../../views/omnichannel/additionalForms';

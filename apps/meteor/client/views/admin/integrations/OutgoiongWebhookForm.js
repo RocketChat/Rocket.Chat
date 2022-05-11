@@ -1,9 +1,9 @@
 import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, Margins, Select, Accordion } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
 import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
 import { useExampleData } from './exampleIncomingData';
 
