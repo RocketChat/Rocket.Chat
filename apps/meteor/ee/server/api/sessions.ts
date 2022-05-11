@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
-import { hasRole } from '../../../app/authorization/server';
 import { Users, Sessions } from '../../../app/models/server/raw/index';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server/functions/hasPermission';
@@ -81,7 +80,7 @@ API.v1.addRoute(
 			if (!this.userId) {
 				API.v1.failure('error-invalid-user');
 			}
-			if (!hasRole(this.userId, 'admin')) {
+			if (!hasPermission(this.userId, 'view-device-management')) {
 				return API.v1.unauthorized();
 			}
 			if (!hasLicense('device-management')) {
@@ -122,7 +121,7 @@ API.v1.addRoute(
 			if (!this.userId) {
 				API.v1.failure('error-invalid-user');
 			}
-			if (!hasPermission(this.userId, 'logout-other-user') && !hasRole(this.userId, 'admin')) {
+			if (!hasPermission(this.userId, 'logout-device-management')) {
 				return API.v1.unauthorized();
 			}
 			if (!hasLicense('device-management')) {
