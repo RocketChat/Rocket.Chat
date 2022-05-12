@@ -33,7 +33,6 @@ import { MessagesRaw } from './Messages';
 import { NotificationQueueRaw } from './NotificationQueue';
 import { OAuthAppsRaw } from './OAuthApps';
 import { OEmbedCacheRaw } from './OEmbedCache';
-import { OmnichannelQueueRaw } from './OmnichannelQueue';
 import { PermissionsRaw } from './Permissions';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { ReadReceiptsRaw } from './ReadReceipts';
@@ -61,7 +60,6 @@ import LivechatInquiryModel from '../models/LivechatInquiry';
 import LivechatRoomsModel from '../models/LivechatRooms';
 import LivechatVisitorsModel from '../models/LivechatVisitors';
 import MessagesModel from '../models/Messages';
-import OmnichannelQueueModel from '../models/OmnichannelQueue';
 import RoomsModel from '../models/Rooms';
 import SettingsModel from '../models/Settings';
 import SubscriptionsModel from '../models/Subscriptions';
@@ -87,7 +85,6 @@ export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.mo
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 // export const Roles = new RolesRaw(RolesModel.model.rawCollection(), { Users, Subscriptions }, trashCollection);
-export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection(), trashCollection);
 export const ImportData = new ImportDataRaw(ImportDataModel.model.rawCollection(), trashCollection);
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
