@@ -33,7 +33,7 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCard): React
 	});
 
 	return (
-		<Card variant='light'>
+		<Card data-qa-id={id} variant='light'>
 			<Card.Title>
 				<Box fontScale='h4'>{t(title)}</Box>
 			</Card.Title>

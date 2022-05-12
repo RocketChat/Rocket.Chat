@@ -61,7 +61,7 @@ const FederationCard: FC = () => {
 	);
 
 	return (
-		<Card>
+		<Card data-qa-id='federation-card'>
 			<CardHeader>
 				<Card.Title>{t('Federation')}</Card.Title>
 				<Box display='flex'>
