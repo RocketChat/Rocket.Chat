@@ -8,7 +8,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOTRAck' });
 		}
 		const otrStreamer = notifications.streamRoomMessage;
-		message.otrAck = ack;
-		otrStreamer.emit(message.rid, message);
+		otrStreamer.emit(message.rid, { ...message, otr: { ack } });
 	},
 });

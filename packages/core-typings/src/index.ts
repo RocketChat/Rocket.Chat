@@ -1,6 +1,7 @@
 export * from './IRoom';
 export * from './UIKit';
 export * from './IMessage';
+export * from './IOTRMessage';
 export * from './Serialized';
 export * from './ISetting';
 export * from './ISubscription';

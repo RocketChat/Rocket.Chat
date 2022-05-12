@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import { IMessage, IOTRMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -38,13 +38,13 @@ Meteor.startup(() => {
 		return message;
 	});
 
-	onClientMessageReceived.use(async (message) => {
+	onClientMessageReceived.use(async (message: IOTRMessage & { notification?: boolean }) => {
 		if (
 			message.rid &&
 			OTR.getInstanceByRoomId(message.rid) &&
 			OTR.getInstanceByRoomId(message.rid).state.get() === OtrRoomState.ESTABLISHED
 		) {
-			if (message.notification) {
+			if (message?.notification) {
 				message.msg = t('Encrypted_message');
 				return message;
 			}
@@ -56,8 +56,8 @@ Meteor.startup(() => {
 
 			if (ts) message.ts = ts;
 
-			if (message.otrAck) {
-				const { text: otrAckText } = await otrRoom.decrypt(message.otrAck);
+			if (message?.otr?.ack) {
+				const { text: otrAckText } = await otrRoom.decrypt(message.otr.ack);
 				if (ack === otrAckText) message.t = 'otr-ack';
 			} else if (userId !== Meteor.userId()) {
 				const encryptedAck = await otrRoom.encryptText(ack);
