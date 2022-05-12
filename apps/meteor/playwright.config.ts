@@ -8,7 +8,7 @@ const config: PlaywrightTestConfig = {
 	globalTeardown: require.resolve('./tests/e2e/utils/configs/teardown.ts'),
 	use: {
 		baseURL: process.env.ENTERPRISE ? 'http://localhost:4000' : 'http://localhost:3000',
-		headless: false,
+		headless: true,
 		viewport: { width: 1024, height: 768 },
 		ignoreHTTPSErrors: true,
 		video: 'retain-on-failure',

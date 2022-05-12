@@ -23,7 +23,7 @@ test.describe('[Channel]', async () => {
 	test.describe('[Public and private channel creation]', () => {
 		let channelName: string;
 		test.beforeEach(async () => {
-			channelName = faker.music.genre();
+			channelName = faker.animal.type();
 		});
 
 		test('expect create privateChannel channel', async () => {

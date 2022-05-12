@@ -198,14 +198,14 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('[Mentions Tab]', () => {
+			test.describe.skip('[Mentions Tab]', () => {
 				test('expect show mentions tab content', async () => {
 					await flexTab.operateFlexTab2('[data-qa="ToolBoxOption-Mentions"]', '[data-qa="VerticalBarHeader"] >> text=Mentions', true);
 					await flexTab.getPage().locator('[data-qa="VerticalBarClose"]').click();
 				});
 			});
 
-			test.describe('[Starred Messages Tab]', () => {
+			test.describe.skip('[Starred Messages Tab]', () => {
 				test('expect show starred message tab content', async () => {
 					await flexTab.operateFlexTab2(
 						'[data-qa="ToolBoxOption-StarredMessages"]',
@@ -216,7 +216,7 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('[Pinned Messages Tab]', () => {
+			test.describe.skip('[Pinned Messages Tab]', () => {
 				test('expect show pinned message tab content', async () => {
 					await flexTab.operateFlexTab2(
 						'[data-qa="ToolBoxOption-PinnedMessages"]',
