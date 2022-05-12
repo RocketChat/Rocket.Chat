@@ -1,11 +1,8 @@
 import { Button, Field } from '@rocket.chat/fuselage';
+import { useMethod, ServerMethods, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
-import { useMethod } from '../../../../contexts/ServerContext';
-import type { ServerMethods } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 
 type ActionSettingInputProps = {
 	_id: string;
