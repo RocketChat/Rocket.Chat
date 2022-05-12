@@ -111,16 +111,12 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
 
 	return __html ? (
-<<<<<<< HEAD:client/components/MarkdownText.tsx
-		<Box style={{whiteSpace:"pre-line"}} dangerouslySetInnerHTML={{ __html }} withTruncatedText={withTruncatedText} withRichContent={withRichContent} {...props} />
-=======
 		<Box
 			dangerouslySetInnerHTML={{ __html }}
 			withTruncatedText={withTruncatedText}
 			withRichContent={variant === 'inlineWithoutBreaks' ? 'inlineWithoutBreaks' : true}
 			{...props}
 		/>
->>>>>>> 035307c90fa43eff3bc47e886b5fe7b7cbe181ea:apps/meteor/client/components/MarkdownText.tsx
 	) : null;
 };
 
