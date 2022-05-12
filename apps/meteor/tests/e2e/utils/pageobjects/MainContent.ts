@@ -24,11 +24,11 @@ class MainContent extends BasePage {
 
 	// Main Content Footer (Message Input Area)
 	public messageInput(): Locator {
-		return this.getPage().locator('[name="msg"]');
+		return this.getPage().locator('.rc-message-box .js-input-message');
 	}
 
 	public sendBtn(): Locator {
-		return this.getPage().locator('.rc-message-box__icon.js-send');
+		return this.getPage().locator('.rc-message-box .js-send');
 	}
 
 	public messageBoxActions(): Locator {
@@ -294,8 +294,8 @@ class MainContent extends BasePage {
 
 	public async sendMessage(text: string): Promise<void> {
 		await this.setTextToInput(text);
-		await this.sendBtn().isVisible();
 		await this.keyboardPress('Enter');
+		await this.sendBtn().click({ delay: 100 });
 	}
 
 	// adds text to the input
@@ -305,7 +305,8 @@ class MainContent extends BasePage {
 
 	// Clear and sets the text to the input
 	public async setTextToInput(text: string): Promise<void> {
-		await this.messageInput().type(text);
+		await this.messageInput().focus();
+		await this.messageInput().type(text, { delay: 10 });
 	}
 
 	public async dragAndDropFile(): Promise<void> {
