@@ -126,7 +126,7 @@ jobs:
         continue-on-error: true
 
       - name: Merge lint reports
-        run: jq -s '[.[]]|flatten' (packages|apps)/*/eslint_report.json &> eslint_report.json
+        run: jq -s '[.[]] | flatten' packages/*/eslint_report.json  ee/packages/*/eslint_report.json apps/*/eslint_report.json ee/apps/*/eslint_report.json &> eslint_report.json
 
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@1.2.0
