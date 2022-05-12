@@ -318,7 +318,7 @@ export class LDAPEEManager extends LDAPManager {
 			logger.debug(`Synced user channel ${rid} from LDAP for ${username}`);
 		}
 
-		channelsToRemove.forEach(async (rid) => {
+		for await (const rid of channelsToRemove) {
 			if (channelsToAdd.has(rid)) {
 				return;
 			}
@@ -328,7 +328,7 @@ export class LDAPEEManager extends LDAPManager {
 				await removeUserFromRoom(rid, user);
 				logger.debug(`Removed user ${username} from channel ${rid}`);
 			}
-		});
+		}
 	}
 
 	private static async syncUserTeams(ldap: LDAPConnection, user: IUser, dn: string, isNewRecord: boolean): Promise<void> {
