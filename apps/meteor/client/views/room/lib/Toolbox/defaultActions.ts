@@ -1,7 +1,7 @@
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo, lazy } from 'react';
 
 import { addAction } from '.';
-import { usePermission } from '../../../../contexts/AuthorizationContext';
 
 addAction('rocket-search', {
 	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],

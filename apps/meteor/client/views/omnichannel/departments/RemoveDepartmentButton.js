@@ -1,11 +1,9 @@
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 function RemoveDepartmentButton({ _id, reload }) {

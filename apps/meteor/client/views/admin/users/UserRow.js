@@ -1,10 +1,10 @@
 import { Box, Table } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { Roles } from '../../../../app/models/client';
 import UserAvatar from '../../../components/avatar/UserAvatar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const style = {
 	whiteSpace: 'nowrap',

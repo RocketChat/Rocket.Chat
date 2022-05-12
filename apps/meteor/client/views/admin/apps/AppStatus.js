@@ -1,11 +1,9 @@
 import { Box, Button, Icon, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, memo } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';

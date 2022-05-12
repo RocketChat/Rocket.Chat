@@ -1,9 +1,8 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
+import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import Page from '../../../components/Page';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import EditOauthAppWithData from './EditOauthAppWithData';
 import OAuthAddApp from './OAuthAddApp';
 import OAuthAppsTable from './OAuthAppsTable';

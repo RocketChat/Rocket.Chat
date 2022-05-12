@@ -1,9 +1,8 @@
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import AssignAgentModal from './AssignAgentModal';
 
 const AssignAgentButton: FC<{ extension: string; reload: () => void }> = ({ extension, reload }) => {

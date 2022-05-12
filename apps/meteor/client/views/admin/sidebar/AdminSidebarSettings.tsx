@@ -1,11 +1,10 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Box, Icon, SearchInput, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useSettings, TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useMemo, FC } from 'react';
 
 import Sidebar from '../../../components/Sidebar';
-import { useSettings } from '../../../contexts/SettingsContext';
-import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 
 const useSettingsGroups = (filter: string): ISetting[] => {
 	const settings = useSettings();

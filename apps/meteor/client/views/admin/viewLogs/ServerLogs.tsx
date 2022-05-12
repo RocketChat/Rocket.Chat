@@ -1,10 +1,8 @@
 import { Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useEndpoint, useStream, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useRef, useState, useCallback, ReactElement } from 'react';
 
-import { useEndpoint, useStream } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { ansispan } from './ansispan';
 
 type StdOutLogEntry = {
