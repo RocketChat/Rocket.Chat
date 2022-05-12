@@ -5,7 +5,8 @@ import { useUser, useSetting, useTranslation, useSetModal } from '@rocket.chat/u
 
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
-import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
+// import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
+import JoinVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/JoinVideoConfModal';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
@@ -124,7 +125,11 @@ addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
-	const handleOpenVideoConf = useMutableCallback((): void => setModal(<StartVideoConfModal room={room} onClose={handleCloseVideoConf} />));
+	const handleOpenConference = (): Window | null => window.open('https://jitsi.org', '_blank');
+
+	const handleOpenVideoConf = useMutableCallback((): void =>
+		setModal(<JoinVideoConfModal room={room} onClose={handleCloseVideoConf} onConfirm={handleOpenConference} />),
+	);
 
 	return useMemo(
 		() => ({
