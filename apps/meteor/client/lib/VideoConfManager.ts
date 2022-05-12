@@ -27,6 +27,11 @@ type DirectCallParams = {
 
 type IncomingDirectCall = DirectCallParams & { timeout: number };
 
+type CallPreferences = {
+	mic?: boolean;
+	cam?: boolean;
+};
+
 export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	// We gave up on calling a remote user
 	'direct/cancel': DirectCallParams;
@@ -42,6 +47,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 	// A remote user accepted our call
 	'direct/accepted': DirectCallParams;
+
+	'preference/changed': { key: keyof CallPreferences; value: boolean };
 }> {
 	private userId: string | undefined;
 
@@ -61,10 +68,17 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 	private acceptingCallTimeout = 0;
 
+	private _preferences: CallPreferences;
+
+	public get preferences(): CallPreferences {
+		return this._preferences;
+	}
+
 	constructor() {
 		super();
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
 		this.mutedCalls = new Set<string>();
+		this._preferences = {};
 	}
 
 	public isBusy(): boolean {
@@ -140,6 +154,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		debug && console.log(`[VideoConf] Notifying user ${callData.uid} that we accept their call.`);
 		Notifications.notifyUser(callData.uid, 'video-conference.accepted', { callId, uid: this.userId, rid: callData.rid });
+
+		this.joinDirectCall(callData);
 	}
 
 	public muteIncomingCall(callId: string): void {
@@ -169,9 +185,32 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		}
 	}
 
-	private joinDirectCall(params: DirectCallParams): void {
-		debug && console.log(`[VideoConf] Opening a call with ${params.uid}.`);
-		// #ToDo Join the call
+	public changePreference(key: keyof CallPreferences, value: boolean): void {
+		this._preferences[key] = value;
+		this.emit('preference/changed', { key, value });
+	}
+
+	private async joinDirectCall({ uid, callId }: DirectCallParams): Promise<void> {
+		debug && console.log(`[VideoConf] Opening a call with ${uid}.`);
+
+		const params = {
+			callId,
+			state: {
+				...(this._preferences.mic !== undefined ? { mic: this._preferences.mic } : {}),
+				...(this._preferences.cam !== undefined ? { cam: this._preferences.cam } : {}),
+			},
+		};
+
+		const url = await tryAssignmentAsync<string>(
+			async () => (await APIClient.v1.post('video-conference.join', {}, params)).url,
+			(e) => {
+				debug && console.error(`[VideoConf] Failed to join call ${callId}`);
+				throw e;
+			},
+		);
+
+		debug && console.log(`[VideoConf] Opening ${url}.`);
+		window.open(url);
 	}
 
 	private async callUser({ uid, rid, callId }: DirectCallParams): Promise<void> {
@@ -240,6 +279,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.incomingDirectCalls.clear();
 		this.currentCallId = undefined;
 		this.acceptingCallId = undefined;
+		this._preferences = {};
 	}
 
 	private async hookNotification(eventName: string, cb: (...params: any[]) => void): Promise<void> {
@@ -362,11 +402,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 			this.currentCallHandler = 0;
 		}
 
-		this.joinDirectCall(params);
 		this.emit('direct/accepted', params);
-
-		// #ToDo: As joining is not yet implemented, we're clearing the state instead
 		this.currentCallId = undefined;
+
+		// Joining here will have the popup blocked by the browser
+		this.joinDirectCall(params);
 	}
 })();
 
