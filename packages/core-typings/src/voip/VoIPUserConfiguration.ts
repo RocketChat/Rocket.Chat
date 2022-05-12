@@ -44,7 +44,7 @@ export interface VoIPUserConfiguration {
 	 * Voip Retry count
 	 * @defaultValue undefined
 	 */
-	enableKeeAliveUsingOptionsForFlakyNetworks: boolean;
+	enableKeepAliveUsingOptionsForUnstableNetworks: boolean;
 }
 
 export interface IMediaStreamRenderer {

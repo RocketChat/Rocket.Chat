@@ -3217,10 +3217,10 @@ settingsRegistry.addGroup('Call_Center', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Enable_Keep_Alive_For_Flaky_Networks', false, {
+			this.add('VoIP_Enable_Keep_Alive_For_Unstable_Networks', true, {
 				type: 'boolean',
 				public: true,
-				i18nDescription: 'VoIP_Enable_Keep_Alive_For_Flaky_Networks_Description',
+				i18nDescription: 'VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description',
 				enableQuery: {
 					_id: 'Livechat_enabled',
 					value: true,

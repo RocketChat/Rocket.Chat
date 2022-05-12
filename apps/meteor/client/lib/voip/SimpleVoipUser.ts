@@ -10,7 +10,7 @@ export class SimpleVoipUser {
 		webSocketPath: string,
 		iceServers: Array<object>,
 		voipRetryCount: number,
-		enableKeepAliveForFlakyNetworks: boolean,
+		enableKeepAliveForUnstableNetworks: boolean,
 		callType?: 'audio' | 'video',
 		mediaStreamRendered?: IMediaStreamRenderer,
 	): Promise<VoIPUser> {
@@ -22,7 +22,7 @@ export class SimpleVoipUser {
 			enableVideo: callType === 'video',
 			iceServers,
 			connectionRetryCount: voipRetryCount,
-			enableKeeAliveUsingOptionsForFlakyNetworks: enableKeepAliveForFlakyNetworks,
+			enableKeepAliveUsingOptionsForUnstableNetworks: enableKeepAliveForUnstableNetworks,
 		};
 
 		return VoIPUser.create(config, mediaStreamRendered);

@@ -151,8 +151,8 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			window.addEventListener('online', this.onlineNetworkHandler);
 			window.addEventListener('offline', this.offlineNetworkHandler);
 			await this.userAgent.start();
-			if (this.config.enableKeeAliveUsingOptionsForFlakyNetworks) {
-				this.startOptionsPingForFlakyNetworks();
+			if (this.config.enableKeepAliveUsingOptionsForUnstableNetworks) {
+				this.startOptionsPingForUnstableNetworks();
 			}
 		} catch (error) {
 			this._connectionState = 'ERROR';
@@ -175,12 +175,12 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		}
 	}
 
-	onDisconnected(_error: any): void {
+	onDisconnected(error: any): void {
 		this._connectionState = 'SERVER_DISCONNECTED';
 		this._opInProgress = Operation.OP_NONE;
 		this.networkEmitter.emit('disconnected');
-		if (_error) {
-			this.networkEmitter.emit('connectionerror', _error);
+		if (error) {
+			this.networkEmitter.emit('connectionerror', error);
 			this.state.isReady = false;
 			/**
 			 * Signalling socket reconnection should be attempted assuming
@@ -214,14 +214,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	onNetworkLost(): void {
 		this.networkEmitter.emit('localnetworkoffline');
 		this._connectionState = 'WAITING_FOR_NETWORK';
-	}
-
-	onNetworkChange(): void {
-		/*
-		if (this._connectionState !== 'INITIAL') {
-			this.attemptReconnection(1, true);
-		}
-		*/
 	}
 
 	get callState(): CallStates {
@@ -912,7 +904,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		return promise;
 	}
 
-	async startOptionsPingForFlakyNetworks(): Promise<void> {
+	async startOptionsPingForUnstableNetworks(): Promise<void> {
 		setTimeout(async () => {
 			if (!this.userAgent || this.stop) {
 				return;
@@ -925,7 +917,8 @@ export class VoIPUser extends Emitter<VoipEvents> {
 						connectivityArray.push(this.sendKeepAliveAndWaitForResponse(true));
 					}
 					const values = await Promise.all(connectivityArray);
-					for (let i = 0; i < values.length; i++) {
+					// for (let i = 0; i < values.length; i++) {
+					for (const i in values) {
 						if (values[i]) {
 							keepAliveResponse = values[i];
 							break;
@@ -944,7 +937,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 					this.networkEmitter.emit('connected');
 				}
 			}
-			this.startOptionsPingForFlakyNetworks();
+			this.startOptionsPingForUnstableNetworks();
 		}, this.optionsKeepaliveInterval * 1000);
 	}
 

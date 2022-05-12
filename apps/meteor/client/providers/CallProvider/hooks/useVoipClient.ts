@@ -21,7 +21,7 @@ const isSignedResponse = (data: any): data is { result: string } => typeof data?
 export const useVoipClient = (): UseVoipClientResult => {
 	const [voipEnabled, setVoipEnabled] = useSafely(useState(useSetting('VoIP_Enabled')));
 	const voipRetryCount = useSetting('VoIP_Retry_Count');
-	const enableKeepAlive = useSetting('VoIP_Enable_Keep_Alive_For_Flaky_Networks');
+	const enableKeepAlive = useSetting('VoIP_Enable_Keep_Alive_For_Unstable_Networks');
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
 	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
 	const user = useUser();
