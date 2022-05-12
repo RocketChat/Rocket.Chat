@@ -1,9 +1,9 @@
 import { Field } from '@rocket.chat/fuselage';
+import { ServerMethods } from '@rocket.chat/ui-contexts';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
-import { ServerMethods } from '../../../../contexts/ServerContext';
 import ActionSettingInput from './ActionSettingInput';
 
 export default {
