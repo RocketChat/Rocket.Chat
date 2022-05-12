@@ -19,17 +19,25 @@ type BodyProps = {
 	channels: ChannelMention[];
 	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
 	onChannelMentionClick?: (id: string) => (e: MouseEvent<HTMLDivElement>) => void;
+	isThreadPreview?: boolean;
 };
 
 const isBigEmoji = (tokens: MarkdownAST): tokens is [ASTBigEmoji] => tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
-const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [], channels = [], onUserMentionClick, onChannelMentionClick }) => {
+const MessageBodyRender: FC<BodyProps> = ({
+	tokens,
+	mentions = [],
+	channels = [],
+	onUserMentionClick,
+	onChannelMentionClick,
+	isThreadPreview,
+}) => {
 	if (isBigEmoji(tokens)) {
-		return <BigEmoji value={tokens[0].value} />;
+		return <BigEmoji value={tokens[0].value} isThreadPreview={isThreadPreview} />;
 	}
 
 	return (
-		<MessageBodyContext.Provider value={{ mentions, channels, onUserMentionClick, onChannelMentionClick }}>
+		<MessageBodyContext.Provider value={{ mentions, channels, onUserMentionClick, onChannelMentionClick, isThreadPreview }}>
 			{tokens.map((block, index) => {
 				if (block.type === 'UNORDERED_LIST') {
 					return <UnorderedList value={block.value} key={index} />;

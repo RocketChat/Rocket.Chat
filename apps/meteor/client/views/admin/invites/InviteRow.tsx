@@ -1,11 +1,10 @@
 import type { IInvite } from '@rocket.chat/core-typings';
 import { Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, MouseEvent } from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeFromNow } from '../../../hooks/useTimeFromNow';
 

@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Users } from '../../../models/server';
 import { Integrations, Uploads } from '../../../models/server/raw';
-import { canAccessRoom, hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../authorization/server';
+import { canAccessRoom, hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -43,24 +43,6 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 }
 
 API.v1.addRoute(
-	'channels.addAll',
-	{ authRequired: true },
-	{
-		post() {
-			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('addAllUserToRoom', findResult._id, this.bodyParams.activeUsersOnly);
-			});
-
-			return API.v1.success({
-				channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'channels.addModerator',
 	{ authRequired: true },
 	{
@@ -89,22 +71,6 @@ API.v1.addRoute(
 
 			Meteor.runAsUser(this.userId, () => {
 				Meteor.call('addRoomOwner', findResult._id, user._id);
-			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.archive',
-	{ authRequired: true },
-	{
-		post() {
-			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('archiveRoom', findResult._id);
 			});
 
 			return API.v1.success();
@@ -302,25 +268,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'channels.delete',
-	{ authRequired: true },
-	{
-		post() {
-			const room = findChannelByIdOrName({
-				params: this.requestParams(),
-				checkedArchived: false,
-			});
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('eraseRoom', room._id);
-			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
 	'channels.files',
 	{ authRequired: true },
 	{
@@ -425,62 +372,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'channels.history',
-	{ authRequired: true },
-	{
-		get() {
-			const findResult = findChannelByIdOrName({
-				params: this.requestParams(),
-				checkedArchived: false,
-			});
-
-			let latestDate = new Date();
-			if (this.queryParams.latest) {
-				latestDate = new Date(this.queryParams.latest);
-			}
-
-			let oldestDate = undefined;
-			if (this.queryParams.oldest) {
-				oldestDate = new Date(this.queryParams.oldest);
-			}
-
-			const inclusive = this.queryParams.inclusive || false;
-
-			let count = 20;
-			if (this.queryParams.count) {
-				count = parseInt(this.queryParams.count);
-			}
-
-			let offset = 0;
-			if (this.queryParams.offset) {
-				offset = parseInt(this.queryParams.offset);
-			}
-
-			const unreads = this.queryParams.unreads || false;
-
-			const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
-
-			const result = Meteor.call('getChannelHistory', {
-				rid: findResult._id,
-				latest: latestDate,
-				oldest: oldestDate,
-				inclusive,
-				offset,
-				count,
-				unreads,
-				showThreadMessages,
-			});
-
-			if (!result) {
-				return API.v1.unauthorized();
-			}
-
-			return API.v1.success(result);
-		},
-	},
-);
-
-API.v1.addRoute(
 	'channels.info',
 	{ authRequired: true },
 	{
@@ -509,65 +400,7 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');
 			}
 
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
-			});
-
-			return API.v1.success({
-				channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.join',
-	{ authRequired: true },
-	{
-		post() {
-			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('joinRoom', findResult._id, this.bodyParams.joinCode);
-			});
-
-			return API.v1.success({
-				channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.kick',
-	{ authRequired: true },
-	{
-		post() {
-			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-			const user = this.getUserFromParams();
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('removeUserFromRoom', { rid: findResult._id, username: user.username });
-			});
-
-			return API.v1.success({
-				channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.leave',
-	{ authRequired: true },
-	{
-		post() {
-			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('leaveRoom', findResult._id);
-			});
+			Meteor.call('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
 
 			return API.v1.success({
 				channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
@@ -721,50 +554,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'channels.messages',
-	{ authRequired: true },
-	{
-		get() {
-			const findResult = findChannelByIdOrName({
-				params: this.requestParams(),
-				checkedArchived: false,
-			});
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
-
-			const ourQuery = Object.assign({}, query, { rid: findResult._id });
-
-			// Special check for the permissions
-			if (
-				hasPermission(this.userId, 'view-joined-room') &&
-				!Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { fields: { _id: 1 } })
-			) {
-				return API.v1.unauthorized();
-			}
-			if (!hasPermission(this.userId, 'view-c-room')) {
-				return API.v1.unauthorized();
-			}
-
-			const cursor = Messages.find(ourQuery, {
-				sort: sort || { ts: -1 },
-				skip: offset,
-				limit: count,
-				fields,
-			});
-
-			const total = cursor.count();
-			const messages = cursor.fetch();
-
-			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId),
-				count: messages.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
 // TODO: CACHE: I dont like this method( functionality and how we implemented ) its very expensive
 // TODO check if this code is better or not
 // RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
@@ -837,35 +626,6 @@ API.v1.addRoute(
 			return API.v1.success({
 				online: onlineInRoom,
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.open',
-	{ authRequired: true },
-	{
-		post() {
-			const findResult = findChannelByIdOrName({
-				params: this.requestParams(),
-				checkedArchived: false,
-			});
-
-			const sub = Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
-
-			if (!sub) {
-				return API.v1.failure(`The user/callee is not in the channel "${findResult.name}".`);
-			}
-
-			if (sub.open) {
-				return API.v1.failure(`The channel, ${findResult.name}, is already open to the sender`);
-			}
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('openRoom', findResult._id);
-			});
-
-			return API.v1.success();
 		},
 	},
 );
@@ -1066,32 +826,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'channels.setReadOnly',
-	{ authRequired: true },
-	{
-		post() {
-			if (typeof this.bodyParams.readOnly === 'undefined') {
-				return API.v1.failure('The bodyParam "readOnly" is required');
-			}
-
-			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-			if (findResult.ro === this.bodyParams.readOnly) {
-				return API.v1.failure('The channel read only setting is the same as what it would be changed to.');
-			}
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
-			});
-
-			return API.v1.success({
-				channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'channels.setTopic',
 	{ authRequired: true },
 	{
@@ -1118,28 +852,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'channels.setAnnouncement',
-	{ authRequired: true },
-	{
-		post() {
-			if (!this.bodyParams.hasOwnProperty('announcement')) {
-				return API.v1.failure('The bodyParam "announcement" is required');
-			}
-
-			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', this.bodyParams.announcement);
-			});
-
-			return API.v1.success({
-				announcement: this.bodyParams.announcement,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'channels.setType',
 	{ authRequired: true },
 	{
@@ -1160,106 +872,6 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				channel: this.composeRoomWithLastMessage(Rooms.findOneById(findResult._id, { fields: API.v1.defaultFieldsToExclude }), this.userId),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.unarchive',
-	{ authRequired: true },
-	{
-		post() {
-			const findResult = findChannelByIdOrName({
-				params: this.requestParams(),
-				checkedArchived: false,
-			});
-
-			if (!findResult.archived) {
-				return API.v1.failure(`The channel, ${findResult.name}, is not archived`);
-			}
-
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('unarchiveRoom', findResult._id);
-			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.getAllUserMentionsByChannel',
-	{ authRequired: true },
-	{
-		get() {
-			const { roomId } = this.requestParams();
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-
-			if (!roomId) {
-				return API.v1.failure('The request param "roomId" is required');
-			}
-
-			const mentions = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('getUserMentionsByChannel', {
-					roomId,
-					options: {
-						sort: sort || { ts: 1 },
-						skip: offset,
-						limit: count,
-					},
-				}),
-			);
-
-			const allMentions = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('getUserMentionsByChannel', {
-					roomId,
-					options: {},
-				}),
-			);
-
-			return API.v1.success({
-				mentions,
-				count: mentions.length,
-				offset,
-				total: allMentions.length,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.roles',
-	{ authRequired: true },
-	{
-		get() {
-			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-			const roles = Meteor.runAsUser(this.userId, () => Meteor.call('getRoomRoles', findResult._id));
-
-			return API.v1.success({
-				roles,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.moderators',
-	{ authRequired: true },
-	{
-		get() {
-			const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-			const moderators = Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
-				fields: { u: 1 },
-			})
-				.fetch()
-				.map((sub) => sub.u);
-
-			return API.v1.success({
-				moderators,
 			});
 		},
 	},
@@ -1337,58 +949,6 @@ API.v1.addRoute(
 				offset,
 				total,
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.convertToTeam',
-	{ authRequired: true },
-	{
-		post() {
-			if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
-				return API.v1.unauthorized();
-			}
-
-			const { channelId, channelName } = this.bodyParams;
-
-			if (!channelId && !channelName) {
-				return API.v1.failure('The parameter "channelId" or "channelName" is required');
-			}
-
-			const room = findChannelByIdOrName({
-				params: {
-					roomId: channelId,
-					roomName: channelName,
-				},
-				userId: this.userId,
-			});
-
-			if (!room) {
-				return API.v1.failure('Channel not found');
-			}
-
-			const subscriptions = Subscriptions.findByRoomId(room._id, {
-				fields: { 'u._id': 1 },
-			});
-
-			const members = subscriptions.fetch().map((s) => s.u && s.u._id);
-
-			const teamData = {
-				team: {
-					name: room.name,
-					type: room.t === 'c' ? 0 : 1,
-				},
-				members,
-				room: {
-					name: room.name,
-					id: room._id,
-				},
-			};
-
-			const team = Promise.await(Team.create(this.userId, teamData));
-
-			return API.v1.success({ team });
 		},
 	},
 );
