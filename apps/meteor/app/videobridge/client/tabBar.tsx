@@ -1,10 +1,11 @@
 import React, { useMemo, lazy, ReactNode } from 'react';
-import { useStableArray } from '@rocket.chat/fuselage-hooks';
+import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
-import { useUser, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUser, useSetting, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
+import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
@@ -115,5 +116,26 @@ addAction('video', ({ room }) => {
 				  }
 				: null,
 		[enableOption, groups, live, t],
+	);
+});
+
+// TODO: fix mocked config
+addAction('video-conf', ({ room }) => {
+	const setModal = useSetModal();
+
+	const handleCloseVideoConf = useMutableCallback(() => setModal());
+	const handleOpenVideoConf = useMutableCallback((): void => setModal(<StartVideoConfModal room={room} onClose={handleCloseVideoConf} />));
+
+	return useMemo(
+		() => ({
+			groups: ['direct', 'group', 'channel'],
+			id: 'video-conference',
+			title: 'Video Conference',
+			icon: 'phone',
+			action: handleOpenVideoConf,
+			full: true,
+			order: 999,
+		}),
+		[handleOpenVideoConf],
 	);
 });

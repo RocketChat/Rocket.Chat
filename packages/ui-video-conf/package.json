@@ -1,0 +1,36 @@
+{
+	"name": "@rocket.chat/ui-video-conf",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@types/jest": "^27.4.1",
+		"eslint": "^8.12.0",
+		"jest": "^27.5.1",
+		"ts-jest": "^27.1.4",
+		"typescript": "~4.3.5"
+	},
+	"peerDependencies": {
+		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/fuselage-hooks": "*",
+		"react": "*",
+		"react-dom": "*"
+	},
+	"dependencies": {
+		"@rocket.chat/fuselage": "~0.31.11",
+		"@rocket.chat/fuselage-hooks": "^0.31.11",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2"
+	},
+	"scripts": {
+		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"jest": "jest",
+		"build": "tsc -p tsconfig.json"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	]
+}
