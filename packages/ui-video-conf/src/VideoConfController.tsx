@@ -1,7 +1,7 @@
 import React from 'react';
-import type { ReactNode, ReactElement, ButtonHTMLAttributes } from 'react';
+import type { ReactElement, ButtonHTMLAttributes } from 'react';
 
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, ActionButton } from '@rocket.chat/fuselage';
 import type { IconProps } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 
@@ -14,16 +14,7 @@ type VideoConfControllerProps = {
 const VideoConfController = ({ primary, text, icon, ...props }: VideoConfControllerProps): ReactElement => {
   const id = useUniqueId();
 
-  return (
-    <Box display='flex' flexDirection='column' alignItems='center' mie='x12'>
-      <Button id={id} square primary={primary} {...props}>
-        <Icon size='x20' name={icon} />
-      </Button>
-      <Box is='label' htmlFor={id} mbs='x8' fontScale='c1' color='neutral-700' {...props}>
-        {text}
-      </Box>
-    </Box>
-  );
+  return <ActionButton icon={icon} id={id} square primary={primary} {...props} />
 }
 
 export default VideoConfController;

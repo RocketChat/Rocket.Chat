@@ -1,4 +1,4 @@
-import { Modal, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode, ReactElement } from 'react';
 import React from 'react';
 
