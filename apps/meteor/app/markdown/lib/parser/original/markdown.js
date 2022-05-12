@@ -110,8 +110,17 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	// <<<
 	msg = msg.replace(
 		/(?:&gt;){3}\n+([\s\S]*?)\n+(?:&lt;){3}/g,
-		'<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;&gt;&gt;</span>$1<span class="copyonly">&lt;&lt;&lt;</span></blockquote>',
+		'<blockquote class="background-transparent-darker-before"><span style="background: black;" class="copyonly">&gt;&gt;&gt;</span>$1<span class="copyonly">&lt;&lt;&lt;</span></blockquote>',
 	);
+
+	// msg = msg.replace(
+	// 	/([^\r\n\s~*|]){0,1}(\|+(?!\s))([^\|\r\n]+)(\|+)([^\r\n\s]){0,1}/gm,
+	// 	'<span class="spoiler-hide"><span class="1">$1</span><span class="2">$2</span><span class="3">$3</span></span>',
+	// )
+	msg = msg.replace(
+		/(\|+(?!\s))([^\|\r\n]+)(\|+)/gm,
+		'<spoiler class="spoiler-hide">$2</spoiler>',
+	)
 
 	// Support >Text for quote
 	msg = msg.replace(

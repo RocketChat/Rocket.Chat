@@ -98,6 +98,14 @@
 	color: var(--error-contrast);
 }
 
+.spoiler-hide {
+	background-color: black;
+}
+
+.spoiler-hide:hover {
+	background-color: rgba(255, 0, 0, 0);
+}
+
 .background-transparent-darkest {
 	background-color: var(--transparent-darkest);
 }
