@@ -469,4 +469,13 @@ export class RoomsRaw extends BaseRaw {
 			options,
 		);
 	}
+
+	findByActiveLivestream(options) {
+		return this.find(
+			{
+				'streamingOptions.type': 'livestream',
+			},
+			options,
+		);
+	}
 }
