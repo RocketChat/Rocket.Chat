@@ -113,9 +113,7 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 
 	for await (const roomAccessValidator of roomAccessValidators) {
 		if (await roomAccessValidator(room, user, extraData)) {
-			if (await hasRoomViewPermission(room.t, user._id)) {
-				return true;
-			}
+			return true;
 		}
 	}
 
