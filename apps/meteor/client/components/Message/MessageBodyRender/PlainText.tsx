@@ -12,12 +12,6 @@ const PlainText: FC<PlainTextType> = ({ value: text }) => {
 	const highlights = useMessageListHighlights();
 	const katex = useMessageListKatex();
 
-	// TODO
-	// Add line break token in the parser
-	if (!text.trim()) {
-		return <></>;
-	}
-
 	if (highlights || katex) {
 		return <CustomText text={text} wordsToHighlight={highlights} katex={katex} />;
 	}
