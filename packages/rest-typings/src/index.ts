@@ -31,6 +31,7 @@ import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
+import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
 
@@ -65,6 +66,7 @@ export interface Endpoints
 		InvitesEndpoints,
 		E2eEndpoints,
 		CustomSoundEndpoint,
+		EmailInboxEndpoints,
 		WebdavEndpoints,
 		OAuthAppsEndpoint {}
 

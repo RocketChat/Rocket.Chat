@@ -241,6 +241,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 
 	parseUrlsInMessage(message);
 
+	message = callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
 		if (message._id && upsert) {
 			const { _id } = message;
