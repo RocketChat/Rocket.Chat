@@ -189,7 +189,6 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				<AccountInfo title='Private Information' items={privateInfo} />
 				<AccountInfo title='Services' items={services} />
 			</Box>
-			<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 		</FieldGroup>
 	);
 }

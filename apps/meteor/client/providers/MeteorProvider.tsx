@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 
 import AttachmentProvider from '../components/Message/Attachments/providers/AttachmentProvider';
-import { DispatchGlobalContext } from '../contexts/BlogDetailContext/GlobalState';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import BlogDetailContextProvider from './BlogDetailProvider';
@@ -21,6 +20,7 @@ import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
 import ProductDetailContextProvider from './ProductDetailProvider';
+import UserPreviousPageProvider from './UserPreviousPageProvider';
 
 const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
@@ -39,7 +39,15 @@ const MeteorProvider: FC = ({ children }) => (
 														<CallProvider>
 															<OmnichannelProvider>
 																<ModalProvider>
-																	<AttachmentProvider>{children}</AttachmentProvider>
+																	<BlogDetailContextProvider>
+																		<GameDetailContextProvider>
+																			<ProductDetailContextProvider>
+																				<UserPreviousPageProvider>
+																					<AttachmentProvider>{children}</AttachmentProvider>
+																				</UserPreviousPageProvider>
+																			</ProductDetailContextProvider>
+																		</GameDetailContextProvider>
+																	</BlogDetailContextProvider>
 																</ModalProvider>
 															</OmnichannelProvider>
 														</CallProvider>

@@ -8,6 +8,7 @@ import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import AccountSecurityPage from './security/AccountSecurityPage';
 import AccountTokensPage from './tokens/AccountTokensPage';
+import TopUpView from '../topup/TopUpView';
 import './sidebarItems';
 
 const AccountRoute = () => {
@@ -57,6 +58,10 @@ const AccountRoute = () => {
 		}
 
 		return <AccountTokensPage />;
+	}
+
+	if (page === 'topup') {
+		return <TopUpView />;
 	}
 
 	return null;

@@ -71,7 +71,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 					}}
 					mie='x4'
 				/>
-				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
+				<Box
+					style={{ marginLeft: '20px !important' }}
+					display='flex'
+					flexDirection='column'
+					flexGrow='1'
+					justifyContent='space-between'
+					mis='x4'
+				>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Margins inline='x4'>
 							<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4' title={t('Accounts_SetDefaultAvatar')}>
@@ -96,8 +103,9 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 					<Margins inlineStart='x4'>
 						<Box fontWeight='bold' fontSize='20px' style={{ margin: '8px 0' }}>
 							{user.name}
+							<img src='images/icons/icon-male.png' alt='gender icon' />
 						</Box>
-						<Box style={{ marginBottom: '8px' }}>@{user.username}</Box>
+						<Box style={{ marginBottom: '8px' }}>@{user.username} </Box>
 						<Box style={{ marginBottom: '8px' }}>Joined: {today}</Box>
 						<Box fontWeight='bold' style={{ marginBottom: '10px' }}>
 							Last Active: {user._updatedAt.toString().slice(15, 24)}

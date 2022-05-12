@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 
 import SingleGame from './SingleGame';
 import Page from '../../components/Page';
