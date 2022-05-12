@@ -1,5 +1,4 @@
 import { Match, check } from 'meteor/check';
-import { parser } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
@@ -10,10 +9,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-import { isE2EEMessage } from '../../../../lib/isE2EEMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
-
-const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
 /**
  * IMPORTANT
@@ -247,13 +243,6 @@ export const sendMessage = function (user, message, room, upsert = false) {
 	parseUrlsInMessage(message);
 
 	message = callbacks.run('beforeSaveMessage', message, room);
-	try {
-		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true' && !isE2EEMessage(message)) {
-			message.md = parser(message.msg);
-		}
-	} catch (e) {
-		SystemLogger.error(e); // errors logged while the parser is at experimental stage
-	}
 	if (message) {
 		if (message.t === 'otr') {
 			const otrStreamer = notifications.streamRoomMessage;

@@ -1,17 +1,21 @@
 import { useRouteParameter, useIsPrivilegedSettingsContext } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from './EditableSettingsProvider';
 import GroupSelector from './GroupSelector';
+import SettingsPage from './SettingsPage';
 
-export function SettingsRoute() {
+export const SettingsRoute = (): ReactElement => {
 	const hasPermission = useIsPrivilegedSettingsContext();
-
 	const groupId = useRouteParameter('group');
 
 	if (!hasPermission) {
 		return <NotAuthorizedPage />;
+	}
+
+	if (!groupId) {
+		return <SettingsPage />;
 	}
 
 	return (
@@ -19,6 +23,6 @@ export function SettingsRoute() {
 			<GroupSelector groupId={groupId} />
 		</EditableSettingsProvider>
 	);
-}
+};
 
 export default SettingsRoute;

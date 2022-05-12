@@ -115,4 +115,11 @@ export const {
 		i18nLabel: 'Permissions',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
 	},
+	{
+		icon: 'customize',
+		href: 'admin-settings',
+		i18nLabel: 'Settings',
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
+	},
 ]);

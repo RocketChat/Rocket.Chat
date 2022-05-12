@@ -368,7 +368,7 @@ jobs:
         run: yarn
 
       - name: Build micro services
-        run: yarn build:services
+        run: yarn build
 
       - name: E2E Test API
         env:
@@ -617,14 +617,14 @@ jobs:
           IMAGE_TAG: check
         run: |
           yarn
-          yarn build:services
+          yarn build
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
 
           docker build \
             --build-arg SERVICE=${{ matrix.service }} \
             -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
-            -f ./apps/meteor/ee/server/services/Dockerfile \
+            -f ./ee/apps/ddp-streamer/Dockerfile \
             .
 
   release-versions:
@@ -872,14 +872,20 @@ jobs:
 
           # first install repo dependencies
           yarn
-          yarn build:services
+          yarn build
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
+
+          if [[ "${{ matrix.service }}" == "ddp-streamer" ]]; then
+            DOCKERFILE_PATH="./ee/apps/ddp-streamer/Dockerfile"
+          else
+            DOCKERFILE_PATH="./apps/meteor/ee/server/services/Dockerfile"
+          fi
 
           docker build \
             --build-arg SERVICE=${{ matrix.service }} \
             -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
-            -f ./apps/meteor/ee/server/services/Dockerfile \
+            -f ${DOCKERFILE_PATH} \
             .
 
           docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
