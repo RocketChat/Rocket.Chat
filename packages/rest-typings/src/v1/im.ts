@@ -1,5 +1,7 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+
 export type ImEndpoints = {
 	'im.create': {
 		POST: (
@@ -32,9 +34,9 @@ export type ImEndpoints = {
 		};
 	};
 	'im.history': {
-		GET: (params: { roomId: string; count: number; latest?: string }) => {
+		GET: (params: PaginatedRequest<{ roomId: string; latest?: string }>) => PaginatedRequest<{
 			messages: IMessage[];
-		};
+		}>;
 	};
 	'im.close': {
 		POST: (params: { roomId: string }) => {};

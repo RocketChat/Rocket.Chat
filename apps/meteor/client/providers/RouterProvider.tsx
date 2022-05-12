@@ -1,9 +1,8 @@
+import { RouterContext, RouterContextValue } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 import React, { FC } from 'react';
 import { Subscription, Unsubscribe } from 'use-subscription';
-
-import { RouterContext, RouterContextValue } from '../contexts/RouterContext';
 
 const createSubscription = function <T>(getValue: () => T): Subscription<T> {
 	let currentValue = Tracker.nonreactive(getValue);

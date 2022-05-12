@@ -1,7 +1,6 @@
+import { TranslationContext } from '@rocket.chat/ui-contexts';
 import i18next from 'i18next';
 import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
-
-import { TranslationContext } from '../../contexts/TranslationContext';
 
 type TranslationContextMockProps = {
 	children: ReactNode;

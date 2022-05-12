@@ -1,12 +1,12 @@
 import React, { useMemo, lazy, ReactNode } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
+import { useUser, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 
-import { useSetting } from '../../../client/contexts/SettingsContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
-import { useUser } from '../../../client/contexts/UserContext';
 import Header from '../../../client/components/Header';
+
+const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
 addAction('bbb_video', ({ room }) => {
 	const enabled = useSetting('bigbluebutton_Enabled');
@@ -27,8 +27,6 @@ addAction('bbb_video', ({ room }) => {
 	const user = useUser();
 	const username = user ? user.username : '';
 	const enableOption = enabled && (!username || !room.muted?.includes(username));
-
-	const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
 	return useMemo(
 		() =>
