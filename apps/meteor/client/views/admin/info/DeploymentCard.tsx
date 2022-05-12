@@ -28,7 +28,7 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 	});
 
 	return (
-		<Card>
+		<Card data-qa-id='deployment-card'>
 			<Card.Title>{t('Deployment')}</Card.Title>
 			<Card.Body>
 				<Card.Col>

@@ -62,13 +62,12 @@ function findChannelByIdOrName({
 
 API.v1.addRoute(
 	'channels.addAll',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsAddAllProps,
+	},
 	{
 		post() {
-			if (!isChannelsAddAllProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsAddAllProps.errors?.map((error: any) => error.message).join('\n '));
-			}
-
 			const { activeUsersOnly, ...params } = this.bodyParams;
 			const findResult = findChannelByIdOrName({ params, userId: this.userId });
 
@@ -83,13 +82,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.archive',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsArchiveProps,
+	},
 	{
 		post() {
-			if (!isChannelsArchiveProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsArchiveProps.errors?.map((error: any) => error.message).join('\n '));
-			}
-
 			const findResult = findChannelByIdOrName({ params: this.bodyParams });
 
 			Meteor.call('archiveRoom', findResult._id);
@@ -101,13 +99,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.unarchive',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsUnarchiveProps,
+	},
 	{
 		post() {
-			if (!isChannelsUnarchiveProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsUnarchiveProps.errors?.map((error: any) => error.message).join('\n '));
-			}
-
 			const findResult = findChannelByIdOrName({
 				params: this.bodyParams,
 				checkedArchived: false,
@@ -126,12 +123,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.history',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsHistoryProps,
+	},
 	{
 		get() {
-			if (!isChannelsHistoryProps(this.queryParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsHistoryProps.errors?.map((error: any) => error.message).join('\n '));
-			}
 			const { roomId, unreads, oldest, latest, showThreadMessages, inclusive } = this.queryParams;
 			const findResult = findChannelByIdOrName({
 				params: { roomId },
@@ -162,12 +159,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.roles',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsRolesProps,
+	},
 	{
 		get() {
-			if (!isChannelsRolesProps(this.queryParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsRolesProps.errors?.map((error: any) => error.message).join('\n '));
-			}
 			const findResult = findChannelByIdOrName({ params: this.queryParams });
 
 			const roles = Meteor.call('getRoomRoles', findResult._id);
@@ -181,13 +178,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.join',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsJoinProps,
+	},
 	{
 		post() {
-			if (!isChannelsJoinProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsJoinProps.errors?.map((error: any) => error.message).join('\n '));
-			}
-
 			const { roomId, joinCode } = this.bodyParams;
 			const findResult = findChannelByIdOrName({ params: { roomId } });
 
@@ -202,12 +198,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.kick',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsKickProps,
+	},
 	{
 		post() {
-			if (!isChannelsKickProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsKickProps.errors?.map((error: any) => error.message).join('\n '));
-			}
 			const { roomId /* userId */ } = this.bodyParams;
 			const findResult = findChannelByIdOrName({ params: { roomId } });
 
@@ -224,13 +220,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.leave',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsLeaveProps,
+	},
 	{
 		post() {
-			if (!isChannelsLeaveProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsLeaveProps.errors?.map((error: any) => error.message).join('\n '));
-			}
-
 			const { roomId } = this.bodyParams;
 			const findResult = findChannelByIdOrName({ params: { roomId } });
 
@@ -247,12 +242,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.messages',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsMessagesProps,
+	},
 	{
 		get() {
-			if (!isChannelsMessagesProps(this.queryParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsMessagesProps.errors?.map((error: any) => error.message).join('\n '));
-			}
 			const { roomId } = this.queryParams;
 			const findResult = findChannelByIdOrName({
 				params: { roomId },
@@ -296,13 +291,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.open',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsOpenProps,
+	},
 	{
 		post() {
-			if (!isChannelsOpenProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsOpenProps.errors?.map((error: any) => error.message).join('\n '));
-			}
-
 			const { roomId } = this.bodyParams;
 
 			const findResult = findChannelByIdOrName({
@@ -329,13 +323,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.setReadOnly',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsSetReadOnlyProps,
+	},
 	{
 		post() {
-			if (!isChannelsSetReadOnlyProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsSetReadOnlyProps.errors?.map((error: any) => error.message).join('\n '));
-			}
-
 			const { roomId } = this.bodyParams;
 
 			const findResult = findChannelByIdOrName({ params: { roomId } });
@@ -355,15 +348,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.setAnnouncement',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsSetAnnouncementProps,
+	},
 	{
 		post() {
-			if (!isChannelsSetAnnouncementProps(this.bodyParams)) {
-				throw new Meteor.Error(
-					'error-invalid-params',
-					isChannelsSetAnnouncementProps.errors?.map((error: any) => error.message).join('\n '),
-				);
-			}
 			const { roomId, announcement } = this.bodyParams;
 
 			const findResult = findChannelByIdOrName({ params: { roomId } });
@@ -379,15 +369,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.getAllUserMentionsByChannel',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsGetAllUserMentionsByChannelProps,
+	},
 	{
 		get() {
-			if (!isChannelsGetAllUserMentionsByChannelProps(this.queryParams)) {
-				throw new Meteor.Error(
-					'error-invalid-params',
-					isChannelsGetAllUserMentionsByChannelProps.errors?.map((error: any) => error.message).join('\n '),
-				);
-			}
 			const { roomId } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
@@ -422,12 +409,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.moderators',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsModeratorsProps,
+	},
 	{
 		get() {
-			if (!isChannelsModeratorsProps(this.queryParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsModeratorsProps.errors?.map((error: any) => error.message).join('\n '));
-			}
 			const { roomId } = this.queryParams;
 
 			const findResult = findChannelByIdOrName({ params: { roomId } });
@@ -447,12 +434,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.delete',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsDeleteProps,
+	},
 	{
 		post() {
-			if (!isChannelsDeleteProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsDeleteProps.errors?.map((error: any) => error.message).join('\n '));
-			}
 			const room = findChannelByIdOrName({
 				params: this.bodyParams,
 				checkedArchived: false,
@@ -467,13 +454,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.convertToTeam',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChannelsConvertToTeamProps,
+	},
 	{
 		async post() {
-			if (!isChannelsConvertToTeamProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-params', isChannelsConvertToTeamProps.errors?.map((error: any) => error.message).join('\n '));
-			}
-
 			if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
 				return API.v1.unauthorized();
 			}

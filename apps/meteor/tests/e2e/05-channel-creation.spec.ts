@@ -34,8 +34,7 @@ test.describe('[Channel]', async () => {
 			await channelCreation.createChannel(channelName, false);
 		});
 	});
-	// TODO: Verify why is intermitent
-	test.skip('expect send message to channel created', async () => {
+	test('expect send message to channel created', async () => {
 		await channelCreation.sendMessage(ROCKET_CAT, HELLO);
 	});
 });
