@@ -134,7 +134,7 @@ addAction('video-conf', ({ room }) => {
 			icon: 'phone',
 			action: handleOpenVideoConf,
 			full: true,
-			order: 4,
+			order: 999,
 		}),
 		[handleOpenVideoConf],
 	);
