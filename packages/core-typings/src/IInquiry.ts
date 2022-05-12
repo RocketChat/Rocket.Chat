@@ -33,5 +33,7 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	estimatedServiceTimeAt: string;
 	department: string;
 	estimatedInactivityCloseTimeAt: Date;
+	locked?: boolean;
+	lockedAt?: Date;
 	lastMessage?: IMessage & { token?: string };
 }
