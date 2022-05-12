@@ -6,8 +6,8 @@ import Inline from './Inline';
 
 const UnorderedList: FC<{ value: ASTUnorderedList['value'] }> = ({ value }) => (
 	<MessageUnorderedList>
-		{value.map((item) => (
-			<MessageUnorderedListItem>
+		{value.map((item, index) => (
+			<MessageUnorderedListItem key={index}>
 				<Inline value={item.value} />
 			</MessageUnorderedListItem>
 		))}

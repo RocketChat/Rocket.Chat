@@ -5,6 +5,7 @@ import React, { FC, memo } from 'react';
 import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import { useMessageActions } from '../../contexts/MessageContext';
+import { useParsedMessage } from '../hooks/useParsedMessage';
 import EncryptedMessageRender from './EncryptedMessageRender';
 
 const MessageRender: FC<{ message: IMessage; isThreadPreview?: boolean }> = ({ message, isThreadPreview }) => {
@@ -14,6 +15,8 @@ const MessageRender: FC<{ message: IMessage; isThreadPreview?: boolean }> = ({ m
 
 	const isEncryptedMessage = isE2EEMessage(message);
 
+	const tokens = useParsedMessage(message.msg);
+
 	return (
 		<>
 			{!isEncryptedMessage && !message.blocks && message.md && (
@@ -22,7 +25,7 @@ const MessageRender: FC<{ message: IMessage; isThreadPreview?: boolean }> = ({ m
 					onChannelMentionClick={openRoom}
 					mentions={message?.mentions || []}
 					channels={message?.channels || []}
-					tokens={message.md}
+					tokens={tokens}
 					isThreadPreview={isThreadPreview}
 				/>
 			)}

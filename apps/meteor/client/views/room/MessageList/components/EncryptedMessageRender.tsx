@@ -1,13 +1,13 @@
 import { IMessage } from '@rocket.chat/core-typings';
-import { parser } from '@rocket.chat/message-parser';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement } from 'react';
 
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import { useMessageActions } from '../../contexts/MessageContext';
+import { useParsedMessage } from '../hooks/useParsedMessage';
 
 const EncryptedMessageRender = ({ message }: { message: IMessage }): ReactElement => {
-	const tokens = useMemo(() => parser(message.msg), [message.msg]);
+	const tokens = useParsedMessage(message.msg);
 	const t = useTranslation();
 
 	const {
