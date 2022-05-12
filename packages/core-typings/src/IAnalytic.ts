@@ -6,7 +6,7 @@ interface IAnalyticsBase extends IRocketChatRecord {
 }
 
 export interface IAnalyticsMessages extends IAnalyticsBase {
-	type: 'messages';
+	type: "messages";
 	room: {
 		_id: string;
 		name?: string;
