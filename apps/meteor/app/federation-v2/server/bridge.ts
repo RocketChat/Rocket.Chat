@@ -1,8 +1,8 @@
-import { Bridge as MatrixBridge, AppServiceRegistration } from '@rocket.chat/forked-matrix-appservice-bridge';
+import type { Bridge as MatrixBridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
 import { settings } from '../../settings/server';
-import { IMatrixEvent } from './definitions/IMatrixEvent';
-import { MatrixEventType } from './definitions/MatrixEventType';
+import type { IMatrixEvent } from './definitions/IMatrixEvent';
+import type { MatrixEventType } from './definitions/MatrixEventType';
 import { addToQueue } from './queue';
 import { getRegistrationInfo } from './config';
 
@@ -15,7 +15,7 @@ class Bridge {
 		try {
 			await this.stop();
 		} finally {
-			this.createInstance();
+			await this.createInstance();
 			if (!this.isRunning) {
 				await this.bridgeInstance.run(this.getBridgePort());
 				this.isRunning = true;
@@ -28,7 +28,7 @@ class Bridge {
 			return;
 		}
 		// the http server can take some minutes to shutdown and this promise to be resolved
-		await this.bridgeInstance.close();
+		await this.bridgeInstance?.close();
 		this.isRunning = false;
 	}
 
@@ -36,7 +36,8 @@ class Bridge {
 		return this.bridgeInstance;
 	}
 
-	private createInstance(): void {
+	private async createInstance(): Promise<void> {
+		const { Bridge: MatrixBridge, AppServiceRegistration } = await import('@rocket.chat/forked-matrix-appservice-bridge');
 		this.bridgeInstance = new MatrixBridge({
 			homeserverUrl: settings.get('Federation_Matrix_homeserver_url'),
 			domain: settings.get('Federation_Matrix_homeserver_domain'),
