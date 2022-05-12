@@ -19,7 +19,7 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 
 	return (
 		<Option id={_id} style={style} data-username={username} presence={status} onClick={onClickView} {...handleMenuEvent}>
-			<Option.Avatar>
+			<Option.Avatar data-qa='MemberItemAvatar'>
 				<UserAvatar username={username} size='x28' />
 			</Option.Avatar>
 			<Option.Column>

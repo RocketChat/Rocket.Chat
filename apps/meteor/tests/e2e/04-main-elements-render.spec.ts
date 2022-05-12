@@ -144,7 +144,7 @@ test.describe('[Main Elements Render]', function () {
 			test('expect show the emoji button', async () => {
 				await expect(mainContent.emojiBtn()).toBeVisible();
 			});
-			test('expect not show the Admin tag', async () => {
+			test.skip('expect not show the Admin tag', async () => {
 				await expect(mainContent.lastMessageUserTag()).not.toBeVisible();
 			});
 		});
@@ -157,130 +157,73 @@ test.describe('[Main Elements Render]', function () {
 			});
 
 			test.describe('[Room tab info]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('info', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('info', false);
-				});
-
-				test('expect show the room info button', async () => {
-					await expect(flexTab.channelTab()).toBeVisible();
-				});
-
-				test('expect show the room info tab content', async () => {
-					await expect(flexTab.channelSettings()).toBeVisible();
+				test('expect room tab info is visible', async () => {
+					await flexTab.operateFlexTab2('[data-qa="ToolBoxVisibleActions-Room_Info"]', '[data-qa="RoomInfoVerticalBarText"]');
+					await flexTab.getPage().locator('[data-qa="VerticalBarClose"]').click();
 				});
 			});
 
 			test.describe('[Search Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('search', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('search', false);
-				});
-
-				test('expect show the message search  button', async () => {
-					await expect(flexTab.searchTab()).toBeVisible();
-				});
-
-				test('expect show the message tab content', async () => {
-					await expect(flexTab.searchTabContent()).toBeVisible();
+				test('expect show search message content', async () => {
+					await flexTab.operateFlexTab2(
+						'[data-qa="ToolBoxVisibleActions-Search_Messages"]',
+						'[data-qa="VerticalBarHeader"] >> text=Search Messages',
+					);
+					await flexTab.getPage().locator('[data-qa="VerticalBarClose"]').click();
 				});
 			});
 
 			test.describe('[Members Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('members', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('members', false);
-				});
-
-				test('expect show the members tab button', () => {
-					expect(flexTab.membersTab().isVisible()).toBeTruthy();
-				});
-
-				test('expect show the members content', async () => {
-					expect(flexTab.membersTabContent().isVisible()).toBeTruthy();
+				test('expect show search message content', async () => {
+					await flexTab.operateFlexTab2('[data-qa="ToolBoxVisibleActions-Members"]', '[data-qa="VerticalBarHeader"] >> text=Members');
+					await flexTab.getPage().locator('[data-qa="VerticalBarClose"]').click();
 				});
 			});
 
 			test.describe('[Notifications Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('notifications', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('notifications', false);
-				});
-
-				test('expect not show the notifications button', async () => {
-					await expect(flexTab.notificationsTab()).not.toBeVisible();
-				});
-
-				test('expect show the notifications Tab content', async () => {
-					await expect(flexTab.notificationsSettings()).toBeVisible();
+				test('expect show notifications tab content', async () => {
+					await flexTab.operateFlexTab2(
+						'[data-qa="ToolBoxOption-NotificationsPreferences"]',
+						'[data-qa="VerticalBarHeader"] >> text=Notifications Preferences',
+						true,
+					);
+					await flexTab.getPage().locator('[data-qa="VerticalBarClose"]').click();
 				});
 			});
 
 			test.describe('[Files Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('files', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('files', false);
-				});
-
-				test('expect show the files Tab content', async () => {
-					await expect(flexTab.filesTabContent()).toBeVisible();
+				test('expect show file tab content', async () => {
+					await flexTab.operateFlexTab2('[data-qa="ToolBoxVisibleActions-Files"]', '[data-qa="VerticalBarHeader"] >> text=Files');
+					await flexTab.getPage().locator('[data-qa="VerticalBarClose"]').click();
 				});
 			});
 
 			test.describe('[Mentions Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('mentions', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('mentions', false);
-				});
-
-				test('expect show the mentions Tab content', async () => {
-					await expect(flexTab.mentionsTabContent()).toBeVisible();
+				test('expect show mentions tab content', async () => {
+					await flexTab.operateFlexTab2('[data-qa="ToolBoxOption-Mentions"]', '[data-qa="VerticalBarHeader"] >> text=Mentions', true);
+					await flexTab.getPage().locator('[data-qa="VerticalBarClose"]').click();
 				});
 			});
 
 			test.describe('[Starred Messages Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('starred', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('starred', false);
-				});
-
-				test('expect show the starred messages Tab content', async () => {
-					await expect(flexTab.starredTabContent()).toBeVisible();
+				test('expect show starred message tab content', async () => {
+					await flexTab.operateFlexTab2(
+						'[data-qa="ToolBoxOption-StarredMessages"]',
+						'[data-qa="VerticalBarHeader"] >> text=Starred Messages',
+						true,
+					);
+					await flexTab.getPage().locator('[data-qa="VerticalBarClose"]').click();
 				});
 			});
 
 			test.describe('[Pinned Messages Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('pinned', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('pinned', false);
-				});
-
-				test('expect show the pinned messages Tab content', async () => {
-					await expect(flexTab.pinnedTabContent()).toBeVisible();
+				test('expect show pinned message tab content', async () => {
+					await flexTab.operateFlexTab2(
+						'[data-qa="ToolBoxOption-PinnedMessages"]',
+						'[data-qa="VerticalBarHeader"] >> text=Pinned Messages',
+						true,
+					);
+					await flexTab.getPage().locator('[data-qa="VerticalBarClose"]').click();
 				});
 			});
 		});

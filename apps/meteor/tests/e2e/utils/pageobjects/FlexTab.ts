@@ -19,7 +19,7 @@ class FlexTab extends BasePage {
 	}
 
 	public headerMoreActions(): Locator {
-		return this.getPage().locator('//main/header//*[contains(@class, "rcx-icon--name-kebab")]/..');
+		return this.getPage().locator('[data-qa="ToolBoxVisibleActionsOptions"]');
 	}
 
 	public moreActions(): Locator {
@@ -40,13 +40,11 @@ class FlexTab extends BasePage {
 
 	// Channel Info Tab
 	public channelTab(): Locator {
-		return this.getPage().locator('(//main//*[contains(@class, "rcx-icon--name-info-circled")])[1]/..');
+		return this.getPage().locator('[data-qa="ToolBoxVisibleActions-Room_Info"]');
 	}
 
 	public channelSettings(): Locator {
-		return this.getPage().locator(
-			'//aside/h3/div/i[contains(@class,"rcx-icon--name-info-circled") and contains(@class,"rcx-icon--name-info-circled")]',
-		);
+		return this.getPage().locator('[data-qa="RoomInfoVerticalBarText"]');
 	}
 
 	public channelSettingName(): Locator {
@@ -171,7 +169,7 @@ class FlexTab extends BasePage {
 	}
 
 	public avatarImage(): Locator {
-		return this.getPage().locator('(//aside[contains(@class, "rcx-vertical-bar")]//*[contains(@class, "avatar")])[1]');
+		return this.getPage().locator('[data-qa="MemberItemAvatar"]:first-child').first();
 	}
 
 	public memberUserName(): Locator {
@@ -201,7 +199,7 @@ class FlexTab extends BasePage {
 
 	// Notifications Tab
 	public notificationsTab(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Notifications Preferences")]');
+		return this.getPage().locator('[data-qa="ToolBoxAction-NotificationsPreferences"]');
 		// return this.getPage().locator('.rcx-option__content:contains("Notifications Preferences")');
 	}
 
@@ -211,7 +209,7 @@ class FlexTab extends BasePage {
 
 	// Files Tab
 	public filesTab(): Locator {
-		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-clip');
+		return this.getPage().locator('[data-qa="ToolBoxVisibleActions-Files"]');
 	}
 
 	public fileItem(): Locator {
@@ -236,7 +234,7 @@ class FlexTab extends BasePage {
 
 	// Mentions Tab
 	public mentionsTab(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Mentions")]');
+		return this.getPage().locator('[data-qa="ToolBoxAction-Mentions"]');
 	}
 
 	public mentionsTabContent(): Locator {
@@ -246,7 +244,7 @@ class FlexTab extends BasePage {
 
 	// Starred Tab
 	public starredTab(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Starred Messages")]');
+		return this.getPage().locator('[data-qa="ToolBoxOption-StarredMessages"]');
 	}
 
 	public starredTabContent(): Locator {
@@ -255,7 +253,7 @@ class FlexTab extends BasePage {
 
 	// Pinned Tab
 	public pinnedTab(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Pinned Messages")]');
+		return this.getPage().locator('[data-qa="ToolBoxOption-PinnedMessages"]');
 	}
 
 	public pinnedTabContent(): Locator {
@@ -541,6 +539,15 @@ class FlexTab extends BasePage {
 		};
 
 		await callFunctionTabs(desiredTab);
+	}
+
+	async operateFlexTab2(tabSelector: string, panelSelector: string, more?: boolean): Promise<void> {
+		if (more) {
+			await this.headerMoreActions().click();
+		}
+		await this.getPage().locator(tabSelector).click({ force: true });
+		await expect(this.getPage().locator(panelSelector)).toBeVisible();
+		// await expect(this.getPage().locator(panelSelector)).toContainText()
 	}
 
 	public flexTabViewThreadMessage(): Locator {

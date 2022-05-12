@@ -11,7 +11,7 @@ import { useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
-	<Option label={title} icon={icon} {...props} />
+	<Option data-qa={`ToolBoxOption-${title.replace(' ', '')}`} label={title} icon={icon} {...props} />
 );
 
 type ToolBoxProps = {
@@ -40,7 +40,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 			return [
 				item.id,
 				{
-					label: { title: t(item.title), icon: item.icon },
+					label: { 'title': t(item.title), 'icon': item.icon, 'data-qa': `ToolBox-${item.title}` },
 					action: (): void => {
 						openTabBar(item.id);
 					},
@@ -83,6 +83,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					'data-toolbox': index,
 					action,
 					'key': id,
+					'data-qa': `ToolBoxVisibleActions-${title.replace(' ', '')}`,
 				};
 				if (renderAction) {
 					return renderAction(props);
@@ -99,6 +100,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					tabIndex={-1}
 					options={hiddenActions}
 					renderItem={({ value, ...props }): ReactElement | null => value && (hiddenActionRenderers.current[value](props) as ReactElement)}
+					data-qa='ToolBoxVisibleActionsOptions'
 				/>
 			)}
 		</>

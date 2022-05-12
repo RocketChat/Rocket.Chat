@@ -113,7 +113,7 @@ const RoomInfo = ({
 		<>
 			<VerticalBar.Header>
 				{onClickBack ? <VerticalBar.Back onClick={onClickBack} /> : <VerticalBar.Icon name='info-circled' />}
-				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
+				<VerticalBar.Text data-qa='RoomInfoVerticalBarText'>{t('Room_Info')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 

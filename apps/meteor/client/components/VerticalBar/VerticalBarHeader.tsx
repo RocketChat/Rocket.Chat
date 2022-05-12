@@ -11,6 +11,7 @@ const VerticalBarHeader: FC<{ children: ReactNode; props?: ComponentProps<typeof
 		pi='x24'
 		borderBlockEndWidth='x2'
 		borderBlockColor='neutral-200'
+		data-qa='VerticalBarHeader'
 		{...props}
 	>
 		<Box
