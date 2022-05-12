@@ -1,8 +1,22 @@
 import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
 import moment from 'moment-timezone';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+
+type SelectTimezoneSettingInputProps = {
+	_id: string;
+	label: string;
+	value?: string;
+	values?: { key: string; i18nLabel: keyof typeof keys }[];
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string) => void;
+	onResetButtonClick?: () => void;
+};
 
 function SelectTimezoneSettingInput({
 	_id,
@@ -15,9 +29,9 @@ function SelectTimezoneSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}) {
-	const handleChange = (value) => {
-		onChangeValue && onChangeValue(value);
+}: SelectTimezoneSettingInputProps): ReactElement {
+	const handleChange = (value: string): void => {
+		onChangeValue?.(value);
 	};
 
 	return (

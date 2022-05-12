@@ -1,7 +1,20 @@
 import { Box, Field, Flex, PasswordInput } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { EventHandler, ReactElement, SyntheticEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+
+type PasswordSettingInputProps = {
+	_id: string;
+	label: string;
+	value?: string | number | readonly string[] | undefined;
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string) => void;
+	onResetButtonClick?: () => void;
+};
 
 function PasswordSettingInput({
 	_id,
@@ -14,9 +27,9 @@ function PasswordSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}) {
-	const handleChange = (event) => {
-		onChangeValue && onChangeValue(event.currentTarget.value);
+}: PasswordSettingInputProps): ReactElement {
+	const handleChange: EventHandler<SyntheticEvent<HTMLInputElement>> = (event) => {
+		onChangeValue?.(event.currentTarget.value);
 	};
 
 	return (
