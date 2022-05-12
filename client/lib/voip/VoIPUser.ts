@@ -19,19 +19,23 @@ import {
 	Registerer,
 	SessionInviteOptions,
 	RequestPendingError,
+	Inviter,
 } from 'sip.js';
 import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
 import { IQueueMembershipSubscription } from '../../../definition/IVoipExtension';
 import { CallStates } from '../../../definition/voip/CallStates';
+import { DeviceEventKeys } from '../../../definition/voip/DeviceEvents';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
+import { IDeviceInfo } from '../../../definition/voip/IDeviceInfo';
 import { Operation } from '../../../definition/voip/Operations';
 import { UserState } from '../../../definition/voip/UserState';
 import { IMediaStreamRenderer, VoIPUserConfiguration } from '../../../definition/voip/VoIPUserConfiguration';
 import { VoIpCallerInfo, IState } from '../../../definition/voip/VoIpCallerInfo';
 import { VoipEvents } from '../../../definition/voip/VoipEvents';
 import { WorkflowTypes } from '../../../definition/voip/WorkflowTypes';
+import { DeviceManager } from './DeviceManager';
 import { toggleMediaStreamTracks } from './Helper';
 import { QueueAggregator } from './QueueAggregator';
 import Stream from './Stream';
@@ -65,6 +69,8 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	private mode: WorkflowTypes;
 
 	private queueInfo: QueueAggregator;
+
+	private deviceManager: DeviceManager;
 
 	get callState(): CallStates {
 		return this._callState;
@@ -121,6 +127,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		this.on('connectionerror', () => {
 			this.state.isReady = false;
 		});
+		this.deviceManager = new DeviceManager();
 	}
 
 	/* UserAgentDelegate methods end */
@@ -620,6 +627,41 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		this.handleHoldUnhold(holdState);
 	}
 
+	async makeCall(callee: string, mediaRenderer: IMediaStreamRenderer, devices: IDeviceInfo): Promise<void> {
+		if (mediaRenderer) {
+			this.mediaStreamRendered = mediaRenderer;
+		}
+		if (this.session) {
+			throw new Error('Session exists');
+		}
+		if (!this.userAgent) {
+			throw new Error('No User Agent.');
+		}
+		if (this.callState !== 'REGISTERED') {
+			throw new Error('Incorrect UA state');
+		}
+		const target = UserAgent.makeURI(callee);
+		if (!target) {
+			throw new Error(`Failed to create valid URI ${callee}`);
+		}
+		const inviterOptions = {
+			sessionDescriptionHandlerOptions: {
+				constraints: {
+					audio: { deviceId: { exact: devices.audioInputDevices[0].id } },
+					video: !!this.config.enableVideo,
+				},
+			},
+		};
+		// Create a new Inviter for the outgoing Session
+		const inviter = new Inviter(this.userAgent, target, inviterOptions);
+		this.session = inviter;
+		this.setupSessionEventHandlers(inviter);
+
+		return inviter.invite().then(() => {
+			console.error(`sent INVITE ${JSON.stringify(inviter.body)}`);
+		});
+	}
+
 	/* CallEventDelegate implementation end */
 	isReady(): boolean {
 		return this.state.isReady;
@@ -662,5 +704,17 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 	clear(): void {
 		this.userAgent?.stop();
+	}
+
+	async getAvailableDevices(): Promise<IDeviceInfo | undefined> {
+		return this.deviceManager.getMediaDevices();
+	}
+
+	onDeviceEvent(event: DeviceEventKeys, handler: () => void): void {
+		this.deviceManager.on(event, handler);
+	}
+
+	offDeviceEvent(event: DeviceEventKeys, handler: () => void): void {
+		this.deviceManager.off(event, handler);
 	}
 }

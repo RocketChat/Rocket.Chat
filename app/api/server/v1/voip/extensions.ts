@@ -74,7 +74,6 @@ API.v1.addRoute(
 				logger.warn('No JWT keys set. Sending registration info as plain text');
 				return API.v1.success({ ...endpointDetails.result });
 			}
-
 			const result = generateJWT(endpointDetails.result, encKey);
 			return API.v1.success({ result });
 		},
