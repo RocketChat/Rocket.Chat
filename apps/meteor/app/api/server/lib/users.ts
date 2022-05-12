@@ -1,9 +1,17 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-
 import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export async function findUsersToAutocomplete({ uid, selector }) {
+import { FilterQuery } from 'mongodb';
+import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+
+type Query = { [k: string]: unknown };
+
+export async function findUsersToAutocomplete({ uid, selector }: { uid: string, selector: {
+		exceptions: string[];
+		conditions: FilterQuery<ILivechatDepartmentRecord>;
+		term: string;
+	} }) {
 	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
 		return { items: [] };
 	}
@@ -39,8 +47,8 @@ export async function findUsersToAutocomplete({ uid, selector }) {
  * Returns a new query object with the inclusive fields only
  * @param {Object} query search query for matching rows
  */
-export function getInclusiveFields(query) {
-	const newQuery = {};
+export function getInclusiveFields(query: Query) {
+	const newQuery = Object.create(null);
 
 	for (const [key, value] of Object.entries(query)) {
 		if (value === 1) {
@@ -55,7 +63,7 @@ export function getInclusiveFields(query) {
  * get the default fields if **fields** are empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} fields the fields from parsed jsonQuery
  */
-export function getNonEmptyFields(fields) {
+export function getNonEmptyFields(fields: Record<string, unknown>) {
 	const defaultFields = {
 		name: 1,
 		username: 1,
@@ -78,7 +86,7 @@ export function getNonEmptyFields(fields) {
  * get the default query if **query** is empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} query the query from parsed jsonQuery
  */
-export function getNonEmptyQuery(query) {
+export function getNonEmptyQuery(query: Query) {
 	const defaultQuery = {
 		$or: [
 			{ 'emails.address': { $regex: '', $options: 'i' } },

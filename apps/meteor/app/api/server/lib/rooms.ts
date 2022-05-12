@@ -2,8 +2,11 @@ import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../autho
 import { Rooms } from '../../../models/server/raw';
 import { Subscriptions } from '../../../models/server';
 import { adminFields } from '../../../../lib/rooms/adminFields';
+import type { IRoom } from '@rocket.chat/core-typings';
 
-export async function findAdminRooms({ uid, filter, types = [], pagination: { offset, count, sort } }) {
+
+// TO-DO: use PaginatedRequest and PaginatedResult
+export async function findAdminRooms({ uid, filter, types = [], pagination: { offset, count, sort } }: { uid: string, filter: string, types: string[], pagination: { offset: number, count: number, sort: number }}) {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -41,7 +44,7 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 	};
 }
 
-export async function findAdminRoom({ uid, rid }) {
+export async function findAdminRoom({ uid, rid }: { uid: string, rid: string }) {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -49,7 +52,7 @@ export async function findAdminRoom({ uid, rid }) {
 	return Rooms.findOneById(rid, { fields: adminFields });
 }
 
-export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
+export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string, selector: { name: string } }) {
 	const options = {
 		fields: {
 			_id: 1,
@@ -66,7 +69,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 
 	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
 		.fetch()
-		.map((item) => item.rid);
+		.map((item: IRoom) => item['_id']);
 
 	const rooms = await Rooms.findRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options).toArray();
 
@@ -75,7 +78,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 	};
 }
 
-export async function findAdminRoomsAutocomplete({ uid, selector }) {
+export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: string, selector: { name: string } }) {
 	if (!(await hasAtLeastOnePermissionAsync(uid, ['view-room-administration', 'can-audit']))) {
 		throw new Error('error-not-authorized');
 	}
@@ -100,10 +103,10 @@ export async function findAdminRoomsAutocomplete({ uid, selector }) {
 	};
 }
 
-export async function findChannelAndPrivateAutocompleteWithPagination({ uid, selector, pagination: { offset, count, sort } }) {
+export async function findChannelAndPrivateAutocompleteWithPagination({ uid, selector, pagination: { offset, count, sort } }: { uid: string, selector: { name: string }, pagination: { offset: number, count: number, sort: number } }) {
 	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
 		.fetch()
-		.map((item) => item.rid);
+		.map((item: IRoom) => item['_id']);
 
 	const options = {
 		fields: {
@@ -129,7 +132,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({ uid, sel
 	};
 }
 
-export async function findRoomsAvailableForTeams({ uid, name }) {
+export async function findRoomsAvailableForTeams({ uid, name }: { uid: string, name: string }) {
 	const options = {
 		fields: {
 			_id: 1,
@@ -146,7 +149,7 @@ export async function findRoomsAvailableForTeams({ uid, name }) {
 
 	const userRooms = Subscriptions.findByUserIdAndRoles(uid, ['owner'], { fields: { rid: 1 } })
 		.fetch()
-		.map((item) => item.rid);
+		.map((item: IRoom) => item['_id']);
 
 	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, userRooms, options).toArray();
 
