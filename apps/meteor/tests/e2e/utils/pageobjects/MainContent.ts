@@ -24,11 +24,11 @@ class MainContent extends BasePage {
 
 	// Main Content Footer (Message Input Area)
 	public messageInput(): Locator {
-		return this.getPage().locator('.rc-message-box .js-input-message');
+		return this.getPage().locator('.messages-container .rc-message-box .js-input-message');
 	}
 
 	public sendBtn(): Locator {
-		return this.getPage().locator('.rc-message-box .js-send');
+		return this.getPage().locator('.messages-container .rc-message-box .js-send');
 	}
 
 	public messageBoxActions(): Locator {
@@ -294,8 +294,8 @@ class MainContent extends BasePage {
 
 	public async sendMessage(text: string): Promise<void> {
 		await this.setTextToInput(text);
-		await this.keyboardPress('Enter');
 		await this.sendBtn().click({ delay: 100 });
+		await this.keyboardPress('Enter');
 	}
 
 	// adds text to the input
