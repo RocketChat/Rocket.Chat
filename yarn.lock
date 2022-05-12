@@ -4037,6 +4037,7 @@ __metadata:
     "@types/rewire": ^2.5.28
     "@types/semver": ^7.3.6
     "@types/sharp": ^0.29.4
+    "@types/speakeasy": ^2.0.7
     "@types/string-strip-html": ^5.0.0
     "@types/supertest": ^2.0.11
     "@types/toastr": ^2.1.39
@@ -4049,7 +4050,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^2.34.0
     "@typescript-eslint/parser": ^3.0.0
     adm-zip: 0.5.9
-    agenda: "github:RocketChat/agenda#3.1.2"
+    agenda: "https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442"
     ajv: ^8.7.1
     apn: 2.2.0
     archiver: ^3.1.1
@@ -6984,6 +6985,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/speakeasy@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@types/speakeasy@npm:2.0.7"
+  dependencies:
+    "@types/node": "*"
+  checksum: 30152d950ea23654060ef596ea459935a9ea80ba4d9803b13fc9b02c7a27a7b5c96742f2cb00db51b19ba0e13ef9a16c1fd977042f61c9019b10c4191e2f1b97
+  languageName: node
+  linkType: hard
+
 "@types/stack-utils@npm:^2.0.0":
   version: 2.0.1
   resolution: "@types/stack-utils@npm:2.0.1"
@@ -7820,7 +7830,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agenda@github:RocketChat/agenda#3.1.2":
+"agenda@https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442":
   version: 3.1.2
   resolution: "agenda@https://github.com/RocketChat/agenda.git#commit=c2cfcc532b8409561104dca980e6adbbcbdf5442"
   dependencies:
