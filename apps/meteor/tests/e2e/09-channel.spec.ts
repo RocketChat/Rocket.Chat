@@ -13,7 +13,7 @@ import { targetUser } from './utils/mocks/interations';
 
 let hasUserAddedInChannel = false;
 
-test.describe.serial('[Channel]', () => {
+test.describe('[Channel]', () => {
 	let flexTab: FlexTab;
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
@@ -36,7 +36,6 @@ test.describe.serial('[Channel]', () => {
 		if (!publicChannelCreated) {
 			await sideNav.createChannel(publicChannelName, false);
 			await setPublicChannelCreated(true);
-			console.log('public channel not found, creating one...');
 		}
 		await sideNav.openChannel('general');
 	});
@@ -96,9 +95,6 @@ test.describe.serial('[Channel]', () => {
 		});
 	});
 
-	/*
-	 * Skipped tests below
-	 * */
 	test.describe('[Usage]', () => {
 		test.beforeAll(async () => {
 			await sideNav.openChannel(publicChannelName);
@@ -170,17 +166,16 @@ test.describe.serial('[Channel]', () => {
 					}
 				});
 
-				test.skip('expect edit the announcement input', async () => {
+				test('expect edit the announcement input', async () => {
 					await flexTab.editAnnouncementTextInput().type('ANNOUNCEMENT EDITED');
 				});
 
-				test.skip('expect save the announcement', async () => {
+				test('expect save the announcement', async () => {
 					await flexTab.editNameSave().click();
 				});
 
-				// FIXME: breaking in CI
-				test.skip('expect show the new announcement', async () => {
-					await expect(flexTab.thirdSetting('ANNOUNCEMENT EDITED')).toHaveText('ANNOUNCEMENT EDITED');
+				test('expect show the new announcement', async () => {
+					await expect(flexTab.thirdSetting()).toHaveText('ANNOUNCEMENT EDITED');
 				});
 			});
 
@@ -264,11 +259,11 @@ test.describe.serial('[Channel]', () => {
 					}
 				});
 
-				test.skip('expect the last message should be a subscription role added', async () => {
+				test('expect the last message should be a subscription role added', async () => {
 					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
 				});
 
-				test.skip('expect show the target username in owner add message', async () => {
+				test('expect show the target username in owner add message', async () => {
 					await expect(mainContent.lastMessageRoleAdded()).toContainText(targetUser);
 				});
 			});
@@ -289,13 +284,12 @@ test.describe.serial('[Channel]', () => {
 					}
 					await flexTab.operateFlexTab('members', false);
 				});
-				// FIXME: breaking in CI
-				test.skip('expect set rocket cat as moderator', async () => {
+
+				test('expect set rocket cat as moderator', async () => {
 					await flexTab.setUserModerator(targetUser);
 				});
 
-				// FIXME: not finding element in CI
-				test.skip('expect be that the last message is a subscription role added', async () => {
+				test('expect be that the last message is a subscription role added', async () => {
 					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
 				});
 			});

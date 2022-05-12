@@ -9,6 +9,7 @@ import {
 	useTranslation,
 	useLoadLanguage,
 	TranslationKey,
+	useRoute,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo, memo, FC, ReactNode, FormEvent, MouseEvent } from 'react';
 
@@ -35,6 +36,13 @@ const GroupPage: FC<GroupPageProps> = ({
 	tabs = undefined,
 	isCustom = false,
 }) => {
+	const t = useTranslation();
+	const user = useUser();
+	const router = useRoute('admin-settings');
+	const dispatch = useSettingsDispatch();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const loadLanguage = useLoadLanguage();
+
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
 			() => ({
@@ -53,13 +61,6 @@ const GroupPage: FC<GroupPageProps> = ({
 			[changedEditableSettings],
 		),
 	);
-
-	const dispatch = useSettingsDispatch();
-
-	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
-	const loadLanguage = useLoadLanguage();
-	const user = useUser();
 
 	const isColorSetting = (setting: ISetting): setting is ISettingColor => setting.type === 'color';
 
@@ -136,6 +137,8 @@ const GroupPage: FC<GroupPageProps> = ({
 		save();
 	};
 
+	const handleBack = useMutableCallback(() => router.push({}));
+
 	const handleCancelClick = (event: MouseEvent<HTMLOrSVGElement>): void => {
 		event.preventDefault();
 		cancel();
@@ -155,7 +158,7 @@ const GroupPage: FC<GroupPageProps> = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<Page.Header title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>
 					{changedEditableSettings.length > 0 && (
 						<Button danger primary type='reset' onClick={handleCancelClick}>

@@ -75,10 +75,10 @@ Meteor.methods({
 			}
 
 			return jitsiTimeout || nextTimeOut;
-		} catch (error) {
-			SystemLogger.error('Error starting video call:', error.message);
+		} catch (err) {
+			SystemLogger.error({ msg: 'Error starting video call:', err });
 
-			throw new Meteor.Error('error-starting-video-call', error.message, {
+			throw new Meteor.Error('error-starting-video-call', err.message, {
 				method: 'jitsi:updateTimeout',
 			});
 		}
