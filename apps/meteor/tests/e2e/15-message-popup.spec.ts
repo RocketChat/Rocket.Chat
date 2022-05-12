@@ -1,6 +1,7 @@
 import { Page, test, expect } from '@playwright/test';
 
-import { adminLogin, registerUser } from './utils/mocks/userAndPasswordMock';
+import { adminLogin } from './utils/mocks/userAndPasswordMock';
+import { userMock } from './utils/mocks/userMock';
 import LoginPage from './utils/pageobjects/LoginPage';
 import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';
@@ -26,23 +27,27 @@ test.describe('[Message Popup]', () => {
 
 	test.describe('User mentions', () => {
 		test('expect show message popup', async () => {
-			await mainContent.setTextToInput('@');
+			await mainContent.setTextToInput('@', { delay: 200 });
 			expect(await mainContent.messagePopUp().isVisible()).toBeTruthy();
 		});
 
 		test('expect popup title to be people', async () => {
+			await mainContent.setTextToInput('@', { delay: 200 });
 			expect(await mainContent.messagePopUpTitle().locator('text=People').isVisible()).toBeTruthy();
 		});
 
 		test.skip('expect show "registerUser" in options', async () => {
-			expect(await mainContent.messagePopUpItems().locator(`text=${registerUser.name}`).isVisible()).toBeTruthy();
+			await mainContent.setTextToInput('@', { delay: 200 });
+			expect(await mainContent.messagePopUpItems().locator(`text=${userMock.name}`).isVisible()).toBeTruthy();
 		});
 
 		test('expect show "all" option', async () => {
+			await mainContent.setTextToInput('@', { delay: 200 });
 			expect(await mainContent.messagePopUpItems().locator('text=all').isVisible()).toBeTruthy();
 		});
 
 		test('expect show "here" option', async () => {
+			await mainContent.setTextToInput('@', { delay: 200 });
 			expect(await mainContent.messagePopUpItems().locator('text=here').isVisible()).toBeTruthy();
 		});
 	});
