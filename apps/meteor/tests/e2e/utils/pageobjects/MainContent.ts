@@ -294,6 +294,7 @@ class MainContent extends BasePage {
 
 	public async sendMessage(text: string): Promise<void> {
 		await this.setTextToInput(text);
+		await this.sendBtn().isVisible();
 		await this.keyboardPress('Enter');
 	}
 
