@@ -12,10 +12,15 @@ import { Settings } from '../../app/models/server/raw';
 import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {
-	if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {
-		Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
-			default: true,
-		});
+	if (!settings.get('Initial_Channel_Created')) {
+		const exists = Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		if (!exists) {
+			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
+				default: true,
+			});
+		}
+
+		Settings.updateValueById('Initial_Channel_Created', true);
 	}
 
 	if (!Users.findOneById('rocket.cat')) {

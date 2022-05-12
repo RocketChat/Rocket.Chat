@@ -28,7 +28,7 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 	const canViewEngagement = useHasLicense('engagement-dashboard');
 
 	return (
-		<Card>
+		<Card data-qa-id='usage-card'>
 			<Card.Title>{t('Usage')}</Card.Title>
 			<Card.Body flexDirection={vertical ? 'column' : 'row'}>
 				<Card.Col>
