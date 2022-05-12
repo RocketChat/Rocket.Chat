@@ -53,9 +53,11 @@ function CodeMirror({
 		}
 
 		const setupCodeMirror = async (): Promise<void> => {
-			const CodeMirror = await import('codemirror/lib/codemirror.js');
+			const jsPath = 'codemirror/lib/codemirror.js';
+			const CodeMirror = await import(jsPath);
 			await import('../../../../../app/ui/client/lib/codeMirror/codeMirror');
-			await import('codemirror/lib/codemirror.css');
+			const cssPath = 'codemirror/lib/codemirror.css';
+			await import(cssPath);
 
 			if (!textAreaRef.current) {
 				return;
