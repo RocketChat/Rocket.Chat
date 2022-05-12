@@ -2,20 +2,17 @@ import { Cursor } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { ITagService, ITagCreateParams, ITag, ITagUpdateBody, ITagUpdateParams } from '../../../definition/ITag';
-
+import { TagsRaw } from '../../../app/models/server/raw/Tags';
 import { IPaginationOptions, IQueryOptions } from '../../../definition/ITeam';
-
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
-import { TagModel } from '../../../app/models/server/raw';
-import { TagsRaw } from '../../../app/models/server/raw/Tags';
+import { TagsModel } from '../../../app/models/server/raw';
 
 export class TagService extends ServiceClassInternal implements ITagService {
 	protected name = 'tag';
 
-
-	private TagModel: TagsRaw = TagModel;
+	private TagModel: TagsRaw = TagsModel;
 
 	async create(params: ITagCreateParams): Promise<ITag> {
 		const createData: InsertionModel<ITag> = {
