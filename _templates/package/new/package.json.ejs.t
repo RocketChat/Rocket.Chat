@@ -14,7 +14,7 @@ to: packages/<%= name %>/package.json
 		"typescript": "~4.3.5"
 	},
 	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint": "eslint --output-file ./eslint_report.json --format json --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"jest": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json"

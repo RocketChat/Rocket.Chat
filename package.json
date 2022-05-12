@@ -16,6 +16,7 @@
 	},
 	"devDependencies": {
 		"husky": "^7.0.4",
+		"node-jq": "^2.3.3",
 		"turbo": "1.2.5"
 	},
 	"workspaces": [

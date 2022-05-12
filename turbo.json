@@ -15,7 +15,7 @@
 		},
 		"lint": {
 			"dependsOn": ["build"],
-			"outputs": []
+			"outputs": ["./eslint_report.json"]
 		},
 		"translation-check": {
 			"outputs": []
