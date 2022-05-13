@@ -1,11 +1,11 @@
-import '../app/settings/server/startup';
+import './services/startup';
+import '../app/settings/server';
 import '../lib/oauthRedirectUri';
 import './overrides/http';
 import './lib/logger/startup';
 import './importPackages';
 import '../imports/startup/server';
-
-import './services/startup';
+import '../app/lib/server/startup';
 
 import '../ee/server';
 import './lib/pushConfig';
