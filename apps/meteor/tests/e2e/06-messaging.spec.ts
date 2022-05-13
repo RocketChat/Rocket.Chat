@@ -48,7 +48,7 @@ test.describe('[Messaging]', () => {
 	test.describe('[Normal messaging]', async () => {
 		let anotherContext: ChatContext;
 
-		test.describe('[General channel]', async () => {
+		test.describe.skip('[General channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
 				await anotherContext.sideNav.findFindForChat('general');
@@ -67,7 +67,7 @@ test.describe('[Messaging]', () => {
 				await expect(mainUserMessage).toBeVisible();
 			});
 		});
-		test.describe('[Public channel]', async () => {
+		test.describe.skip('[Public channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
 				await anotherContext.sideNav.findFindForChat('public channel');
@@ -87,7 +87,7 @@ test.describe('[Messaging]', () => {
 			});
 		});
 
-		test.describe('[Private channel]', async () => {
+		test.describe.skip('[Private channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
 				await anotherContext.sideNav.findFindForChat('private channel');
@@ -107,7 +107,7 @@ test.describe('[Messaging]', () => {
 			});
 		});
 
-		test.describe('[Direct Message]', async () => {
+		test.describe.skip('[Direct Message]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
 				await anotherContext.sideNav.findFindForChat('rocketchat.internal.admin.test');
