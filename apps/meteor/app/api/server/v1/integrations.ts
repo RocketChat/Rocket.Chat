@@ -31,7 +31,6 @@ API.v1.addRoute(
 							channel: String,
 							alias: Match.Maybe(String),
 							avatar: Match.Maybe(String),
-							avatarUrl: Match.Maybe(String),
 							emoji: Match.Maybe(String),
 							token: Match.Maybe(String),
 							scriptEnabled: Boolean,

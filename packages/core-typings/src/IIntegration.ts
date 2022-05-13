@@ -19,7 +19,7 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 	enabled: boolean;
 
 	alias?: string;
-	avatarUrl?: string;
+	avatar?: string;
 	emoji?: string;
 }
 
@@ -88,7 +88,6 @@ export type IUpdateIncomingIntegration = Omit<
 	'type' | 'channel' | 'scriptCompiled' | 'scriptError' | '_createdBy' | '_createdAt' | 'userId' | 'token' | 'username'
 > & {
 	channel?: string;
-	avatar?: string;
 };
 
 export type IUpdateOutgoingIntegration = Omit<
