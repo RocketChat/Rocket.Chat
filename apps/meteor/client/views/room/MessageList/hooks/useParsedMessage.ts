@@ -3,5 +3,10 @@ import { MarkdownAST, parser } from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
 export function useParsedMessage(message: IMessage['msg']): MarkdownAST {
-	return useMemo(() => parser(message), [message]);
+	return useMemo(() => {
+		if (!message) {
+			return [];
+		}
+		return parser(message);
+	}, [message]);
 }
