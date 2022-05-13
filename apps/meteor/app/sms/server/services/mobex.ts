@@ -1,12 +1,38 @@
 import { HTTP } from 'meteor/http';
 import { Base64 } from 'meteor/base64';
 
-import { settings } from '../../../settings';
-import { SMS } from '../SMS';
+import { settings } from '../../../settings/server';
+import { SMS, SMSServiceClass } from '../SMS';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-class Mobex {
+// Here, i wanted to use: Record<`MediaContentType${number}` | `MediaUrl${number}`, string> instead of the index sig, but it doesnt work on our ts version :(
+type UnparsedData = { [k: string]: string } & {
+	from: string;
+	to: string;
+	NumMedia: string;
+	content: string;
+};
+
+type ParsedData = {
+	from: string;
+	to: string;
+	body: string;
+	media: { url: string; contentType: string }[];
+};
+
+class Mobex extends SMSServiceClass {
+	address: string;
+
+	restAddress: string;
+
+	username: string;
+
+	password: string;
+
+	from: string;
+
 	constructor() {
+		super();
 		this.address = settings.get('SMS_Mobex_gateway_address');
 		this.restAddress = settings.get('SMS_Mobex_restful_address');
 		this.username = settings.get('SMS_Mobex_username');
@@ -14,13 +40,14 @@ class Mobex {
 		this.from = settings.get('SMS_Mobex_from_number');
 	}
 
-	parse(data) {
+	parse(data: UnparsedData): ParsedData {
 		let numMedia = 0;
 
-		const returnData = {
+		const returnData: ParsedData = {
 			from: data.from,
 			to: data.to,
 			body: data.content,
+			media: [],
 		};
 
 		if (data.NumMedia) {
@@ -31,8 +58,6 @@ class Mobex {
 			SystemLogger.error(`Error parsing NumMedia ${data.NumMedia}`);
 			return returnData;
 		}
-
-		returnData.media = [];
 
 		for (let mediaIndex = 0; mediaIndex < numMedia; mediaIndex++) {
 			const media = {
@@ -52,7 +77,14 @@ class Mobex {
 		return returnData;
 	}
 
-	send(fromNumber, toNumber, message, username = null, password = null, address = null) {
+	send(
+		fromNumber: string,
+		toNumber: string,
+		message: string,
+		username?: string,
+		password?: string,
+		address?: string,
+	): { isSuccess: boolean; resultMsg: string } {
 		let currentFrom = this.from;
 		let currentUsername = this.username;
 		let currentAddress = this.address;
@@ -81,7 +113,7 @@ class Mobex {
 				`${currentAddress}/send?username=${currentUsername}&password=${currentPassword}&to=${strippedTo}&from=${currentFrom}&content=${message}`,
 			);
 			if (response.statusCode === 200) {
-				result.resultMsg = response.content;
+				result.resultMsg = response.content || '';
 				result.isSuccess = true;
 			} else {
 				result.resultMsg = `Could not able to send SMS. Code:  ${response.statusCode}`;
@@ -94,16 +126,20 @@ class Mobex {
 		return result;
 	}
 
-	async sendBatch(fromNumber, toNumbersArr, message) {
+	async sendBatch(
+		fromNumber: string,
+		toNumbersArr: string[],
+		message: string,
+	): Promise<{ isSuccess: boolean; resultMsg: string; response: HTTP.HTTPResponse | null }> {
 		let currentFrom = this.from;
 		if (fromNumber) {
 			currentFrom = fromNumber;
 		}
 
-		const result = {
+		const result: { isSuccess: boolean; resultMsg: string; response: HTTP.HTTPResponse | null } = {
 			isSuccess: false,
 			resultMsg: 'An unknown error happened',
-			response: false,
+			response: null,
 		};
 
 		const userPass = `${this.username}:${this.password}`;
@@ -128,7 +164,7 @@ class Mobex {
 
 			result.isSuccess = true;
 			result.resultMsg = 'Success';
-			result.response = response;
+			result.response = response || '';
 		} catch (e) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${e}`;
 			SystemLogger.error('Error while sending SMS with Mobex', e);
@@ -137,7 +173,7 @@ class Mobex {
 		return result;
 	}
 
-	response(/* message */) {
+	response(/* message */): { headers: { [key: string]: string }; body: string } {
 		return {
 			headers: {
 				'Content-Type': 'text/xml',
@@ -146,7 +182,7 @@ class Mobex {
 		};
 	}
 
-	error(error) {
+	error(error: Error & { reason?: string }): { headers: { [key: string]: string }; body: string } {
 		let message = '';
 		if (error.reason) {
 			message = `<Message>${error.reason}</Message>`;
