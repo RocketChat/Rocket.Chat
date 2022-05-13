@@ -67,4 +67,33 @@ export type RoomsEndpoints = {
 	'rooms.adminRooms.getRoom': {
 		GET: (params: { rid?: string }) => Pick<IRoom, RoomAdminFieldsType>;
 	};
+	'rooms.saveRoomSettings': {
+		POST: (params: {
+			rid: string;
+			roomAvatar?: string;
+			featured?: boolean;
+			roomName?: string;
+			roomTopic?: string;
+			roomAnnouncement?: string;
+			roomDescription?: string;
+			roomType?: IRoom['t'];
+			readOnly?: boolean;
+			reactWhenReadOnly?: boolean;
+			default?: boolean;
+			tokenpass?: string;
+			encrypted?: boolean;
+			favorite?: {
+				defaultValue?: boolean;
+				favorite?: boolean;
+			};
+		}) => {
+			success: boolean;
+			rid: string;
+		};
+	};
+	'rooms.changeArchivationState': {
+		POST: (params: { rid: string; action?: string }) => {
+			success: boolean;
+		};
+	};
 };
