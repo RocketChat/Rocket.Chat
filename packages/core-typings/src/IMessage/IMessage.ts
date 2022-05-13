@@ -74,6 +74,19 @@ export type MessageTypesValues =
 	| OmnichannelTypesValues
 	| OtrSystemMessages;
 
+export type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
+export type Token = {
+	token: string;
+	text: string;
+	type?: TokenType;
+	noHtml?: string;
+} & TokenExtra;
+
+export type TokenExtra = {
+	highlight?: boolean;
+	noHtml?: string;
+};
+
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
@@ -140,6 +153,10 @@ export interface IMessage extends IRocketChatRecord {
 
 	avatar?: string;
 	emoji?: string;
+	
+	// Tokenization fields
+	tokens?: Token[];
+	html?: string;
 }
 
 export type MessageSystem = {
