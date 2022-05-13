@@ -10,10 +10,13 @@ type PriceDisplayProps = {
 	pricingPlans: unknown[];
 	price: int;
 	showType?: boolean;
+	marginInline?: string;
 };
 
+type PlanType = 'Subscription' | 'Paid' | 'Free';
+
 type FormattedPriceAndPlan = {
-	type: 'Subscription' | 'Paid' | 'Free';
+	type: PlanType;
 	price: string;
 };
 
