@@ -1,22 +1,22 @@
 import { Box, Button, Flex, Icon } from '@rocket.chat/fuselage';
 import { useCurrentRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import React, { ReactElement, useContext } from 'react';
 
-import React, { useContext } from 'react';
-import { DispatchPreviousPageContext, UserPreviousPageContext } from '../../contexts/UserPreviousPageContext/GlobalState';
+import { DispatchPreviousPageContext } from '../../contexts/UserPreviousPageContext/GlobalState';
 
 type Props = {
 	title: string;
 	items: Record<string, any>[];
 };
 
-const AccountInfo = ({ title, items }: Props) => {
+const AccountInfo = ({ title, items }: Props): ReactElement => {
 	const { dispatch } = useContext(DispatchPreviousPageContext);
 
 	const [routeName] = useCurrentRoute();
 	const page = useRouteParameter('group');
 
-	const handleChange = () => {
+	const handleChange = (): void => {
 		dispatch({ type: 'ADD_LOCATION', payload: { location: `${routeName}/${page}` } });
 		FlowRouter.go('/account/topup');
 	};

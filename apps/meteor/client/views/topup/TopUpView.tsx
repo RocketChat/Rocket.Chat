@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { Meteor } from 'meteor/meteor';
+import React, { ReactElement, useEffect, useState } from 'react';
+
 import { IGateway } from '../../../definition/IGateway';
 
-const TopUpView = () => {
+const TopUpView = (): ReactElement => {
 	const [fetchedGateways, setFetchedGateways] = useState<IGateway[]>([]);
 	const gateways = [
 		{
@@ -45,9 +47,8 @@ const TopUpView = () => {
 			cmpClass: 'PaypalClass',
 		},
 	];
-	console.log(fetchedGateways)
 
-	const getGatewaysFn = () => {
+	const getGatewaysFn = (): void => {
 		Meteor.call('getGateways', {}, {}, (error, result) => {
 			if (result) {
 				if (result.length) {

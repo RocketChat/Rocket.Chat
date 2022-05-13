@@ -3,12 +3,12 @@ import React, { useEffect } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
 import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
+import TopUpView from '../topup/TopUpView';
 import AccountIntegrationsPage from './AccountIntegrationsPage';
 import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import AccountSecurityPage from './security/AccountSecurityPage';
 import AccountTokensPage from './tokens/AccountTokensPage';
-import TopUpView from '../topup/TopUpView';
 import './sidebarItems';
 
 const AccountRoute = () => {

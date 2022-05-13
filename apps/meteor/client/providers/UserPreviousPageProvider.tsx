@@ -1,7 +1,7 @@
 import React, { ReactElement, useReducer } from 'react';
 
-import { UserPreviousPageReducer, InitialState } from '../contexts/UserPreviousPageContext/UserPreviousPageReducer';
 import { DispatchPreviousPageContext, UserPreviousPageContext } from '../contexts/UserPreviousPageContext/GlobalState';
+import { UserPreviousPageReducer, InitialState } from '../contexts/UserPreviousPageContext/UserPreviousPageReducer';
 
 const UserPreviousPageProvider = ({ children }): ReactElement => {
 	const [global, dispatch] = useReducer(UserPreviousPageReducer, InitialState);

@@ -1,7 +1,7 @@
 import { Box, Menu, Icon } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
+import React, { ReactElement, useContext } from 'react';
 
-import React, { useContext } from 'react';
 import { DispatchBlogGlobalContext } from '../../../contexts/BlogDetailContext/GlobalState';
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 	setCommentId: Function;
 };
 
-const Comment = ({ commentId, content, setComment, setCommentId }: Props) => {
+const Comment = ({ commentId, content, setComment, setCommentId }: Props): ReactElement => {
 	const { dispatch } = useContext(DispatchBlogGlobalContext);
 
 	return (

@@ -117,7 +117,6 @@ FlowRouter.route('/home', {
 	},
 });
 
-
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {

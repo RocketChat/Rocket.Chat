@@ -1,14 +1,14 @@
+import { Grid } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 
-import SingleGame from './SingleGame';
-import Page from '../../components/Page';
 import BottomBar from '../../components/BottomBar';
+import Page from '../../components/Page';
 import TopBar from '../../topbar/TopBar';
 import { IGame } from '../../../definition/IGame';
 import PageInlineNavbar from '../../components/PageInlineNavbar/PageInlineNavbar';
-import { Grid } from '@rocket.chat/fuselage';
-import { isMobile } from 'react-device-detect';
+import SingleGame from './SingleGame';
 
 const GamesView = (): ReactElement => {
 	const [gamesResults, setGamesResults] = useState([]);
@@ -42,7 +42,7 @@ const GamesView = (): ReactElement => {
 		},
 	];
 
-	const getGames = () => {
+	const getGames = (): void => {
 		Meteor.call('getGames', { count: 10 }, {}, (error, result) => {
 			if (result) {
 				if (result.length) {
@@ -69,6 +69,7 @@ const GamesView = (): ReactElement => {
 						if (index === data.length - 1) {
 							getGames();
 						}
+						return null;
 					});
 				}
 			}

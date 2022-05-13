@@ -1,4 +1,4 @@
-import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Margins, Avatar } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback } from 'react';
 
@@ -10,9 +10,9 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	const t = useTranslation();
 	const user = useUser();
 	const rotateImages = useSetting('FileUpload_RotateImages');
-	const [avatarFromUrl, setAvatarFromUrl] = useState('');
+	const [avatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
-	const [urlEmpty, setUrlEmpty] = useState(true);
+	const [urlEmpty] = useState(true);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const toDataURL = (file, callback) => {
 		const reader = new FileReader();
@@ -51,10 +51,10 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	const url = newAvatarSource;
 	let today = new Date();
 	const dd = String(today.getDate()).padStart(2, '0');
-	const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+	const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
 	const yyyy = today.getFullYear();
 
-	today = mm + '/' + dd + '/' + yyyy;
+	today = `${mm}'/'${dd}'/'${yyyy}`;
 
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m'>

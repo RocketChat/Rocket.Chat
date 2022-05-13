@@ -42,7 +42,7 @@ const AccountProfilePage = () => {
 	const user = useUser();
 
 	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(getInitialValues(user ?? {}));
-	const [canSave, setCanSave] = useState(true);
+	const [setCanSave] = useState(true);
 	const setModal = useSetModal();
 	const logout = useLogout();
 	const [loggingOut, setLoggingOut] = useState(false);

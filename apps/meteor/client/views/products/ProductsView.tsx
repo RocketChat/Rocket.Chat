@@ -1,8 +1,9 @@
 import { Grid } from '@rocket.chat/fuselage';
-import React, { ReactElement, useEffect, useState } from 'react';
+import { Meteor } from 'meteor/meteor';
+import React, { ReactElement, useState } from 'react';
 import { isMobile } from 'react-device-detect';
-import { IProduct } from '../../../definition/IProduct';
 
+import { IProduct } from '../../../definition/IProduct';
 import BottomBar from '../../components/BottomBar';
 import Page from '../../components/Page';
 import PageInlineNavbar from '../../components/PageInlineNavbar/PageInlineNavbar';
@@ -41,7 +42,7 @@ const ProductsView = (): ReactElement => {
 		},
 	];
 
-	const getBackendProducts = () => {
+	const getBackendProducts = (): void => {
 		Meteor.call('getProducts', { count: 10 }, {}, (error, result) => {
 			if (result) {
 				if (result.length) {
@@ -68,6 +69,7 @@ const ProductsView = (): ReactElement => {
 						if (index === data.length - 1) {
 							getBackendProducts();
 						}
+						return null;
 					});
 				}
 			}

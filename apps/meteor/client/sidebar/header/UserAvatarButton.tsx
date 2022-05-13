@@ -1,6 +1,6 @@
+import { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Dropdown } from '@rocket.chat/fuselage';
-import { useUser } from '@rocket.chat/ui-contexts';
 import React, { memo, useRef, ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -8,9 +8,8 @@ import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import UserDropdown from './UserDropdown';
 import { useDropdownVisibility } from './hooks/useDropdownVisibility';
-import { IUser } from '@rocket.chat/core-typings';
 
-const UserAvatarButton = function UserAvatarButton({user}: {user: IUser}): ReactElement {
+const UserAvatarButton = function UserAvatarButton({ user }: { user: IUser }): ReactElement {
 	const {
 		status = !user ? 'online' : 'offline',
 		username,

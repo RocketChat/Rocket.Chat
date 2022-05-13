@@ -1,65 +1,27 @@
 import { Field, FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { validateEmail } from '../../../lib/emailValidator';
-import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import AccountInfo from './AccountInfo';
 
 function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const checkUsernameAvailability = useMethod('checkUsernameAvailability');
 	const getAvatarSuggestions = useMethod('getAvatarSuggestion');
-	const sendConfirmationEmail = useMethod('sendConfirmationEmail');
 
 	const [usernameError, setUsernameError] = useState();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
 
-	const {
-		allowRealNameChange,
-		allowUserStatusMessageChange,
-		allowEmailChange,
-		allowPasswordChange,
-		allowUserAvatarChange,
-		canChangeUsername,
-		namesRegex,
-		requireName,
-	} = settings;
+	const { allowUserAvatarChange, namesRegex, requireName } = settings;
 
-	const { realname, email, username, password, confirmationPassword, statusText, bio, statusType, customFields, nickname } = values;
+	const { realname, email, username, password, confirmationPassword, statusText } = values;
 
-	const {
-		handleRealname,
-		handleEmail,
-		handleUsername,
-		handlePassword,
-		handleConfirmationPassword,
-		handleAvatar,
-		handleStatusText,
-		handleStatusType,
-		handleBio,
-		handleCustomFields,
-		handleNickname,
-	} = handlers;
-
-	const previousEmail = getUserEmailAddress(user);
-
-	const handleSendConfirmationEmail = useCallback(async () => {
-		if (email !== previousEmail) {
-			return;
-		}
-		try {
-			await sendConfirmationEmail(email);
-			dispatchToastMessage({ type: 'success', message: t('Verification_email_sent') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);
+	const { handleConfirmationPassword, handleAvatar } = handlers;
 
 	const passwordError = useMemo(
 		() => (!password || !confirmationPassword || password === confirmationPassword ? undefined : t('Passwords_do_not_match')),
@@ -119,7 +81,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		return undefined;
 	}, [statusText, t]);
 	const {
-		emails: [{ verified = false } = { verified: false }],
+		emails: [],
 	} = user;
 
 	const canSave = !![!!passwordError, !!emailError, !!usernameError, !!nameError, !!statusTextError].filter(Boolean);
@@ -145,7 +107,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				console.log(result, 'result');
 			});
 		}
-	}, []);
+	}, [user.credit, dummyCredit]);
 
 	const careerItems = [
 		{ icon: 'user', content: 'Employee/er/broker', rc: true },

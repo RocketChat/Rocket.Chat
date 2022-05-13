@@ -4,13 +4,14 @@ import AttachmentProvider from '../components/Message/Attachments/providers/Atta
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import BlogDetailContextProvider from './BlogDetailProvider';
-import GameDetailContextProvider from './GameDetailProvider';
 import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
+import GameDetailContextProvider from './GameDetailProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider';
 import OmnichannelProvider from './OmnichannelProvider';
+import ProductDetailContextProvider from './ProductDetailProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
 import SessionProvider from './SessionProvider';
@@ -18,9 +19,8 @@ import SettingsProvider from './SettingsProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
-import UserProvider from './UserProvider';
-import ProductDetailContextProvider from './ProductDetailProvider';
 import UserPreviousPageProvider from './UserPreviousPageProvider';
+import UserProvider from './UserProvider';
 
 const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>

@@ -1,7 +1,7 @@
 import { Box, Tabs, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
-const PageInlineNavbar = () => (
+const PageInlineNavbar = (): ReactElement => (
 	<Box display='flex' justifyContent='space-between' style={{ margin: '20px 0' }}>
 		<Tabs>
 			<Tabs.Item>
