@@ -1,21 +1,21 @@
 import { test, expect } from '@playwright/test';
 
-import { adminUsername, adminEmail, adminPassword, username, email, password } from './utils/mocks/userAndPasswordMock';
+// import { adminUsername, adminEmail, adminPassword, username, email, password } from './utils/mocks/userAndPasswordMock';
 import Administration from './utils/pageobjects/Administration';
-import SideNav from './utils/pageobjects/SideNav';
-import LoginPage from './utils/pageobjects/LoginPage';
+// import SideNav from './utils/pageobjects/SideNav';
+// import LoginPage from './utils/pageobjects/LoginPage';
 
 test.describe('[Rocket.Chat Settings based permissions]', () => {
 	let admin: Administration;
-	let sideNav: SideNav;
-	let loginPage: LoginPage;
+	// let sideNav: SideNav;
+	// let loginPage: LoginPage;
 
 	test.beforeAll(async ({ browser }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
-		sideNav = new SideNav(page);
+		// sideNav = new SideNav(page);
 		admin = new Administration(page);
-		loginPage = new LoginPage(page);
+		// loginPage = new LoginPage(page);
 	});
 
 	test.describe('Give User Permissions', async () => {
