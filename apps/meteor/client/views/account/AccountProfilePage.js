@@ -228,7 +228,7 @@ const AccountProfilePage = () => {
 					<Button primary danger disabled={!hasUnsavedChanges} onClick={reset}>
 						{t('Reset')}
 					</Button>
-					<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
+					<Button data-qa='AccountProfilePageSaveButton' primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

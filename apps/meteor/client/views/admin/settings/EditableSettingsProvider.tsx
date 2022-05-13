@@ -12,7 +12,7 @@ import { EditableSettingsContext, IEditableSetting, EditableSettingsContextValue
 const defaultQuery: SettingsContextQuery = {};
 
 type EditableSettingsProviderProps = {
-	readonly query: SettingsContextQuery;
+	readonly query?: SettingsContextQuery;
 };
 
 const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps> = ({ children, query = defaultQuery }) => {
