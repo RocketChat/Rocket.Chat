@@ -1,14 +1,15 @@
 import { MatrixBridgedUser, MatrixBridgedRoom, Users, Rooms } from '../../../models/server';
-import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../lib/server';
+import { addUserToRoom, removeUserFromRoom } from '../../../lib/server';
 import { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 import { AddMemberToRoomMembership } from '../definitions/IMatrixEventContent/IMatrixEventContentAddMemberToRoom';
 import { setRoomJoinRules } from './setRoomJoinRules';
 import { setRoomName } from './setRoomName';
-import { addToQueue } from '../queue';
 import { matrixClient } from '../matrix-client';
+import { createLocalRoom } from './createRoom';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-const ensureRoom = async (
+const ensureLocalRoom = async (
 	matrixRoomId: string,
 	roomId: string,
 	username: string,
@@ -17,15 +18,7 @@ const ensureRoom = async (
 	const room = await Rooms.findOneById(roomId);
 	// If the room does not exist, create it
 	if (!room) {
-		// Create temp room name
-		const roomName = `Federation-${matrixRoomId.split(':')[0].replace('!', '')}`;
-
-		// @ts-ignore TODO: typing of legacy functions
-		const { rid: createdRoomId } = createRoom('c', roomName, username);
-
-		roomId = createdRoomId;
-
-		MatrixBridgedRoom.insert({ rid: roomId, mri: matrixRoomId });
+		roomId = await createLocalRoom(username, matrixRoomId, username);
 
 		// TODO: this should be better
 		/* eslint-disable no-await-in-loop */
@@ -63,6 +56,10 @@ const ensureRoom = async (
 	}
 
 	return roomId;
+};
+
+const addUserToRoomAsync = async (roomId: string, affectedUser: IUser, senderUser?: IUser): Promise<void> => {
+	new Promise((resolve) => resolve(addUserToRoom(roomId, affectedUser as any, senderUser as any)));
 };
 
 export const handleRoomMembership = async (event: IMatrixEvent<MatrixEventType.ROOM_MEMBERSHIP>): Promise<void> => {
@@ -104,29 +101,16 @@ export const handleRoomMembership = async (event: IMatrixEvent<MatrixEventType.R
 
 	switch (membership) {
 		case AddMemberToRoomMembership.JOIN:
-			roomId = await ensureRoom(matrixRoomId, roomId, senderUser.username, roomState);
+			roomId = await ensureLocalRoom(matrixRoomId, roomId, senderUser.username, roomState);
 
-			addUserToRoom(roomId, affectedUser);
+			await addUserToRoomAsync(roomId, affectedUser);
 			break;
 		case AddMemberToRoomMembership.INVITE:
-			// Re-run the state first
-			if (!roomId) {
-				for (const state of roomState || []) {
-					// eslint-disable-next-line @typescript-eslint/camelcase,no-await-in-loop
-					addToQueue({ ...state, room_id: matrixRoomId });
-				}
-
-				addToQueue(event);
-
-				return;
-			}
-
-			// If the room exists, then just add the user
 			// TODO: this should be a local invite
-			addUserToRoom(roomId, affectedUser, senderUser);
+			await addUserToRoomAsync(roomId, affectedUser, senderUser);
 			break;
 		case AddMemberToRoomMembership.LEAVE:
-			removeUserFromRoom(roomId, affectedUser, {
+			await removeUserFromRoom(roomId, affectedUser, {
 				byUser: senderUser,
 			});
 			break;

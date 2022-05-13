@@ -32,6 +32,10 @@ class Bridge {
 		this.isRunning = false;
 	}
 
+	public async getRoomStateByRoomId(userId: string, roomId: string): Promise<Record<string, any>[]> {
+		return Array.from(await this.getInstance().getIntent(userId).roomState(roomId) as Record<string, any>[] || []);
+	}
+
 	public getInstance(): MatrixBridge {
 		return this.bridgeInstance;
 	}

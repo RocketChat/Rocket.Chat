@@ -20,7 +20,6 @@ export const setRoomName = async (event: IMatrixEvent<MatrixEventType.SET_ROOM_N
 			$set: {
 				name: normalizedName,
 				fname: normalizedName,
-				bridged: true, // TODO: this should not be here
 			},
 		},
 	);
