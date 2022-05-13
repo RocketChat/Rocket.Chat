@@ -181,7 +181,7 @@ test.describe('[Main Elements Render]', function () {
 			});
 
 			test.describe('[Notifications Tab]', () => {
-				test('expect show notifications tab content', async () => {
+				test.skip('expect show notifications tab content', async () => {
 					await flexTab.operateFlexTab2(
 						'[data-qa="ToolBoxOption-NotificationsPreferences"]',
 						'[data-qa="VerticalBarHeader"] >> text=Notifications Preferences',
