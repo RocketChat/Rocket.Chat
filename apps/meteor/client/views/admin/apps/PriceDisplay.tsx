@@ -3,11 +3,12 @@ import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import { int } from 'aws-sdk/clients/datapipeline';
 import React, { FC, useMemo } from 'react';
 
+import { PricingPlan } from './definitions/PricingPlan';
 import { formatPricingPlan, formatPrice } from './helpers';
 
 type PriceDisplayProps = {
 	purchaseType: string;
-	pricingPlans: unknown[];
+	pricingPlans: PricingPlan[];
 	price: int;
 	showType?: boolean;
 	marginInline?: string;
@@ -20,7 +21,7 @@ type FormattedPriceAndPlan = {
 	price: string;
 };
 
-const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: unknown[], price: int): FormattedPriceAndPlan => {
+const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: PricingPlan[], price: int): FormattedPriceAndPlan => {
 	if (purchaseType === 'subscription') {
 		const type = 'Subscription';
 		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
