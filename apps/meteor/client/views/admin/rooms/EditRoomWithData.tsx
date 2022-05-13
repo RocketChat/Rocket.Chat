@@ -1,4 +1,3 @@
-import { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import React, { useMemo, FC } from 'react';
 
@@ -43,7 +42,7 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 		onReload();
 	};
 
-	return data ? <EditRoom room={data as Serialized<IRoom>} onChange={handleChange} onDelete={handleDelete} /> : null;
+	return data ? <EditRoom room={data} onChange={handleChange} onDelete={handleDelete} /> : null;
 };
 
 export default EditRoomWithData;

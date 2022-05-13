@@ -1,20 +1,27 @@
+import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactElement } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
 import RoomAvatar from './RoomAvatar';
 
-const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...props }) => {
+type RoomAvatarEditorProps = {
+	room: Pick<IRoom, RoomAdminFieldsType>;
+	roomAvatar: IRoom['avatarETag'];
+	onChangeAvatar: (e: FileReader['result']) => void;
+};
+
+const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar, ...props }: RoomAvatarEditorProps): ReactElement => {
 	const t = useTranslation();
 
 	const handleChangeAvatar = useMutableCallback((file) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
-		reader.onloadend = () => {
+		reader.onloadend = (): void => {
 			onChangeAvatar(reader.result);
 		};
 	});

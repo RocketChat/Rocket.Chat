@@ -1,4 +1,4 @@
-import { IRoom, Serialized } from '@rocket.chat/core-typings';
+import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo, ReactElement } from 'react';
@@ -19,13 +19,27 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import DeleteTeamModal from '../../teams/contextualBar/info/Delete/DeleteTeamModal';
 
 type EditRoomProps = {
-	room: Serialized<IRoom>;
+	room: Pick<IRoom, RoomAdminFieldsType>;
 	onChange: () => void;
 	onDelete: () => void;
 };
 
-const getInitialValues = (room: IRoom) => ({
-	roomName: room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, { type: room.t, ...room }),
+type EditRoomFormValues = {
+	roomName: IRoom['name'];
+	roomTopic: string;
+	roomType: IRoom['t'];
+	readOnly: boolean;
+	isDefault: boolean;
+	favorite: boolean;
+	featured: boolean;
+	roomDescription: string;
+	roomAnnouncement: string;
+	roomAvatar: IRoom['avatarETag'];
+	archived: boolean;
+};
+
+const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormValues => ({
+	roomName: room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room),
 	roomType: room.t,
 	readOnly: !!room.ro,
 	archived: !!room.archived,
@@ -45,19 +59,20 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
+
 	const { values, handlers, hasUnsavedChanges, reset } = useForm(getInitialValues(room));
 
 	const [canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly] =
 		useMemo(() => {
 			const isAllowed = roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange;
 			return [
-				isAllowed(room, RoomSettingsEnum.NAME),
-				isAllowed(room, RoomSettingsEnum.TOPIC),
-				isAllowed(room, RoomSettingsEnum.ANNOUNCEMENT),
-				isAllowed(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
-				isAllowed(room, RoomSettingsEnum.DESCRIPTION),
-				isAllowed(room, RoomSettingsEnum.TYPE),
-				isAllowed(room, RoomSettingsEnum.READ_ONLY),
+				isAllowed?.(room, RoomSettingsEnum.NAME),
+				isAllowed?.(room, RoomSettingsEnum.TOPIC),
+				isAllowed?.(room, RoomSettingsEnum.ANNOUNCEMENT),
+				isAllowed?.(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
+				isAllowed?.(room, RoomSettingsEnum.DESCRIPTION),
+				isAllowed?.(room, RoomSettingsEnum.TYPE),
+				isAllowed?.(room, RoomSettingsEnum.READ_ONLY),
 			];
 		}, [room]);
 
@@ -73,7 +88,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		roomAvatar,
 		roomDescription,
 		roomAnnouncement,
-	} = values;
+	} = values as EditRoomFormValues;
 
 	const {
 		handleIsDefault,
@@ -102,7 +117,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
 
 	const handleSave = useMutableCallback(async () => {
-		const save = () =>
+		const save = (): Promise<{ success: boolean; rid: string }> =>
 			saveAction({
 				rid: room._id,
 				roomName: roomType === 'd' ? undefined : roomName,
@@ -117,7 +132,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 				roomAvatar,
 			});
 
-		const archive = () => archiveAction({ rid: room._id, action: archiveSelector });
+		const archive = (): Promise<{ success: boolean }> => archiveAction({ rid: room._id, action: archiveSelector });
 
 		await Promise.all([hasUnsavedChanges && save(), changeArchivation && archive()].filter(Boolean));
 		onChange();
@@ -134,24 +149,24 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		if (room.teamMain) {
 			setModal(
 				<DeleteTeamModal
-					onConfirm={async (deletedRooms) => {
-						const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : [];
+					onConfirm={async (deletedRooms: EditRoomProps['room'][]): Promise<void> => {
+						const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms.map((room) => room._id) : [];
 
 						try {
 							setDeleting(true);
 							setModal(null);
-							await deleteTeam({ teamId: room.teamId, ...(roomsToRemove.length && { roomsToRemove }) });
+							await deleteTeam({ teamId: room.teamId as string, ...(roomsToRemove.length && { roomsToRemove }) });
 							dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
 							roomsRoute.push({});
 						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
+							dispatchToastMessage({ type: 'error', message: String(error) });
 							setDeleting(false);
 						} finally {
 							onDelete();
 						}
 					}}
-					onCancel={() => setModal(null)}
-					teamId={room.teamId}
+					onCancel={(): void => setModal(null)}
+					rooms={undefined} // Endpoint broken, doesn't return the list of rooms under a team
 				/>,
 			);
 
@@ -161,7 +176,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		setModal(
 			<GenericModal
 				variant='danger'
-				onConfirm={async () => {
+				onConfirm={async (): Promise<void> => {
 					try {
 						setDeleting(true);
 						setModal(null);
@@ -169,13 +184,14 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 						dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
 						roomsRoute.push({});
 					} catch (error) {
-						dispatchToastMessage({ type: 'error', message: error });
+						dispatchToastMessage({ type: 'error', message: String(error) });
 						setDeleting(false);
 					} finally {
 						onDelete();
 					}
 				}}
-				onCancel={() => setModal(null)}
+				onClose={(): void => setModal(null)}
+				onCancel={(): void => setModal(null)}
 				confirmText={t('Yes_delete_it')}
 			>
 				{t('Delete_Room_Warning')}
