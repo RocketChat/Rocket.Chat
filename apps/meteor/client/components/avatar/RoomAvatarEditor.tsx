@@ -2,27 +2,29 @@ import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, ReactElement } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
 import RoomAvatar from './RoomAvatar';
 
 type RoomAvatarEditorProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
-	roomAvatar: IRoom['avatarETag'];
-	onChangeAvatar: (e: FileReader['result']) => void;
+	roomAvatar?: string;
+	onChangeAvatar: (url: string | null) => void;
 };
 
-const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar, ...props }: RoomAvatarEditorProps): ReactElement => {
+const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar }: RoomAvatarEditorProps): ReactElement => {
 	const t = useTranslation();
 
 	const handleChangeAvatar = useMutableCallback((file) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onloadend = (): void => {
-			onChangeAvatar(reader.result);
+			if (typeof reader.result === 'string') {
+				onChangeAvatar(reader.result);
+			}
 		};
 	});
 
@@ -39,7 +41,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar, ...props }: RoomAv
 	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` }); // Discussions inherit avatars from the parent room
 
 	return (
-		<Box borderRadius='x2' maxWidth='x332' w='full' position='relative' {...props}>
+		<Box borderRadius='x2' maxWidth='x332' w='full' position='relative'>
 			<RoomAvatar {...(roomAvatar !== undefined && { url: roomAvatar === null ? defaultUrl : roomAvatar })} room={room} size='x332' />
 			<Box
 				className={[

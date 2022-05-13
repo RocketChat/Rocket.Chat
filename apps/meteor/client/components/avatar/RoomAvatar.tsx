@@ -1,6 +1,6 @@
+import { useRoomAvatarPath } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { useRoomAvatarPath } from '../../contexts/AvatarUrlContext';
 import BaseAvatar from './BaseAvatar';
 
 // TODO: frontend chapter day - Remove inline Styling

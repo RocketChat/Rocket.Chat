@@ -1,13 +1,12 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, useMemo, useCallback, CSSProperties, ReactElement, MutableRefObject } from 'react';
 
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FilterByTypeAndText from './FilterByTypeAndText';

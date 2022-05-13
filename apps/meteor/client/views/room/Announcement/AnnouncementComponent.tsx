@@ -43,7 +43,7 @@ const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onCl
 			textAlign='center'
 			className={announcementBar}
 		>
-			<Box withTruncatedText w='none'>
+			<Box withTruncatedText w='none' data-qa='AnnouncementAnnoucementComponent'>
 				{children}
 			</Box>
 		</Box>

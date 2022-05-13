@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useUserId } from '../../../contexts/UserContext';
 import { usePresence } from '../../../hooks/usePresence';
 import RoomHeader from './RoomHeader';
 

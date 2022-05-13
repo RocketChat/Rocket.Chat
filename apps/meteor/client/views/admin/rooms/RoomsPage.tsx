@@ -1,9 +1,8 @@
+import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import EditRoomContextBar from './EditRoomContextBar';
 import RoomsTable from './RoomsTable';
 

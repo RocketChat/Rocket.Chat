@@ -1,8 +1,7 @@
 import { Sidebar } from '@rocket.chat/fuselage';
+import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useUser } from '../../contexts/UserContext';
 import { useSidebarPaletteColor } from '../hooks/useSidebarPaletteColor';
 import UserAvatarButton from './UserAvatarButton';
 import CreateRoom from './actions/CreateRoom';
