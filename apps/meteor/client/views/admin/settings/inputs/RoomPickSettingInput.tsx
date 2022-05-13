@@ -31,7 +31,7 @@ function RoomPickSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: RoomPickSettingInputProps): ReactElement {
-	const wrapperRef = useRef() as MutableRefObject<HTMLElement>;
+	const wrapperRef = useRef() as MutableRefObject<HTMLDivElement>;
 	const valueRef = useRef(value);
 
 	const handleRemoveRoomButtonClick = (rid: string) => (): void => {
