@@ -50,15 +50,18 @@ export class AppsRestApi {
 		const handleError = (message: string, e: unknown) => {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
-			if (!e.hasOwnProperty('response')) {
+			function isError(e: unknown): e is Error | Meteor.Error {
+				return !!e && !!(e as Error).message;
+			}
+			
+			if (!isError(e)) {
 				orchestrator.getRocketChatLogger().warn(message, e.message);
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
-
 			orchestrator.getRocketChatLogger().error(message, e.response.data);
 
-			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+			if ((e instanceof Error) && e.response.statusCode >= 500 && e.response.statusCode <= 599) {
 				return API.v1.internalError();
 			}
 
@@ -237,7 +240,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 					}
 
-					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+					const user = orchestrator.getConverters()!.get('users').convertToApp(Meteor.user());
 
 					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user });
 					const info = aff.getAppInfo();
@@ -306,7 +309,7 @@ export class AppsRestApi {
 
 					try {
 						const { event, externalComponent } = this.bodyParams;
-						const result = Apps.getBridges().getListenerBridge().externalComponentEvent(event, externalComponent);
+						const result = Apps.getBridges()!.getListenerBridge().externalComponentEvent(event, externalComponent);
 
 						return API.v1.success({ result });
 					} catch (e) {
@@ -516,7 +519,7 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
 
-					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+					const user = orchestrator.getConverters()!.get('users').convertToApp(Meteor.user());
 
 					Promise.await(manager.remove(prl.getID(), { user }));
 
@@ -655,7 +658,7 @@ export class AppsRestApi {
 							fields,
 						};
 
-						const logs = Promise.await(orchestrator.getLogStorage().find(ourQuery, options));
+						const logs = Promise.await(orchestrator.getLogStorage()!.find(ourQuery, options));
 
 						return API.v1.success({ logs });
 					}
@@ -697,8 +700,8 @@ export class AppsRestApi {
 
 					const { settings } = prl.getStorageItem();
 
-					const updated = [];
-					this.bodyParams.settings.forEach((s) => {
+					const updated: { id: string | number; }[] = [];
+					this.bodyParams.settings.forEach((s: { id: string | number; }) => {
 						if (settings[s.id]) {
 							Promise.await(manager.getSettingsManager().updateAppSetting(this.urlParams.id, s));
 							// Updating?
