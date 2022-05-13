@@ -50,7 +50,7 @@ export const loadConfig = async () => {
 	const {
 		agent,
 		room,
-		guest: user,
+		guest,
 		resources: { sound: src = null } = {},
 		queueInfo,
 		...config
@@ -64,7 +64,8 @@ export const loadConfig = async () => {
 		config,
 		agent: agent && agent.hiddenInfo ? { hiddenInfo: true } : agent, // TODO: revert it when the API is updated
 		room,
-		user,
+		user: guest,
+		guest,
 		queueInfo,
 		sound: { src, enabled: true, play: false },
 		messages: [],

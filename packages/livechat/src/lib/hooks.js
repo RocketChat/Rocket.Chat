@@ -6,6 +6,7 @@ import CustomFields from './customFields';
 import { loadConfig, updateBusinessUnit } from './main';
 import { parentCall } from './parentCall';
 import { createToken } from './random';
+import { loadMessages } from './room';
 import Triggers from './triggers';
 
 const createOrUpdateGuest = async (guest) => {
@@ -61,7 +62,7 @@ const api = {
 	},
 
 	async setDepartment(value) {
-		const { config: { departments = [] }, department: existingDepartment } = store.state;
+		const { config: { departments = [] }, guest: { department: existingDepartment } = {} } = store.state;
 
 		const dept = departments.find((dep) => dep._id === value || dep.name === value);
 		const department = (dept && dept._id) || '';
@@ -70,6 +71,7 @@ const api = {
 
 		if (department !== existingDepartment) {
 			await loadConfig();
+			await loadMessages();
 		}
 	},
 
