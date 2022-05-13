@@ -7,7 +7,7 @@ import type {
 	PathPattern,
 	UrlParams,
 } from '@rocket.chat/rest-typings';
-import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
+import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings';
 
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
@@ -96,6 +96,8 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		query: Record<string, unknown>;
 	};
 	getUserFromParams(): IUser;
+	insertUserObject<T>({ object, userId }: { object: { [key: string]: unknown }; userId: string }): { [key: string]: unknown } & T;
+	composeRoomWithLastMessage(room: IRoom, userId: string): { [key: string]: unknown };
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;

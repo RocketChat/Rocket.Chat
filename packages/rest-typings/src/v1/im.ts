@@ -5,40 +5,29 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type ImEndpoints = {
 	'im.create': {
-		POST: (
-			params: (
-				| {
-						username: Exclude<IUser['username'], undefined>;
-				  }
-				| {
-						usernames: string;
-				  }
-			) & {
-				excludeSelf?: boolean;
-			},
-		) => {
+		POST: (params: { username?: Exclude<IUser['username'], undefined>; usernames?: string; excludeSelf?: boolean }) => {
 			room: IRoom & { rid: IRoom['_id'] };
 		};
 	};
 	'im.delete': {
-		POST: (params: { roomId: string }) => {};
+		POST: (params: { roomId: string }) => void;
 	};
 	'im.close': {
-		POST: (params: { roomId: string }) => {};
+		POST: (params: { roomId: string }) => void;
 	};
 	'im.counters': {
-		GET: (params: { roomId: string }) => {
+		GET: (params: { roomId: string; userId?: string }) => {
 			joined: boolean;
-			unreads: number;
-			unreadsFrom: string;
-			msgs: number;
-			members: number;
-			latest: string;
-			userMentions: number;
+			unreads: number | null;
+			unreadsFrom: string | null;
+			msgs: number | null;
+			members: number | null;
+			latest: string | null;
+			userMentions: number | null;
 		};
 	};
 	'im.files': {
-		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query?: string; fields?: string }>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ roomId?: IRoom['_id']; username?: string; query?: string; fields?: string }>) => PaginatedResult<{
 			files: IUpload[];
 		}>;
 	};
@@ -73,7 +62,7 @@ export type ImEndpoints = {
 			messages: IMessage[];
 		}>;
 	};
-	'im.messages.other': {
+	'im.messages.others': {
 		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query?: string; fields?: string }>) => PaginatedResult<{ message: IMessage[] }>;
 	};
 	'im.list': {

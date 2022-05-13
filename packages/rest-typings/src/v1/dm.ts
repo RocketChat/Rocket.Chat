@@ -9,7 +9,7 @@ export type DmEndpoints = {
 	'dm.history': ImEndpoints['im.history'];
 	'dm.members': ImEndpoints['im.members'];
 	'dm.messages': ImEndpoints['im.messages'];
-	'dm.messages.other': ImEndpoints['im.messages.other'];
+	'dm.messages.others': ImEndpoints['im.messages.others'];
 	'dm.list': ImEndpoints['im.list'];
 	'dm.list.everyone': ImEndpoints['im.list.everyone'];
 	'dm.open': ImEndpoints['im.open'];

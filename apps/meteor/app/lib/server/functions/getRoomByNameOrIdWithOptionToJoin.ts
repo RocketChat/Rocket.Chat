@@ -4,14 +4,14 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { Rooms, Users, Subscriptions } from '../../../models/server';
 
-export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({
+export const getRoomByNameOrIdWithOptionToJoin = ({
 	currentUserId = '',
 	nameOrId = '',
 	type = '',
 	tryDirectByUserIdOnly = false,
 	joinChannel = true,
 	errorOnEmpty = true,
-}): any {
+}): IRoom | undefined => {
 	let room: IRoom;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
