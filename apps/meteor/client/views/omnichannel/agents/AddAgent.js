@@ -10,7 +10,7 @@ function AddAgent({ reload, ...props }) {
 	const t = useTranslation();
 	const [username, setUsername] = useState();
 
-	const saveAction = useEndpointAction('POST', 'livechat/users/agent', { username });
+	const saveAction = useEndpointAction('POST', '/v1/livechat/users/agent', { username });
 
 	const handleSave = useMutableCallback(async () => {
 		if (!username) {

@@ -82,7 +82,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 
 	const deleteAction = useEndpointAction(
 		'POST',
-		'emoji-custom.delete',
+		'/v1/emoji-custom.delete',
 		useMemo(() => ({ emojiId: _id }), [_id]),
 	);
 

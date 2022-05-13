@@ -205,9 +205,9 @@ export const CallProvider: FC = ({ children }) => {
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 	}, [result.voipClient]);
 
-	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
-	const voipEndpoint = useEndpoint('GET', 'voip/room');
-	const voipCloseRoomEndpoint = useEndpoint('POST', 'voip/room.close');
+	const visitorEndpoint = useEndpoint('POST', '/v1/livechat/visitor');
+	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
+	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
 
 	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
 

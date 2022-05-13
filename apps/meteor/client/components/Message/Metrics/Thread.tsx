@@ -22,8 +22,8 @@ type ThreadReplyOptions = {
 const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, counter, participants, following, lm, openThread }) => {
 	const t = useTranslation();
 
-	const followMessage = useEndpoint('POST', 'chat.followMessage');
-	const unfollowMessage = useEndpoint('POST', 'chat.unfollowMessage');
+	const followMessage = useEndpoint('POST', '/v1/chat.followMessage');
+	const unfollowMessage = useEndpoint('POST', '/v1/chat.unfollowMessage');
 	const format = useTimeAgo();
 
 	const handleFollow = useCallback(

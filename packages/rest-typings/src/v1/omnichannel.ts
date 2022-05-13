@@ -225,7 +225,7 @@ export type OmnichannelEndpoints = {
 		GET: () => { departments: ILivechatDepartment[] };
 	};
 
-	'canned-responses': {
+	'/v1/canned-responses': {
 		GET: (
 			params: PaginatedRequest<{
 				scope?: string;

@@ -49,8 +49,8 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']): 
 	);
 
 	const saveAvatarAction = useEndpointUpload('users.setAvatar', saveAvatarQuery, successText);
-	const saveAvatarUrlAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, successText);
-	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, successText);
+	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', saveAvatarQuery, successText);
+	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', resetAvatarQuery, successText);
 
 	const updateAvatar = useCallback(async () => {
 		if (isAvatarReset(avatarObj)) {

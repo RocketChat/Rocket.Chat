@@ -7,7 +7,7 @@ import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 function RemoveAgentButton({ _id, reload }) {
-	const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${_id}`);
+	const deleteAction = useEndpointAction('DELETE', `/v1/livechat/users/agent/${_id}`);
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
