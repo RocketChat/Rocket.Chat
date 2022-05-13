@@ -48,7 +48,7 @@ export const UiTextContext = {
 export interface IRoomTypeConfig {
 	identifier: string;
 	order: number;
-	icon: 'hash' | 'hashtag' | 'hashtag-lock' | 'at' | 'omnichannel';
+	icon?: 'hash' | 'hashtag' | 'hashtag-lock' | 'at' | 'omnichannel' | 'phone' | 'star';
 	header?: string;
 	label?: string;
 	route?: IRoomTypeRouteConfig;

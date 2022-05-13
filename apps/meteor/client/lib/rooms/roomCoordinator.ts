@@ -92,7 +92,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		openRoom(type, name, render);
 	}
 
-	getIcon(room: Partial<IRoom>): IRoomTypeConfig['icon'] | undefined {
+	getIcon(room: Partial<IRoom>): IRoomTypeConfig['icon'] {
 		return room?.t && this.getRoomDirectives(room.t)?.getIcon(room);
 	}
 
