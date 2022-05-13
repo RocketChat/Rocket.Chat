@@ -3872,7 +3872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage@npm:next":
+"@rocket.chat/fuselage@npm:~0.32.0-dev.33":
   version: 0.32.0-dev.33
   resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.33"
   dependencies:
@@ -3908,7 +3908,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/icons@npm:next":
+"@rocket.chat/icons@npm:~0.32.0-dev.15":
   version: 0.32.0-dev.15
   resolution: "@rocket.chat/icons@npm:0.32.0-dev.15"
   checksum: 85080ec996e43e322d4c3fb07d7b77d98652c29f8c4d13f5883677632ad41a47cbf29047c9341e9370c94651f462c9c76c93f2ae079ba2dbdbf782b81e5d7bce
@@ -4065,12 +4065,12 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
-    "@rocket.chat/fuselage": next
+    "@rocket.chat/fuselage": ~0.32.0-dev.33
     "@rocket.chat/fuselage-hooks": ~0.31.11
     "@rocket.chat/fuselage-polyfills": ~0.31.11
     "@rocket.chat/fuselage-tokens": ~0.31.11
     "@rocket.chat/fuselage-ui-kit": ~0.31.11
-    "@rocket.chat/icons": next
+    "@rocket.chat/icons": ~0.32.0-dev.15
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": ~0.31.11
     "@rocket.chat/memo": ~0.31.11
