@@ -1,9 +1,9 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import VoIPLayout from './VoIPLayout';
 
-function VoIPRouter({ renderRoute }) {
+function VoIPRouter() {
 	const [routeName] = useCurrentRoute();
 	const defaultRoute = useRoute('omnichannel-current-chats');
 	useEffect(() => {
