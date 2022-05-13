@@ -261,7 +261,7 @@
 		"fibers": "^5.0.1",
 		"file-type": "^10.11.0",
 		"filenamify": "^4.3.0",
-		"filesize": "^3.6.1",
+		"filesize": "^8.0.7",
 		"google-libphonenumber": "^3.2.27",
 		"googleapis": "^25.0.0",
 		"grapheme-splitter": "^1.0.4",

@@ -2,23 +2,8 @@ import { HTTP } from 'meteor/http';
 import { Base64 } from 'meteor/base64';
 
 import { settings } from '../../../settings/server';
-import { SMS, SMSServiceClass } from '../SMS';
+import { SMS, SMSServiceClass, UnparsedData, ParsedData } from '../SMS';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-
-// Here, i wanted to use: Record<`MediaContentType${number}` | `MediaUrl${number}`, string> instead of the index sig, but it doesnt work on our ts version :(
-type UnparsedData = { [k: string]: string } & {
-	from: string;
-	to: string;
-	NumMedia: string;
-	content: string;
-};
-
-type ParsedData = {
-	from: string;
-	to: string;
-	body: string;
-	media: { url: string; contentType: string }[];
-};
 
 class Mobex extends SMSServiceClass {
 	address: string;
