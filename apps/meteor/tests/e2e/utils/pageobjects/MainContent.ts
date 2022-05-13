@@ -24,7 +24,7 @@ export default class MainContent extends BasePage {
 
 	// Main Content Footer (Message Input Area)
 	public messageInput(): Locator {
-		return this.getPage().locator('.js-input-message');
+		return this.getPage().locator('[name="msg"]');
 	}
 
 	public sendBtn(): Locator {
@@ -69,7 +69,7 @@ export default class MainContent extends BasePage {
 
 	// Messages
 	public lastMessageUser(): Locator {
-		return this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "user-card-message")])[last()]');
+		return this.getPage().locator('.message:last-child div:nth-child(2) button');
 	}
 
 	public lastMessageFileName(): Locator {
@@ -431,8 +431,16 @@ export default class MainContent extends BasePage {
 		return this.getPage().locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
 	}
 
-	public async reload(): Promise<void> {
-		await this.getPage().reload({ waitUntil: 'load' });
-		await this.getPage().waitForSelector('.messages-box');
+	public userCard(): Locator {
+		return this.getPage().locator('[data-qa="UserCard"]');
 	}
+
+	public viewUserProfile(): Locator {
+		return this.getPage().locator('[data-qa="UserCard"] a');
+	}
+  
+  public async reload(): Promise<void> {
+	  await this.getPage().reload({ waitUntil: 'load' });
+	  await this.getPage().waitForSelector('.messages-box');
+  }
 }

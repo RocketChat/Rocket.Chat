@@ -13,6 +13,14 @@ class Administration extends Page {
 		return browser.element('input[type=search]');
 	}
 
+	get settingsLink() {
+		return browser.element('.flex-nav [href="/admin/settings"]');
+	}
+
+	get groupSettingsPageBack() {
+		return browser.element('button[title="Back"]');
+	}
+
 	get layoutLink() {
 		return browser.element('.flex-nav [href="/admin/Layout"]');
 	}
@@ -29,12 +37,12 @@ class Administration extends Page {
 		return browser.element('.flex-nav [href="/admin/users"]');
 	}
 
-	get accountsLink() {
-		return browser.element('.flex-nav [href="/admin/Accounts"]');
+	get accountsSettingsButton() {
+		return browser.element('[data-qa-id="Accounts"] button:contains("Open")');
 	}
 
-	get generalLink() {
-		return browser.element('.flex-nav [href="/admin/General"]');
+	get generalSettingsButton() {
+		return browser.element('[data-qa-id="General"] button:contains("Open")');
 	}
 
 	get permissionsLink() {
@@ -54,19 +62,19 @@ class Administration extends Page {
 	}
 
 	get infoDeployment() {
-		return browser.element('.rcx-css-kyq2rf .rcx-css-gfnglw:contains("Deployment")');
+		return browser.element('[data-qa-id="deployment-card"]');
 	}
 
 	get infoLicense() {
-		return browser.element('.rcx-css-kyq2rf .rcx-css-gfnglw:contains("License")');
+		return browser.element('[data-qa-id="license-card"]');
 	}
 
 	get infoUsage() {
-		return browser.element('.rcx-css-kyq2rf .rcx-css-gfnglw:contains("Usage")');
+		return browser.element('[data-qa-id="usage-card"]');
 	}
 
 	get infoFederation() {
-		return browser.element('.rcx-css-kyq2rf .rcx-css-gfnglw:contains("Federation")');
+		return browser.element('[data-qa-id="federation-card"]');
 	}
 
 	get roomsSearchForm() {

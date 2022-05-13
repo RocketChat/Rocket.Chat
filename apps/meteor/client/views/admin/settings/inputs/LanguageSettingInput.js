@@ -1,7 +1,7 @@
 import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
+import { useLanguages } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useLanguages } from '../../../../contexts/TranslationContext';
 import ResetSettingButton from '../ResetSettingButton';
 
 function LanguageSettingInput({

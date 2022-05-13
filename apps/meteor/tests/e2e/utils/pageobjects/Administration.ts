@@ -15,6 +15,14 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('input[type=search]');
 	}
 
+	public settingsLink(): Locator {
+		return this.getPage().locator('.flex-nav [href="/admin/settings"]');
+	}
+
+	public groupSettingsPageBack(): Locator {
+		return this.getPage().locator('button[title="Back"]');
+	}
+
 	public layoutLink(): Locator {
 		return this.getPage().locator('.flex-nav [href="/admin/Layout"]');
 	}
@@ -31,12 +39,12 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('.flex-nav [href="/admin/users"]');
 	}
 
-	public accountsLink(): Locator {
-		return this.getPage().locator('.flex-nav [href="/admin/Accounts"]');
+	public accountSettingsButton(): Locator {
+		return this.getPage().locator('[data-qa-id="Accounts"] button');
 	}
 
-	public generalLink(): Locator {
-		return this.getPage().locator('.flex-nav [href="/admin/General"]');
+	public generalSettingsButton(): Locator {
+		return this.getPage().locator('[data-qa-id="General"] button');
 	}
 
 	public permissionsLink(): Locator {

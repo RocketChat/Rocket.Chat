@@ -1,12 +1,10 @@
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
 import { Box, Select, SelectOption, Field, Button } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, ReactElement } from 'react';
 
 import { WebdavAccounts } from '../../../app/models/client';
 import Page from '../../components/Page';
-import { useMethod } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 
