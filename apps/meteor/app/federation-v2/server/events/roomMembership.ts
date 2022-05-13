@@ -1,3 +1,5 @@
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
+
 import { MatrixBridgedUser, MatrixBridgedRoom, Users, Rooms } from '../../../models/server';
 import { addUserToRoom, removeUserFromRoom } from '../../../lib/server';
 import { IMatrixEvent } from '../definitions/IMatrixEvent';
@@ -7,7 +9,6 @@ import { setRoomJoinRules } from './setRoomJoinRules';
 import { setRoomName } from './setRoomName';
 import { matrixClient } from '../matrix-client';
 import { createLocalRoom } from './createRoom';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 const ensureLocalRoom = async (
 	matrixRoomId: string,

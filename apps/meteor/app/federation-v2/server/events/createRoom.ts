@@ -1,5 +1,6 @@
 import { IRoom, RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { ICreatedRoom } from '@rocket.chat/core-typings';
+
 import { MatrixBridgedRoom, MatrixBridgedUser, Users } from '../../../models/server';
 import { Rooms } from '../../../models/server/raw';
 import { createRoom } from '../../../lib/server';
@@ -27,33 +28,41 @@ const createLocalRoomAsync = async (roomType: RoomType, roomName: string, creato
 
 const setRoomAsBridged = async (roomId: string): Promise<void> => {
 	await Rooms.setAsBridged(roomId);
-}
+};
 
-const createBridgedRecordRoom = async (roomId: IRoom['id'], matrixRoomId: string): Promise<void> => new Promise((resolve) => resolve(MatrixBridgedRoom.insert({ rid: roomId, mri: matrixRoomId })));
+const createBridgedRecordRoom = async (roomId: IRoom['id'], matrixRoomId: string): Promise<void> =>
+	new Promise((resolve) => resolve(MatrixBridgedRoom.insert({ rid: roomId, mri: matrixRoomId })));
 
 const createLocalUserIfNecessary = async (matrixUserId: string): Promise<string> => {
 	const { uid } = await matrixClient.user.createLocal(matrixUserId);
 
 	return uid;
-}
+};
 
-export const getLocalRoomType = (matrixJoinRule: string, matrixRoomIsDirect: boolean = false): RoomType => {
+export const getLocalRoomType = (matrixJoinRule: string, matrixRoomIsDirect = false): RoomType => {
 	const mapping: Record<string, RoomType> = {
 		[SetRoomJoinRules.JOIN]: RoomType.CHANNEL,
 		[SetRoomJoinRules.INVITE]: RoomType.PRIVATE_GROUP,
 	};
 	const roomType = mapping[matrixJoinRule] || RoomType.CHANNEL;
 
-	return (roomType === RoomType.PRIVATE_GROUP && matrixRoomIsDirect) ? RoomType.DIRECT_MESSAGE : roomType;
-}
+	return roomType === RoomType.PRIVATE_GROUP && matrixRoomIsDirect ? RoomType.DIRECT_MESSAGE : roomType;
+};
 
 export const createLocalRoom = async (sender: string, matrixRoomId: string, creator: string): Promise<IRoom['id']> => {
 	const roomState = await matrixBridge.getRoomStateByRoomId(sender, matrixRoomId);
-	const matrixRoomName = roomState.find((stateEvent: Record<string, any>) => stateEvent.type === MatrixEventType.SET_ROOM_NAME)?.content?.name;
-	const matrixJoinRule = roomState.find((stateEvent: Record<string, any>) => stateEvent.type === MatrixEventType.SET_ROOM_JOIN_RULES)?.content?.join_rule;
-	const matrixRoomIsDirect = roomState.find((stateEvent: Record<string, any>) => stateEvent.type === MatrixEventType.SET_ROOM_JOIN_RULES)?.content?.is_direct;
+	const matrixRoomName = roomState.find((stateEvent: Record<string, any>) => stateEvent.type === MatrixEventType.SET_ROOM_NAME)?.content
+		?.name;
+	const matrixJoinRule = roomState.find((stateEvent: Record<string, any>) => stateEvent.type === MatrixEventType.SET_ROOM_JOIN_RULES)
+		?.content?.join_rule;
+	const matrixRoomIsDirect = roomState.find((stateEvent: Record<string, any>) => stateEvent.type === MatrixEventType.SET_ROOM_JOIN_RULES)
+		?.content?.is_direct;
 
-	const { rid: roomId } = await createLocalRoomAsync(getLocalRoomType(matrixJoinRule, matrixRoomIsDirect), generateRoomNameForLocalServer(matrixRoomId, matrixRoomName), creator);
+	const { rid: roomId } = await createLocalRoomAsync(
+		getLocalRoomType(matrixJoinRule, matrixRoomIsDirect),
+		generateRoomNameForLocalServer(matrixRoomId, matrixRoomName),
+		creator,
+	);
 	await setRoomAsBridged(roomId);
 	await createBridgedRecordRoom(roomId, matrixRoomId);
 
@@ -71,7 +80,7 @@ export const handleCreateRoom = async (event: IMatrixEvent<MatrixEventType.CREAT
 	}
 
 	const bridgedUserId = await MatrixBridgedUser.getId(sender);
-	const user = await Users.findOneById(bridgedUserId || await createLocalUserIfNecessary(sender));
-	
+	const user = await Users.findOneById(bridgedUserId || (await createLocalUserIfNecessary(sender)));
+
 	await createLocalRoom(sender, matrixRoomId, user.username);
 };
