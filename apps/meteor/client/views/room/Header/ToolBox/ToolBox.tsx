@@ -83,7 +83,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					'data-toolbox': index,
 					action,
 					'key': id,
-					'data-qa': `ToolBoxVisibleActions-${title.replace(' ', '')}`,
+					'data-qa': `ToolBoxVisibleActions-${title.replaceAll(' ', '')}`,
 				};
 				if (renderAction) {
 					return renderAction(props);
