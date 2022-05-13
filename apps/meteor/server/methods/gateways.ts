@@ -8,6 +8,7 @@ Meteor.methods({
 		check(
 			params,
 			Match.ObjectIncluding({
+				_id: String,
 				show: Boolean,
 				active: Boolean,
 				sortOrder: Number,
@@ -42,6 +43,29 @@ Meteor.methods({
 		const gateway = await Gateways.getGateway(gatewayId);
 
 		return gateway;
+	},
+
+	async getGateways(paginationOptions, queryOptions) {
+		check(
+			paginationOptions,
+			Match.ObjectIncluding({
+				offset: Match.Optional(Number),
+				count: Match.Optional(Number),
+			}),
+		);
+		check(
+			queryOptions,
+			Match.ObjectIncluding({
+				sort: Match.Optional(Object),
+				query: Match.Optional(Object),
+			}),
+		);
+
+		const Gateways = new GatewayService();
+
+		const results = await Gateways.list(paginationOptions, queryOptions).toArray();
+
+		return results;
 	},
 
 	async updateGateway(gatewayId, params) {

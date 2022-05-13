@@ -36,7 +36,7 @@ Meteor.methods({
 
 		const transaction = await Transactions.create({
 			...params,
-			status: nonce > 7 ? 'error' : 'success',
+			status: nonce < 8 ? 'success' : 'error',
 			createdBy: Meteor.userId(),
 		});
 
@@ -120,5 +120,28 @@ Meteor.methods({
 		const transaction = await Transactions.update(transactionId, { ...params, updatedBy: Meteor.userId() });
 
 		return transaction;
+	},
+
+	async getTransactions(paginationOptions, queryOptions) {
+		check(
+			paginationOptions,
+			Match.ObjectIncluding({
+				offset: Match.Optional(Number),
+				count: Match.Optional(Number),
+			}),
+		);
+		check(
+			queryOptions,
+			Match.ObjectIncluding({
+				sort: Match.Optional(Object),
+				query: Match.Optional(Object),
+			}),
+		);
+
+		const Transactions = new TransactionService();
+
+		const results = await Transactions.list(paginationOptions, queryOptions).toArray();
+
+		return results;
 	},
 });

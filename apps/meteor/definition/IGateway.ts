@@ -16,7 +16,7 @@ export interface IGateway extends IRocketChatRecord {
 
 export type IGatewayLean = Omit<IGateway, '_id' | '_updatedAt'>;
 
-export type IGatewayCreateParams = PartialBy<IGatewayLean, 'cmpClass' | 'cmpConfig'>;
+export type IGatewayCreateParams = PartialBy<Omit<IGateway, '_updatedAt'>, 'cmpClass' | 'cmpConfig'>;
 
 export type IGatewayUpdateParams = AtLeastOne<IGatewayLean>;
 
