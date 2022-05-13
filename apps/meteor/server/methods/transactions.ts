@@ -28,7 +28,7 @@ Meteor.methods({
 		if (nonce < 8) {
 			const query = { _id: Meteor.userId() };
 			const user = await Users.findOneById(Meteor.userId());
-			const updateData = { ...new UpdateObject(), credit: user.credit + params.quantity };
+			const updateData = { ...new UpdateObject(), credit: user.credit ? user.credit + params.quantity : params.quantity };
 			await Users.update(query, { $set: updateData });
 		}
 

@@ -1,26 +1,11 @@
-import {
-	Field,
-	FieldGroup,
-	TextInput,
-	TextAreaInput,
-	Box,
-	Icon,
-	AnimatedVisibility,
-	PasswordInput,
-	Button,
-	Grid,
-	Margins,
-	Flex,
-} from '@rocket.chat/fuselage';
+import { Field, FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { validateEmail } from '../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
-import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
-import UserStatusMenu from '../../components/UserStatusMenu';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import AccountInfo from './AccountInfo';
 
@@ -147,27 +132,42 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		e.preventDefault();
 	}, []);
 
+	const dummyCredit = {
+		gateway: 'bank-transfer',
+		quantity: 11,
+		amount: 3000,
+		currency: 'USD',
+	};
+
+	useEffect(() => {
+		if (!user.credit) {
+			Meteor.call('buyCredit', dummyCredit, (error, result) => {
+				console.log(result, 'result');
+			});
+		}
+	}, []);
+
 	const careerItems = [
-		{icon: 'user', content: 'Employee/er/broker', rc: true},
-		{icon: 'credit', content: 'Credit point: 343', rc: false},
-		{icon: 'trust-score', content: 'Trust score: 60/100', rc: false},
-	]
+		{ icon: 'user', content: 'Employee/er/broker', rc: true },
+		{ icon: 'credit', content: `Credit point: ${user.credit ? user.credit : 0}`, rc: false },
+		{ icon: 'trust-score', content: 'Trust score: 60/100', rc: false },
+	];
 
 	const privateInfo = [
-		{icon: 'mail', content: 'ryan@gmail.com', rc: true},
-		{icon: 'phone', content: '+254 730430234', rc: true},
-		{icon: 'gender', content: 'Male', rc: false},
-	]
+		{ icon: 'mail', content: `${email}`, rc: true },
+		{ icon: 'phone', content: '+254 730430234', rc: true },
+		{ icon: 'gender', content: 'Male', rc: false },
+	];
 
 	const services = [
-		{icon: 'lock', content: 'Update profile/Chan', rc: true},
-		{icon: 'info', content: 'Customer support', rc: false},
-		{icon: 'credit-card', content: 'Verify identity', rc: false},
-		{icon: 'info', content: 'About us', rc: false},
-	]
+		{ icon: 'lock', content: 'Update profile/Chan', rc: true },
+		{ icon: 'info', content: 'Customer support', rc: false },
+		{ icon: 'credit-card', content: 'Verify identity', rc: false },
+		{ icon: 'info', content: 'About us', rc: false },
+	];
 
 	return (
-		<FieldGroup is='form' style={{marginTop: '0px !important'}} autoComplete='off' onSubmit={handleSubmit} {...props}>
+		<FieldGroup is='form' style={{ marginTop: '0px !important' }} autoComplete='off' onSubmit={handleSubmit} {...props}>
 			{useMemo(
 				() => (
 					<Field>
@@ -183,8 +183,10 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				),
 				[username, user.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag],
 			)}
-				<Box style={{ margin: '0px auto', fontSize: '16px' }}>I'm a fullstack developer with interests in the NFT space and E-commerce space.</Box>
-			<Box display='flex' flexDirection='column' style={{marginTop: '30px'}}>
+			<Box style={{ margin: '0px auto', fontSize: '16px' }}>
+				I'm a fullstack developer with interests in the NFT space and E-commerce space.
+			</Box>
+			<Box display='flex' flexDirection='column' style={{ marginTop: '30px' }}>
 				<AccountInfo title='Career' items={careerItems} />
 				<AccountInfo title='Private Information' items={privateInfo} />
 				<AccountInfo title='Services' items={services} />

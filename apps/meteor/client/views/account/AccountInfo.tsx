@@ -12,8 +12,6 @@ type Props = {
 
 const AccountInfo = ({ title, items }: Props) => {
 	const { dispatch } = useContext(DispatchPreviousPageContext);
-	const { value } = useContext(UserPreviousPageContext);
-	console.log(value, 'value');
 
 	const [routeName] = useCurrentRoute();
 	const page = useRouteParameter('group');

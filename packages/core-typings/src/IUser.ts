@@ -111,6 +111,7 @@ export interface IUser extends IRocketChatRecord {
 	username?: string;
 	name?: string;
 	services?: IUserServices;
+	credit?: number;
 	emails?: IUserEmail[];
 	status?: UserStatus;
 	statusConnection?: string;
