@@ -207,7 +207,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * If such is the case, it will first unregister and then reregister.
 			 * */
 			this.attemptReconnection();
-			this.attemptRegistration = true;
+			if (this.registerer && this.callState !== 'INITIAL') {
+				this.attemptRegistration = true;
+			}
 		}
 	}
 
