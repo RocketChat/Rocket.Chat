@@ -2,19 +2,16 @@ import { AggregationCursor } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IBlogService, IBlogCreateParams, IBlog, IBlogUpdateBody, IBlogUpdateParams } from '../../../definition/IBlog';
-
+import { BlogsRaw } from '../../../app/models/server/raw/Blogs';
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
-import { BlogModel } from '../../../app/models/server/raw';
-import { BlogsRaw } from '../../../app/models/server/raw/Blogs';
+import { BlogsModel } from '../../../app/models/server/raw';
 
 export class BlogService extends ServiceClassInternal implements IBlogService {
 	protected name = 'blog';
 
-
-	private BlogModel: BlogsRaw = BlogModel;
-
+	private BlogModel: BlogsRaw = BlogsModel;
 
 	async create(params: IBlogCreateParams): Promise<IBlog> {
 		const createData: InsertionModel<IBlog> = {
@@ -48,10 +45,8 @@ export class BlogService extends ServiceClassInternal implements IBlogService {
 			...new UpdateObject(),
 			...params,
 		};
-
 		const result = await this.BlogModel.updateOne(query, { $set: updateData });
-		return this.BlogModel.findOneById(blogId);
-
+		return this.BlogModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
 	list(limit = 10): AggregationCursor<IBlog> {

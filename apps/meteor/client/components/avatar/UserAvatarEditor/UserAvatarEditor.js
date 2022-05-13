@@ -1,5 +1,5 @@
-import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, Button, Icon, Margins, Avatar } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback } from 'react';
 
 import { useFileInput } from '../../../hooks/useFileInput';
@@ -8,10 +8,11 @@ import UserAvatarSuggestions from './UserAvatarSuggestions';
 
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled, etag }) {
 	const t = useTranslation();
+	const user = useUser();
 	const rotateImages = useSetting('FileUpload_RotateImages');
-	const [avatarFromUrl, setAvatarFromUrl] = useState('');
+	const [avatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
-	const [urlEmpty, setUrlEmpty] = useState(true);
+	const [urlEmpty] = useState(true);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const toDataURL = (file, callback) => {
 		const reader = new FileReader();
@@ -48,11 +49,12 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	};
 
 	const url = newAvatarSource;
+	let today = new Date();
+	const dd = String(today.getDate()).padStart(2, '0');
+	const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+	const yyyy = today.getFullYear();
 
-	const handleAvatarFromUrlChange = (event) => {
-		event.currentTarget.value !== '' ? setUrlEmpty(false) : setUrlEmpty(true);
-		setAvatarFromUrl(event.currentTarget.value);
-	};
+	today = `${mm}'/'${dd}'/'${yyyy}`;
 
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m'>
@@ -69,7 +71,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 					}}
 					mie='x4'
 				/>
-				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
+				<Box
+					style={{ marginLeft: '20px !important' }}
+					display='flex'
+					flexDirection='column'
+					flexGrow='1'
+					justifyContent='space-between'
+					mis='x4'
+				>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Margins inline='x4'>
 							<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4' title={t('Accounts_SetDefaultAvatar')}>
@@ -92,8 +101,15 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 						</Margins>
 					</Box>
 					<Margins inlineStart='x4'>
-						<Box>{t('Use_url_for_avatar')}</Box>
-						<TextInput flexGrow={0} placeholder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={handleAvatarFromUrlChange} />
+						<Box fontWeight='bold' fontSize='20px' style={{ margin: '8px 0' }}>
+							{user.name}
+							<img src='images/icons/icon-male.png' alt='gender icon' />
+						</Box>
+						<Box style={{ marginBottom: '8px' }}>@{user.username} </Box>
+						<Box style={{ marginBottom: '8px' }}>Joined: {today}</Box>
+						<Box fontWeight='bold' style={{ marginBottom: '10px' }}>
+							Last Active: {user._updatedAt.toString().slice(15, 24)}
+						</Box>
 					</Margins>
 				</Box>
 			</Box>

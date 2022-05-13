@@ -1,10 +1,7 @@
-import { useLayout, useRoute } from '@rocket.chat/ui-contexts';
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-
+import { useLayout, useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-
 
 const BlogPostSection = (props: typeof Box): ReactElement => {
 	const { sidebar } = useLayout();

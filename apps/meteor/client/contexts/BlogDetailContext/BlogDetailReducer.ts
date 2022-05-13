@@ -42,14 +42,13 @@ const BlogDetailReducer = (state, action): IStateInterface => {
 				value: { ...state.value, comments: [...state.value.comments, action.payload] },
 			};
 		case 'UPDATE_COMMENT':
-			let removeOldComment = state.value.comments.filter((item) => item._id !== action.payload._id);
+			const removeOldComment = state.value.comments.filter((item) => item._id !== action.payload._id);
 			const addUpdatedComment = [...removeOldComment, action.payload];
 			return {
 				...state,
 				value: { ...state.value, comments: addUpdatedComment },
 			};
 		case 'DELETE_COMMENT':
-			console.log(action.payload, 'payload');
 			const deleteComment = state.value.comments.filter((item) => item._id !== action.payload.commentId);
 			return {
 				...state,

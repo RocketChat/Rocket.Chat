@@ -2,21 +2,17 @@ import { Cursor } from 'mongodb';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IGameService, IGameCreateParams, IGame, IGameUpdateParams } from '../../../definition/IGame';
-
+import { GamesRaw } from '../../../app/models/server/raw/Games';
 import { IPaginationOptions, IQueryOptions } from '../../../definition/ITeam';
-
 import { CreateObject } from '../../../definition/ICreate';
 import { UpdateObject } from '../../../definition/IUpdate';
 import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
-import { GameModel } from '../../../app/models/server/raw';
-import { GamesRaw } from '../../../app/models/server/raw/Games';
+import { GamesModel } from '../../../app/models/server/raw';
 
 export class GameService extends ServiceClassInternal implements IGameService {
 	protected name = 'game';
 
-
-	private GameModel: GamesRaw = GameModel;
-
+	private GameModel: GamesRaw = GamesModel;
 
 	async create(params: IGameCreateParams): Promise<IGame> {
 		const createData: InsertionModel<IGame> = {
@@ -51,10 +47,8 @@ export class GameService extends ServiceClassInternal implements IGameService {
 			...new UpdateObject(),
 			...params,
 		};
-
 		const result = await this.GameModel.updateOne(query, { $set: updateData });
-		return this.GameModel.findOneById(gameId);
-
+		return this.GameModel.findOneById(result.upsertedId._id.toHexString());
 	}
 
 	list(

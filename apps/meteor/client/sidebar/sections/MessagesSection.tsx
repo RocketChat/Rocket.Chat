@@ -3,8 +3,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-
-
 const MessagesSection = (props: typeof Box): ReactElement => {
 	const { sidebar } = useLayout();
 	const MessagesRoute = useRoute('messages');

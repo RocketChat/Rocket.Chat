@@ -5,7 +5,6 @@ import React, { ReactElement, useContext } from 'react';
 
 import { DispatchBlogGlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
 
-
 type Props = {
 	content?: string;
 	createdAt?: string;
@@ -57,9 +56,7 @@ const SingleBlogPost = ({
 	// Use the random number to display random images and names.
 	const randNum = Math.floor(Math.random() * 5);
 
-
 	const handleDetailRoute = (id: string, author: string, createdAt: string, title: string, content: string, image: string): void => {
-
 		const payload = {
 			id,
 			author,
@@ -72,14 +69,11 @@ const SingleBlogPost = ({
 		};
 		dispatch({ type: 'ADD_DETAILS', payload });
 		BlogDetailRoute.push({ id });
-
 	};
 
 	return (
 		<Margins block='15px'>
-
 			<Modal>
-
 				<Modal.Content>
 					<Box display='flex' justifyContent='flex-end' alignItems='center' flexDirection='column' style={{ margin: '13px 0px' }}>
 						<Menu
@@ -142,7 +136,6 @@ const SingleBlogPost = ({
 						<div style={{ margin: '10px 0' }}>
 							<img style={{ height: '300px', width: '100%' }} src={images[randNum]} alt='blog image' />
 						</div>
-
 					</div>
 				</Modal.Content>
 				<Modal.Footer>

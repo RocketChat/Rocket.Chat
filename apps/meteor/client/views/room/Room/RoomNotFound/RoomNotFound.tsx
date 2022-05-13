@@ -2,7 +2,7 @@ import { States, StatesIcon, StatesTitle, StatesSubtitle, Box } from '@rocket.ch
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import BurgerMenu from '../../../../components/BottomBar/BurgerMenu';
+import BurgerMenu from '../../../../components/BurgerMenu';
 import TemplateHeader from '../../../../components/Header';
 import { RoomTemplate } from '../../components/RoomTemplate/RoomTemplate';
 

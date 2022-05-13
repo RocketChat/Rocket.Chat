@@ -1,17 +1,16 @@
 import { Icon, Grid, Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { isMobile } from 'react-device-detect';
 import React, { ReactElement, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 
-import Page from '../../components/Page';
 import BottomBar from '../../components/BottomBar';
+import Page from '../../components/Page';
+import PageInlineNavbar from '../../components/PageInlineNavbar/PageInlineNavbar';
 import TopBar from '../../topbar/TopBar';
 import SingleBlogPost from './SingleBlogPost';
 import CreateBlogForm from './components/CreateBlogForm';
-
 import './blog.css';
-import PageInlineNavbar from '../../components/PageInlineNavbar/PageInlineNavbar';
 
 const BlogView = (): ReactElement => {
 	const [showModal, setShowModal] = useState(false);
@@ -22,7 +21,6 @@ const BlogView = (): ReactElement => {
 	const [blogId, setBlogId] = useState('');
 
 	const clearUpdateFields = (): void => {
-
 		setUpdateTitle('');
 		setUpdateContent('');
 		setUpdateTags([]);
@@ -76,9 +74,7 @@ const BlogView = (): ReactElement => {
 					</Grid>
 					<div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
 						<Button square primary>
-
 							<Icon name='plus' size='x20' onClick={(): void => setShowModal(true)} />
-
 						</Button>
 					</div>
 				</Page.Content>

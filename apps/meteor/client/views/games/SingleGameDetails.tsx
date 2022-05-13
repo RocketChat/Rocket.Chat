@@ -7,7 +7,6 @@ import { DispatchGameGlobalContext, GameGlobalContext } from '../../contexts/Gam
 const SingleGameDetails = (): ReactElement => {
 	const { value } = useContext(GameGlobalContext);
 	const { title, description } = value;
-	console.log(value, 'value');
 	return (
 		<>
 			<DetailPageHeader title={title} route='games' context={DispatchGameGlobalContext} />

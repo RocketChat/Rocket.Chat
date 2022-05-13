@@ -1,11 +1,4 @@
-import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Session } from 'meteor/session';
-import { Tracker } from 'meteor/tracker';
-import React, { lazy } from 'react';
-import toastr from 'toastr';
 
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
@@ -91,3 +84,13 @@ FlowRouter.route('/products/detail/:id', {
 		appLayout.renderMainLayout({ center: ProductDetailPageView });
 	},
 });
+
+// FlowRouter.route('/topup/amount=optional', {
+// 	name: 'topup',
+// 	action: () => {
+// 		const TopUpPageVIew = createTemplateForComponent('TopUpPage', () => import('../views/topup/TopUpView'), {
+// 			attachment: 'at-parent',
+// 		});
+// 		appLayout.renderMainLayout({ center: TopUpPageVIew });
+// 	},
+// });

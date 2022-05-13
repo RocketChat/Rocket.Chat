@@ -2,11 +2,11 @@ import { InputBox, Button } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useContext, useState } from 'react';
 
+import BottomBar from '../../components/BottomBar';
+import DetailPageHeader from '../../components/DetailPageHeader/DetailPageHeader';
 import Comment from './components/Comment';
 import Page from '../../components/Page';
 import { DispatchBlogGlobalContext, BlogGlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
-import BottomBar from '../../components/BottomBar';
-import DetailPageHeader from '../../components/DetailPageHeader/DetailPageHeader';
 
 const BlogView = (): ReactElement => {
 	const { dispatch } = useContext(DispatchBlogGlobalContext);
@@ -37,7 +37,6 @@ const BlogView = (): ReactElement => {
 		}
 	};
 
-
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -58,9 +57,7 @@ const BlogView = (): ReactElement => {
 							placeholder='New Comment...'
 							width='full'
 							value={comment}
-
 							onChange={(e: any): void => setComment(e.target.value)}
-
 						/>
 						<Button primary style={{ float: 'right', marginTop: '5px' }} onClick={handleSubmit}>
 							Post
@@ -83,7 +80,6 @@ const BlogView = (): ReactElement => {
 					</div>
 				</Page.Content>
 				<BottomBar />
-
 			</Page>
 		</Page>
 	);

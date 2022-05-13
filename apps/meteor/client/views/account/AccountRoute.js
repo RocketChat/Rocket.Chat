@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
 import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
+import TopUpView from '../topup/TopUpView';
 import AccountIntegrationsPage from './AccountIntegrationsPage';
 import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
@@ -57,6 +58,10 @@ const AccountRoute = () => {
 		}
 
 		return <AccountTokensPage />;
+	}
+
+	if (page === 'topup') {
+		return <TopUpView />;
 	}
 
 	return null;

@@ -1,5 +1,5 @@
-import { Modal, Button, ButtonGroup, Box, Margins } from '@rocket.chat/fuselage';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { isMobile } from 'react-device-detect';
 
 import BottomBar from '../../components/BottomBar';
@@ -7,12 +7,7 @@ import Page from '../../components/Page';
 import TopBar from '../../topbar/TopBar';
 import SingleBlogPost from '../blog/SingleBlogPost';
 
-type Props = {
-	title: string;
-	body: string;
-};
-
-const LandingView = ({ title, body }: Props): ReactElement => {
+const LandingView = (): ReactElement => {
 	const [blogResults, setBlogResults] = useState([]);
 	Meteor.startup(() => {
 		if (!blogResults.length)
