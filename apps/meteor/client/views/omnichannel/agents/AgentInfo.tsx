@@ -12,12 +12,16 @@ import UserInfo from '../../room/contextualBar/UserInfo';
 import { formsSubscription } from '../additionalForms';
 import AgentInfoAction from './AgentInfoAction';
 
-export const AgentInfo = memo(function AgentInfo({ uid, children, ...props }) {
+type AgentInfoProps = {
+	uid: string;
+};
+
+export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
 	const { value: data, phase: state, error } = useEndpointData(`livechat/users/agent/${uid}`);
 	const eeForms = useSubscription(formsSubscription);
 
-	const { useMaxChatsPerAgentDisplay = () => {} } = eeForms;
+	const { useMaxChatsPerAgentDisplay = (): void => {} } = eeForms;
 
 	const MaxChats = useMaxChatsPerAgentDisplay();
 
@@ -38,13 +42,13 @@ export const AgentInfo = memo(function AgentInfo({ uid, children, ...props }) {
 				<UserInfo.Avatar size={'x332'} username={username} />
 			</Box>
 
-			<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center' flexShrink={0}>
+			<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
 				{children}
 			</ButtonGroup>
 
 			<Margins block='x4'>
 				<Box mb='x2'>
-					<UserInfo.Username name={username} status={<UserStatus status={userStatus} />} />
+					<UserInfo.Username username={username} status={<UserStatus status={userStatus} />} />
 				</Box>
 
 				{statusLivechat && (

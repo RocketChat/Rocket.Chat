@@ -1,12 +1,16 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { FC } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import AgentInfo from './AgentInfo';
 
-function AgentInfoActions({ reload }) {
+type AgentInfoActionsProps = {
+	reload: () => void;
+};
+
+const AgentInfoActions: FC<AgentInfoActionsProps> = ({ reload }) => {
 	const t = useTranslation();
 	const _id = useRouteParameter('id');
 	const agentsRoute = useRoute('omnichannel-agents');
@@ -24,23 +28,23 @@ function AgentInfoActions({ reload }) {
 
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
-		const onDeleteAgent = async () => {
+		const onDeleteAgent = async (): Promise<void> => {
 			try {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 			}
 			setModal();
 		};
 
-		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={(): void => setModal()} confirmText={t('Delete')} />);
 	});
 
 	const handleEditClick = useMutableCallback(() =>
 		agentsRoute.push({
 			context: 'edit',
-			id: _id,
+			id: String(_id),
 		}),
 	);
 
@@ -48,6 +52,6 @@ function AgentInfoActions({ reload }) {
 		<AgentInfo.Action key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon={'trash'} />,
 		<AgentInfo.Action key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon={'edit'} />,
 	];
-}
+};
 
 export default AgentInfoActions;

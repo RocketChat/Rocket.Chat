@@ -141,30 +141,13 @@ export type OmnichannelEndpoints = {
 			messages: IMessage[];
 		}>;
 	};
-	'livechat/users/agent': {
-		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
-			users: {
-				_id: string;
-				emails: {
-					address: string;
-					verified: boolean;
-				}[];
-				status: string;
-				name: string;
-				username: string;
-				statusLivechat: string;
-				livechat: {
-					maxNumberSimultaneousChat: number;
-				};
-			}[];
-		}>;
-	};
 
-	'livechat/users/manager/:_id': {
+	'livechat/users/:type/:_id': {
+		GET: () => { user: ILivechatAgent[] };
 		DELETE: () => { success: boolean };
 	};
 
-	'livechat/users/manager': {
+	'livechat/users/:type': {
 		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
 			users: ILivechatAgent[];
 		}>;
@@ -221,8 +204,8 @@ export type OmnichannelEndpoints = {
 			total: number;
 		};
 	};
-	'livechat/agents/:uid/departments?enabledDepartmentsOnly=true': {
-		GET: () => { departments: ILivechatDepartment[] };
+	'livechat/agents/:uid/departments': {
+		GET: (params: { enableDepartmentsOnly: 'true' | 'false' | '0' | '1' }) => { departments: ILivechatDepartment[] };
 	};
 
 	'canned-responses': {

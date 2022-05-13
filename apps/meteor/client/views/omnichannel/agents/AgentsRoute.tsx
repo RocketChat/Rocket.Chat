@@ -1,7 +1,8 @@
 import { Box, Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, FC } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import VerticalBar from '../../../components/VerticalBar';
@@ -16,7 +17,7 @@ import RemoveAgentButton from './RemoveAgentButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
+const useQuery = ({ text, itemsPerPage, current }, [column, direction]): PaginatedRequest<{ text: string }> =>
 	useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
@@ -31,7 +32,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 		[text, itemsPerPage, current, column, direction],
 	);
 
-function AgentsRoute() {
+const AgentsRoute: FC = () => {
 	const t = useTranslation();
 	const canViewAgents = usePermission('manage-livechat-agents');
 
@@ -58,7 +59,7 @@ function AgentsRoute() {
 	});
 
 	const onRowClick = useMutableCallback(
-		(id) => () =>
+		(id) => (): void =>
 			agentsRoute.push({
 				context: 'info',
 				id,
@@ -138,7 +139,7 @@ function AgentsRoute() {
 						<Box mi='x4' />
 					</Table.Cell>
 				)}
-				<Table.Cell withTruncatedText>{emails && emails.length && emails[0].address}</Table.Cell>
+				<Table.Cell withTruncatedText>{emails?.length && emails[0].address}</Table.Cell>
 				<Table.Cell withTruncatedText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</Table.Cell>
 				<RemoveAgentButton _id={_id} reload={reload} />
 			</Table.Row>
@@ -191,6 +192,6 @@ function AgentsRoute() {
 			<EditAgentsTab />
 		</AgentsPage>
 	);
-}
+};
 
 export default AgentsRoute;
