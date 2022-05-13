@@ -18,6 +18,10 @@ import type {
 	ILivechatCustomField,
 	ILivechatInquiryRecord,
 	ILivechatTrigger,
+	IConversationTotalizers,
+	IAgentProductivityTotalizers,
+	IChatTotalizers,
+	IProductivityTotalizers,
 } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -257,46 +261,23 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/analytics/dashboards/conversation-totalizers': {
-		GET: (params: { start: string | Date; end: string | Date; departmentId?: string }) => {
-			totalizers: {
-				title: 'Total_conversations' | 'Open_conversations' | 'Total_messages' | 'On_Hold_conversations' | 'Total_visitors';
-				value: number;
-			}[];
-		};
+		GET: (params: { start: string; end: string; departmentId?: string }) => IConversationTotalizers;
 	};
 
 	'livechat/analytics/dashboards/agents-productivity-totalizers': {
-		GET: (params: { start: string | Date; end: string | Date; departmentId?: string }) => {
-			totalizers: {
-				title: 'Busiest_time' | 'Avg_of_available_service_time' | 'Avg_of_service_time';
-				value: string;
-			}[];
-		};
+		GET: (params: { start: string; end: string; departmentId?: string }) => IAgentProductivityTotalizers;
 	};
 
 	'livechat/analytics/dashboards/chats-totalizers': {
-		GET: (params: { start: string | Date; end: string | Date; departmentId?: string }) => {
-			totalizers: Array<
-				| {
-						title: 'Avg_of_abandoned_chats' | 'Avg_of_chat_duration_time';
-						value: string;
-				  }
-				| { title: 'Total_abandoned_chats'; value: number }
-			>;
-		};
+		GET: (params: { start: string; end: string; departmentId?: string }) => IChatTotalizers;
 	};
 
 	'livechat/analytics/dashboards/productivity-totalizers': {
-		GET: (params: { start: string | Date; end: string | Date; departmentId?: string }) => {
-			totalizers: {
-				title: 'Avg_response_time' | 'Avg_first_response_time' | 'Avg_reaction_time' | 'Avg_of_waiting_time';
-				value: string;
-			}[];
-		};
+		GET: (params: { start: string; end: string; departmentId?: string }) => IProductivityTotalizers;
 	};
 
 	'livechat/analytics/dashboards/charts/chats': {
-		GET: (params: { start: string | Date; end: string | Date; departmentId?: string }) => {
+		GET: (params: { start: string; end: string; departmentId?: string }) => {
 			open: number;
 			closed: number;
 			queued: number;
@@ -305,7 +286,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/analytics/dashboards/charts/chats-per-agent': {
-		GET: (params: { start: string | Date; end: string | Date; departmentId?: string }) => {
+		GET: (params: { start: string; end: string; departmentId?: string }) => {
 			[agentId: string]: {
 				open: number;
 				closed: number;
@@ -324,7 +305,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/analytics/dashboards/charts/chats-per-department': {
-		GET: (params: { start: string | Date; end: string | Date; departmentId?: string }) => {
+		GET: (params: { start: string; end: string; departmentId?: string }) => {
 			[departmentName: string]: {
 				open: number;
 				closed: number;
@@ -333,7 +314,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/analytics/dashboards/charts/timings': {
-		GET: (params: { start: string | Date; end: string | Date; departmentId?: string }) => {
+		GET: (params: { start: string; end: string; departmentId?: string }) => {
 			response: {
 				avg: number;
 				longest: number;
@@ -474,7 +455,7 @@ export type OmnichannelEndpoints = {
 
 	'livechat/messages': {
 		POST: (params: { visitor: { token: string }; messages: { msg: string }[] }) => {
-			messages: { username: string; msg: string; ts: Date }[];
+			messages: { username: string; msg: string; ts: string }[];
 		};
 	};
 
@@ -509,7 +490,7 @@ export type OmnichannelEndpoints = {
 				domain: SettingValue;
 				provider: string;
 				room: string;
-				timeout: Date;
+				timeout: string;
 			};
 		};
 	};

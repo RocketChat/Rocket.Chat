@@ -1,5 +1,6 @@
 import { Match, check } from 'meteor/check';
 import { OperationResult } from '@rocket.chat/rest-typings';
+import { IAgentProductivityTotalizers, IConversationTotalizers, IChatTotalizers, IProductivityTotalizers } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization/server';
@@ -24,7 +25,7 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
 			check(start, String);
@@ -34,16 +35,16 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
 
-			const totalizers = getConversationsMetrics({ start, end, departmentId, user });
+			const totalizers = getConversationsMetrics({ start: startDate, end: endDate, departmentId, user }) as IConversationTotalizers;
 			return API.v1.success(totalizers);
 		},
 	},
@@ -57,7 +58,7 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
 			check(start, String);
@@ -67,16 +68,21 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
 
-			const totalizers = getAgentsProductivityMetrics({ start, end, departmentId, user });
+			const totalizers = getAgentsProductivityMetrics({
+				start: startDate,
+				end: endDate,
+				departmentId,
+				user,
+			}) as IAgentProductivityTotalizers;
 			return API.v1.success(totalizers);
 		},
 	},
@@ -90,7 +96,7 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
 			check(start, String);
@@ -100,17 +106,14 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
-			const totalizers = getChatsMetrics({ start, end, departmentId }) as OperationResult<
-				'GET',
-				'livechat/analytics/dashboards/chats-totalizers'
-			>;
+			const totalizers = getChatsMetrics({ start: startDate, end: endDate, departmentId }) as IChatTotalizers;
 			return API.v1.success(totalizers);
 		},
 	},
@@ -124,7 +127,7 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
 			check(start, String);
@@ -134,16 +137,16 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
 			const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
 
-			const totalizers = getProductivityMetrics({ start, end, departmentId, user });
+			const totalizers = getProductivityMetrics({ start: startDate, end: endDate, departmentId, user }) as IProductivityTotalizers;
 
 			return API.v1.success(totalizers);
 		},
@@ -158,7 +161,7 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
 			check(start, String);
@@ -168,14 +171,14 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
-			const result = findAllChatsStatus({ start, end, departmentId });
+			const result = findAllChatsStatus({ start: startDate, end: endDate, departmentId });
 
 			return API.v1.success(result);
 		},
@@ -190,7 +193,7 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
 			check(start, String);
@@ -200,14 +203,14 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
-			const result = findAllChatMetricsByAgent({ start, end, departmentId }) as OperationResult<
+			const result = findAllChatMetricsByAgent({ start: startDate, end: endDate, departmentId }) as OperationResult<
 				'GET',
 				'livechat/analytics/dashboards/charts/chats-per-agent'
 			>;
@@ -243,7 +246,7 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
 			check(start, String);
@@ -253,14 +256,14 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
-			const result = findAllChatMetricsByDepartment({ start, end, departmentId }) as OperationResult<
+			const result = findAllChatMetricsByDepartment({ start: startDate, end: endDate, departmentId }) as OperationResult<
 				'GET',
 				'livechat/analytics/dashboards/charts/chats-per-department'
 			>;
@@ -278,7 +281,7 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end } = this.requestParams();
+			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
 			check(start, String);
@@ -288,14 +291,14 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			start = new Date(start);
+			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			end = new Date(end);
+			const endDate = new Date(end);
 
-			const result = findAllResponseTimeMetrics({ start, end, departmentId });
+			const result = findAllResponseTimeMetrics({ start: startDate, end: endDate, departmentId });
 
 			return API.v1.success(result);
 		},
