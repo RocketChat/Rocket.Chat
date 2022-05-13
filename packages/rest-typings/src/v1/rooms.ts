@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -62,9 +62,9 @@ export type RoomsEndpoints = {
 			sort?: string;
 			count?: number;
 			offset?: number;
-		}) => PaginatedResult<{ rooms: IRoom[] }>;
+		}) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
 	};
 	'rooms.adminRooms.getRoom': {
-		GET: (params: { rid?: string }) => IRoom;
+		GET: (params: { rid?: string }) => Pick<IRoom, RoomAdminFieldsType>;
 	};
 };
