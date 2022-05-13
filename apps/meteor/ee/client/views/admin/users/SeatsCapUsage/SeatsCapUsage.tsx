@@ -1,7 +1,6 @@
 import { ProgressBar, Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 
 type SeatsCapUsageProps = {
 	limit: number;

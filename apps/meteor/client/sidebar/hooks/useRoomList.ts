@@ -1,10 +1,10 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
+import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
-import { useSetting } from '../../contexts/SettingsContext';
-import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
+import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
+import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
 import { useQueryOptions } from './useQueryOptions';
 
 const query = { open: { $ne: false } };

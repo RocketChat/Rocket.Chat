@@ -1,10 +1,9 @@
 import { Button, Icon, Box, Accordion, Field, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 

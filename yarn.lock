@@ -3638,7 +3638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/emitter@npm:~0.31.11, @rocket.chat/emitter@npm:~0.31.9":
+"@rocket.chat/emitter@npm:^0.31.11, @rocket.chat/emitter@npm:~0.31.11, @rocket.chat/emitter@npm:~0.31.9":
   version: 0.31.11
   resolution: "@rocket.chat/emitter@npm:0.31.11"
   checksum: 12b008c350c11276a66901efbd2015be1c135e7604f20c261504207f2a5de5b6a83d91a11191cdc896d14f6147711b189f229a82fadceeeed419cfea200550bb
@@ -3979,6 +3979,7 @@ __metadata:
     "@rocket.chat/onboarding-ui": ~0.31.11
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.11
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": ~0.31.11
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/client": ^4.12.0
@@ -4048,7 +4049,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^2.34.0
     "@typescript-eslint/parser": ^3.0.0
     adm-zip: 0.5.9
-    agenda: "github:RocketChat/agenda#3.1.2"
+    agenda: "https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442"
     ajv: ^8.7.1
     apn: 2.2.0
     archiver: ^3.1.1
@@ -4185,8 +4186,8 @@ __metadata:
     psl: ^1.8.0
     queue-fifo: ^0.2.6
     rc-scrollbars: ^1.1.3
-    react: ^17.0.2
-    react-dom: ^17.0.2
+    react: ~17.0.2
+    react-dom: ~17.0.2
     react-hook-form: ^7.30.0
     react-i18next: ^11.16.7
     react-keyed-flatten-children: ^1.3.0
@@ -4333,6 +4334,34 @@ __metadata:
   checksum: a711eb247c5911b03d67a2f1b66e6673f43a22c334e9ef29c283cd64251254f0596805bf8c6c91b89b3e504ed3b1659d42b0b4ed6632887b71b54ce402d74126
   languageName: node
   linkType: hard
+
+"@rocket.chat/ui-contexts@workspace:^, @rocket.chat/ui-contexts@workspace:packages/ui-contexts":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-contexts@workspace:packages/ui-contexts"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": ^0.31.11
+    "@rocket.chat/fuselage-hooks": ^0.31.11
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@types/jest": ^27.4.1
+    "@types/mongodb": ~3.6.10
+    "@types/react": ^17
+    "@types/use-subscription": ^1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    react: ~17.0.2
+    ts-jest: ^27.1.4
+    typescript: ~4.3.5
+    use-subscription: ~1.6.0
+  peerDependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": "*"
+    "@rocket.chat/fuselage-hooks": "*"
+    "@rocket.chat/rest-typings": "workspace:^"
+    react: ~17.0.2
+    use-subscription: "*"
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/ui-kit@npm:^0.14.1":
   version: 0.14.1
@@ -6610,7 +6639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mongodb@npm:^3.6.10, @types/mongodb@npm:^3.6.20":
+"@types/mongodb@npm:^3.6.10, @types/mongodb@npm:^3.6.20, @types/mongodb@npm:~3.6.10":
   version: 3.6.20
   resolution: "@types/mongodb@npm:3.6.20"
   dependencies:
@@ -6855,6 +6884,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react@npm:^17":
+  version: 17.0.44
+  resolution: "@types/react@npm:17.0.44"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: ebee02778ca08f954c316dc907802264e0121c87b8fa2e7e0156ab0ef2a1b0a09d968c016a3600ec4c9a17dc09b4274f292d9b15a1a5369bb7e4072def82808f
+  languageName: node
+  linkType: hard
+
 "@types/request@npm:^2.48.1":
   version: 2.48.8
   resolution: "@types/request@npm:2.48.8"
@@ -7064,7 +7104,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/use-subscription@npm:^1.0.0":
+"@types/use-subscription@npm:^1, @types/use-subscription@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/use-subscription@npm:1.0.0"
   checksum: 47fff868682692ecda7110bd04ba4c5b1324854c0bcccc765606a42d4bd9be475207413c8829a883b98e7edd801100df53876da0ff89ac21a8f964e440636ef2
@@ -7780,7 +7820,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agenda@github:RocketChat/agenda#3.1.2":
+"agenda@https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442":
   version: 3.1.2
   resolution: "agenda@https://github.com/RocketChat/agenda.git#commit=c2cfcc532b8409561104dca980e6adbbcbdf5442"
   dependencies:
@@ -27400,19 +27440,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^17.0.2":
-  version: 17.0.2
-  resolution: "react-dom@npm:17.0.2"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    scheduler: ^0.20.2
-  peerDependencies:
-    react: 17.0.2
-  checksum: 1c1eaa3bca7c7228d24b70932e3d7c99e70d1d04e13bb0843bbf321582bc25d7961d6b8a6978a58a598af2af496d1cedcfb1bf65f6b0960a0a8161cb8dab743c
-  languageName: node
-  linkType: hard
-
 "react-dom@npm:^18.1.0":
   version: 18.1.0
   resolution: "react-dom@npm:18.1.0"
@@ -27422,6 +27449,19 @@ __metadata:
   peerDependencies:
     react: ^18.1.0
   checksum: bb0d48eeb0b297c79c2a03978baa29f5b3ff7ba3d070b21e34c9af1a6e7fdf0ca8b8d73e41f9214d91ad40eeb6d1f3559f884cbbc338713374a51320637c23df
+  languageName: node
+  linkType: hard
+
+"react-dom@npm:~17.0.2":
+  version: 17.0.2
+  resolution: "react-dom@npm:17.0.2"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    scheduler: ^0.20.2
+  peerDependencies:
+    react: 17.0.2
+  checksum: 1c1eaa3bca7c7228d24b70932e3d7c99e70d1d04e13bb0843bbf321582bc25d7961d6b8a6978a58a598af2af496d1cedcfb1bf65f6b0960a0a8161cb8dab743c
   languageName: node
   linkType: hard
 
@@ -27784,7 +27824,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^17.0.2":
+"react@npm:~17.0.2":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
   dependencies:

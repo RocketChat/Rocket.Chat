@@ -1,11 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Page from '../../../components/Page';
 import RawText from '../../../components/RawText';
 import TextCopy from '../../../components/TextCopy';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import Wrapper from './Wrapper';
 
 const Installation = () => {

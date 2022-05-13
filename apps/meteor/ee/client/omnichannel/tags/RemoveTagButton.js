@@ -1,13 +1,9 @@
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
-import { useSetModal } from '../../../../client/contexts/ModalContext';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 function RemoveTagButton({ _id, reload }) {
 	const removeTag = useMethod('livechat:removeTag');

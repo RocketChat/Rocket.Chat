@@ -1,10 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Field, TextInput } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import AutoCompleteDepartment from '../../../../../client/components/AutoCompleteDepartment';
 import Tags from '../../../../../client/components/Omnichannel/Tags';
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import MarkdownTextEditor from '../../components/CannedResponse/MarkdownTextEditor';
 import PreviewText from '../../components/CannedResponse/modals/CreateCannedResponse/PreviewText';
 import SharingOptions from '../../components/CannedResponse/modals/CreateCannedResponse/SharingOptions';
