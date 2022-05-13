@@ -69,7 +69,16 @@ class Voxtelesys extends SMSServiceClass {
 		return returnData;
 	}
 
-	send(fromNumber: string, toNumber: string, message: string, extraData: Record<string, any>): void {
+	send(
+		fromNumber: string,
+		toNumber: string,
+		message: string,
+		extraData: {
+			rid: string;
+			userId: string;
+			fileUpload: { size: number; type: string; publicFilePath: string };
+		},
+	): void {
 		let media;
 		const defaultLanguage = settings.get<string>('Language') || 'en';
 		if (extraData?.fileUpload) {

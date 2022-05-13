@@ -62,7 +62,7 @@ class Mobex extends SMSServiceClass {
 		return returnData;
 	}
 
-	send(fromNumber: string, toNumber: string, message: string, _extraData?: Record<string, any>): { isSuccess: boolean; resultMsg: string } {
+	send(fromNumber: string, toNumber: string, message: string, _extraData?: unknown): { isSuccess: boolean; resultMsg: string } {
 		let currentFrom = this.from;
 		const currentUsername = this.username;
 		const currentAddress = this.address;

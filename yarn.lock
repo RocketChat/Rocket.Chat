@@ -4148,7 +4148,7 @@ __metadata:
     fibers: ^5.0.1
     file-type: ^10.11.0
     filenamify: ^4.3.0
-    filesize: ^3.6.1
+    filesize: ^8.0.7
     google-libphonenumber: ^3.2.27
     googleapis: ^25.0.0
     grapheme-splitter: ^1.0.4
@@ -15570,10 +15570,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filesize@npm:^3.6.1":
-  version: 3.6.1
-  resolution: "filesize@npm:3.6.1"
-  checksum: 9ba47e9df90cd6bb6c0434418123facf9dafbe92c850f29ed50bfa42d60d00f8501a8a9b962f77ec7d1ba30190d5dbda5f6f56c5e56bce9e09729988bf0613c4
+"filesize@npm:^8.0.7":
+  version: 8.0.7
+  resolution: "filesize@npm:8.0.7"
+  checksum: 8603d27c5287b984cb100733640645e078f5f5ad65c6d913173e01fb99e09b0747828498fd86647685ccecb69be31f3587b9739ab1e50732116b2374aff4cbf9
   languageName: node
   linkType: hard
 

@@ -25,7 +25,7 @@ export abstract class SMSServiceClass {
 		fromNumber: string,
 		toNumber: string,
 		message: string,
-		extraData: Record<string, any>,
+		extraData: unknown,
 	): { isSuccess: boolean; resultMsg: string } | void;
 
 	abstract response(): { headers: { [key: string]: string }; body: string };
