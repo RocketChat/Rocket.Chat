@@ -110,6 +110,19 @@ const defaultLimit = parseInt(getConfig('roomListLimit')) || 50;
 
 const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 10);
 
+const spoilerHandle = (evnt) => {
+	const spoilWrapper = evnt.currentTarget
+
+	console.log("spoilWrapper", spoilWrapper)
+
+	spoilWrapper.classList.toggle("hide")
+	if (!spoilWrapper.classList.contains("hide")) {
+		spoilWrapper.setAttribute("role", "presentation")
+		spoilWrapper.setAttribute("tabindex", "-1")
+		spoilWrapper.setAttribute("aria-expanded", true)
+	}
+}
+
 export const RoomHistoryManager = new (class extends Emitter {
 	constructor() {
 		super();
@@ -241,11 +254,18 @@ export const RoomHistoryManager = new (class extends Emitter {
 			wrapper.scrollTop = scroll + heightDiff;
 		});
 
+		waitAfterFlush(() => {
+			const t = [...document.getElementsByClassName("spoiler")]
+			t.map(x => x.addEventListener("click", spoilerHandle))
+			console.log("flushed spoil", t)
+		});
+
 		room.isLoading.set(false);
 		waitAfterFlush(() => {
 			readMessage.refreshUnreadMark(rid);
 			return RoomManager.updateMentionsMarksOfRoom(typeName);
 		});
+		
 	}
 
 	async getMoreNext(rid, limit = defaultLimit) {

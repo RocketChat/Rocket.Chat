@@ -98,12 +98,16 @@
 	color: var(--error-contrast);
 }
 
-.spoiler-hide {
-	background-color: black;
+.spoiler.hide {
+	background-color: var(--primary-font-color);
+	border-radius: 3px;
+	cursor: pointer;
 }
 
-.spoiler-hide:hover {
-	background-color: rgba(255, 0, 0, 0);
+.spoiler {
+	background-color: #0000001a;
+	border-radius: 3px;
+
 }
 
 .background-transparent-darkest {

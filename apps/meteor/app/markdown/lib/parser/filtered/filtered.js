@@ -43,6 +43,7 @@ export const filtered = (
 	// Filter block quotes
 	message = message.replace(/(?:>){3}\n+([\s\S]*?)\n+(?:<){3}/g, '$1');
 
+	// Filter Spoiler text
 	message = message.replace(/(^|>|[ >*~`|])\|{1,2}([^\|\r\n]+)\|{1,2}([<*~`]|\B|\b|$)/gm, '$1$2$3');
 
 

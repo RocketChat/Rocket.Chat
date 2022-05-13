@@ -117,9 +117,11 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	// 	/([^\r\n\s~*|]){0,1}(\|+(?!\s))([^\|\r\n]+)(\|+)([^\r\n\s]){0,1}/gm,
 	// 	'<span class="spoiler-hide"><span class="1">$1</span><span class="2">$2</span><span class="3">$3</span></span>',
 	// )
+	
+	// Support for |text|
 	msg = msg.replace(
 		/(\|+(?!\s))([^\|\r\n]+)(\|+)/gm,
-		'<spoiler class="spoiler-hide">$2</spoiler>',
+		'<span tabindex="0" role="button" aria-expanded=false aria-label="Spoiler" class="spoiler hide"><span class="inline-content">$2</span></span>',
 	)
 
 	// Support >Text for quote
