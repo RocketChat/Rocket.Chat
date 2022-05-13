@@ -8,7 +8,6 @@ type SelectTimezoneSettingInputProps = {
 	_id: string;
 	label: string;
 	value?: string;
-	values?: { key: string; i18nLabel: keyof typeof keys }[];
 	placeholder?: string;
 	readonly?: boolean;
 	autocomplete?: boolean;
