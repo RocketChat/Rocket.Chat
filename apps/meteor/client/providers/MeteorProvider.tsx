@@ -39,15 +39,9 @@ const MeteorProvider: FC = ({ children }) => (
 														<CallProvider>
 															<OmnichannelProvider>
 																<ModalProvider>
-																	<BlogDetailContextProvider>
-																		<GameDetailContextProvider>
-																			<ProductDetailContextProvider>
-																				<UserPreviousPageProvider>
-																					<AttachmentProvider>{children}</AttachmentProvider>
-																				</UserPreviousPageProvider>
-																			</ProductDetailContextProvider>
-																		</GameDetailContextProvider>
-																	</BlogDetailContextProvider>
+																	<UserPreviousPageProvider>
+																		<AttachmentProvider>{children}</AttachmentProvider>
+																	</UserPreviousPageProvider>
 																</ModalProvider>
 															</OmnichannelProvider>
 														</CallProvider>
