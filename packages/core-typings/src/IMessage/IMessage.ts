@@ -153,7 +153,7 @@ export interface IMessage extends IRocketChatRecord {
 
 	avatar?: string;
 	emoji?: string;
-	
+
 	// Tokenization fields
 	tokens?: Token[];
 	html?: string;
