@@ -4,6 +4,7 @@ import { MessageBody } from '@rocket.chat/fuselage';
 import { useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
+import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
 import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
@@ -16,6 +17,7 @@ import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
+import EncryptedMessageRender from './EncryptedMessageRender';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
 import MessageRender from './MessageRender';
@@ -40,13 +42,19 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	const mineUid = useUserId();
 
+	const isEncryptedMessage = isE2EEMessage(message);
+
 	return (
 		<>
-			<MessageBody data-qa-type='message-body'>
-				<MessageRender message={message} />
-			</MessageBody>
+			{!message.blocks && (
+				<MessageBody data-qa-type='message-body'>
+					{isEncryptedMessage ? <EncryptedMessageRender message={message} /> : <MessageRender message={message} />}
+				</MessageBody>
+			)}
 			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+
+			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
 			{message.actionLinks?.length && (
 				<MessageActions
@@ -92,8 +100,6 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
 				<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
-
-			{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
 
 			{shouldShowReadReceipt && <ReadReceipt unread={message.unread} />}
 		</>
