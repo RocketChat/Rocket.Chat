@@ -19,7 +19,7 @@ import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import DeleteTeamModal from '../../teams/contextualBar/info/Delete/DeleteTeamModal';
+import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/Delete/';
 
 type EditRoomProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
@@ -57,7 +57,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 
 const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => {
 	const t = useTranslation();
-
+	console.log("Room = ", room)
 	const [deleting, setDeleting] = useState(false);
 
 	const setModal = useSetModal();
@@ -151,7 +151,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	const handleDelete = useMutableCallback(() => {
 		if (room.teamMain) {
 			setModal(
-				<DeleteTeamModal
+				<DeleteTeamModalWithRooms
 					onConfirm={async (deletedRooms: EditRoomProps['room'][]): Promise<void> => {
 						const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms.map((room) => room._id) : [];
 
@@ -169,7 +169,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 						}
 					}}
 					onCancel={(): void => setModal(null)}
-					rooms={undefined} // Endpoint broken, doesn't return the list of rooms under a team
+					teamId={room.teamId as string}
 				/>,
 			);
 
