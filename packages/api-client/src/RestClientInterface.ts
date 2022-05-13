@@ -1,6 +1,10 @@
 import type { Serialized } from '@rocket.chat/core-typings/dist';
 import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
 
+type Next<T extends (...args: any[]) => any> = (...args: Parameters<T>) => ReturnType<T>;
+
+export type Middleware<T extends (...args: any[]) => any> = (context: Parameters<T>, next: Next<T>) => ReturnType<T>;
+
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface RestClientInterface {
 	get<TPath extends PathFor<'GET'>>(
@@ -38,4 +42,8 @@ export interface RestClientInterface {
 		  }
 		| undefined;
 	setCredentials(credentials: undefined | { 'X-User-Id': string; 'X-Auth-Token': string }): void;
+
+	use(middleware: Middleware<RestClientInterface['send']>): void;
+
+	send(endpoint: string, method: string, options: Omit<RequestInit, 'method'>): Promise<Response>;
 }

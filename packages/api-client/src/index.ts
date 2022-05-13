@@ -1,8 +1,13 @@
 import type { Serialized } from '../../core-typings/dist';
 import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from '../../rest-typings/dist';
-import type { RestClientInterface } from './RestClientInterface';
+import type { Middleware, RestClientInterface } from './RestClientInterface';
 
 export { RestClientInterface };
+
+const pipe =
+	<T extends (...args: any[]) => any>(fn: T) =>
+	(...args: Parameters<T>): ReturnType<T> =>
+		fn(...args);
 
 export class RestClient implements RestClientInterface {
 	private readonly baseUrl: string;
@@ -61,7 +66,9 @@ export class RestClient implements RestClientInterface {
 			: Record<string, string>,
 		options?: Omit<RequestInit, 'method'>,
 	): Promise<TPath extends PathFor<'GET'> ? Serialized<OperationResult<'GET', MatchPathPattern<TPath>>> : unknown> {
-		return this.send(`${endpoint}?${this.getParams(params)}`, 'GET', options);
+		return this.send(`${endpoint}?${this.getParams(params)}`, 'GET', options).then(function (response) {
+			return response.json();
+		});
 	}
 
 	post: RestClientInterface['post'] = (endpoint, params, { headers, ...options } = {}) => {
@@ -75,6 +82,8 @@ export class RestClient implements RestClientInterface {
 			},
 
 			...options,
+		}).then(function (response) {
+			return response.json();
 		});
 	};
 
@@ -89,11 +98,15 @@ export class RestClient implements RestClientInterface {
 			},
 
 			...options,
+		}).then(function (response) {
+			return response.json();
 		});
 	};
 
 	delete: RestClientInterface['delete'] = (endpoint, params, options) => {
-		return this.send(endpoint, 'DELETE', options);
+		return this.send(endpoint, 'DELETE', options).then(function (response) {
+			return response.json();
+		});
 	};
 
 	protected getCredentialsAsHeaders(): Record<string, string> {
@@ -106,14 +119,12 @@ export class RestClient implements RestClientInterface {
 			: {};
 	}
 
-	protected send<T>(endpoint: string, method: string, { headers, ...options }: Omit<RequestInit, 'method'> = {}): Promise<T> {
+	send(endpoint: string, method: string, { headers, ...options }: Omit<RequestInit, 'method'> = {}): Promise<Response> {
 		return fetch(`${this.baseUrl}${endpoint}`, {
 			...options,
 			headers: { ...this.getCredentialsAsHeaders(), ...this.headers, ...headers },
 			method,
-		}).then(function (response) {
-			return response.json();
-		}) as Promise<T>;
+		});
 	}
 
 	protected getParams(data: Record<string, object | number | string | boolean> | void): string {
@@ -126,5 +137,11 @@ export class RestClient implements RestClientInterface {
 					})
 					.join('&')
 			: '';
+	}
+
+	use(middleware: Middleware<RestClientInterface['send']>): void {
+		this.send = function (this: RestClient, ...context: Parameters<RestClientInterface['send']>): ReturnType<RestClientInterface['send']> {
+			return middleware(context, pipe(this.send.bind(this)));
+		} as RestClientInterface['send'];
 	}
 }

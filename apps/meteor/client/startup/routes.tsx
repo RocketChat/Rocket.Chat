@@ -65,7 +65,7 @@ FlowRouter.route('/meet/:rid', {
 	async action(_params, queryParams) {
 		if (queryParams?.token !== undefined) {
 			// visitor login
-			const result = await APIClient.get(`/v1/livechat/visitor/${queryParams.token}`);
+			const result = (await APIClient.get(`/v1/livechat/visitor/${queryParams.token}`)) as ILivechatVisitor;
 
 			if ('visitor' in result) {
 				appLayout.render(<MeetPage />);

@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { baseURI } from '../../../../client/lib/baseURI';
+import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
 
 export class RestApiClient extends RestClient {
 	getCredentials():
@@ -25,4 +26,27 @@ export class RestApiClient extends RestClient {
 
 export const APIClient = new RestApiClient({
 	baseUrl: baseURI.replace(/\/$/, ''),
+});
+
+APIClient.use(function (request, next) {
+	try {
+		return next(...request);
+	} catch (e) {
+		return new Promise((resolve, reject) => {
+			process2faReturn({
+				error: e,
+				result: null,
+				emailOrUsername: undefined,
+				originalCallback: () => reject(e),
+				onCode(code, method) {
+					return resolve(
+						next(request[0], request[1], {
+							...request[2],
+							headers: { ...request[2].headers, 'x-2fa-code': code, 'x-2fa-method': method },
+						}),
+					);
+				},
+			});
+		});
+	}
 });
