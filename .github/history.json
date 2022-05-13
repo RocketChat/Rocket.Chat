@@ -74398,6 +74398,49 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "4.7.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25471",
+          "title": "[FIX] Spotlight results showing usernames instead of real names",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.7.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "25434",
+          "title": "[FIX] LDAP sync removing users from channels when multiple groups are mapped to it",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.7.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "25441",
+          "title": "[NEW] Use setting to determine if initial general channel is needed",
+          "userLogin": "felipe-menelau",
+          "description": "- Adds flag responsible for overwriting #general channel creation",
+          "milestone": "4.7.1",
+          "contributors": [
+            "felipe-menelau",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
