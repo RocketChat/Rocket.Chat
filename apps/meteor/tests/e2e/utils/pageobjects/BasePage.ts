@@ -19,8 +19,13 @@ class BasePage {
 		await this.getPage().waitForSelector(selector);
 	}
 
-	public async keyboardPress(key: string): Promise<void> {
-		await this.getPage().keyboard.press(key, { delay: 10 });
+	public async keyboardPress(
+		key: string,
+		options?: {
+			delay?: number;
+		},
+	): Promise<void> {
+		await this.getPage().keyboard.press(key, options);
 	}
 }
 export default BasePage;
