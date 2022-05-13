@@ -3,9 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { Settings } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
+import { AppServerOrchestrator } from '../orchestrator';
 
-const waitToLoad = function (orch) {
-	return new Promise((resolve) => {
+const waitToLoad = function (orch: AppServerOrchestrator) {
+	return new Promise<void>((resolve) => {
 		let id = setInterval(() => {
 			if (orch.isEnabled() && orch.isLoaded()) {
 				clearInterval(id);
@@ -16,8 +17,8 @@ const waitToLoad = function (orch) {
 	});
 };
 
-const waitToUnload = function (orch) {
-	return new Promise((resolve) => {
+const waitToUnload = function (orch: AppServerOrchestrator) {
+	return new Promise<void>((resolve) => {
 		let id = setInterval(() => {
 			if (!orch.isEnabled() && !orch.isLoaded()) {
 				clearInterval(id);
@@ -29,7 +30,9 @@ const waitToUnload = function (orch) {
 };
 
 export class AppMethods {
-	constructor(orch) {
+	_orch: AppServerOrchestrator;
+	
+	constructor(orch: AppServerOrchestrator) {
 		this._orch = orch;
 
 		this._addMethods();
@@ -45,7 +48,8 @@ export class AppMethods {
 
 	_addMethods() {
 		const instance = this;
-
+		const uid = Meteor.userId();
+		
 		Meteor.methods({
 			'apps/is-enabled'() {
 				return instance.isEnabled();
@@ -56,13 +60,13 @@ export class AppMethods {
 			},
 
 			'apps/go-enable': twoFactorRequired(function _appsGoEnable() {
-				if (!Meteor.userId()) {
+				if (!uid) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 						method: 'apps/go-enable',
 					});
 				}
 
-				if (!hasPermission(Meteor.userId(), 'manage-apps')) {
+				if (!hasPermission(uid, 'manage-apps')) {
 					throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 						method: 'apps/go-enable',
 					});
@@ -74,13 +78,13 @@ export class AppMethods {
 			}),
 
 			'apps/go-disable': twoFactorRequired(function _appsGoDisable() {
-				if (!Meteor.userId()) {
+				if (!uid) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 						method: 'apps/go-enable',
 					});
 				}
 
-				if (!hasPermission(Meteor.userId(), 'manage-apps')) {
+				if (!hasPermission(uid, 'manage-apps')) {
 					throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 						method: 'apps/go-enable',
 					});

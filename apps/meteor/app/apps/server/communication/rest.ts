@@ -8,10 +8,12 @@ import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
 import { Users } from '../../../models/server';
 import { Settings } from '../../../models/server/raw';
-import { Apps } from '../orchestrator';
+import { Apps, AppServerOrchestrator } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
+
+import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
@@ -21,7 +23,10 @@ const getDefaultHeaders = () => ({
 const purchaseTypes = new Set(['buy', 'subscription']);
 
 export class AppsRestApi {
-	constructor(orch, manager) {
+	_orch: AppServerOrchestrator;
+	_manager: AppServerOrchestrator;
+
+	constructor(orch: AppServerOrchestrator, manager: AppManager) {
 		this._orch = orch;
 		this._manager = manager;
 		this.loadAPI();
@@ -42,13 +47,14 @@ export class AppsRestApi {
 		const orchestrator = this._orch;
 		const manager = this._manager;
 
-		const handleError = (message, e) => {
+		const handleError = (message: string, e: unknown) => {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!e.hasOwnProperty('response')) {
 				orchestrator.getRocketChatLogger().warn(message, e.message);
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
+
 
 			orchestrator.getRocketChatLogger().error(message, e.response.data);
 
