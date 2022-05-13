@@ -83,7 +83,7 @@ class Twilio extends SMSServiceClass {
 		return returnData;
 	}
 
-	send(fromNumber: string, toNumber: string, message: string, extraData: any): void {
+	send(fromNumber: string, toNumber: string, message: string, extraData: Record<string, any>): void {
 		const client = twilio(this.accountSid, this.authToken);
 		let body = message;
 

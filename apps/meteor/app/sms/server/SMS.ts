@@ -15,6 +15,7 @@ export type ParsedData = {
 	to: string;
 	body: string;
 	media: { url: string; contentType: string }[];
+	extra?: Record<string, string>;
 };
 
 export abstract class SMSServiceClass {
@@ -24,16 +25,8 @@ export abstract class SMSServiceClass {
 		fromNumber: string,
 		toNumber: string,
 		message: string,
-		username?: string,
-		password?: string,
-		address?: string,
-	): { isSuccess: boolean; resultMsg: string };
-
-	abstract sendBatch(
-		fromNumber: string,
-		toNumbersArr: string[],
-		message: string,
-	): Promise<{ isSuccess: boolean; resultMsg: string; response: HTTP.HTTPResponse | null }>;
+		extraData: Record<string, any>,
+	): { isSuccess: boolean; resultMsg: string } | void;
 
 	abstract response(): { headers: { [key: string]: string }; body: string };
 

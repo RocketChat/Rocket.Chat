@@ -62,28 +62,14 @@ class Mobex extends SMSServiceClass {
 		return returnData;
 	}
 
-	send(
-		fromNumber: string,
-		toNumber: string,
-		message: string,
-		username?: string,
-		password?: string,
-		address?: string,
-	): { isSuccess: boolean; resultMsg: string } {
+	send(fromNumber: string, toNumber: string, message: string, _extraData?: Record<string, any>): { isSuccess: boolean; resultMsg: string } {
 		let currentFrom = this.from;
-		let currentUsername = this.username;
-		let currentAddress = this.address;
-		let currentPassword = this.password;
+		const currentUsername = this.username;
+		const currentAddress = this.address;
+		const currentPassword = this.password;
 
 		if (fromNumber) {
 			currentFrom = fromNumber;
-		}
-		if (username && password) {
-			currentUsername = username;
-			currentPassword = password;
-		}
-		if (address) {
-			currentAddress = address;
 		}
 
 		const strippedTo = toNumber.replace(/\D/g, '');

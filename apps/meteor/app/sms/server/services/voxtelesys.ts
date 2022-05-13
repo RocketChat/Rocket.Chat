@@ -1,10 +1,10 @@
 import { HTTP } from 'meteor/http';
-import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 
-import { settings } from '../../../settings';
-import { SMS } from '../SMS';
+import { Users } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { ParsedData, SMS, SMSServiceClass, UnparsedData } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { api } from '../../../../server/sdk/api';
@@ -12,27 +12,37 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) =>
+const notifyAgent = (userId: string, rid: string, msg: string): Promise<void> =>
 	api.broadcast('notify.ephemeralMessage', userId, rid, {
 		msg,
 	});
 
-class Voxtelesys {
+class Voxtelesys extends SMSServiceClass {
+	authToken: string;
+
+	URL: string;
+
+	fileUploadEnabled: string;
+
+	mediaTypeWhiteList: string;
+
 	constructor() {
+		super();
 		this.authToken = settings.get('SMS_Voxtelesys_authToken');
 		this.URL = settings.get('SMS_Voxtelesys_URL');
 		this.fileUploadEnabled = settings.get('SMS_Voxtelesys_FileUpload_Enabled');
 		this.mediaTypeWhiteList = settings.get('SMS_Voxtelesys_FileUpload_MediaTypeWhiteList');
 	}
 
-	parse(data) {
-		const returnData = {
+	parse(data: UnparsedData): ParsedData {
+		const returnData: ParsedData = {
 			from: data.from,
 			to: data.to,
 			body: data.body,
 			media: [],
 
 			extra: {
+				// eslint-disable-next-line @typescript-eslint/camelcase
 				received_at: data.received_at,
 			},
 		};
@@ -48,7 +58,7 @@ class Voxtelesys {
 			};
 
 			const mediaUrl = data.media[mediaIndex];
-			const contentType = mime.lookup(new URL(data.media[mediaIndex]).pathname);
+			const contentType = mime.lookup(new URL(data.media[mediaIndex]).pathname) as string;
 
 			media.url = mediaUrl;
 			media.contentType = contentType;
@@ -59,17 +69,17 @@ class Voxtelesys {
 		return returnData;
 	}
 
-	send(fromNumber, toNumber, message, extraData) {
+	send(fromNumber: string, toNumber: string, message: string, extraData: Record<string, any>): void {
 		let media;
-		const defaultLanguage = settings.get('Language') || 'en';
-		if (extraData && extraData.fileUpload) {
+		const defaultLanguage = settings.get<string>('Language') || 'en';
+		if (extraData?.fileUpload) {
 			const {
 				rid,
 				userId,
 				fileUpload: { size, type, publicFilePath },
 			} = extraData;
-			const user = userId ? Meteor.users.findOne(userId) : null;
-			const lng = (user && user.language) || defaultLanguage;
+			const user = userId ? Users.findOne(userId) : null;
+			const lng = user?.language || defaultLanguage;
 
 			let reason;
 			if (!this.fileUploadEnabled) {
@@ -79,7 +89,7 @@ class Voxtelesys {
 					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
-			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList)) {
+			} else if (!fileUploadIsValidContentType(type, this.mediaTypeWhiteList)) {
 				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
 			}
 
@@ -110,7 +120,7 @@ class Voxtelesys {
 		}
 	}
 
-	response(/* message */) {
+	response(/* message */): { headers: Record<string, string>; body: any } {
 		return {
 			headers: {
 				'Content-Type': 'application/json',
@@ -121,7 +131,7 @@ class Voxtelesys {
 		};
 	}
 
-	error(error) {
+	error(error: Error & { reason?: string }): { headers: Record<string, string>; body: any } {
 		let message = '';
 		if (error.reason) {
 			message = error.reason;
