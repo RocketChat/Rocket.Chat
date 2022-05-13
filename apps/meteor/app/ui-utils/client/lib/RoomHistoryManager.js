@@ -111,17 +111,15 @@ const defaultLimit = parseInt(getConfig('roomListLimit')) || 50;
 const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 10);
 
 const spoilerHandle = (evnt) => {
-	const spoilWrapper = evnt.currentTarget
+	const spoilWrapper = evnt.currentTarget;
 
-	console.log("spoilWrapper", spoilWrapper)
-
-	spoilWrapper.classList.toggle("hide")
-	if (!spoilWrapper.classList.contains("hide")) {
-		spoilWrapper.setAttribute("role", "presentation")
-		spoilWrapper.setAttribute("tabindex", "-1")
-		spoilWrapper.setAttribute("aria-expanded", true)
+	spoilWrapper.classList.toggle('hide');
+	if (!spoilWrapper.classList.contains('hide')) {
+		spoilWrapper.setAttribute('role', 'presentation');
+		spoilWrapper.setAttribute('tabindex', '-1');
+		spoilWrapper.setAttribute('aria-expanded', true);
 	}
-}
+};
 
 export const RoomHistoryManager = new (class extends Emitter {
 	constructor() {
@@ -143,6 +141,11 @@ export const RoomHistoryManager = new (class extends Emitter {
 		}
 
 		return this.histories[rid];
+	}
+
+	getSpoilers() {
+		const t = [...document.getElementsByClassName('spoiler')];
+		t.map((x) => x.addEventListener('click', spoilerHandle));
 	}
 
 	async queue() {
@@ -252,12 +255,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 		waitAfterFlush(() => {
 			const heightDiff = wrapper.scrollHeight - previousHeight;
 			wrapper.scrollTop = scroll + heightDiff;
-		});
-
-		waitAfterFlush(() => {
-			const t = [...document.getElementsByClassName("spoiler")]
-			t.map(x => x.addEventListener("click", spoilerHandle))
-			console.log("flushed spoil", t)
+			this.getSpoilers();
 		});
 
 		room.isLoading.set(false);
@@ -265,7 +263,6 @@ export const RoomHistoryManager = new (class extends Emitter {
 			readMessage.refreshUnreadMark(rid);
 			return RoomManager.updateMentionsMarksOfRoom(typeName);
 		});
-		
 	}
 
 	async getMoreNext(rid, limit = defaultLimit) {

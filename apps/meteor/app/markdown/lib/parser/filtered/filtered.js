@@ -46,10 +46,8 @@ export const filtered = (
 	// Filter Spoiler text
 	message = message.replace(/(^|>|[ >*~`|])\|{1,2}([^\|\r\n]+)\|{1,2}([<*~`]|\B|\b|$)/gm, '$1$2$3');
 
-
 	// Filter > quote
 	message = message.replace(/^>(.*)$/gm, '$1');
-	console.log("catch message", message)
 
 	return message;
 };

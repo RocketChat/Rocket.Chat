@@ -80,6 +80,7 @@ export const readMessage = new (class extends Emitter {
 
 		return Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
+			RoomHistoryManager.getSpoilers();
 			return this.emit(rid);
 		});
 	}

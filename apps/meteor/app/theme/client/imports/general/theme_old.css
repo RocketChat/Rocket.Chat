@@ -99,15 +99,15 @@
 }
 
 .spoiler.hide {
-	background-color: var(--primary-font-color);
-	border-radius: 3px;
 	cursor: pointer;
+
+	border-radius: 3px;
+	background-color: var(--primary-font-color);
 }
 
 .spoiler {
-	background-color: #0000001a;
 	border-radius: 3px;
-
+	background-color: #0000001a;
 }
 
 .background-transparent-darkest {
@@ -229,8 +229,8 @@ textarea {
 	background-color: var(--popup-list-selected-background);
 }
 
-.rc-old input[type="button"],
-.rc-old input[type="submit"] {
+.rc-old input[type='button'],
+.rc-old input[type='submit'] {
 	color: var(--button-secondary-text-color);
 	border-color: var(--button-secondary-background);
 	background: var(--button-secondary-background);
@@ -267,7 +267,7 @@ textarea {
 .message,
 .flex-tab {
 	a i,
-	a[class^="icon-"] {
+	a[class^='icon-'] {
 		color: var(--primary-font-color);
 
 		&:hover {
