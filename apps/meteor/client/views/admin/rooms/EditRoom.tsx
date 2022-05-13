@@ -19,7 +19,7 @@ import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/Delete/';
+import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/Delete';
 
 type EditRoomProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
@@ -57,7 +57,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 
 const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => {
 	const t = useTranslation();
-	console.log("Room = ", room)
+
 	const [deleting, setDeleting] = useState(false);
 
 	const setModal = useSetModal();
@@ -152,7 +152,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		if (room.teamMain) {
 			setModal(
 				<DeleteTeamModalWithRooms
-					onConfirm={async (deletedRooms: EditRoomProps['room'][]): Promise<void> => {
+					onConfirm={async (deletedRooms: IRoom[]): Promise<void> => {
 						const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms.map((room) => room._id) : [];
 
 						try {
