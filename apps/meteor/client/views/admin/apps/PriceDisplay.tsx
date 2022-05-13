@@ -1,10 +1,23 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
+import { int } from 'aws-sdk/clients/datapipeline';
+import React, { FC, useMemo } from 'react';
 
 import { formatPricingPlan, formatPrice } from './helpers';
 
-const formatPriceAndPurchaseType = (purchaseType, pricingPlans, price) => {
+type PriceDisplayProps = {
+	purchaseType: string;
+	pricingPlans: unknown[];
+	price: int;
+	showType?: boolean;
+};
+
+type FormattedPriceAndPlan = {
+	type: 'Subscription' | 'Paid' | 'Free';
+	price: string;
+};
+
+const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: unknown[], price: int): FormattedPriceAndPlan => {
 	if (purchaseType === 'subscription') {
 		const type = 'Subscription';
 		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
@@ -20,18 +33,19 @@ const formatPriceAndPurchaseType = (purchaseType, pricingPlans, price) => {
 	return { type: 'Free', price: '-' };
 };
 
-function PriceDisplay({ purchaseType, pricingPlans, price, showType = true, ...props }) {
+const PriceDisplay: FC<PriceDisplayProps> = ({ purchaseType, pricingPlans, price, showType = true, ...props }) => {
 	const t = useTranslation();
 
 	const { type, price: formattedPrice } = useMemo(
 		() => formatPriceAndPurchaseType(purchaseType, pricingPlans, price),
 		[purchaseType, pricingPlans, price],
 	);
+
 	return (
 		<Box display='flex' flexDirection='column' {...props}>
 			{showType && (
 				<Box color='default' withTruncatedText>
-					{t(type)}
+					{t(type as TranslationKey)}
 				</Box>
 			)}
 			<Box color='hint' withTruncatedText>
@@ -39,6 +53,6 @@ function PriceDisplay({ purchaseType, pricingPlans, price, showType = true, ...p
 			</Box>
 		</Box>
 	);
-}
+};
 
 export default PriceDisplay;
