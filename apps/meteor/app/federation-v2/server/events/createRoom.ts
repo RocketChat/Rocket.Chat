@@ -26,10 +26,6 @@ const createLocalRoomAsync = async (roomType: RoomType, roomName: string, creato
 	return new Promise((resolve) => resolve(createRoom(roomType, roomName, creator) as unknown as ICreatedRoom));
 };
 
-const setRoomAsBridged = async (roomId: string): Promise<void> => {
-	await Rooms.setAsBridged(roomId);
-};
-
 const createBridgedRecordRoom = async (roomId: IRoom['id'], matrixRoomId: string): Promise<void> =>
 	new Promise((resolve) => resolve(MatrixBridgedRoom.insert({ rid: roomId, mri: matrixRoomId })));
 
@@ -63,19 +59,18 @@ export const createLocalRoom = async (sender: string, matrixRoomId: string, crea
 		generateRoomNameForLocalServer(matrixRoomId, matrixRoomName),
 		creator,
 	);
-	await setRoomAsBridged(roomId);
 	await createBridgedRecordRoom(roomId, matrixRoomId);
+	await Rooms.setAsBridged(roomId);
 
 	return roomId;
 };
 
 export const handleCreateRoom = async (event: IMatrixEvent<MatrixEventType.CREATE_ROOM>): Promise<void> => {
-	const { room_id: matrixRoomId, sender } = event;
+	const { room_id: matrixRoomId, sender, content: { was_programatically_created: wasProgramaticallyCreated = false }} = event;
 
 	// Check if the room already exists and if so, ignore
 	const roomExists = await checkBridgedRoomExists(matrixRoomId);
-
-	if (roomExists) {
+	if (roomExists || wasProgramaticallyCreated) {
 		return;
 	}
 
