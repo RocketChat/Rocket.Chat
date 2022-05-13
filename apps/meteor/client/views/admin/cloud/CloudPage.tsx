@@ -40,7 +40,6 @@ const CloudPage = function CloudPage(): ReactNode {
 	const { reload, ...checkRegisterStatus } = useMethodData('cloud:checkRegisterStatus', args);
 
 	useEffect(() => {
-		console.log('checkRegisterStatus', checkRegisterStatus);
 	}, [checkRegisterStatus]);
 
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
