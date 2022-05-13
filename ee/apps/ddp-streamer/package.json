@@ -1,0 +1,50 @@
+{
+	"name": "@rocket.chat/ddp-streamer",
+	"private": true,
+	"version": "0.0.1",
+	"description": "Rocket.Chat DDP-Streamer service",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"rocketchat"
+	],
+	"author": "Rocket.Chat",
+	"dependencies": {
+		"@rocket.chat/apps-engine": "^1.31.0",
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/emitter": "~0.31.9",
+		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/string-helpers": "~0.31.9",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"colorette": "^1.3.0",
+		"ejson": "^2.2.2",
+		"eventemitter3": "^4.0.7",
+		"fibers": "^5.0.1",
+		"jaeger-client": "^3.19.0",
+		"moleculer": "^0.14.19",
+		"mongodb": "^3.6.10",
+		"nats": "^2.4.0",
+		"pino": "^7.9.2",
+		"sharp": "^0.30.4",
+		"uuid": "^7.0.3",
+		"ws": "^8.5.0"
+	},
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@types/ejson": "^2.1.3",
+		"@types/meteor": "1.4.81",
+		"@types/mongodb": "^3.6.20",
+		"@types/node": "^14.18.12",
+		"@types/sharp": "^0.30.2",
+		"@types/uuid": "^8.3.4",
+		"@types/ws": "^8.5.3",
+		"pino-pretty": "^7.6.0",
+		"typescript": "~4.3.5"
+	},
+	"main": "./dist/service.js",
+	"files": [
+		"/dist"
+	]
+}
