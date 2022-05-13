@@ -112,6 +112,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 	return __html ? (
 		<Box
+			style={{whiteSpace:"pre-line"}} 
 			dangerouslySetInnerHTML={{ __html }}
 			withTruncatedText={withTruncatedText}
 			withRichContent={variant === 'inlineWithoutBreaks' ? 'inlineWithoutBreaks' : true}
