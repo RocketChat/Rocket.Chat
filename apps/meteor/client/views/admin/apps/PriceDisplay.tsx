@@ -21,7 +21,7 @@ type FormattedPriceAndPlan = {
 	price: string;
 };
 
-const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: PricingPlan[], price: int): FormattedPriceAndPlan => {
+const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: PricingPlan[], price: number): FormattedPriceAndPlan => {
 	if (purchaseType === 'subscription') {
 		const type = 'Subscription';
 		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {

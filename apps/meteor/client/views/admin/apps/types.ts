@@ -36,4 +36,3 @@ export type App = {
 	modifiedAt: string;
 	permissions: unknown[];
 };
-
