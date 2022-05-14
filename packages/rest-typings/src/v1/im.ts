@@ -10,7 +10,7 @@ export type ImEndpoints = {
 		};
 	};
 	'im.delete': {
-		POST: (params: { roomId: string }) => void;
+		POST: (params: { roomId?: string; username?: string }) => void;
 	};
 	'im.close': {
 		POST: (params: { roomId: string }) => void;
@@ -42,19 +42,20 @@ export type ImEndpoints = {
 				showThreadMessages?: string;
 			}>,
 		) => {
-			messages: IMessage[];
+			messages: Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | '_updatedAt' | 'u'>[];
 		};
 	};
 
 	'im.members': {
-		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; filter?: string; status?: string[] }>) => PaginatedResult<{
-			members: IUser[];
+		GET: (params: PaginatedRequest<{ roomId?: IRoom['_id']; username?: string; filter?: string; status?: string[] }>) => PaginatedResult<{
+			members: Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'>[];
 		}>;
 	};
 	'im.messages': {
 		GET: (
 			params: PaginatedRequest<{
-				roomId: IRoom['_id'];
+				roomId?: IRoom['_id'];
+				username?: string;
 				query?: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
 				fields?: string;
 			}>,

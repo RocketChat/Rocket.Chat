@@ -1,3 +1,6 @@
+/**
+ * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
+ */
 import type { IRoom, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
@@ -46,7 +49,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			const { username, usernames, excludeSelf } = this.requestParams();
+			const { username, usernames, excludeSelf = false } = this.requestParams();
 
 			if (!username && !usernames) {
 				throw new Meteor.Error('error-room-param-not-provided', 'Body param "username" or "usernames" is required');
@@ -68,10 +71,11 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const { roomId } = this.requestParams();
-			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			const { roomId, username } = this.requestParams();
+			if (!roomId && !username) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
 			}
+			const { room } = await findDirectMessageRoom({ roomId, username, userId: this.userId });
 
 			const canAccess = (await canAccessRoomIdAsync(roomId, this.userId)) || hasPermission(this.userId, 'view-room-administration');
 			if (!canAccess) {
@@ -265,12 +269,14 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { roomId } = this.requestParams();
+			const { roomId, username } = this.requestParams();
 
-			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			if (!roomId && !username) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
 			}
-			const findResult = await findDirectMessageRoom({ roomId, userId: this.userId });
+
+			const { room } = await findDirectMessageRoom({ roomId, username, userId: this.userId });
+
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
@@ -285,13 +291,13 @@ API.v1.addRoute(
 			const { status, filter } = this.queryParams;
 
 			const extraQuery = {
-				_id: { $in: findResult.room.uids },
+				_id: { $in: room.uids },
 				...(status && { status: { $in: status } }),
 			};
 
 			const options = {
 				sort: { username: sort?.username ? sort.username : 1 },
-				fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
+				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
 				skip: offset,
 				limit: count,
 			};
@@ -316,7 +322,13 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { roomId } = this.requestParams();
+			const { roomId, username } = this.requestParams();
+
+			if (!roomId && !username) {
+				throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
+			}
+
+			const { room } = await findDirectMessageRoom({ roomId, username, userId: this.userId });
 
 			if (!roomId) {
 				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
@@ -499,10 +511,10 @@ API.v1.addRoute(
 				return API.v1.failure('The bodyParam "topic" is required');
 			}
 
-			const findResult = await findDirectMessageRoom({ roomId, userId: this.userId });
+			const { room } = await findDirectMessageRoom({ roomId, userId: this.userId });
 
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult.room._id, 'roomTopic', topic);
+				Meteor.call('saveRoomSettings', room._id, 'roomTopic', topic);
 			});
 
 			return API.v1.success({
