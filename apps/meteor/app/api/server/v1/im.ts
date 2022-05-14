@@ -1,12 +1,12 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IRoom, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISetting, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Users, Rooms } from '../../../models/server';
-import { Subscriptions, Uploads, Messages } from '../../../models/server/raw';
+import { Users } from '../../../models/server';
+import { Subscriptions, Uploads, Messages, Rooms, Settings } from '../../../models/server/raw';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -425,26 +425,33 @@ API.v1.addRoute(
 	['dm.list', 'im.list'],
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { name: 1 }, fields } = this.parseJsonQuery();
 
 			// TODO: CACHE: Add Breacking notice since we removed the query param
 
-			const cursor = Rooms.findBySubscriptionTypeAndUserId('d', this.userId, {
-				sort,
-				skip: offset,
-				limit: count,
-				fields,
-			});
+			const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' })
+				.map((item) => item.rid)
+				.toArray();
 
-			const total = cursor.count();
-			const rooms = cursor.fetch();
+			const rooms = Rooms.find(
+				{ type: 'd', _id: { $in: subscriptions } },
+				{
+					sort,
+					skip: offset,
+					limit: count,
+					fields,
+				},
+			);
+
+			const total = await rooms.count();
+			const ims = await rooms.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId) as IRoom).toArray();
 
 			return API.v1.success({
-				ims: rooms.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
+				ims,
 				offset,
-				count: rooms.length,
+				count,
 				total,
 			});
 		},
@@ -455,28 +462,30 @@ API.v1.addRoute(
 	['dm.list.everyone', 'im.list.everyone'],
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-room-administration')) {
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count }: { offset: number; count: number } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
 			const ourQuery = Object.assign({}, query, { t: 'd' });
 
-			const rooms = Rooms.find(ourQuery, {
+			const rooms = await Rooms.find<IRoom>(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				fields,
-			}).fetch();
+			})
+				.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId) as IRoom)
+				.toArray();
 
 			return API.v1.success({
-				ims: rooms.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
+				ims: rooms,
 				offset,
 				count: rooms.length,
-				total: Rooms.find(ourQuery).count(),
+				total: await Rooms.find(ourQuery).count(),
 			});
 		},
 	},
