@@ -77,12 +77,10 @@ API.v1.addRoute(
 			}
 			const { room } = await findDirectMessageRoom({ roomId, username, userId: this.userId });
 
-			const canAccess = (await canAccessRoomIdAsync(roomId, this.userId)) || hasPermission(this.userId, 'view-room-administration');
+			const canAccess = (await canAccessRoomIdAsync(room._id, this.userId)) || hasPermission(this.userId, 'view-room-administration');
 			if (!canAccess) {
 				return API.v1.unauthorized();
 			}
-
-			const { room } = await findDirectMessageRoom({ roomId, userId: this.userId });
 
 			Meteor.call('eraseRoom', room._id);
 
@@ -129,7 +127,7 @@ API.v1.addRoute(
 			const access = hasPermission(this.userId, 'view-room-administration');
 			const { roomId, userId: ruserId } = this.requestParams();
 			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+				throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" is required');
 			}
 			let user = this.userId;
 			let unreads = null;
@@ -147,6 +145,12 @@ API.v1.addRoute(
 				}
 				user = ruserId;
 			}
+			const canAccess = await canAccessRoomIdAsync(roomId, user);
+
+			if (!canAccess) {
+				return API.v1.unauthorized();
+			}
+
 			const { room, subscription } = await findDirectMessageRoom({ roomId, userId: user });
 
 			lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString(); // lm is the last message timestamp
@@ -189,7 +193,7 @@ API.v1.addRoute(
 			const { roomId, username } = this.requestParams();
 
 			if (!roomId && !username) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
+				throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
 			}
 
 			const { room } = await findDirectMessageRoom({ roomId, username, userId: this.userId });
@@ -228,7 +232,6 @@ API.v1.addRoute(
 	},
 );
 
-// https://github.com/xbolshe/docs/blob/cf09dff1b654ca861dac539aa01956a508df49aa/developer-guides/rest-api/im/history/README.md
 API.v1.addRoute(
 	['dm.history', 'im.history'],
 	{ authRequired: true },
@@ -277,6 +280,10 @@ API.v1.addRoute(
 
 			const { room } = await findDirectMessageRoom({ roomId, username, userId: this.userId });
 
+			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
+			if (!canAccess) {
+				return API.v1.unauthorized();
+			}
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
@@ -330,15 +337,15 @@ API.v1.addRoute(
 
 			const { room } = await findDirectMessageRoom({ roomId, username, userId: this.userId });
 
-			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
+			if (!canAccess) {
+				return API.v1.unauthorized();
 			}
-			const findResult = await findDirectMessageRoom({ roomId, userId: this.userId });
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
+			const ourQuery = Object.assign({}, query, { rid: room._id });
 			const sortObj = sort?.ts ? { ts: sort.ts } : { ts: -1 };
 			const messages = await Messages.find(ourQuery, {
 				sort: sortObj,
@@ -484,6 +491,11 @@ API.v1.addRoute(
 			if (!roomId) {
 				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
 			}
+			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
+			if (!canAccess) {
+				return API.v1.unauthorized();
+			}
+
 			const { room, subscription } = await findDirectMessageRoom({ roomId, userId: this.userId });
 
 			if (!subscription?.open) {
@@ -507,6 +519,11 @@ API.v1.addRoute(
 			if (!roomId) {
 				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
 			}
+			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
+			if (!canAccess) {
+				return API.v1.unauthorized();
+			}
+
 			if (!topic) {
 				return API.v1.failure('The bodyParam "topic" is required');
 			}
