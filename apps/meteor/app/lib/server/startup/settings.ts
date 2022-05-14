@@ -2886,6 +2886,10 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 		this.add('Organization_Email', '', {
 			type: 'string',
 		});
+		this.add('Triggered_Emails_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 	});
 
 	this.section('Cloud_Info', function () {

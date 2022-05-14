@@ -147,4 +147,5 @@ export interface IStats {
 	joinJitsiButton: number;
 	totalBroadcastRooms: number;
 	totalRoomsWithActiveLivestream: number;
+	totalTriggeredEmails: number;
 }

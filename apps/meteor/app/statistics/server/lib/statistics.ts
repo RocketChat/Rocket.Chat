@@ -459,6 +459,7 @@ export const statistics = {
 		statistics.totalOTR = settings.get('OTR_Count');
 		statistics.totalBroadcastRooms = await RoomsRaw.findByBroadcast().count();
 		statistics.totalRoomsWithActiveLivestream = await RoomsRaw.findByActiveLivestream().count();
+		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 
 		await Promise.all(statsPms).catch(log);
 
