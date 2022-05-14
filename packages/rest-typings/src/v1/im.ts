@@ -64,7 +64,7 @@ export type ImEndpoints = {
 		}>;
 	};
 	'im.messages.others': {
-		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query?: string; fields?: string }>) => PaginatedResult<{ message: IMessage[] }>;
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query?: string; fields?: string }>) => PaginatedResult<{ messages: IMessage[] }>;
 	};
 	'im.list': {
 		GET: (params: PaginatedRequest<{ fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;

@@ -364,61 +364,62 @@ API.v1.addRoute(
 	},
 );
 
-// TODO: fix return
-// API.v1.addRoute(
-// 	['dm.messages.others', 'im.messages.others'],
-// 	{ authRequired: true },
-// 	{
-// 		async get() {
-// 			// if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
-// 			// 	throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
-// 			// 		route: '/api/v1/im.messages.others',
-// 			// 	});
-// 			// }
+API.v1.addRoute(
+	['dm.messages.others', 'im.messages.others'],
+	{ authRequired: true },
+	{
+		async get() {
+			const settings = await Settings.findOne<ISetting>(
+				{ _id: 'API_Enable_Direct_Message_History_EndPoint' },
+				{
+					projection: { _id: 1, value: 1 },
+				},
+			);
+			if (settings?.value !== true) {
+				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
+					route: '/api/v1/im.messages.others',
+				});
+			}
 
-// 			try {
-// 				if (!hasPermission(this.userId, 'view-room-administration')) {
-// 					return API.v1.unauthorized();
-// 				}
+			if (!hasPermission(this.userId, 'view-room-administration')) {
+				return API.v1.unauthorized();
+			}
 
-// 				const { roomId } = this.requestParams();
-// 				if (!roomId || !roomId.trim()) {
-// 					throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
-// 				}
+			const { roomId } = this.requestParams();
+			if (!roomId) {
+				throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
+			}
 
-// 				const room = Rooms.findOneById(roomId);
-// 				if (!room || room.t !== 'd') {
-// 					throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
-// 				}
+			const room = await Rooms.findOneById<IRoom>(roomId, { projection: { _id: 1, t: 1 } });
+			if (!room || room?.t !== 'd') {
+				throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
+			}
 
-// 				const { offset, count } = this.getPaginationItems();
-// 				const { sort, fields, query } = this.parseJsonQuery();
-// 				const ourQuery = Object.assign({}, query, { rid: room._id });
+			const { offset, count } = this.getPaginationItems();
+			const { sort, fields, query } = this.parseJsonQuery();
+			const ourQuery = Object.assign({}, query, { rid: room._id });
 
-// 				const msgs = await Messages.find<IMessage>(ourQuery, {
-// 					sort: sort || { ts: -1 },
-// 					skip: offset,
-// 					limit: count,
-// 					fields,
-// 				}).toArray();
+			const msgs = await Messages.find<IMessage>(ourQuery, {
+				sort: sort || { ts: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			}).toArray();
 
-// 				if (!msgs) {
-// 					throw new Meteor.Error('error-no-messages', 'No messages found');
-// 				}
+			if (!msgs) {
+				throw new Meteor.Error('error-no-messages', 'No messages found');
+			}
+			const total = await Messages.find(ourQuery).count();
 
-// 				return API.v1.success({
-// 					messages: msgs, //normalizeMessagesForUser(msgs, this.userId),
-// 					offset: 0,
-// 					count: 0,
-// 					total: 0, //await Messages.find(ourQuery).count(),
-// 				});
-// 			} catch (error) {
-// 				console.log(error, `${error}`);
-// 				API.v1.failure(`${error}`);
-// 			}
-// 		},
-// 	},
-// );
+			return API.v1.success({
+				messages: normalizeMessagesForUser(msgs, this.userId),
+				offset,
+				count: msgs.length,
+				total,
+			});
+		},
+	},
+);
 
 API.v1.addRoute(
 	['dm.list', 'im.list'],
