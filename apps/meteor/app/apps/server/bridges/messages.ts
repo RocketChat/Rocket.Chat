@@ -10,6 +10,7 @@ import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { api } from '../../../../server/sdk/api';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { AppServerOrchestrator } from '../orchestrator';
+import { deleteMessage } from '../../../lib/server';
 
 export class AppMessageBridge extends MessageBridge {
 	// eslint-disable-next-line no-empty-function
@@ -48,6 +49,21 @@ export class AppMessageBridge extends MessageBridge {
 		const editor = Users.findOneById(message.editor.id);
 
 		updateMessage(msg, editor);
+	}
+
+	protected async delete(messageId: string, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is deleting a message with id: "${messageId}".`);
+
+		const appUser = Users.findOneByAppId(appId, {});
+		if (!appUser) {
+			throw new Error('Invalid app user, cannot delete message.');
+		}
+		const message = Messages.findOneById(messageId);
+		if (!message) {
+			throw new Error('Invalid message, cannot delete message.');
+		}
+
+		await deleteMessage(message, appUser);
 	}
 
 	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
