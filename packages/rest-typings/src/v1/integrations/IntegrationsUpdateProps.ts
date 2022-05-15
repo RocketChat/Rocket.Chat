@@ -62,10 +62,6 @@ const integrationsUpdateSchema = {
 					type: 'string',
 					nullable: false,
 				},
-				// username: {
-				// 	type: 'string',
-				// 	nullable: false,
-				// },
 				channel: {
 					type: 'string',
 					nullable: false,
