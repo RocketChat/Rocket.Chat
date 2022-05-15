@@ -5,22 +5,22 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { sauEvents } from '../services/sauMonitor/events';
+import { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
 
-Accounts.onLogin((info: { user: Meteor.User; connection: Meteor.Connection; methodArguments: any[] }) => {
+Accounts.onLogin((info: ILoginAttempt) => {
 	const {
-		user,
 		methodArguments,
 		connection: { httpHeaders },
 	} = info;
-	const { resume } = methodArguments.reduce((a, b) => Object.assign(a, b), {});
-	let loginToken = '';
-	if (resume) {
-		loginToken = Accounts._hashLoginToken(resume);
-	}
+
+	// Sometimes there is no resume token
+	// TODO: check what case triggers onLogin that can cause a nonexistent resume token in methodArguments
+	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
+	const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
 
 	sauEvents.emit('accounts.login', {
-		userId: user._id,
-		connection: { loginToken, instanceId: InstanceStatus.id(), ...info.connection, httpHeaders: httpHeaders as IncomingHttpHeaders },
+		userId: info.user._id,
+		connection: { ...info.connection, loginToken, instanceId: InstanceStatus.id(), httpHeaders: httpHeaders as IncomingHttpHeaders },
 	});
 });
 

@@ -739,12 +739,28 @@ export const aggregates = {
 };
 
 export class SessionsRaw extends BaseRaw<ISession> {
+	protected indexes: IndexSpecification[] = [
+		{ key: { instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 } },
+		{ key: { instanceId: 1, sessionId: 1, userId: 1 } },
+		{ key: { instanceId: 1, sessionId: 1 } },
+		{ key: { sessionId: 1 } },
+		{ key: { sessionId: 1, userId: 1 } },
+		{ key: { userId: 1 } },
+		{ key: { userId: 1, loginToken: 1, logoutAt: 1 } },
+		{ key: { loginToken: 1, logoutAt: 1 } },
+		{ key: { year: 1, month: 1, day: 1, type: 1 } },
+		{ key: { type: 1 } },
+		{ key: { ip: 1, loginAt: 1 } },
+		{ key: { _computedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 45 },
+	];
+
 	private secondaryCollection: Collection<ISession>;
 
 	constructor(public readonly col: Collection<ISession>, public readonly colSecondary: Collection<ISession>, trash?: Collection<ISession>) {
 		super(col, trash);
 
 		this.secondaryCollection = colSecondary;
+		this.col.createIndexes(this.indexes);
 	}
 
 	async getByUserId(
@@ -1500,6 +1516,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	}
 
 	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined> {
+		// TODO: check if we should create a session when there is no loginToken or not
 		const { year, month, day, sessionId, instanceId } = data;
 
 		if (!year || !month || !day || !sessionId || !instanceId) {

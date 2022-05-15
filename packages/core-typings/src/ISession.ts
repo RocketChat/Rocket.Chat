@@ -35,6 +35,7 @@ export interface ISession {
 	closedAt?: Date;
 	logoutBy?: string;
 	count?: number;
+	loginToken?: string;
 }
 
 type SessionAggregationResult = {
