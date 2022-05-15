@@ -27,7 +27,6 @@ export interface ISession {
 	sessionId: string;
 	_updatedAt: Date;
 	createdAt: Date;
-	loginToken?: string;
 	host: string;
 	ip: string;
 	loginAt: Date;
