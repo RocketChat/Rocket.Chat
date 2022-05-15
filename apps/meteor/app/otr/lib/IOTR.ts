@@ -1,14 +1,14 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { OtrRoomState } from './OtrRoomState';
 import { UserPresence } from '../../../client/lib/presence';
-import type { OTRRoom } from './OTRRoom';
+import type { OTRRoom } from '../client/OTRRoom';
 
 export interface IOnUserStreamData {
-	roomId: string;
+	roomId: IRoom['_id'];
 	publicKey: string;
-	userId: string;
+	userId: IUser['_id'];
 	refresh?: boolean;
 }
 
@@ -16,12 +16,12 @@ export interface IOTRDecrypt {
 	ack: string | Uint8Array;
 	text: string;
 	ts: Date;
-	userId: string;
+	userId: IUser['_id'];
 	_id: string;
 }
 
 export interface IOTRRoom {
-	peerId: string;
+	peerId: IUser['_id'];
 	isFirstOTR: boolean;
 	state: ReactiveVar<OtrRoomState>;
 	setState(nextState: OtrRoomState): void;
@@ -40,9 +40,9 @@ export interface IOTRRoom {
 
 export interface IOTR {
 	enabled: ReactiveVar<boolean>;
-	instancesByRoomId: { [rid: string]: OTRRoom };
+	instancesByRoomId: { [rid: IRoom['_id']]: OTRRoom };
 	isEnabled(): boolean;
-	getInstanceByRoomId(roomId: string): OTRRoom | undefined;
+	getInstanceByRoomId(roomId: IRoom['_id']): OTRRoom | undefined;
 }
 
 export type publicKeyObject = ReturnType<<T extends U, U extends JsonWebKey>() => T>;

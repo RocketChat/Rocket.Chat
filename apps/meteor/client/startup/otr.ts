@@ -3,9 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
-import { IOnUserStreamData, IOTRDecrypt } from '../../app/otr/client/IOTR';
+import { IOnUserStreamData, IOTRDecrypt } from '../../app/otr/lib/IOTR';
 import OTR from '../../app/otr/client/OTR';
-import { OtrRoomState } from '../../app/otr/client/OtrRoomState';
+import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
 import { t } from '../../app/utils/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { IOTR } from './IOTR';
+import { IOTR } from '../lib/IOTR';
 import { Subscriptions } from '../../models/client';
 import { OTRRoom } from './OTRRoom';
 

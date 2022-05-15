@@ -3,7 +3,7 @@ import { Box, Button, Throbber } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { MouseEventHandler, ReactElement } from 'react';
 
-import { OtrRoomState } from '../../../../../app/otr/client/OtrRoomState';
+import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import VerticalBar from '../../../../components/VerticalBar';
 import OTREstablished from './components/OTREstablished';
 import OTRStates from './components/OTRStates';

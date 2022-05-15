@@ -17,7 +17,7 @@ import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Notifications } from '../../notifications/client';
 import { APIClient } from '../../utils/client';
 import { otrSystemMessages } from '../lib/constants';
-import { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom, userPresenceUsername } from './IOTR';
+import { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom, userPresenceUsername } from '../lib/IOTR';
 import {
 	decryptAES,
 	deriveBits,
@@ -28,8 +28,8 @@ import {
 	importKey,
 	importKeyRaw,
 	joinEncryptedData,
-} from './OTRFunctions';
-import { OtrRoomState } from './OtrRoomState';
+} from '../lib/functions';
+import { OtrRoomState } from '../lib/OtrRoomState';
 
 export class OTRRoom implements IOTRRoom {
 	private _userId: string;
