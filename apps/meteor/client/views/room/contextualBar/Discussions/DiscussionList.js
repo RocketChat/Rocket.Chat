@@ -1,12 +1,11 @@
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import Row from './Row';
 import { withData } from './withData';

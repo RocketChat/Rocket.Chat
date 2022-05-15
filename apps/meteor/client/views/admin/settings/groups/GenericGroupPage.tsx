@@ -1,7 +1,7 @@
 import { ISetting } from '@rocket.chat/core-typings';
 import React, { memo, ReactElement } from 'react';
 
-import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
+import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 

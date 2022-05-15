@@ -1,7 +1,7 @@
 import { Skeleton, TextInput, Callout } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, ReactElement } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';

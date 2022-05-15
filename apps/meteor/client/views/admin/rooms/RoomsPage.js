@@ -1,10 +1,9 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditRoomContextBar from './EditRoomContextBar';
 import RoomsTable from './RoomsTable';
