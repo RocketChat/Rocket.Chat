@@ -190,7 +190,6 @@ export class SAUMonitorClass {
 			return;
 		}
 
-
 		const ip = getClientAddress(connection);
 
 		const host = connection.httpHeaders?.host ?? '';
