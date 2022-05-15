@@ -10,6 +10,7 @@ import { aggregates } from '../../../models/server/raw/Sessions';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
+import { getClientAddress } from '../../../../server/lib/getClientAddress';
 
 type DateObj = { day: number; month: number; year: number };
 
@@ -103,7 +104,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		sauEvents.on('accounts.login', async ({ userId, connection }) => {
+		sauEvents.on('accounts.login', async ({ userId, connection }: { userId: string; connection: ISocketConnection }) => {
 			if (!this.isRunning()) {
 				return;
 			}
@@ -189,15 +190,16 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		const ip = connection.clientAddress || connection.httpHeaders?.['x-real-ip'] || connection.httpHeaders?.['x-forwarded-for'];
+		const ip = getClientAddress(connection);
 
-		const host = connection.httpHeaders?.host || '';
-
+		const host = connection.httpHeaders?.host ?? '';
+		const loginToken = connection?.loginToken ? { loginToken: connection?.loginToken } : {};
 		return {
 			type: 'session',
 			sessionId: connection.id,
 			instanceId: connection.instanceId,
-			ip: (Array.isArray(ip) ? ip[0] : ip) || '',
+			...loginToken,
+			ip,
 			host,
 			...this._getUserAgentInfo(connection),
 			...params,
