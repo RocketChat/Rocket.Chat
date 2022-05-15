@@ -408,7 +408,7 @@ export const saveUser = function (userId, userData) {
 		updateUser.$set['emails.0.verified'] = userData.verified;
 	}
 
-	const userUpdateResult = Promise.await(UsersRaw.findOneAndUpdate({ _id: userData._id }, updateUser));
+	const userUpdateResult = Promise.await(UsersRaw.findOneAndUpdate({ _id: userData._id }, updateUser, { returnDocument: 'after' }));
 
 	callbacks.run('afterSaveUser', userData);
 
