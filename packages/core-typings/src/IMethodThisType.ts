@@ -1,5 +1,3 @@
-import type { ISocketConnection } from './ISocketConnection';
-
 export interface IMethodConnection {
   id: string;
   close(fn: (...args: any[]) => void): void;
@@ -11,7 +9,7 @@ export interface IMethodConnection {
 export interface IMethodThisType {
   isSimulation: boolean;
   userId: string | null;
-  connection: ISocketConnection | null;
+  connection: IMethodConnection | null;
   setUserId(userId: string): void;
   unblock(): void;
   twoFactorChecked: boolean | undefined;

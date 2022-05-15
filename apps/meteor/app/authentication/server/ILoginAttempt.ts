@@ -1,4 +1,4 @@
-import type { IUser, ISocketConnection } from '@rocket.chat/core-typings';
+import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 
 interface IMethodArgument {
 	user?: { username: string };
@@ -14,6 +14,6 @@ export interface ILoginAttempt {
 	allowed: boolean;
 	methodName: string;
 	methodArguments: IMethodArgument[];
-	connection: ISocketConnection;
+	connection: IMethodConnection;
 	user: IUser;
 }
