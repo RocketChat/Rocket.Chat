@@ -21,7 +21,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		username,
 		name,
 		alias,
-		avatar: avatarUrl,
+		avatar,
 		emoji,
 		token,
 		scriptEnabled,
@@ -75,9 +75,9 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		() => ({
 			...(alias && { alias }),
 			...(emoji && { emoji }),
-			...(avatarUrl && { avatar: avatarUrl }),
+			...(avatar && { avatar }),
 		}),
-		[alias, avatarUrl, emoji],
+		[alias, avatar, emoji],
 	);
 
 	const [exampleData] = useExampleData({
@@ -239,7 +239,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field.Row>
 										<TextInput
 											flexGrow={1}
-											value={avatarUrl}
+											value={avatar}
 											onChange={handleAvatar}
 											addon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
 										/>
@@ -248,7 +248,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field.Hint>{t('Should_be_a_URL_of_an_image')}</Field.Hint>
 								</Field>
 							),
-							[avatarUrl, handleAvatar, t],
+							[avatar, handleAvatar, t],
 						)}
 						{useMemo(
 							() => (

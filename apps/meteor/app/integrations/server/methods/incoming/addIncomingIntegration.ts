@@ -28,7 +28,7 @@ Meteor.methods({
 				emoji: Match.Maybe(String),
 				scriptEnabled: Boolean,
 				script: Match.Maybe(String),
-				avatarUrl: Match.Maybe(String),
+				avatar: Match.Maybe(String),
 			}),
 		);
 

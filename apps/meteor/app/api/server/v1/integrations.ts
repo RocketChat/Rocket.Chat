@@ -1,6 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { IIntegration, IOutgoingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
+import { IIntegration } from '@rocket.chat/core-typings';
+import {
+	isIntegrationsCreateProps,
+	isIntegrationsHistoryProps,
+	isIntegrationsRemoveProps,
+	isIntegrationsGetProps,
+	isIntegrationsUpdateProps,
+} from '@rocket.chat/rest-typings';
 
 import { hasAtLeastOnePermission } from '../../../authorization/server';
 import { Integrations, IntegrationHistory } from '../../../models/server/raw';
@@ -13,59 +20,10 @@ import { findOneIntegration } from '../lib/integrations';
 
 API.v1.addRoute(
 	'integrations.create',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isIntegrationsCreateProps },
 	{
 		post() {
 			const { userId, bodyParams } = this;
-
-			check(bodyParams, Match.ObjectIncluding({ type: String }));
-
-			switch (bodyParams.type) {
-				case 'webhook-incoming':
-					check(
-						bodyParams,
-						Match.ObjectIncluding({
-							name: String,
-							enabled: Boolean,
-							username: String,
-							channel: String,
-							alias: Match.Maybe(String),
-							avatar: Match.Maybe(String),
-							emoji: Match.Maybe(String),
-							token: Match.Maybe(String),
-							scriptEnabled: Boolean,
-							script: Match.Maybe(String),
-						}),
-					);
-					break;
-				case 'webhook-outgoing':
-					check(
-						bodyParams,
-						Match.ObjectIncluding({
-							name: String,
-							enabled: Boolean,
-							username: String,
-							urls: Match.Maybe([String]),
-							channel: String,
-							event: String,
-							triggerWords: Match.Maybe([String]),
-							alias: Match.Maybe(String),
-							avatar: Match.Maybe(String),
-							emoji: Match.Maybe(String),
-							token: Match.Maybe(String),
-							scriptEnabled: Boolean,
-							script: Match.Maybe(String),
-							targetRoom: Match.Maybe(String),
-							impersonateUser: Match.Maybe(Boolean),
-							retryCount: Match.Maybe(Number),
-							retryDelay: Match.Maybe(String),
-							retryFailedCalls: Match.Maybe(Boolean),
-							runOnEdits: Match.Maybe(Boolean),
-							triggerWordAnywhere: Match.Maybe(Boolean),
-						}),
-					);
-					break;
-			}
 
 			const integration = ((): IIntegration | undefined => {
 				let integration: IIntegration | undefined;
@@ -97,7 +55,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.history',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isIntegrationsHistoryProps },
 	{
 		get() {
 			const { userId, queryParams } = this;
@@ -105,13 +63,6 @@ API.v1.addRoute(
 			if (!hasAtLeastOnePermission(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'])) {
 				return API.v1.unauthorized();
 			}
-
-			check(
-				queryParams,
-				Match.ObjectIncluding({
-					id: String,
-				}),
-			);
 
 			if (!queryParams.id || queryParams.id.trim() === '') {
 				return API.v1.failure('Invalid integration id.');
@@ -187,7 +138,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.remove',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isIntegrationsRemoveProps },
 	{
 		post() {
 			if (
@@ -201,33 +152,19 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					type: String,
-				}),
-			);
+			const { bodyParams } = this;
 
 			let integration: IIntegration | null = null;
-			switch (this.bodyParams.type) {
+			switch (bodyParams.type) {
 				case 'webhook-outgoing':
-					check(
-						this.bodyParams,
-						Match.ObjectIncluding({
-							// eslint-disable-next-line @typescript-eslint/camelcase
-							target_url: Match.Maybe(String),
-							integrationId: Match.Maybe(String),
-						}),
-					);
-
-					if (!this.bodyParams.target_url && !this.bodyParams.integrationId) {
+					if (!bodyParams.target_url && !bodyParams.integrationId) {
 						return API.v1.failure('An integrationId or target_url needs to be provided.');
 					}
 
-					if (this.bodyParams.target_url) {
-						integration = Promise.await(Integrations.findOne({ urls: this.bodyParams.target_url }));
-					} else if (this.bodyParams.integrationId) {
-						integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
+					if (bodyParams.target_url) {
+						integration = Promise.await(Integrations.findOne({ urls: bodyParams.target_url }));
+					} else if (bodyParams.integrationId) {
+						integration = Promise.await(Integrations.findOne({ _id: bodyParams.integrationId }));
 					}
 
 					if (!integration) {
@@ -245,13 +182,13 @@ API.v1.addRoute(
 					});
 				case 'webhook-incoming':
 					check(
-						this.bodyParams,
+						bodyParams,
 						Match.ObjectIncluding({
 							integrationId: String,
 						}),
 					);
 
-					integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
+					integration = Promise.await(Integrations.findOne({ _id: bodyParams.integrationId }));
 
 					if (!integration) {
 						return API.v1.failure('No integration found.');
@@ -274,7 +211,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.get',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isIntegrationsGetProps },
 	{
 		get() {
 			const { integrationId, createdBy } = this.queryParams;
@@ -297,62 +234,40 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.update',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isIntegrationsUpdateProps },
 	{
 		put() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					type: String,
-					name: String,
-					enabled: Boolean,
-					username: String,
-					urls: Match.Maybe([String]),
-					channel: String,
-					event: Match.Maybe(String),
-					triggerWords: Match.Maybe([String]),
-					alias: Match.Maybe(String),
-					avatar: Match.Maybe(String),
-					emoji: Match.Maybe(String),
-					token: Match.Maybe(String),
-					scriptEnabled: Boolean,
-					script: Match.Maybe(String),
-					targetChannel: Match.Maybe(String),
-					integrationId: Match.Maybe(String),
-					// eslint-disable-next-line @typescript-eslint/camelcase
-					target_url: Match.Maybe(String),
-				}),
-			);
+			const { bodyParams } = this;
 
 			let integration;
-			switch (this.bodyParams.type) {
+			switch (bodyParams.type) {
 				case 'webhook-outgoing':
-					if (this.bodyParams.target_url) {
-						integration = Promise.await(Integrations.findOne({ urls: this.bodyParams.target_url }));
-					} else if (this.bodyParams.integrationId) {
-						integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
+					if (bodyParams.target_url) {
+						integration = Promise.await(Integrations.findOne({ urls: bodyParams.target_url }));
+					} else if (bodyParams.integrationId) {
+						integration = Promise.await(Integrations.findOne({ _id: bodyParams.integrationId }));
 					}
 
 					if (!integration) {
 						return API.v1.failure('No integration found.');
 					}
 
-					Meteor.call('updateOutgoingIntegration', integration._id, this.bodyParams);
+					Meteor.call('updateOutgoingIntegration', integration._id, bodyParams);
 
 					return API.v1.success({
-						integration: Promise.await(Integrations.findOne({ _id: integration._id })) as IOutgoingIntegration,
+						integration: Promise.await(Integrations.findOne({ _id: integration._id })),
 					});
 				case 'webhook-incoming':
-					integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
+					integration = Promise.await(Integrations.findOne({ _id: bodyParams.integrationId }));
 
 					if (!integration) {
 						return API.v1.failure('No integration found.');
 					}
 
-					Meteor.call('updateIncomingIntegration', integration._id, this.bodyParams);
+					Meteor.call('updateIncomingIntegration', integration._id, bodyParams);
 
 					return API.v1.success({
-						integration: Promise.await(Integrations.findOne({ _id: integration._id })) as IIncomingIntegration,
+						integration: Promise.await(Integrations.findOne({ _id: integration._id })),
 					});
 				default:
 					return API.v1.failure('Invalid integration type.');
