@@ -1212,6 +1212,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	}
 
 	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined> {
+		// TODO: check if we should create a session when there is no loginToken or not
 		const { year, month, day, sessionId, instanceId } = data;
 
 		if (!year || !month || !day || !sessionId || !instanceId) {
