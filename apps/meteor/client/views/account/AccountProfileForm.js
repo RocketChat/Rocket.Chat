@@ -6,6 +6,7 @@ import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { validateEmail } from '../../../lib/emailValidator';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import AccountInfo from './AccountInfo';
 
 function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
@@ -16,6 +17,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 
 	const [usernameError, setUsernameError] = useState();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
+	const [creditPoints, setCreditPoints] = useState(0);
+	const [trustScoreNumber, setTrustScoreNumber] = useState(0);
 
 	const { allowUserAvatarChange, namesRegex, requireName } = settings;
 
@@ -94,6 +97,21 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		e.preventDefault();
 	}, []);
 
+	// Refetch user data so that we can get createdAt field.
+	const { value: data } = useEndpointData(
+		'users.info',
+		useMemo(() => ({ ...(username && { username }) }), [username, creditPoints]),
+	);
+
+	const userWithCredit = useMemo(() => {
+		const { user } = data || { user: {} };
+		console.log(user, 'inside user');
+		if (user) {
+			return user.credit;
+		}
+		return 0;
+	}, [data]);
+
 	const dummyCredit = {
 		gateway: 'bank-transfer',
 		quantity: 7,
@@ -101,18 +119,36 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		currency: 'USD',
 	};
 
+	console.log(user, 'outer user');
+
 	useEffect(() => {
-		if (!user.credit) {
+		console.log(creditPoints, trustScoreNumber);
+		if (creditPoints === 0) {
 			Meteor.call('buyCredit', dummyCredit, (error, result) => {
-				console.log(result, 'result');
+				if (result) {
+					setCreditPoints(1);
+				}
+				if (error) {
+					console.log(error);
+				}
 			});
 		}
-	}, [user.credit, dummyCredit]);
+		if (trustScoreNumber === 0) {
+			Meteor.call('setRandomTrustScore', (error, result) => {
+				if (result) {
+					setTrustScoreNumber(result.trustScore * 100);
+				}
+				if (error) {
+					console.log(error);
+				}
+			});
+		}
+	}, [user.credit, dummyCredit, user.trustScore]);
 
 	const careerItems = [
 		{ icon: 'user', content: 'Employee/er/broker', rc: true },
-		{ icon: 'credit', content: `Credit point: ${user.credit ? user.credit : 0}`, rc: false },
-		{ icon: 'trust-score', content: 'Trust score: 60/100', rc: false },
+		{ icon: 'credit', content: `Credit point: ${userWithCredit}`, rc: false },
+		{ icon: 'trust-score', content: `Trust score: ${trustScoreNumber}/100`, rc: false },
 	];
 
 	const privateInfo = [
