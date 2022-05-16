@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { IMessage } from '@rocket.chat/core-typings';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
-// import { useSetting } from '../../../../contexts/SettingsContext';
-import { useUserPreference } from '../../../../contexts/UserContext';
+// import { useSetting } from '@rocket.chat/ui-contexts'
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
 const options = {

@@ -1,10 +1,7 @@
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
+import { useToastMessageDispatch, useSettingSetValue, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useCallback } from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useSettingSetValue } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const setIntervalTime = (interval?: number): number => (interval ? interval * 1000 : 0);

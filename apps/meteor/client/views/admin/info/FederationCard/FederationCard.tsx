@@ -1,11 +1,9 @@
 import { Box, Button, ButtonGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useSetting, useSettingSetValue, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import Card from '../../../../components/Card';
-import { useSetModal } from '../../../../contexts/ModalContext';
-import { useSetting, useSettingSetValue } from '../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import SettingsProvider from '../../../../providers/SettingsProvider';
 import { CardHeader, Section } from './components';
 import { FederationModal } from './components/FederationModal';
@@ -63,7 +61,7 @@ const FederationCard: FC = () => {
 	);
 
 	return (
-		<Card>
+		<Card data-qa-id='federation-card'>
 			<CardHeader>
 				<Card.Title>{t('Federation')}</Card.Title>
 				<Box display='flex'>

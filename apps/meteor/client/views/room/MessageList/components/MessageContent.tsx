@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
+import { useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
 import Attachments from '../../../../components/Message/Attachments';
@@ -8,8 +9,6 @@ import MessageActions from '../../../../components/Message/MessageActions';
 import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
 import DiscussionMetric from '../../../../components/Message/Metrics/Discussion';
 import ThreadMetric from '../../../../components/Message/Metrics/Thread';
-import { TranslationKey } from '../../../../contexts/TranslationContext';
-import { useUserId } from '../../../../contexts/UserContext';
 import { useUserData } from '../../../../hooks/useUserData';
 import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
