@@ -48,7 +48,6 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 			await admin.getPage().locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
 			const isOptionChecked = await admin.getPage().isChecked('table tbody tr:first-child td:nth-child(6) label input');
 			const changeHomeTitleSelected = await admin.getPage().isChecked('table tbody tr:nth-child(3) td:nth-child(6) label input');
-			console.log(isOptionChecked, changeHomeTitleSelected);
 			if (!isOptionChecked && !changeHomeTitleSelected) {
 				await admin.getPage().click('table tbody tr:first-child td:nth-child(6) label');
 				await admin.getPage().click('table tbody tr:nth-child(3) td:nth-child(6) label');
@@ -73,7 +72,6 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 		test('expect new permissions is enabled for user', async () => {
 			await admin.homeTitleInput().fill(newHomeTitle);
 			await admin.buttonSave().click();
-			await expect(admin.getPage().locator('.toast-message >> text="Settings updated"')).toBeVisible();
 		});
 	});
 
@@ -100,7 +98,6 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 			await admin.generalHomeTitleReset().click();
 			await admin.buttonSave().click();
 			expect(text).toEqual(newHomeTitle);
-			await expect(admin.getPage().locator('.toast-message >> text="Settings updated"')).toBeVisible();
 		});
 
 		test('Clear all user permissions', async () => {
