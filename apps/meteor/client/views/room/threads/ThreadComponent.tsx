@@ -1,56 +1,19 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { useRoute, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { Tracker } from 'meteor/tracker';
 import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 'react';
 
-import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
+import { useThreadExpansion } from './useThreadExpansion';
+import { useThreadFollowing } from './useThreadFollowing';
+import { useThreadMessage } from './useThreadMessage';
 
 const subscriptionFields = {};
-
-const useThreadMessage = (tmid: string): IMessage => {
-	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
-	const getMessage = useEndpoint('GET', 'chat.getMessage');
-	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
-		async (params) => {
-			const { message } = await getMessage(params);
-			return mapMessageFromApi(message);
-		},
-		[getMessage],
-	);
-
-	useEffect(() => {
-		const computation = Tracker.autorun(async (computation) => {
-			const msg = ChatMessage.findOne({ _id: tmid }) || (await getMessageParsed({ msgId: tmid }));
-
-			if (!msg || computation.stopped) {
-				return;
-			}
-
-			setMessage((prevMsg) => {
-				if (!prevMsg || prevMsg._id !== msg._id || prevMsg._updatedAt?.getTime() !== msg._updatedAt?.getTime()) {
-					return msg;
-				}
-
-				return prevMsg;
-			});
-		});
-
-		return (): void => {
-			computation.stop();
-		};
-	}, [getMessageParsed, tmid]);
-
-	return message;
-};
 
 const ThreadComponent: FC<{
 	mid: string;
@@ -65,34 +28,10 @@ const ThreadComponent: FC<{
 	const openUserInfo = useTabBarOpenUserInfo();
 
 	const ref = useRef<HTMLElement>(null);
-	const uid = useUserId();
 
-	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
-	const [expanded, setExpand] = useLocalStorage('expand-threads', false);
-	const following = !uid ? false : threadMessage?.replies?.includes(uid) ?? false;
-
-	const dispatchToastMessage = useToastMessageDispatch();
-	const followMessage = useMethod('followMessage');
-	const unfollowMessage = useMethod('unfollowMessage');
-
-	const setFollowing = useCallback<(following: boolean) => void>(
-		async (following) => {
-			try {
-				if (following) {
-					await followMessage({ mid });
-					return;
-				}
-
-				await unfollowMessage({ mid });
-			} catch (error) {
-				dispatchToastMessage({
-					type: 'error',
-					message: error,
-				});
-			}
-		},
-		[dispatchToastMessage, followMessage, unfollowMessage, mid],
-	);
+	const headerTitle: string | null = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
+	const [canExpand, expanded, toggleExpanded] = useThreadExpansion();
+	const [following, toggleFollowing] = useThreadFollowing(mid);
 
 	const handleClose = useCallback(() => {
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
@@ -136,17 +75,18 @@ const ThreadComponent: FC<{
 	}, [viewData]);
 
 	if (!threadMessage) {
-		return <ThreadSkeleton expanded={expanded} onClose={handleClose} />;
+		return <ThreadSkeleton expanded={canExpand && expanded} onClose={handleClose} />;
 	}
 
 	return (
 		<ThreadView
 			ref={ref}
 			title={headerTitle}
+			canExpand={canExpand}
 			expanded={expanded}
 			following={following}
-			onToggleExpand={(expanded): void => setExpand(!expanded)}
-			onToggleFollow={(following): void => setFollowing(!following)}
+			onToggleExpand={toggleExpanded}
+			onToggleFollow={toggleFollowing}
 			onClose={handleClose}
 			onClickBack={onClickBack}
 		/>

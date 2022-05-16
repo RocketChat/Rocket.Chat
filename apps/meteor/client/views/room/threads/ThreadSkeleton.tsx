@@ -2,6 +2,7 @@ import { Modal, Box } from '@rocket.chat/fuselage';
 import React, { FC, useMemo } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
+import { useDir } from '../../../hooks/useDir';
 
 type ThreadSkeletonProps = {
 	expanded: boolean;
@@ -9,9 +10,11 @@ type ThreadSkeletonProps = {
 };
 
 const ThreadSkeleton: FC<ThreadSkeletonProps> = ({ expanded, onClose }) => {
+	const dir = useDir();
+
 	const style = useMemo(
 		() =>
-			document.dir === 'rtl'
+			dir === 'rtl'
 				? {
 						left: 0,
 						borderTopRightRadius: 4,
@@ -20,7 +23,7 @@ const ThreadSkeleton: FC<ThreadSkeletonProps> = ({ expanded, onClose }) => {
 						right: 0,
 						borderTopLeftRadius: 4,
 				  },
-		[],
+		[dir],
 	);
 
 	return (

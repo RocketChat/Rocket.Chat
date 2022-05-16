@@ -1,28 +1,30 @@
 import { Modal, Box } from '@rocket.chat/fuselage';
-import { useLayoutContextualBarExpanded, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, useCallback, useMemo, forwardRef } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
+import { useDir } from '../../../hooks/useDir';
 
-type ThreadViewProps = ComponentProps<typeof Box> & {
-	title: string;
+type ThreadViewProps = {
+	title: string | null;
+	canExpand: boolean;
 	expanded: boolean;
 	following: boolean;
-	onToggleExpand: (expanded: boolean) => void;
+	onToggleExpand: () => void;
 	onToggleFollow: (following: boolean) => void;
 	onClose: () => void;
 	onClickBack: (e: unknown) => void;
-};
+} & Omit<ComponentProps<typeof Box>, 'title'>;
 
 const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(function ThreadView(
-	{ title, expanded, following, onToggleExpand, onToggleFollow, onClose, onClickBack },
+	{ title, canExpand, expanded, following, onToggleExpand, onToggleFollow, onClose, onClickBack },
 	ref,
 ) {
-	const hasExpand = useLayoutContextualBarExpanded();
+	const dir = useDir();
 
 	const style = useMemo(
 		() =>
-			document.dir === 'rtl'
+			dir === 'rtl'
 				? {
 						left: 0,
 						borderTopRightRadius: 4,
@@ -31,17 +33,13 @@ const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(function ThreadView(
 						right: 0,
 						borderTopLeftRadius: 4,
 				  },
-		[],
+		[dir],
 	);
 
 	const t = useTranslation();
 
 	const expandLabel = expanded ? t('Collapse') : t('Expand');
 	const expandIcon = expanded ? 'arrow-collapse' : 'arrow-expand';
-
-	const handleExpandActionClick = useCallback(() => {
-		onToggleExpand(expanded);
-	}, [expanded, onToggleExpand]);
 
 	const followLabel = following ? t('Following') : t('Not_Following');
 	const followIcon = following ? 'bell' : 'bell-off';
@@ -52,16 +50,16 @@ const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(function ThreadView(
 
 	return (
 		<>
-			{hasExpand && expanded && <Modal.Backdrop onClick={onClose} />}
+			{canExpand && expanded && <Modal.Backdrop onClick={onClose} />}
 
 			<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
 				<VerticalBar
 					className='rcx-thread-view'
-					position={hasExpand && expanded ? 'fixed' : 'absolute'}
+					position={canExpand && expanded ? 'fixed' : 'absolute'}
 					display='flex'
 					flexDirection='column'
 					width={'full'}
-					maxWidth={hasExpand && expanded ? 855 : undefined}
+					maxWidth={canExpand && expanded ? 855 : undefined}
 					overflow='hidden'
 					zIndex={100}
 					insetBlock={0}
@@ -69,8 +67,8 @@ const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(function ThreadView(
 				>
 					<VerticalBar.Header>
 						{onClickBack && <VerticalBar.Action onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
-						<VerticalBar.Text dangerouslySetInnerHTML={{ __html: title }} />
-						{hasExpand && <VerticalBar.Action title={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />}
+						<VerticalBar.Text dangerouslySetInnerHTML={{ __html: title ?? '' }} />
+						{canExpand && <VerticalBar.Action title={expandLabel} name={expandIcon} onClick={(): void => onToggleExpand()} />}
 						<VerticalBar.Actions>
 							<VerticalBar.Action title={followLabel} name={followIcon} onClick={handleFollowActionClick} />
 							<VerticalBar.Close onClick={onClose} />
