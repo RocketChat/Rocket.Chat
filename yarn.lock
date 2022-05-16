@@ -3864,6 +3864,8 @@ __metadata:
     "@babel/preset-env": ^7.11.5
     "@kossnocorp/desvg": ^0.2.0
     "@rocket.chat/eslint-config": ^0.4.0
+    "@rocket.chat/fuselage-tokens": ~0.31.11
+    "@rocket.chat/logo": ^0.31.11
     "@rocket.chat/sdk": ^1.0.0-alpha.42
     "@rocket.chat/ui-kit": ^0.14.1
     "@storybook/addon-actions": ^6.0.12
