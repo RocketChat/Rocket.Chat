@@ -6,7 +6,6 @@ import React, { FC, memo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { usePresence } from '../../../../hooks/usePresence';
-import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsMessageHighlight } from '../contexts/MessageHighlightContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import MessageContent from './MessageContent';
@@ -23,9 +22,6 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 }) => {
 	const isMessageHighlight = useIsMessageHighlight(message._id);
 	const [isMessageIgnored, toggleMessageIgnored] = useToggle(message.ignored);
-	const {
-		actions: { openUserCard },
-	} = useMessageActions();
 	const user = usePresence(message.u._id);
 
 	const isSelecting = useIsSelecting();
