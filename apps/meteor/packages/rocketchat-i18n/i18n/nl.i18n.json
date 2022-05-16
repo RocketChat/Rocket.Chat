@@ -1620,8 +1620,6 @@
   "Emoji_provided_by_JoyPixels": "Emoji geleverd door <strong>JoyPixels</strong>",
   "EmojiCustomFilesystem": "Aangepast Emoji-bestandssysteem",
   "Empty_title": "Lege titel",
-  "Enable_message_parser_early_adoption": "Schakel de berichtparser in",
-  "Enable_message_parser_early_adoption_alert": "Dit is een experimentele functie en zal in ieder geval zo blijven tot versie 3.19.0, deze optie is bedoeld om ons te helpen met tests en edge cases. Zodra we geen problemen meer ondervinden, zullen we die optie verwijderen en naar de nieuwe oplossing migreren",
   "See_on_Engagement_Dashboard": "Zie op het Engagement Dashboard",
   "Enable": "Inschakelen",
   "Enable_Auto_Away": "Schakel automatische afwezigheid in",
