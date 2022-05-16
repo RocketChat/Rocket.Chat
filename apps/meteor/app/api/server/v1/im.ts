@@ -2,6 +2,7 @@
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
 import type { IMessage, IRoom, ISetting, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
+import { isDmDeleteProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
@@ -13,7 +14,6 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
-import { isDmDeleteProps } from '@rocket.chat/rest-typings';
 
 interface IImFilesObject extends IUpload {
 	userId: string;
