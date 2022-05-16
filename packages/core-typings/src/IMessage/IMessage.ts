@@ -12,6 +12,7 @@ type MentionType = 'user' | 'team';
 
 type MessageUrl = {
 	url: string;
+	source?: string;
 	meta: Record<string, string>;
 	headers?: { contentLength: string; contentType: string };
 };
