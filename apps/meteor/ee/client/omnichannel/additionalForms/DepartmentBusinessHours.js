@@ -1,7 +1,7 @@
 import { Field, TextInput } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
 export const DepartmentBusinessHours = ({ bhId }) => {

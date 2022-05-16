@@ -1,8 +1,7 @@
 import type { ComponentProps } from 'react';
 import { Option } from '@rocket.chat/fuselage';
 import type { IUser } from '@rocket.chat/core-typings';
-
-import { TranslationKey } from '../../../../client/contexts/TranslationContext';
+import { TranslationKey } from '@rocket.chat/ui-contexts';
 
 export declare const AccountBox: {
 	setStatus: (status: IUser['status'], statusText?: IUser['statusText']) => void;

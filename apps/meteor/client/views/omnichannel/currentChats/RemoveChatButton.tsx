@@ -1,12 +1,9 @@
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload }) => {
 	const removeChat = useMethod('livechat:removeRoom');
