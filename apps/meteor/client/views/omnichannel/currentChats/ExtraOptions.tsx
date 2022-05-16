@@ -1,8 +1,6 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
+import { usePermission, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
-
-import { usePermission, useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const ExtraOptions: FC<{
 	handleClearFilters: any;

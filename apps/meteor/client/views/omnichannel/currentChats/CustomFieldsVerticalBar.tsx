@@ -6,13 +6,12 @@
 // NO NEED Create a hook for the convertCustomFieldsToValidJSONFormat and rename it to something more appropriate
 // Implement interfaces for different custom Fields
 
+import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import { ILivechatCustomField } from '../../../../definition/ILivechatCustomField';
 import OmnichannelCustomFieldsForm from '../../../components/Omnichannel/OmnichannelCustomFieldsForm';
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 type CustomFieldsVerticalBarProps = {
 	customFields: ILivechatCustomField[];

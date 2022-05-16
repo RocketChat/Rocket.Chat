@@ -1,9 +1,9 @@
 import { TextInput, Select, Field } from '@rocket.chat/fuselage';
+import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 
 import React, { useMemo, ReactElement } from 'react';
 
 import { ICustomField } from '../../definition/ICustomField';
-import { useTranslation, TranslationKey } from '../contexts/TranslationContext';
 
 interface ICustomFieldComponentProps {
 	label?: string;

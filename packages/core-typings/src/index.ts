@@ -21,6 +21,7 @@ export * from './IRole';
 export * from './IIntegration';
 export * from './IIntegrationHistory';
 export * from './ICustomSound';
+export * from './ICustomField';
 export * from './ICloud';
 export * from './IServerEvent';
 export * from './ICronJobs';
@@ -78,6 +79,7 @@ export * from './IOmnichannelBusinessUnit';
 export * from './IOmnichannelCustomAgent';
 
 export * from './ILivechatTag';
+export * from './ILivechatCustomField';
 export * from './IPbxEvent';
 export * from './ILivechatMonitor';
 export * from './ILivechatTagRecord';
