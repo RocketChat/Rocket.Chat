@@ -441,7 +441,7 @@ API.v1.addRoute(
 					sort,
 					skip: offset,
 					limit: count,
-					fields,
+					projection: fields,
 				},
 			);
 
@@ -476,7 +476,7 @@ API.v1.addRoute(
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			})
 				.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId) as IRoom)
 				.toArray();
