@@ -137,7 +137,10 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 
 		const archive = (): Promise<{ success: boolean }> => archiveAction({ rid: room._id, action: archiveSelector });
 
-		await Promise.all([hasUnsavedChanges && save(), changeArchivation && archive()].filter(Boolean));
+		const promises = [];
+		hasUnsavedChanges && promises.push(save());
+		changeArchivation && promises.push(archive());
+		await Promise.all(promises);
 		onChange();
 	});
 
