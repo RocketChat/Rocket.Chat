@@ -1,5 +1,4 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-import { Box } from '@rocket.chat/fuselage';
 import { UiKitMessage, UiKitComponent, kitContext, messageParser } from '@rocket.chat/fuselage-ui-kit';
 import React from 'react';
 
@@ -35,10 +34,8 @@ function MessageBlock({ mid: _mid, rid, blocks, appId }) {
 
 	return (
 		<kitContext.Provider value={context}>
-			<Box maxWidth='400px'>
-				<div className={className} ref={ref} />
-				<UiKitComponent render={UiKitMessage} blocks={blocks} />
-			</Box>
+			<div className={className} ref={ref} />
+			<UiKitComponent render={UiKitMessage} blocks={blocks} />
 		</kitContext.Provider>
 	);
 }
