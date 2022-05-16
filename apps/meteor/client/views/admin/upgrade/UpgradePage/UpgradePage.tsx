@@ -90,7 +90,7 @@ const UpgradePage = (): ReactElement => {
 			{isMobile && <PageHeader title='' />}
 			{!hasConnection && <UpgradePageError />}
 			{hasConnection && isLoading && (
-				<Box width={'100%'} height={'100%'} position={'absolute'} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+				<Box width='100%' height='100%' position='absolute' display='flex' justifyContent='center' alignItems='center'>
 					<Throbber />
 				</Box>
 			)}
@@ -101,8 +101,8 @@ const UpgradePage = (): ReactElement => {
 					ref={ref}
 					onLoad={(): void => setIsLoading(false)}
 					invisible={isLoading}
-					width={'100%'}
-					height={'100%'}
+					width='100%'
+					height='100%'
 				/>
 			)}
 		</Page>
