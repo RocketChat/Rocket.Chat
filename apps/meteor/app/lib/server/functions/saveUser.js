@@ -271,8 +271,6 @@ const saveNewUser = function (userData, sendPassword) {
 		password: userData.password,
 		joinDefaultChannels: userData.joinDefaultChannels,
 		isGuest,
-		credit: 0,
-		trustScore: 1,
 	};
 	if (userData.email) {
 		createUser.email = userData.email;

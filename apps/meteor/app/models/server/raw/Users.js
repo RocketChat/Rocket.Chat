@@ -8,6 +8,8 @@ export class UsersRaw extends BaseRaw {
 
 		this.defaultFields = {
 			__rooms: 0,
+			credit: 0,
+			trustScore: 1,
 		};
 	}
 
