@@ -16,5 +16,6 @@ const config: PlaywrightTestConfig = {
 		trace: 'retain-on-failure',
 	},
 	testDir: 'tests/e2e',
+	retries: 3,
 };
 export default config;
