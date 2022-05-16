@@ -1,14 +1,18 @@
 import { FindOneOptions } from 'mongodb';
+import type {
+	IAgentExtensionMap,
+	IRoomCreationResponse,
+	ILivechatVisitor,
+	IVoipRoom,
+	IRoom,
+	IUser,
+	IVoipExtensionWithAgentInfo,
+	ILivechatAgent,
+} from '@rocket.chat/core-typings';
+import { VoipClientEvents } from '@rocket.chat/core-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
-import { IAgentExtensionMap, IRoomCreationResponse } from '../../../definition/IOmnichannelVoipServiceResult';
-import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
-import { IVoipRoom, IRoom } from '../../../definition/IRoom';
-import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
-import { IUser } from '../../../definition/IUser';
-import { IVoipExtensionWithAgentInfo } from '../../../definition/IVoipExtension';
 import { FindVoipRoomsParams } from '../../services/omnichannel-voip/internalTypes';
-import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
-import { ILivechatAgent } from '../../../definition/ILivechatAgent';
 
 export interface IOmnichannelVoipService {
 	getFreeExtensions(): Promise<string[]>;

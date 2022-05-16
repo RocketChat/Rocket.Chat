@@ -1,9 +1,9 @@
-import type { IUser } from '../../../definition/IUser';
-import type { IMessage } from '../../../definition/IMessage/IMessage';
+import type { IUser, IMessage } from '@rocket.chat/core-typings';
+
 import { Messages } from '../../../app/models/server/raw';
 import { canAccessRoomId } from '../../../app/authorization/server';
 
-export async function getMessageForUser(messageId: IMessage['_id'], uid: IUser['_id']): Promise<IMessage | undefined> {
+export async function getMessageForUser(messageId: IMessage['_id'], uid: IUser['_id'] | null): Promise<IMessage | undefined> {
 	if (!uid) {
 		throw new Error('error-invalid-user');
 	}

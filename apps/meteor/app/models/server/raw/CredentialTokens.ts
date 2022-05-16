@@ -1,8 +1,11 @@
+import { ICredentialToken as T } from '@rocket.chat/core-typings';
+
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { ICredentialToken as T } from '../../../../definition/ICredentialToken';
 
 export class CredentialTokensRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { expireAt: 1 }, sparse: true, expireAfterSeconds: 0 }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { expireAt: 1 }, sparse: true, expireAfterSeconds: 0 }];
+	}
 
 	async create(_id: string, userInfo: T['userInfo']): Promise<T> {
 		const validForMilliseconds = 60000; // Valid for 60 seconds

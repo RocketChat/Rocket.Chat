@@ -1,7 +1,6 @@
-import type { IRole, IUser } from '../../../../definition/IUser';
-import type { IRoom } from '../../../../definition/IRoom';
+import type { IRole, IUser, IRoom, ISubscription } from '@rocket.chat/core-typings';
+
 import { Roles } from '../../../models/server/raw';
-import { ISubscription } from '../../../../definition/ISubscription';
 
 export const hasAnyRoleAsync = async (
 	userId: IUser['_id'],

@@ -1,17 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { FilterQuery } from 'mongodb';
+import type {
+	IMessage,
+	IRoom,
+	IUser,
+	ILivechatDepartmentRecord,
+	ILivechatAgent,
+	OmnichannelAgentStatus,
+	ILivechatInquiryRecord,
+	ILivechatVisitor,
+} from '@rocket.chat/core-typings';
 
-import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { Logger } from '../app/logger/server';
-import type { IMessage } from '../definition/IMessage';
-import type { IRoom } from '../definition/IRoom';
-import type { IUser } from '../definition/IUser';
-import type { ILivechatDepartmentRecord } from '../definition/ILivechatDepartmentRecord';
-import type { ILivechatAgent } from '../definition/ILivechatAgent';
-import type { OmnichannelAgentStatus } from '../definition/IOmnichannelAgent';
-import type { ILivechatInquiryRecord } from '../definition/IInquiry';
-import type { ILivechatVisitor } from '../definition/ILivechatVisitor';
+import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import { getRandomId } from './random';
+import { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -52,6 +55,7 @@ type EventLikeCallbackSignatures = {
 	'beforeJoinDefaultChannels': (user: IUser) => void;
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
+	'onValidateLogin': (login: ILoginAttempt) => void;
 };
 
 /**
@@ -60,6 +64,7 @@ type EventLikeCallbackSignatures = {
  * TODO: develop a middleware alternative and grant independence of execution order
  */
 type ChainedCallbackSignatures = {
+	'beforeSaveMessage': (message: IMessage, room?: IRoom) => IMessage;
 	'afterCreateUser': (user: IUser) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: IRoom) => IRoom;

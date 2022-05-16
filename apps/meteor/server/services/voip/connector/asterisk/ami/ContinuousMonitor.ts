@@ -13,17 +13,7 @@
  *
  */
 import { Db } from 'mongodb';
-
-import { Command, CommandType } from '../Command';
-import { Logger } from '../../../../../lib/logger/Logger';
-import { CallbackContext } from './CallbackContext';
-// import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
-import { UsersRaw } from '../../../../../../app/models/server/raw/Users';
-import { PbxEventsRaw } from '../../../../../../app/models/server/raw/PbxEvents';
-import { api } from '../../../../../sdk/api';
-import { ACDQueue } from './ACDQueue';
-import { Commands } from '../Commands';
-import { IQueueDetails } from '../../../../../../definition/ACDQueues';
+import type { IQueueDetails } from '@rocket.chat/core-typings';
 import {
 	IAgentCalledEvent,
 	IAgentConnectEvent,
@@ -47,7 +37,17 @@ import {
 	IContactStatus,
 	isICallHangupEvent,
 	ICallHangup,
-} from '../../../../../../definition/voip/IEvents';
+} from '@rocket.chat/core-typings';
+
+import { Command, CommandType } from '../Command';
+import { Logger } from '../../../../../lib/logger/Logger';
+import { CallbackContext } from './CallbackContext';
+// import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
+import { UsersRaw } from '../../../../../../app/models/server/raw/Users';
+import { PbxEventsRaw } from '../../../../../../app/models/server/raw/PbxEvents';
+import { api } from '../../../../../sdk/api';
+import { ACDQueue } from './ACDQueue';
+import { Commands } from '../Commands';
 
 export class ContinuousMonitor extends Command {
 	private logger: Logger;

@@ -1,9 +1,8 @@
 import { Box, InputBox, Menu, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { useState, useMemo, useEffect } from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const formatToDateInput = (date) => date.format('YYYY-MM-DD');
 

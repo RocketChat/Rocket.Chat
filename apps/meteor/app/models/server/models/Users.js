@@ -6,7 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
-import { settings } from '../../../settings/server/functions/settings';
+import { settings } from '../../../settings/server';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
 	statusLivechat: 'available',
@@ -52,7 +52,6 @@ export class Users extends Base {
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ appId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
-		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
@@ -1066,7 +1065,7 @@ export class Users extends Base {
 	}
 
 	/**
-	 * @param {import('mongodb').FilterQuery<import('../../../../definition/IStats').IStats>} fields
+	 * @param {import('mongodb').FilterQuery<import('@rocket.chat/core-typings').IStats>} fields
 	 */
 	getOldest(fields = { _id: 1 }) {
 		const query = {

@@ -1,13 +1,11 @@
+import type { ISetting } from '@rocket.chat/core-typings';
+import { Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { ISetting } from '../../../../definition/ISetting';
-import { Serialized } from '../../../../definition/Serialized';
 import Page from '../../../components/Page';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import AppearanceForm from './AppearanceForm';
 

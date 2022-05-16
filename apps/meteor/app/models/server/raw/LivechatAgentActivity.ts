@@ -1,7 +1,7 @@
 import moment from 'moment';
+import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/core-typings';
 import type { AggregationCursor, Cursor, FindAndModifyWriteOpResultObject, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
 
-import { ILivechatAgentActivity, IServiceHistory } from '../../../../definition/ILivechatAgentActivity';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {

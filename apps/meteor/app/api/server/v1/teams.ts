@@ -1,23 +1,25 @@
-import { FilterQuery } from 'mongodb';
+import type { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { IUser } from '@rocket.chat/core-typings';
+import {
+	isTeamsConvertToChannelProps,
+	isTeamsRemoveRoomProps,
+	isTeamsUpdateMemberProps,
+	isTeamsRemoveMemberProps,
+	isTeamsAddMembersProps,
+	isTeamsDeleteProps,
+	isTeamsLeaveProps,
+	isTeamsUpdateProps,
+} from '@rocket.chat/rest-typings';
+import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
-import { API } from '../api';
-import { Team } from '../../../../server/sdk';
-import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { IUser } from '../../../../definition/IUser';
-import { isTeamsConvertToChannelProps } from '../../../../definition/rest/v1/teams/TeamsConvertToChannelProps';
-import { isTeamsRemoveRoomProps } from '../../../../definition/rest/v1/teams/TeamsRemoveRoomProps';
-import { isTeamsUpdateMemberProps } from '../../../../definition/rest/v1/teams/TeamsUpdateMemberProps';
-import { isTeamsRemoveMemberProps } from '../../../../definition/rest/v1/teams/TeamsRemoveMemberProps';
-import { isTeamsAddMembersProps } from '../../../../definition/rest/v1/teams/TeamsAddMembersProps';
-import { isTeamsDeleteProps } from '../../../../definition/rest/v1/teams/TeamsDeleteProps';
-import { isTeamsLeaveProps } from '../../../../definition/rest/v1/teams/TeamsLeaveProps';
-import { isTeamsUpdateProps } from '../../../../definition/rest/v1/teams/TeamsUpdateProps';
-import { ITeam, TEAM_TYPE } from '../../../../definition/ITeam';
+import { Users } from '../../../models/server';
+import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { Team } from '../../../../server/sdk';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'teams.list',
@@ -113,13 +115,12 @@ const getTeamByIdOrName = async (params: { teamId: string } | { teamName: string
 
 API.v1.addRoute(
 	'teams.convertToChannel',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsConvertToChannelProps,
+	},
 	{
 		async post() {
-			if (!isTeamsConvertToChannelProps(this.bodyParams)) {
-				return API.v1.failure('invalid-body-params', isTeamsConvertToChannelProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { roomsToRemove = [] } = this.bodyParams;
 
 			const team = await getTeamByIdOrName(this.bodyParams);
@@ -195,13 +196,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.removeRoom',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsRemoveRoomProps,
+	},
 	{
 		async post() {
-			if (!isTeamsRemoveRoomProps(this.bodyParams)) {
-				return API.v1.failure('body-params-invalid', isTeamsRemoveRoomProps.errors?.map((error) => error.message).join('\n '));
-			}
-
 			const team = await getTeamByIdOrName(this.bodyParams);
 			if (!team) {
 				return API.v1.failure('team-does-not-exist');
@@ -429,13 +429,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.addMembers',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsAddMembersProps,
+	},
 	{
 		async post() {
-			if (!isTeamsAddMembersProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params');
-			}
-
 			const { bodyParams } = this;
 			const { members } = bodyParams;
 
@@ -457,13 +456,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.updateMember',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsUpdateMemberProps,
+	},
 	{
 		async post() {
-			if (!isTeamsUpdateMemberProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsUpdateMemberProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { bodyParams } = this;
 			const { member } = bodyParams;
 
@@ -485,13 +483,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.removeMember',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsRemoveMemberProps,
+	},
 	{
 		async post() {
-			if (!isTeamsRemoveMemberProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsRemoveMemberProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { bodyParams } = this;
 			const { userId, rooms } = bodyParams;
 
@@ -531,13 +528,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.leave',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsLeaveProps,
+	},
 	{
 		async post() {
-			if (!isTeamsLeaveProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsLeaveProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { rooms = [] } = this.bodyParams;
 
 			const team = await getTeamByIdOrName(this.bodyParams);
@@ -590,14 +586,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.delete',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsDeleteProps,
+	},
 	{
 		async post() {
 			const { roomsToRemove = [] } = this.bodyParams;
-
-			if (!isTeamsDeleteProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsDeleteProps.errors?.map((e) => e.message).join('\n '));
-			}
 
 			const team = await getTeamByIdOrName(this.bodyParams);
 			if (!team) {
@@ -657,13 +652,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.update',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsUpdateProps,
+	},
 	{
 		async post() {
-			if (!isTeamsUpdateProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsUpdateProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { data } = this.bodyParams;
 
 			const team = await getTeamByIdOrName(this.bodyParams);

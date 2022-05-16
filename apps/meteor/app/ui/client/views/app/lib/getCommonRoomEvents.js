@@ -321,6 +321,7 @@ export const getCommonRoomEvents = () => ({
 		const messageContext = messageArgs(this);
 		const { msg: message, u: user, context: ctx } = messageContext;
 		const context = ctx || message.context || message.actionContext || 'message';
+		const room = Rooms.findOne({ _id: template.data.rid });
 
 		const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
 			icon: item.icon,
@@ -328,6 +329,7 @@ export const getCommonRoomEvents = () => ({
 			type: 'message-action',
 			id: item.id,
 			modifier: item.color,
+			action: () => item.action(e, { tabbar: template.tabbar, message, room }),
 		}));
 
 		const itemsBelowDivider = ['delete-message', 'report-message'];
@@ -352,6 +354,7 @@ export const getCommonRoomEvents = () => ({
 			instance: template,
 			rid: template.data.rid,
 			data: this,
+			type: 'message-action-menu-options',
 			currentTarget: e.currentTarget,
 			activeElement: $(e.currentTarget).parents('.message')[0],
 			onRendered: () => new Clipboard('.rc-popover__item'),

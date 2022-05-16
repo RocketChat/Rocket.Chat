@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import type { IUser, IUserEmail, IDirectMessageRoom } from '@rocket.chat/core-typings';
 
 import * as Mailer from '../../../mailer';
 import { Users, Subscriptions, Rooms } from '../../../models/server';
@@ -10,8 +11,6 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { IUser, IUserEmail } from '../../../../definition/IUser';
-import { IDirectMessageRoom } from '../../../../definition/IRoom';
 
 function reactivateDirectConversations(userId: string): void {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
@@ -62,7 +61,7 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 
 		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
 			const rooms = getUserSingleOwnedRooms(chatSubscribedRooms as []);
-			throw new Meteor.Error('user-last-owner', '', String(rooms));
+			throw new Meteor.Error('user-last-owner', '', rooms);
 		}
 
 		closeOmnichannelConversations(user, livechatSubscribedRooms);

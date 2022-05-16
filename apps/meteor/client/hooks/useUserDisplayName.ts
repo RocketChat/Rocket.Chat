@@ -1,5 +1,6 @@
-import { IUser } from '../../definition/IUser';
-import { useSetting } from '../contexts/SettingsContext';
+import type { IUser } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
+
 import { getUserDisplayName } from '../lib/getUserDisplayName';
 
 export const useUserDisplayName = ({ name, username }: Pick<IUser, 'name' | 'username'>): string | undefined => {

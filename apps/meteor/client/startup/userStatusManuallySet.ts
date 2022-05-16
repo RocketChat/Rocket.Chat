@@ -1,6 +1,6 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { UserStatus } from '../../definition/UserStatus';
 import { callbacks } from '../../lib/callbacks';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 

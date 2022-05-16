@@ -1,9 +1,9 @@
+import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import createLess from 'less/browser';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../app/settings/client';
-import { ISetting, ISettingColor } from '../../definition/ISetting';
 
 const variables = new Map();
 const lessExpressions = new Map([

@@ -1,4 +1,4 @@
-import { ISetting } from '../../../../definition/ISetting';
+import type { ISetting } from '@rocket.chat/core-typings';
 
 export const validateSetting = <T extends ISetting>(_id: T['_id'], type: T['type'], value: T['value'] | unknown): boolean => {
 	switch (type) {

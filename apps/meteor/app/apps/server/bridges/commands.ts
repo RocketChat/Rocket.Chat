@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { SlashCommandContext, ISlashCommand, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../lib/misc/Utilities';
 import { AppServerOrchestrator } from '../orchestrator';
-import { IMessage } from '../../../../definition/IMessage';
 
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, object>;

@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
-import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -14,8 +13,12 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
+import { Users as UsersRaw } from '../../../models/server/raw';
 import { callbacks } from '../../../../lib/callbacks';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+
+const MAX_BIO_LENGTH = 260;
+const MAX_NICKNAME_LENGTH = 120;
 
 let html = '';
 let passwordChangedHtml = '';
@@ -230,7 +233,7 @@ export function validateUserEditing(userId, userData) {
 
 const handleBio = (updateUser, bio) => {
 	if (bio && bio.trim()) {
-		if (typeof bio !== 'string' || bio.length > 260) {
+		if (typeof bio !== 'string' || bio.length > MAX_BIO_LENGTH) {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
 			});
@@ -245,7 +248,7 @@ const handleBio = (updateUser, bio) => {
 
 const handleNickname = (updateUser, nickname) => {
 	if (nickname && nickname.trim()) {
-		if (typeof nickname !== 'string' || nickname.length > 120) {
+		if (typeof nickname !== 'string' || nickname.length > MAX_NICKNAME_LENGTH) {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
 			});
@@ -408,26 +411,18 @@ export const saveUser = function (userId, userData) {
 		updateUser.$set['emails.0.verified'] = userData.verified;
 	}
 
-	Meteor.users.update({ _id: userData._id }, updateUser);
+	const userUpdateResult = Promise.await(UsersRaw.findOneAndUpdate({ _id: userData._id }, updateUser, { returnDocument: 'after' }));
 
 	callbacks.run('afterSaveUser', userData);
 
 	// App IPostUserUpdated event hook
-	try {
-		Promise.await(
-			Apps.triggerEvent(AppEvents.IPostUserUpdated, {
-				user: userData,
-				previousUser: oldUserData,
-				performedBy: Meteor.user(),
-			}),
-		);
-	} catch (error) {
-		if (error instanceof AppsEngineException) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
-
-		throw error;
-	}
+	Promise.await(
+		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+			user: userUpdateResult.value,
+			previousUser: oldUserData,
+			performedBy: Meteor.user(),
+		}),
+	);
 
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);

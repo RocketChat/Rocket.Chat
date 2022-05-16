@@ -1,5 +1,4 @@
 import {
-	Collection,
 	WithoutProjection,
 	FindOneOptions,
 	Cursor,
@@ -8,20 +7,22 @@ import {
 	DeleteWriteOpResultObject,
 	FilterQuery,
 } from 'mongodb';
+import type { ITeamMember, IUser, IRole } from '@rocket.chat/core-typings';
 
-import { BaseRaw } from './BaseRaw';
-import { ITeamMember } from '../../../../definition/ITeam';
-import type { IUser, IRole } from '../../../../definition/IUser';
+import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 type T = ITeamMember;
 export class TeamMemberRaw extends BaseRaw<T> {
-	constructor(public readonly col: Collection<T>, trash?: Collection<T>) {
-		super(col, trash);
-
-		this.col.createIndexes([{ key: { teamId: 1 } }]);
-
-		// teamId => userId should be unique
-		this.col.createIndex({ teamId: 1, userId: 1 }, { unique: true });
+	protected modelIndexes(): IndexSpecification[] {
+		return [
+			{
+				key: { teamId: 1 },
+			},
+			{
+				key: { teamId: 1, userId: 1 },
+				unique: true,
+			},
+		];
 	}
 
 	findByUserId(userId: string): Cursor<ITeamMember>;

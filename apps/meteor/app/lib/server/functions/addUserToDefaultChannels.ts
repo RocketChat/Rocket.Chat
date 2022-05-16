@@ -1,7 +1,7 @@
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+
 import { Rooms, Subscriptions, Messages } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { IRoom } from '../../../../definition/IRoom';
-import { IUser } from '../../../../definition/IUser';
 
 export const addUserToDefaultChannels = function (user: IUser, silenced: boolean): void {
 	callbacks.run('beforeJoinDefaultChannels', user);

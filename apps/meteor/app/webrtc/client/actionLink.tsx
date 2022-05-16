@@ -1,10 +1,10 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { actionLinks } from '../../action-links/client';
 import { APIClient } from '../../utils/client';
 import { Rooms } from '../../models/client';
-import { IMessage } from '../../../definition/IMessage';
 import { Notifications } from '../../notifications/client';
 
 actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {

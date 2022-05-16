@@ -1,8 +1,7 @@
 /* eslint-env mocha */
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { IMessage } from '../../../../../definition/IMessage';
-import { ISubscription } from '../../../../../definition/ISubscription';
 import { isMessageFirstUnread } from './isMessageFirstUnread';
 
 const date = new Date('2021-10-27T00:00:00.000Z');

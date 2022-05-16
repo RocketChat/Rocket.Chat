@@ -1,12 +1,11 @@
 import { FilterQuery, SortOptionObject } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { ILivechatDepartmentRecord, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
 import { callbacks } from '../../../../../lib/callbacks';
-import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
-import { ILivechatDepartmentRecord } from '../../../../../definition/ILivechatDepartmentRecord';
-import { ILivechatDepartmentAgents } from '../../../../../definition/ILivechatDepartmentAgents';
 
 type Pagination<T> = { pagination: { offset: number; count: number; sort: SortOptionObject<T> } };
 type FindDepartmentParams = {

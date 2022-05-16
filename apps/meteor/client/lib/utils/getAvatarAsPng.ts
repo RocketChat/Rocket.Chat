@@ -1,5 +1,6 @@
+import type { IUser } from '@rocket.chat/core-typings';
+
 import { getUserAvatarURL } from '../../../app/utils/lib/getUserAvatarURL';
-import { IUser } from '../../../definition/IUser';
 
 export const getAvatarAsPng = (username: IUser['username'], cb: (dataURL: string) => void): (() => void) => {
 	const image = new Image();

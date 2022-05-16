@@ -1,6 +1,6 @@
 import mock from 'mock-require';
+import type { ISetting } from '@rocket.chat/core-typings';
 
-import { ISetting } from '../../../../definition/ISetting';
 import { ICachedSettings } from '../CachedSettings';
 
 type Dictionary = {

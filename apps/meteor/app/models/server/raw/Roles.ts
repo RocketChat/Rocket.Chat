@@ -8,9 +8,8 @@ import type {
 	WithId,
 	WithoutProjection,
 } from 'mongodb';
+import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 
-import { IRole, IUser } from '../../../../definition/IUser';
-import type { IRoom } from '../../../../definition/IRoom';
 import { BaseRaw } from './BaseRaw';
 import { SubscriptionsRaw } from './Subscriptions';
 import { UsersRaw } from './Users';

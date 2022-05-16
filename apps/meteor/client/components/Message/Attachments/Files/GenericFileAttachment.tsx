@@ -1,10 +1,9 @@
+import { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
+import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { FileProp } from '../../../../../definition/IMessage/MessageAttachment/Files/FileProp';
-import { MessageAttachmentBase } from '../../../../../definition/IMessage/MessageAttachment/MessageAttachmentBase';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import { useMediaUrl } from '../context/AttachmentContext';
 
 export type GenericFileAttachmentProps = {
 	file?: FileProp;

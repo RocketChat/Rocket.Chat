@@ -1,24 +1,28 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useUserId,
+	useSetting,
+	usePermission,
+	useRole,
+	useEndpoint,
+	useMethod,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
 
 import { RoomManager } from '../../../../../../../app/ui-utils/client';
-import { IOmnichannelRoom } from '../../../../../../../definition/IRoom';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
 import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
-import { usePermission, useRole } from '../../../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../../../contexts/ModalContext';
-import { useOmnichannelRouteConfig } from '../../../../../../contexts/OmnichannelContext';
-import { useEndpoint, useMethod } from '../../../../../../contexts/ServerContext';
-import { useSetting } from '../../../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../../contexts/TranslationContext';
-import { useUserId } from '../../../../../../contexts/UserContext';
+import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { handleError } from '../../../../../../lib/utils/handleError';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../../lib/QuickActions';
 import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
@@ -178,7 +182,7 @@ export const useQuickActions = (
 	const closeChat = useMethod('livechat:closeRoom');
 
 	const handleClose = useCallback(
-		async (comment: string, tags: string[]) => {
+		async (comment?: string, tags?: string[]) => {
 			try {
 				await closeChat(rid, comment, { clientAction: true, tags });
 				closeModal();

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
@@ -12,7 +13,6 @@ import {
 } from '../../app/license/server/maxSeatsBanners';
 import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
 import { Users } from '../../../app/models/server';
-import type { IUser } from '../../../definition/IUser';
 
 callbacks.add(
 	'onCreateUser',

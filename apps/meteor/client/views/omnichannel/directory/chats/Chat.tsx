@@ -1,8 +1,8 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import React, { useEffect, FC } from 'react';
 
 import { openRoom } from '../../../../../app/ui-utils/client/lib/openRoom';
-import { IRoom } from '../../../../../definition/IRoom';
 import RoomWithData from '../../../room/Room';
 
 const Chat: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {

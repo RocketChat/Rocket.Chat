@@ -1,5 +1,5 @@
-import { ISetting } from '../../../../definition/ISetting';
-import { useSetting } from '../../../contexts/SettingsContext';
+import type { ISetting } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
 
 type Asset = { url?: string; defaultUrl?: string };
 

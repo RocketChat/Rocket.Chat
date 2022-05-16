@@ -1,9 +1,8 @@
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { memoize } from '@rocket.chat/memo';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatSubscription } from '../../../app/models/client';
-import { IRoom } from '../../../definition/IRoom';
-import { ISubscription } from '../../../definition/ISubscription';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 import { callWithErrorHandling } from './callWithErrorHandling';
 

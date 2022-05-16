@@ -9,9 +9,8 @@
  * Currently the data is stored locally but may sent back to server if such need exists.
  */
 
-import { IQueueMembershipSubscription } from '../../../definition/IVoipExtension';
-import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
-import { IQueueInfo } from '../../../definition/voip/IQueueInfo';
+import type { IQueueMembershipSubscription } from '@rocket.chat/core-typings';
+import { ICallerInfo, IQueueInfo } from '@rocket.chat/core-typings';
 
 interface IQueueServingRecord {
 	queueInfo: IQueueInfo;

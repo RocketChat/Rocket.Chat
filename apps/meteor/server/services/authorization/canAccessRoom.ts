@@ -1,11 +1,12 @@
+import { TEAM_TYPE, ITeam } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+
 import { Authorization } from '../../sdk';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomVoip } from './canAccessRoomVoip';
 import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
 import { Subscriptions, Rooms, Settings, TeamMembers, Team } from './service';
-import { TEAM_TYPE, ITeam } from '../../../definition/ITeam';
-import { IUser } from '../../../definition/IUser';
 
 async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {

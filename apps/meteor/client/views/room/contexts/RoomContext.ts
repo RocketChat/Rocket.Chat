@@ -1,6 +1,5 @@
+import { IRoom, IOmnichannelRoom, isOmnichannelRoom, isVoipRoom, IVoipRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
-
-import { IRoom, IOmnichannelRoom, isOmnichannelRoom, isVoipRoom, IVoipRoom } from '../../../../definition/IRoom';
 
 export type RoomContextValue = {
 	rid: IRoom['_id'];

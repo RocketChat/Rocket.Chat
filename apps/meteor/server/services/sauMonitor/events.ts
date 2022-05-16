@@ -1,6 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-
-import { ISocketConnection } from '../../../definition/ISocketConnection';
+import type { ISocketConnection } from '@rocket.chat/core-typings';
 
 export const sauEvents = new Emitter<{
 	'accounts.login': { userId: string; connection: ISocketConnection };

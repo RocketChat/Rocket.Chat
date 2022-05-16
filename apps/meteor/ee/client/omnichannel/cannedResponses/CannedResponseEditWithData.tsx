@@ -1,10 +1,11 @@
 import { Callout } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import '../../../definition/rest';
 import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepartmentData';
 
