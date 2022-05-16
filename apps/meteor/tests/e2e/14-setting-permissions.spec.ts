@@ -1,119 +1,119 @@
 import { test, expect } from '@playwright/test';
+import faker from '@faker-js/faker';
 
-// import { adminUsername, adminEmail, adminPassword, username, email, password } from './utils/mocks/userAndPasswordMock';
+import LoginPage from './utils/pageobjects/LoginPage';
+import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
 import Administration from './utils/pageobjects/Administration';
-// import SideNav from './utils/pageobjects/SideNav';
-// import LoginPage from './utils/pageobjects/LoginPage';
+import SideNav from './utils/pageobjects/SideNav';
 
 test.describe('[Rocket.Chat Settings based permissions]', () => {
 	let admin: Administration;
-	// let sideNav: SideNav;
-	// let loginPage: LoginPage;
-
+	let sideNav: SideNav;
+	let loginPage: LoginPage;
+	const newHomeTitle = faker.animal.type();
 	test.beforeAll(async ({ browser }) => {
 		const context = await browser.newContext();
 		const page = await context.newPage();
-		// sideNav = new SideNav(page);
+		sideNav = new SideNav(page);
 		admin = new Administration(page);
-		// loginPage = new LoginPage(page);
+		loginPage = new LoginPage(page);
 	});
 
-	test.describe('Give User Permissions', async () => {
+	test.describe('[Give User Permissions]', async () => {
 		test.beforeAll(async () => {
+			await loginPage.goto('/');
+			await loginPage.login(adminLogin);
+			await sideNav.sidebarUserMenu().click();
+			await sideNav.admin().click();
 			await admin.permissionsLink().click();
 		});
 
+		test.afterAll(async () => {
+			await loginPage.goto('/home');
+			await loginPage.logout();
+		});
+
 		test('Set permission for user to manage settings', async () => {
-			const isChecked = await admin.getPage().isChecked('table tbody tr td:nth-child(6)');
-			if (!isChecked) {
-				await admin.getPage().click('table tbody tr td:nth-child(6)');
+			await admin.rolesSettingsFindInput().type('settings');
+			await admin.getPage().locator('table tbody tr:first-child td:nth-child(1) >> text="Change some settings"').waitFor();
+			const isOptionChecked = await admin.getPage().isChecked('table tbody tr:first-child td:nth-child(6) label input');
+			if (!isOptionChecked) {
+				await admin.getPage().click('table tbody tr:first-child td:nth-child(6) label');
 			}
-			expect(await admin.getPage().isChecked('table tbody tr td:nth-child(6)')).toBeTruthy();
 		});
 
-		test('Set Permission for user to change titlepage title', async () => {
+		test('Set Permission for user to change title page title', async () => {
 			await admin.rolesSettingsTab().click();
-			await admin.rolesSettingsFindInput().type('Layout');
-			const isChecked = await admin.getPage().isChecked('table tbody tr td:nth-child(6)');
-			if (!isChecked) {
-				await admin.rolesSettingLayoutTitle().click();
+			await admin.rolesSettingsFindInput().fill('Layout');
+			await admin.getPage().locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
+			const isOptionChecked = await admin.getPage().isChecked('table tbody tr:first-child td:nth-child(6) label input');
+			const changeHomeTitleSelected = await admin.getPage().isChecked('table tbody tr:nth-child(3) td:nth-child(6) label input');
+			console.log(isOptionChecked, changeHomeTitleSelected);
+			if (!isOptionChecked && !changeHomeTitleSelected) {
+				await admin.getPage().click('table tbody tr:first-child td:nth-child(6) label');
+				await admin.getPage().click('table tbody tr:nth-child(3) td:nth-child(6) label');
 			}
-			expect(await admin.getPage().isChecked('table tbody tr td:nth-child(6)')).toBeTruthy();
+		});
+	});
+
+	test.describe('Test new user setting permissions', async () => {
+		test.beforeAll(async () => {
+			await loginPage.goto('/');
+			await loginPage.login(validUserInserted);
+			await sideNav.sidebarUserMenu().click();
+			await sideNav.admin().click();
+			await admin.settingsLink().click();
+			await admin.layoutSettingsButton().click();
+		});
+		test.afterAll(async () => {
+			await loginPage.goto('/home');
+			await loginPage.logout();
 		});
 
-		// 	it('Set Permission for user to change titlepage title', function (done) {
-		// 		admin.rolesSettingsTab.click();
-		// 		admin.rolesSettingsFindInput.type('Layout');
-		// 		if (!admin.rolesSettingLayoutTitle.isSelected()) {
-		// 			admin.rolesSettingLayoutTitle.click();
-		// 		}
-		// 		admin.rolesSettingLayoutTitle.isSelected().should.equal(true);
-		// 		done();
-		// 	});
+		test('expect new permissions is enabled for user', async () => {
+			await admin.homeTitleInput().fill(newHomeTitle);
+			await admin.buttonSave().click();
+			await expect(admin.getPage().locator('.toast-message >> text="Settings updated"')).toBeVisible();
+		});
+	});
 
-		// 	after(() => {
-		// 		sideNav.preferencesClose.click();
-		// 		logoutRocketchat();
-		// 	});
-		// });
+	test.describe('[Verify settings change and cleanup]', async () => {
+		test.beforeAll(async () => {
+			await loginPage.goto('/');
+			await loginPage.login(adminLogin);
+			await sideNav.sidebarUserMenu().click();
+			await sideNav.admin().click();
+			await admin.settingsLink().click();
+			await admin.settingsSearch().type('Layout');
+			await admin.layoutSettingsButton().click();
+		});
 
-		// describe('Test new user setting permissions', function () {
-		// 	before(() => {
-		// 		try {
-		// 			checkIfUserIsValid(username, email, password);
-		// 		} catch (e) {
-		// 			console.log('		User could not be logged in - trying again');
-		// 			checkIfUserIsValid(username, email, password);
-		// 		}
-		// 		openAdminView();
-		// 	});
+		test.afterAll(async () => {
+			await loginPage.goto('/home');
+			await loginPage.logout();
+		});
 
-		// 	it('Change titlepage title is allowed', function (done) {
-		// 		admin.layoutLink.click();
-		// 		admin.generalLayoutTitle.type(newTitle);
-		// 		browser.pause(2000);
-		// 		admin.buttonSave.click();
-		// 		done();
-		// 	});
+		test('New settings value visible for admin as well', async () => {
+			await admin.getPage().locator('[data-qa-section="Content"]').click();
+			await admin.homeTitleInput().waitFor();
+			const text = await admin.homeTitleInput().inputValue();
+			await admin.generalHomeTitleReset().click();
+			await admin.buttonSave().click();
+			expect(text).toEqual(newHomeTitle);
+			await expect(admin.getPage().locator('.toast-message >> text="Settings updated"')).toBeVisible();
+		});
 
-		// 	after(() => {
-		// 		sideNav.preferencesClose.click();
-		// 		logoutRocketchat();
-		// 	});
-		// });
+		test('Clear all user permissions', async () => {
+			await admin.permissionsLink().click();
+			await admin.rolesSettingsFindInput().type('settings');
+			await admin.getPage().locator('table tbody tr:first-child td:nth-child(1) >> text="Change some settings"').waitFor();
+			await admin.getPage().click('table tbody tr:first-child td:nth-child(6) label');
 
-		// describe('Verify settings change and cleanup', function () {
-		// 	before(() => {
-		// 		console.log('Switching back to Admin');
-		// 		checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
-		// 		openAdminView();
-		// 	});
-
-		// 	it('New settings value visible for admin as well', function (done) {
-		// 		admin.layoutLink.click();
-		// 		admin.layoutButtonExpandContent.click();
-		// 		assert(admin.generalLayoutTitle.getValue() === newTitle, 'Title setting value not changed properly');
-		// 		browser.pause(2000);
-		// 		admin.buttonSave.click();
-		// 		done();
-		// 	});
-
-		// 	it('Cleanup permissions', function (done) {
-		// 		admin.permissionsLink.click();
-
-		// 		admin.rolesManageSettingsPermissions.click();
-		// 		admin.rolesManageSettingsPermissions.isSelected().should.equal(false);
-
-		// 		admin.rolesSettingsTab.click();
-		// 		admin.rolesSettingsFindInput.type('Layout');
-		// 		admin.rolesSettingLayoutTitle.click();
-		// 		admin.rolesSettingLayoutTitle.isSelected().should.equal(false);
-		// 		done();
-		// 	});
-
-		// 	after(() => {
-		// 		sideNav.preferencesClose.click();
-		// 		logoutRocketchat();
-		// 	});
+			await admin.rolesSettingsTab().click();
+			await admin.rolesSettingsFindInput().fill('Layout');
+			await admin.getPage().locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
+			await admin.getPage().click('table tbody tr td:nth-child(6) label');
+			await admin.getPage().click('table tbody tr:nth-child(3) td:nth-child(6) label');
+		});
 	});
 });
