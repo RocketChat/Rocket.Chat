@@ -3797,6 +3797,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/fuselage-toastbar@file:../../../Rocket.Chat.Fuselage/packages/fuselage-toastbar::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
+  version: 0.31.11
+  resolution: "@rocket.chat/fuselage-toastbar@file:../../../Rocket.Chat.Fuselage/packages/fuselage-toastbar#../../../Rocket.Chat.Fuselage/packages/fuselage-toastbar::hash=7a504f&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
+  dependencies:
+    "@rocket.chat/fuselage-hooks": ^0.31.11
+    "@rocket.chat/styled": ^0.31.11
+  peerDependencies:
+    "@rocket.chat/fuselage": "*"
+    "@rocket.chat/fuselage-polyfills": "*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+  checksum: c0a3199d2769b074a66ffa88267c309585c8d4103591fc1bb5b9ac1195172a471f5192c217af6d9f818149c7723354aade59a624e5863c04cd6c53391e7aead0
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/fuselage-tokens@npm:^0.31.11, @rocket.chat/fuselage-tokens@npm:~0.31.11":
   version: 0.31.11
   resolution: "@rocket.chat/fuselage-tokens@npm:0.31.11"
@@ -4003,6 +4018,7 @@ __metadata:
     "@rocket.chat/fuselage": ~0.31.11
     "@rocket.chat/fuselage-hooks": ~0.31.11
     "@rocket.chat/fuselage-polyfills": ~0.31.11
+    "@rocket.chat/fuselage-toastbar": ../../../Rocket.Chat.Fuselage/packages/fuselage-toastbar
     "@rocket.chat/fuselage-tokens": ~0.31.11
     "@rocket.chat/fuselage-ui-kit": ~0.31.11
     "@rocket.chat/icons": ~0.31.11
