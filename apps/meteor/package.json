@@ -216,7 +216,6 @@
 		"@types/lodash.debounce": "^4.0.6",
 		"@types/proxy-from-env": "^1.0.1",
 		"adm-zip": "0.5.9",
-		"agenda": "github:RocketChat/agenda#3.1.2",
 		"ajv": "^8.7.1",
 		"apn": "2.2.0",
 		"archiver": "^3.1.1",

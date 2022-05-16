@@ -1,5 +1,8 @@
 import type { IMessage, IRoom, ReadReceipt } from '@rocket.chat/core-typings';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
 export type ChatEndpoints = {
 	'chat.getMessage': {
 		GET: (params: { msgId: IMessage['_id'] }) => {
@@ -34,7 +37,7 @@ export type ChatEndpoints = {
 		};
 	};
 	'chat.getThreadsList': {
-		GET: (params: { rid: IRoom['_id']; type: 'unread' | 'following' | 'all'; text?: string; offset: number; count: number }) => {
+		GET: (params: PaginatedRequest<{ rid: IRoom['_id']; type: 'unread' | 'following' | 'all'; text?: string }>) => {
 			threads: IMessage[];
 			total: number;
 		};
@@ -61,9 +64,9 @@ export type ChatEndpoints = {
 		GET: (params: { rid: string; userId: string; ignore: boolean }) => {};
 	};
 	'chat.search': {
-		GET: (params: { roomId: IRoom['_id']; searchText: string; count: number; offset: number }) => {
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; searchText: string }>) => PaginatedResult<{
 			messages: IMessage[];
-		};
+		}>;
 	};
 	'chat.update': {
 		POST: (params: { roomId: IRoom['_id']; msgId: string; text: string }) => {

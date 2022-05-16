@@ -5,13 +5,21 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type GroupsEndpoints = {
 	'groups.files': {
-		GET: (params: { roomId: IRoom['_id']; count: number; sort: string; query: string } | { roomName: IRoom['name']; count: number; sort: string; query: string }) => {
+		GET: (
+			params:
+				| { roomId: IRoom['_id']; count: number; sort: string; query: string }
+				| { roomName: IRoom['name']; count: number; sort: string; query: string },
+		) => {
 			files: IMessage[];
 			total: number;
 		};
 	};
 	'groups.members': {
-		GET: (params: { roomId: IRoom['_id']; offset?: number; count?: number; filter?: string; status?: string[] } | { roomName: IRoom['name']; offset?: number; count?: number; filter?: string; status?: string[] }) => {
+		GET: (
+			params:
+				| { roomId: IRoom['_id']; offset?: number; count?: number; filter?: string; status?: string[] }
+				| { roomName: IRoom['name']; offset?: number; count?: number; filter?: string; status?: string[] },
+		) => {
 			count: number;
 			offset: number;
 			members: IUser[];
@@ -73,18 +81,20 @@ export type GroupsEndpoints = {
 		GET: (params: { roomId: string } | { roomName: string }) => { roles: IGetRoomRoles[] };
 	};
 	'groups.messages': {
-		GET: (params: {
-			roomId: IRoom['_id'];
-			query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-			offset: number;
-			sort: { ts: number };
-		} | {
-			roomName: IRoom['name'];
-			query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-			offset: number;
-			sort: { ts: number };
-		}) => {
+		GET: (
+			params:
+				| PaginatedRequest<{
+						roomId: IRoom['_id'];
+						query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+						sort: { ts: number };
+				  }>
+				| PaginatedRequest<{
+						roomName: IRoom['name'];
+						query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+						sort: { ts: number };
+				  }>,
+		) => PaginatedResult<{
 			messages: IMessage[];
-		};
+		}>;
 	};
 };

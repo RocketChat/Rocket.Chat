@@ -1,6 +1,7 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type ImEndpoints = {
 	'im.create': {
@@ -20,18 +21,17 @@ export type ImEndpoints = {
 		};
 	};
 	'im.files': {
-		GET: (params: { roomId: IRoom['_id']; count: number; sort: string; query: string } | { roomName: IRoom['_id']; count: number; sort: string; query: string }) => {
+		GET: (params: PaginatedRequest<{ roomId: string }> | PaginatedRequest<{ roomName: IRoom['_id'] }>) => PaginatedResult<{
 			files: IMessage[];
 			total: number;
-		};
+		}>;
 	};
 	'im.members': {
-		GET: (params: { roomId: IRoom['_id']; offset?: number; count?: number; filter?: string; status?: string[] } | { roomName: IRoom['name']; offset?: number; count?: number; filter?: string; status?: string[] }) => {
-			count: number;
-			offset: number;
+		GET: (
+			params: PaginatedRequest<({ roomId: string } | { roomName: IRoom['name'] }) & { filter?: string; status?: string[] }>,
+		) => PaginatedResult<{
 			members: IUser[];
-			total: number;
-		};
+		}>;
 	};
 	'im.history': {
 		GET: (params: PaginatedRequest<{ roomId: string; latest?: string } | { roomName: string; latest?: string }>) => PaginatedRequest<{
@@ -51,19 +51,20 @@ export type ImEndpoints = {
 		POST: (params: { roomId: string } | { roomName: string }) => {};
 	};
 	'im.messages': {
-		GET: (params: {
-			roomId: IRoom['_id'];
-			query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-			offset: number;
-			sort: { ts: number };
-		} | 
-		{
-			roomName: IRoom['name'];
-			query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-			offset: number;
-			sort: { ts: number };
-		}) => {
+		GET: (
+			params:
+				| PaginatedRequest<{
+						roomId: string;
+						query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+						sort: { ts: number };
+				  }>
+				| PaginatedRequest<{
+						roomName: IRoom['name'];
+						query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+						sort: { ts: number };
+				  }>,
+		) => PaginatedResult<{
 			messages: IMessage[];
-		};
+		}>;
 	};
 };

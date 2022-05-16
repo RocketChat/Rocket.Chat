@@ -1,5 +1,8 @@
 import type { IStats } from '@rocket.chat/core-typings';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
 type OTREnded = { rid: string };
 
 type SlashCommand = { command: string };
@@ -23,12 +26,10 @@ export type StatisticsEndpoints = {
 		GET: (params: { refresh?: 'true' | 'false' }) => IStats;
 	};
 	'statistics.list': {
-		GET: (params: { offset?: number; count?: number; sort?: string; fields?: string; query?: string }) => {
+		GET: (params: PaginatedRequest<{ fields?: string }>) => PaginatedResult<{
 			statistics: IStats[];
-			count: number;
-			offset: number;
 			total: number;
-		};
+		}>;
 	};
 	'statistics.telemetry': {
 		POST: (params: TelemetryPayload) => any;

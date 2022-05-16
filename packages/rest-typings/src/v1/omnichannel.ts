@@ -203,23 +203,20 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/queue': {
-		GET: (params: {
-			agentId?: ILivechatAgent['_id'];
-			includeOfflineAgents?: boolean;
-			departmentId?: ILivechatAgent['_id'];
-			offset: number;
-			count: number;
-			sort: string;
-		}) => {
+		GET: (
+			params: PaginatedRequest<{
+				agentId?: ILivechatAgent['_id'];
+				includeOfflineAgents?: boolean;
+				departmentId?: ILivechatAgent['_id'];
+			}>,
+		) => PaginatedResult<{
 			queue: {
 				chats: number;
 				department: { _id: string; name: string };
 				user: { _id: string; username: string; status: string };
 			}[];
-			count: number;
-			offset: number;
 			total: number;
-		};
+		}>;
 	};
 	'livechat/agents/:uid/departments?enabledDepartmentsOnly=true': {
 		GET: () => { departments: ILivechatDepartment[] };

@@ -18,26 +18,32 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'channels.members': {
-		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; filter?: string; status?: string[] } | { roomName: IRoom['name']; filter?: string; status?: string[] }>) => PaginatedResult<{
+		GET: (
+			params: PaginatedRequest<
+				{ roomId: IRoom['_id']; filter?: string; status?: string[] } | { roomName: IRoom['name']; filter?: string; status?: string[] }
+			>,
+		) => PaginatedResult<{
 			members: IUser[];
 		}>;
 	};
 	'channels.history': {
 		GET: (
-			params: PaginatedRequest<{
-				roomId: IRoom['_id'];
-				latest?: string;
-				showThreadMessages?: 'false' | 'true';
-				oldest?: string;
-				inclusive?: 'false' | 'true';
-			} | 
-			{
-				roomName: IRoom['name'];
-				latest?: string;
-				showThreadMessages?: 'false' | 'true';
-				oldest?: string;
-				inclusive?: 'false' | 'true';
-			}>,
+			params: PaginatedRequest<
+				| {
+						roomId: IRoom['_id'];
+						latest?: string;
+						showThreadMessages?: 'false' | 'true';
+						oldest?: string;
+						inclusive?: 'false' | 'true';
+				  }
+				| {
+						roomName: IRoom['name'];
+						latest?: string;
+						showThreadMessages?: 'false' | 'true';
+						oldest?: string;
+						inclusive?: 'false' | 'true';
+				  }
+			>,
 		) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
@@ -82,7 +88,7 @@ export type ChannelsEndpoints = {
 		};
 	};
 	'channels.join': {
-		POST: (params: { roomId: IRoom['_id']; joinCode?: string }  | { roomName: IRoom['name']; joinCode?: string }) => {
+		POST: (params: { roomId: IRoom['_id']; joinCode?: string } | { roomName: IRoom['name']; joinCode?: string }) => {
 			channel: IRoom;
 		};
 	};
