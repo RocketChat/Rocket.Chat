@@ -13,6 +13,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { isDmDeleteProps } from '@rocket.chat/rest-typings';
 
 interface IImFilesObject extends IUpload {
 	userId: string;
@@ -46,7 +47,9 @@ const findDirectMessageRoom = async ({
 
 API.v1.addRoute(
 	['dm.create', 'im.create'],
-	{ authRequired: true },
+	{
+		authRequired: true,
+	},
 	{
 		post() {
 			const { username, usernames, excludeSelf = false } = this.requestParams();
@@ -68,14 +71,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	['dm.delete', 'im.delete'],
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isDmDeleteProps,
+	},
 	{
 		async post() {
-			const { roomId, username } = this.requestParams();
-			if (!roomId && !username) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
-			}
-			const { room } = await findDirectMessageRoom({ roomId, username, userId: this.userId });
+			const { room } = await findDirectMessageRoom({ ...this.bodyParams, userId: this.userId });
 
 			const canAccess = (await canAccessRoomIdAsync(room._id, this.userId)) || hasPermission(this.userId, 'view-room-administration');
 			if (!canAccess) {
@@ -345,13 +347,13 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: room._id });
-			const sortObj = sort?.ts ? { ts: sort.ts } : { ts: -1 };
+			const ourQuery = { rid: room._id, ...query };
+			const sortObj = { ts: sort.ts ?? -1 };
 			const messages = await Messages.find(ourQuery, {
 				sort: sortObj,
 				skip: offset,
 				limit: count,
-				fields,
+				...(fields && { fields }),
 			}).toArray();
 
 			return API.v1.success({
@@ -429,7 +431,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { name: 1 }, fields } = this.parseJsonQuery();
 
-			// TODO: CACHE: Add Breacking notice since we removed the query param
+			// TODO: CACHE: Add Breaking notice since we removed the query param
 
 			const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' })
 				.map((item) => item.rid)

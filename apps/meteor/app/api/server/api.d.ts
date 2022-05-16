@@ -103,8 +103,8 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		readonly count: number;
 	};
 	parseJsonQuery(): {
-		sort: Record<string, unknown>;
-		fields: Record<string, unknown>;
+		sort: Record<string, 1 | -1>;
+		fields: Record<string, 0 | 1>;
 		query: Record<string, unknown>;
 	};
 	/* @deprecated */

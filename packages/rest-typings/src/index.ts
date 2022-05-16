@@ -9,12 +9,11 @@ import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
-import type { DmEndpoints } from './v1/dm';
 import type { DnsEndpoints } from './v1/dns';
 import type { E2eEndpoints } from './v1/e2e';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { GroupsEndpoints } from './v1/groups';
-import type { ImEndpoints } from './v1/im';
+import type { ImEndpoints, DmEndpoints } from './v1/dm';
 import type { InstancesEndpoints } from './v1/instances';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
@@ -152,6 +151,9 @@ export * from './v1/channels/ChannelsModeratorsProps';
 export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
+
+export * from './v1/dm/DmDeleteProps';
+
 export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';

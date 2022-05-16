@@ -1,7 +1,8 @@
 import type { IMessage, IRoom, IUser, IUpload } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { DmDeleteProps } from './DmDeleteProps';
 
 export type ImEndpoints = {
 	'im.create': {
@@ -10,7 +11,7 @@ export type ImEndpoints = {
 		};
 	};
 	'im.delete': {
-		POST: (params: { roomId?: string; username?: string }) => void;
+		POST: (params: DmDeleteProps) => void;
 	};
 	'im.close': {
 		POST: (params: { roomId: string }) => void;
