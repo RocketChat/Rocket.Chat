@@ -17,7 +17,6 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 
 	const [usernameError, setUsernameError] = useState();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
-	const [creditPoints, setCreditPoints] = useState(0);
 	const [trustScoreNumber, setTrustScoreNumber] = useState(0);
 
 	const { allowUserAvatarChange, namesRegex, requireName } = settings;
@@ -100,17 +99,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 	// Refetch user data so that we can get createdAt field.
 	const { value: data } = useEndpointData(
 		'users.info',
-		useMemo(() => ({ ...(username && { username }) }), [username, creditPoints]),
+		useMemo(() => ({ ...(username && { username }) }), [username]),
 	);
-
-	const userWithCredit = useMemo(() => {
-		const { user } = data || { user: {} };
-		console.log(user, 'inside user');
-		if (user) {
-			return user.credit;
-		}
-		return 0;
-	}, [data]);
 
 	const dummyCredit = {
 		gateway: 'bank-transfer',
@@ -122,11 +112,10 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 	console.log(user, 'outer user');
 
 	useEffect(() => {
-		console.log(creditPoints, trustScoreNumber);
-		if (creditPoints === 0) {
+		if (!user.credit) {
 			Meteor.call('buyCredit', dummyCredit, (error, result) => {
 				if (result) {
-					setCreditPoints(1);
+					console.log('Bought credit');
 				}
 				if (error) {
 					console.log(error);
@@ -147,7 +136,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 
 	const careerItems = [
 		{ icon: 'user', content: 'Employee/er/broker', rc: true },
-		{ icon: 'credit', content: `Credit point: ${userWithCredit}`, rc: false },
+		{ icon: 'credit', content: `Credit point: ${user.credit ? user.credit : 0}`, rc: false },
 		{ icon: 'trust-score', content: `Trust score: ${trustScoreNumber}/100`, rc: false },
 	];
 

@@ -36,8 +36,6 @@ export class Users extends Base {
 
 		this.defaultFields = {
 			__rooms: 0,
-			credit: 0,
-			trustScore: 1,
 		};
 
 		this.tryEnsureIndex({ __rooms: 1 }, { sparse: 1 });
