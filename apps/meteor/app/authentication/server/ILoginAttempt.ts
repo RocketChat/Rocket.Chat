@@ -1,5 +1,4 @@
-import { IUser } from '../../../definition/IUser';
-import { IMethodConnection } from '../../../definition/IMethodThisType';
+import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 
 interface IMethodArgument {
 	user?: { username: string };
@@ -8,6 +7,12 @@ interface IMethodArgument {
 		algorithm: string;
 	};
 	resume?: string;
+
+	cas?: boolean;
+
+	totp?: {
+		code: string;
+	};
 }
 
 export interface ILoginAttempt {

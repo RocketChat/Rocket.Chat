@@ -1,4 +1,4 @@
-import type { IRole } from '../../definition/IRole';
+import type { IRole } from '@rocket.chat/core-typings';
 
 type PriorityRoleName =
 	| 'custom-role'

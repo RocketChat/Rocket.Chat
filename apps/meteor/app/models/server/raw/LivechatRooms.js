@@ -84,13 +84,23 @@ export class LivechatRoomsRaw extends BaseRaw {
 			firstParams.push(matchUsers);
 		}
 		const sort = { $sort: options.sort || { chats: -1 } };
-		const params = [...firstParams, usersGroup, project, sort];
+		const pagination = [sort];
+
 		if (options.offset) {
-			params.push({ $skip: options.offset });
+			pagination.push({ $skip: options.offset });
 		}
 		if (options.count) {
-			params.push({ $limit: options.count });
+			pagination.push({ $limit: options.count });
 		}
+
+		const facet = {
+			$facet: {
+				sortedResults: pagination,
+				totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+			},
+		};
+
+		const params = [...firstParams, usersGroup, project, facet];
 		return this.col.aggregate(params).toArray();
 	}
 

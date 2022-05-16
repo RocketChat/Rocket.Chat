@@ -1,5 +1,6 @@
+import type { ISettingStatistics, ISettingStatisticsObject } from '@rocket.chat/core-typings';
+
 import { Settings } from '../../../app/models/server/raw';
-import { ISettingStatistics, ISettingStatisticsObject } from '../../../definition/ISetting';
 
 const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISettingStatisticsObject> => {
 	const {

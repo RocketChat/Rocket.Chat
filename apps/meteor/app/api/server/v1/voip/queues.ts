@@ -1,10 +1,8 @@
 import { Match, check } from 'meteor/check';
+import type { IVoipConnectorResult, IQueueSummary, IQueueMembershipDetails, IQueueMembershipSubscription } from '@rocket.chat/core-typings';
 
-import { API } from '../../api';
 import { Voip } from '../../../../../server/sdk';
-import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
-import { IQueueSummary } from '../../../../../definition/ACDQueues';
-import { IQueueMembershipDetails, IQueueMembershipSubscription } from '../../../../../definition/IVoipExtension';
+import { API } from '../../api';
 
 API.v1.addRoute(
 	'voip/queues.getSummary',

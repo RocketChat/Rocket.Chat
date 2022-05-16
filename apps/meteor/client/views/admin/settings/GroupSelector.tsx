@@ -1,7 +1,7 @@
+import { GroupId } from '@rocket.chat/core-typings';
+import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import React, { FunctionComponent } from 'react';
 
-import { GroupId } from '../../../../definition/ISetting';
-import { useSettingStructure } from '../../../contexts/SettingsContext';
 import GroupPage from './GroupPage';
 import AssetsGroupPage from './groups/AssetsGroupPage';
 import LDAPGroupPage from './groups/LDAPGroupPage';

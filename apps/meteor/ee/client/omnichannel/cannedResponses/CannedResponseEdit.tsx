@@ -1,17 +1,12 @@
+import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
+import { Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useState, useMemo, useEffect, useCallback } from 'react';
 
 import Page from '../../../../client/components/Page';
-import { usePermission } from '../../../../client/contexts/AuthorizationContext';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useEndpoint } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
-import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
-import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
-import { Serialized } from '../../../../definition/Serialized';
 import CannedResponseForm from './components/cannedResponseForm';
 
 const CannedResponseEdit: FC<{

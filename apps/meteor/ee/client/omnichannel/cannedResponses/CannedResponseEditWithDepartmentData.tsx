@@ -1,12 +1,12 @@
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
+import { Serialized } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
-import { Serialized } from '../../../../definition/Serialized';
 import CannedResponseEdit from './CannedResponseEdit';
 
 const CannedResponseEditWithData: FC<{

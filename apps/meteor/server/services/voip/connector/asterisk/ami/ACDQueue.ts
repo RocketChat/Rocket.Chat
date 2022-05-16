@@ -3,12 +3,12 @@
  * @remarks
  */
 import { Db } from 'mongodb';
+import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
 
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
-import { IVoipConnectorResult } from '../../../../../../definition/IVoipConnectorResult';
 
 export class ACDQueue extends Command {
 	private logger: Logger;

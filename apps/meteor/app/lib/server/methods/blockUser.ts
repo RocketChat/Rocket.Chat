@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { Rooms, Subscriptions } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
 Meteor.methods({
 	blockUser({ rid, blocked }) {

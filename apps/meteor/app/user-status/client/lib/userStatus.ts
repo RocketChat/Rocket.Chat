@@ -1,4 +1,4 @@
-import { UserStatus } from '../../../../definition/UserStatus';
+import { UserStatus } from '@rocket.chat/core-typings';
 
 type Status = {
 	name: string;

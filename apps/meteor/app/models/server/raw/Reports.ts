@@ -1,6 +1,6 @@
+import type { IReport, IMessage } from '@rocket.chat/core-typings';
+
 import { BaseRaw } from './BaseRaw';
-import { IReport } from '../../../../definition/IReport';
-import { IMessage } from '../../../../definition/IMessage';
 
 export class ReportsRaw extends BaseRaw<IReport> {
 	createWithMessageDescriptionAndUserId(message: IMessage, description: string, userId: string): ReturnType<BaseRaw<IReport>['insertOne']> {

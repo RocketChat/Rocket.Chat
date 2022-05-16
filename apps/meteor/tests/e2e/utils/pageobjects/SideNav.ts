@@ -2,11 +2,14 @@ import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
 // import mainContent from './main-content.page';
+import { ENTER } from '../mocks/keyboardKeyMock';
 
 class SideNav extends BasePage {
 	// New channel
 	public channelType(): Locator {
-		return this.getPage().locator('#modal-root .rcx-field:contains("Private") .rcx-toggle-switch__fake');
+		return this.getPage().locator(
+			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
+		);
 	}
 
 	public channelReadOnly(): Locator {
@@ -18,7 +21,7 @@ class SideNav extends BasePage {
 	}
 
 	public saveChannelBtn(): Locator {
-		return this.getPage().locator('#modal-root button:contains("Create")');
+		return this.getPage().locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
 	// Account box
@@ -108,11 +111,11 @@ class SideNav extends BasePage {
 	}
 
 	public newChannelBtn(): Locator {
-		return this.getPage().locator('.rcx-option__content:contains("Channel")');
+		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Channel' });
 	}
 
 	public newDiscussionBtn(): Locator {
-		return this.getPage().locator('.rcx-option__content:contains("Discussion")');
+		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Discussion' });
 	}
 
 	public newChannelIcon(): Locator {
@@ -194,7 +197,9 @@ class SideNav extends BasePage {
 		await expect(this.spotlightSearch()).toBeFocused();
 		await this.spotlightSearch().type(channelName);
 
-		await expect(this.getPage().locator('.rcx-room-header')).toContainText(channelName);
+		await expect(this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).first()).toContainText(channelName);
+
+		await this.spotlightSearchPopUp().click();
 	}
 
 	public async searchChannelAndOpen(channelName: string): Promise<void> {
@@ -204,6 +209,14 @@ class SideNav extends BasePage {
 	// Gets a channel from the rooms list
 	public getChannelFromList(channelName: any): Locator {
 		return this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
+	}
+
+	private searchUser(): Locator {
+		return this.getPage().locator('[data-qa="sidebar-search"]');
+	}
+
+	private searchInput(): Locator {
+		return this.getPage().locator('[data-qa="sidebar-search-input"]');
 	}
 
 	public async createChannel(channelName: any, isPrivate: any /* isReadOnly*/): Promise<void> {
@@ -226,6 +239,12 @@ class SideNav extends BasePage {
 		await this.saveChannelBtn().click();
 		await expect(this.channelType()).not.toBeVisible();
 		// mainContent.messageInput().should('be.focused');
+	}
+
+	public async findFindForChat(userName: string): Promise<void> {
+		await this.searchUser().click();
+		await this.searchInput().type(userName, { delay: 300 });
+		await this.getPage().keyboard.press(ENTER);
 	}
 }
 

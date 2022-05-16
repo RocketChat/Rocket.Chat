@@ -1,7 +1,5 @@
+import type { ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
-
-import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
-import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
 
 type useQueryType = (
 	debouncedParams: {

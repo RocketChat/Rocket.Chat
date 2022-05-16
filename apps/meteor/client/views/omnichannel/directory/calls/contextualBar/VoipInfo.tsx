@@ -1,13 +1,13 @@
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Chip } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import { IVoipRoom } from '../../../../../../definition/IRoom';
 import UserCard from '../../../../../components/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import InfoPanel from '../../../../InfoPanel';
 import AgentField from '../../chats/contextualBar/AgentField';
 import { InfoField } from './InfoField';

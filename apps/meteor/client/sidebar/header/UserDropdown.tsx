@@ -1,23 +1,17 @@
+import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings';
 import { Box, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLayout, useRoute, useLogout, useSetting, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement } from 'react';
 
 import { AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
-import { IUser } from '../../../definition/IUser';
-import { UserStatus as UserStatusEnum } from '../../../definition/UserStatus';
-import { ValueOf } from '../../../definition/utils';
 import { callbacks } from '../../../lib/callbacks';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
-import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
-import { useLayout } from '../../contexts/LayoutContext';
-import { useRoute } from '../../contexts/RouterContext';
-import { useSetting } from '../../contexts/SettingsContext';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useLogout } from '../../contexts/UserContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { imperativeModal } from '../../lib/imperativeModal';
@@ -68,7 +62,7 @@ type UserDropdownProps = {
 const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const t = useTranslation();
 	const accountRoute = useRoute('account');
-	const adminRoute = useRoute('admin');
+	const adminRoute = useRoute('admin-index');
 	const logout = useLogout();
 	const { sidebar, isMobile } = useLayout();
 

@@ -1,11 +1,8 @@
 import _ from 'underscore';
 import type ldapjs from 'ldapjs';
+import { ILDAPEntry } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
 
-import { ILDAPEntry } from '../../../../definition/ldap/ILDAPEntry';
-import type { IUser } from '../../../../definition/IUser';
-import type { IRoom, ICreatedRoom } from '../../../../definition/IRoom';
-import type { IRole } from '../../../../definition/IRole';
-import { IImportUser } from '../../../../definition/IImportUser';
 import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
 import { Rooms } from '../../../../app/models/server';
@@ -282,6 +279,8 @@ export class LDAPEEManager extends LDAPManager {
 
 		logger.debug('syncing user channels');
 		const ldapFields = Object.keys(fieldMap);
+		const channelsToAdd = new Set<string>();
+		const channelsToRemove = new Set<string>();
 
 		for await (const ldapField of ldapFields) {
 			if (!fieldMap[ldapField]) {
@@ -302,19 +301,32 @@ export class LDAPEEManager extends LDAPManager {
 						if (room.teamMain) {
 							logger.error(`Can't add user to channel ${channel} because it is a team.`);
 						} else {
-							addUserToRoom(room._id, user);
-							logger.debug(`Synced user channel ${room._id} from LDAP for ${username}`);
+							channelsToAdd.add(room._id);
 						}
 					} else if (syncUserChannelsRemove && !room.teamMain) {
-						const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
-						if (subscription) {
-							await removeUserFromRoom(room._id, user);
-						}
+						channelsToRemove.add(room._id);
 					}
 				} catch (e) {
 					logger.debug(`Failed to sync user room, user = ${username}, channel = ${channel}`);
 					logger.error(e);
 				}
+			}
+		}
+
+		for (const rid of channelsToAdd) {
+			addUserToRoom(rid, user);
+			logger.debug(`Synced user channel ${rid} from LDAP for ${username}`);
+		}
+
+		for await (const rid of channelsToRemove) {
+			if (channelsToAdd.has(rid)) {
+				return;
+			}
+
+			const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(rid, user._id);
+			if (subscription) {
+				await removeUserFromRoom(rid, user);
+				logger.debug(`Removed user ${username} from channel ${rid}`);
 			}
 		}
 	}

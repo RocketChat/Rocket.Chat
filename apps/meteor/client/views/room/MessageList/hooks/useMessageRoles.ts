@@ -1,8 +1,7 @@
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useCallback } from 'react';
 
 import { RoomRoles, UserRoles, Roles } from '../../../../../app/models/client';
-import { IRoom } from '../../../../../definition/IRoom';
-import { IUser } from '../../../../../definition/IUser';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
 export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom['_id'], shouldLoadRoles: boolean): Array<string> =>

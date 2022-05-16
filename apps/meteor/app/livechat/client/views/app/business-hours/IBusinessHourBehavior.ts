@@ -1,4 +1,4 @@
-import { ILivechatBusinessHour } from '../../../../../../definition/ILivechatBusinessHour';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 
 export interface IBusinessHourBehavior {
 	getView(): string;

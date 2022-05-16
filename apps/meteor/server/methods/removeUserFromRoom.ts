@@ -5,9 +5,9 @@ import { hasPermission, hasRole, getUsersInRole } from '../../app/authorization/
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
-import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { Team } from '../sdk';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
+import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
 Meteor.methods({
 	async removeUserFromRoom(data) {

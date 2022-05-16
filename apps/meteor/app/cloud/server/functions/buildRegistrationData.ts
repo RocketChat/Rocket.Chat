@@ -1,9 +1,10 @@
+import { SettingValue } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { Statistics } from '../../../models/server/raw';
 import { statistics } from '../../../statistics/server';
 import { LICENSE_VERSION } from '../license';
-import { SettingValue } from '../../../../definition/ISetting';
 
 type WorkspaceRegistrationData = {
 	uniqueId: string;

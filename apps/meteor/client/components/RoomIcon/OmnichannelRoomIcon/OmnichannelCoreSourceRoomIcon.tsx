@@ -1,7 +1,6 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
 import React, { ComponentProps, ReactElement } from 'react';
-
-import { IOmnichannelRoom } from '../../../../definition/IRoom';
 
 const colors = {
 	busy: 'danger-500',

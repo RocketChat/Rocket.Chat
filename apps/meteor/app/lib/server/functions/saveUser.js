@@ -17,6 +17,9 @@ import { Users as UsersRaw } from '../../../models/server/raw';
 import { callbacks } from '../../../../lib/callbacks';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 
+const MAX_BIO_LENGTH = 260;
+const MAX_NICKNAME_LENGTH = 120;
+
 let html = '';
 let passwordChangedHtml = '';
 Meteor.startup(() => {
@@ -230,7 +233,7 @@ export function validateUserEditing(userId, userData) {
 
 const handleBio = (updateUser, bio) => {
 	if (bio && bio.trim()) {
-		if (typeof bio !== 'string' || bio.length > 260) {
+		if (typeof bio !== 'string' || bio.length > MAX_BIO_LENGTH) {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
 			});
@@ -245,7 +248,7 @@ const handleBio = (updateUser, bio) => {
 
 const handleNickname = (updateUser, nickname) => {
 	if (nickname && nickname.trim()) {
-		if (typeof nickname !== 'string' || nickname.length > 120) {
+		if (typeof nickname !== 'string' || nickname.length > MAX_NICKNAME_LENGTH) {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
 			});

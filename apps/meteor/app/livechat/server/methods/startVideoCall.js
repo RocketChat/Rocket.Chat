@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 import { Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 Meteor.methods({
 	async 'livechat:startVideoCall'(roomId) {

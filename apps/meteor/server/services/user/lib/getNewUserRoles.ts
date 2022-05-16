@@ -1,5 +1,6 @@
+import type { IRole } from '@rocket.chat/core-typings';
+
 import { settings } from '../../../../app/settings/server';
-import type { IRole } from '../../../../definition/IRole';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 
 export function getNewUserRoles(previousRoles?: IRole['_id'][]): IRole['_id'][] {

@@ -5,15 +5,11 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Icon } from '@rocket.chat/fuselage';
+import { IMessage, IUser, ISubscription, IRoom, SettingValue } from '@rocket.chat/core-typings';
+import { TranslationKey } from '@rocket.chat/ui-contexts';
 
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
-import { IMessage } from '../../../../definition/IMessage';
-import { IUser } from '../../../../definition/IUser';
-import { ISubscription } from '../../../../definition/ISubscription';
-import { TranslationKey } from '../../../../client/contexts/TranslationContext';
-import { IRoom } from '../../../../definition/IRoom';
-import { SettingValue } from '../../../../definition/ISetting';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
 
 const call = (method: string, ...args: any[]): Promise<any> =>

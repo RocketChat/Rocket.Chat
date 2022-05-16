@@ -1,9 +1,9 @@
 import { Box, Field, TextInput, ButtonGroup, Button, Margins, Tabs, Flex } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Page from '../../../client/components/Page';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useEndpointAction } from '../../../client/hooks/useEndpointAction';
 import DateRangePicker from './DateRangePicker';
 import Result from './Result';

@@ -1,10 +1,12 @@
 import { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
+import { IEmojiCustom as T } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
-import { IEmojiCustom as T } from '../../../../definition/IEmojiCustom';
 
 export class EmojiCustomRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [{ key: { name: 1 } }, { key: { aliases: 1 } }, { key: { extension: 1 } }];
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { name: 1 } }, { key: { aliases: 1 } }, { key: { extension: 1 } }];
+	}
 
 	// find
 	findByNameOrAlias(emojiName: string, options: WithoutProjection<FindOneOptions<T>>): Cursor<T> {

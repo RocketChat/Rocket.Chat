@@ -3,6 +3,7 @@ import stripHtml from 'string-strip-html';
 import { Random } from 'meteor/random';
 import { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import { LivechatRooms, LivechatVisitors, Messages } from '../../../app/models/server';
@@ -10,7 +11,6 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
 import { logger } from './logger';
-import { OmnichannelSourceType } from '../../../definition/IRoom';
 
 type FileAttachment = {
 	title: string;

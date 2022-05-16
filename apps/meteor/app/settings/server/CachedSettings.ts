@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 import _ from 'underscore';
+import { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
-import { ISetting, SettingValue } from '../../../definition/ISetting';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
 const warn = process.env.NODE_ENV === 'development' || process.env.TEST_MODE;

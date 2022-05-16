@@ -1,8 +1,8 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useState, useCallback } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
-import { Serialized } from '../../../../definition/Serialized';
 import FirstStep from './ModalSteps/FirstStep';
 import SecondStep from './ModalSteps/SecondStep';
 

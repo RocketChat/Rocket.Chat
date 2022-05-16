@@ -3,10 +3,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Messages } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { settings } from '../../settings/server';
 import { api } from '../../../server/sdk/api';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
+import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 
 function Unarchive(_command: 'unarchive', params: string, item: Record<string, string>): void | Promise<void> | Function {
 	let channel = params.trim();

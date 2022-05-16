@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { IRoom } from '../../../../definition/IRoom';
-import { IUser } from '../../../../definition/IUser';
 import { Rooms, Users, Subscriptions } from '../../../models/server';
 
 export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({

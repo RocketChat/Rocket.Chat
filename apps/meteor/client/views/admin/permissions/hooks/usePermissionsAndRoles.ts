@@ -1,3 +1,4 @@
+import type { IRole, IPermission } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback } from 'react';
 
@@ -6,7 +7,12 @@ import { CONSTANTS } from '../../../../../app/authorization/lib';
 import { Roles } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
-export const usePermissionsAndRoles = (type = 'permissions', filter = '', limit = 25, skip = 0): Array<any> => {
+export const usePermissionsAndRoles = (
+	type = 'permissions',
+	filter = '',
+	limit = 25,
+	skip = 0,
+): { permissions: IPermission[]; total: number; roleList: IRole[]; reload: () => void } => {
 	const getPermissions = useCallback(() => {
 		const filterRegExp = new RegExp(filter, 'i');
 
@@ -25,12 +31,9 @@ export const usePermissionsAndRoles = (type = 'permissions', filter = '', limit 
 		);
 	}, [filter, limit, skip, type]);
 
-	const getRoles = useMutableCallback(() => Roles.find().fetch());
-
 	const permissions = useReactiveValue(getPermissions);
+	const getRoles = useMutableCallback(() => Roles.find().fetch());
 	const roles = useReactiveValue(getRoles);
 
-	const reloadRoles = getRoles();
-
-	return [permissions.fetch(), permissions.count(false), roles, reloadRoles];
+	return { permissions: permissions.fetch(), total: permissions.count(false), roleList: roles, reload: getRoles };
 };

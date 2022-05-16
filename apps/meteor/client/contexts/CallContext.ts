@@ -1,9 +1,8 @@
+import type { IVoipRoom } from '@rocket.chat/core-typings';
+import { ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { IVoipRoom } from '../../definition/IRoom';
-import { ICallerInfo } from '../../definition/voip/ICallerInfo';
-import { VoIpCallerInfo } from '../../definition/voip/VoIpCallerInfo';
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
 export type CallContextValue = CallContextDisabled | CallContextEnabled | CallContextReady | CallContextError;
@@ -28,7 +27,7 @@ type CallContextReady = {
 	openWrapUpModal: () => void;
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
-	closeRoom: (data: { comment?: string; tags?: string[] }) => void;
+	closeRoom: (data?: { comment?: string; tags?: string[] }) => void;
 };
 type CallContextError = {
 	enabled: true;

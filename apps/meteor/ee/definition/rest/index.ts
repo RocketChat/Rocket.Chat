@@ -1,4 +1,4 @@
-import type { EngagementDashboardEndpoints } from './v1/engagementDashboard';
-import type { OmnichannelEndpoints } from './v1/omnichannel';
+// TODO: chapter day backend - move to rest ee definitions to another package
 
-export type EnterpriseEndpoints = EngagementDashboardEndpoints & OmnichannelEndpoints;
+import './v1/engagementDashboard';
+import './v1/omnichannel';

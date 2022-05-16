@@ -1,7 +1,7 @@
 import { Message } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 
@@ -16,11 +16,11 @@ type DicussionOptions = {
 const DiscussionMetric: FC<DicussionOptions> = ({ lm, count, rid, drid, openDiscussion }) => {
 	const t = useTranslation();
 	const format = useTimeAgo();
-	const { className, ref } = useBlockRendered();
+	const { className, ref } = useBlockRendered<HTMLDivElement>();
 
 	return (
 		<Message.Block>
-			<div className={className} ref={ref as any} />
+			<div className={className} ref={ref} />
 			<Message.Metrics>
 				<Message.Metrics.Reply data-rid={rid} data-drid={drid} onClick={openDiscussion}>
 					{count ? t('message_counter', { counter: count, count }) : t('Reply')}

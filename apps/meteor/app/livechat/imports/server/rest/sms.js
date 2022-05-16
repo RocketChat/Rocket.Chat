@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 import { FileUpload } from '../../../../file-upload/server';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
@@ -7,7 +8,6 @@ import { API } from '../../../../api/server';
 import { fetch } from '../../../../../server/lib/http/fetch';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
-import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 const getUploadFile = async (details, fileUrl) => {
 	const response = await fetch(fileUrl);

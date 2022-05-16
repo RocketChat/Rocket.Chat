@@ -1,8 +1,7 @@
 import { FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
+import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
 
-import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
-import { IRoom } from '../../../definition/IRoom';
-import { IUser, IRole } from '../../../definition/IUser';
 import { ICreateRoomParams } from './IRoomService';
 
 export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {

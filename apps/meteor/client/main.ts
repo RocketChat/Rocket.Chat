@@ -1,3 +1,6 @@
+import '../ee/definition/rest';
+import '../ee/definition/methods';
+import '../definition/methods';
 import '../ee/client/ecdh';
 import './polyfills';
 

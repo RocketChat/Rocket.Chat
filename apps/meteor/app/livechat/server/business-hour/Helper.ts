@@ -1,6 +1,6 @@
 import moment from 'moment';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
 import { createDefaultBusinessHourRow } from '../../../models/server/models/LivechatBusinessHours';
 
