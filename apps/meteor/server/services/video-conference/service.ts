@@ -1,4 +1,4 @@
-import { Db, ObjectID } from 'mongodb';
+import { Db } from 'mongodb';
 import type {
 	IRoom,
 	IUser,
@@ -14,7 +14,6 @@ import { VideoConferenceStatus, isDirectVideoConference } from '@rocket.chat/cor
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { VideoConferenceRaw } from '../../../app/models/server/raw/VideoConference';
-import { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
@@ -178,24 +177,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-load-own-data');
 		}
 
-		const callId = new ObjectID().toHexString();
+		const callId = await this.VideoConference.createDirect(rid, {
+			_id: user._id,
+			name: user.name,
+			username: user.username,
+		});
+
+		const url = await this.generateNewUrl(callId);
+		this.VideoConference.setUrlById(callId, url);
+
 		const messageId = await this.createDirectCallMessage(rid, user);
-
-		const call: InsertionModel<IVideoConference> = {
-			_id: callId,
-			type: 'direct',
-			rid,
-			users: [],
-			messages: {
-				started: messageId,
-			},
-			status: VideoConferenceStatus.CALLING,
-			createdBy: user,
-			createdAt: new Date(),
-			url: await this.generateNewUrl(callId),
-		};
-
-		await this.VideoConference.insertOne(call);
+		this.VideoConference.setMessageById(callId, 'started', messageId);
 
 		return {
 			type: 'direct',

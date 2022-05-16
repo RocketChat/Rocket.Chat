@@ -1,11 +1,27 @@
-import { IVideoConference, IUser } from '@rocket.chat/core-typings';
-import { UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
+import type { UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
+import type { IVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { BaseRaw } from './BaseRaw';
+import type { IndexSpecification, InsertionModel } from './BaseRaw';
 
 export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { rid: 1, status: 1, createdAt: 1 }, unique: false }];
+	}
+
+	public async createDirect(rid: IRoom['_id'], createdBy: Pick<IUser, '_id' | 'name' | 'username'>): Promise<string> {
+		const call: InsertionModel<IVideoConference> = {
+			type: 'direct',
+			rid,
+			users: [],
+			messages: {},
+			status: VideoConferenceStatus.CALLING,
+			createdBy,
+			createdAt: new Date(),
+		};
+
+		return (await this.insertOne(call)).insertedId;
 	}
 
 	public updateOneById(
@@ -42,6 +58,14 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 					name: user.name,
 					ts: new Date(),
 				},
+			},
+		});
+	}
+
+	public setMessageById(callId: string, messageType: keyof IVideoConference['messages'], messageId: string): void {
+		this.updateOneById(callId, {
+			$set: {
+				[`messages.${messageType}`]: messageId,
 			},
 		});
 	}
