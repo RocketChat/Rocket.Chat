@@ -29,7 +29,10 @@ export interface IVideoConference extends IRocketChatRecord {
 	rid: string;
 	users: IVideoConferenceUser[];
 	status: VideoConferenceStatus;
-	messages: {};
+	messages: {
+		started?: IMessage['_id'];
+		ended?: IMessage['_id'];
+	};
 	url?: string;
 
 	createdBy: Pick<IUser, '_id' | 'username' | 'name'>;
@@ -41,24 +44,20 @@ export interface IVideoConference extends IRocketChatRecord {
 
 export interface IDirectVideoConference extends IVideoConference {
 	type: 'direct';
-
-	messages: {
-		calling?: IMessage['_id'];
-		missed?: IMessage['_id'];
-		started?: IMessage['_id'];
-		ended?: IMessage['_id'];
-	};
 }
 
 export interface IGroupVideoConference extends IVideoConference {
 	type: 'videoconference';
 	anonymousUsers: number;
 	title: string;
-
-	messages: {
-		started?: IMessage['_id'];
-		ended?: IMessage['_id'];
-	};
 }
 
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions;
+
+export const isDirectVideoConference = (call: IVideoConference): call is IDirectVideoConference => {
+	return call?.type === 'direct';
+};
+
+export const isGroupVideoConference = (call: IVideoConference): call is IGroupVideoConference => {
+	return call?.type === 'videoconference';
+};

@@ -1,4 +1,4 @@
-import { isVideoConfStartProps, isVideoConfJoinProps } from '@rocket.chat/rest-typings';
+import { isVideoConfStartProps, isVideoConfJoinProps, isVideoConfCancelProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../../models/server';
@@ -72,6 +72,29 @@ API.v1.addRoute(
 					...(state?.mic !== undefined ? { mic: state.mic } : {}),
 				}),
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'video-conference.cancel',
+	{ authRequired: true, validateParams: isVideoConfCancelProps },
+	{
+		async post() {
+			const { callId } = this.bodyParams;
+			const { userId } = this;
+
+			const call = await VideoConf.get(callId);
+			if (!call) {
+				return API.v1.failure('invalid-params');
+			}
+
+			if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+				return API.v1.failure('invalid-params');
+			}
+
+			await VideoConf.cancel(userId, callId);
+			return API.v1.success();
 		},
 	},
 );

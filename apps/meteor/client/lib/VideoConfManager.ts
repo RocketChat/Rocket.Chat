@@ -239,6 +239,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		debug && console.log(`[VideoConf] Ringing user ${uid} for the first time.`);
 		Notifications.notifyUser(uid, 'video-conference.call', { uid: this.userId, rid, callId });
+
+		// Immediately open the call in a new tab
+		this.joinDirectCall({ uid, rid, callId });
 	}
 
 	private async giveUp({ uid, rid, callId }: DirectCallParams): Promise<void> {
@@ -252,6 +255,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		debug && console.log(`[VideoConf] Notifying user ${uid} that we are no longer calling.`);
 		Notifications.notifyUser(uid, 'video-conference.canceled', { uid: this.userId, rid, callId });
 		this.emit('direct/cancel', { uid, rid, callId });
+
+		APIClient.v1.post('video-conference.cancel', { callId });
 	}
 
 	private disconnect(): void {
@@ -404,9 +409,6 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		this.emit('direct/accepted', params);
 		this.currentCallId = undefined;
-
-		// Joining here will have the popup blocked by the browser
-		this.joinDirectCall(params);
 	}
 })();
 
