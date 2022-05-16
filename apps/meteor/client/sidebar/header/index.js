@@ -13,7 +13,6 @@ import Sort from './actions/Sort';
 
 const HeaderWithData = () => {
 	const user = useUser();
-	console.log(user, 'user');
 	const t = useTranslation();
 	const { sidebar } = useLayout();
 	useSidebarPaletteColor();

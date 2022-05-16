@@ -5,12 +5,14 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { useFormatDate } from '../../../hooks/useFormatDate';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled, etag }) {
 	const t = useTranslation();
 	const timeAgo = useTimeAgo();
+	const formatDate = useFormatDate();
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
@@ -62,7 +64,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	};
 
 	const url = newAvatarSource;
-	console.log(userWithCreatedAt, 'createdAt');
 
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m'>
@@ -115,7 +116,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 						</Box>
 						<Box style={{ marginBottom: '8px' }}>@{username} </Box>
 						<Box style={{ marginBottom: '8px' }} fontWeight='bold'>
-							Joined: {userWithCreatedAt.createdAt ? timeAgo(userWithCreatedAt.createdAt) : 'Waiting...'}
+							Joined: {userWithCreatedAt.createdAt ? formatDate(userWithCreatedAt.createdAt) : 'Waiting...'}
 						</Box>
 						<Box fontWeight='bold' style={{ marginBottom: '10px' }}>
 							Last Active: {userWithCreatedAt.lastLogin ? timeAgo(userWithCreatedAt.lastLogin) : 'Waiting...'}
