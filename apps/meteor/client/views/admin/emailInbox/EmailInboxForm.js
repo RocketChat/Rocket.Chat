@@ -123,7 +123,7 @@ function EmailInboxForm({ id, data }) {
 
 	const close = useCallback(() => router.push({}), [router]);
 
-	const saveEmailInbox = useEndpoint('POST', 'email-inbox');
+	const saveEmailInbox = useEndpoint('POST', '/v1/email-inbox');
 	const deleteAction = useEndpoint('DELETE', `email-inbox/${id}`);
 	const emailAlreadyExistsAction = useEndpoint('GET', `email-inbox.search?email=${email}`);
 

@@ -97,7 +97,7 @@ function ContactNewEdit({ id, data, close }) {
 		[allCustomFields],
 	);
 
-	const saveContact = useEndpoint('POST', 'omnichannel/contact');
+	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
 	const emailAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?email=${email}`);
 	const phoneAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?phone=${phone}`);
 

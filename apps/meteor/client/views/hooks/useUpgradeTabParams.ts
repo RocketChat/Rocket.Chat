@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 import { UpgradeTabVariant, getUpgradeTabType } from '../../../lib/getUpgradeTabType';
 
 export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; trialEndDate: string | undefined; isLoading: boolean } => {
-	const getRegistrationStatus = useEndpoint('GET', 'cloud.registrationStatus');
+	const getRegistrationStatus = useEndpoint('GET', '/v1/cloud.registrationStatus');
 	const getLicenses = useEndpoint('GET', '/v1/licenses.get');
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 

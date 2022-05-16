@@ -124,7 +124,7 @@ function EditRoom({ room, onChange, onDelete }) {
 	});
 
 	const eraseRoom = useMethod('eraseRoom');
-	const deleteTeam = useEndpoint('POST', 'teams.delete');
+	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
 
 	const handleDelete = useMutableCallback(() => {
 		if (room.teamMain) {
