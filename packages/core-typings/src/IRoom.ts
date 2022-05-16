@@ -234,3 +234,31 @@ export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichanne
 
 	return room.source?.type === OmnichannelSourceType.APP;
 };
+
+export type RoomAdminFieldsType =
+	| '_id'
+	| 'prid'
+	| 'fname'
+	| 'name'
+	| 't'
+	| 'cl'
+	| 'u'
+	| 'usernames'
+	| 'usersCount'
+	| 'muted'
+	| 'unmuted'
+	| 'ro'
+	| 'default'
+	| 'favorite'
+	| 'featured'
+	| 'topic'
+	| 'msgs'
+	| 'archived'
+	| 'tokenpass'
+	| 'teamId'
+	| 'teamMain'
+	| 'announcement'
+	| 'description'
+	| 'broadcast'
+	| 'uids'
+	| 'avatarETag';
