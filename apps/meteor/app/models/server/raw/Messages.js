@@ -189,7 +189,7 @@ export class MessagesRaw extends BaseRaw {
 		);
 	}
 
-	updateType(_id, t) {
+	setTypeById(_id, t) {
 		this.updateOne(
 			{ _id },
 			{

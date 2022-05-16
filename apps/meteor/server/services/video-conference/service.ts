@@ -162,7 +162,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async changeMessageType(messageId: string, newType: MessageTypesValues): Promise<void> {
-		this.Messages.updateType(messageId, newType);
+		this.Messages.setTypeById(messageId, newType);
 	}
 
 	private async startDirect(caller: IUser['_id'], { _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>): Promise<DirectCallInstructions> {
