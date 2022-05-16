@@ -125,12 +125,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.changeMessageType(call.messages.started, 'video-direct-missed');
 		}
 
-		this.VideoConference.updateOneById(call._id, {
-			$set: {
-				endedBy: { _id: user._id, name: user.name, username: user.username },
-				endedAt: new Date(),
-			},
-		});
+		this.VideoConference.endVideoConference(call._id, { _id: user._id, name: user.name, username: user.username });
 	}
 
 	public async get(callId: IVideoConference['_id']): Promise<IVideoConference | null> {
@@ -168,14 +163,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async changeMessageType(messageId: string, newType: MessageTypesValues): Promise<void> {
-		this.Messages.updateOne(
-			{ _id: messageId },
-			{
-				$set: {
-					t: newType,
-				},
-			},
-		);
+		this.Messages.updateType(messageId, newType);
 	}
 
 	private async startDirect(caller: IUser['_id'], { _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>): Promise<DirectCallInstructions> {
@@ -242,7 +230,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	): Promise<string> {
 		if (!call.url) {
 			call.url = await this.generateNewUrl(call._id);
-			this.VideoConference.updateOneById(call._id, { $set: { url: call.url } });
+			this.VideoConference.updateUrl(call._id, call.url);
 		}
 
 		// #ToDo: Load this from the Apps-Engine
@@ -253,15 +241,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		callId: IVideoConference['_id'],
 		{ _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>,
 	): Promise<void> {
-		this.VideoConference.updateOneById(callId, {
-			$addToSet: {
-				users: {
-					_id,
-					username,
-					name,
-					ts: new Date(),
-				},
-			},
-		});
+		this.VideoConference.addUserToVideoConference(callId, { _id, username, name });
 	}
 }

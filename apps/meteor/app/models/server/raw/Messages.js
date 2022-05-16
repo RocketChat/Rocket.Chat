@@ -188,4 +188,15 @@ export class MessagesRaw extends BaseRaw {
 			options,
 		);
 	}
+
+	updateType(_id, t) {
+		this.updateOne(
+			{ _id },
+			{
+				$set: {
+					t,
+				},
+			},
+		);
+	}
 }
