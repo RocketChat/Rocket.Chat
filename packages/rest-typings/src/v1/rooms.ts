@@ -57,10 +57,12 @@ export type RoomsEndpoints = {
 		};
 	};
 	'rooms.adminRooms': {
-		GET: (params: PaginatedRequest<{
-			filter?: string;
-			types?: string[];
-		}>) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
+		GET: (
+			params: PaginatedRequest<{
+				filter?: string;
+				types?: string[];
+			}>,
+		) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
 	};
 	'rooms.adminRooms.getRoom': {
 		GET: (params: { rid?: string }) => Pick<IRoom, RoomAdminFieldsType>;
