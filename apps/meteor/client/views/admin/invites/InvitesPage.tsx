@@ -20,7 +20,7 @@ const InvitesPage = (): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const { phase, value, reload } = useEndpointData('listInvites');
+	const { phase, value, reload } = useEndpointData('/v1/istInvites');
 
 	const onRemove = (removeInvite: () => void): void => {
 		const confirmRemove = async (): Promise<void> => {

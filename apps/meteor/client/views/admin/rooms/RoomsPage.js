@@ -47,7 +47,7 @@ export function RoomsPage() {
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const endpointData = useEndpointData('rooms.adminRooms', query);
+	const endpointData = useEndpointData('/v1/ooms.adminRooms', query);
 
 	return (
 		<Page flexDirection='row'>

@@ -236,4 +236,8 @@ export type OmnichannelEndpoints = {
 			cannedResponses: IOmnichannelCannedResponse[];
 		}>;
 	};
+
+	'/v1/livechat/webrtc.call/:callId': {
+		PUT: (params: { rid: string; status: 'ended' }) => void;
+	};
 };

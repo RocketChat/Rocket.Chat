@@ -130,7 +130,7 @@ const CurrentChatsRoute: FC = () => {
 		directoryRoute.push({ id: _id });
 	});
 
-	const { value: data, reload } = useEndpointData('livechat/rooms', query);
+	const { value: data, reload } = useEndpointData('/v1/ivechat/rooms', query);
 
 	const header = useMemo(
 		() =>

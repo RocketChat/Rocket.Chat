@@ -22,7 +22,7 @@ const ContactInfo = ({ id, rid, route }) => {
 	const t = useTranslation();
 	const routePath = useRoute(route || 'omnichannel-directory');
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/ivechat/custom-fields');
 
 	const [customFields, setCustomFields] = useState([]);
 

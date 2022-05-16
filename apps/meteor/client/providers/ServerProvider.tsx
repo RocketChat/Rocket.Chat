@@ -28,18 +28,15 @@ const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	path: TPath,
 	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
 ): Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>> => {
-	const api = path[0] === '/' ? APIClient : APIClient.v1;
-	const endpointPath = (path[0] === '/' ? path.slice(1) : path) as TPath;
-
 	switch (method) {
 		case 'GET':
-			return api.get(endpointPath, params);
+			return APIClient.get(path, params);
 
 		case 'POST':
-			return api.post(endpointPath, {}, params);
+			return APIClient.post(path, {}, params);
 
 		case 'DELETE':
-			return api.delete(endpointPath, params);
+			return APIClient.delete(path, params);
 
 		default:
 			throw new Error('Invalid HTTP method');

@@ -10,7 +10,7 @@ const OAuthAppsTable = (): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const { value: data } = useEndpointData('oauth-apps.list');
+	const { value: data } = useEndpointData('/v1/auth-apps.list');
 
 	const router = useRoute('admin-oauth-apps');
 

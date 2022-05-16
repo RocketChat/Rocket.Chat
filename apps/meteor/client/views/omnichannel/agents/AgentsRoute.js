@@ -65,7 +65,7 @@ function AgentsRoute() {
 			}),
 	);
 
-	const { value: data, reload } = useEndpointData('livechat/users/agent', query);
+	const { value: data, reload } = useEndpointData('/v1/ivechat/users/agent', query);
 
 	const header = useMemo(
 		() =>

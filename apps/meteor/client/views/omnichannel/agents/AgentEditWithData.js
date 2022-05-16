@@ -19,7 +19,7 @@ function AgentEditWithData({ uid, reload }) {
 		value: availableDepartments,
 		phase: availableDepartmentsState,
 		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
+	} = useEndpointData('/v1/ivechat/department');
 
 	if ([state, availableDepartmentsState, userDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
