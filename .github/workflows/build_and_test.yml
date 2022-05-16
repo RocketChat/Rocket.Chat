@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
   pull_request:
-    branches: "**"
+    branches: '**'
   push:
     branches:
       - develop
@@ -36,7 +36,7 @@ jobs:
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
-          node-version: "14.18.3"
+          node-version: '14.18.3'
 
       - uses: actions/checkout@v3
 
@@ -175,8 +175,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["14.18.3"]
-        mongodb-version: ["3.6", "4.0", "4.2", "4.4", "5.0"]
+        node-version: ['14.18.3']
+        mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
 
     steps:
       - name: Launch MongoDB
@@ -247,7 +247,7 @@ jobs:
 
       - name: E2E Test API
         env:
-          TEST_MODE: "true"
+          TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
@@ -258,7 +258,7 @@ jobs:
 
       - name: E2E Test UI (Legacy - Cypress)
         env:
-          TEST_MODE: "true"
+          TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
@@ -269,7 +269,7 @@ jobs:
 
       - name: E2E Test UI
         env:
-          TEST_MODE: "true"
+          TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
@@ -305,8 +305,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["14.18.3"]
-        mongodb-version: ["4.4"]
+        node-version: ['14.18.3']
+        mongodb-version: ['4.4']
 
     steps:
       - name: Launch MongoDB
@@ -368,16 +368,16 @@ jobs:
         run: yarn
 
       - name: Build micro services
-        run: yarn build:services
+        run: yarn build
 
       - name: E2E Test API
         env:
-          TEST_MODE: "true"
+          TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
           TRANSPORTER: nats://localhost:4222
-          SKIP_PROCESS_EVENT_REGISTRATION: "true"
+          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
@@ -388,7 +388,7 @@ jobs:
 
       - name: E2E Test UI (Legacy - Cypress)
         env:
-          TEST_MODE: "true"
+          TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
@@ -396,7 +396,7 @@ jobs:
           CYPRESS_BASE_URL: http://localhost:4000
           CYPRESS_TEST_API_URL: http://localhost:4000
           OVERWRITE_SETTING_Site_Url: http://localhost:4000
-          SKIP_PROCESS_EVENT_REGISTRATION: "true"
+          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
@@ -412,7 +412,7 @@ jobs:
 
       - name: E2E Test UI
         env:
-          TEST_MODE: "true"
+          TEST_MODE: 'true'
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
@@ -420,7 +420,7 @@ jobs:
           CYPRESS_BASE_URL: http://localhost:4000
           CYPRESS_TEST_API_URL: http://localhost:4000
           OVERWRITE_SETTING_Site_Url: http://localhost:4000
-          SKIP_PROCESS_EVENT_REGISTRATION: "true"
+          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
@@ -469,7 +469,7 @@ jobs:
 
     strategy:
       matrix:
-        release: ["official", "preview"]
+        release: ['official', 'preview']
 
     steps:
       - uses: actions/checkout@v3
@@ -519,7 +519,7 @@ jobs:
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
-          node-version: "14.18.3"
+          node-version: '14.18.3'
 
       - name: Install Meteor
         run: |
@@ -601,8 +601,7 @@ jobs:
 
     strategy:
       matrix:
-        service:
-          ["ddp-streamer"]
+        service: ['ddp-streamer']
 
     steps:
       - uses: actions/checkout@v3
@@ -610,21 +609,33 @@ jobs:
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
-          node-version: "14.18.3"
+          node-version: '14.18.3'
+
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
 
       - name: Build Docker images
         env:
           IMAGE_TAG: check
         run: |
           yarn
-          yarn build:services
+          yarn build
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
 
           docker build \
             --build-arg SERVICE=${{ matrix.service }} \
             -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
-            -f ./apps/meteor/ee/server/services/Dockerfile \
+            -f ./ee/apps/ddp-streamer/Dockerfile \
             .
 
   release-versions:
@@ -670,7 +681,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: "us-east-1"
+          AWS_DEFAULT_REGION: 'us-east-1'
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
           REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
           REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
@@ -738,10 +749,10 @@ jobs:
     strategy:
       matrix:
         # this is current a mix of variants and different images
-        release: ["official", "preview", "alpine"]
+        release: ['official', 'preview', 'alpine']
 
     env:
-      IMAGE_NAME: "rocketchat/rocket.chat"
+      IMAGE_NAME: 'rocketchat/rocket.chat'
 
     steps:
       - uses: actions/checkout@v3
@@ -844,8 +855,7 @@ jobs:
 
     strategy:
       matrix:
-        service:
-          ["account", "authorization", "ddp-streamer", "presence", "stream-hub"]
+        service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
 
     steps:
       - uses: actions/checkout@v3
@@ -853,7 +863,7 @@ jobs:
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
-          node-version: "14.18.3"
+          node-version: '14.18.3'
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -872,14 +882,20 @@ jobs:
 
           # first install repo dependencies
           yarn
-          yarn build:services
+          yarn build
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
+
+          if [[ "${{ matrix.service }}" == "ddp-streamer" ]]; then
+            DOCKERFILE_PATH="./ee/apps/ddp-streamer/Dockerfile"
+          else
+            DOCKERFILE_PATH="./apps/meteor/ee/server/services/Dockerfile"
+          fi
 
           docker build \
             --build-arg SERVICE=${{ matrix.service }} \
             -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
-            -f ./apps/meteor/ee/server/services/Dockerfile \
+            -f ${DOCKERFILE_PATH} \
             .
 
           docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}

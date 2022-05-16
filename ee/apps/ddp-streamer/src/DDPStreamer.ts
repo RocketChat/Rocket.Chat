@@ -3,15 +3,15 @@ import url from 'url';
 
 import WebSocket from 'ws';
 
-import { ListenersModule } from '../../../../server/modules/listeners/listeners.module';
-import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
-import { MeteorService } from '../../../../server/sdk';
-import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
+import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
+import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
+import { MeteorService } from '../../../../apps/meteor/server/sdk';
+import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import { Client } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
-import notifications from './streams';
+import { notifications } from './streams';
 
 const { PORT: port = 4000 } = process.env;
 

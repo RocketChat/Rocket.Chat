@@ -1,7 +1,7 @@
 import { ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import Card from '../../../components/Card';
 import PlanTag from '../../../components/PlanTag';
@@ -10,9 +10,8 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import Feature from './Feature';
 import OfflineLicenseModal from './OfflineLicenseModal';
 
-const LicenseCard = () => {
+const LicenseCard = (): ReactElement => {
 	const t = useTranslation();
-
 	const setModal = useSetModal();
 
 	const currentLicense = useSetting('Enterprise_License');
@@ -23,7 +22,7 @@ const LicenseCard = () => {
 	const { value, phase, error } = useEndpointData('licenses.get');
 	const endpointLoading = phase === AsyncStatePhase.LOADING;
 
-	const { modules = [] } = endpointLoading || error || !value.licenses.length ? {} : value.licenses[0];
+	const { modules = [] } = endpointLoading || error || !value?.licenses.length ? {} : value.licenses[0];
 
 	const hasEngagement = modules.includes('engagement-dashboard');
 	const hasOmnichannel = modules.includes('livechat-enterprise');
@@ -33,7 +32,7 @@ const LicenseCard = () => {
 	const handleApplyLicense = useMutableCallback(() =>
 		setModal(
 			<OfflineLicenseModal
-				onClose={() => {
+				onClose={(): void => {
 					setModal();
 				}}
 				license={currentLicense}
@@ -43,7 +42,7 @@ const LicenseCard = () => {
 	);
 
 	return (
-		<Card>
+		<Card data-qa-id='license-card'>
 			<Card.Title>{t('License')}</Card.Title>
 			<Card.Body>
 				<Card.Col>
