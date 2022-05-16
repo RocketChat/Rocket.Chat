@@ -1,14 +1,16 @@
 import { Box, Button, Icon, Margins, Avatar } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback } from 'react';
+import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useState, useCallback, useMemo } from 'react';
 
 import { useFileInput } from '../../../hooks/useFileInput';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled, etag }) {
 	const t = useTranslation();
-	const user = useUser();
+	const timeAgo = useTimeAgo();
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
@@ -21,6 +23,17 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 		};
 		reader.readAsDataURL(file);
 	};
+
+	// Refetch user data so that we can get createdAt field.
+	const { value: data } = useEndpointData(
+		'users.info',
+		useMemo(() => ({ ...(username && { username }) }), [username]),
+	);
+
+	const userWithCreatedAt = useMemo(() => {
+		const { user } = data || { user: {} };
+		return user || {};
+	}, [data]);
 
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
@@ -49,12 +62,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	};
 
 	const url = newAvatarSource;
-	let today = new Date();
-	const dd = String(today.getDate()).padStart(2, '0');
-	const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
-	const yyyy = today.getFullYear();
-
-	today = `${mm}'/'${dd}'/'${yyyy}`;
+	console.log(userWithCreatedAt, 'createdAt');
 
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m'>
@@ -102,13 +110,15 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 					</Box>
 					<Margins inlineStart='x4'>
 						<Box fontWeight='bold' fontSize='20px' style={{ margin: '8px 0' }}>
-							{user.name}
+							{userWithCreatedAt ? userWithCreatedAt.name : 'Waiting...'}
 							<img src='images/icons/icon-male.png' alt='gender icon' />
 						</Box>
-						<Box style={{ marginBottom: '8px' }}>@{user.username} </Box>
-						<Box style={{ marginBottom: '8px' }}>Joined: {today}</Box>
+						<Box style={{ marginBottom: '8px' }}>@{username} </Box>
+						<Box style={{ marginBottom: '8px' }} fontWeight='bold'>
+							Joined: {userWithCreatedAt.createdAt ? timeAgo(userWithCreatedAt.createdAt) : 'Waiting...'}
+						</Box>
 						<Box fontWeight='bold' style={{ marginBottom: '10px' }}>
-							Last Active: {user._updatedAt.toString().slice(15, 24)}
+							Last Active: {userWithCreatedAt.lastLogin ? timeAgo(userWithCreatedAt.lastLogin) : 'Waiting...'}
 						</Box>
 					</Margins>
 				</Box>

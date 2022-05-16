@@ -18,7 +18,6 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const getRoles = useRolesDescription();
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
-
 	const {
 		value: data,
 		phase: state,

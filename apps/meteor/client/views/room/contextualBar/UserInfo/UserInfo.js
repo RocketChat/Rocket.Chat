@@ -29,6 +29,7 @@ function UserInfo({
 	data,
 	nickname,
 	actions,
+	details,
 	...props
 }) {
 	const t = useTranslation();

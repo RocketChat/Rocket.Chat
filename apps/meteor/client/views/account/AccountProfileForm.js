@@ -96,8 +96,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 
 	const dummyCredit = {
 		gateway: 'bank-transfer',
-		quantity: 11,
-		amount: 3000,
+		quantity: 7,
+		amount: 500,
 		currency: 'USD',
 	};
 
@@ -140,6 +140,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 							setAvatarObj={handleAvatar}
 							disabled={!allowUserAvatarChange}
 							suggestions={avatarSuggestions}
+							userId={user._id}
 						/>
 					</Field>
 				),

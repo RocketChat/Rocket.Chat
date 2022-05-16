@@ -49,7 +49,7 @@ const TopUpView = (): ReactElement => {
 	];
 
 	const getGatewaysFn = (): void => {
-		Meteor.call('getGateways', {}, {}, (error, result) => {
+		Meteor.call('getGateways', {}, {}, (_error, result) => {
 			if (result) {
 				if (result.length) {
 					setFetchedGateways(result);
@@ -59,7 +59,7 @@ const TopUpView = (): ReactElement => {
 						// The server requires us to wait atleast 2 seconds before sending in a new request.
 						if (index > 0) {
 							setTimeout(() => {
-								Meteor.call('addGateway', gateway, (error, result) => {
+								Meteor.call('addGateway', gateway, (_error, result) => {
 									if (result) {
 										console.log('Gateway was created');
 									}
@@ -76,6 +76,7 @@ const TopUpView = (): ReactElement => {
 			}
 		});
 	};
+
 	useEffect(() => {
 		getGatewaysFn();
 	}, []);
