@@ -39,10 +39,10 @@ class JitsiApp {
 
 		console.log(user.username, options);
 		if (options.mic !== undefined) {
-			configs.push(`config.startWithAudioMuted=${options.mic ? 'true' : 'false'}`);
+			configs.push(`config.startWithAudioMuted=${options.mic ? 'false' : 'true'}`);
 		}
 		if (options.cam !== undefined) {
-			configs.push(`config.startWithVideoMuted=${options.cam ? 'true' : 'false'}`);
+			configs.push(`config.startWithVideoMuted=${options.cam ? 'false' : 'true'}`);
 		}
 
 		const configHash = configs.join('&');
