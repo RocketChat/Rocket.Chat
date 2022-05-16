@@ -230,7 +230,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	): Promise<string> {
 		if (!call.url) {
 			call.url = await this.generateNewUrl(call._id);
-			this.VideoConference.updateUrl(call._id, call.url);
+			this.VideoConference.setUrlById(call._id, call.url);
 		}
 
 		// #ToDo: Load this from the Apps-Engine
@@ -241,6 +241,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		callId: IVideoConference['_id'],
 		{ _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>,
 	): Promise<void> {
-		this.VideoConference.addUserToVideoConference(callId, { _id, username, name });
+		this.VideoConference.addUserById(callId, { _id, username, name });
 	}
 }

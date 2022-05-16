@@ -25,7 +25,7 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		});
 	}
 
-	public updateUrl(callId: string, url: string): void {
+	public setUrlById(callId: string, url: string): void {
 		this.updateOneById(callId, {
 			$set: {
 				url,
@@ -33,7 +33,7 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		});
 	}
 
-	public addUserToVideoConference(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'>): void {
+	public addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'>): void {
 		this.updateOneById(callId, {
 			$addToSet: {
 				users: {
