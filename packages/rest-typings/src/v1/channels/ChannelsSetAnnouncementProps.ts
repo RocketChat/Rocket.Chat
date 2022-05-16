@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type ChannelsSetAnnouncementProps = { roomId: string; announcement: string } |  { roomName: string; announcement: string };
+export type ChannelsSetAnnouncementProps = { roomId: string; announcement: string } | { roomName: string; announcement: string };
 
 const channelsSetAnnouncementPropsSchema = {
 	oneOf: [

@@ -2,15 +2,17 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type ChannelsOpenProps = {
-	roomId: string;
-	query?: string; // { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-	sort?: { ts: 1 | -1 };
-} | {
-	roomName: string;
-	query?: string;
-	sort?: { ts: 1 | -1 };
-};
+export type ChannelsOpenProps =
+	| {
+			roomId: string;
+			query?: string; // { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+			sort?: { ts: 1 | -1 };
+	  }
+	| {
+			roomName: string;
+			query?: string;
+			sort?: { ts: 1 | -1 };
+	  };
 
 const channelsOpenPropsSchema = {
 	oneOf: [

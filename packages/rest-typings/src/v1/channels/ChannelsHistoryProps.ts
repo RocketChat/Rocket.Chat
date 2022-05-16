@@ -2,21 +2,23 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type ChannelsHistoryProps = {
-	roomId: string;
-	latest?: string;
-	showThreadMessages?: 'false' | 'true';
-	oldest?: string;
-	unreads?: 'true' | 'false';
-	inclusive?: 'false' | 'true';
-} | {
-	roomName: string;
-	latest?: string;
-	showThreadMessages?: 'false' | 'true';
-	oldest?: string;
-	unreads?: 'true' | 'false';
-	inclusive?: 'false' | 'true';
-};
+export type ChannelsHistoryProps =
+	| {
+			roomId: string;
+			latest?: string;
+			showThreadMessages?: 'false' | 'true';
+			oldest?: string;
+			unreads?: 'true' | 'false';
+			inclusive?: 'false' | 'true';
+	  }
+	| {
+			roomName: string;
+			latest?: string;
+			showThreadMessages?: 'false' | 'true';
+			oldest?: string;
+			unreads?: 'true' | 'false';
+			inclusive?: 'false' | 'true';
+	  };
 
 const channelsHistoryPropsSchema = {
 	oneOf: [

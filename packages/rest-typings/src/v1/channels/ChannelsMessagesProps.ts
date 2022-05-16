@@ -6,10 +6,11 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 const ajv = new Ajv();
 
 export type ChannelsMessagesProps = PaginatedRequest<
-	{
-		roomId: IRoom['_id'];
-		// query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-	} | { roomName: IRoom['name'] },
+	| {
+			roomId: IRoom['_id'];
+			// query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
+	  }
+	| { roomName: IRoom['name'] },
 	'ts'
 >;
 
