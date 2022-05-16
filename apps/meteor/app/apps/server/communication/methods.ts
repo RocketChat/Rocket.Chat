@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { SettingValue } from '@rocket.chat/core-typings';
 
 import { Settings } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { AppServerOrchestrator } from '../orchestrator';
 
-const waitToLoad = function (orch: AppServerOrchestrator) {
+const waitToLoad = function (orch: AppServerOrchestrator): unknown {
 	return new Promise<void>((resolve) => {
 		let id = setInterval(() => {
 			if (orch.isEnabled() && orch.isLoaded()) {
@@ -17,7 +18,7 @@ const waitToLoad = function (orch: AppServerOrchestrator) {
 	});
 };
 
-const waitToUnload = function (orch: AppServerOrchestrator) {
+const waitToUnload = function (orch: AppServerOrchestrator): unknown {
 	return new Promise<void>((resolve) => {
 		let id = setInterval(() => {
 			if (!orch.isEnabled() && !orch.isLoaded()) {
@@ -31,25 +32,26 @@ const waitToUnload = function (orch: AppServerOrchestrator) {
 
 export class AppMethods {
 	_orch: AppServerOrchestrator;
-	
+
 	constructor(orch: AppServerOrchestrator) {
 		this._orch = orch;
 
 		this._addMethods();
 	}
 
-	isEnabled() {
+	isEnabled(): SettingValue {
 		return typeof this._orch !== 'undefined' && this._orch.isEnabled();
 	}
 
-	isLoaded() {
+	isLoaded(): boolean | '' | 0 | undefined {
 		return typeof this._orch !== 'undefined' && this._orch.isEnabled() && this._orch.isLoaded();
 	}
 
-	_addMethods() {
+	_addMethods(): void {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const instance = this;
 		const uid = Meteor.userId();
-		
+
 		Meteor.methods({
 			'apps/is-enabled'() {
 				return instance.isEnabled();
