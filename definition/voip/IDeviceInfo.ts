@@ -9,3 +9,9 @@ export interface IDeviceInfo {
 	audioInputDevices: IDevice[];
 	videoInputDevices: IDevice[];
 }
+
+export interface ISelectedDevices {
+	audioOutputDevice: IDevice;
+	audioInputDevice: IDevice;
+	videoInputDevice?: IDevice;
+}

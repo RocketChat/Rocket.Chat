@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
-import { IDevice, IDeviceInfo } from '../../../definition/voip/IDeviceInfo';
+import { IDevice, ISelectedDevices } from '../../../definition/voip/IDeviceInfo';
 import { IMediaStreamRenderer, VoIPUserConfiguration } from '../../../definition/voip/VoIPUserConfiguration';
 import { WorkflowTypes } from '../../../definition/voip/WorkflowTypes';
 import { ClientLogger } from '../../../lib/ClientLogger';
@@ -353,6 +353,66 @@ class VoIPLayout extends React.Component<{}, IState> {
 		}
 	}
 
+	async registerEndpoint(): Promise<void> {
+		// await this._apitest_debug();
+		if (!this.userHandler) {
+			try {
+				await this.initUserAgent();
+			} catch (error) {
+				this.logger.error('registerEndpoint() Error in getting extension Info', error);
+				throw error;
+			}
+		}
+		if (this.callTypeSelection.current) {
+			this.callTypeSelection.current.disabled = true;
+		}
+		this.userHandler?.register();
+	}
+
+	unregisterEndpoint(): void {
+		if (this.callTypeSelection.current) {
+			this.callTypeSelection.current.disabled = false;
+		}
+		this.userHandler?.unregister();
+		this.resetUserAgent();
+	}
+
+	async acceptCall(): Promise<any> {
+		const videoElement = document.getElementById('remote_media') as HTMLMediaElement;
+		const mediaRenderer: IMediaStreamRenderer = {
+			remoteMediaElement: videoElement,
+		};
+		return this.userHandler?.acceptCall(mediaRenderer);
+	}
+
+	async rejectCall(): Promise<any> {
+		return this.userHandler?.rejectCall();
+	}
+
+	async endCall(): Promise<any> {
+		return this.userHandler?.endCall();
+	}
+
+	onChange(): void {
+		if (this.callTypeSelection.current?.value) {
+			this.setState({ enableVideo: this.callTypeSelection.current?.checked });
+		}
+	}
+
+	async makeCall(): Promise<any> {
+		const videoElement = document.getElementById('remote_media') as HTMLMediaElement;
+		const mediaRenderer: IMediaStreamRenderer = {
+			remoteMediaElement: videoElement,
+		};
+		const uri = this.calledParty.current?.value;
+		if (!uri) {
+			return;
+		}
+		this.userHandler?.setSelectedDevices(this.getSelectedDevices());
+		await this.userHandler?.makeCall(uri, mediaRenderer);
+	}
+
+	/* Device Selection Code BEGIN*/
 	async onDeviceChange(): Promise<void> {
 		await this.populateMediaDevices();
 	}
@@ -392,79 +452,55 @@ class VoIPLayout extends React.Component<{}, IState> {
 		}
 	}
 
-	async registerEndpoint(): Promise<void> {
-		// await this._apitest_debug();
-		if (!this.userHandler) {
-			try {
-				await this.initUserAgent();
-			} catch (error) {
-				this.logger.error('registerEndpoint() Error in getting extension Info', error);
-				throw error;
-			}
-		}
-		if (this.callTypeSelection.current) {
-			this.callTypeSelection.current.disabled = true;
-		}
-		this.userHandler?.register();
-	}
-
-	unregisterEndpoint(): void {
-		if (this.callTypeSelection.current) {
-			this.callTypeSelection.current.disabled = false;
-		}
-		this.userHandler?.unregister();
-		this.resetUserAgent();
-	}
-
-	async acceptCall(): Promise<any> {
-		const videoElement = document.getElementById('remote_media') as HTMLMediaElement;
-		const mediaRenderer: IMediaStreamRenderer = {
-			remoteMediaElement: videoElement,
-		};
-		return this.userHandler?.acceptCall(mediaRenderer);
-	}
-
-	async rejectCall(): Promise<any> {
-		return this.userHandler?.rejectCall();
-	}
-
-	async makeCall(): Promise<any> {
-		const videoElement = document.getElementById('remote_media') as HTMLMediaElement;
-		const mediaRenderer: IMediaStreamRenderer = {
-			remoteMediaElement: videoElement,
-		};
-		const uri = this.calledParty.current?.value;
-		if (!uri) {
-			return;
-		}
-		const deviceInfo: IDeviceInfo = {
-			audioOutputDevices: [],
-			audioInputDevices: [],
-			videoInputDevices: [],
-		};
+	getSelectedDevices(): ISelectedDevices {
 		const audioInputDevice = document.getElementById('audio_input_devices') as HTMLSelectElement;
-		const value = audioInputDevice?.options[audioInputDevice.selectedIndex].value;
-		const label = audioInputDevice?.options[audioInputDevice.selectedIndex].text;
-		if (value && label) {
-			deviceInfo.audioInputDevices.push({
-				id: value,
-				label,
+		let value = audioInputDevice?.options[audioInputDevice.selectedIndex].value;
+		let label = audioInputDevice?.options[audioInputDevice.selectedIndex].text;
+		const audioInput: IDevice = {
+			id: value,
+			label,
+			type: '',
+		};
+		const audioOutputDevice = document.getElementById('audio_output_devices') as HTMLSelectElement;
+		value = audioOutputDevice?.options[audioOutputDevice.selectedIndex].value;
+		label = audioOutputDevice?.options[audioOutputDevice.selectedIndex].text;
+		const audioOutput: IDevice = {
+			id: value,
+			label,
+			type: '',
+		};
+		return { audioInputDevice: audioInput, audioOutputDevice: audioOutput };
+	}
+
+	async onDeviceSelectionChange(deviceType: string): Promise<void> {
+		if (deviceType === 'audio-input') {
+			const audioInputDevice = document.getElementById('audio_input_devices') as HTMLSelectElement;
+			const audioInput: IDevice = {
+				id: audioInputDevice?.options[audioInputDevice.selectedIndex].value,
+				label: audioInputDevice?.options[audioInputDevice.selectedIndex].text,
 				type: '',
-			});
+			};
+			await this.userHandler?.changeAudioInputDevice(audioInput);
+		} else if (deviceType === 'audio-output') {
+			const audioOutputDevice = document.getElementById('audio_output_devices') as HTMLSelectElement;
+			const audioOutput: IDevice = {
+				id: audioOutputDevice?.options[audioOutputDevice.selectedIndex].value,
+				label: audioOutputDevice?.options[audioOutputDevice.selectedIndex].text,
+				type: '',
+			};
+			this.userHandler?.changeAudioOutputDevice(audioOutput);
+		} else if (deviceType === 'video-input') {
+			const videoInputDevice = document.getElementById('video_devices') as HTMLSelectElement;
+			const audioInput: IDevice = {
+				id: videoInputDevice?.options[videoInputDevice.selectedIndex].value,
+				label: videoInputDevice?.options[videoInputDevice.selectedIndex].text,
+				type: '',
+			};
+			await this.userHandler?.changeVideoInputDevice(audioInput);
 		}
-		await this.userHandler?.makeCall(uri, mediaRenderer, deviceInfo);
 	}
 
-	async endCall(): Promise<any> {
-		return this.userHandler?.endCall();
-	}
-
-	onChange(): void {
-		if (this.callTypeSelection.current?.value) {
-			this.setState({ enableVideo: this.callTypeSelection.current?.checked });
-		}
-	}
-
+	/* Device Selection Code END*/
 	render(): any {
 		return (
 			<div
@@ -495,10 +531,11 @@ class VoIPLayout extends React.Component<{}, IState> {
 						</label>
 					</div>
 					<div className='rcx-box rcx-box--full rcx-css-25ncok'>
-						<div className='rcx-box rcx-box--full'>Audio Devices</div>
+						<div className='rcx-box rcx-box--full'>Audio Input Devices</div>
 						<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-toggle-switch'>
 							<select
 								id='audio_input_devices'
+								onChange={this.onDeviceSelectionChange.bind(this, 'audio-input')}
 								style={{ width: '20%', height: '10%' }}
 								className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
 							>
@@ -508,10 +545,11 @@ class VoIPLayout extends React.Component<{}, IState> {
 						</label>
 					</div>
 					<div className='rcx-box rcx-box--full rcx-css-25ncok'>
-						<div className='rcx-box rcx-box--full'>Audio Devices</div>
+						<div className='rcx-box rcx-box--full'>Audio Output Devices</div>
 						<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-toggle-switch'>
 							<select
 								id='audio_output_devices'
+								onChange={this.onDeviceSelectionChange.bind(this, 'audio-output')}
 								style={{ width: '20%', height: '10%' }}
 								className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
 							>
@@ -525,6 +563,7 @@ class VoIPLayout extends React.Component<{}, IState> {
 						<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-toggle-switch'>
 							<select
 								id='video_devices'
+								onChange={this.onDeviceSelectionChange.bind(this, 'video-input')}
 								style={{ width: '20%', height: '10%' }}
 								className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
 							>

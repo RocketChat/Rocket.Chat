@@ -22,13 +22,18 @@ import {
 	Inviter,
 } from 'sip.js';
 import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
-import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
+import {
+	defaultMediaStreamFactory,
+	MediaStreamFactory,
+	SessionDescriptionHandler,
+	SessionDescriptionHandlerOptions,
+} from 'sip.js/lib/platform/web';
 
 import { IQueueMembershipSubscription } from '../../../definition/IVoipExtension';
 import { CallStates } from '../../../definition/voip/CallStates';
 import { DeviceEventKeys } from '../../../definition/voip/DeviceEvents';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
-import { IDeviceInfo } from '../../../definition/voip/IDeviceInfo';
+import { ISelectedDevices, IDeviceInfo, IDevice } from '../../../definition/voip/IDeviceInfo';
 import { Operation } from '../../../definition/voip/Operations';
 import { UserState } from '../../../definition/voip/UserState';
 import { IMediaStreamRenderer, VoIPUserConfiguration } from '../../../definition/voip/VoIPUserConfiguration';
@@ -71,6 +76,8 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	private queueInfo: QueueAggregator;
 
 	private deviceManager: DeviceManager;
+
+	private selectedDevices: ISelectedDevices;
 
 	get callState(): CallStates {
 		return this._callState;
@@ -128,6 +135,18 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			this.state.isReady = false;
 		});
 		this.deviceManager = new DeviceManager();
+		this.selectedDevices = {
+			audioInputDevice: {
+				id: 'default',
+				label: '',
+				type: 'audio',
+			},
+			audioOutputDevice: {
+				id: 'default',
+				label: '',
+				type: 'audio',
+			},
+		};
 	}
 
 	/* UserAgentDelegate methods end */
@@ -236,7 +255,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 * Sets up Stream class and plays the stream on given Media element/
 	 * Also sets up various event handlers.
 	 */
-	private setupRemoteMedia(): any {
+	private async setupRemoteMedia(): Promise<any> {
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
@@ -627,41 +646,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		this.handleHoldUnhold(holdState);
 	}
 
-	async makeCall(callee: string, mediaRenderer: IMediaStreamRenderer, devices: IDeviceInfo): Promise<void> {
-		if (mediaRenderer) {
-			this.mediaStreamRendered = mediaRenderer;
-		}
-		if (this.session) {
-			throw new Error('Session exists');
-		}
-		if (!this.userAgent) {
-			throw new Error('No User Agent.');
-		}
-		if (this.callState !== 'REGISTERED') {
-			throw new Error('Incorrect UA state');
-		}
-		const target = UserAgent.makeURI(callee);
-		if (!target) {
-			throw new Error(`Failed to create valid URI ${callee}`);
-		}
-		const inviterOptions = {
-			sessionDescriptionHandlerOptions: {
-				constraints: {
-					audio: { deviceId: { exact: devices.audioInputDevices[0].id } },
-					video: !!this.config.enableVideo,
-				},
-			},
-		};
-		// Create a new Inviter for the outgoing Session
-		const inviter = new Inviter(this.userAgent, target, inviterOptions);
-		this.session = inviter;
-		this.setupSessionEventHandlers(inviter);
-
-		return inviter.invite().then(() => {
-			console.error(`sent INVITE ${JSON.stringify(inviter.body)}`);
-		});
-	}
-
 	/* CallEventDelegate implementation end */
 	isReady(): boolean {
 		return this.state.isReady;
@@ -706,6 +690,37 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		this.userAgent?.stop();
 	}
 
+	async makeCall(callee: string, mediaRenderer: IMediaStreamRenderer): Promise<void> {
+		if (mediaRenderer) {
+			this.mediaStreamRendered = mediaRenderer;
+		}
+		if (this.session) {
+			throw new Error('Session exists');
+		}
+		if (!this.userAgent) {
+			throw new Error('No User Agent.');
+		}
+		if (this.callState !== 'REGISTERED') {
+			throw new Error('Incorrect UA state');
+		}
+		const target = UserAgent.makeURI(callee);
+		if (!target) {
+			throw new Error(`Failed to create valid URI ${callee}`);
+		}
+		const constraints = this.getConstraints();
+		const inviterOptions = {
+			sessionDescriptionHandlerOptions: { constraints },
+		};
+		// Create a new Inviter for the outgoing Session
+		const inviter = new Inviter(this.userAgent, target, inviterOptions);
+		this.session = inviter;
+		this.setupSessionEventHandlers(inviter);
+
+		return inviter.invite().then(() => {
+			console.error(`sent INVITE ${JSON.stringify(inviter.body)}`);
+		});
+	}
+
 	async getAvailableDevices(): Promise<IDeviceInfo | undefined> {
 		return this.deviceManager.getMediaDevices();
 	}
@@ -716,5 +731,157 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 	offDeviceEvent(event: DeviceEventKeys, handler: () => void): void {
 		this.deviceManager.off(event, handler);
+	}
+
+	setSelectedDevices(selectedDevices: ISelectedDevices): void {
+		this.selectedDevices = selectedDevices;
+	}
+
+	async changeAudioInputDevice(selectedAudioDevices: IDevice): Promise<boolean> {
+		this.selectedDevices.audioInputDevice = selectedAudioDevices;
+		const stream = await this.getStream(this.getConstraints('audio'));
+		if (stream) {
+			this.replaceTrack(stream.getAudioTracks(), 'audio');
+			return true;
+		}
+		return false;
+	}
+
+	changeAudioOutputDevice(selectedAudioDevices: IDevice): void {
+		this.selectedDevices.audioOutputDevice = selectedAudioDevices;
+		if (this.mediaStreamRendered) {
+			// SinkId is an experimental feature.
+			// So supressing error.
+			// @Dev take a look while code review.
+			// @ts-ignore
+			(this.mediaStreamRendered.remoteMediaElement as HTMLAudioElement).setSinkId(this.selectedDevices.audioOutputDevice.id);
+		}
+	}
+
+	async changeVideoInputDevice(selectedVideoDevices: IDevice): Promise<boolean> {
+		if (this.config.enableVideo && this.selectedDevices.videoInputDevice) {
+			this.selectedDevices.videoInputDevice = selectedVideoDevices;
+			const stream = await this.getStream(this.getConstraints('video'));
+			if (stream) {
+				this.replaceTrack(stream.getVideoTracks(), 'video');
+				return true;
+			}
+		}
+		return false;
+	}
+
+	async getStream(constraints: MediaStreamConstraints): Promise<MediaStream | undefined> {
+		const factory: MediaStreamFactory = defaultMediaStreamFactory();
+		if (this.session?.sessionDescriptionHandler) {
+			return factory(constraints, this.session?.sessionDescriptionHandler as SessionDescriptionHandler);
+		}
+	}
+
+	private getConstraints(mediaType?: 'audio' | 'video'): MediaStreamConstraints {
+		switch (mediaType) {
+			case 'audio': {
+				return {
+					audio:
+						this.selectedDevices.audioInputDevice.id === 'default'
+							? true
+							: { deviceId: { exact: this.selectedDevices.audioInputDevice.id } },
+				};
+			}
+			case 'video': {
+				if (!this.config.enableVideo) {
+					return {
+						video: false,
+					};
+				}
+				return {
+					video:
+						this.selectedDevices.videoInputDevice?.id === 'default'
+							? true
+							: { deviceId: { exact: this.selectedDevices.videoInputDevice?.id } },
+				};
+			}
+			default: {
+				const constraints: {
+					audio: boolean | Record<string, any>;
+					video: boolean | Record<string, any>;
+				} = {
+					audio:
+						this.selectedDevices.audioInputDevice.id === 'default'
+							? true
+							: { deviceId: { exact: this.selectedDevices.audioInputDevice.id } },
+					video: false,
+				};
+				if (this.config.enableVideo) {
+					constraints.video =
+						this.selectedDevices.videoInputDevice?.id === 'default'
+							? true
+							: { deviceId: { exact: this.selectedDevices.videoInputDevice?.id } };
+				}
+				return constraints;
+			}
+		}
+	}
+
+	async replaceTrack(newTracks: MediaStreamTrack[], mediaType?: 'audio' | 'video'): Promise<boolean> {
+		const sdh = this.session?.sessionDescriptionHandler as SessionDescriptionHandler;
+		const senders = sdh.peerConnection?.getSenders();
+		if (!senders) {
+			return false;
+		}
+		/**
+		 * This will be called when media device change happens.
+		 * This needs to be called externally when the device change occurs.
+		 * This function first acquires the new stream based on device selection
+		 * and then replaces the track in the sender of existing stream by track acquired
+		 * by caputuring new stream.
+		 *
+		 * Notes:
+		 * Each sender represents a track in the RTCPeerConnection.
+		 * Peer connection will contain single track for
+		 * each, audio, video and data.
+		 * Furthermore, We are assuming that
+		 * newly captured stream will have a single track for each media type. i.e
+		 * audio video and data. But this assumption may not be true atleast in theory. One may see multiple
+		 * audio track in the captured stream or multiple senders for same kind in the peer connection
+		 * If/When such situation arrives in future, we may need to revisit the track replacement logic.
+		 * */
+
+		switch (mediaType) {
+			case 'audio': {
+				let replaced = false;
+				for (let i = 0; i < senders?.length; i++) {
+					if (senders[i].track?.kind === 'audio') {
+						senders[i].replaceTrack(newTracks[0]);
+						replaced = true;
+						break;
+					}
+				}
+				return replaced;
+			}
+			case 'video': {
+				let replaced = false;
+				for (let i = 0; i < senders?.length; i++) {
+					if (senders[i].track?.kind === 'video') {
+						senders[i].replaceTrack(newTracks[0]);
+						replaced = true;
+						break;
+					}
+				}
+				return replaced;
+			}
+			default: {
+				let replaced = false;
+				for (let i = 0; i < senders?.length; i++) {
+					for (let j = 0; j < newTracks.length; j++) {
+						if (senders[i].track?.kind === newTracks[j].kind) {
+							senders[i].replaceTrack(newTracks[j]);
+							replaced = true;
+							break;
+						}
+					}
+				}
+				return replaced;
+			}
+		}
 	}
 }
