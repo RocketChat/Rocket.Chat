@@ -443,10 +443,10 @@ API.v1.addRoute(
 					limit: count,
 					projection: fields,
 				},
-			);
+			).map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId));
 
 			const total = await rooms.count();
-			const ims = await rooms.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId) as IRoom).toArray();
+			const ims = await rooms.toArray();
 
 			return API.v1.success({
 				ims,
@@ -472,13 +472,13 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign({}, query, { t: 'd' });
 
-			const rooms = await Rooms.find<IRoom>(ourQuery, {
+			const rooms = await Rooms.find(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
 				projection: fields,
 			})
-				.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId) as IRoom)
+				.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId))
 				.toArray();
 
 			return API.v1.success({

@@ -110,7 +110,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	/* @deprecated */
 	getUserFromParams(): IUser;
 	insertUserObject<T>({ object, userId }: { object: { [key: string]: unknown }; userId: string }): { [key: string]: unknown } & T;
-	composeRoomWithLastMessage(room: IRoom, userId: string): { [key: string]: unknown };
+	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;
