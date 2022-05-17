@@ -3,8 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Notifications } from '../../app/notifications/client';
-import { IOnUserStreamData, IOTRDecrypt } from '../../app/otr/lib/IOTR';
 import OTR from '../../app/otr/client/OTR';
+import { IOnUserStreamData, IOTRDecrypt } from '../../app/otr/lib/IOTR';
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
 import { t } from '../../app/utils/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
@@ -33,7 +33,7 @@ Meteor.startup(() => {
 		return message;
 	});
 
-	onClientMessageReceived.use(async (message) => {
+	onClientMessageReceived.use(async (message: IMessage & { notification?: boolean }) => {
 		const instanceByRoomId = OTR.getInstanceByRoomId(message.rid);
 
 		if (message.rid && instanceByRoomId && instanceByRoomId.state.get() === OtrRoomState.ESTABLISHED) {
@@ -41,7 +41,7 @@ Meteor.startup(() => {
 				message.msg = t('Encrypted_message');
 				return message;
 			}
-			if (message.t !== 'otr') {
+			if (message?.t !== 'otr') {
 				return message;
 			}
 			const otrRoom = instanceByRoomId;

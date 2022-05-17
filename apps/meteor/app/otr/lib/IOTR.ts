@@ -40,7 +40,7 @@ export interface IOTRRoom {
 
 export interface IOTR {
 	enabled: ReactiveVar<boolean>;
-	instancesByRoomId: { [rid: IRoom['_id']]: OTRRoom };
+	instancesByRoomId: { [rid: string]: OTRRoom };
 	isEnabled(): boolean;
 	getInstanceByRoomId(roomId: IRoom['_id']): OTRRoom | undefined;
 }
