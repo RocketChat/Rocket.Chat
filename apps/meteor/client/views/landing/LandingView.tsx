@@ -9,6 +9,7 @@ import SingleBlogPost from '../blog/SingleBlogPost';
 
 const LandingView = (): ReactElement => {
 	const [blogResults, setBlogResults] = useState([]);
+
 	Meteor.startup(() => {
 		if (!blogResults.length)
 			Meteor.call('getBlogs', 10, (error, result) => {

@@ -42,7 +42,6 @@ const AccountProfilePage = () => {
 	const user = useUser();
 
 	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(getInitialValues(user ?? {}));
-	const [canSave, setCanSave] = useState(true);
 	const setModal = useSetModal();
 	const logout = useLogout();
 	const [loggingOut, setLoggingOut] = useState(false);
@@ -235,13 +234,7 @@ const AccountProfilePage = () => {
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='600px' w='full' alignSelf='center'>
-					<AccountProfileForm
-						values={values}
-						handlers={handlers}
-						user={user ?? { emails: [] }}
-						settings={settings}
-						onSaveStateChange={setCanSave}
-					/>
+					<AccountProfileForm values={values} handlers={handlers} user={user ?? { emails: [] }} settings={settings} />
 					<ButtonGroup stretch mb='x12'>
 						<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
 							{t('Logout_Others')}

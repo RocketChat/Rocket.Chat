@@ -1,15 +1,14 @@
-import { Field, FieldGroup, Box } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { validateEmail } from '../../../lib/emailValidator';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
-import { useEndpointData } from '../../hooks/useEndpointData';
 import AccountInfo from './AccountInfo';
 
-function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
+function AccountProfileForm({ values, handlers, user, settings, ...props }) {
 	const t = useTranslation();
 
 	const checkUsernameAvailability = useMethod('checkUsernameAvailability');
@@ -17,6 +16,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 
 	const [usernameError, setUsernameError] = useState();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
+	const [boughtCredit, setBoughtCredit] = useState(false);
 	const [trustScoreNumber, setTrustScoreNumber] = useState(0);
 
 	const { allowUserAvatarChange, namesRegex, requireName } = settings;
@@ -86,21 +86,9 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		emails: [],
 	} = user;
 
-	const canSave = !![!!passwordError, !!emailError, !!usernameError, !!nameError, !!statusTextError].filter(Boolean);
-
-	useEffect(() => {
-		onSaveStateChange(canSave);
-	}, [canSave, onSaveStateChange]);
-
 	const handleSubmit = useCallback((e) => {
 		e.preventDefault();
 	}, []);
-
-	// Refetch user data so that we can get createdAt field.
-	const { value: data } = useEndpointData(
-		'users.info',
-		useMemo(() => ({ ...(username && { username }) }), [username]),
-	);
 
 	const dummyCredit = {
 		gateway: 'bank-transfer',
@@ -109,19 +97,21 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		currency: 'USD',
 	};
 
-	console.log(user, 'outer user');
-
-	useEffect(() => {
-		if (!user.credit) {
+	const buyCredit = useMemo(() => {
+		if (!boughtCredit) {
 			Meteor.call('buyCredit', dummyCredit, (error, result) => {
 				if (result) {
 					console.log('Bought credit');
+					setBoughtCredit(true);
 				}
 				if (error) {
 					console.log(error);
 				}
 			});
 		}
+	}, [user.credit]);
+
+	const setRandomTrustScore = useMemo(() => {
 		if (trustScoreNumber === 0) {
 			Meteor.call('setRandomTrustScore', (error, result) => {
 				if (result) {
@@ -132,7 +122,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				}
 			});
 		}
-	}, [user.credit, dummyCredit, user.trustScore]);
+	}, [user.trustScore]);
 
 	const careerItems = [
 		{ icon: 'user', content: 'Employee/er/broker', rc: true },
@@ -171,9 +161,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				),
 				[username, user.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag],
 			)}
-			<Box style={{ margin: '0px auto', fontSize: '16px' }}>
-				I'm a fullstack developer with interests in the NFT space and E-commerce space.
-			</Box>
+			<Box style={{ margin: '0px auto', fontSize: '16px' }}>{user.bio ? user.bio : 'No user bio...'}</Box>
 			<Box display='flex' flexDirection='column' style={{ marginTop: '30px' }}>
 				<AccountInfo title='Career' items={careerItems} />
 				<AccountInfo title='Private Information' items={privateInfo} />
