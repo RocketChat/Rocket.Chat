@@ -1,10 +1,15 @@
+import { Accordion, Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useEffect, useState } from 'react';
 
 import { IGateway } from '../../../definition/IGateway';
+import Page from '../../components/Page';
+import PerfectMoneyVoucher from './components/PerfectMoneyVoucher';
 
 const TopUpView = (): ReactElement => {
 	const [fetchedGateways, setFetchedGateways] = useState<IGateway[]>([]);
+	const t = useTranslation();
 	const gateways = [
 		{
 			_id: 'perfect-money-voucher',
@@ -81,7 +86,18 @@ const TopUpView = (): ReactElement => {
 		getGatewaysFn();
 	}, []);
 
-	return <div>TopUpView</div>;
+	return (
+		<Page>
+			<Page.Header title={t('Payment')} />
+			<Box style={{ margin: '15px 15px 0 15px' }}>
+				<h3 style={{ fontSize: '19px', marginBottom: '10px' }}>{t('Buy credit')}</h3>
+				<p style={{ fontSize: '16px' }}>{t('Select your payment method')}</p>
+				<Accordion style={{ margin: '15px 0' }}>
+					<PerfectMoneyVoucher title='Perfect Money Voucher' />
+				</Accordion>
+			</Box>
+		</Page>
+	);
 };
 
 export default TopUpView;
