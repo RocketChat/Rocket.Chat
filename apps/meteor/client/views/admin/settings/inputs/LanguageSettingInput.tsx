@@ -1,8 +1,21 @@
 import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
 import { useLanguages } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+
+type LanguageSettingInputProps = {
+	_id: string;
+	label: string;
+	value: string | number | string[];
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string | number) => void;
+	onResetButtonClick?: () => void;
+};
 
 function LanguageSettingInput({
 	_id,
@@ -15,11 +28,11 @@ function LanguageSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}) {
+}: LanguageSettingInputProps): ReactElement {
 	const languages = useLanguages();
 
-	const handleChange = (value) => {
-		onChangeValue(value);
+	const handleChange = (value: string): void => {
+		onChangeValue?.(value);
 	};
 
 	return (
