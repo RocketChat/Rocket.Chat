@@ -156,7 +156,7 @@ server.methods({
 server.on(DDP_EVENTS.LOGGED, (info) => {
 	const { userId, connection } = info;
 
-	Presence.newConnection(userId, connection.id);
+	Presence.newConnection(userId, connection.id, server.id);
 	api.broadcast('accounts.login', { userId, connection });
 });
 
@@ -174,7 +174,7 @@ server.on(DDP_EVENTS.DISCONNECTED, (info) => {
 	if (!userId) {
 		return;
 	}
-	Presence.removeConnection(userId, connection.id);
+	Presence.removeConnection(userId, connection.id, server.id);
 });
 
 server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {

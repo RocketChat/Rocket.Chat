@@ -1,4 +1,5 @@
 import { MongoInternals } from 'meteor/mongo';
+import { Presence } from '@rocket.chat/presence';
 
 import { AnalyticsService } from './analytics/service';
 import { api } from '../sdk/api';
@@ -33,6 +34,7 @@ api.registerService(new VoipService(db));
 api.registerService(new OmnichannelVoipService(db));
 api.registerService(new TeamService(db));
 api.registerService(new UiKitCoreApp());
+api.registerService(new Presence(db));
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

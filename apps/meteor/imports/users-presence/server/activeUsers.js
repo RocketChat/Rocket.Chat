@@ -1,7 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
-import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
-import { settings } from '../../../app/settings/server';
+// import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
 
 export const STATUS_MAP = {
@@ -21,16 +20,17 @@ export const setUserStatus = (user, status /* , statusConnection*/) => {
 	});
 };
 
-let TroubleshootDisablePresenceBroadcast;
-settings.watch('Troubleshoot_Disable_Presence_Broadcast', (value) => {
-	if (TroubleshootDisablePresenceBroadcast === value) {
-		return;
-	}
-	TroubleshootDisablePresenceBroadcast = value;
+// TODO how to disable presence broadcast only?
+// let TroubleshootDisablePresenceBroadcast;
+// settings.watch('Troubleshoot_Disable_Presence_Broadcast', (value) => {
+// 	if (TroubleshootDisablePresenceBroadcast === value) {
+// 		return;
+// 	}
+// 	TroubleshootDisablePresenceBroadcast = value;
 
-	if (value) {
-		return UserPresenceEvents.removeListener('setUserStatus', setUserStatus);
-	}
+// 	if (value) {
+// 		return UserPresenceEvents.removeListener('setUserStatus', setUserStatus);
+// 	}
 
-	UserPresenceEvents.on('setUserStatus', setUserStatus);
-});
+// 	UserPresenceEvents.on('setUserStatus', setUserStatus);
+// });
