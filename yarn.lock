@@ -1943,10 +1943,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@faker-js/faker@npm:6.1.2":
-  version: 6.1.2
-  resolution: "@faker-js/faker@npm:6.1.2"
-  checksum: 953d0301f71e264330a2aa1e04ae4ecd8c7af5276ce932f92138923d3ef2cc69354a879a7d232805066728e6c65d1021a3f20a72b9b4c49d0ee880db9fcecada
+"@faker-js/faker@npm:^6.3.1":
+  version: 6.3.1
+  resolution: "@faker-js/faker@npm:6.3.1"
+  checksum: 05071e952248f4565218a95b089ef8f616130c6ff914bb416ba7c891f81d123b637c2abe8aa2eb7b207b5d4b8bd9c75c8c2133019d2d11db4176948737a95813
   languageName: node
   linkType: hard
 
@@ -3986,7 +3986,7 @@ __metadata:
     "@babel/register": ^7.14.5
     "@babel/runtime": ^7.15.4
     "@bugsnag/js": ^7.11.0
-    "@faker-js/faker": 6.1.2
+    "@faker-js/faker": ^6.3.1
     "@google-cloud/language": ^3.8.0
     "@google-cloud/storage": ^2.5.0
     "@nivo/bar": 0.73.1
