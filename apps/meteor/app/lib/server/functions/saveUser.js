@@ -13,7 +13,6 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
-import { Users as UsersRaw } from '../../../models/server/raw';
 import { callbacks } from '../../../../lib/callbacks';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 
@@ -348,7 +347,7 @@ export const saveUser = function (userId, userData) {
 
 	validateUserEditing(userId, userData);
 
-	const oldUserData = Users.findOneById(userData._id);
+	const oldUserData = Users.findOneById(userId);
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
@@ -411,14 +410,15 @@ export const saveUser = function (userId, userData) {
 		updateUser.$set['emails.0.verified'] = userData.verified;
 	}
 
-	const userUpdateResult = Promise.await(UsersRaw.findOneAndUpdate({ _id: userData._id }, updateUser, { returnDocument: 'after' }));
+	Meteor.users.update({ _id: userId }, updateUser);
 
 	callbacks.run('afterSaveUser', userData);
 
 	// App IPostUserUpdated event hook
+	const userUpdated = Users.findOneById(userId);
 	Promise.await(
 		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
-			user: userUpdateResult.value,
+			user: userUpdated,
 			previousUser: oldUserData,
 			performedBy: Meteor.user(),
 		}),
