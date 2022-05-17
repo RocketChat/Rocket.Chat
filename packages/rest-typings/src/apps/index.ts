@@ -1,7 +1,11 @@
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type { ISetting, AppScreenshot, App } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
+	'/apps/externalComponents': {
+		GET: () => { externalComponents: IExternalComponent[] };
+	};
 	'apps/:id/settings': {
 		GET: () => {
 			[key: string]: ISetting;
