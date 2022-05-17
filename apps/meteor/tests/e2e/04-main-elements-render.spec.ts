@@ -128,8 +128,6 @@ test.describe('[Main Elements Render]', function () {
 				await expect(mainContent.messageBoxActions()).toBeVisible();
 			});
 
-			// issues with the new message box action button and the no animations on tests
-
 			test('expect show the audio recording button', async () => {
 				await expect(mainContent.recordBtn()).toBeVisible();
 			});
