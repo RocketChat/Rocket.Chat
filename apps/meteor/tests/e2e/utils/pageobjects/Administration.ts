@@ -119,6 +119,10 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('input[placeholder="Search Users"]');
 	}
 
+	public userInTable(id: string): Locator {
+		return this.getPage().locator(`tr > td:has-text("${id}")`);
+	}
+
 	public rolesNewRolesButton(): Locator {
 		return this.getPage().locator('button[aria-label="New"]');
 	}
@@ -666,16 +670,6 @@ export default class Administration extends BasePage {
 	public modalCancel(): Locator {
 		return this.getPage().locator('//button[text()="Cancel"]');
 	}
-	// public async checkUserList(user: string): Promise<boolean> {
-	// 	const locator = this.getPage().locator(`td=adminCreated${user}`);
-
-	// 	const result = await locator.isVisible();
-	// 	if (Array.isArray(result)) {
-	// 		return result[0];
-	// 	}
-
-	// 	return result;
-	// }
 
 	public async publicUserFromList(user: string): Promise<void> {
 		await expect(this.getPage().locator(`.rcx-table__cell:first-child:contains(${user}) figure`)).toBeVisible();
@@ -687,5 +681,9 @@ export default class Administration extends BasePage {
 
 	public async adminSaveChanges(): Promise<void> {
 		await this.buttonSave().click();
+	}
+
+	public userInfoActions(): Locator {
+		return this.getPage().locator('[data-qa-id="UserInfoActions"]');
 	}
 }

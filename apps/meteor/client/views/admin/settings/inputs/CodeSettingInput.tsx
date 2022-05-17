@@ -1,10 +1,24 @@
 import { Box, Button, Field, Flex } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';
+
+type CodeSettingInputProps = {
+	_id: string;
+	label: string;
+	value?: string;
+	code: string;
+	placeholder?: string;
+	readonly: boolean;
+	autocomplete: boolean;
+	disabled: boolean;
+	hasResetButton: boolean;
+	onChangeValue: (value: string) => void;
+	onResetButtonClick: () => void;
+};
 
 function CodeSettingInput({
 	_id,
@@ -18,12 +32,12 @@ function CodeSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}) {
+}: CodeSettingInputProps): ReactElement {
 	const t = useTranslation();
 
 	const [fullScreen, toggleFullScreen] = useToggle(false);
 
-	const handleChange = (value) => {
+	const handleChange = (value: string): void => {
 		onChangeValue(value);
 	};
 
@@ -51,7 +65,7 @@ function CodeSettingInput({
 					onChange={handleChange}
 				/>
 				<div className='buttons'>
-					<Button primary onClick={() => toggleFullScreen()}>
+					<Button primary onClick={(): void => toggleFullScreen()}>
 						{fullScreen ? t('Exit_Full_Screen') : t('Full_Screen')}
 					</Button>
 				</div>
