@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { appLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
@@ -124,11 +122,9 @@ registerAdminRoute('/email-inboxes/:context?/:_id?', {
 	lazyRouteComponent: () => import('./emailInbox/EmailInboxRoute'),
 });
 
-Meteor.startup(() => {
-	registerAdminRoute('/:group+', {
-		name: 'admin',
-		lazyRouteComponent: () => import('./settings/SettingsRoute'),
-	});
+registerAdminRoute('/settings/:group?', {
+	name: 'admin-settings',
+	lazyRouteComponent: () => import('./settings/SettingsRoute'),
 });
 
 registerAdminRoute('/chatpal', {
