@@ -1,3 +1,4 @@
+export * from './Apps';
 export * from './IRoom';
 export * from './UIKit';
 export * from './IMessage';

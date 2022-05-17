@@ -1,15 +1,15 @@
+import { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
 import ScreenshotCarouselAnchor from './components/ScreenshotCarouselAnchor';
-import { Screenshot } from './definitions/AppInfo';
 import { App } from './types';
 
 type AppDetailsPageContentProps = {
 	app: App;
-	screenshots: Screenshot[];
+	screenshots: AppScreenshot[];
 };
 
 const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app, screenshots }) => {
