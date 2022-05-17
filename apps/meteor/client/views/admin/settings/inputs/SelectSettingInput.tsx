@@ -1,8 +1,23 @@
 import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
+import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
 import ResetSettingButton from '../ResetSettingButton';
+
+type SelectSettingInputProps = {
+	_id: string;
+	label: string;
+	value?: string;
+	values?: { key: string; i18nLabel: keyof typeof keys }[];
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string) => void;
+	onResetButtonClick?: () => void;
+};
 
 function SelectSettingInput({
 	_id,
@@ -16,11 +31,11 @@ function SelectSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}) {
+}: SelectSettingInputProps): ReactElement {
 	const t = useTranslation();
 
-	const handleChange = (value) => {
-		onChangeValue && onChangeValue(value);
+	const handleChange = (value: string): void => {
+		onChangeValue?.(value);
 	};
 
 	return (
