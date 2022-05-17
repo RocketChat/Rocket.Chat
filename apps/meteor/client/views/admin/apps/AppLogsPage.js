@@ -1,11 +1,9 @@
 import { Box, Button, ButtonGroup, Icon, Accordion, Pagination } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useCurrentRoute, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect } from 'react';
 
 import Page from '../../../components/Page';
-import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import LogItem from './LogItem';
 import LogsLoading from './LogsLoading';

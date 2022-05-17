@@ -8,11 +8,12 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { refresh } = this.requestParams();
+			const { refresh = 'false' } = this.requestParams();
+
 			return API.v1.success(
-				await	getLastStatistics({
+				await getLastStatistics({
 					userId: this.userId,
-					refresh: refresh && refresh === 'true',
+					refresh: refresh === 'true',
 				}),
 			);
 		},
@@ -28,7 +29,7 @@ API.v1.addRoute(
 			const { sort, fields, query } = this.parseJsonQuery();
 
 			return API.v1.success(
-				await	getStatistics({
+				await getStatistics({
 					userId: this.userId,
 					query,
 					pagination: {
@@ -50,17 +51,24 @@ API.v1.addRoute(
 		post() {
 			const events = this.requestParams();
 
-			events.params.forEach((event: { rid: string; eventName: TelemetryEvents; } | { command: string; eventName: TelemetryEvents; } | { settingsId: string; eventName: TelemetryEvents; }) => {
-				const { eventName, ...params } = event;
-				telemetryEvent.call(eventName, params);
-			});
+			events.params.forEach(
+				(
+					event:
+						| { rid: string; eventName: TelemetryEvents }
+						| { command: string; eventName: TelemetryEvents }
+						| { settingsId: string; eventName: TelemetryEvents },
+				) => {
+					const { eventName, ...params } = event;
+					telemetryEvent.call(eventName, params);
+				},
+			);
 
 			return API.v1.success();
 		},
 	},
 );
 
-/*	
+/*
 	params:
 		otrDataType = { rid: string };
 		slashCommandsDataType = { command: string };

@@ -6,7 +6,9 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			return API.v1.success(await findWebdavAccountsByUserId({ uid: this.userId }));
+			return API.v1.success({
+				accounts: await findWebdavAccountsByUserId({ uid: this.userId }),
+			});
 		},
 	},
 );

@@ -1,12 +1,11 @@
 import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, ReactElement, Dispatch, SetStateAction } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import NoResults from '../../../../client/components/GenericTable/NoResults';
 import Page from '../../../../client/components/Page';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 export type CannedResponsesPageProps = {
 	data: any;

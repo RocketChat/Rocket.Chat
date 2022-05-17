@@ -1,14 +1,11 @@
 import { Table, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState, FC, ReactElement } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import PageSkeleton from '../../../../client/components/PageSkeleton';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
-import { usePermission } from '../../../../client/contexts/AuthorizationContext';
-import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';

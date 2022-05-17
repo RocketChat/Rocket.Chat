@@ -1,10 +1,9 @@
 import { ActionButton, Box, Icon, Option, OptionContent, Tag } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import { usePermission } from '../../../../contexts/AuthorizationContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { usePreventProgation } from '../../../../hooks/usePreventProgation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import RoomActions from './RoomActions';
