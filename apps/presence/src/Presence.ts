@@ -10,6 +10,7 @@ import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
 export class Presence extends ServiceClass implements IPresence {
 	private UsersSessions: UsersSessionsRaw;
+
 	private Users: UsersRaw;
 
 	constructor(db: Db) {
@@ -101,12 +102,15 @@ export class Presence extends ServiceClass implements IPresence {
 
 		const ids = nodes.filter((node) => node.available).map(({ id }) => id);
 
-		const affectedUsers = await this.UsersSessions.find({
-			'connections.instanceId': {
-				$exists: true,
-				$nin: ids,
+		const affectedUsers = await this.UsersSessions.find(
+			{
+				'connections.instanceId': {
+					$exists: true,
+					$nin: ids,
+				},
 			},
-		}, { projection: { _id: 1 } }).toArray();
+			{ projection: { _id: 1 } },
+		).toArray();
 
 		const update = {
 			$pull: {
@@ -189,4 +193,3 @@ export class Presence extends ServiceClass implements IPresence {
 		}
 	}
 }
-
