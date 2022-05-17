@@ -1,7 +1,7 @@
 import { Box, Icon, PositionAnimated, AnimatedVisibility, Tooltip } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { RefObject, useRef, useState, ReactElement } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { App } from './types';
 
 type BundleChipsProps = {
