@@ -10,20 +10,20 @@ const pipe =
 		fn(...args);
 
 function buildFormData(data?: Record<string, any> | void, formData = new FormData(), parentKey?: string): FormData {
+	if (!data) {
+		return formData;
+	}
+
+	if (typeof data === 'object' && !(data instanceof File)) {
+		Object.keys(data).forEach((key) => {
+			buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
+		});
+	} else {
+		const value = data == null ? '' : data;
+
+		parentKey && formData.append(parentKey, value);
+	}
 	return formData;
-	// if (!data) {
-	// }
-
-	// if (typeof data === 'object' && !(data instanceof File)) {
-	// 	Object.keys(data).forEach((key) => {
-	// 		buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
-	// 	});
-	// } else {
-	// 	const value = data == null ? '' : data;
-
-	// 	parentKey && formData.append(parentKey, value);
-	// }
-	// return formData;
 }
 export class RestClient implements RestClientInterface {
 	private readonly baseUrl: string;
