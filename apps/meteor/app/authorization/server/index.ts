@@ -1,4 +1,4 @@
-import { canAccessRoom, canAccessRoomId, roomAccessAttributes, roomAccessValidators } from './functions/canAccessRoom';
+import { canAccessRoom, canAccessRoomId, roomAccessAttributes } from './functions/canAccessRoom';
 import { canSendMessage, validateRoomMessagePermissions } from './functions/canSendMessage';
 import { getRoles } from './functions/getRoles';
 import { getUsersInRole } from './functions/getUsersInRole';
@@ -21,7 +21,6 @@ export {
 	subscriptionHasRole,
 	canSendMessage,
 	validateRoomMessagePermissions,
-	roomAccessValidators,
 	canAccessRoom,
 	canAccessRoomId,
 	roomAccessAttributes,
