@@ -11,7 +11,7 @@ import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
-test.describe('[Settings]', async () => {
+test.describe.skip('[Settings]', async () => {
 	let page: Page;
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
@@ -362,7 +362,7 @@ test.describe('[Settings]', async () => {
 		});
 	});
 
-	test.describe.only('Avatar change', () => {
+	test.describe('Avatar change', () => {
 		test('(API) expect disable avatar change', async ({ request }) => {
 			const response = await request.post(`${BASE_API_URL}/settings/Accounts_AllowUserAvatarChange`, {
 				headers: apiSessionHeaders,
