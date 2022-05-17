@@ -4,7 +4,7 @@ import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
 
-class MainContent extends BasePage {
+export default class MainContent extends BasePage {
 	public mainContent(): Locator {
 		return this.getPage().locator('.main-content');
 	}
@@ -24,7 +24,7 @@ class MainContent extends BasePage {
 
 	// Main Content Footer (Message Input Area)
 	public messageInput(): Locator {
-		return this.getPage().locator('.js-input-message');
+		return this.getPage().locator('[name="msg"]');
 	}
 
 	public sendBtn(): Locator {
@@ -36,7 +36,7 @@ class MainContent extends BasePage {
 	}
 
 	public recordBtn(): Locator {
-		return this.getPage().locator('.js-audio-message-record');
+		return this.getPage().locator('[data-qa-id="audio-record"]');
 	}
 
 	public emojiBtn(): Locator {
@@ -69,7 +69,7 @@ class MainContent extends BasePage {
 
 	// Messages
 	public lastMessageUser(): Locator {
-		return this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "user-card-message")])[last()]');
+		return this.getPage().locator('.message:last-child div:nth-child(2) button');
 	}
 
 	public lastMessageFileName(): Locator {
@@ -77,9 +77,7 @@ class MainContent extends BasePage {
 	}
 
 	public lastMessage(): Locator {
-		return this.getPage().locator(
-			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="message-body-wrapper"]//div[2]',
-		);
+		return this.getPage().locator('.messages-box [data-qa-type="message"]').last();
 	}
 
 	public lastMessageDesc(): Locator {
@@ -133,7 +131,7 @@ class MainContent extends BasePage {
 	}
 
 	public messageActionMenu(): Locator {
-		return this.getPage().locator('.rc-popover .rc-popover__content');
+		return this.getPage().locator('[data-qa-type="message-action-menu-options"]');
 	}
 
 	public messageReply(): Locator {
@@ -304,9 +302,10 @@ class MainContent extends BasePage {
 		await this.messageInput().type(text);
 	}
 
-	// Clear and sets the text to the input
-	public async setTextToInput(text: string): Promise<void> {
-		await this.messageInput().type(text);
+	public async setTextToInput(text: string, options: { delay?: number } = {}): Promise<void> {
+		await this.messageInput().click({ clickCount: 3 });
+		await this.getPage().keyboard.press('Backspace');
+		await this.messageInput().type(text, { delay: options.delay ?? 0 });
 	}
 
 	public async dragAndDropFile(): Promise<void> {
@@ -395,9 +394,6 @@ class MainContent extends BasePage {
 				await this.emojiPickerPeopleIcon().click();
 				await this.emojiGrinning().click();
 				break;
-			// case 'close':
-			// 	await this.messageClose().click();
-			// 	break;
 		}
 	}
 
@@ -405,6 +401,11 @@ class MainContent extends BasePage {
 		await this.getPage().locator('.messages-box [data-qa-type="message"]:last-child').hover();
 		await this.getPage().locator('[data-qa-type="message"]:last-child div.message-actions__menu').waitFor();
 		await this.getPage().locator('[data-qa-type="message"]:last-child div.message-actions__menu').click();
+	}
+
+	public async openMoreActionMenu(): Promise<void> {
+		await this.getPage().locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
+		await this.getPage().waitForSelector('.rc-popover__content');
 	}
 
 	public async acceptDeleteMessage(): Promise<void> {
@@ -430,6 +431,17 @@ class MainContent extends BasePage {
 	public waitForLastMessageTextAttachmentEqualsText(): Locator {
 		return this.getPage().locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
 	}
-}
 
-export default MainContent;
+	public userCard(): Locator {
+		return this.getPage().locator('[data-qa="UserCard"]');
+	}
+
+	public viewUserProfile(): Locator {
+		return this.getPage().locator('[data-qa="UserCard"] a');
+	}
+
+	public async reload(): Promise<void> {
+		await this.getPage().reload({ waitUntil: 'load' });
+		await this.getPage().waitForSelector('.messages-box');
+	}
+}
