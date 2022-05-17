@@ -47,6 +47,10 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('[data-qa-id="General"] button');
 	}
 
+	public layoutSettingsButton(): Locator {
+		return this.getPage().locator('[data-qa-id="Layout"] button');
+	}
+
 	public permissionsLink(): Locator {
 		return this.getPage().locator('.flex-nav [href="/admin/permissions"]');
 	}
@@ -168,15 +172,19 @@ export default class Administration extends BasePage {
 	}
 
 	public rolesSettingsFindInput(): Locator {
-		return this.getPage().locator('input#permissions-filter');
+		return this.getPage().locator('[data-qa="PermissionTable-PermissionsTableFilter"]');
 	}
 
 	public rolesSettingsTab(): Locator {
-		return this.getPage().locator('button[data-value="settings"]');
+		return this.getPage().locator('[data-qa="PermissionTable-Settings"]');
 	}
 
 	public rolesPermissionsTab(): Locator {
-		return this.getPage().locator('button[data-value="permissions"]');
+		return this.getPage().locator('[data-qa="PermissionTable-Permissions"]');
+	}
+
+	public homeTitleInput(): Locator {
+		return this.getPage().locator('[data-qa-setting-id="Layout_Home_Title"]');
 	}
 
 	// permissions grids checkboxes
@@ -239,7 +247,7 @@ export default class Administration extends BasePage {
 
 	// settings
 	public buttonSave(): Locator {
-		return this.getPage().locator('//h2[text()="General"]/following-sibling::div//button[text()="Save changes"]');
+		return this.getPage().locator('button.save');
 	}
 
 	public generalSectionIframeIntegration(): Locator {
@@ -284,6 +292,10 @@ export default class Administration extends BasePage {
 
 	public generalSiteNameReset(): Locator {
 		return this.getPage().locator('[data-qa-reset-setting-id="Site_Name"]');
+	}
+
+	public generalHomeTitleReset(): Locator {
+		return this.getPage().locator('[data-qa-reset-setting-id="Layout_Home_Title"]');
 	}
 
 	public generalLanguage(): Locator {
