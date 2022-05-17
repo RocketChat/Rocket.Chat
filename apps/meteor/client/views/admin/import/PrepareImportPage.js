@@ -1,5 +1,6 @@
 import { Badge, Box, Button, ButtonGroup, Icon, Margins, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
@@ -13,9 +14,6 @@ import {
 	ImportingErrorStates,
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import PrepareChannels from './PrepareChannels';
 import PrepareUsers from './PrepareUsers';
 import { useErrorHandler } from './useErrorHandler';

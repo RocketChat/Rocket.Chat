@@ -1,8 +1,8 @@
 import { Box, PasswordInput, TextInput, FieldGroup, Field } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, FC } from 'react';
 
 import GenericModal from '../../components/GenericModal';
-import { useTranslation } from '../../contexts/TranslationContext';
 
 type ActionConfirmModalProps = {
 	isPassword: boolean;

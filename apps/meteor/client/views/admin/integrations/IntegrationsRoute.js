@@ -1,7 +1,6 @@
+import { useRouteParameter, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
-import { useRouteParameter } from '../../../contexts/RouterContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import IntegrationsPage from './IntegrationsPage';
 import EditIntegrationsPage from './edit/EditIntegrationsPage';

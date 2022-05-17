@@ -1,15 +1,12 @@
 import { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
 import { Tile, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import UsersInRoleTableRow from './UsersInRoleTableRow';
 
 type UsersInRoleTable = {
