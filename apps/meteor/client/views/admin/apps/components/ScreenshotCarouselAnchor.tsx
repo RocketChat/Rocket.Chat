@@ -1,14 +1,14 @@
+import { AppScreenshot } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { Screenshot } from '../definitions/AppInfo';
 import ScreenshotCarousel from './ScreenshotCarousel';
 
 type ScreenshotCarouselAnchorProps = {
-	screenshots: Screenshot[];
+	screenshots: AppScreenshot[];
 };
 
 type voidFunction = () => void;

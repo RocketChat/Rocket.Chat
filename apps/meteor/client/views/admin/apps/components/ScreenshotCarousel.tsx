@@ -1,12 +1,11 @@
+import { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement } from 'react';
 
-import { Screenshot } from '../definitions/AppInfo';
-
 type ScreenshotCarouselProps = {
-	AppScreenshots: Array<Screenshot>;
-	setViewCarousel: React.Dispatch<React.SetStateAction<boolean>>;
+	AppScreenshots: Array<AppScreenshot>;
+	setViewCarousel: (state: boolean) => void;
 	handleNextSlide: () => void;
 	handlePrevSlide: () => void;
 	isFirstSlide: boolean;
