@@ -1,4 +1,4 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -10,7 +10,7 @@ import { useFileInput } from '../../hooks/useFileInput';
 import RoomAvatar from './RoomAvatar';
 
 type RoomAvatarEditorProps = {
-	room: IRoom;
+	room: Pick<IRoom, RoomAdminFieldsType>;
 	roomAvatar?: string;
 	onChangeAvatar: (url: string | null) => void;
 };

@@ -209,10 +209,9 @@ test.describe('[Administration]', () => {
 
 		test.describe('[General Settings]', () => {
 			test.beforeAll(async () => {
+				await admin.settingsLink().click();
 				await admin.settingsSearch().type('general');
-				await admin.generalLink().click();
-				await admin.settingsSearch().click({ clickCount: 3 });
-				await admin.keyboardPress('Backspace');
+				await admin.generalSettingsButton().click();
 			});
 
 			test.describe('[General]', () => {
@@ -360,10 +359,9 @@ test.describe('[Administration]', () => {
 
 		test.describe('[Accounts]', () => {
 			test.beforeAll(async () => {
+				await admin.groupSettingsPageBack().click();
 				await admin.settingsSearch().type('accounts');
-				await admin.accountsLink().click();
-				await admin.settingsSearch().click({ clickCount: 3 });
-				await admin.keyboardPress('Backspace');
+				await admin.accountSettingsButton().click();
 			});
 
 			test.describe('[Default user preferences]', () => {
