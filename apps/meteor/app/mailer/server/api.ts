@@ -9,7 +9,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { ISetting } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
-import { Settings as SettingsRaw } from '../../models/server/raw';
+import { Settings as SettingsRaw } from '../../models/server';
 import { replaceVariables } from './replaceVariables';
 import { Apps } from '../../apps/server';
 import { validateEmail } from '../../../lib/emailValidator';
