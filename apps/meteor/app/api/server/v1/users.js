@@ -932,6 +932,8 @@ API.v1.addRoute(
 					utcOffset: 1,
 					statusText: 1,
 					avatarETag: 1,
+					credit: 1,
+					trustScore: 1,
 				},
 			};
 

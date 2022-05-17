@@ -228,7 +228,7 @@ const AccountProfilePage = () => {
 						{t('Reset')}
 					</Button>
 					<Button primary onClick={onSave}>
-						Edit
+						{t('Edit')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>

@@ -6,6 +6,7 @@ import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { validateEmail } from '../../../lib/emailValidator';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import AccountInfo from './AccountInfo';
 
 function AccountProfileForm({ values, handlers, user, settings, ...props }) {
@@ -16,8 +17,6 @@ function AccountProfileForm({ values, handlers, user, settings, ...props }) {
 
 	const [usernameError, setUsernameError] = useState();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
-	const [boughtCredit, setBoughtCredit] = useState(false);
-	const [trustScoreNumber, setTrustScoreNumber] = useState(0);
 
 	const { allowUserAvatarChange, namesRegex, requireName } = settings;
 
@@ -90,6 +89,17 @@ function AccountProfileForm({ values, handlers, user, settings, ...props }) {
 		e.preventDefault();
 	}, []);
 
+	// Refetch user data so that we can get createdAt field.
+	const { value: data } = useEndpointData(
+		'users.info',
+		useMemo(() => ({ ...(username && { username }) }), [username]),
+	);
+
+	const userWithCredit = useMemo(() => {
+		const { user } = data || { user: {} };
+		return user || {};
+	}, [data]);
+
 	const dummyCredit = {
 		gateway: 'bank-transfer',
 		quantity: 7,
@@ -98,11 +108,10 @@ function AccountProfileForm({ values, handlers, user, settings, ...props }) {
 	};
 
 	const buyCredit = useMemo(() => {
-		if (!boughtCredit) {
+		if (!user.credit) {
 			Meteor.call('buyCredit', dummyCredit, (error, result) => {
 				if (result) {
 					console.log('Bought credit');
-					setBoughtCredit(true);
 				}
 				if (error) {
 					console.log(error);
@@ -112,10 +121,10 @@ function AccountProfileForm({ values, handlers, user, settings, ...props }) {
 	}, [user.credit]);
 
 	const setRandomTrustScore = useMemo(() => {
-		if (trustScoreNumber === 0) {
+		if (!user.trustScore) {
 			Meteor.call('setRandomTrustScore', (error, result) => {
 				if (result) {
-					setTrustScoreNumber(result.trustScore * 100);
+					console.log('Set a random trust score');
 				}
 				if (error) {
 					console.log(error);
@@ -126,8 +135,8 @@ function AccountProfileForm({ values, handlers, user, settings, ...props }) {
 
 	const careerItems = [
 		{ icon: 'user', content: 'Employee/er/broker', rc: true },
-		{ icon: 'credit', content: `Credit point: ${user.credit ? user.credit : 0}`, rc: false },
-		{ icon: 'trust-score', content: `Trust score: ${trustScoreNumber}/100`, rc: false },
+		{ icon: 'credit', content: `Credit point: ${userWithCredit.credit ? userWithCredit.credit : 0}`, rc: false },
+		{ icon: 'trust-score', content: `Trust score: ${userWithCredit.trustScore ? userWithCredit.trustScore * 100 : 0}/100`, rc: false },
 	];
 
 	const privateInfo = [
@@ -163,9 +172,9 @@ function AccountProfileForm({ values, handlers, user, settings, ...props }) {
 			)}
 			<Box style={{ margin: '0px auto', fontSize: '16px' }}>{user.bio ? user.bio : 'No user bio...'}</Box>
 			<Box display='flex' flexDirection='column' style={{ marginTop: '30px' }}>
-				<AccountInfo title='Career' items={careerItems} />
-				<AccountInfo title='Private Information' items={privateInfo} />
-				<AccountInfo title='Services' items={services} />
+				<AccountInfo title={t('Career')} items={careerItems} />
+				<AccountInfo title={t('Private Information')} items={privateInfo} />
+				<AccountInfo title={t('Services')} items={services} />
 			</Box>
 		</FieldGroup>
 	);
