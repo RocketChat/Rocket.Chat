@@ -1,13 +1,13 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React, { useMemo, FC } from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditRoom from './EditRoom';
 
-function EditRoomWithData({ rid, onReload }) {
+const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onReload }) => {
 	const {
-		value: data = {},
+		value: data,
 		phase: state,
 		error,
 		reload,
@@ -30,19 +30,19 @@ function EditRoomWithData({ rid, onReload }) {
 	}
 
 	if (state === AsyncStatePhase.REJECTED) {
-		return error.message;
+		return <>{error?.message}</>;
 	}
 
-	const handleChange = () => {
+	const handleChange = (): void => {
 		reload();
 		onReload();
 	};
 
-	const handleDelete = () => {
+	const handleDelete = (): void => {
 		onReload();
 	};
 
-	return <EditRoom room={{ type: data.t, ...data }} onChange={handleChange} onDelete={handleDelete} />;
-}
+	return data ? <EditRoom room={data} onChange={handleChange} onDelete={handleDelete} /> : null;
+};
 
 export default EditRoomWithData;

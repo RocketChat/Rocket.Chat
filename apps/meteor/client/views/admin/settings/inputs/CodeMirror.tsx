@@ -1,7 +1,28 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
+
+type CodeMirrorProps = {
+	id: string;
+	placeholder?: string;
+	disabled?: boolean;
+	autoComplete?: string | undefined;
+	lineNumbers?: boolean;
+	lineWrapping?: boolean;
+	mode?: string;
+	gutters?: string[];
+	foldGutter?: boolean;
+	matchBrackets?: boolean;
+	autoCloseBrackets?: boolean;
+	matchTags?: boolean;
+	showTrailingSpace?: boolean;
+	highlightSelectionMatches?: boolean;
+	readOnly: boolean;
+	value: string;
+	defaultValue?: string;
+	onChange: (value: string) => void;
+};
 
 function CodeMirror({
 	lineNumbers = true,
@@ -19,11 +40,11 @@ function CodeMirror({
 	defaultValue,
 	onChange,
 	...props
-}) {
+}: CodeMirrorProps): ReactElement {
 	const [value, setValue] = useState(valueProp || defaultValue);
 
-	const textAreaRef = useRef();
-	const editorRef = useRef();
+	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+	const editorRef = useRef<HTMLFormElement | null>(null);
 	const handleChange = useMutableCallback(onChange);
 
 	useEffect(() => {
@@ -31,10 +52,12 @@ function CodeMirror({
 			return;
 		}
 
-		const setupCodeMirror = async () => {
-			const CodeMirror = await import('codemirror/lib/codemirror.js');
+		const setupCodeMirror = async (): Promise<void> => {
+			const jsPath = 'codemirror/lib/codemirror.js';
+			const CodeMirror = await import(jsPath);
 			await import('../../../../../app/ui/client/lib/codeMirror/codeMirror');
-			await import('codemirror/lib/codemirror.css');
+			const cssPath = 'codemirror/lib/codemirror.css';
+			await import(cssPath);
 
 			if (!textAreaRef.current) {
 				return;
@@ -54,7 +77,7 @@ function CodeMirror({
 				readOnly,
 			});
 
-			editorRef.current.on('change', (doc) => {
+			editorRef?.current?.on('change', (doc: HTMLFormElement) => {
 				const value = doc.getValue();
 				setValue(value);
 				handleChange(value);
@@ -63,7 +86,7 @@ function CodeMirror({
 
 		setupCodeMirror();
 
-		return () => {
+		return (): void => {
 			if (!editorRef.current) {
 				return;
 			}
