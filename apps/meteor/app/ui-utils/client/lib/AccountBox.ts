@@ -19,60 +19,60 @@ export interface IAccountBoxItem extends Omit<IUIActionButton, 'when'> {
 	when?: Omit<IUActionButtonWhen, 'roomTypes' | 'messageActionContext'>;
 }
 
-export class AccountBox {
-	private static items = new ReactiveVar([]);
+export class AccountBoxBase {
+	private items = new ReactiveVar([]);
 
-	private static status = 0;
+	private status = 0;
 
-	public static setStatus(status: number, statusText: string): any {
+	public setStatus(status: number, statusText: string): any {
 		return Meteor.call('setUserStatus', status, statusText);
 	}
 
-	public static open(): void {
+	public open(): void {
 		if (SideNav.flexStatus()) {
 			SideNav.closeFlex();
 			return;
 		}
-		AccountBox.status = 1;
+		this.status = 1;
 	}
 
-	public static close(): void {
-		AccountBox.status = 0;
+	public close(): void {
+		this.status = 0;
 	}
 
-	public static toggle(): Window | null | void {
-		if (AccountBox.status) {
-			return AccountBox.close();
+	public toggle(): Window | null | void {
+		if (this.status) {
+			return this.close();
 		}
-		return AccountBox.open();
+		return this.open();
 	}
 
-	public static openFlex(): void {
-		AccountBox.status = 0;
+	public openFlex(): void {
+		this.status = 0;
 	}
 
-	public static async addItem(newItem: IAccountBoxItem): Promise<void> {
-		Tracker.nonreactive(function () {
-			const actual = AccountBox.items.get();
+	public async addItem(newItem: IAccountBoxItem): Promise<void> {
+		Tracker.nonreactive(() => {
+			const actual = this.items.get();
 			actual.push(newItem as never);
-			AccountBox.items.set(actual);
+			this.items.set(actual);
 		});
 	}
 
-	public static async deleteItem(item: IAccountBoxItem): Promise<void> {
-		Tracker.nonreactive(function () {
-			const actual = AccountBox.items.get();
+	public async deleteItem(item: IAccountBoxItem): Promise<void> {
+		Tracker.nonreactive(() => {
+			const actual = this.items.get();
 			const itemIndex = actual.findIndex((actualItem: IAccountBoxItem) => actualItem.appId === item.appId);
 			actual.splice(itemIndex, 1);
-			AccountBox.items.set(actual);
+			this.items.set(actual);
 		});
 	}
 
-	public static getItems(): IAccountBoxItem[] {
-		return AccountBox.items.get().filter((item: IAccountBoxItem) => applyDropdownActionButtonFilters(item));
+	public getItems(): IAccountBoxItem[] {
+		return this.items.get().filter((item: IAccountBoxItem) => applyDropdownActionButtonFilters(item));
 	}
 
-	public static addRoute(newRoute: any, router: any, wait = async (): Promise<null> => null): Router {
+	public addRoute(newRoute: any, router: any, wait = async (): Promise<null> => null): Router {
 		if (router == null) {
 			router = FlowRouter;
 		}
@@ -100,7 +100,7 @@ export class AccountBox {
 				appLayout.renderMainLayout(routeConfig);
 			},
 			triggersEnter: [
-				function (): void {
+				(): void => {
 					if (newRoute.sideNav != null) {
 						SideNav.setFlex(newRoute.sideNav);
 						SideNav.openFlex();
@@ -110,3 +110,5 @@ export class AccountBox {
 		});
 	}
 }
+
+export const AccountBox = new AccountBoxBase();
