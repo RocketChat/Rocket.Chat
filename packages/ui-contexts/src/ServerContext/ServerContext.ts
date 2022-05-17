@@ -24,7 +24,6 @@ export type ServerContextValue = {
 	) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>;
 	uploadToEndpoint: (
 		endpoint: string,
-		params: any,
 		formData: any,
 	) =>
 		| Promise<UploadResult>

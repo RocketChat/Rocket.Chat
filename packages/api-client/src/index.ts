@@ -19,9 +19,7 @@ function buildFormData(data?: Record<string, any> | void, formData = new FormDat
 			buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
 		});
 	} else {
-		const value = data == null ? '' : data;
-
-		parentKey && formData.append(parentKey, value);
+		data && parentKey && formData.append(parentKey, data);
 	}
 	return formData;
 }
