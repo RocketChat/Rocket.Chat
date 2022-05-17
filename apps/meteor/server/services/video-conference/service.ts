@@ -124,7 +124,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.changeMessageType(call.messages.started, 'video-direct-missed');
 		}
 
-		this.VideoConference.endVideoConference(call._id, { _id: user._id, name: user.name, username: user.username });
+		this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
 	}
 
 	public async get(callId: IVideoConference['_id']): Promise<IVideoConference | null> {

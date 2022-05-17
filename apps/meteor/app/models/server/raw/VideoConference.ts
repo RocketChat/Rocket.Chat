@@ -32,7 +32,7 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		return this.updateOne({ _id }, update, options);
 	}
 
-	public endVideoConference(callId: string, endedBy: { _id: string; name: string; username: string }): void {
+	public setEndedById(callId: string, endedBy: { _id: string; name: string; username: string }): void {
 		this.updateOneById(callId, {
 			$set: {
 				endedBy,
