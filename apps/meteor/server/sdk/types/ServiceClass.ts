@@ -29,8 +29,15 @@ export interface IServiceClass {
 	onNodeConnected?({ node, reconnected }: { node: IBrokerNode; reconnected: boolean }): void;
 	onNodeUpdated?({ node }: { node: IBrokerNode }): void;
 	onNodeDisconnected?({ node, unexpected }: { node: IBrokerNode; unexpected: boolean }): Promise<void>;
+	getEvents(): Array<keyof EventSignatures>;
+
+	// TODO api should be correctly typed
+	setApi(api: any): void;
 
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
+	emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void;
+
+	isInternal(): boolean;
 
 	created?(): Promise<void>;
 	started?(): Promise<void>;
@@ -44,8 +51,14 @@ export abstract class ServiceClass implements IServiceClass {
 
 	protected internal = false;
 
+	protected api: any;
+
 	constructor() {
 		this.emit = this.emit.bind(this);
+	}
+
+	setApi(api: any): void {
+		this.api = api;
 	}
 
 	getEvents(): Array<keyof EventSignatures> {

@@ -1,4 +1,4 @@
-import { ServiceClass } from './ServiceClass';
+import type { IServiceClass } from './ServiceClass';
 import { EventSignatures } from '../lib/Events';
 
 export interface IBrokerNode {
@@ -47,8 +47,8 @@ export interface IServiceMetrics {
 
 export interface IBroker {
 	metrics?: IServiceMetrics;
-	destroyService(service: ServiceClass): void;
-	createService(service: ServiceClass): void;
+	destroyService(service: IServiceClass): void;
+	createService(service: IServiceClass): void;
 	call(method: string, data: any): Promise<any>;
 	waitAndCall(method: string, data: any): Promise<any>;
 	broadcastToServices<T extends keyof EventSignatures>(

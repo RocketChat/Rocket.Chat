@@ -1,11 +1,11 @@
 // import { BaseBroker } from './BaseBroker';
 import { IBroker } from '../types/IBroker';
-import { ServiceClass } from '../types/ServiceClass';
+import type { IServiceClass } from '../types/ServiceClass';
 import { EventSignatures } from './Events';
 import { LocalBroker } from './LocalBroker';
 
 export class Api {
-	private services = new Set<ServiceClass>();
+	private services = new Set<IServiceClass>();
 
 	private broker: IBroker = new LocalBroker();
 
@@ -16,7 +16,7 @@ export class Api {
 		this.services.forEach((service) => this.broker.createService(service));
 	}
 
-	destroyService(instance: ServiceClass): void {
+	destroyService(instance: IServiceClass): void {
 		if (!this.services.has(instance)) {
 			return;
 		}
@@ -28,8 +28,10 @@ export class Api {
 		this.services.delete(instance);
 	}
 
-	registerService(instance: ServiceClass): void {
+	registerService(instance: IServiceClass): void {
 		this.services.add(instance);
+
+		instance.setApi(this);
 
 		if (this.broker) {
 			this.broker.createService(instance);

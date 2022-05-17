@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { IBroker, IBrokerNode } from '../types/IBroker';
-import { ServiceClass } from '../types/ServiceClass';
+import type { ServiceClass, IServiceClass } from '../types/ServiceClass';
 import { asyncLocalStorage } from '..';
 import { EventSignatures } from './Events';
 import { StreamerCentral } from '../../modules/streamer/streamer.module';
@@ -49,7 +49,7 @@ export class LocalBroker implements IBroker {
 		}
 	}
 
-	createService(instance: ServiceClass): void {
+	createService(instance: IServiceClass): void {
 		const namespace = instance.getName();
 
 		instance.getEvents().forEach((eventName) => {

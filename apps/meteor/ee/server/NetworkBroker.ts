@@ -2,7 +2,7 @@ import { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { asyncLocalStorage } from '../../server/sdk';
 import { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
-import { ServiceClass } from '../../server/sdk/types/ServiceClass';
+import type { IServiceClass } from '../../server/sdk/types/ServiceClass';
 import { EventSignatures } from '../../server/sdk/lib/Events';
 
 const events: { [k: string]: string } = {
@@ -73,11 +73,11 @@ export class NetworkBroker implements IBroker {
 		return this.broker.call(method, data);
 	}
 
-	destroyService(instance: ServiceClass): void {
+	destroyService(instance: IServiceClass): void {
 		this.broker.destroyService(instance.getName());
 	}
 
-	createService(instance: ServiceClass): void {
+	createService(instance: IServiceClass): void {
 		const methods = (
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
