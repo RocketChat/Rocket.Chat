@@ -9,7 +9,7 @@ import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import AccountInfo from './ViewAccountInfo';
 
-function AccountProfileForm({ values, handlers, user, settings, ...props }) {
+function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 	const t = useTranslation();
 
 	const checkUsernameAvailability = useMethod('checkUsernameAvailability');
@@ -180,4 +180,4 @@ function AccountProfileForm({ values, handlers, user, settings, ...props }) {
 	);
 }
 
-export default AccountProfileForm;
+export default ViewProfileForm;

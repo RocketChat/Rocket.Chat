@@ -84,13 +84,3 @@ FlowRouter.route('/products/detail/:id', {
 		appLayout.renderMainLayout({ center: ProductDetailPageView });
 	},
 });
-
-// FlowRouter.route('/topup/amount=optional', {
-// 	name: 'topup',
-// 	action: () => {
-// 		const TopUpPageVIew = createTemplateForComponent('TopUpPage', () => import('../views/topup/TopUpView'), {
-// 			attachment: 'at-parent',
-// 		});
-// 		appLayout.renderMainLayout({ center: TopUpPageVIew });
-// 	},
-// });

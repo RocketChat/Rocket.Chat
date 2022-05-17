@@ -10,6 +10,7 @@ import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import AccountSecurityPage from './security/AccountSecurityPage';
 import AccountTokensPage from './tokens/AccountTokensPage';
 import './sidebarItems';
+import ViewProfilePage from './ViewProfilePage';
 
 const AccountRoute = () => {
 	const [routeName] = useCurrentRoute();
@@ -21,7 +22,7 @@ const AccountRoute = () => {
 			return;
 		}
 
-		!page && router.push({ group: 'profile' });
+		!page && router.push({ group: 'view-profile' });
 	}, [routeName, page, router]);
 
 	useEffect(() => {
@@ -62,6 +63,10 @@ const AccountRoute = () => {
 
 	if (page === 'topup') {
 		return <TopUpView />;
+	}
+
+	if (page === 'view-profile') {
+		return <ViewProfilePage />;
 	}
 
 	return null;

@@ -15,8 +15,8 @@ export const {
 	},
 	{
 		pathSection: 'account',
-		pathGroup: 'profile',
-		i18nLabel: 'Profile',
+		pathGroup: 'view-profile',
+		i18nLabel: 'View Profile',
 		icon: 'user',
 		permissionGranted: () => settings.get('Accounts_AllowUserProfileChange'),
 	},
