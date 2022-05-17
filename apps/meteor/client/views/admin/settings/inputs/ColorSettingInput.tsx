@@ -1,9 +1,25 @@
 import { Box, Field, Flex, InputBox, Margins, TextInput, Select } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
+import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
 import ResetSettingButton from '../ResetSettingButton';
 
+type ColorSettingInputProps = {
+	_id: string;
+	label: string;
+	value: string;
+	editor: string;
+	allowedTypes?: (keyof typeof keys)[];
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string) => void;
+	onChangeEditor?: (value: string) => void;
+	onResetButtonClick?: () => void;
+};
 function ColorSettingInput({
 	_id,
 	label,
@@ -18,19 +34,19 @@ function ColorSettingInput({
 	onChangeValue,
 	onChangeEditor,
 	onResetButtonClick,
-}) {
+}: ColorSettingInputProps): ReactElement {
 	const t = useTranslation();
 
 	const handleChange = useCallback(
 		(event) => {
-			onChangeValue && onChangeValue(event.currentTarget.value);
+			onChangeValue?.(event.currentTarget.value);
 		},
 		[onChangeValue],
 	);
 
 	const handleEditorTypeChange = useCallback(
 		(value) => {
-			onChangeEditor && onChangeEditor(value);
+			onChangeEditor?.(value);
 		},
 		[onChangeEditor],
 	);

@@ -1,7 +1,20 @@
 import { Box, Field, Flex, InputBox } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FormEventHandler, ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+
+type IntSettingInputProps = {
+	_id: string;
+	label: string;
+	value: string;
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string | number) => void;
+	onResetButtonClick?: () => void;
+};
 
 function IntSettingInput({
 	_id,
@@ -14,9 +27,9 @@ function IntSettingInput({
 	onChangeValue,
 	hasResetButton,
 	onResetButtonClick,
-}) {
-	const handleChange = (event) => {
-		onChangeValue && onChangeValue(parseInt(event.currentTarget.value, 10));
+}: IntSettingInputProps): ReactElement {
+	const handleChange: FormEventHandler<HTMLInputElement> = (event) => {
+		onChangeValue?.(parseInt(event.currentTarget.value, 10));
 	};
 
 	return (
