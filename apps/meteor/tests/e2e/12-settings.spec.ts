@@ -394,7 +394,7 @@ test.describe.skip('[Settings]', async () => {
 	});
 });
 
-test.describe('[Settings (admin)]', async () => {
+test.describe.skip('[Settings (admin)]', async () => {
 	let page: Page;
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
