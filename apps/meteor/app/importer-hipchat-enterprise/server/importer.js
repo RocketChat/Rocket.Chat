@@ -5,7 +5,7 @@ import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 
 import { Base, ProgressStep } from '../../importer/server';
-import { Settings as SettingsRaw } from '../../models/server/raw';
+import { Settings as SettingsRaw } from '../../models/server';
 
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info, importRecord) {

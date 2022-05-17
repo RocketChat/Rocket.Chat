@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import * as Mailer from '../../../mailer';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { Settings as SettingsRaw } from '../../../models/server/raw';
+import { Settings as SettingsRaw } from '../../../models/server';
 
 let html = '';
 Meteor.startup(() => {

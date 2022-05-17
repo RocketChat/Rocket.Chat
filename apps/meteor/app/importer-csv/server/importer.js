@@ -1,8 +1,7 @@
 import { Random } from 'meteor/random';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import { Users } from '../../models/server';
-import { Settings as SettingsRaw } from '../../models/server/raw';
+import { Users, Settings as SettingsRaw } from '../../models/server';
 
 export class CsvImporter extends Base {
 	constructor(info, importRecord) {

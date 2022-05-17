@@ -1,11 +1,10 @@
 import _ from 'underscore';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import { Messages, ImportData } from '../../models/server';
+import { Messages, ImportData, Settings as SettingsRaw } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { Settings as SettingsRaw } from '../../models/server/raw';
 
 export class SlackImporter extends Base {
 	parseData(data) {
