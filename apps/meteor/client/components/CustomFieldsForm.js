@@ -1,9 +1,8 @@
 import { TextInput, Select, Field } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, useState } from 'react';
 
-import { useSetting } from '../contexts/SettingsContext';
-import { useTranslation } from '../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
 import { useForm } from '../hooks/useForm';
 

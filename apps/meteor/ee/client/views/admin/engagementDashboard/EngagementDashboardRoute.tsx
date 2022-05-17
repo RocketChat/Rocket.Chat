@@ -1,7 +1,6 @@
+import { useCurrentRoute, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect } from 'react';
 
-import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
-import { useCurrentRoute, useRoute } from '../../../../../client/contexts/RouterContext';
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
 import EngagementDashboardPage from './EngagementDashboardPage';
@@ -26,7 +25,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	}, [routeName, engagementDashboardRoute, tab]);
 
 	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
-		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count', timestamp: Date.now() }],
+		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count' }],
 	});
 
 	if (!isValidTab(tab)) {

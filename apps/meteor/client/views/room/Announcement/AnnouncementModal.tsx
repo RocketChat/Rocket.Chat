@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Box, Modal } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 type AnnouncementModalParams = {
 	onClose: () => void;

@@ -24,6 +24,8 @@ export * from './ICustomSound';
 export * from './ICloud';
 export * from './IServerEvent';
 export * from './ICronJobs';
+export * from './IPushToken';
+export * from './IPushNotificationConfig';
 
 export * from './IUserDataFile';
 export * from './IUserSession';
@@ -65,7 +67,6 @@ export * from './IBaseData';
 export * from './IOAuthApps';
 export * from './Federation';
 export * from './ISmarshHistory';
-export * from './IStatistic';
 export * from './IReport';
 
 // export * from './IMethodConnection';

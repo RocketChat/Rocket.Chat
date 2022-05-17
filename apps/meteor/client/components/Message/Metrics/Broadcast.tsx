@@ -1,6 +1,6 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 import Content from './Content';
 import Reply from './Reply';
