@@ -1,9 +1,9 @@
 import { ISetting } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ReactNode, RefObject } from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 type CallJitsiProps = {
 	handleClose: () => void;

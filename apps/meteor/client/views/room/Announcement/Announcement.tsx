@@ -1,8 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import React, { FC, MouseEvent } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { useSetModal } from '../../../contexts/ModalContext';
 import AnnouncementComponent from './AnnouncementComponent';
 import AnnouncementModal from './AnnouncementModal';
 

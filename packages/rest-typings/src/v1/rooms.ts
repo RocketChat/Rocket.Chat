@@ -1,4 +1,7 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type RoomsEndpoints = {
 	'rooms.autocomplete.channelAndPrivate': {
@@ -50,6 +53,46 @@ export type RoomsEndpoints = {
 			format?: 'html' | 'json';
 		}) => {
 			missing?: [];
+			success: boolean;
+		};
+	};
+	'rooms.adminRooms': {
+		GET: (
+			params: PaginatedRequest<{
+				filter?: string;
+				types?: string[];
+			}>,
+		) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
+	};
+	'rooms.adminRooms.getRoom': {
+		GET: (params: { rid?: string }) => Pick<IRoom, RoomAdminFieldsType>;
+	};
+	'rooms.saveRoomSettings': {
+		POST: (params: {
+			rid: string;
+			roomAvatar?: string;
+			featured?: boolean;
+			roomName?: string;
+			roomTopic?: string;
+			roomAnnouncement?: string;
+			roomDescription?: string;
+			roomType?: IRoom['t'];
+			readOnly?: boolean;
+			reactWhenReadOnly?: boolean;
+			default?: boolean;
+			tokenpass?: string;
+			encrypted?: boolean;
+			favorite?: {
+				defaultValue?: boolean;
+				favorite?: boolean;
+			};
+		}) => {
+			success: boolean;
+			rid: string;
+		};
+	};
+	'rooms.changeArchivationState': {
+		POST: (params: { rid: string; action?: string }) => {
 			success: boolean;
 		};
 	};

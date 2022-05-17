@@ -1,9 +1,9 @@
+import { ModalContext } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, memo, ReactNode, useCallback, ReactElement } from 'react';
 
 import { modal } from '../../app/ui-utils/client/lib/modal';
 import ModalBackdrop from '../components/modal/ModalBackdrop';
 import ModalPortal from '../components/modal/ModalPortal';
-import { ModalContext } from '../contexts/ModalContext';
 import { useImperativeModal } from '../views/hooks/useImperativeModal';
 
 type ModalProviderProps = {
