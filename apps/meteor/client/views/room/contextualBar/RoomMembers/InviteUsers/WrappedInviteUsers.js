@@ -1,8 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect } from 'react';
 
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import EditInvite from '../EditInvite';

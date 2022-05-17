@@ -27,7 +27,7 @@ export const SideNav = new (class extends Emitter<{
 
 	private flexNav: JQuery<HTMLElement>;
 
-	toggleFlex(status: 1 | -1, callback: () => void): void {
+	toggleFlex(status: 1 | -1, callback?: () => void): void {
 		if (this.animating === true) {
 			return;
 		}

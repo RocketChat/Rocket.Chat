@@ -1,6 +1,6 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import Sidebar from './Sidebar';
 
 const ItemsAssembler = ({ items, currentPath }) => {

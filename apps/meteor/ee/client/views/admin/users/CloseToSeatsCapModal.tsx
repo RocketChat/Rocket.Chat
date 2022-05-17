@@ -1,8 +1,8 @@
 import { Modal, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import ExternalLink from '../../../../../client/components/ExternalLink';
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import MemberCapUsage from './SeatsCapUsage';
 
 type CloseToSeatsCapModalProps = {

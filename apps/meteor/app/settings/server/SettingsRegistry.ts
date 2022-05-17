@@ -163,6 +163,7 @@ export class SettingsRegistry {
 					}),
 				},
 			);
+
 			return;
 		}
 

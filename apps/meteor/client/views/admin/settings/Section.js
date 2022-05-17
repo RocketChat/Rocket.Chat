@@ -1,13 +1,13 @@
 import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useEditableSettings, useEditableSettingsDispatch } from '../../../contexts/EditableSettingsContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEditableSettings, useEditableSettingsDispatch } from '../EditableSettingsContext';
 import SectionSkeleton from './SectionSkeleton';
 import Setting from './Setting';
 
-function Section({ children = undefined, groupId, hasReset = true, help = undefined, sectionName, tabName, solo }) {
+function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, ...props }) {
 	const editableSettings = useEditableSettings(
 		useMemo(
 			() => ({
@@ -49,9 +49,9 @@ function Section({ children = undefined, groupId, hasReset = true, help = undefi
 
 	return (
 		<Accordion.Item data-qa-section={sectionName} noncollapsible={solo || !sectionName} title={sectionName && t(sectionName)}>
-			{help && (
+			{props.help && (
 				<Box is='p' color='hint' fontScale='p2'>
-					{help}
+					{props.help}
 				</Box>
 			)}
 
@@ -60,7 +60,7 @@ function Section({ children = undefined, groupId, hasReset = true, help = undefi
 					<Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />
 				))}
 
-				{children}
+				{props.children}
 			</FieldGroup>
 			{hasReset && canReset && (
 				<Button
