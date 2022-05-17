@@ -438,9 +438,9 @@ export default class MainContent extends BasePage {
 	public viewUserProfile(): Locator {
 		return this.getPage().locator('[data-qa="UserCard"] a');
 	}
-  
-  public async reload(): Promise<void> {
-	  await this.getPage().reload({ waitUntil: 'load' });
-	  await this.getPage().waitForSelector('.messages-box');
-  }
+
+	public async reload(): Promise<void> {
+		await this.getPage().reload({ waitUntil: 'load' });
+		await this.getPage().waitForSelector('.messages-box');
+	}
 }
