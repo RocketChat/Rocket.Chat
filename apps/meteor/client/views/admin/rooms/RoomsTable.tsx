@@ -1,15 +1,57 @@
+import { IRoom } from '@rocket.chat/core-typings';
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, CSSProperties, ReactElement, MutableRefObject } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FilterByTypeAndText from './FilterByTypeAndText';
 
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+type RoomParamsType = {
+	text?: string;
+	types?: string[];
+	current?: number;
+	itemsPerPage?: 25 | 50 | 100;
+};
+
+const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+
+export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
+
+const useQuery = (
+	{
+		text,
+		types,
+		itemsPerPage,
+		current,
+	}: {
+		text?: string;
+		types?: string[];
+		itemsPerPage?: 25 | 50 | 100;
+		current?: number;
+	},
+	[column, direction]: [string, 'asc' | 'desc'],
+): {
+	filter: string;
+	types: string[];
+	sort: string;
+	count?: number;
+	offset?: number;
+} =>
+	useMemo(
+		() => ({
+			filter: text || '',
+			types: types || [],
+			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
+			...(itemsPerPage && { count: itemsPerPage }),
+			...(current && { offset: current }),
+		}),
+		[text, types, itemsPerPage, current, column, direction],
+	);
 
 export const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -17,18 +59,19 @@ export const roomTypeI18nMap = {
 	d: 'Direct',
 	p: 'Group',
 	discussion: 'Discussion',
-};
+} as const;
 
-const getRoomType = (room) => {
+const getRoomType = (room: IRoom): typeof roomTypeI18nMap[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' => {
 	if (room.teamMain) {
 		return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
 	}
-	return roomTypeI18nMap[room.t];
+	return roomTypeI18nMap[room.t as keyof typeof roomTypeI18nMap];
 };
 
-const getRoomDisplayName = (room) => (room.t === 'd' ? room.usernames.join(' x ') : roomCoordinator.getRoomName(room.t, room));
+const getRoomDisplayName = (room: IRoom): string | undefined =>
+	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room);
 
-const useDisplayData = (asyncState, sort) =>
+const useDisplayData = (asyncState: any, sort: [string, 'asc' | 'desc']): IRoom[] =>
 	useMemo(() => {
 		const { value = {}, phase } = asyncState;
 
@@ -37,9 +80,9 @@ const useDisplayData = (asyncState, sort) =>
 		}
 
 		if (sort[0] === 'name' && value.rooms) {
-			return value.rooms.sort((a, b) => {
-				const aName = getRoomDisplayName(a);
-				const bName = getRoomDisplayName(b);
+			return value.rooms.sort((a: IRoom, b: IRoom) => {
+				const aName = getRoomDisplayName(a) || '';
+				const bName = getRoomDisplayName(b) || '';
 				if (aName === bName) {
 					return 0;
 				}
@@ -50,19 +93,37 @@ const useDisplayData = (asyncState, sort) =>
 		return value.rooms;
 	}, [asyncState, sort]);
 
-function RoomsTable({ endpointData, params, onChangeParams, sort, onChangeSort }) {
+const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
 	const t = useTranslation();
-
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const routeName = 'admin-rooms';
 
-	const { value: data = {} } = endpointData;
+	const [params, setParams] = useState<RoomParamsType>({
+		text: '',
+		types: DEFAULT_TYPES,
+		current: 0,
+		itemsPerPage: 25,
+	});
+	const [sort, setSort] = useState<[string, 'asc' | 'desc']>(['name', 'asc']);
+
+	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedSort = useDebouncedValue(sort, 500);
+
+	const query = useQuery(debouncedParams, debouncedSort);
+
+	const endpointData = useEndpointData('rooms.adminRooms', query);
+
+	const { value: data, reload: reloadEndPoint } = endpointData;
+
+	useEffect(() => {
+		reload.current = reloadEndPoint;
+	}, [reload, reloadEndPoint]);
 
 	const router = useRoute(routeName);
 
 	const onClick = useCallback(
-		(rid) => () =>
+		(rid) => (): void =>
 			router.push({
 				context: 'edit',
 				id: rid,
@@ -75,12 +136,12 @@ function RoomsTable({ endpointData, params, onChangeParams, sort, onChangeSort }
 			const [sortBy, sortDirection] = sort;
 
 			if (sortBy === id) {
-				onChangeSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
+				setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
 				return;
 			}
-			onChangeSort([id, 'asc']);
+			setSort([id, 'asc']);
 		},
-		[sort, onChangeSort],
+		[sort, setSort],
 	);
 
 	const displayData = useDisplayData(endpointData, sort);
@@ -146,7 +207,7 @@ function RoomsTable({ endpointData, params, onChangeParams, sort, onChangeSort }
 
 	const renderRow = useCallback(
 		(room) => {
-			const { _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, ...args } = room;
+			const { _id, t: type, usersCount, msgs, default: isDefault, featured, ...args } = room;
 			const icon = roomCoordinator.getIcon(room);
 			const roomName = getRoomDisplayName(room);
 
@@ -157,7 +218,7 @@ function RoomsTable({ endpointData, params, onChangeParams, sort, onChangeSort }
 							<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 							<Box display='flex' style={style} mi='x8'>
 								<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-									<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2m' color='hint' />
+									{icon && <Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2m' color='hint' />}
 									<Box fontScale='p2m' style={style} color='default'>
 										{roomName}
 									</Box>
@@ -186,12 +247,12 @@ function RoomsTable({ endpointData, params, onChangeParams, sort, onChangeSort }
 			header={header}
 			renderRow={renderRow}
 			results={displayData}
-			total={data.total}
-			setParams={onChangeParams}
+			total={data?.total}
 			params={params}
-			renderFilter={({ onChange, ...props }) => <FilterByTypeAndText setFilter={onChange} {...props} />}
+			setParams={setParams}
+			renderFilter={({ onChange, ...props }): ReactElement => <FilterByTypeAndText setFilter={onChange} {...props} />}
 		/>
 	);
-}
+};
 
 export default RoomsTable;

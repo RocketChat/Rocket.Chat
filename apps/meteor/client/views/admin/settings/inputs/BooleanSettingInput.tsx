@@ -1,12 +1,31 @@
 import { Field, ToggleSwitch } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement, SyntheticEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
-function BooleanSettingInput({ _id, label, disabled, readonly, value, hasResetButton, onChangeValue, onResetButtonClick }) {
-	const handleChange = (event) => {
+type BooleanSettingInputProps = {
+	_id: string;
+	label: string;
+	disabled: boolean;
+	readonly: boolean;
+	value: boolean;
+	hasResetButton: boolean;
+	onChangeValue: (value: boolean) => void;
+	onResetButtonClick: () => void;
+};
+function BooleanSettingInput({
+	_id,
+	label,
+	disabled,
+	readonly,
+	value,
+	hasResetButton,
+	onChangeValue,
+	onResetButtonClick,
+}: BooleanSettingInputProps): ReactElement {
+	const handleChange = (event: SyntheticEvent<HTMLInputElement>): void => {
 		const value = event.currentTarget.checked;
-		onChangeValue && onChangeValue(value);
+		onChangeValue?.(value);
 	};
 
 	return (
