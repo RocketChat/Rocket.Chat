@@ -11,7 +11,8 @@ const applyMarkdownIfRequires = (
 	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
 	key: MarkdownFields,
 	text: string,
-): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant='inline' content={text} /> : text);
+	variant: 'inline' | 'inlineWithoutBreaks' | 'document' = 'inline',
+): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant={variant} content={text} /> : text);
 
 const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
@@ -58,7 +59,9 @@ const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 				)}
 				{!collapsed && (
 					<>
-						{attachment.text && <Attachment.Text>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text)}</Attachment.Text>}
+						{attachment.text && (
+							<Attachment.Text>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text, 'document')}</Attachment.Text>
+						)}
 						{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
 						{attachment.fields && (
 							<FieldsAttachment
