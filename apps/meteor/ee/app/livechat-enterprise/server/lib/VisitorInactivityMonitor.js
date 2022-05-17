@@ -98,7 +98,7 @@ export class VisitorInactivityMonitor {
 		if (!action || action === 'none') {
 			return;
 		}
-		LivechatRooms.findAbandonedOpenRooms(new Date().toISOString()).forEach((room) => {
+		LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
 			switch (action) {
 				case 'close': {
 					this.closeRooms(room);

@@ -38,7 +38,7 @@ LivechatRooms.prototype.setPredictedVisitorAbandonment = function (roomId, willB
 
 LivechatRooms.prototype.findAbandonedOpenRooms = function (date) {
 	return this.find({
-		'omnichannel.predictedVisitorAbandonmentAt': { $lte: new Date(date) },
+		'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
 		'waitingResponse': { $exists: false },
 		'closedAt': { $exists: false },
 		'open': true,
