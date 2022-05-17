@@ -6,10 +6,12 @@ import type {
 	MessageTypesValues,
 	VideoConferenceInstructions,
 	DirectCallInstructions,
+	ConferenceInstructions,
 	AtLeast,
 	IMessage,
+	IVideoConferenceMessage,
 } from '@rocket.chat/core-typings';
-import { VideoConferenceStatus, isDirectVideoConference } from '@rocket.chat/core-typings';
+import { VideoConferenceStatus, isDirectVideoConference, isGroupVideoConference } from '@rocket.chat/core-typings';
 
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
@@ -30,20 +32,21 @@ class JitsiApp {
 		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
-		const configs = [
-			`userInfo.displayName="${user.name}"`,
-			`config.prejoinPageEnabled=false`,
-			`config.requireDisplayName=false`,
-			`config.callDisplayName="Direct Message"`,
-		];
+		const configs = [`userInfo.displayName="${user.name}"`, `config.prejoinPageEnabled=false`, `config.requireDisplayName=false`];
 
-		console.log(user.username, options);
+		if (isGroupVideoConference(call)) {
+			configs.push(`config.callDisplayName="${call.title || 'Video Conference'}"`);
+		} else {
+			configs.push(`config.callDisplayName="Direct Message"`);
+		}
+
 		if (options.mic !== undefined) {
 			configs.push(`config.startWithAudioMuted=${options.mic ? 'false' : 'true'}`);
 		}
 		if (options.cam !== undefined) {
 			configs.push(`config.startWithVideoMuted=${options.cam ? 'false' : 'true'}`);
 		}
+		console.log(user.username, options, configs);
 
 		const configHash = configs.join('&');
 		const url = `${call.url}#${configHash}`;
@@ -72,8 +75,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.Messages = new MessagesRaw(db.collection('rocketchat_message'));
 	}
 
-	public async start(caller: IUser['_id'], rid: string): Promise<VideoConferenceInstructions> {
-		const room = await this.Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'uids'>>(rid, { projection: { t: 1, uids: 1 } });
+	public async start(caller: IUser['_id'], rid: string, title?: string): Promise<VideoConferenceInstructions> {
+		const room = await this.Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'uids' | 'name' | 'fname'>>(rid, {
+			projection: { t: 1, uids: 1, name: 1, fname: 1 },
+		});
 
 		if (!room) {
 			throw new Error('invalid-room');
@@ -83,7 +88,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return this.startDirect(caller, room);
 		}
 
-		throw new Error('Conferece calls have not been implemented yet.');
+		return this.startGroup(caller, room._id, title || room.fname || room.name || '');
 	}
 
 	public async join(uid: IUser['_id'], callId: IVideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
@@ -97,12 +102,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-load-own-data');
 		}
 
-		switch (call.type) {
-			case 'direct':
-				return this.joinDirect(call, user, options);
-		}
-
-		throw new Error('Conferece calls have not been implemented yet.');
+		return this.joinCall(call, user, options);
 	}
 
 	public async cancel(uid: IUser['_id'], callId: IVideoConference['_id']): Promise<void> {
@@ -161,6 +161,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.createMessage('video-direct-calling', rid, user);
 	}
 
+	private async createGroupCallMessage(rid: IRoom['_id'], user: IUser, title: string): Promise<IMessage['_id']> {
+		return this.createMessage('video-conference-started', rid, user, {
+			videoConf: {
+				title,
+			},
+		} as Partial<IVideoConferenceMessage>);
+	}
+
 	private async changeMessageType(messageId: string, newType: MessageTypesValues): Promise<void> {
 		this.Messages.setTypeById(messageId, newType);
 	}
@@ -196,7 +204,31 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async joinDirect(
+	private async startGroup(caller: IUser['_id'], rid: IRoom['_id'], title: string): Promise<ConferenceInstructions> {
+		const user = await this.Users.findOneById<IUser>(caller, {});
+		if (!user) {
+			throw new Error('failed-to-load-own-data');
+		}
+
+		const callId = await this.VideoConference.createGroup(rid, title, {
+			_id: user._id,
+			name: user.name,
+			username: user.username,
+		});
+
+		const url = await this.generateNewUrl(callId);
+		this.VideoConference.setUrlById(callId, url);
+
+		const messageId = await this.createGroupCallMessage(rid, user, title);
+		this.VideoConference.setMessageById(callId, 'started', messageId);
+
+		return {
+			type: 'videoconference',
+			callId,
+		};
+	}
+
+	private async joinCall(
 		call: IVideoConference,
 		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		options: VideoConferenceJoinOptions,
@@ -204,7 +236,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const url = this.getUrl(call, user, options);
 
 		if (!call.users.find(({ _id }) => _id === user._id)) {
-			this.addUserToCall(call._id, user);
+			this.addUserToCall(call, user);
 		}
 
 		return url;
@@ -229,10 +261,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return JitsiApp.customizeUrl(call, user, options);
 	}
 
-	private async addUserToCall(
-		callId: IVideoConference['_id'],
-		{ _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>,
-	): Promise<void> {
-		this.VideoConference.addUserById(callId, { _id, username, name });
+	private async addUserToCall(call: IVideoConference, { _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
+		this.VideoConference.addUserById(call._id, { _id, username, name });
+
+		if (call.type !== 'direct') {
+			// #ToDo: Add user avatar to the "started" message blocks
+		}
 	}
 }
