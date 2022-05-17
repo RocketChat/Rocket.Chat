@@ -183,7 +183,7 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('[Members Tab]', () => {
+			test.describe.skip('[Members Tab]', () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('members', true);
 				});
