@@ -1,13 +1,13 @@
 import { Field, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { validateEmail } from '../../../lib/emailValidator';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import AccountInfo from './ViewAccountInfo';
+import ViewAccountInfo from './ViewAccountInfo';
 
 function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 	const t = useTranslation();
@@ -134,9 +134,13 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 	}, [user.trustScore]);
 
 	const careerItems = [
-		{ icon: 'user', content: 'Employee/er/broker', rc: true },
-		{ icon: 'credit', content: `Credit point: ${userWithCredit.credit ? userWithCredit.credit : 0}`, rc: false },
-		{ icon: 'trust-score', content: `Trust score: ${userWithCredit.trustScore ? userWithCredit.trustScore * 100 : 0}/100`, rc: false },
+		{ icon: 'user', content: `${t('Employee/er/broker')}`, rc: true },
+		{ icon: 'credit', content: `${t('Credit point')}: ${userWithCredit.credit ? userWithCredit.credit : 0}`, rc: false },
+		{
+			icon: 'trust-score',
+			content: `${t('Trust score')}: ${userWithCredit.trustScore ? userWithCredit.trustScore * 100 : 0}/100`,
+			rc: false,
+		},
 	];
 
 	const privateInfo = [
@@ -146,10 +150,10 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 	];
 
 	const services = [
-		{ icon: 'lock', content: 'Update profile/Chan', rc: true },
-		{ icon: 'info', content: 'Customer support', rc: false },
-		{ icon: 'credit-card', content: 'Verify identity', rc: false },
-		{ icon: 'info', content: 'About us', rc: false },
+		{ icon: 'lock', content: `${t('Update profile/Chan')}`, rc: true },
+		{ icon: 'info', content: `${t('Customer support')}`, rc: false },
+		{ icon: 'credit-card', content: `${t('Verify identity')}`, rc: false },
+		{ icon: 'info', content: `${t('About us')}`, rc: false },
 	];
 
 	return (
@@ -162,7 +166,7 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 							currentUsername={user.username}
 							username={username}
 							setAvatarObj={handleAvatar}
-							disabled={!allowUserAvatarChange}
+							disabled={true}
 							suggestions={avatarSuggestions}
 							userId={user._id}
 						/>
@@ -172,9 +176,9 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 			)}
 			<Box style={{ margin: '0px auto', fontSize: '16px' }}>{user.bio ? user.bio : 'No user bio...'}</Box>
 			<Box display='flex' flexDirection='column' style={{ marginTop: '30px' }}>
-				<AccountInfo title={t('Career')} items={careerItems} />
-				<AccountInfo title={t('Private Information')} items={privateInfo} />
-				<AccountInfo title={t('Services')} items={services} />
+				<ViewAccountInfo title={t('Career')} items={careerItems} />
+				<ViewAccountInfo title={t('Private Information')} items={privateInfo} />
+				<ViewAccountInfo title={t('Services')} items={services} />
 			</Box>
 		</FieldGroup>
 	);

@@ -17,8 +17,7 @@ import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
 import Page from '../../components/Page';
 import { useForm } from '../../hooks/useForm';
-import { useUpdateAvatar } from '../../hooks/useUpdateAvatar';
-import AccountProfileForm from './AccountProfileForm';
+import ViewProfileForm from './ViewProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
 
 const getInitialValues = (user) => ({
@@ -48,7 +47,6 @@ const ViewProfilePage = () => {
 
 	const logoutOtherClients = useEndpoint('POST', 'users.logoutOtherClients');
 	const deleteOwnAccount = useMethod('deleteUserOwnAccount');
-	const saveFn = useMethod('saveUserProfile');
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
@@ -175,7 +173,7 @@ const ViewProfilePage = () => {
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='600px' w='full' alignSelf='center'>
-					<AccountProfileForm values={values} handlers={handlers} user={user ?? { emails: [] }} settings={settings} />
+					<ViewProfileForm values={values} handlers={handlers} user={user ?? { emails: [] }} settings={settings} />
 					<ButtonGroup stretch mb='x12'>
 						<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
 							{t('Logout_Others')}
