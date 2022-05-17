@@ -1,0 +1,11 @@
+/packages/* @RocketChat/chat-engine
+/packages/core-typings/ @RocketChat/chat-engine
+/packages/rest-typings/ @RocketChat/chat-engine
+/packages/ui-contexts/ @RocketChat/frontend
+/packages/eslint-config/ @RocketChat/chat-engine
+/packages/livechat/ @RocketChat/frontend @RocketChat/chat-engine
+/.vscode/ @RocketChat/chat-engine
+/.github/ @RocketChat/chat-engine
+/_templates/ @RocketChat/chat-engine
+/apps/meteor/client/ @RocketChat/frontend
+/apps/meteor/tests/ @RocketChat/chat-engine
