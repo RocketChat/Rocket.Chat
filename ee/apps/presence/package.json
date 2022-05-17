@@ -1,0 +1,25 @@
+{
+	"name": "@rocket.chat/presence-service",
+	"private": true,
+	"version": "0.1.0",
+	"description": "Rocket.Chat Presence service",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"rocketchat"
+	],
+	"author": "Rocket.Chat",
+	"dependencies": {
+		"@rocket.chat/presence": "workspace:^"
+	},
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"typescript": "~4.3.5"
+	},
+	"main": "./dist/service.js",
+	"files": [
+		"/dist"
+	]
+}
