@@ -75,7 +75,7 @@ const CallTable: FC = () => {
 		);
 	});
 
-	const { value: data } = useEndpointData('voip/rooms', query);
+	const { value: data } = useEndpointData('/v1/voip/rooms', query);
 
 	const header = useMemo(
 		() =>

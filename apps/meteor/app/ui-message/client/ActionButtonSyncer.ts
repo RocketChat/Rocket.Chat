@@ -42,7 +42,7 @@ export const loadButtons = (): Promise<void> =>
 	APIClient.get('apps/actionButtons').then((value) => {
 		registeredButtons.forEach((button) => removeButton(button));
 		registeredButtons = [];
-		(value as Array<IUIActionButton>).map(addButton);
+		value.map(addButton);
 	});
 
 Meteor.startup(() => loadButtons());

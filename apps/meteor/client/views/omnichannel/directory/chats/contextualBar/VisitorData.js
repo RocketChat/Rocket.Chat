@@ -16,7 +16,7 @@ function VisitorData({ room, reload, reloadInfo, close }) {
 		},
 	} = room;
 
-	const { value: visitor, phase: stateVisitor, error: errorVisitor } = useEndpointData(`livechat/visitors.info?visitorId=${_id}`);
+	const { value: visitor, phase: stateVisitor, error: errorVisitor } = useEndpointData(`/v1/livechat/visitors.info?visitorId=${_id}`);
 
 	if ([stateVisitor].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

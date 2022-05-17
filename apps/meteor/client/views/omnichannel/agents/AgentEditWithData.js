@@ -9,17 +9,17 @@ import AgentEdit from './AgentEdit';
 
 function AgentEditWithData({ uid, reload }) {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/users/agent/${uid}`);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/users/agent/${uid}`);
 	const {
 		value: userDepartments,
 		phase: userDepartmentsState,
 		error: userDepartmentsError,
-	} = useEndpointData(`livechat/agents/${uid}/departments`);
+	} = useEndpointData(`/v1/livechat/agents/${uid}/departments`);
 	const {
 		value: availableDepartments,
 		phase: availableDepartmentsState,
 		error: availableDepartmentsError,
-	} = useEndpointData('/v1/ivechat/department');
+	} = useEndpointData('/v1/livechat/department');
 
 	if ([state, availableDepartmentsState, userDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

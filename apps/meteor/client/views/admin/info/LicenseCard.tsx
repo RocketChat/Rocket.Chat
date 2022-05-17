@@ -19,7 +19,7 @@ const LicenseCard = (): ReactElement => {
 
 	const isAirGapped = true;
 
-	const { value, phase, error } = useEndpointData('/v1/icenses.get');
+	const { value, phase, error } = useEndpointData('/v1/licenses.get');
 	const endpointLoading = phase === AsyncStatePhase.LOADING;
 
 	const { modules = [] } = endpointLoading || error || !value?.licenses.length ? {} : value.licenses[0];

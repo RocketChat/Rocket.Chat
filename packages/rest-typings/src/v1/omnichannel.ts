@@ -237,6 +237,10 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
+	'/v1/livechat/webrtc.call': {
+		GET: (params: { rid: string }) => void;
+	};
+
 	'/v1/livechat/webrtc.call/:callId': {
 		PUT: (params: { rid: string; status: 'ended' }) => void;
 	};

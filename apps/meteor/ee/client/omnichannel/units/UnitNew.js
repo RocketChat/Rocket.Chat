@@ -14,12 +14,12 @@ function UnitNew({ reload, allUnits }) {
 		value: availableDepartments,
 		phase: availableDepartmentsState,
 		error: availableDepartmentsError,
-	} = useEndpointData('/v1/ivechat/department');
+	} = useEndpointData('/v1/livechat/department');
 	const {
 		value: availableMonitors,
 		phase: availableMonitorsState,
 		error: availableMonitorsError,
-	} = useEndpointData('/v1/ivechat/monitors.list');
+	} = useEndpointData('/v1/livechat/monitors.list');
 
 	if ([availableDepartmentsState, availableMonitorsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

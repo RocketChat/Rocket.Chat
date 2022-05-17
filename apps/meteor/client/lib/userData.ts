@@ -81,7 +81,7 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 		}
 	});
 
-	const userData = (await APIClient.get('/v1/me')) as RawUserData;
+	const userData = await APIClient.get('/v1/me');
 	if (userData) {
 		updateUser({
 			...userData,

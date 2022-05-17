@@ -75,7 +75,7 @@ function ContactNewEdit({ id, data, close }) {
 	const [phoneError, setPhoneError] = useState();
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
-	const { value: allCustomFields, phase: state } = useEndpointData('/v1/ivechat/custom-fields');
+	const { value: allCustomFields, phase: state } = useEndpointData('/v1/livechat/custom-fields');
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};

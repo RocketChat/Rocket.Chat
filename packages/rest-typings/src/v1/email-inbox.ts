@@ -4,10 +4,10 @@ import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type EmailInboxEndpoints = {
-	'email-inbox.list': {
+	'/v1/email-inbox.list': {
 		GET: (params: PaginatedRequest<{ query?: string }>) => PaginatedResult<{ emailInboxes: IEmailInbox[] }>;
 	};
-	'email-inbox': {
+	'/v1/email-inbox': {
 		POST: (params: {
 			_id?: string;
 			name: string;
@@ -32,14 +32,14 @@ export type EmailInboxEndpoints = {
 			};
 		}) => { _id: string };
 	};
-	'email-inbox/:_id': {
+	'/v1/email-inbox/:_id': {
 		GET: (params: void) => IEmailInbox | null;
 		DELETE: (params: void) => { _id: string };
 	};
-	'email-inbox.search': {
+	'/v1/email-inbox.search': {
 		GET: (params: { email: string }) => { emailInbox: IEmailInbox | null };
 	};
-	'email-inbox.send-test/:_id': {
+	'/v1/email-inbox.send-test/:_id': {
 		POST: (params: void) => { _id: string };
 	};
 };

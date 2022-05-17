@@ -9,14 +9,15 @@ export type Middleware<T extends (...args: any[]) => any> = (context: Parameters
 export interface RestClientInterface {
 	get<TPath extends PathFor<'GET'>>(
 		endpoint: TPath,
-		params: void extends OperationParams<'GET', MatchPathPattern<TPath>> ? void : OperationParams<'GET', MatchPathPattern<TPath>>,
+		params: void extends OperationParams<'GET', MatchPathPattern<TPath>> ? never : OperationParams<'GET', MatchPathPattern<TPath>>,
 		options?: Omit<RequestInit, 'method'>,
 	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>>;
 
-	get<TPath extends string>(
+	get<TPath extends PathFor<'GET'>>(
 		endpoint: TPath,
-		...args: [params: Record<string, unknown> | void, options?: Omit<RequestInit, 'method'>] | []
-	): Promise<unknown>;
+		params?: void extends OperationParams<'GET', MatchPathPattern<TPath>> ? undefined : never,
+		options?: Omit<RequestInit, 'method'>,
+	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>>;
 
 	post<TPath extends PathFor<'POST'>>(
 		endpoint: TPath,

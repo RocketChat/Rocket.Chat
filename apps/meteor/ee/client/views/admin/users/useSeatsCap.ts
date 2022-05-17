@@ -7,7 +7,7 @@ export const useSeatsCap = ():
 			reload: () => void;
 	  }
 	| undefined => {
-	const { value, reload } = useEndpointData('/v1/icenses.maxActiveUsers');
+	const { value, reload } = useEndpointData('/v1/licenses.maxActiveUsers');
 
 	if (!value) {
 		return undefined;

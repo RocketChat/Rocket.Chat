@@ -35,10 +35,12 @@ import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
 import type { CommandsEndpoints } from './v1/commands';
+import type { MeEndpoints } from './v1/me';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
 	extends ChannelsEndpoints,
+		MeEndpoints,
 		BannersEndpoints,
 		ChatEndpoints,
 		CommandsEndpoints,
@@ -126,10 +128,10 @@ export type OperationResult<TMethod extends Method, TPathPattern extends PathPat
 
 export type UrlParams<T extends string> = string extends T
 	? Record<string, string>
-	: T extends `${infer _Start}:${infer Param}`
-	? { [k in Param | keyof UrlParams<_Start>]: string }
 	: T extends `${infer _Start}:${infer Param}/${infer Rest}`
 	? { [k in Param | keyof UrlParams<Rest>]: string }
+	: T extends `${infer _Start}:${infer Param}`
+	? { [k in Param | keyof UrlParams<_Start>]: string }
 	: T extends `${infer _Start}:${infer Param}`
 	? { [k in Param]: string }
 	: undefined | {};

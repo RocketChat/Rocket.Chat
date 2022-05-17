@@ -25,7 +25,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 		phase: state,
 		error,
 		reload,
-	} = useEndpointData('/v1/v1/emoji-custom.list', query);
+	} = useEndpointData('/v1/emoji-custom.list', query);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (

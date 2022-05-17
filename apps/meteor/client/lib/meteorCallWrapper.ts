@@ -50,7 +50,10 @@ function wrapMeteorDDPCalls(): void {
 			Meteor.connection.onMessage(_message);
 		};
 
-		APIClient.post(`/v1/${endpoint}/${encodeURIComponent(message.method.replace(/\//g, ':'))}` as any, restParams)
+		APIClient.post(
+			`/v1/${endpoint}/${encodeURIComponent(message.method.replace(/\//g, ':'))}` as Parameters<typeof APIClient.post>[0],
+			restParams as any,
+		)
 			.then(({ message: _message }) => {
 				processResult(_message);
 				if (message.method === 'login') {

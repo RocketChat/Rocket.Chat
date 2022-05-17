@@ -33,7 +33,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 	});
 	const handleAgentChange = useMutableCallback((e) => setAgent(e));
 
-	const { value: availableExtensions, phase: state } = useEndpointData('/v1/mnichannel/extension', query);
+	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', query);
 
 	return (
 		<Modal>

@@ -23,7 +23,7 @@ const Tags = ({
 	const t = useTranslation();
 	const forms = useSubscription<any>(formsSubscription);
 
-	const { value: tagsResult, phase: stateTags } = useEndpointData('/v1/v1/livechat/tags.list');
+	const { value: tagsResult, phase: stateTags } = useEndpointData('/v1/livechat/tags.list');
 
 	const { useCurrentChatTags } = forms;
 	const EETagsComponent = useCurrentChatTags();

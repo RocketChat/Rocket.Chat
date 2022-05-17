@@ -9,6 +9,22 @@ const pipe =
 	(...args: Parameters<T>): ReturnType<T> =>
 		fn(...args);
 
+function buildFormData(data?: Record<string, any> | void, formData = new FormData(), parentKey?: string): FormData {
+	return formData;
+	// if (!data) {
+	// }
+
+	// if (typeof data === 'object' && !(data instanceof File)) {
+	// 	Object.keys(data).forEach((key) => {
+	// 		buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
+	// 	});
+	// } else {
+	// 	const value = data == null ? '' : data;
+
+	// 	parentKey && formData.append(parentKey, value);
+	// }
+	// return formData;
+}
 export class RestClient implements RestClientInterface {
 	private readonly baseUrl: string;
 
@@ -48,24 +64,21 @@ export class RestClient implements RestClientInterface {
 
 	get<TPath extends PathFor<'GET'>>(
 		endpoint: TPath,
-		params: void extends OperationParams<'GET', MatchPathPattern<TPath>> ? void : OperationParams<'GET', MatchPathPattern<TPath>>,
+		params: void extends OperationParams<'GET', MatchPathPattern<TPath>> ? never : OperationParams<'GET', MatchPathPattern<TPath>>,
 		options?: Omit<RequestInit, 'method'>,
 	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>>;
 
-	get<TPath extends string>(
+	get<TPath extends PathFor<'GET'>>(
 		endpoint: TPath,
-		...args: [params: Record<string, unknown> | void, options?: Omit<RequestInit, 'method'>] | []
-	): Promise<unknown>;
-
-	get<TPath extends PathFor<'GET'> | string>(
-		endpoint: TPath,
-		params: TPath extends PathFor<'GET'>
-			? void extends OperationParams<'GET', MatchPathPattern<TPath>>
-				? void
-				: OperationParams<'GET', MatchPathPattern<TPath>>
-			: Record<string, string>,
+		params?: void extends OperationParams<'GET', MatchPathPattern<TPath>> ? undefined : never,
 		options?: Omit<RequestInit, 'method'>,
-	): Promise<TPath extends PathFor<'GET'> ? Serialized<OperationResult<'GET', MatchPathPattern<TPath>>> : unknown> {
+	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>>;
+
+	get<TPath extends PathFor<'GET'>>(
+		endpoint: TPath,
+		params?: OperationParams<'GET', MatchPathPattern<TPath>>,
+		options?: Omit<RequestInit, 'method'>,
+	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>> {
 		return this.send(`${endpoint}?${this.getParams(params)}`, 'GET', options).then(function (response) {
 			return response.json();
 		});
@@ -73,7 +86,7 @@ export class RestClient implements RestClientInterface {
 
 	post: RestClientInterface['post'] = (endpoint, params, { headers, ...options } = {}) => {
 		return this.send(endpoint, 'POST', {
-			body: JSON.stringify(params),
+			body: buildFormData(params),
 
 			headers: {
 				'Accept': 'application/json',
@@ -89,7 +102,7 @@ export class RestClient implements RestClientInterface {
 
 	put: RestClientInterface['put'] = (endpoint, params, { headers, ...options } = {}) => {
 		return this.send(endpoint, 'PUT', {
-			body: JSON.stringify(params),
+			body: buildFormData(params),
 
 			headers: {
 				'Accept': 'application/json',
