@@ -9,7 +9,7 @@ export type IntegrationsCreateProps =
 			username: string;
 			channel: string;
 			scriptEnabled: boolean;
-			script: string;
+			script?: string;
 			name: string;
 			enabled: boolean;
 			alias?: string;
@@ -29,7 +29,7 @@ export type IntegrationsCreateProps =
 			token?: string;
 
 			scriptEnabled: boolean;
-			script: string;
+			script?: string;
 			runOnEdits?: boolean;
 
 			retryFailedCalls?: boolean;
@@ -69,7 +69,7 @@ const integrationsCreateSchema = {
 				},
 				script: {
 					type: 'string',
-					nullable: false,
+					nullable: true,
 				},
 				name: {
 					type: 'string',
@@ -92,7 +92,7 @@ const integrationsCreateSchema = {
 					nullable: true,
 				},
 			},
-			required: ['type', 'username', 'channel', 'scriptEnabled', 'script', 'name', 'enabled'],
+			required: ['type', 'username', 'channel', 'scriptEnabled', 'name', 'enabled'],
 			additionalProperties: false,
 		},
 		{
@@ -149,7 +149,7 @@ const integrationsCreateSchema = {
 				},
 				script: {
 					type: 'string',
-					nullable: false,
+					nullable: true,
 				},
 				runOnEdits: {
 					type: 'boolean',
@@ -192,7 +192,7 @@ const integrationsCreateSchema = {
 					nullable: true,
 				},
 			},
-			required: ['type', 'username', 'channel', 'event', 'scriptEnabled', 'script', 'name', 'enabled'],
+			required: ['type', 'username', 'channel', 'event', 'scriptEnabled', 'name', 'enabled'],
 			additionalProperties: false,
 		},
 	],
