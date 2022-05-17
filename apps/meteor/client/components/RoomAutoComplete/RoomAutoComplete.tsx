@@ -1,13 +1,13 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState, FC, ReactElement } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import RoomAvatar from '../avatar/RoomAvatar';
 import Avatar from './Avatar';
 
-const query = (term = '') => ({ selector: JSON.stringify({ name: term }) });
+const query = (term = ''): { selector: string } => ({ selector: JSON.stringify({ name: term }) });
 
-const RoomAutoComplete = (props) => {
+const RoomAutoComplete: FC = (props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'rooms.autocomplete.channelAndPrivate',
@@ -15,12 +15,10 @@ const RoomAutoComplete = (props) => {
 	);
 	const options = useMemo(
 		() =>
-			(data &&
-				data.items.map(({ name, _id, avatarETag, t }) => ({
-					value: _id,
-					label: { name, avatarETag, type: t },
-				}))) ||
-			[],
+			data?.items.map(({ name, _id, avatarETag, t }) => ({
+				value: _id,
+				label: { name, avatarETag, type: t },
+			})) || [],
 		[data],
 	);
 
@@ -29,7 +27,7 @@ const RoomAutoComplete = (props) => {
 			{...props}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value, label }) => (
+			renderSelected={({ value, label }): ReactElement | null => (
 				<>
 					<Box margin='none' mi='x2'>
 						<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />{' '}
@@ -39,7 +37,7 @@ const RoomAutoComplete = (props) => {
 					</Box>
 				</>
 			)}
-			renderItem={({ value, label, ...props }) => (
+			renderItem={({ value, label, ...props }): ReactElement | null => (
 				<Option key={value} {...props} label={label.name} avatar={<Avatar value={value} {...label} />} />
 			)}
 			options={options}
