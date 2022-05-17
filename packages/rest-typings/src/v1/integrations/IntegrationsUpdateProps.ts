@@ -7,10 +7,9 @@ export type IntegrationsUpdateProps =
 	| {
 			type: 'webhook-incoming';
 			integrationId: string;
-			// username: string;
 			channel: string;
 			scriptEnabled: boolean;
-			script: string;
+			script?: string;
 			name: string;
 			enabled: boolean;
 			alias?: string;
@@ -32,7 +31,7 @@ export type IntegrationsUpdateProps =
 			token?: string;
 
 			scriptEnabled: boolean;
-			script: string;
+			script?: string;
 			runOnEdits?: boolean;
 
 			retryFailedCalls?: boolean;
@@ -72,7 +71,7 @@ const integrationsUpdateSchema = {
 				},
 				script: {
 					type: 'string',
-					nullable: false,
+					nullable: true,
 				},
 				name: {
 					type: 'string',
@@ -95,8 +94,8 @@ const integrationsUpdateSchema = {
 					nullable: true,
 				},
 			},
-			required: ['integrationId', 'type', 'channel', 'scriptEnabled', 'script', 'name', 'enabled'],
-			additionalProperties: false,
+			required: ['integrationId', 'type', 'channel', 'scriptEnabled', 'name', 'enabled'],
+			additionalProperties: true,
 		},
 		{
 			type: 'object',
@@ -161,7 +160,7 @@ const integrationsUpdateSchema = {
 				},
 				script: {
 					type: 'string',
-					nullable: false,
+					nullable: true,
 				},
 				runOnEdits: {
 					type: 'boolean',
@@ -204,7 +203,7 @@ const integrationsUpdateSchema = {
 					nullable: true,
 				},
 			},
-			required: ['type', 'username', 'channel', 'event', 'scriptEnabled', 'script', 'name', 'enabled'],
+			required: ['type', 'username', 'channel', 'event', 'scriptEnabled', 'name', 'enabled'],
 			additionalProperties: false,
 		},
 	],
