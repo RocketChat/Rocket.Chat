@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { formatDistanceStrict } from 'date-fns';
 import React, { FC } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
 import BundleChips from './BundleChips';

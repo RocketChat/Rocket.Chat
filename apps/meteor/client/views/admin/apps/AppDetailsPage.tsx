@@ -1,10 +1,10 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useRef, FC, MouseEventHandler } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import APIsDisplay from './APIsDisplay';
 import AppDetailsHeader from './AppDetailsHeader';
 import AppDetailsPageContent from './AppDetailsPageContent';

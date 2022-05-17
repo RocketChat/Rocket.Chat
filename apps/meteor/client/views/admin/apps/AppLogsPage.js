@@ -1,9 +1,9 @@
 import { Box, Accordion } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect } from 'react';
 
 import Page from '../../../components/Page';
-import { useEndpoint } from '../../../contexts/ServerContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import LogItem from './LogItem';
 import LogsLoading from './LogsLoading';

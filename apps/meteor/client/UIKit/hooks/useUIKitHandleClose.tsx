@@ -5,11 +5,12 @@ import { UIKitInteractionType } from '@rocket.chat/apps-engine/definition/uikit'
 // import React, { Context, FC, useMemo } from 'react';
 import { UiKitPayload } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 // import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 
-// import { useEndpoint } from '../../contexts/ServerContext';
+// import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emptyFn = (_error: any, _result: UIKitInteractionType | void): void => undefined;

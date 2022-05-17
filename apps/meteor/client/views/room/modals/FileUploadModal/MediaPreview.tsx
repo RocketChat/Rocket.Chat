@@ -1,7 +1,7 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useState, memo } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { FilePreviewType } from './FilePreview';
 import ImagePreview from './ImagePreview';
 import PreviewSkeleton from './PreviewSkeleton';
