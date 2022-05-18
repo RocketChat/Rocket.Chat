@@ -10,7 +10,7 @@ const query = (term = '') => ({ selector: JSON.stringify({ name: term }) });
 const RoomAutoComplete = (props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
-		'rooms.autocomplete.channelAndPrivate',
+		'/v1/rooms.autocomplete.channelAndPrivate',
 		useMemo(() => query(filter), [filter]),
 	);
 	const options = useMemo(

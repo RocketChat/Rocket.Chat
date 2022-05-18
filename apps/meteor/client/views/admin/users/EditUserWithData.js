@@ -15,7 +15,7 @@ function EditUserWithData({ uid, ...props }) {
 		phase: state,
 		error,
 	} = useEndpointData(
-		'users.info',
+		'/v1/users.info',
 		useMemo(() => ({ userId: uid }), [uid]),
 	);
 

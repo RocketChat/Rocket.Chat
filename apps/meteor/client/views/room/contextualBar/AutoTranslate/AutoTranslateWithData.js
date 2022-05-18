@@ -13,7 +13,7 @@ const AutoTranslateWithData = ({ rid }) => {
 	const subscription = useUserSubscription(rid);
 
 	const { value: data } = useEndpointData(
-		'autotranslate.getSupportedLanguages',
+		'/v1/autotranslate.getSupportedLanguages',
 		useMemo(() => ({ targetLanguage: userLanguage }), [userLanguage]),
 	);
 

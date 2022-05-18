@@ -155,6 +155,7 @@ API.v1.addRoute(
 		post: {
 			twoFactorRequired: true,
 			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
+				console.log(this.bodyParams, this.urlParams);
 				if (!hasPermission(this.userId, 'edit-privileged-setting')) {
 					return API.v1.unauthorized();
 				}
@@ -167,6 +168,7 @@ API.v1.addRoute(
 				const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
 
 				if (!setting) {
+					console.log('setting not found');
 					return API.v1.failure();
 				}
 
@@ -184,18 +186,22 @@ API.v1.addRoute(
 					return API.v1.success();
 				}
 
+				console.log(isSettingsUpdatePropDefault(this.bodyParams));
 				if (
 					isSettingsUpdatePropDefault(this.bodyParams) &&
 					(await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value))
 				) {
 					const s = await Settings.findOneNotHiddenById(this.urlParams._id);
 					if (!s) {
+						console.log('setting not found 2');
 						return API.v1.failure();
 					}
 					settings.set(s);
 					setValue(this.urlParams._id, this.bodyParams.value);
 					return API.v1.success();
 				}
+
+				console.log('setting not found 3');
 
 				return API.v1.failure();
 			},

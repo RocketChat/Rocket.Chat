@@ -53,7 +53,7 @@ export type RoomsEndpoints = {
 			success: boolean;
 		};
 	};
-	'rooms.adminRooms': {
+	'/v1/rooms.adminRooms': {
 		GET: (
 			params: PaginatedRequest<{
 				filter?: string;
@@ -61,10 +61,10 @@ export type RoomsEndpoints = {
 			}>,
 		) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
 	};
-	'rooms.adminRooms.getRoom': {
+	'/v1/rooms.adminRooms.getRoom': {
 		GET: (params: { rid?: string }) => Pick<IRoom, RoomAdminFieldsType>;
 	};
-	'rooms.saveRoomSettings': {
+	'/v1/rooms.saveRoomSettings': {
 		POST: (params: {
 			rid: string;
 			roomAvatar?: string;
@@ -88,7 +88,7 @@ export type RoomsEndpoints = {
 			rid: string;
 		};
 	};
-	'rooms.changeArchivationState': {
+	'/v1/rooms.changeArchivationState': {
 		POST: (params: { rid: string; action?: string }) => {
 			success: boolean;
 		};
