@@ -47,6 +47,10 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('[data-qa-id="General"] button');
 	}
 
+	public layoutSettingsButton(): Locator {
+		return this.getPage().locator('[data-qa-id="Layout"] button');
+	}
+
 	public permissionsLink(): Locator {
 		return this.getPage().locator('.flex-nav [href="/admin/permissions"]');
 	}
@@ -119,6 +123,10 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('input[placeholder="Search Users"]');
 	}
 
+	public userInTable(id: string): Locator {
+		return this.getPage().locator(`tr > td:has-text("${id}")`);
+	}
+
 	public rolesNewRolesButton(): Locator {
 		return this.getPage().locator('button[aria-label="New"]');
 	}
@@ -164,15 +172,19 @@ export default class Administration extends BasePage {
 	}
 
 	public rolesSettingsFindInput(): Locator {
-		return this.getPage().locator('input#permissions-filter');
+		return this.getPage().locator('[data-qa="PermissionTable-PermissionsTableFilter"]');
 	}
 
 	public rolesSettingsTab(): Locator {
-		return this.getPage().locator('button[data-value="settings"]');
+		return this.getPage().locator('[data-qa="PermissionTable-Settings"]');
 	}
 
 	public rolesPermissionsTab(): Locator {
-		return this.getPage().locator('button[data-value="permissions"]');
+		return this.getPage().locator('[data-qa="PermissionTable-Permissions"]');
+	}
+
+	public homeTitleInput(): Locator {
+		return this.getPage().locator('[data-qa-setting-id="Layout_Home_Title"]');
 	}
 
 	// permissions grids checkboxes
@@ -235,7 +247,7 @@ export default class Administration extends BasePage {
 
 	// settings
 	public buttonSave(): Locator {
-		return this.getPage().locator('//h2[text()="General"]/following-sibling::div//button[text()="Save changes"]');
+		return this.getPage().locator('button.save');
 	}
 
 	public generalSectionIframeIntegration(): Locator {
@@ -280,6 +292,10 @@ export default class Administration extends BasePage {
 
 	public generalSiteNameReset(): Locator {
 		return this.getPage().locator('[data-qa-reset-setting-id="Site_Name"]');
+	}
+
+	public generalHomeTitleReset(): Locator {
+		return this.getPage().locator('[data-qa-reset-setting-id="Layout_Home_Title"]');
 	}
 
 	public generalLanguage(): Locator {
@@ -666,16 +682,6 @@ export default class Administration extends BasePage {
 	public modalCancel(): Locator {
 		return this.getPage().locator('//button[text()="Cancel"]');
 	}
-	// public async checkUserList(user: string): Promise<boolean> {
-	// 	const locator = this.getPage().locator(`td=adminCreated${user}`);
-
-	// 	const result = await locator.isVisible();
-	// 	if (Array.isArray(result)) {
-	// 		return result[0];
-	// 	}
-
-	// 	return result;
-	// }
 
 	public async publicUserFromList(user: string): Promise<void> {
 		await expect(this.getPage().locator(`.rcx-table__cell:first-child:contains(${user}) figure`)).toBeVisible();
@@ -687,5 +693,9 @@ export default class Administration extends BasePage {
 
 	public async adminSaveChanges(): Promise<void> {
 		await this.buttonSave().click();
+	}
+
+	public userInfoActions(): Locator {
+		return this.getPage().locator('[data-qa-id="UserInfoActions"]');
 	}
 }
