@@ -1,52 +1,24 @@
-import { Modal, Box } from '@rocket.chat/fuselage';
-import React, { FC, useMemo } from 'react';
+import { Box, Skeleton } from '@rocket.chat/fuselage';
+import React, { ReactElement } from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
-import { useDir } from '../../../hooks/useDir';
+import ThreadVerticalBar from './ThreadVerticalBar';
 
 type ThreadSkeletonProps = {
-	expanded: boolean;
+	onBack: () => void;
 	onClose: () => void;
 };
 
-const ThreadSkeleton: FC<ThreadSkeletonProps> = ({ expanded, onClose }) => {
-	const dir = useDir();
-
-	const style = useMemo(
-		() =>
-			dir === 'rtl'
-				? {
-						left: 0,
-						borderTopRightRadius: 4,
-				  }
-				: {
-						right: 0,
-						borderTopLeftRadius: 4,
-				  },
-		[dir],
-	);
-
-	return (
-		<>
-			{expanded && <Modal.Backdrop onClick={onClose} />}
-			<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
-				<VerticalBar.Skeleton
-					className='rcx-thread-view'
-					position='absolute'
-					display='flex'
-					flexDirection='column'
-					width={'full'}
-					maxWidth={855}
-					overflow='hidden'
-					zIndex={100}
-					insetBlock={0}
-					// insetInlineEnd={0}
-					// borderStartStartRadius={4}
-					style={style} // workaround due to a RTL bug in Fuselage
-				/>
-			</Box>
-		</>
-	);
-};
+const ThreadSkeleton = ({ onBack, onClose }: ThreadSkeletonProps): ReactElement => (
+	<ThreadVerticalBar title={<Skeleton width='100%' />} onBack={onBack} onClose={onClose}>
+		<Box p='x24'>
+			<Skeleton width='32px' height='32px' variant='rect' /> <Skeleton />
+			{Array(5)
+				.fill(5)
+				.map((_, index) => (
+					<Skeleton key={index} />
+				))}
+		</Box>
+	</ThreadVerticalBar>
+);
 
 export default ThreadSkeleton;

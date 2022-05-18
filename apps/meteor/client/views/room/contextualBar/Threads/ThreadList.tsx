@@ -74,6 +74,14 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 		});
 	});
 
+	const onClickBack = useMutableCallback((): void => {
+		channelRoute.push({
+			tab: 'thread',
+			rid: room._id,
+			...(room.name && { name: room.name }),
+		});
+	});
+
 	const options: [string, string][] = useMemo(
 		() => [
 			['all', t('All')],
@@ -172,7 +180,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 
 			{typeof mid === 'string' && (
 				<VerticalBar.InnerContent>
-					<ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room} />
+					<ThreadComponent onBack={onClickBack} mid={mid} jump={jump} room={room} />
 				</VerticalBar.InnerContent>
 			)}
 		</>

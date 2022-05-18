@@ -7,6 +7,11 @@ import { settings } from '../../../settings/client';
 import { MentionsParser } from '../../../mentions/lib/MentionsParser';
 import { emojiParser } from '../../../emoji/client/emojiParser.js';
 
+/**
+ * @param {import('@rocket.chat/core-typings').IMessage} message
+ * @returns {string | undefined}
+ * @todo migrate to TypeScript
+ */
 export const normalizeThreadTitle = ({ ...message }) => {
 	if (message.msg) {
 		const filteredMessage = filterMarkdown(escapeHTML(message.msg));
