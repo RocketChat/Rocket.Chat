@@ -4023,7 +4023,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/message-parser@npm:^0.31.6, @rocket.chat/message-parser@npm:~0.31.9":
+"@rocket.chat/message-parser@npm:^0.31.6":
   version: 0.31.9
   resolution: "@rocket.chat/message-parser@npm:0.31.9"
   checksum: 1ffe8f5d2a93d7d532e14e3ab466ecc713e6d6420b48494404e69415147d0e42d55c2bd80f03bbb7bd711c73b7c3aed96c2e11dc89abc383cbd381ef70ece41c
@@ -4364,7 +4364,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.31.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/message-parser": ^0.31.6
+    "@rocket.chat/message-parser": 0.31.12-dev.10
     "@rocket.chat/ui-kit": ^0.31.6
     "@types/jest": ^27.4.1
     "@types/mongodb": ^3.6.10
@@ -29059,7 +29059,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.9
     "@rocket.chat/icons": ^0.31.0
-    "@rocket.chat/message-parser": ~0.31.9
+    "@rocket.chat/message-parser": 0.31.12-dev.10
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.9
     "@rocket.chat/ui-kit": ~0.31.9
