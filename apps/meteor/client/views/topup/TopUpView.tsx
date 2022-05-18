@@ -1,11 +1,13 @@
 import { Accordion, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { IGateway } from '../../../definition/IGateway';
 import Page from '../../components/Page';
+import BankTransfer from './components/BankTransfer';
 import PerfectMoneyVoucher from './components/PerfectMoneyVoucher';
+import './topup.css';
 
 const TopUpView = (): ReactElement => {
 	const [fetchedGateways, setFetchedGateways] = useState<IGateway[]>([]);
@@ -53,6 +55,10 @@ const TopUpView = (): ReactElement => {
 		},
 	];
 
+	const sortedGateways = useMemo(() => {
+		return fetchedGateways.sort((a, b) => a.sortOrder - b.sortOrder);
+	}, [fetchedGateways]);
+
 	const getGatewaysFn = (): void => {
 		Meteor.call('getGateways', {}, {}, (_error, result) => {
 			if (result) {
@@ -86,14 +92,35 @@ const TopUpView = (): ReactElement => {
 		getGatewaysFn();
 	}, []);
 
+	const capitalizeAndJoin = (word: string): string => {
+		const capitalize = word.charAt(0).toUpperCase() + word.slice(1);
+		return capitalize.replace(/-/g, ' ');
+	};
+
 	return (
-		<Page>
+		<Page id='topup-page'>
 			<Page.Header title={t('gso_topupView_header')} />
 			<Box style={{ margin: '15px 15px 0 15px' }}>
 				<h3 style={{ fontSize: '19px', marginBottom: '10px' }}>{t('gso_topupView_title')}</h3>
 				<p style={{ fontSize: '16px' }}>{t('gso_topupView_info')}</p>
 				<Accordion style={{ margin: '15px 0' }}>
-					<PerfectMoneyVoucher title='Perfect Money Voucher' />
+					{sortedGateways.length ? (
+						<>
+							<PerfectMoneyVoucher title={capitalizeAndJoin(sortedGateways[0]._id)} />
+							<BankTransfer title={capitalizeAndJoin(sortedGateways[1]._id)} />
+						</>
+					) : (
+						'Loading...'
+					)}
+					{sortedGateways.length
+						? sortedGateways.slice(2).map((gateway, index) => (
+								<Accordion.Item title={capitalizeAndJoin(gateway._id)} key={index}>
+									<Box color='default' fontScale='p2'>
+										{capitalizeAndJoin(gateway._id)}
+									</Box>
+								</Accordion.Item>
+						  ))
+						: 'Loading...'}
 				</Accordion>
 			</Box>
 		</Page>

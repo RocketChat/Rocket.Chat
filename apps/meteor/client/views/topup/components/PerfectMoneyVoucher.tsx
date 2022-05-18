@@ -13,11 +13,11 @@ const PerfectMoneyVoucher = ({ title }: Props) => {
 				<Field>
 					<Field.Row>
 						<Field.Label htmlFor='e-voucher-number'>E-voucher number</Field.Label>
-						<InputBox type='text' id='' />
+						<InputBox type='text' id='e-voucher-number' />
 					</Field.Row>
 					<Field.Row>
 						<Field.Label htmlFor='activation-code'>Activation code</Field.Label>
-						<InputBox type='text' />
+						<InputBox type='text' id='activation-code' />
 					</Field.Row>
 					<Button primary style={{ marginTop: '12px' }}>
 						Submit

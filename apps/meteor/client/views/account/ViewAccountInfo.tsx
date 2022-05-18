@@ -42,6 +42,7 @@ const ViewAccountInfo = ({ title, items }: Props): ReactElement => {
 										<Box style={{ marginLeft: '8px' }}>{item.content}</Box>
 										{item.icon === 'credit' ? (
 											<Button style={{ marginLeft: 'auto' }} primary onClick={handleTopUp}>
+												{/* tslint:disable-next-line */}
 												{t('gso_viewProfileForm_viewAccountInfo_btnTopUp')}
 											</Button>
 										) : null}

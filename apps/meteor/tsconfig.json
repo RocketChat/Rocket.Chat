@@ -2,10 +2,7 @@
 	"compilerOptions": {
 		"module": "CommonJS",
 		"target": "es2018",
-		"lib": [
-			"esnext",
-			"dom"
-		],
+		"lib": ["esnext", "dom"],
 		"allowJs": true,
 		"checkJs": false,
 		"jsx": "react",
@@ -25,18 +22,10 @@
 		"baseUrl": ".",
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
-			"/*": [
-				"*"
-			],
-			"@/public/*": [
-				"public/*"
-			],
-			"@/client/*": [
-				"client/*"
-			],
-			"@/app/*": [
-				"app/*"
-			],
+			"/*": ["*"],
+			"@/public/*": ["public/*"],
+			"@/client/*": ["client/*"],
+			"@/app/*": ["app/*"]
 		},
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
@@ -48,9 +37,7 @@
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
-	"include": [
-		"public/**/*"
-	],
+	"include": ["public/**/*"],
 	"exclude": [
 		"./.meteor/**",
 		"./packages/**",
