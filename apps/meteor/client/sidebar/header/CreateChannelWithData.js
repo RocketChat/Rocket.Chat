@@ -8,8 +8,8 @@ import { goToRoomById } from '../../lib/utils/goToRoomById';
 import CreateChannel from './CreateChannel';
 
 const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
-	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
-	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
+	const createChannel = useEndpointActionExperimental('POST', '/v1/channels.create');
+	const createPrivateChannel = useEndpointActionExperimental('POST', '/v1/groups.create');
 	const canCreateChannel = usePermission('create-c');
 	const canCreatePrivateChannel = usePermission('create-p');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
