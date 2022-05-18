@@ -88,10 +88,10 @@ const TopUpView = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Payment')} />
+			<Page.Header title={t('gso_topupView_header')} />
 			<Box style={{ margin: '15px 15px 0 15px' }}>
-				<h3 style={{ fontSize: '19px', marginBottom: '10px' }}>{t('Buy credit')}</h3>
-				<p style={{ fontSize: '16px' }}>{t('Select your payment method')}</p>
+				<h3 style={{ fontSize: '19px', marginBottom: '10px' }}>{t('gso_topupView_title')}</h3>
+				<p style={{ fontSize: '16px' }}>{t('gso_topupView_info')}</p>
 				<Accordion style={{ margin: '15px 0' }}>
 					<PerfectMoneyVoucher title='Perfect Money Voucher' />
 				</Accordion>

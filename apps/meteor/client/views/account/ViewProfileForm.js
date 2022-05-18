@@ -134,11 +134,15 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 	}, [user.trustScore]);
 
 	const careerItems = [
-		{ icon: 'user', content: `${t('Employee/er/broker')}`, rc: true },
-		{ icon: 'credit', content: `${t('Credit point')}: ${userWithCredit.credit ? userWithCredit.credit : 0}`, rc: false },
+		{ icon: 'user', content: `${t('gso_viewProfileForm_careerItems_employee')}`, rc: true },
+		{
+			icon: 'credit',
+			content: `${t('gso_viewProfileForm_careerItems_creditPoints')}: ${userWithCredit.credit ? userWithCredit.credit : 0}`,
+			rc: false,
+		},
 		{
 			icon: 'trust-score',
-			content: `${t('Trust score')}: ${userWithCredit.trustScore ? userWithCredit.trustScore * 100 : 0}/100`,
+			content: `${t('gso_viewProfileForm_careerItems_trustScore')}: ${userWithCredit.trustScore ? userWithCredit.trustScore * 100 : 0}/100`,
 			rc: false,
 		},
 	];
@@ -150,10 +154,10 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 	];
 
 	const services = [
-		{ icon: 'lock', content: `${t('Update profile/Chan')}`, rc: true },
-		{ icon: 'info', content: `${t('Customer support')}`, rc: false },
-		{ icon: 'credit-card', content: `${t('Verify identity')}`, rc: false },
-		{ icon: 'info', content: `${t('About us')}`, rc: false },
+		{ icon: 'lock', content: `${t('gso_viewProfileForm_services_updateProfile')}`, rc: true },
+		{ icon: 'info', content: `${t('gso_viewProfileForm_services_customerSupport')}`, rc: false },
+		{ icon: 'credit-card', content: `${t('gso_viewProfileForm_services_verifyIdentity')}`, rc: false },
+		{ icon: 'info', content: `${t('gso_viewProfileForm_services_aboutUs')}`, rc: false },
 	];
 
 	return (
@@ -176,9 +180,9 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 			)}
 			<Box style={{ margin: '0px auto', fontSize: '16px' }}>{user.bio ? user.bio : 'No user bio...'}</Box>
 			<Box display='flex' flexDirection='column' style={{ marginTop: '30px' }}>
-				<ViewAccountInfo title={t('Career')} items={careerItems} />
-				<ViewAccountInfo title={t('Private Information')} items={privateInfo} />
-				<ViewAccountInfo title={t('Services')} items={services} />
+				<ViewAccountInfo title={t('gso_viewProfileForm_viewAccountInfo_careerItems')} items={careerItems} />
+				<ViewAccountInfo title={t('gso_viewProfileForm_viewAccountInfo_privateInfo')} items={privateInfo} />
+				<ViewAccountInfo title={t('gso_viewProfileForm_viewAccountInfo_services')} items={services} />
 			</Box>
 		</FieldGroup>
 	);

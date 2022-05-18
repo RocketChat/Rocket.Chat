@@ -116,10 +116,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 						</Box>
 						<Box style={{ marginBottom: '8px' }}>@{username} </Box>
 						<Box style={{ marginBottom: '8px' }} fontWeight='bold'>
-							Joined: {userWithCreatedAt.createdAt ? formatDate(userWithCreatedAt.createdAt) : 'Waiting...'}
+							{`${t('gso_useAvatarEditor_joined')}: ${
+								userWithCreatedAt.createdAt ? formatDate(userWithCreatedAt.createdAt) : 'Waiting...'
+							}`}
 						</Box>
 						<Box fontWeight='bold' style={{ marginBottom: '10px' }}>
-							Last Active: {userWithCreatedAt.lastLogin ? timeAgo(userWithCreatedAt.lastLogin) : 'Waiting...'}
+							{`${t('gso_useAvatarEditor_lastActive')}: ${
+								userWithCreatedAt.lastLogin ? timeAgo(userWithCreatedAt.lastLogin) : 'Waiting...'
+							}`}
 						</Box>
 					</Margins>
 				</Box>

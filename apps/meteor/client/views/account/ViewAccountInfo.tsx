@@ -23,7 +23,7 @@ const ViewAccountInfo = ({ title, items }: Props): ReactElement => {
 	return (
 		<Box>
 			<h4 style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', background: '#ddd', height: '50px', marginTop: '20px' }}>
-				<span style={{ marginLeft: '8px' }}>{title}</span>
+				<span style={{ marginLeft: '9px' }}>{title}</span>
 			</h4>
 			{items.length
 				? items.map((item, index) => (
@@ -42,7 +42,7 @@ const ViewAccountInfo = ({ title, items }: Props): ReactElement => {
 										<Box style={{ marginLeft: '8px' }}>{item.content}</Box>
 										{item.icon === 'credit' ? (
 											<Button style={{ marginLeft: 'auto' }} primary onClick={handleTopUp}>
-												{t('Top up')}
+												{t('gso_viewProfileForm_viewAccountInfo_btnTopUp')}
 											</Button>
 										) : null}
 									</Flex.Item>

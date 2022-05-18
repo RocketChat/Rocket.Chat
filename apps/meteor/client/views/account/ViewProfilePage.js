@@ -167,7 +167,7 @@ const ViewProfilePage = () => {
 						{t('Reset')}
 					</Button>
 					<Button primary onClick={handleEdit}>
-						{t('Edit')}
+						{t('gso_viewProfilePage_btnEdit')}
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
