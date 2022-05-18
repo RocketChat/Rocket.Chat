@@ -11,7 +11,7 @@ export const createRoom = ({ name, type, username, token, agentId, members = [],
 		 * is handled separately here.
 		 */
 		return request
-			.get(api(`/v1/voip/room?token=${token}&agentId=${agentId}`))
+			.get(api(`voip/room?token=${token}&agentId=${agentId}`))
 			.set(customCredentials || credentials)
 			.send();
 	}
@@ -19,9 +19,9 @@ export const createRoom = ({ name, type, username, token, agentId, members = [],
 		throw new Error('To be able to create DM Room, you must provide the username');
 	}
 	const endpoints = {
-		c: '/v1/channels.create',
-		p: '/v1/groups.create',
-		d: '/v1/im.create',
+		c: 'channels.create',
+		p: 'groups.create',
+		d: 'im.create',
 	};
 	const params = type === 'd' ? { username } : { name };
 
