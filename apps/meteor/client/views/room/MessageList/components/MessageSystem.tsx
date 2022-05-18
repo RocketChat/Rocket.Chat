@@ -10,13 +10,13 @@ import {
 	CheckBox,
 	MessageUsername,
 } from '@rocket.chat/fuselage';
+import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { TranslationKey, useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { UserPresence } from '../../../../lib/presence';

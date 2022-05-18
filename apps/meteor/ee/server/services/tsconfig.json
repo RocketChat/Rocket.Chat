@@ -44,5 +44,5 @@
 		// "experimentalDecorators": true,
 	},
 	"include": ["./**/*", "../../../definition"],
-	"exclude": ["./dist", "./ecosystem.config.js"]
+	"exclude": ["./dist", "./ecosystem.config.js", "../../../definition/methods"]
 }

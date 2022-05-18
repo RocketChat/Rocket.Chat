@@ -1,7 +1,7 @@
 import { Dimensions } from '@rocket.chat/core-typings';
+import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
 import React, { memo, FC, useState, useMemo } from 'react';
 
-import { useAttachmentDimensions } from '../context/AttachmentContext';
 import ImageBox from './ImageBox';
 import Load from './Load';
 import Retry from './Retry';
