@@ -12,7 +12,7 @@ const UserAutoComplete = (props) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: data } = useEndpointData(
-		'users.autocomplete',
+		'/v1/users.autocomplete',
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		useMemo(() => query(debouncedFilter, conditions), [filter]),
 	);

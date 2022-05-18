@@ -1,3 +1,5 @@
+import qs from 'query-string';
+
 import type { Serialized } from '../../core-typings/dist';
 import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from '../../rest-typings/dist';
 import type { Middleware, RestClientInterface } from './RestClientInterface';
@@ -163,15 +165,7 @@ export class RestClient implements RestClientInterface {
 	}
 
 	protected getParams(data: Record<string, object | number | string | boolean> | void): string {
-		return data
-			? Object.entries(data)
-					.map(function ([k, data]) {
-						return `${encodeURIComponent(
-							k,
-						)}=${typeof data === 'object' ? encodeURIComponent(JSON.stringify(data)) : encodeURIComponent(data)}`;
-					})
-					.join('&')
-			: '';
+		return data ? qs.stringify(data, { arrayFormat: 'bracket' }) : '';
 	}
 
 	use(middleware: Middleware<RestClientInterface['send']>): void {
