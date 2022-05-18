@@ -1,10 +1,12 @@
 import type { Bridge as MatrixBridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
 import { settings } from '../../settings/server';
+import { Settings } from '../../models/server/raw';
 import type { IMatrixEvent } from './definitions/IMatrixEvent';
 import type { MatrixEventType } from './definitions/MatrixEventType';
 import { addToQueue } from './queue';
 import { getRegistrationInfo } from './config';
+import { bridgeLogger } from './logger';
 
 class Bridge {
 	private bridgeInstance: MatrixBridge;
@@ -14,12 +16,17 @@ class Bridge {
 	public async start(): Promise<void> {
 		try {
 			await this.stop();
-		} finally {
 			await this.createInstance();
+
 			if (!this.isRunning) {
 				await this.bridgeInstance.run(this.getBridgePort());
 				this.isRunning = true;
 			}
+		} catch (e) {
+			bridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
+
+			bridgeLogger.error('Disabling Matrix Bridge.  Please resolve error and try again');
+			Settings.updateValueById('Federation_Matrix_enabled', false);
 		}
 	}
 
@@ -37,7 +44,11 @@ class Bridge {
 	}
 
 	private async createInstance(): Promise<void> {
+		bridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
+
+		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
 		const { Bridge: MatrixBridge, AppServiceRegistration } = await import('@rocket.chat/forked-matrix-appservice-bridge');
+
 		this.bridgeInstance = new MatrixBridge({
 			homeserverUrl: settings.get('Federation_Matrix_homeserver_url'),
 			domain: settings.get('Federation_Matrix_homeserver_domain'),
