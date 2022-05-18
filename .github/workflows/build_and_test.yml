@@ -296,169 +296,170 @@ jobs:
           name: cypress-test-videos
           path: ./apps/meteor/tests/cypress/videos*
 
-  test-ee:
-    runs-on: ubuntu-20.04
-    needs: build
+  # TODO enable again BEFORE merge
+  # test-ee:
+  #   runs-on: ubuntu-20.04
+  #   needs: build
 
-    strategy:
-      matrix:
-        node-version: ['14.18.3']
-        mongodb-version: ['4.4']
+  #   strategy:
+  #     matrix:
+  #       node-version: ['14.18.3']
+  #       mongodb-version: ['4.4']
 
-    steps:
-      - name: Launch MongoDB
-        uses: wbari/start-mongoDB@v0.2
-        with:
-          mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
-
-      - name: Launch NATS
-        run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
-
-      - name: Restore build for tests
-        uses: actions/download-artifact@v2
-        with:
-          name: build-test
-          path: /tmp
-
-      - name: Decompress build
-        run: |
-          cd /tmp
-          tar xzf Rocket.Chat.test.tar.gz
-          cd -
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Setup Chrome
-        run: |
-          npm i chromedriver
-
-      - name: Configure Replica Set
-        run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-          docker exec mongo mongo --eval 'rs.status()'
-
-      - uses: actions/checkout@v3
-
-      - name: Cache cypress
-        id: cache-cypress
-        uses: actions/cache@v2
-        with:
-          path: /home/runner/.cache/Cypress
-          key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
-      - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
-
-      - name: Yarn install
-        # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
-        run: yarn
-
-      - name: Build micro services
-        run: yarn build
-
-      - name: E2E Test API
-        env:
-          TEST_MODE: 'true'
-          MONGO_URL: mongodb://localhost:27017/rocketchat
-          MONGO_OPLOG_URL: mongodb://localhost:27017/local
-          ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
-          TRANSPORTER: nats://localhost:4222
-          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
-        run: |
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
-
-          cd ./apps/meteor/
-
-          for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
-
-      - name: E2E Test UI (Legacy - Cypress)
-        env:
-          TEST_MODE: 'true'
-          MONGO_URL: mongodb://localhost:27017/rocketchat
-          MONGO_OPLOG_URL: mongodb://localhost:27017/local
-          ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
-          TRANSPORTER: nats://localhost:4222
-          CYPRESS_BASE_URL: http://localhost:4000
-          CYPRESS_TEST_API_URL: http://localhost:4000
-          OVERWRITE_SETTING_Site_Url: http://localhost:4000
-          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
-        run: |
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
-
-          cd ./apps/meteor/
-
-          for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
-
-      - name: Install Playwright
-        run: |
-          cd ./apps/meteor/
-          npx playwright install --with-deps
-
-      - name: E2E Test UI
-        env:
-          TEST_MODE: 'true'
-          MONGO_URL: mongodb://localhost:27017/rocketchat
-          MONGO_OPLOG_URL: mongodb://localhost:27017/local
-          ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
-          TRANSPORTER: nats://localhost:4222
-          CYPRESS_BASE_URL: http://localhost:4000
-          CYPRESS_TEST_API_URL: http://localhost:4000
-          OVERWRITE_SETTING_Site_Url: http://localhost:4000
-          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
-        run: |
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
-
-          cd ./apps/meteor
-
-          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright:ee
-
-      - name: Store playwright test trace
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ee-playwright-test-trace
-          path: ./apps/meteor/tests/e2e/test-failures*
-
-      - name: Store cypress test screenshots
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ee-cypress-test-screenshots
-          path: ./apps/meteor/tests/cypress/screenshots*
-
-      - name: Store cypress test videos
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ee-cypress-test-videos
-          path: ./apps/meteor/tests/cypress/videos*
-  #   notification:
-  #     runs-on: ubuntu-20.04
-  #     needs: test
-
-  #     steps:
-  #     - name: Rocket.Chat Notification
-  #       uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+  #   steps:
+  #     - name: Launch MongoDB
+  #       uses: wbari/start-mongoDB@v0.2
   #       with:
-  #         type: ${{ job.status }}
-  #         job_name: '**Build and Test**'
-  #         url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
-  #         commit: true
-  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
+
+  #     - name: Launch NATS
+  #       run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
+
+  #     - name: Restore build for tests
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: build-test
+  #         path: /tmp
+
+  #     - name: Decompress build
+  #       run: |
+  #         cd /tmp
+  #         tar xzf Rocket.Chat.test.tar.gz
+  #         cd -
+
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
+
+  #     - name: Setup Chrome
+  #       run: |
+  #         npm i chromedriver
+
+  #     - name: Configure Replica Set
+  #       run: |
+  #         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+  #         docker exec mongo mongo --eval 'rs.status()'
+
+  #     - uses: actions/checkout@v3
+
+  #     - name: Cache cypress
+  #       id: cache-cypress
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: /home/runner/.cache/Cypress
+  #         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+  #     - uses: c-hive/gha-yarn-cache@v2
+  #     - name: Cache turbo
+  #       id: cache-turbo
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: |
+  #           ./node_modules/.turbo
+  #         key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-turbo-
+  #           ${{ runner.os }}-
+
+  #     - name: Yarn install
+  #       # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
+  #       run: yarn
+
+  #     - name: Build micro services
+  #       run: yarn build
+
+  #     - name: E2E Test API
+  #       env:
+  #         TEST_MODE: 'true'
+  #         MONGO_URL: mongodb://localhost:27017/rocketchat
+  #         MONGO_OPLOG_URL: mongodb://localhost:27017/local
+  #         ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
+  #         TRANSPORTER: nats://localhost:4222
+  #         SKIP_PROCESS_EVENT_REGISTRATION: 'true'
+  #       run: |
+  #         echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+  #         Xvfb -screen 0 1024x768x24 :99 &
+
+  #         cd ./apps/meteor/
+
+  #         for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
+  #     - name: E2E Test UI (Legacy - Cypress)
+  #       env:
+  #         TEST_MODE: 'true'
+  #         MONGO_URL: mongodb://localhost:27017/rocketchat
+  #         MONGO_OPLOG_URL: mongodb://localhost:27017/local
+  #         ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
+  #         TRANSPORTER: nats://localhost:4222
+  #         CYPRESS_BASE_URL: http://localhost:4000
+  #         CYPRESS_TEST_API_URL: http://localhost:4000
+  #         OVERWRITE_SETTING_Site_Url: http://localhost:4000
+  #         SKIP_PROCESS_EVENT_REGISTRATION: 'true'
+  #       run: |
+  #         echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+  #         Xvfb -screen 0 1024x768x24 :99 &
+
+  #         cd ./apps/meteor/
+
+  #         for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
+
+  #     - name: Install Playwright
+  #       run: |
+  #         cd ./apps/meteor/
+  #         npx playwright install --with-deps
+
+  #     - name: E2E Test UI
+  #       env:
+  #         TEST_MODE: 'true'
+  #         MONGO_URL: mongodb://localhost:27017/rocketchat
+  #         MONGO_OPLOG_URL: mongodb://localhost:27017/local
+  #         ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
+  #         TRANSPORTER: nats://localhost:4222
+  #         CYPRESS_BASE_URL: http://localhost:4000
+  #         CYPRESS_TEST_API_URL: http://localhost:4000
+  #         OVERWRITE_SETTING_Site_Url: http://localhost:4000
+  #         SKIP_PROCESS_EVENT_REGISTRATION: 'true'
+  #       run: |
+  #         echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+  #         Xvfb -screen 0 1024x768x24 :99 &
+
+  #         cd ./apps/meteor
+
+  #         docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && npm run testci -- --enterprise --test=test:playwright:ee
+
+  #     - name: Store playwright test trace
+  #       uses: actions/upload-artifact@v2
+  #       if: failure()
+  #       with:
+  #         name: ee-playwright-test-trace
+  #         path: ./apps/meteor/tests/e2e/test-failures*
+
+  #     - name: Store cypress test screenshots
+  #       uses: actions/upload-artifact@v2
+  #       if: failure()
+  #       with:
+  #         name: ee-cypress-test-screenshots
+  #         path: ./apps/meteor/tests/cypress/screenshots*
+
+  #     - name: Store cypress test videos
+  #       uses: actions/upload-artifact@v2
+  #       if: failure()
+  #       with:
+  #         name: ee-cypress-test-videos
+  #         path: ./apps/meteor/tests/cypress/videos*
+  # #   notification:
+  # #     runs-on: ubuntu-20.04
+  # #     needs: test
+
+  # #     steps:
+  # #     - name: Rocket.Chat Notification
+  # #       uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+  # #       with:
+  # #         type: ${{ job.status }}
+  # #         job_name: '**Build and Test**'
+  # #         url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
+  # #         commit: true
+  # #         token: ${{ secrets.GITHUB_TOKEN }}
 
   build-image-pr:
     runs-on: ubuntu-20.04
