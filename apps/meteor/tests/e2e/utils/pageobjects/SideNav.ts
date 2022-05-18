@@ -206,7 +206,6 @@ class SideNav extends BasePage {
 		await this.searchChannel(channelName);
 	}
 
-	// Gets a channel from the rooms list
 	public getChannelFromList(channelName: any): Locator {
 		return this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
 	}
@@ -241,9 +240,9 @@ class SideNav extends BasePage {
 		// mainContent.messageInput().should('be.focused');
 	}
 
-	public async findFindForChat(userName: string): Promise<void> {
+	public async findForChat(target: string): Promise<void> {
 		await this.searchUser().click();
-		await this.searchInput().type(userName, { delay: 300 });
+		await this.searchInput().type(target, { delay: 300 });
 		await this.getPage().keyboard.press(ENTER);
 	}
 }

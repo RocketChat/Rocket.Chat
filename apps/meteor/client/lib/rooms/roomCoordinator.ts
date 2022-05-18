@@ -38,7 +38,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getAvatarPath(_room): string {
 				return '';
 			},
-			getIcon(_room: Partial<IRoom>): string | undefined {
+			getIcon(_room: Partial<IRoom>): IRoomTypeConfig['icon'] {
 				return this.config.icon;
 			},
 			getUserStatus(_roomId: string): string | undefined {
@@ -92,7 +92,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		openRoom(type, name, render);
 	}
 
-	getIcon(room: Partial<IRoom>): string | undefined {
+	getIcon(room: Partial<IRoom>): IRoomTypeConfig['icon'] {
 		return room?.t && this.getRoomDirectives(room.t)?.getIcon(room);
 	}
 
