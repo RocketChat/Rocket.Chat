@@ -20,7 +20,7 @@ class TriggerMessage extends Component {
 
 		for (const el of this.ref.current.base.children) {
 			height += el.scrollHeight;
-		};
+		}
 
 		parentCall('resizeWidget', height);
 	}
