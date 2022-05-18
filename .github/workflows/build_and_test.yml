@@ -171,7 +171,7 @@ jobs:
 
   test:
     runs-on: ubuntu-20.04
-    needs: build
+    needs: build-image-pr
 
     strategy:
       matrix:
@@ -183,18 +183,6 @@ jobs:
         uses: wbari/start-mongoDB@v0.2
         with:
           mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
-
-      - name: Restore build for tests
-        uses: actions/download-artifact@v2
-        with:
-          name: build-test
-          path: /tmp
-
-      - name: Decompress build
-        run: |
-          cd /tmp
-          tar xzf Rocket.Chat.test.tar.gz
-          cd -
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -210,6 +198,25 @@ jobs:
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
+      - name: Start up Rocket.Chat
+        run: |
+          # TODO move this to a different job
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          IMAGE_NAME="rocket.chat"
+          if [[ '${{ matrix.release }}' = 'preview' ]]; then
+            IMAGE_NAME="${IMAGE_NAME}.preview"
+          fi;
+
+          # TODO this needs to be different on develop and on release
+          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:pr-${{ github.event.number }}.alpine"
+
+          docker run --name rocketchat -d \
+            -p 3000:3000 \
+            -e TEST_MODE=true \
+            -e MONGO_URL=mongodb://localhost:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://localhost:27017/local \
+            ${IMAGE_NAME}
+
       - uses: actions/checkout@v3
 
       - name: Cache cypress
@@ -221,7 +228,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cache-cypress-
             ${{ runner.os }}-
+
       - uses: c-hive/gha-yarn-cache@v2
+
       - name: Cache turbo
         id: cache-turbo
         uses: actions/cache@v2
@@ -246,10 +255,6 @@ jobs:
           npx playwright install --with-deps
 
       - name: E2E Test API
-        env:
-          TEST_MODE: 'true'
-          MONGO_URL: mongodb://localhost:27017/rocketchat
-          MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
           cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
@@ -257,10 +262,6 @@ jobs:
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - name: E2E Test UI (Legacy - Cypress)
-        env:
-          TEST_MODE: 'true'
-          MONGO_URL: mongodb://localhost:27017/rocketchat
-          MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
           cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
@@ -268,10 +269,6 @@ jobs:
           for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
 
       - name: E2E Test UI
-        env:
-          TEST_MODE: 'true'
-          MONGO_URL: mongodb://localhost:27017/rocketchat
-          MONGO_OPLOG_URL: mongodb://localhost:27017/local
         run: |
           cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
@@ -465,11 +462,12 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-20.04
+    needs: [build]
     if: github.event.pull_request.head.repo.full_name == github.repository
 
     strategy:
       matrix:
-        release: ['official', 'preview']
+        release: ['official', 'preview', 'alpine']
 
     steps:
       - uses: actions/checkout@v3
@@ -488,84 +486,12 @@ jobs:
           sudo apt clean
           docker rmi $(docker image ls -aq)
           df -h
-      - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
+
+      - name: Restore build
+        uses: actions/download-artifact@v2
         with:
-          path: |
-            ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
-
-      - name: Cache meteor local
-        uses: actions/cache@v2
-        with:
-          path: ./apps/meteor/.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}
-          restore-keys: |
-            ${{ runner.os }}-meteor_cache-
-            ${{ runner.os }}-
-      - name: Cache meteor
-        uses: actions/cache@v2
-        with:
-          path: ~/.meteor
-          key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}
-          restore-keys: |
-            ${{ runner.os }}-meteor-
-            ${{ runner.os }}-
-      - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14.18.3'
-
-      - name: Install Meteor
-        run: |
-          # Restore bin from cache
-          set +e
-          METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
-          METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
-          set -e
-          LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
-          if [ -e $LAUNCHER ]
-          then
-            echo "Cached Meteor bin found, restoring it"
-            sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
-          else
-            echo "No cached Meteor bin found."
-          fi
-
-          # only install meteor if bin isn't found
-          command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
-
-      - name: Versions
-        run: |
-          npm --versions
-          yarn -v
-          node -v
-          meteor --version
-          meteor npm --versions
-          meteor node -v
-          git version
-
-      - name: Yarn install
-        # if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-        run: yarn
-
-      # To reduce memory need during actual build, build the packages solely first
-      # - name: Build a Meteor cache
-      #   run: |
-      #     # to do this we can clear the main files and it build the rest
-      #     echo "" > server/main.ts
-      #     echo "" > client/main.ts
-      #     sed -i.backup 's/rocketchat:livechat/#rocketchat:livechat/' .meteor/packages
-      #     meteor build --server-only --debug --directory /tmp/build-temp
-      #     git checkout -- server/main.ts client/main.ts .meteor/packages
-
-      - name: Build Rocket.Chat
-        run: yarn build:ci -- --directory /tmp/build-pr
+          name: build
+          path: /tmp/build
 
       - name: Build Docker image for PRs
         run: |
@@ -579,6 +505,10 @@ jobs:
 
           IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:pr-${{ github.event.number }}"
 
+          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+            IMAGE_NAME="${IMAGE_NAME}.${{ matrix.release }}"
+          fi;
+
           echo "Build official Docker image ${IMAGE_NAME}"
 
           DOCKER_PATH="${GITHUB_WORKSPACE}/apps/meteor/.docker"
@@ -586,12 +516,18 @@ jobs:
             DOCKER_PATH="${DOCKER_PATH}-mongo"
           fi;
 
-          echo "Build ${{ matrix.release }} Docker image"
-          cp ${DOCKER_PATH}/Dockerfile .
-          if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
-            cp ${DOCKER_PATH}/entrypoint.sh .
+          DOCKERFILE_PATH="${DOCKER_PATH}/Dockerfile"
+          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+            DOCKERFILE_PATH="${DOCKERFILE_PATH}.${{ matrix.release }}"
           fi;
 
+          echo "Copy Dockerfile for release: ${{ matrix.release }}"
+          cp ${DOCKERFILE_PATH}/Dockerfile .
+          if [ -e ${DOCKERFILE_PATH}/entrypoint.sh ]; then
+            cp ${DOCKERFILE_PATH}/entrypoint.sh .
+          fi;
+
+          echo "Build ${{ matrix.release }} Docker image"
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
