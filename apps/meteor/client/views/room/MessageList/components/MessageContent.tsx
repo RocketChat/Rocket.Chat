@@ -17,10 +17,10 @@ import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
-import EncryptedMessageRender from './EncryptedMessageRender';
+import EncryptedMessageContentBody from './EncryptedMessageContentBody';
+import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
-import MessageRender from './MessageRender';
 import PreviewList from './UrlPreview';
 
 const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
@@ -48,7 +48,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 		<>
 			{!message.blocks && (
 				<MessageBody data-qa-type='message-body'>
-					{isEncryptedMessage ? <EncryptedMessageRender message={message} /> : <MessageRender message={message} />}
+					{isEncryptedMessage ? <EncryptedMessageContentBody message={message} /> : <MessageContentBody message={message} />}
 				</MessageBody>
 			)}
 			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}

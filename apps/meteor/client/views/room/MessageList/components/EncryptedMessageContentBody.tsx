@@ -2,7 +2,7 @@ import { IMessage } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import MessageRender from './MessageRender';
+import MessageRender from './PlainMessageRender';
 
 const EncryptedMessageRender = ({ message }: { message: IMessage }): ReactElement => {
 	const t = useTranslation();

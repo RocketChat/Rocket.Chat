@@ -1,17 +1,18 @@
-/* eslint-disable complexity */
 import { IMessage } from '@rocket.chat/core-typings';
-import React, { FC, memo } from 'react';
+import React, { ReactElement } from 'react';
 
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import { useMessageActions } from '../../contexts/MessageContext';
-import { useParsedMessage } from '../hooks/useParsedMessage';
+import PlainMessageRender from './PlainMessageRender';
 
-const MessageRender: FC<{ message: IMessage; isThreadPreview?: boolean }> = ({ message, isThreadPreview }) => {
+const MessageContentBody = ({ message, isThreadPreview }: { message: IMessage; isThreadPreview?: boolean }): ReactElement => {
 	const {
 		actions: { openRoom, openUserCard },
 	} = useMessageActions();
 
-	const tokens = useParsedMessage(message.msg);
+	if (!message.md) {
+		return <PlainMessageRender message={message} isThreadPreview={isThreadPreview} />;
+	}
 
 	return (
 		<MessageBodyRender
@@ -19,10 +20,10 @@ const MessageRender: FC<{ message: IMessage; isThreadPreview?: boolean }> = ({ m
 			onChannelMentionClick={openRoom}
 			mentions={message?.mentions || []}
 			channels={message?.channels || []}
-			tokens={tokens}
+			tokens={message.md}
 			isThreadPreview={isThreadPreview}
 		/>
 	);
 };
 
-export default memo(MessageRender);
+export default MessageContentBody;
