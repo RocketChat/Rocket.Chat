@@ -3684,7 +3684,7 @@
   "Room_archivation_state_true": "Archiviert",
   "Room_archived": "Der Room wurde archiviert",
   "room_changed_announcement": "Ankündigung des Rooms wurde von <em>__user_by__</em> zu <em>__room_announcement__</em> geändert",
-  "room_changed_avatar": "Raum-Avator von <em>__user_by__</em> geändert",
+  "room_changed_avatar": "Raum-Avatar von <em>__user_by__</em> geändert",
   "room_changed_description": "Room-Beschreibung wurde von  von <em>__user_by__</em> zu <em>__room_description__</em> geändert",
   "room_changed_privacy": "Der Room wurde von <em>__user_by__</em> zum/r <em>__room_type__</em> geändert",
   "room_changed_topic": "Das Thema des Rooms wurde von <em>__user_by__</em> zu <em>__room_topic__</em> geändert",
