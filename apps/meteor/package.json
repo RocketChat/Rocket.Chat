@@ -203,7 +203,7 @@
 		"@rocket.chat/icons": "~0.31.11",
 		"@rocket.chat/logo": "~0.31.11",
 		"@rocket.chat/memo": "~0.31.11",
-		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/message-parser": "0.31.12-dev.10",
 		"@rocket.chat/mp3-encoder": "^0.24.0",
 		"@rocket.chat/onboarding-ui": "~0.31.11",
 		"@rocket.chat/rest-typings": "workspace:^",

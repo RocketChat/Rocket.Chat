@@ -4016,17 +4016,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/message-parser@npm:0.31.12-dev.10":
+  version: 0.31.12-dev.10
+  resolution: "@rocket.chat/message-parser@npm:0.31.12-dev.10"
+  checksum: 5d302792ab2988750b3b4c7ce4cf0aa42ec18bded9eb1179ec3ab8d9aa26d0ed0a1817cf2d60990dc61941b0ba39ba53396daa1fc36b1323e43110910ca40a62
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/message-parser@npm:^0.31.6, @rocket.chat/message-parser@npm:~0.31.9":
   version: 0.31.9
   resolution: "@rocket.chat/message-parser@npm:0.31.9"
   checksum: 1ffe8f5d2a93d7d532e14e3ab466ecc713e6d6420b48494404e69415147d0e42d55c2bd80f03bbb7bd711c73b7c3aed96c2e11dc89abc383cbd381ef70ece41c
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/message-parser@npm:next":
-  version: 0.31.12-dev.10
-  resolution: "@rocket.chat/message-parser@npm:0.31.12-dev.10"
-  checksum: 5d302792ab2988750b3b4c7ce4cf0aa42ec18bded9eb1179ec3ab8d9aa26d0ed0a1817cf2d60990dc61941b0ba39ba53396daa1fc36b1323e43110910ca40a62
   languageName: node
   linkType: hard
 
@@ -4067,7 +4067,7 @@ __metadata:
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": ~0.31.11
     "@rocket.chat/memo": ~0.31.11
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.31.12-dev.10
     "@rocket.chat/mp3-encoder": ^0.24.0
     "@rocket.chat/onboarding-ui": ~0.31.11
     "@rocket.chat/rest-typings": "workspace:^"
