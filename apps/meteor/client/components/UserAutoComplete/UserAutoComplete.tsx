@@ -12,13 +12,15 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term, conditions }) });
 
-type UserAutoCompleteProps = ComponentProps<typeof AutoComplete> &
-	ComponentProps<typeof Option> & {
+type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> &
+	Omit<ComponentProps<typeof Option>, 'value'> & {
 		conditions?: { [key: string]: string };
 		onChange?: MouseEventHandler<HTMLButtonElement>;
+		value: any;
+		filter?: string;
 	};
 
-const UserAutoComplete = (props: UserAutoCompleteProps): ReactElement => {
+const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElement => {
 	const { conditions = {} } = props;
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
@@ -33,6 +35,7 @@ const UserAutoComplete = (props: UserAutoCompleteProps): ReactElement => {
 	return (
 		<AutoComplete
 			{...props}
+			value={value}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ value, label }): ReactElement => {

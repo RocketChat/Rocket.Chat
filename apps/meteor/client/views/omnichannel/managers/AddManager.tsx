@@ -23,12 +23,15 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 		reload();
 		setUsername('');
 	});
+
+	const handleChange = (value: any): void => setUsername(value);
+
 	return (
 		<Box display='flex' alignItems='center' pi='x24'>
 			<Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
-					<UserAutoComplete value={username} onChange={setUsername} />
+					<UserAutoComplete value={username} onChange={handleChange} />
 					<Button disabled={!username} onClick={handleSave} mis='x8' primary>
 						{t('Add')}
 					</Button>
