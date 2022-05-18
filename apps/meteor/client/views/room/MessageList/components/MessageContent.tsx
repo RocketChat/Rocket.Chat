@@ -40,11 +40,16 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	const mineUid = useUserId();
 
+	const hasMessage = message?.md || message?.msg;
+
 	return (
 		<>
-			<MessageBody data-qa-type='message-body'>
-				<MessageRender message={message} />
-			</MessageBody>
+			{hasMessage && (
+				<MessageBody data-qa-type='message-body'>
+					<MessageRender message={message} />
+				</MessageBody>
+			)}
+
 			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
 
