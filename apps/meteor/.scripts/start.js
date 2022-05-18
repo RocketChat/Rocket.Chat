@@ -101,29 +101,29 @@ function startProcess(opts) {
 	});
 }
 
-function startRocketChat() {
-	return new Promise((resolve) => {
-		const waitServerRunning = (message) => {
-			if (message.toString().match('SERVER RUNNING')) {
-				return resolve();
-			}
-		};
+// function startRocketChat() {
+// 	return new Promise((resolve) => {
+// 		const waitServerRunning = (message) => {
+// 			if (message.toString().match('SERVER RUNNING')) {
+// 				return resolve();
+// 			}
+// 		};
 
-		startProcess({
-			name: 'Meteor App',
-			command: 'node',
-			params: ['/tmp/build-test/bundle/main.js'],
-			onData: waitServerRunning,
-			options: {
-				cwd: srcDir,
-				env: {
-					...appOptions.env,
-					...process.env,
-				},
-			},
-		});
-	});
-}
+// 		startProcess({
+// 			name: 'Meteor App',
+// 			command: 'node',
+// 			params: ['/tmp/build-test/bundle/main.js'],
+// 			onData: waitServerRunning,
+// 			options: {
+// 				cwd: srcDir,
+// 				env: {
+// 					...appOptions.env,
+// 					...process.env,
+// 				},
+// 			},
+// 		});
+// 	});
+// }
 
 async function startMicroservices() {
 	const waitStart = (resolve) => (message) => {
@@ -186,7 +186,7 @@ function startTests(options = []) {
 (async () => {
 	const [, , ...options] = process.argv;
 
-	await startRocketChat();
+	// await startRocketChat();
 
 	if (options.includes('--enterprise')) {
 		await startMicroservices();
