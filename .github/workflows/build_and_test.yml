@@ -156,7 +156,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: build
-          path: /tmp/build
+          path: /tmp/build/Rocket.Chat.tar.gz
 
   test:
     runs-on: ubuntu-20.04
