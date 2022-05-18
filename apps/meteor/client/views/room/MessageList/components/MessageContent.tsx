@@ -98,7 +98,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 				<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
 
-			{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
+			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
 			{shouldShowReadReceipt && <ReadReceipt unread={message.unread} />}
 		</>
