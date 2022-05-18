@@ -140,28 +140,17 @@ jobs:
         env:
           METEOR_PROFILE: 1000
         run: |
-          yarn build:ci -- --debug --directory /tmp/build-test
+          yarn build:ci -- --debug --directory /tmp/build
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
         run: |
-          yarn build:ci -- --directory /tmp/build-test
+          yarn build:ci -- --directory /tmp/build
 
       - name: Prepare build
         run: |
-          mkdir /tmp/build/
-          cd /tmp/build-test
+          cd /tmp/build
           tar czf /tmp/build/Rocket.Chat.tar.gz bundle
-          cd /tmp/build-test/bundle/programs/server
-          npm install --production
-          cd /tmp
-          tar czf Rocket.Chat.test.tar.gz ./build-test
-
-      - name: Store build for tests
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-test
-          path: /tmp/Rocket.Chat.test.tar.gz
 
       - name: Store build
         uses: actions/upload-artifact@v2
@@ -497,6 +486,8 @@ jobs:
       - name: Build Docker image for PRs
         run: |
           cd /tmp/build
+          tar xzf Rocket.Chat.tar.gz
+          rm Rocket.Chat.tar.gz
 
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
           IMAGE_NAME="rocket.chat"
