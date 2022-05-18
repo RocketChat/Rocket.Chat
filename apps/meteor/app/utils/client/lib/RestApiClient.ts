@@ -28,25 +28,25 @@ export const APIClient = new RestApiClient({
 	baseUrl: baseURI.replace(/\/$/, ''),
 });
 
-APIClient.use(function (request, next) {
-	try {
-		return next(...request);
-	} catch (e) {
-		return new Promise((resolve, reject) => {
-			process2faReturn({
-				error: e,
-				result: null,
-				emailOrUsername: undefined,
-				originalCallback: () => reject(e),
-				onCode(code, method) {
-					return resolve(
-						next(request[0], request[1], {
-							...request[2],
-							headers: { ...request[2].headers, 'x-2fa-code': code, 'x-2fa-method': method },
-						}),
-					);
-				},
-			});
-		});
-	}
-});
+// APIClient.use(function (request, next) {
+// 	try {
+// 		return next(...request);
+// 	} catch (e) {
+// 		return new Promise((resolve, reject) => {
+// 			process2faReturn({
+// 				error: e,
+// 				result: null,
+// 				emailOrUsername: undefined,
+// 				originalCallback: () => reject(e),
+// 				onCode(code, method) {
+// 					return resolve(
+// 						next(request[0], request[1], {
+// 							...request[2],
+// 							headers: { ...request[2].headers, 'x-2fa-code': code, 'x-2fa-method': method },
+// 						}),
+// 					);
+// 				},
+// 			});
+// 		});
+// 	}
+// });

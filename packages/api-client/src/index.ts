@@ -10,6 +10,9 @@ const pipe =
 		fn(...args);
 
 function buildFormData(data?: Record<string, any> | void, formData = new FormData(), parentKey?: string): FormData {
+	if (data instanceof FormData) {
+		return data;
+	}
 	if (!data) {
 		return formData;
 	}
@@ -23,6 +26,19 @@ function buildFormData(data?: Record<string, any> | void, formData = new FormDat
 	}
 	return formData;
 }
+
+const checkIfIsFormData = (data: any = {}): boolean => {
+	if (data instanceof FormData) {
+		return true;
+	}
+	return Object.entries(data).some(([key, value]) => {
+		if (typeof value === 'object' && !(value instanceof File)) {
+			return checkIfIsFormData(value);
+		}
+		return value instanceof File;
+	});
+};
+
 export class RestClient implements RestClientInterface {
 	private readonly baseUrl: string;
 
@@ -77,18 +93,25 @@ export class RestClient implements RestClientInterface {
 		params?: OperationParams<'GET', MatchPathPattern<TPath>>,
 		options?: Omit<RequestInit, 'method'>,
 	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>> {
-		return this.send(`${endpoint}?${this.getParams(params)}`, 'GET', options).then(function (response) {
+		if (/\?/.test(endpoint)) {
+			// throw new Error('Endpoint cannot contain query string');
+			console.warn('Endpoint cannot contain query string', endpoint);
+		}
+		const queryParams = this.getParams(params);
+		return this.send(`${endpoint}${ queryParams? `?${queryParams}` : '' }`, 'GET', options).then(function (response) {
 			return response.json();
 		});
 	}
 
 	post: RestClientInterface['post'] = (endpoint, params, { headers, ...options } = {}) => {
+		const isFormData = checkIfIsFormData(params);
+
 		return this.send(endpoint, 'POST', {
-			body: buildFormData(params),
+			body: isFormData ? buildFormData(params) : JSON.stringify(params),
 
 			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				...(!isFormData && { 'Content-Type': 'application/json' }),
 				...headers,
 			},
 
@@ -99,12 +122,13 @@ export class RestClient implements RestClientInterface {
 	};
 
 	put: RestClientInterface['put'] = (endpoint, params, { headers, ...options } = {}) => {
+		const isFormData = checkIfIsFormData(params);
 		return this.send(endpoint, 'PUT', {
-			body: buildFormData(params),
+			body: isFormData ? buildFormData(params) : JSON.stringify(params),
 
 			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				...(!isFormData && { 'Content-Type': 'application/json' }),
 				...headers,
 			},
 
@@ -131,7 +155,7 @@ export class RestClient implements RestClientInterface {
 	}
 
 	send(endpoint: string, method: string, { headers, ...options }: Omit<RequestInit, 'method'> = {}): Promise<Response> {
-		return fetch(`${this.baseUrl}${endpoint}`, {
+		return fetch(`${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, {
 			...options,
 			headers: { ...this.getCredentialsAsHeaders(), ...this.headers, ...headers },
 			method,

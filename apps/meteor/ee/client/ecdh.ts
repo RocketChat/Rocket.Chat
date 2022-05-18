@@ -65,14 +65,14 @@ async function initEncryptedSession(): Promise<void> {
 }
 
 initEncryptedSession();
-APIClient.use(async (request, next) => {
-	const session = await sessionPromise;
+// APIClient.use(async (request, next) => {
+// 	const session = await sessionPromise;
 
-	if (!session) {
-		return next(...request);
-	}
-	const result = await (await next(...request)).text();
-	const decrypted = await session.decrypt(result);
-	const parsed = JSON.parse(decrypted);
-	return parsed;
-});
+// 	if (!session) {
+// 		return next(...request);
+// 	}
+// 	const result = await (await next(...request)).text();
+// 	const decrypted = await session.decrypt(result);
+// 	const parsed = JSON.parse(decrypted);
+// 	return parsed;
+// });
