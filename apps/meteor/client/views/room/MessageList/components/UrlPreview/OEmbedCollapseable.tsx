@@ -14,7 +14,7 @@ const OEmbedCollapseable = ({ children, ...props }: OEmbedCollapseableProps): Re
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' color='hint' fontScale='c1'>
+			<Box mbs='x4' mbe='x6' display='flex' flexDirection='row' color='hint' fontScale='c1' alignItems='center'>
 				{t('Link_Preview')} {collapse}
 			</Box>
 			<MessageGenericPreview>

@@ -118,7 +118,7 @@ const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
 
 	return (
-		<Box width={oembedWidth}>
+		<Box width={oembedWidth} mb='x4'>
 			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
 					return <OEmbedResolver meta={data} key={index} />;

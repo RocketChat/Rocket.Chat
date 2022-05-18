@@ -27,7 +27,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	const getURL = useMediaUrl();
 	return (
 		<Attachment>
-			{description && <MarkdownText parseEmoji variant='inline' content={description} />}
+			{description && <MarkdownText mbs='x2' mbe='x4' parseEmoji variant='inline' content={description} />}
 			<Attachment.Row>
 				<Attachment.Title>{title}</Attachment.Title>
 				{size && <Attachment.Size size={size} />}
