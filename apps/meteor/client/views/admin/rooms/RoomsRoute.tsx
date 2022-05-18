@@ -1,10 +1,10 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import RoomsPage from './RoomsPage';
 
-function RoomsRoute() {
+const RoomsRoute = (): ReactElement => {
 	const canViewRoomAdministration = usePermission('view-room-administration');
 
 	if (!canViewRoomAdministration) {
@@ -12,6 +12,6 @@ function RoomsRoute() {
 	}
 
 	return <RoomsPage />;
-}
+};
 
 export default RoomsRoute;
