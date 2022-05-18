@@ -1606,7 +1606,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const update = {
 			$set: {
 				logoutAt,
-				userId,
+				logoutBy: userId,
 			},
 		};
 
