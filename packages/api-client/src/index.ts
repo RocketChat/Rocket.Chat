@@ -31,7 +31,7 @@ const checkIfIsFormData = (data: any = {}): boolean => {
 	if (data instanceof FormData) {
 		return true;
 	}
-	return Object.entries(data).some(([key, value]) => {
+	return Object.values(data).some((value) => {
 		if (typeof value === 'object' && !(value instanceof File)) {
 			return checkIfIsFormData(value);
 		}
@@ -98,7 +98,7 @@ export class RestClient implements RestClientInterface {
 			console.warn('Endpoint cannot contain query string', endpoint);
 		}
 		const queryParams = this.getParams(params);
-		return this.send(`${endpoint}${ queryParams? `?${queryParams}` : '' }`, 'GET', options).then(function (response) {
+		return this.send(`${endpoint}${queryParams ? `?${queryParams}` : ''}`, 'GET', options).then(function (response) {
 			return response.json();
 		});
 	}

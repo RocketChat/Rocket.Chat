@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { APIClient } from '../../app/utils/client';
+// import { APIClient } from '../../app/utils/client';
 import type { ClientSession } from '../app/ecdh/client/ClientSession';
 
 let resolveSession: (value: ClientSession | void) => void;
-const sessionPromise = new Promise<ClientSession | void>((resolve) => {
-	resolveSession = resolve;
-});
+// const sessionPromise = new Promise<ClientSession | void>((resolve) => {
+// 	resolveSession = resolve;
+// });
 
 function init(session: ClientSession): void {
 	Meteor.connection._stream.allowConnection();

@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { baseURI } from '../../../../client/lib/baseURI';
-import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
+// import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
 
 export class RestApiClient extends RestClient {
 	getCredentials():
