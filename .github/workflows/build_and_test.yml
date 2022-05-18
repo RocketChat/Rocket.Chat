@@ -505,7 +505,6 @@ jobs:
           fi;
 
           IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:pr-${{ github.event.number }}"
-
           if [[ '${{ matrix.release }}' = 'alpine' ]]; then
             IMAGE_NAME="${IMAGE_NAME}.${{ matrix.release }}"
           fi;
@@ -523,9 +522,9 @@ jobs:
           fi;
 
           echo "Copy Dockerfile for release: ${{ matrix.release }}"
-          cp ${DOCKERFILE_PATH}/Dockerfile .
-          if [ -e ${DOCKERFILE_PATH}/entrypoint.sh ]; then
-            cp ${DOCKERFILE_PATH}/entrypoint.sh .
+          cp $DOCKERFILE_PATH ./Dockerfile
+          if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
+            cp ${DOCKER_PATH}/entrypoint.sh .
           fi;
 
           echo "Build ${{ matrix.release }} Docker image"
