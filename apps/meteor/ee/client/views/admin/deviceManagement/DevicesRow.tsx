@@ -6,7 +6,7 @@ import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateA
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
     browser: 'desktop',
     mobile: 'mobile',
-}
+};
 
 const DeviceIcon: FC<{ deviceType: string }> = ({ deviceType }) =>
     <Box is='span' p='x4' bg='neutral-500-50' borderRadius='x32' mie='x4'><Icon name={iconMap[deviceType]} size='x20' color='info' /></Box>;
@@ -25,9 +25,9 @@ const DevicesRow = ({ _id, userId, ip, device: { name, type, os: { name:OSName }
                 {name}
             </TableCell>
             <TableCell>{OSName}</TableCell>
-            <TableCell>{userId}</TableCell>
+            <TableCell withTruncatedText>{userId}</TableCell>
             {mediaQuery && <TableCell>{formatDateAndTime(loginAt)}</TableCell>}
-            {mediaQuery && <TableCell>{_id}</TableCell>}
+            {mediaQuery && <TableCell withTruncatedText>{_id}</TableCell>}
             {mediaQuery && <TableCell>{ip}</TableCell>}
         </TableRow>
     );

@@ -1,12 +1,34 @@
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { Pagination } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import React, { ReactElement, useState, useMemo, useEffect } from 'react';
 
-import GenericTable from '../../../../../client/components/GenericTable';
+import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody } from '../../../../../client/components/GenericTable';
+import { usePagination } from '../../../../../client/components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../../../client/components/GenericTable/hooks/useSort';
 import DevicesRow from './DevicesRow';
+import FilterByText from '/client/components/FilterByText';
 
 const DevicesTable = (): ReactElement => {
 	const t = useTranslation();
+	const [text, setText] = useState('');
+	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
+	const { sortBy, sortDirection, setSort } = useSort<'clients' | 'os' | 'user' | 'loginAt'>('user');
+
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				query: text,
+				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
+				count: itemsPerPage,
+				offset: current,
+			}),
+			[text, itemsPerPage, current, sortBy, sortDirection]
+		),
+		500,
+	);
+
+	useEffect(() => console.log("Query = ", query), [query]);
 
 	const data = {
 		"sessions": [
@@ -261,45 +283,55 @@ const DevicesTable = (): ReactElement => {
 
 	const headers = useMemo(
 		() => [
-			<GenericTable.HeaderCell key={'name'}>
+			<GenericTableHeaderCell key={'clients'} direction={sortDirection} active={sortBy === 'clients'} onClick={setSort} sort='clients'>
 				{t('Clients')}
-			</GenericTable.HeaderCell>,
-			<GenericTable.HeaderCell key={'os'}>
+			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key={'os'} direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort='os'>
 				{t('OS')}
-			</GenericTable.HeaderCell>,
-			<GenericTable.HeaderCell key={'user'}>
+			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key={'user'} direction={sortDirection} active={sortBy === 'user'} onClick={setSort} sort='user'>
 				{t('User')}
-			</GenericTable.HeaderCell>,
+			</GenericTableHeaderCell>,
 			mediaQuery && (
-				<GenericTable.HeaderCell key={'loginAt'}>
+				<GenericTableHeaderCell key={'loginAt'} direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort='loginAt'>
 					{t('Last_login')}
-				</GenericTable.HeaderCell>
+				</GenericTableHeaderCell>
 			),
 			mediaQuery && (
-				<GenericTable.HeaderCell key={'_id'}>
+				<GenericTableHeaderCell key={'_id'}>
 					{t('Device_Id')}
-				</GenericTable.HeaderCell>
+				</GenericTableHeaderCell>
 			),
 			mediaQuery && (
-				<GenericTable.HeaderCell key={'ip'}>
+				<GenericTableHeaderCell key={'ip'}>
 					{t('IP_Address')}
-				</GenericTable.HeaderCell>
+				</GenericTableHeaderCell>
 			),
 		],
 		[t, mediaQuery],
 	);
 
-	const renderRow = useCallback((props) => <DevicesRow {...props} />, []);
-
 	return (
-		<GenericTable
-			header={headers}
-			results={data && data.sessions}
-			total={data && data.total}
-			renderRow={renderRow}
-		/>
+		<>
+			<FilterByText onChange={({ text }): void => setText(text)} />
+			<GenericTable>
+				<GenericTableHeader>
+					{headers}
+				</GenericTableHeader>
+				<GenericTableBody>
+					{data && data.sessions && data.sessions.map((session) => <DevicesRow {...session}/>)}
+				</GenericTableBody>
+			</GenericTable>
+			<Pagination
+				current={current}
+				itemsPerPage={itemsPerPage}
+				count={data?.total || 0}
+				onSetCurrent={setCurrent}
+				onSetItemsPerPage={setItemsPerPage}
+				{...paginationProps}
+			/>
+		</>
 	);
 };
 
 export default DevicesTable;
-
