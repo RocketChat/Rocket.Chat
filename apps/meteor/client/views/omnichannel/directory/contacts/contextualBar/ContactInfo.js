@@ -5,13 +5,13 @@ import React, { useEffect, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
-import AgentOrContactCardUsername from '../../../../../components/Omnichannel/AgentOrContactCardUsername';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
+import AgentOrContactCardUsername from '../../../components/AgentOrContactCardUsername';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';

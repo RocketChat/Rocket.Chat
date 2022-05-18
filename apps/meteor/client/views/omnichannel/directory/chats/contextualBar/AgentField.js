@@ -2,11 +2,11 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import AgentOrContactCardUsername from '../../../../../components/Omnichannel/AgentOrContactCardUsername';
 import { UserStatus } from '../../../../../components/UserStatus';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import AgentOrContactCardUsername from '../../../components/AgentOrContactCardUsername';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';

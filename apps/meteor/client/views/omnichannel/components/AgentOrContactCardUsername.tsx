@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement, ReactNode, ComponentProps } from 'react';
 
-import * as UserStatus from '../UserStatus';
+import * as UserStatus from '../../../components/UserStatus';
 
 type AgentOrContactCardUsernameProps = ComponentProps<typeof Box> & {
 	name: ReactNode;

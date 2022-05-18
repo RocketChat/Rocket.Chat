@@ -2,11 +2,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import AgentOrContactCardUsername from '../../../client/components/Omnichannel/AgentOrContactCardUsername';
 import { UserStatus } from '../../../client/components/UserStatus';
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
+import AgentOrContactCardUsername from '../../../client/views/omnichannel/components/AgentOrContactCardUsername';
 import Info from '../../../client/views/omnichannel/components/Info';
 
 const wordBreak = css`
