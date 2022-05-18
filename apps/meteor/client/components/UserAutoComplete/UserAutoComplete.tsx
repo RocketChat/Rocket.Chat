@@ -14,7 +14,7 @@ const query = (
 
 type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> &
 	Omit<ComponentProps<typeof Option>, 'value'> & {
-		conditions?: { [key: string]: string };
+		conditions?: { [key: string]: unknown };
 		onChange?: MouseEventHandler<HTMLButtonElement>;
 		value: any;
 		filter?: string;
