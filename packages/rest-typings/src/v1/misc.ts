@@ -11,44 +11,51 @@ export type MiscEndpoints = {
 		};
 	};
 
-	
 	// type DefaultUserFields = {
 	// 	[k: string]: number;
 	// };
-	
+
 	'me': {
-		GET: (params: { fields: {[k: string]: number;}, user: IUser }) => {
+		GET: (params: { fields: { [k: string]: number }; user: IUser }) => {
 			me: IUser;
 		};
 	};
 
 	'shield.svg': {
-		GET: (params: { type: string, icon: string, channel: string, name: string, text: string, color: string, size: number }) => {
+		GET: (params: { type: string; icon: string; channel: string; name: string; text: string; color: string; size: number }) => {
 			svg: string;
 		};
 	};
 
 	'spotlight': {
-		GET: (params: { query: string, limit: number, offset: number }) => {
+		GET: (params: { query: string; limit: number; offset: number }) => {
 			results: IUser[];
 		};
 	};
 
 	'directory': {
-		GET: (params: { text: string, type: string, workspace: unknown, sortBy: string | undefined, sortDirection: string, offset: number, limit: number }) => {
+		GET: (params: {
+			text: string;
+			type: string;
+			workspace: unknown;
+			sortBy: string | undefined;
+			sortDirection: string;
+			offset: number;
+			limit: number;
+		}) => {
 			results: IUser[];
 		};
 	};
 
 	'method.call': {
-		POST: (params: { method: string, params: unknown, id: string }) => {
+		POST: (params: { method: string; params: unknown; id: string }) => {
 			result: unknown;
 		};
 	};
 
 	'method.callAnon': {
-		POST: (params: { method: string, params: unknown, id: string }) => {
+		POST: (params: { method: string; params: unknown; id: string }) => {
 			result: unknown;
 		};
-	};		
+	};
 };
