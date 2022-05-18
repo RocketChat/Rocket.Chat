@@ -53,7 +53,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		[previousName, name, aliases, previousAliases, emojiFile],
 	);
 
-	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
+	const saveAction = useEndpointUpload('/v1/emoji-custom.update', t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		if (!name) {

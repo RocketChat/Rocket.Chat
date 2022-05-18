@@ -11,7 +11,7 @@ export type UserPresence = Readonly<
 
 export type UsersEndpoints = {
 	'/v1/users.info': {
-		GET: (params: { userId?: IUser['_id']; userName?: IUser['username'] }) => {
+		GET: (params: undefined | { userId?: IUser['_id'] } | { userName?: IUser['username'] }) => {
 			user: IUser;
 		};
 	};
@@ -25,10 +25,10 @@ export type UsersEndpoints = {
 		GET: (params: { userId: IUser['_id'] }) => { teams: Array<ITeam> };
 	};
 	'/v1/users.setAvatar': {
-		POST: (params: { userId?: IUser['_id']; username?: IUser['username']; avatarUrl?: string }) => void;
+		POST: (params: (undefined | { userId?: IUser['_id'] } | { username?: IUser['username'] }) & { avatarUrl?: string }) => void;
 	};
 	'/v1/users.resetAvatar': {
-		POST: (params: { userId?: IUser['_id']; username?: IUser['username'] }) => void;
+		POST: (params: undefined | { userId?: IUser['_id'] } | { username?: IUser['username'] }) => void;
 	};
 	'/v1/users.presence': {
 		GET: (params: { ids: string[] }) => UsersPresencePayload;

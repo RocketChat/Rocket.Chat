@@ -43,7 +43,7 @@ const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	}
 };
 
-const uploadToEndpoint = (endpoint: string, formData: any): Promise<UploadResult> => APIClient.post(endpoint.slice(1), formData);
+const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> => APIClient.post(endpoint, formData);
 
 const getStream = (streamName: string, options: {} = {}): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
 	const streamer = Meteor.StreamerCentral.instances[streamName]

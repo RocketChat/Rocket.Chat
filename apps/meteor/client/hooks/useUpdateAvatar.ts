@@ -48,7 +48,7 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']): 
 		[userId],
 	);
 
-	const saveAvatarAction = useEndpointUpload('users.setAvatar', saveAvatarQuery, successText);
+	const saveAvatarAction = useEndpointUpload('/v1/users.setAvatar', successText);
 	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', saveAvatarQuery, successText);
 	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', resetAvatarQuery, successText);
 
