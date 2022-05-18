@@ -104,7 +104,6 @@ API.v1.addRoute(
 					{ $text: { $search: search }, active: true },
 					{ projection: { _id: 1 }, limit: 10 },
 				).toArray();
-				console.log(searchUser);
 				if (searchUser?.length) {
 					search += ` ${searchUser.map((user) => user._id).join(' ')}`;
 				}
