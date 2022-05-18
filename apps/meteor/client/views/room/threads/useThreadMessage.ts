@@ -1,43 +1,43 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { Tracker } from 'meteor/tracker';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient, UseQueryResult } from 'react-query';
 
 import { ChatMessage } from '../../../../app/models/client';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 
-export const useThreadMessage = (tmid: string): IMessage => {
-	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
+export const useThreadMessage = (tmid: string): UseQueryResult<IMessage, Error> => {
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
-	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
-		async (params) => {
-			const { message } = await getMessage(params);
+
+	const query = useQuery<IMessage, Error>(
+		['thread', tmid, 'message'],
+		async (): Promise<IMessage> => {
+			const { message } = await getMessage({ msgId: tmid });
 			return mapMessageFromApi(message);
 		},
-		[getMessage],
+		{
+			initialData: ChatMessage.findOne({ _id: tmid }) as IMessage | undefined,
+		},
 	);
+
+	const queryClient = useQueryClient();
 
 	useEffect(() => {
 		const computation = Tracker.autorun(async (computation) => {
-			const msg = ChatMessage.findOne({ _id: tmid }) || (await getMessageParsed({ msgId: tmid }));
+			const msg: IMessage | undefined = ChatMessage.findOne({ _id: tmid });
 
 			if (!msg || computation.stopped) {
 				return;
 			}
 
-			setMessage((prevMsg) => {
-				if (!prevMsg || prevMsg._id !== msg._id || prevMsg._updatedAt?.getTime() !== msg._updatedAt?.getTime()) {
-					return msg;
-				}
-
-				return prevMsg;
-			});
+			queryClient.setQueryData(['thread', tmid, 'message'], msg);
 		});
 
 		return (): void => {
 			computation.stop();
 		};
-	}, [getMessageParsed, tmid]);
+	}, [queryClient, tmid]);
 
-	return message;
+	return query;
 };

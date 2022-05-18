@@ -5,7 +5,7 @@ import { useThreadMessage } from './useThreadMessage';
 
 export const useThreadFollowing = (mid: string): [following: boolean, toggle: () => void] => {
 	const uid = useUserId();
-	const threadMessage = useThreadMessage(mid);
+	const { data: threadMessage } = useThreadMessage(mid);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const followMessage = useMethod('followMessage');
 	const unfollowMessage = useMethod('unfollowMessage');

@@ -2,9 +2,10 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useRoute, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo, FC } from 'react';
 
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
+import { useMemoCompare } from '../../../hooks/useMemoCompare';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import ThreadSkeleton from './ThreadSkeleton';
@@ -21,9 +22,11 @@ const ThreadComponent: FC<{
 	room: IRoom;
 	onClickBack: (e: unknown) => void;
 }> = ({ mid, jump, room, onClickBack }) => {
+	const threadMessageQuery = useThreadMessage(mid);
+	const { data: threadMessage } = threadMessageQuery;
+
 	const subscription = useUserSubscription(room._id, subscriptionFields);
 	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
-	const threadMessage = useThreadMessage(mid);
 
 	const openUserInfo = useTabBarOpenUserInfo();
 
@@ -37,31 +40,17 @@ const ThreadComponent: FC<{
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
 	}, [channelRoute, room._id, room.t, room.name]);
 
-	const [viewData, setViewData] = useState(() => ({
-		mainMessage: threadMessage,
-		jump,
-		following,
-		subscription,
-		rid: room._id,
-		tabBar: { openUserInfo },
-	}));
-
-	useEffect(() => {
-		setViewData((viewData) => {
-			if (!threadMessage || viewData.mainMessage?._id === threadMessage._id) {
-				return viewData;
-			}
-
-			return {
-				mainMessage: threadMessage,
-				jump,
-				following,
-				subscription,
-				rid: room._id,
-				tabBar: { openUserInfo },
-			};
-		});
-	}, [following, jump, openUserInfo, room._id, subscription, threadMessage]);
+	const viewData = useMemoCompare(
+		{
+			mainMessage: threadMessage,
+			jump,
+			following,
+			subscription,
+			rid: room._id,
+			tabBar: { openUserInfo },
+		},
+		(prev, next) => !threadMessage || prev.mainMessage?._id === next.mainMessage?._id,
+	);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {
@@ -74,7 +63,12 @@ const ThreadComponent: FC<{
 		};
 	}, [viewData]);
 
-	if (!threadMessage) {
+	if (threadMessageQuery.isLoading) {
+		return <ThreadSkeleton expanded={canExpand && expanded} onClose={handleClose} />;
+	}
+
+	if (threadMessageQuery.isError) {
+		// TODO: view for thread fetch errored
 		return <ThreadSkeleton expanded={canExpand && expanded} onClose={handleClose} />;
 	}
 
