@@ -2,7 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import ThreadError from './ThreadError';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 import { useThreadMessage } from './useThreadMessage';
@@ -27,11 +29,21 @@ const ThreadComponent = ({ mid, jump, room, onBack }: ThreadComponentProps): Rea
 	}
 
 	if (threadMessageQuery.isError) {
-		// TODO: view for thread fetch errored
-		return <ThreadSkeleton onBack={onBack} onClose={handleClose} />;
+		return (
+			<ThreadError
+				reloading={threadMessageQuery.isRefetching}
+				onReload={threadMessageQuery.refetch}
+				onBack={onBack}
+				onClose={handleClose}
+			/>
+		);
 	}
 
-	return <ThreadView message={threadMessageQuery.data} jump={jump} onBack={onBack} onClose={handleClose} />;
+	return (
+		<ErrorBoundary fallback={<ThreadError onReload={threadMessageQuery.refetch} onBack={onBack} onClose={handleClose} />}>
+			<ThreadView message={threadMessageQuery.data} jump={jump} onBack={onBack} onClose={handleClose} />
+		</ErrorBoundary>
+	);
 };
 
 export default ThreadComponent;
