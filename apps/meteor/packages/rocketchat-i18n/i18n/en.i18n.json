@@ -2644,7 +2644,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "User Group Filter",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "The LDAP search filter used to check if a user is in a group.",
   "LDAP_Sync_User_Data_RolesMap": "User Data Group Map",
-  "LDAP_Sync_User_Data_RolesMap_Description": "Map LDAP groups to Rocket.Chat user roles <br/>As an example, `{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}` will map the rocket-admin LDAP group to Rocket's \"admin\" role.",
+  "LDAP_Sync_User_Data_RolesMap_Description": "Map LDAP groups to Rocket.Chat user roles <br/>As an example, `{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}` will map the rocket-admin LDAP group to Rocket's \"admin\" role.",
   "LDAP_Teams_BaseDN": "LDAP Teams BaseDN",
   "LDAP_Teams_BaseDN_Description": "The LDAP BaseDN used to lookup user teams.",
   "LDAP_Teams_Name_Field": "LDAP Team Name Attribute",
