@@ -37,7 +37,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
-	const { installed, screenshots, settings, apis } = data || {};
+	const { installed, settings, apis } = data || {};
 	const showApis = apis?.length;
 
 	const saveAppSettings = useCallback(async () => {
@@ -124,7 +124,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 								)}
 							</Tabs>
 
-							{isDetailsTabSelected && <AppDetailsPageContent app={data} screenshots={screenshots || []} />}
+							{isDetailsTabSelected && <AppDetailsPageContent app={data} />}
 							{areApisVisible && <APIsDisplay apis={apis || []} />}
 							{isLogsTabSelected && <AppLogsPage id={id} />}
 							{isSettingsTabSelected && (

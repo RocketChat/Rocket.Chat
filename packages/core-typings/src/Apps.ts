@@ -36,6 +36,7 @@ export type App = {
 		bundleId: string;
 		bundleName: string;
 		apps: App[];
+		addonTierId?: string;
 	}[];
 	marketplaceVersion: string;
 	latest: App;

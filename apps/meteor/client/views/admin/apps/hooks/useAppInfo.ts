@@ -23,12 +23,12 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 
 	const [appData, setAppData] = useState<AppInfo>();
 
-	const getSettings = useEndpoint('GET', `apps/${appId}/settings`);
-	const getScreenshots = useEndpoint('GET', `apps/${appId}/screenshots`);
-	const getApis = useEndpoint('GET', `apps/${appId}/apis`);
+	const getSettings = useEndpoint('GET', `/apps/${appId}/settings`);
+	const getScreenshots = useEndpoint('GET', `/apps/${appId}/screenshots`);
+	const getApis = useEndpoint('GET', `/apps/${appId}/apis`);
 
 	// TODO: remove EndpointFunction<'GET', 'apps/:id'>
-	const getBundledIn = useEndpoint('GET', `apps/${appId}`) as EndpointFunction<'GET', 'apps/:id'>;
+	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as EndpointFunction<'GET', '/apps/:id'>;
 
 	useEffect(() => {
 		const apps: App[] = [];
@@ -53,16 +53,17 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 			};
 
 			const [bundledIn, settings, apis, screenshots] = await Promise.all([
-				app.marketplace &&
-					getBundledIn({
-						marketplace: 'true',
-						update: 'true',
-						appVersion: appId,
-					})
-						.then(({ app }) => getBundledInApp(app))
-						.catch(() => ({
-							settings: {},
-						})),
+				app.marketplace === false
+					? []
+					: getBundledIn({
+							marketplace: 'true',
+							update: 'true',
+							appVersion: appId,
+					  })
+							.then(({ app }) => getBundledInApp(app))
+							.catch(() => ({
+								settings: {},
+							})),
 				app.installed &&
 					getSettings().catch(() => ({
 						settings: {},

@@ -1,23 +1,22 @@
-import { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
 import ScreenshotCarouselAnchor from './components/ScreenshotCarouselAnchor';
-import { App } from './types';
+import { AppInfo } from './definitions/AppInfo';
 
 type AppDetailsPageContentProps = {
-	app: App;
-	screenshots: AppScreenshot[];
+	app: AppInfo;
 };
 
-const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app, screenshots }) => {
+const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 	const {
 		author: { homepage, support },
 		detailedDescription,
 		description,
 		categories = [],
+		screenshots,
 	} = app;
 
 	const t = useTranslation();
