@@ -1,69 +1,31 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useRoute, useUserSubscription } from '@rocket.chat/ui-contexts';
-import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
-import React, { useEffect, useRef, useCallback, useMemo, FC } from 'react';
+import { useRoute } from '@rocket.chat/ui-contexts';
+import React, { useCallback, ReactElement, MouseEvent } from 'react';
 
-import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
-import { useMemoCompare } from '../../../hooks/useMemoCompare';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 import { useThreadExpansion } from './useThreadExpansion';
-import { useThreadFollowing } from './useThreadFollowing';
 import { useThreadMessage } from './useThreadMessage';
 
-const subscriptionFields = {};
-
-const ThreadComponent: FC<{
+type ThreadComponentProps = {
 	mid: string;
-	jump: unknown;
+	jump: string | undefined;
 	room: IRoom;
-	onClickBack: (e: unknown) => void;
-}> = ({ mid, jump, room, onClickBack }) => {
+	onClickBack: (e: MouseEvent<HTMLOrSVGElement>) => void;
+};
+
+const ThreadComponent = ({ mid, jump, room, onClickBack }: ThreadComponentProps): ReactElement => {
 	const threadMessageQuery = useThreadMessage(mid);
-	const { data: threadMessage } = threadMessageQuery;
 
-	const subscription = useUserSubscription(room._id, subscriptionFields);
-	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
-
-	const openUserInfo = useTabBarOpenUserInfo();
-
-	const ref = useRef<HTMLElement>(null);
-
-	const headerTitle: string | null = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
 	const [canExpand, expanded, toggleExpanded] = useThreadExpansion();
-	const [following, toggleFollowing] = useThreadFollowing(mid);
 
+	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
 	const handleClose = useCallback(() => {
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
 	}, [channelRoute, room._id, room.t, room.name]);
 
-	const viewData = useMemoCompare(
-		{
-			mainMessage: threadMessage,
-			jump,
-			following,
-			subscription,
-			rid: room._id,
-			tabBar: { openUserInfo },
-		},
-		(prev, next) => !threadMessage || prev.mainMessage?._id === next.mainMessage?._id,
-	);
-
-	useEffect(() => {
-		if (!ref.current || !viewData.mainMessage) {
-			return;
-		}
-		const view = Blaze.renderWithData(Template.thread, viewData, ref.current);
-
-		return (): void => {
-			Blaze.remove(view);
-		};
-	}, [viewData]);
-
-	if (threadMessageQuery.isLoading) {
+	if (threadMessageQuery.isIdle || threadMessageQuery.isLoading) {
 		return <ThreadSkeleton expanded={canExpand && expanded} onClose={handleClose} />;
 	}
 
@@ -74,13 +36,11 @@ const ThreadComponent: FC<{
 
 	return (
 		<ThreadView
-			ref={ref}
-			title={headerTitle}
+			message={threadMessageQuery.data}
+			jump={jump}
 			canExpand={canExpand}
 			expanded={expanded}
-			following={following}
 			onToggleExpand={toggleExpanded}
-			onToggleFollow={toggleFollowing}
 			onClose={handleClose}
 			onClickBack={onClickBack}
 		/>

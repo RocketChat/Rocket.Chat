@@ -1,25 +1,32 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import { Modal, Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, useCallback, useMemo, forwardRef } from 'react';
+import { useTranslation, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import React, { useMemo, useEffect, useRef, ReactElement, MouseEvent } from 'react';
 
+import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import VerticalBar from '../../../components/VerticalBar';
 import { useDir } from '../../../hooks/useDir';
+import { useMemoCompare } from '../../../hooks/useMemoCompare';
+import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
+import { useThreadFollowing } from './useThreadFollowing';
+
+const subscriptionFields = {};
 
 type ThreadViewProps = {
-	title: string | null;
+	message: IMessage;
+	jump: string | undefined;
 	canExpand: boolean;
 	expanded: boolean;
-	following: boolean;
 	onToggleExpand: () => void;
-	onToggleFollow: (following: boolean) => void;
 	onClose: () => void;
-	onClickBack: (e: unknown) => void;
-} & Omit<ComponentProps<typeof Box>, 'title'>;
+	onClickBack: (e: MouseEvent<HTMLOrSVGElement>) => void;
+};
 
-const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(function ThreadView(
-	{ title, canExpand, expanded, following, onToggleExpand, onToggleFollow, onClose, onClickBack },
-	ref,
-) {
+const ThreadView = ({ message, jump, canExpand, expanded, onToggleExpand, onClose, onClickBack }: ThreadViewProps): ReactElement => {
+	const title: string = useMemo(() => normalizeThreadTitle(message), [message]);
+
 	const dir = useDir();
 
 	const style = useMemo(
@@ -41,12 +48,36 @@ const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(function ThreadView(
 	const expandLabel = expanded ? t('Collapse') : t('Expand');
 	const expandIcon = expanded ? 'arrow-collapse' : 'arrow-expand';
 
+	const [following, toggleFollowing] = useThreadFollowing(message._id);
 	const followLabel = following ? t('Following') : t('Not_Following');
 	const followIcon = following ? 'bell' : 'bell-off';
 
-	const handleFollowActionClick = useCallback(() => {
-		onToggleFollow(following);
-	}, [following, onToggleFollow]);
+	const ref = useRef<HTMLElement>(null);
+
+	const subscription = useUserSubscription(message.rid, subscriptionFields);
+	const openUserInfo = useTabBarOpenUserInfo();
+	const viewData = useMemoCompare(
+		{
+			mainMessage: message,
+			jump,
+			following,
+			subscription,
+			rid: message.rid,
+			tabBar: { openUserInfo },
+		},
+		(prev, next) => !next.mainMessage || prev.mainMessage?._id === next.mainMessage?._id,
+	);
+
+	useEffect(() => {
+		if (!ref.current) {
+			return;
+		}
+		const view = Blaze.renderWithData(Template.thread, viewData, ref.current);
+
+		return (): void => {
+			Blaze.remove(view);
+		};
+	}, [viewData]);
 
 	return (
 		<>
@@ -70,22 +101,15 @@ const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(function ThreadView(
 						<VerticalBar.Text dangerouslySetInnerHTML={{ __html: title ?? '' }} />
 						{canExpand && <VerticalBar.Action title={expandLabel} name={expandIcon} onClick={(): void => onToggleExpand()} />}
 						<VerticalBar.Actions>
-							<VerticalBar.Action title={followLabel} name={followIcon} onClick={handleFollowActionClick} />
+							<VerticalBar.Action title={followLabel} name={followIcon} onClick={(): void => toggleFollowing()} />
 							<VerticalBar.Close onClick={onClose} />
 						</VerticalBar.Actions>
 					</VerticalBar.Header>
-					<VerticalBar.Content
-						ref={ref}
-						{...{
-							flexShrink: 1,
-							flexGrow: 1,
-							paddingInline: 0,
-						}}
-					/>
+					<VerticalBar.Content ref={ref} flexShrink={1} flexGrow={1} paddingInline={0} />
 				</VerticalBar>
 			</Box>
 		</>
 	);
-});
+};
 
 export default ThreadView;
