@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-// import { APIClient } from '../../app/utils/client';
+import { APIClient } from '../../app/utils/client';
 import type { ClientSession } from '../app/ecdh/client/ClientSession';
 
 let resolveSession: (value: ClientSession | void) => void;
-// const sessionPromise = new Promise<ClientSession | void>((resolve) => {
-// 	resolveSession = resolve;
-// });
+const sessionPromise = new Promise<ClientSession | void>((resolve) => {
+	resolveSession = resolve;
+});
 
 function init(session: ClientSession): void {
 	Meteor.connection._stream.allowConnection();
@@ -65,14 +65,14 @@ async function initEncryptedSession(): Promise<void> {
 }
 
 initEncryptedSession();
-// APIClient.use(async (request, next) => {
-// 	const session = await sessionPromise;
+APIClient.use(async (request, next) => {
+	const session = await sessionPromise;
 
-// 	if (!session) {
-// 		return next(...request);
-// 	}
-// 	const result = await (await next(...request)).text();
-// 	const decrypted = await session.decrypt(result);
-// 	const parsed = JSON.parse(decrypted);
-// 	return parsed;
-// });
+	if (!session) {
+		return next(...request);
+	}
+	const result = await (await next(...request)).text();
+	const decrypted = await session.decrypt(result);
+	const parsed = JSON.parse(decrypted);
+	return parsed;
+});

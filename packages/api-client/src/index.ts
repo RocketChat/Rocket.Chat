@@ -175,8 +175,9 @@ export class RestClient implements RestClientInterface {
 	}
 
 	use(middleware: Middleware<RestClientInterface['send']>): void {
+		const fn = this.send.bind(this);
 		this.send = function (this: RestClient, ...context: Parameters<RestClientInterface['send']>): ReturnType<RestClientInterface['send']> {
-			return middleware(context, pipe(this.send.bind(this)));
+			return middleware(context, pipe(fn));
 		} as RestClientInterface['send'];
 	}
 }
