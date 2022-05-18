@@ -1,10 +1,9 @@
-import { Field, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { Field, FieldGroup, Box } from '@rocket.chat/fuselage';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, useEffect, useState } from 'react';
+import { Meteor } from 'meteor/meteor';
+import React, { useMemo, useEffect, useState } from 'react';
 
-import { validateEmail } from '../../../lib/emailValidator';
-import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import ViewAccountInfo from './ViewAccountInfo';
@@ -12,40 +11,13 @@ import ViewAccountInfo from './ViewAccountInfo';
 function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 	const t = useTranslation();
 
-	const checkUsernameAvailability = useMethod('checkUsernameAvailability');
 	const getAvatarSuggestions = useMethod('getAvatarSuggestion');
 
-	const [usernameError, setUsernameError] = useState();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
 
-	const { allowUserAvatarChange, namesRegex, requireName } = settings;
-
-	const { realname, email, username, password, confirmationPassword, statusText } = values;
+	const { email, username, password } = values;
 
 	const { handleConfirmationPassword, handleAvatar } = handlers;
-
-	const passwordError = useMemo(
-		() => (!password || !confirmationPassword || password === confirmationPassword ? undefined : t('Passwords_do_not_match')),
-		[t, password, confirmationPassword],
-	);
-	const emailError = useMemo(() => (validateEmail(email) ? undefined : 'error-invalid-email-address'), [email]);
-	const checkUsername = useDebouncedCallback(
-		async (username) => {
-			if (user.username === username) {
-				return setUsernameError(undefined);
-			}
-			if (!namesRegex.test(username)) {
-				return setUsernameError(t('error-invalid-username'));
-			}
-			const isAvailable = await checkUsernameAvailability(username);
-			if (!isAvailable) {
-				return setUsernameError(t('Username_already_exist'));
-			}
-			setUsernameError(undefined);
-		},
-		400,
-		[namesRegex, t, user.username, checkUsernameAvailability, setUsernameError],
-	);
 
 	useEffect(() => {
 		const getSuggestions = async () => {
@@ -56,38 +28,19 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 	}, [getAvatarSuggestions, setAvatarSuggestions]);
 
 	useEffect(() => {
-		checkUsername(username);
-	}, [checkUsername, username]);
-
-	useEffect(() => {
 		if (!password) {
 			handleConfirmationPassword('');
 		}
 	}, [password, handleConfirmationPassword]);
 
-	const nameError = useMemo(() => {
-		if (user.name === realname) {
-			return undefined;
-		}
-		if (!realname && requireName) {
-			return t('Field_required');
-		}
-	}, [realname, requireName, t, user.name]);
-
-	const statusTextError = useMemo(() => {
-		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
-			return t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH);
-		}
-
-		return undefined;
-	}, [statusText, t]);
 	const {
+		// eslint-disable-next-line no-empty-pattern
 		emails: [],
 	} = user;
 
-	const handleSubmit = useCallback((e) => {
+	const handleSubmit = (e) => {
 		e.preventDefault();
-	}, []);
+	};
 
 	// Refetch user data so that we can get createdAt field.
 	const { value: data } = useEndpointData(
@@ -107,6 +60,7 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 		currency: 'USD',
 	};
 
+	// eslint-disable-next-line no-unused-vars
 	const buyCredit = useMemo(() => {
 		if (!user.credit) {
 			Meteor.call('buyCredit', dummyCredit, (error, result) => {
@@ -118,8 +72,9 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 				}
 			});
 		}
-	}, [user.credit]);
+	}, [user.credit, dummyCredit]);
 
+	// eslint-disable-next-line no-unused-vars
 	const setRandomTrustScore = useMemo(() => {
 		if (!user.trustScore) {
 			Meteor.call('setRandomTrustScore', (error, result) => {
@@ -176,7 +131,7 @@ function ViewProfileForm({ values, handlers, user, settings, ...props }) {
 						/>
 					</Field>
 				),
-				[username, user.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag],
+				[username, user.username, handleAvatar, avatarSuggestions, user.avatarETag, user._id],
 			)}
 			<Box style={{ margin: '0px auto', fontSize: '16px' }}>{user.bio ? user.bio : 'No user bio...'}</Box>
 			<Box display='flex' flexDirection='column' style={{ marginTop: '30px' }}>

@@ -4,9 +4,9 @@ import React, { ReactElement, useContext, useState } from 'react';
 
 import BottomBar from '../../components/BottomBar';
 import DetailPageHeader from '../../components/DetailPageHeader/DetailPageHeader';
-import Comment from './components/Comment';
 import Page from '../../components/Page';
 import { DispatchBlogGlobalContext, BlogGlobalContext } from '../../contexts/BlogDetailContext/GlobalState';
+import Comment from './components/Comment';
 
 const BlogView = (): ReactElement => {
 	const { dispatch } = useContext(DispatchBlogGlobalContext);

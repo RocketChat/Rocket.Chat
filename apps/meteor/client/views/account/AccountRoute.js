@@ -6,11 +6,11 @@ import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import TopUpView from '../topup/TopUpView';
 import AccountIntegrationsPage from './AccountIntegrationsPage';
 import AccountProfilePage from './AccountProfilePage';
+import ViewProfilePage from './ViewProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import AccountSecurityPage from './security/AccountSecurityPage';
 import AccountTokensPage from './tokens/AccountTokensPage';
 import './sidebarItems';
-import ViewProfilePage from './ViewProfilePage';
 
 const AccountRoute = () => {
 	const [routeName] = useCurrentRoute();

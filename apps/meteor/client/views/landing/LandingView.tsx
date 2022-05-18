@@ -1,5 +1,5 @@
-import React, { ReactElement, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
+import React, { ReactElement, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import BottomBar from '../../components/BottomBar';

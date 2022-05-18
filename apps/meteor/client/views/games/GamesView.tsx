@@ -3,11 +3,11 @@ import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 
+import { IGame } from '../../../definition/IGame';
 import BottomBar from '../../components/BottomBar';
 import Page from '../../components/Page';
-import TopBar from '../../topbar/TopBar';
-import { IGame } from '../../../definition/IGame';
 import PageInlineNavbar from '../../components/PageInlineNavbar/PageInlineNavbar';
+import TopBar from '../../topbar/TopBar';
 import SingleGame from './SingleGame';
 
 const GamesView = (): ReactElement => {

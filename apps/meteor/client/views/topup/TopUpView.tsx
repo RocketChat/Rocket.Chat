@@ -55,9 +55,7 @@ const TopUpView = (): ReactElement => {
 		},
 	];
 
-	const sortedGateways = useMemo(() => {
-		return fetchedGateways.sort((a, b) => a.sortOrder - b.sortOrder);
-	}, [fetchedGateways]);
+	const sortedGateways = useMemo(() => fetchedGateways.sort((a, b) => a.sortOrder - b.sortOrder), [fetchedGateways]);
 
 	const getGatewaysFn = (): void => {
 		Meteor.call('getGateways', {}, {}, (_error, result) => {
@@ -82,6 +80,7 @@ const TopUpView = (): ReactElement => {
 						if (index === gateways.length - 1) {
 							getGatewaysFn();
 						}
+						return null;
 					});
 				}
 			}

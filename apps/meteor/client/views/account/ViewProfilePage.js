@@ -9,16 +9,16 @@ import {
 	useMethod,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import { SHA256 } from 'meteor/sha';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { SHA256 } from 'meteor/sha';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
 import Page from '../../components/Page';
 import { useForm } from '../../hooks/useForm';
-import ViewProfileForm from './ViewProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
+import ViewProfileForm from './ViewProfileForm';
 
 const getInitialValues = (user) => ({
 	realname: user.name ?? '',
@@ -40,7 +40,7 @@ const ViewProfilePage = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const user = useUser();
 
-	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(getInitialValues(user ?? {}));
+	const { values, handlers, hasUnsavedChanges, reset } = useForm(getInitialValues(user ?? {}));
 	const setModal = useSetModal();
 	const logout = useLogout();
 	const [loggingOut, setLoggingOut] = useState(false);

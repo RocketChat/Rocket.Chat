@@ -2,10 +2,10 @@ import { Box, Button, Icon, Margins, Avatar } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useMemo } from 'react';
 
-import { useFileInput } from '../../../hooks/useFileInput';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { useFileInput } from '../../../hooks/useFileInput';
 import { useFormatDate } from '../../../hooks/useFormatDate';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 
