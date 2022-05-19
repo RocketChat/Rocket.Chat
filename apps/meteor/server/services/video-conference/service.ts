@@ -124,7 +124,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.changeMessageType(call.messages.started, 'video-direct-missed');
 		}
 
-		this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
+		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
 	}
 
 	public async get(callId: IVideoConference['_id']): Promise<IVideoConference | null> {
@@ -162,7 +162,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async changeMessageType(messageId: string, newType: MessageTypesValues): Promise<void> {
-		this.Messages.setTypeById(messageId, newType);
+		await this.Messages.setTypeById(messageId, newType);
 	}
 
 	private async startDirect(caller: IUser['_id'], { _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>): Promise<DirectCallInstructions> {
@@ -204,7 +204,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const url = this.getUrl(call, user, options);
 
 		if (!call.users.find(({ _id }) => _id === user._id)) {
-			this.addUserToCall(call._id, user);
+			await this.addUserToCall(call._id, user);
 		}
 
 		return url;
@@ -233,6 +233,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		callId: IVideoConference['_id'],
 		{ _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>,
 	): Promise<void> {
-		this.VideoConference.addUserById(callId, { _id, username, name });
+		await this.VideoConference.addUserById(callId, { _id, username, name });
 	}
 }
