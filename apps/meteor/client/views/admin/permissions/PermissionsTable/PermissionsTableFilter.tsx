@@ -16,7 +16,15 @@ const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: stri
 		setFilter(value);
 	});
 
-	return <TextInput value={filter} onChange={handleFilter} placeholder={t('Search')} flexGrow={0} />;
+	return (
+		<TextInput
+			data-qa='PermissionTable-PermissionsTableFilter'
+			value={filter}
+			onChange={handleFilter}
+			placeholder={t('Search')}
+			flexGrow={0}
+		/>
+	);
 };
 
 export default PermissionsTableFilter;
