@@ -15,6 +15,7 @@ type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' |
 	value: any;
 };
 
+/* @deprecated */
 const RoomAutoComplete = (props: RoomAutoCompleteProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
@@ -28,7 +29,7 @@ const RoomAutoComplete = (props: RoomAutoCompleteProps): ReactElement => {
 				label: { name, avatarETag, type: t },
 			})) || [],
 		[data],
-	);
+	) as unknown as { value: string; label: string }[];
 
 	return (
 		<AutoComplete
@@ -48,7 +49,7 @@ const RoomAutoComplete = (props: RoomAutoCompleteProps): ReactElement => {
 			renderItem={({ value, label, ...props }): ReactElement => (
 				<Option key={value} {...props} label={label.name} avatar={<Avatar value={value} {...label} />} />
 			)}
-			options={options.map((option) => ({ value: option.value, label: option.label.name || '' }))}
+			options={options}
 		/>
 	);
 };

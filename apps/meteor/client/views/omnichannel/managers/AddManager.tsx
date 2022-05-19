@@ -24,7 +24,11 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 		setUsername('');
 	});
 
-	const handleChange = (value: any): void => setUsername(value);
+	const handleChange = (value: unknown): void => {
+		if (typeof value === 'string') {
+			setUsername(value);
+		}
+	};
 
 	return (
 		<Box display='flex' alignItems='center' pi='x24'>

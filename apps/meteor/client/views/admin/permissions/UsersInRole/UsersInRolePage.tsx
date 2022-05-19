@@ -51,7 +51,11 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		return setUser(user);
 	});
 
-	const handleChange = (value: any): void => setRid(value);
+	const handleChange = (value: unknown): void => {
+		if (typeof value === 'string') {
+			setRid(value);
+		}
+	};
 
 	return (
 		<Page>
