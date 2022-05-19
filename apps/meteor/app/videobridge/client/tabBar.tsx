@@ -7,6 +7,7 @@ import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/T
 import Header from '../../../client/components/Header';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
 import { useVideoConfPopupDispatch } from '../../../client/contexts/VideoConfPopupContext';
+import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
@@ -128,6 +129,7 @@ addAction('video-conf', ({ room }) => {
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 
 	const handleStartConference = useMutableCallback(() => {
+		VideoConfManager.startCall(room._id);
 		handleCloseVideoConf();
 		dispatchPopup({ room });
 	});
@@ -135,6 +137,10 @@ addAction('video-conf', ({ room }) => {
 	const handleOpenVideoConf = useMutableCallback((): void =>
 		setModal(<StartVideoConfModal onConfirm={handleStartConference} room={room} onClose={handleCloseVideoConf} />),
 	);
+
+	const useIncomingCalls = VideoConfManager.getIncomingCallsSubscription();
+	const calls = useIncomingCalls();
+	console.log(calls);
 
 	return useMemo(
 		() => ({

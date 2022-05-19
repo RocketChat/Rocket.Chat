@@ -2,6 +2,8 @@ import type { IRoom, IUser, VideoConferenceInstructions } from '@rocket.chat/cor
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { useMemo } from 'react';
+import { useSubscription, Subscription } from 'use-subscription';
 
 import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
@@ -49,6 +51,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	'direct/accepted': DirectCallParams;
 
 	'preference/changed': { key: keyof CallPreferences; value: boolean };
+
+	'incoming/changed': void;
 }> {
 	private userId: string | undefined;
 
@@ -95,6 +99,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 	public isRinging(): boolean {
 		return this.incomingDirectCalls.size > 0;
+	}
+
+	public getIncomingDirectCalls(): IncomingDirectCall[] {
+		return [...this.incomingDirectCalls.values()];
 	}
 
 	public async startCall(roomId: IRoom['_id']): Promise<void> {
@@ -148,6 +156,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 			this.acceptingCallTimeout = 0;
 
 			this.incomingDirectCalls.delete(callId);
+			this.emit('incoming/changed');
 
 			this.emit('direct/failed', { callId, uid: callData.uid, rid: callData.rid });
 		}, ACCEPT_TIMEOUT) as unknown as number;
@@ -285,6 +294,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.currentCallId = undefined;
 		this.acceptingCallId = undefined;
 		this._preferences = {};
+		this.emit('incoming/changed');
 	}
 
 	private async hookNotification(eventName: string, cb: (...params: any[]) => void): Promise<void> {
@@ -322,6 +332,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		}
 
 		this.incomingDirectCalls.delete(callId);
+		this.emit('incoming/changed');
 
 		debug && console.log(`[VideoConf] Call ${callId} from ${lostCall.uid} was lost.`);
 		this.emit('direct/lost', { callId, uid: lostCall.uid, rid: lostCall.rid });
@@ -345,6 +356,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 			timeout: this.createAbortTimeout(callId),
 		});
 
+		this.emit('incoming/changed');
 		this.emit('direct/ringing', { callId, uid, rid });
 	}
 
@@ -409,6 +421,22 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		this.emit('direct/accepted', params);
 		this.currentCallId = undefined;
+	}
+
+	public getIncomingCallsSubscription(): () => IncomingDirectCall[] {
+		return (): IncomingDirectCall[] => {
+			const subscribeIncomingCalls: Subscription<IncomingDirectCall[]> = useMemo(
+				() => ({
+					getCurrentValue: (): IncomingDirectCall[] => this.getIncomingDirectCalls(),
+					subscribe: (cb: any): any => {
+						return this.on('incoming/changed', cb);
+					},
+				}),
+				[],
+			);
+
+			return useSubscription(subscribeIncomingCalls);
+		};
 	}
 })();
 
