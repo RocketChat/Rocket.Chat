@@ -2204,7 +2204,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "Filtr skupiny uživatelů",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "Vyhledávací filtr LDAP používaný ke kontrole, zda je uživatel ve skupině.",
   "LDAP_Sync_User_Data_RolesMap": "Mapa skupin uživatelských dat",
-  "LDAP_Sync_User_Data_RolesMap_Description": "Mapuje skupiny LDAP na Rocket.Chat uživatelské role <br/>Jako příklad bude \"{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}\" mapovat skupinu LDAP Rocket-admin do role „admin“ v Rocket.Chat.",
+  "LDAP_Sync_User_Data_RolesMap_Description": "Mapuje skupiny LDAP na Rocket.Chat uživatelské role <br/>Jako příklad bude \"{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}\" mapovat skupinu LDAP Rocket-admin do role „admin“ v Rocket.Chat.",
   "LDAP_Timeout": "Časový limit (ms)",
   "LDAP_Timeout_Description": "Kolik milisekund počkat na vyhledávání než bude vrácena chyba",
   "LDAP_Unique_Identifier_Field": "Jedinečný identifikátor",
