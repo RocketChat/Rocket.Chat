@@ -316,7 +316,7 @@ class FlexTab extends BasePage {
 	}
 
 	public usersAddUserEmail(): Locator {
-		return this.getPage().locator('//label[text()="Email"]/following-sibling::span//input/following-sibling::span//i');
+		return this.getPage().locator('//label[text()="Email"]/following-sibling::span//input').first();
 	}
 
 	public usersAddUserRoleList(): Locator {
