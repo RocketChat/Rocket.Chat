@@ -62,12 +62,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
-		if (user.roles.find((r: string) => r === 'livechat-agent') !== undefined) {
+		if (user.roles.find((r: string) => r === 'livechat-agent')) {
 			// Remove user as livechat agent
 			LivechatDepartmentAgents.removeByAgentId(userId);
 		}
 
-		if (user.roles.find((r: string) => r === 'livechat-monitor') !== undefined) {
+		if (user.roles.find((r: string) => r === 'livechat-monitor')) {
 			// Remove user as Unit Monitor
 			LivechatUnitMonitors.removeByMonitorId(userId);
 		}
