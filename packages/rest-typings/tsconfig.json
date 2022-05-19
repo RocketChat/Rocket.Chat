@@ -1,8 +1,15 @@
 {
-	"extends": "../../tsconfig.base.json",
-	"compilerOptions": {
-		"rootDir": "./src",
-		"outDir": "./dist"
-	},
-	"include": ["./src/**/*"]
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist"
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "references": [
+    {
+      "path": "../core-typings"
+    }
+  ]
 }

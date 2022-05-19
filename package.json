@@ -15,6 +15,7 @@
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
 	},
 	"devDependencies": {
+		"@monorepo-utils/workspaces-to-typescript-project-references": "^2.8.1",
 		"husky": "^7.0.4",
 		"turbo": "1.2.5"
 	},

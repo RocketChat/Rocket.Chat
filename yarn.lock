@@ -2693,6 +2693,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@monorepo-utils/package-utils@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "@monorepo-utils/package-utils@npm:2.8.1"
+  dependencies:
+    globby: ^11.0.1
+    load-json-file: ^6.2.0
+    upath: ^2.0.1
+  checksum: dfbf62ba61f253946be0ce263702322bd6e38ccb6a402082b78d350700e35f6c7359a8522dccc19d70a0e0b2a7b6fc1c4c98a40e145aeba1dce9fac75d5a6679
+  languageName: node
+  linkType: hard
+
+"@monorepo-utils/workspaces-to-typescript-project-references@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "@monorepo-utils/workspaces-to-typescript-project-references@npm:2.8.1"
+  dependencies:
+    "@monorepo-utils/package-utils": ^2.8.1
+    comment-json: ^3.0.3
+    meow: ^7.1.1
+    semver-match: 0.1.1
+    upath: ^2.0.1
+  bin:
+    workspaces-to-typescript-project-references: bin/cmd.js
+  checksum: dddc7a06dffb47fd139f06a4ee734d0b7b49ee1407a271cb2679894cc14fe4d91d80972231124ecdde89eaffc7e4be625414d27b13406f2f2e2c38f2388254bc
+  languageName: node
+  linkType: hard
+
 "@mrmlnc/readdir-enhanced@npm:^2.2.1":
   version: 2.2.1
   resolution: "@mrmlnc/readdir-enhanced@npm:2.2.1"
@@ -11418,6 +11444,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"comment-json@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "comment-json@npm:3.0.3"
+  dependencies:
+    core-util-is: ^1.0.2
+    esprima: ^4.0.1
+    has-own-prop: ^2.0.0
+    repeat-string: ^1.6.1
+  checksum: c8e92e820b73e7bd83890e38680617b21028eca9a7e83a2af72750eae8c7e2570dd40e5848148b1e1d34d58ce62a0cb4e2b5836df0f8daa1d6bceca8666936cd
+  languageName: node
+  linkType: hard
+
 "common-path-prefix@npm:^3.0.0":
   version: 3.0.0
   resolution: "common-path-prefix@npm:3.0.0"
@@ -11800,7 +11838,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-util-is@npm:~1.0.0":
+"core-util-is@npm:^1.0.2, core-util-is@npm:~1.0.0":
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
   checksum: 9de8597363a8e9b9952491ebe18167e3b36e7707569eed0ebf14f8bba773611376466ae34575bca8cfe3c767890c859c74056084738f09d4e4a6f902b2ad7d99
@@ -16846,7 +16884,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globby@npm:^11.0.2, globby@npm:^11.0.3, globby@npm:^11.0.4":
+"globby@npm:^11.0.1, globby@npm:^11.0.2, globby@npm:^11.0.3, globby@npm:^11.0.4":
   version: 11.1.0
   resolution: "globby@npm:11.1.0"
   dependencies:
@@ -17284,6 +17322,13 @@ __metadata:
   dependencies:
     is-glob: ^3.0.0
   checksum: cafad93e599f49f676a9ab444ec90210fcda35ac14ad6c9bb96c08057ad18a1318f1116b053aa6bdc744f19252537006872d3fc76785e842bbe8cc4312447fc8
+  languageName: node
+  linkType: hard
+
+"has-own-prop@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "has-own-prop@npm:2.0.0"
+  checksum: ca6336e85ead2295c9603880cbc199e2d3ff7eaea0e9035d68fbc79892e9cf681abc62c0909520f112c671dad9961be2173b21dff951358cc98425c560e789e0
   languageName: node
   linkType: hard
 
@@ -21339,6 +21384,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"load-json-file@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "load-json-file@npm:6.2.0"
+  dependencies:
+    graceful-fs: ^4.1.15
+    parse-json: ^5.0.0
+    strip-bom: ^4.0.0
+    type-fest: ^0.6.0
+  checksum: 4429e430ebb99375fc7cd936348e4f7ba729486080ced4272091c1e386a7f5f738ea3337d8ffd4b01c2f5bc3ddde92f2c780045b66838fe98bdb79f901884643
+  languageName: node
+  linkType: hard
+
 "loader-runner@npm:^2.4.0":
   version: 2.4.0
   resolution: "loader-runner@npm:2.4.0"
@@ -22477,6 +22534,25 @@ __metadata:
     redent: ^1.0.0
     trim-newlines: ^1.0.0
   checksum: 65a412e5d0d643615508007a9292799bb3e4e690597d54c9e98eb0ca3adb7b8ca8899f41ea7cb7d8277129cdcd9a1a60202b31f88e0034e6aaae02894d80999a
+  languageName: node
+  linkType: hard
+
+"meow@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "meow@npm:7.1.1"
+  dependencies:
+    "@types/minimist": ^1.2.0
+    camelcase-keys: ^6.2.2
+    decamelize-keys: ^1.1.0
+    hard-rejection: ^2.1.0
+    minimist-options: 4.1.0
+    normalize-package-data: ^2.5.0
+    read-pkg-up: ^7.0.1
+    redent: ^3.0.0
+    trim-newlines: ^3.0.0
+    type-fest: ^0.13.1
+    yargs-parser: ^18.1.3
+  checksum: 87bba177ab858a9b606ee52220e6bf395277beebafefe8ab5dbdf178f5825274a24ca16dca7e0ddd41e5ac3533164ee52e3d0eec87b66d78aae796d24a817842
   languageName: node
   linkType: hard
 
@@ -28982,6 +29058,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocket.chat@workspace:."
   dependencies:
+    "@monorepo-utils/workspaces-to-typescript-project-references": ^2.8.1
     husky: ^7.0.4
     turbo: 1.2.5
   languageName: unknown
@@ -29407,6 +29484,15 @@ __metadata:
   dependencies:
     semver: ^5.0.3
   checksum: 14e50363d12ac7e77c2dd89319d97f9ec075ed8ee7ab1bde867b30f8e890fffd637dd90c7c2559e2431278d555b8bc6abc5796bb40b734cea267631c9501827c
+  languageName: node
+  linkType: hard
+
+"semver-match@npm:0.1.1":
+  version: 0.1.1
+  resolution: "semver-match@npm:0.1.1"
+  dependencies:
+    semver: ^5.1.0
+  checksum: 624968a1d0b665fb08d3e7a4d28b62332ae1695c19f4b7f7cddb34c07bf8e5b6f19d393249bb1b96b09746651bd20d754fc2d64318fd7f959f6bec6abfa883dd
   languageName: node
   linkType: hard
 
@@ -32437,6 +32523,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"type-fest@npm:^0.13.1":
+  version: 0.13.1
+  resolution: "type-fest@npm:0.13.1"
+  checksum: e6bf2e3c449f27d4ef5d56faf8b86feafbc3aec3025fc9a5fbe2db0a2587c44714521f9c30d8516a833c8c506d6263f5cc11267522b10c6ccdb6cc55b0a9d1c4
+  languageName: node
+  linkType: hard
+
 "type-fest@npm:^0.18.0":
   version: 0.18.1
   resolution: "type-fest@npm:0.18.1"
@@ -32954,6 +33047,13 @@ __metadata:
   version: 1.2.0
   resolution: "upath@npm:1.2.0"
   checksum: 4c05c094797cb733193a0784774dbea5b1889d502fc9f0572164177e185e4a59ba7099bf0b0adf945b232e2ac60363f9bf18aac9b2206fb99cbef971a8455445
+  languageName: node
+  linkType: hard
+
+"upath@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "upath@npm:2.0.1"
+  checksum: 2db04f24a03ef72204c7b969d6991abec9e2cb06fb4c13a1fd1c59bc33b46526b16c3325e55930a11ff86a77a8cbbcda8f6399bf914087028c5beae21ecdb33c
   languageName: node
   linkType: hard
 
@@ -34555,7 +34655,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs-parser@npm:^18.1.2":
+"yargs-parser@npm:^18.1.2, yargs-parser@npm:^18.1.3":
   version: 18.1.3
   resolution: "yargs-parser@npm:18.1.3"
   dependencies:
