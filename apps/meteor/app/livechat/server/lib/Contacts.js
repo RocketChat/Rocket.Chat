@@ -13,7 +13,7 @@ export const Contacts = {
 
 		if (contactManager?.username) {
 			// verify if the user exists with this username and has a livechat-agent role
-			const user = Users.findOneByUsername(contactManager.username, { projection: { roles: 1 } });
+			const user = Promise.await(Users.findOneByUsername(contactManager.username, { projection: { roles: 1 } }));
 			if (!user) {
 				throw new Meteor.Error('error-contact-manager-not-found', `No user found with username ${contactManager.username}`);
 			}
