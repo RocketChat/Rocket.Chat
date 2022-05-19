@@ -466,20 +466,20 @@ export const statistics = {
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
 		statistics.totalOTRRooms = Rooms.findByCreatedOTR().count();
 		statistics.totalOTR = settings.get('OTR_Count');
-		statistics.totalRoomsWithStarred = await MessagesRaw.countRoomsWithStarredMessages();
-		statistics.totalRoomsWithPinned = await MessagesRaw.countRoomsWithPinnedMessages();
-		statistics.totalUserTOTP = await UsersRaw.findActiveUsersTOTPEnable().count();
-		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable().count();
-		statistics.totalPinned = await MessagesRaw.findPinned().count();
-		statistics.totalStarred = await MessagesRaw.findStarred().count();
+		statistics.totalRoomsWithStarred = await MessagesRaw.countRoomsWithStarredMessages({ readPreference });
+		statistics.totalRoomsWithPinned = await MessagesRaw.countRoomsWithPinnedMessages({ readPreference });
+		statistics.totalUserTOTP = await UsersRaw.findActiveUsersTOTPEnable({ readPreference }).count();
+		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable({ readPreference }).count();
+		statistics.totalPinned = await MessagesRaw.findPinned({ readPreference }).count();
+		statistics.totalStarred = await MessagesRaw.findStarred({ readPreference }).count();
 		statistics.totalLinkInvitation = await Invites.find().count();
 		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
-		statistics.totalE2ERooms = await RoomsRaw.findByE2E().count();
+		statistics.totalE2ERooms = await RoomsRaw.findByE2E({ readPreference }).count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== 'Home';
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
-		statistics.totalEncryptedMessages = await MessagesRaw.countE2EEMessages();
+		statistics.totalEncryptedMessages = await MessagesRaw.countE2EEMessages({ readPreference });
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
 
 		await Promise.all(statsPms).catch(log);

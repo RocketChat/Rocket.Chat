@@ -189,24 +189,27 @@ export class MessagesRaw extends BaseRaw {
 		);
 	}
 
-	async countRoomsWithStarredMessages() {
+	async countRoomsWithStarredMessages(options) {
 		const [queryResult] = await this.col
-			.aggregate([{ $match: { starred: { $exists: true } } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }])
+			.aggregate(
+				[{ $match: { starred: { $exists: true } } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }],
+				options,
+			)
 			.toArray();
 
 		return queryResult?.total || 0;
 	}
 
-	async countRoomsWithPinnedMessages() {
+	async countRoomsWithPinnedMessages(options) {
 		const [queryResult] = await this.col
-			.aggregate([{ $match: { pinned: true } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }])
+			.aggregate([{ $match: { pinned: true } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }], options)
 			.toArray();
 
 		return queryResult?.total || 0;
 	}
 
-	async countE2EEMessages() {
-		return this.find({ t: 'e2e' }).count();
+	async countE2EEMessages(options) {
+		return this.find({ t: 'e2e' }, options).count();
 	}
 
 	findPinned(options) {
