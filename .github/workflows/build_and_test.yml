@@ -184,7 +184,7 @@ jobs:
 
       - name: Configure Replica Set
         run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"mongo:27017"}]})'
+          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
       - name: Start up Rocket.Chat
@@ -334,7 +334,7 @@ jobs:
 
   #     - name: Configure Replica Set
   #       run: |
-  #         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"mongo:27017"}]})'
+  #         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
   #         docker exec mongo mongo --eval 'rs.status()'
 
   #     - uses: actions/checkout@v3
