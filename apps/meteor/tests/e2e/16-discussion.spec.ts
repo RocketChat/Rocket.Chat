@@ -8,7 +8,7 @@ import SideNav from './utils/pageobjects/SideNav';
 import MainContent from './utils/pageobjects/MainContent';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
-test.describe.only('[Discussion]', () => {
+test.describe('[Discussion]', () => {
 	let page: Page;
 	let loginPage: LoginPage;
 	let discussion: Discussion;
