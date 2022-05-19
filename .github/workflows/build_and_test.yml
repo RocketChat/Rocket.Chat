@@ -184,7 +184,7 @@ jobs:
 
       - name: Configure Replica Set
         run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"mongo:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
       - name: Start up Rocket.Chat
@@ -200,10 +200,11 @@ jobs:
           IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:pr-${{ github.event.number }}"
 
           docker run --name rocketchat -d \
+            --link mongo \
             -p 3000:3000 \
             -e TEST_MODE=true \
-            -e MONGO_URL=mongodb://localhost:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://localhost:27017/local \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             ${IMAGE_NAME}
 
       - uses: actions/checkout@v3
@@ -333,7 +334,7 @@ jobs:
 
   #     - name: Configure Replica Set
   #       run: |
-  #         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+  #         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"mongo:27017"}]})'
   #         docker exec mongo mongo --eval 'rs.status()'
 
   #     - uses: actions/checkout@v3
