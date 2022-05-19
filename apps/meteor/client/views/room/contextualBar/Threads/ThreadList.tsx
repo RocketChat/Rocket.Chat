@@ -8,7 +8,7 @@ import { Virtuoso } from 'react-virtuoso';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTabContext } from '../../providers/ToolboxProvider';
-import ThreadComponent from '../../threads/ThreadComponent';
+import Thread from '../../threads/Thread';
 import Row from './Row';
 import { withData } from './withData';
 
@@ -96,7 +96,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 	});
 
 	const mid = useTabContext();
-	const jump = useQueryStringParameter('jump');
+	const jumpTo = useQueryStringParameter('jump');
 
 	return (
 		<>
@@ -180,7 +180,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 
 			{typeof mid === 'string' && (
 				<VerticalBar.InnerContent>
-					<ThreadComponent onBack={onClickBack} mid={mid} jump={jump} room={room} />
+					<Thread onBack={onClickBack} mid={mid} jumpTo={jumpTo} room={room} />
 				</VerticalBar.InnerContent>
 			)}
 		</>

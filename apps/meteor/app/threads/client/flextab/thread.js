@@ -85,7 +85,7 @@ Template.thread.helpers({
 			tmid,
 			onSend: (...args) => {
 				instance.sendToBottom();
-				instance.state.set('sendToChannel', false);
+				instance.data.setSendToChannel(false);
 				return instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args);
 			},
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
@@ -107,15 +107,6 @@ Template.thread.helpers({
 	},
 	hideUsername() {
 		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
-	},
-	checkboxData() {
-		const instance = Template.instance();
-		const checked = instance.state.get('sendToChannel');
-		return {
-			id: 'sendAlso',
-			checked,
-			onChange: () => instance.state.set('sendToChannel', !checked),
-		};
 	},
 	tmid() {
 		return Template.instance().state.get('tmid');
@@ -214,11 +205,12 @@ Template.thread.onRendered(function () {
 	this.autorun(() => {
 		FlowRouter.watchPathChange();
 		const jump = FlowRouter.getQueryParam('jump');
-		const { mainMessage } = Template.currentData();
+		const { mainMessage, sendToChannel } = Template.currentData();
 		this.state.set({
 			tmid: mainMessage._id,
 			rid: mainMessage.rid,
 			jump,
+			sendToChannel,
 		});
 	});
 
@@ -246,11 +238,11 @@ Template.thread.onRendered(function () {
 	});
 });
 
-Template.thread.onCreated(async function () {
+Template.thread.onCreated(function () {
 	this.Threads = new Mongo.Collection(null);
 
 	this.state = new ReactiveDict({
-		sendToChannel: !this.data.mainMessage.tcount,
+		sendToChannel: this.data.sendToChannel,
 	});
 
 	this.loadMore = async () => {

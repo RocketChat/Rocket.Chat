@@ -1,8 +1,8 @@
 import { IMessage } from '@rocket.chat/core-typings';
+import { CheckBox } from '@rocket.chat/fuselage';
 import { useTranslation, useUserSubscription } from '@rocket.chat/ui-contexts';
-import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import React, { useMemo, useEffect, useRef, ReactElement } from 'react';
+import React, { useMemo, ReactElement, useState } from 'react';
 
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import VerticalBarAction from '../../../components/VerticalBar/VerticalBarAction';
@@ -11,60 +11,55 @@ import VerticalBarText from '../../../components/VerticalBar/VerticalBarText';
 import { useMemoCompare } from '../../../hooks/useMemoCompare';
 import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import ThreadVerticalBar from './ThreadVerticalBar';
+import { useBlazeTemplate } from './useBlazeTemplate';
 import { useThreadFollowing } from './useThreadFollowing';
 
 const subscriptionFields = {};
 
 type ThreadViewProps = {
-	message: IMessage;
-	jump: string | undefined;
+	mainMessage: IMessage;
+	jumpTo: IMessage['_id'] | undefined;
 	onBack: () => void;
 	onClose: () => void;
 };
 
-const ThreadView = ({ message, jump, onBack, onClose }: ThreadViewProps): ReactElement => {
+const ThreadView = ({ mainMessage, jumpTo, onBack, onClose }: ThreadViewProps): ReactElement => {
 	const title = useMemo(() => {
-		const titleHTML = normalizeThreadTitle(message);
+		const titleHTML = normalizeThreadTitle(mainMessage);
 
 		if (!titleHTML) {
 			return null;
 		}
 
 		return <VerticalBarText dangerouslySetInnerHTML={{ __html: titleHTML }} />;
-	}, [message]);
+	}, [mainMessage]);
 
 	const t = useTranslation();
 
-	const [following, toggleFollowing] = useThreadFollowing(message._id);
+	const [following, toggleFollowing] = useThreadFollowing(mainMessage._id);
 	const followLabel = following ? t('Following') : t('Not_Following');
 	const followIcon = following ? 'bell' : 'bell-off';
 
-	const ref = useRef<HTMLElement>(null);
-
-	const subscription = useUserSubscription(message.rid, subscriptionFields);
+	const subscription = useUserSubscription(mainMessage.rid, subscriptionFields);
 	const openUserInfo = useTabBarOpenUserInfo();
+	const [sendToChannel, setSendToChannel] = useState(() => !mainMessage.tcount);
 	const viewData = useMemoCompare(
 		{
-			mainMessage: message,
-			jump,
+			mainMessage,
+			jump: jumpTo,
 			following,
 			subscription,
-			rid: message.rid,
+			rid: mainMessage.rid,
 			tabBar: { openUserInfo },
 		},
 		(prev, next) => !next.mainMessage || prev.mainMessage?._id === next.mainMessage?._id,
 	);
 
-	useEffect(() => {
-		if (!ref.current) {
-			return;
-		}
-		const view = Blaze.renderWithData(Template.thread, viewData, ref.current);
-
-		return (): void => {
-			Blaze.remove(view);
-		};
-	}, [viewData]);
+	const ref = useBlazeTemplate<HTMLElement>(Template.thread, {
+		...viewData,
+		sendToChannel,
+		setSendToChannel,
+	});
 
 	return (
 		<ThreadVerticalBar
@@ -74,6 +69,14 @@ const ThreadView = ({ message, jump, onBack, onClose }: ThreadViewProps): ReactE
 			onClose={onClose}
 		>
 			<VerticalBarContent ref={ref} flexShrink={1} flexGrow={1} paddingInline={0} />
+			<footer className='thread-footer'>
+				<div style={{ display: 'flex' }}>
+					<CheckBox id='sendAlso' checked={sendToChannel} onChange={(): void => setSendToChannel((checked) => !checked)} />
+				</div>
+				<label htmlFor='sendAlso' className='thread-footer__text'>
+					{t('Also_send_to_channel')}
+				</label>
+			</footer>
 		</ThreadVerticalBar>
 	);
 };

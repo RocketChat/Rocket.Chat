@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 
@@ -9,14 +9,14 @@ import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 import { useThreadMessage } from './useThreadMessage';
 
-type ThreadComponentProps = {
-	mid: string;
-	jump: string | undefined;
+type ThreadProps = {
+	mid: IMessage['_id'];
+	jumpTo?: IMessage['_id'];
 	room: IRoom;
 	onBack: () => void;
 };
 
-const ThreadComponent = ({ mid, jump, room, onBack }: ThreadComponentProps): ReactElement => {
+const Thread = ({ mid, jumpTo, room, onBack }: ThreadProps): ReactElement => {
 	const threadMessageQuery = useThreadMessage(mid);
 
 	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
@@ -41,9 +41,9 @@ const ThreadComponent = ({ mid, jump, room, onBack }: ThreadComponentProps): Rea
 
 	return (
 		<ErrorBoundary fallback={<ThreadError onReload={threadMessageQuery.refetch} onBack={onBack} onClose={handleClose} />}>
-			<ThreadView message={threadMessageQuery.data} jump={jump} onBack={onBack} onClose={handleClose} />
+			<ThreadView mainMessage={threadMessageQuery.data} jumpTo={jumpTo} onBack={onBack} onClose={handleClose} />
 		</ErrorBoundary>
 	);
 };
 
-export default ThreadComponent;
+export default Thread;
