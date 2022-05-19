@@ -1015,14 +1015,4 @@ export class UsersRaw extends BaseRaw {
 		};
 		return this.find(query, options);
 	}
-
-	countUsersByService(serviceName, options) {
-		const query = {
-			type: { $nin: ['app'] },
-			roles: { $ne: ['guest'] },
-			[`services.${serviceName}`]: { $exists: true },
-		};
-
-		return this.find(query, options).count();
-	}
 }
