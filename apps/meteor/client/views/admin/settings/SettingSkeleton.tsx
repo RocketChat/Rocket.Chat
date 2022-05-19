@@ -1,7 +1,7 @@
 import { Field, Flex, InputBox, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
-const SettingSkeleton = () => (
+const SettingSkeleton = (): ReactElement => (
 	<Field>
 		<Flex.Item align='stretch'>
 			<Field.Label>

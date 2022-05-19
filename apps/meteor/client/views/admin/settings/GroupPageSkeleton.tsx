@@ -1,11 +1,11 @@
 import { Accordion, Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import Page from '../../../components/Page';
 import Section from './Section';
 
-function GroupPageSkeleton() {
+function GroupPageSkeleton(): ReactElement {
 	const t = useTranslation();
 
 	return (
