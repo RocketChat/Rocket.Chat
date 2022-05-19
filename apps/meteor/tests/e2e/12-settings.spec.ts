@@ -58,7 +58,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(edit) not be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 			await mainContent.openMessageActionMenu();
 
@@ -77,7 +77,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(edit) be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 			await mainContent.openMessageActionMenu();
 
@@ -98,7 +98,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(delete) not be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 			await mainContent.openMessageActionMenu();
 
@@ -117,7 +117,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(delete) be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 			await mainContent.openMessageActionMenu();
 
@@ -138,7 +138,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload audio) not be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 
 			expect(await mainContent.recordBtn().isVisible()).toBeFalsy();
 		});
@@ -155,7 +155,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload audio) be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 
 			expect(await mainContent.recordBtn().isVisible()).toBeTruthy();
 		});
@@ -174,7 +174,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload video) not be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.openMoreActionMenu();
 
 			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeFalsy();
@@ -192,7 +192,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload video) be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.openMoreActionMenu();
 
 			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeTruthy();
@@ -225,7 +225,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect badword be censored', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 
 			await mainContent.sendMessage(unauthorizedWord);
 			await mainContent.waitForLastMessageEqualsText('*'.repeat(unauthorizedWord.length));
@@ -243,7 +243,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect badword not be censored', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 
 			await mainContent.sendMessage(unauthorizedWord);
 			await mainContent.waitForLastMessageEqualsText(unauthorizedWord);
@@ -263,7 +263,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test.skip('(UI) expect option(star message) not be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 			await mainContent.openMessageActionMenu();
 
@@ -282,7 +282,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(star message) be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 			await mainContent.openMessageActionMenu();
 
@@ -303,7 +303,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload file) not be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.openMoreActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeFalsy();
@@ -321,7 +321,7 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test('(UI) expect option(upload file) be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.openMoreActionMenu();
 
 			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeTruthy();
@@ -436,7 +436,7 @@ test.describe.skip('[Settings (admin)]', async () => {
 		});
 
 		test('(UI) expect option(pin message) not be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 			await mainContent.openMessageActionMenu();
 
@@ -455,7 +455,7 @@ test.describe.skip('[Settings (admin)]', async () => {
 		});
 
 		test('(UI) expect option(pin message) be visible', async () => {
-			await mainContent.reload();
+			await mainContent.doReload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 			await mainContent.openMessageActionMenu();
 

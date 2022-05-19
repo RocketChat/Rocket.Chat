@@ -695,6 +695,14 @@ export default class Administration extends BasePage {
 		await this.buttonSave().click();
 	}
 
+	public inputPermissionsSearch(): Locator {
+		return this.getPage().locator('.main-content input[placeholder="Search"]');
+	}
+
+	public getCheckboxPermission(label: string, column = 6): Locator {
+		return this.getPage().locator(`tr td:has-text("${label}") ~ td:nth-child(${column})`).locator('label').first();
+	}
+
 	public userInfoActions(): Locator {
 		return this.getPage().locator('[data-qa-id="UserInfoActions"]');
 	}
