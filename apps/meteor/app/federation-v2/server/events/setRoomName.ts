@@ -1,4 +1,5 @@
-import { MatrixBridgedRoom, Rooms, Subscriptions } from '../../../models/server';
+import { Rooms, Subscriptions } from '../../../models/server/raw';
+import { MatrixBridgedRoom } from '../../../models/server';
 import { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 
@@ -14,7 +15,11 @@ export const setRoomName = async (event: IMatrixEvent<MatrixEventType.SET_ROOM_N
 	// Find the bridged room id
 	const roomId = await MatrixBridgedRoom.getId(matrixRoomId);
 
-	Rooms.update(
+	if (!roomId) {
+		return;
+	}
+
+	await Rooms.update(
 		{ _id: roomId },
 		{
 			$set: {
@@ -24,7 +29,7 @@ export const setRoomName = async (event: IMatrixEvent<MatrixEventType.SET_ROOM_N
 		},
 	);
 
-	Subscriptions.update(
+	await Subscriptions.update(
 		{ rid: roomId },
 		{
 			$set: {
@@ -32,5 +37,6 @@ export const setRoomName = async (event: IMatrixEvent<MatrixEventType.SET_ROOM_N
 				fname: normalizedName,
 			},
 		},
+		{ multi: true },
 	);
 };
