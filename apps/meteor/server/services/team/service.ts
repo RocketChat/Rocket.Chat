@@ -957,7 +957,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		return {
 			totalTeams: await this.TeamModel.find({}).count(),
 			totalRoomsInsideTeams: await this.RoomsModel.findRoomsInsideTeams().count(),
-			totalDefaultRoomsInsideTeams: await this.RoomsModel.findAutojoinRoomsInsideTeams().count(),
+			totalDefaultRoomsInsideTeams: await this.RoomsModel.findRoomsInsideTeams(true).count(),
 		};
 	}
 

@@ -470,15 +470,11 @@ export class RoomsRaw extends BaseRaw {
 		);
 	}
 
-	findRoomsInsideTeams() {
-		return this.find({ teamId: { $exists: true }, teamMain: { $exists: false } });
-	}
-
-	findAutojoinRoomsInsideTeams() {
+	findRoomsInsideTeams(autoJoin = false) {
 		return this.find({
 			teamId: { $exists: true },
 			teamMain: { $exists: false },
-			teamDefault: true,
+			...(autoJoin && { teamDefault: true }),
 		});
 	}
 }
