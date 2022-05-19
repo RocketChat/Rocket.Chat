@@ -240,10 +240,16 @@ class SideNav extends BasePage {
 		// mainContent.messageInput().should('be.focused');
 	}
 
-	public async findFindForChat(userName: string): Promise<void> {
+	public async findForChat(target: string): Promise<void> {
 		await this.searchUser().click();
-		await this.searchInput().type(userName, { delay: 300 });
+		await this.searchInput().type(target, { delay: 300 });
 		await this.getPage().keyboard.press(ENTER);
+	}
+
+	public async doLogout(): Promise<void> {
+		await this.getPage().goto('/home');
+		await this.sidebarUserMenu().click();
+		await this.logout().click();
 	}
 }
 

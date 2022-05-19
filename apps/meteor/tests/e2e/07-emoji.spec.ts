@@ -99,12 +99,12 @@ test.describe('[Emoji]', function () {
 			});
 
 			test('expect be that the value on the message input is the same as the emoji clicked', async () => {
-				await expect(mainContent.messageInput()).toHaveValue(':smiley: :grinning: ');
+				await expect(mainContent.messageInput()).toHaveValue(':grinning: ');
 			});
 
 			test('expect send the emoji', async () => {
 				await mainContent.addTextToInput(' ');
-				await mainContent.sendBtn().click();
+				await mainContent.getPage().keyboard.press('Enter');
 			});
 
 			test('expect be that the value on the message is the same as the emoji clicked', async () => {

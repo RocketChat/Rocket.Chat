@@ -316,7 +316,7 @@ class FlexTab extends BasePage {
 	}
 
 	public usersAddUserEmail(): Locator {
-		return this.getPage().locator('//label[text()="Email"]/following-sibling::span//input/following-sibling::span//i');
+		return this.getPage().locator('//label[text()="Email"]/following-sibling::span//input').first();
 	}
 
 	public usersAddUserRoleList(): Locator {
@@ -547,6 +547,11 @@ class FlexTab extends BasePage {
 		return this.getPage().locator(
 			'div.thread-list.js-scroll-thread ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',
 		);
+	}
+
+	public async doAddRole(role: string): Promise<void> {
+		await this.usersAddUserRoleList().click();
+		await this.getPage().locator(`li[value=${role}]`).click();
 	}
 }
 

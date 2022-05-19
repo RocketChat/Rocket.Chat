@@ -1,4 +1,3 @@
-import React from 'react';
 import type { ReactNode, ReactElement, ButtonHTMLAttributes } from 'react';
 import { Button, Icon, IconProps } from '@rocket.chat/fuselage';
 
