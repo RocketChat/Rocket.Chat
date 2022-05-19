@@ -1,25 +1,30 @@
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
 
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
+
+import { AppServerOrchestrator } from '../orchestrator';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export class AppUsersConverter {
-	constructor(orch) {
+	orch: AppServerOrchestrator;
+
+	constructor(orch: AppServerOrchestrator) {
 		this.orch = orch;
 	}
 
-	convertById(userId) {
+	convertById(userId: string) {
 		const user = Users.findOneById(userId);
 
 		return this.convertToApp(user);
 	}
 
-	convertByUsername(username) {
+	convertByUsername(username: string) {
 		const user = Users.findOneByUsername(username);
 
 		return this.convertToApp(user);
 	}
 
-	convertToApp(user) {
+	convertToApp(user: IUser) {
 		if (!user) {
 			return undefined;
 		}
@@ -46,7 +51,7 @@ export class AppUsersConverter {
 		};
 	}
 
-	convertToRocketChat(user) {
+	convertToRocketChat(user: IUser) {
 		if (!user) {
 			return undefined;
 		}
@@ -69,7 +74,7 @@ export class AppUsersConverter {
 		};
 	}
 
-	_convertUserTypeToEnum(type) {
+	_convertUserTypeToEnum(type: string) {
 		switch (type) {
 			case 'user':
 				return UserType.USER;
@@ -86,7 +91,7 @@ export class AppUsersConverter {
 		}
 	}
 
-	_convertStatusConnectionToEnum(username, userId, status) {
+	_convertStatusConnectionToEnum(username: string, userId: string, status: string) {
 		switch (status) {
 			case 'offline':
 				return UserStatusConnection.OFFLINE;

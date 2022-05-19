@@ -1,18 +1,22 @@
 import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppDepartmentsConverter {
-	constructor(orch) {
+	orch: AppServerOrchestrator;
+
+	constructor(orch: AppServerOrchestrator) {
 		this.orch = orch;
 	}
 
-	convertById(id) {
+	convertById(id: string) {
 		const department = LivechatDepartment.findOneById(id);
 
 		return this.convertDepartment(department);
 	}
 
-	convertDepartment(department) {
+	convertDepartment(department: ILivechatDepartment) {
 		if (!department) {
 			return undefined;
 		}
@@ -38,7 +42,7 @@ export class AppDepartmentsConverter {
 		return transformMappedData(department, map);
 	}
 
-	convertAppDepartment(department) {
+	convertAppDepartment(department: ILivechatDepartment) {
 		if (!department) {
 			return undefined;
 		}

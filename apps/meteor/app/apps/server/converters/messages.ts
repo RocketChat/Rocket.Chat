@@ -1,20 +1,25 @@
 import { Random } from 'meteor/random';
 
-import { Messages, Rooms, Users } from '../../../models';
+import { Messages, Rooms, Users } from '../../../models/server';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
+import { AppServerOrchestrator } from '../orchestrator';
+
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 
 export class AppMessagesConverter {
-	constructor(orch) {
+	orch: AppServerOrchestrator;
+
+	constructor(orch: AppServerOrchestrator) {
 		this.orch = orch;
 	}
 
-	convertById(msgId) {
+	convertById(msgId: string) {
 		const msg = Messages.findOneById(msgId);
 
 		return this.convertMessage(msg);
 	}
 
-	convertMessage(msgObj) {
+	convertMessage(msgObj: IMessage) {
 		if (!msgObj) {
 			return undefined;
 		}
@@ -36,12 +41,12 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
-			room: (message) => {
-				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
+			room: (message: IMessage) => {
+				const result = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 				delete message.rid;
 				return result;
 			},
-			editor: (message) => {
+			editor: (message: IMessage) => {
 				const { editedBy } = message;
 				delete message.editedBy;
 
@@ -49,23 +54,23 @@ export class AppMessagesConverter {
 					return undefined;
 				}
 
-				return this.orch.getConverters().get('users').convertById(editedBy._id);
+				return this.orch.getConverters()?.get('users').convertById(editedBy._id);
 			},
-			attachments: (message) => {
+			attachments: (message: IMessage) => {
 				const result = this._convertAttachmentsToApp(message.attachments);
 				delete message.attachments;
 				return result;
 			},
-			sender: (message) => {
+			sender: (message: IMessage) => {
 				if (!message.u || !message.u._id) {
 					return undefined;
 				}
 
-				let user = this.orch.getConverters().get('users').convertById(message.u._id);
+				let user = this.orch.getConverters()?.get('users').convertById(message.u._id);
 
 				// When the sender of the message is a Guest (livechat) and not a user
 				if (!user) {
-					user = this.orch.getConverters().get('users').convertToApp(message.u);
+					user = this.orch.getConverters()?.get('users').convertToApp(message.u);
 				}
 
 				delete message.u;
@@ -77,7 +82,7 @@ export class AppMessagesConverter {
 		return transformMappedData(msgObj, map);
 	}
 
-	convertAppMessage(message) {
+	convertAppMessage(message: IMessage) {
 		if (!message || !message.room) {
 			return undefined;
 		}
@@ -143,7 +148,7 @@ export class AppMessagesConverter {
 		return Object.assign(newMessage, message._unmappedProperties_);
 	}
 
-	_convertAppAttachments(attachments) {
+	_convertAppAttachments(attachments: MessageAttachment[]) {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -185,7 +190,7 @@ export class AppMessagesConverter {
 		);
 	}
 
-	_convertAttachmentsToApp(attachments) {
+	_convertAttachmentsToApp(attachments: MessageAttachment[]) {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -212,7 +217,7 @@ export class AppMessagesConverter {
 			actions: 'actions',
 			type: 'type',
 			description: 'description',
-			author: (attachment) => {
+			author: (attachment: MessageAttachment) => {
 				const { author_name: name, author_link: link, author_icon: icon } = attachment;
 
 				delete attachment.author_name;
@@ -221,7 +226,7 @@ export class AppMessagesConverter {
 
 				return { name, link, icon };
 			},
-			title: (attachment) => {
+			title: (attachment: MessageAttachment) => {
 				const { title: value, title_link: link, title_link_download: displayDownloadLink } = attachment;
 
 				delete attachment.title;
@@ -230,7 +235,7 @@ export class AppMessagesConverter {
 
 				return { value, link, displayDownloadLink };
 			},
-			timestamp: (attachment) => {
+			timestamp: (attachment: MessageAttachment) => {
 				const result = new Date(attachment.ts);
 				delete attachment.ts;
 				return result;

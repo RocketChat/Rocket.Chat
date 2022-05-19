@@ -1,18 +1,23 @@
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 import { Uploads } from '../../../models/server/raw';
+import { AppServerOrchestrator } from '../orchestrator';
+
+import type { IUpload } from '@rocket.chat/core-typings';
 
 export class AppUploadsConverter {
-	constructor(orch) {
+	orch: AppServerOrchestrator;
+
+	constructor(orch: AppServerOrchestrator) {
 		this.orch = orch;
 	}
 
-	convertById(id) {
+	convertById(id: string) {
 		const upload = Promise.await(Uploads.findOneById(id));
 
 		return this.convertToApp(upload);
 	}
 
-	convertToApp(upload) {
+	convertToApp(upload: IUpload) {
 		if (!upload) {
 			return undefined;
 		}
@@ -34,26 +39,26 @@ export class AppUploadsConverter {
 			url: 'url',
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
-			room: (upload) => {
-				const result = this.orch.getConverters().get('rooms').convertById(upload.rid);
+			room: (upload: IUpload) => {
+				const result = this.orch.getConverters()?.get('rooms').convertById(upload.rid);
 				delete upload.rid;
 				return result;
 			},
-			user: (upload) => {
+			user: (upload: IUpload) => {
 				if (!upload.userId) {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters().get('users').convertById(upload.userId);
+				const result = this.orch.getConverters()?.get('users').convertById(upload.userId);
 				delete upload.userId;
 				return result;
 			},
-			visitor: (upload) => {
+			visitor: (upload: IUpload) => {
 				if (!upload.visitorToken) {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters().get('visitors').convertByToken(upload.visitorToken);
+				const result = this.orch.getConverters()?.get('visitors').convertByToken(upload.visitorToken);
 				delete upload.visitorToken;
 				return result;
 			},
@@ -62,7 +67,7 @@ export class AppUploadsConverter {
 		return transformMappedData(upload, map);
 	}
 
-	convertToRocketChat(upload) {
+	convertToRocketChat(upload: IUpload) {
 		if (!upload) {
 			return undefined;
 		}
