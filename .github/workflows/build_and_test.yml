@@ -169,7 +169,7 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: @v0.2
+        uses: wbari/start-mongoDB@v0.2
         with:
           mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
