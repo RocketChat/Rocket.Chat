@@ -119,6 +119,10 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('input[placeholder="Search Users"]');
 	}
 
+	public userInTable(id: string): Locator {
+		return this.getPage().locator(`tr > td:has-text("${id}")`);
+	}
+
 	public rolesNewRolesButton(): Locator {
 		return this.getPage().locator('button[aria-label="New"]');
 	}
@@ -687,5 +691,13 @@ export default class Administration extends BasePage {
 
 	public async adminSaveChanges(): Promise<void> {
 		await this.buttonSave().click();
+	}
+
+	public inputPermissionsSearch(): Locator {
+		return this.getPage().locator('.main-content input[placeholder="Search"]');
+	}
+
+	public getCheckboxPermission(label: string, column = 6): Locator {
+		return this.getPage().locator(`tr td:has-text("${label}") ~ td:nth-child(${column})`).locator('label').first();
 	}
 }
