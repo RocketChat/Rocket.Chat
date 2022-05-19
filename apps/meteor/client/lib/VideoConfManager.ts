@@ -3,7 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { useMemo } from 'react';
-import { useSubscription, Subscription } from 'use-subscription';
+import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
@@ -422,22 +422,18 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.emit('direct/accepted', params);
 		this.currentCallId = undefined;
 	}
-
-	public getIncomingCallsSubscription(): () => IncomingDirectCall[] {
-		return (): IncomingDirectCall[] => {
-			const subscribeIncomingCalls: Subscription<IncomingDirectCall[]> = useMemo(
-				() => ({
-					getCurrentValue: (): IncomingDirectCall[] => this.getIncomingDirectCalls(),
-					subscribe: (cb: any): any => {
-						return this.on('incoming/changed', cb);
-					},
-				}),
-				[],
-			);
-
-			return useSubscription(subscribeIncomingCalls);
-		};
-	}
 })();
+
+export const useVideoConfIncomingCalls = (): IncomingDirectCall[] => {
+	const subscribeIncomingCalls: Subscription<IncomingDirectCall[]> = useMemo(
+		() => ({
+			getCurrentValue: (): IncomingDirectCall[] => VideoConfManager.getIncomingDirectCalls(),
+			subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('incoming/changed', cb),
+		}),
+		[],
+	);
+
+	return useSubscription(subscribeIncomingCalls);
+};
 
 Meteor.startup(() => Tracker.autorun(() => VideoConfManager.updateUser()));
