@@ -251,14 +251,16 @@ jobs:
           docker logs rocketchat --tail=50
 
           cd ./apps/meteor
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
           for i in $(seq 1 5); do
             docker stop rocketchat
             docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+
+            NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+            echo $NOW
+
             docker start rocketchat
 
-            until echo "$(docker logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
               sleep 10
             done
@@ -269,20 +271,27 @@ jobs:
 
       - name: E2E Test UI (Legacy - Cypress)
         run: |
-          docker logs rocketchat --tail=50
-
-          cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
-          for i in $(seq 1 2); do
+
+          cd ./apps/meteor
+          for i in $(seq 1 3); do
             docker stop rocketchat
             docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+
+            NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+            echo $NOW
+
             docker start rocketchat
 
-            until echo "$(docker logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
               sleep 10
             done
+
+            docker logs rocketchat --tail=10
+
+            echo "Starting tests"
 
             npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && docker logs rocketchat --tail=100;
           done;
@@ -297,9 +306,13 @@ jobs:
 
           docker stop rocketchat
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+
+          NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+          echo $NOW
+
           docker start rocketchat
 
-          until echo "$(docker logs rocketchat)" | grep -q "SERVER RUNNING"; do
+          until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
             sleep 10
           done
