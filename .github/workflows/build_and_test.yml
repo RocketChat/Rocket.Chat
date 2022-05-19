@@ -251,7 +251,7 @@ jobs:
           cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
-          for i in $(seq 1 5); do npm run testci -- --test=testapi && s=0 && break || s=$? && (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && docker restart rocketchat && sleep 10; done; (exit $s)
+          for i in $(seq 1 5); do npm run testci -- --test=testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100 && docker stop rocketchat && (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && docker start rocketchat && sleep 10; done; (exit $s)
 
       - name: E2E Test UI (Legacy - Cypress)
         run: |
@@ -260,7 +260,7 @@ jobs:
           cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
-          for i in $(seq 1 2); do npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && docker restart rocketchat && sleep 10; done; (exit $s)
+          for i in $(seq 1 2); do npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && docker logs rocketchat --tail=100 && docker stop rocketchat && (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && docker start rocketchat && sleep 10; done; (exit $s)
 
       - name: E2E Test UI
         run: |
@@ -269,7 +269,7 @@ jobs:
           cd ./apps/meteor
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
-          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && docker restart rocketchat && sleep 10 && npm run testci -- --test=test:playwright
+          docker stop rocketchat && docker exec mongo mongo rocketchat --eval 'db.dropDatabase()' && docker start rocketchat && sleep 10 && npm run testci -- --test=test:playwright
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
