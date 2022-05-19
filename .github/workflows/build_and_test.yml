@@ -197,7 +197,7 @@ jobs:
           fi;
 
           # TODO this needs to be different on develop and on release
-          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:pr-${{ github.event.number }}.alpine"
+          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:pr-${{ github.event.number }}"
 
           docker run --name rocketchat -d \
             -p 3000:3000 \
