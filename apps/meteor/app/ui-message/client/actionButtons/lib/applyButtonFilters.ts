@@ -16,15 +16,17 @@ import {
 
 import { hasAtLeastOnePermission, hasPermission, hasRole, hasAnyRole } from '../../../../authorization/client';
 
-export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean => {
+export const applyAuthFilter = (button: IUIActionButton, room?: IRoom, ignoreSubscriptions = false): boolean => {
 	const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};
 
 	const userId = Meteor.userId();
 
 	const hasAllPermissionsResult = hasAllPermissions ? hasPermission(hasAllPermissions) : true;
 	const hasOnePermissionResult = hasOnePermission ? hasAtLeastOnePermission(hasOnePermission) : true;
-	const hasAllRolesResult = hasAllRoles ? !!userId && hasAllRoles.every((role) => hasRole(userId, role, room?._id)) : true;
-	const hasOneRoleResult = hasOneRole ? !!userId && hasAnyRole(userId, hasOneRole, room?._id) : true;
+	const hasAllRolesResult = hasAllRoles
+		? !!userId && hasAllRoles.every((role) => hasRole(userId, role, room?._id, ignoreSubscriptions))
+		: true;
+	const hasOneRoleResult = hasOneRole ? !!userId && hasAnyRole(userId, hasOneRole, room?._id, ignoreSubscriptions) : true;
 
 	return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;
 };
@@ -48,4 +50,8 @@ export const applyRoomFilter = (button: IUIActionButton, room: IRoom): boolean =
 
 export const applyButtonFilters = (button: IUIActionButton, room?: IRoom): boolean => {
 	return applyAuthFilter(button, room) && (!room || applyRoomFilter(button, room));
+};
+
+export const applyDropdownActionButtonFilters = (button: IUIActionButton): boolean => {
+	return applyAuthFilter(button, undefined, true);
 };
