@@ -477,28 +477,10 @@ export const statistics = {
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 		statistics.totalE2ERooms = await RoomsRaw.findByE2E().count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
-		statistics.homeTitle = settings.get('Layout_Home_Title');
+		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== 'Home';
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.totalEncryptedMessages = await MessagesRaw.countE2EEMessages();
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
-
-		const homeBody = settings.get('Layout_Home_Body') as string;
-		statistics.homeBody = homeBody ? homeBody.split('\n')[0] : '';
-
-		const customCSS = settings.get('theme-custom-css') as string;
-		statistics.customCSSLines = customCSS ? customCSS.split('\n').length : 0;
-
-		statistics.customScriptLines = _.reduce(
-			['Custom_Script_On_Logout', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In'],
-			function _customScript(num, setting) {
-				const script = settings.get(setting) as string;
-				if (script !== '//Add your script') {
-					return num + script.split('\n').length;
-				}
-				return num;
-			},
-			0,
-		);
 
 		await Promise.all(statsPms).catch(log);
 
