@@ -24,7 +24,7 @@ export default class Discussion extends BasePage {
 	}
 
 	public buttonCreateDiscussion(): Locator {
-		return this.getPage().locator('button.rcx-button--primary.rcx-button');
+		return this.getPage().locator('button.rcx-button--primary.rcx-button >> text="Create"');
 	}
 
 	public discussionCreated(discussionName: string): Locator {
@@ -45,6 +45,8 @@ export default class Discussion extends BasePage {
 	}
 
 	async createDiscussionInContext(message: string): Promise<void> {
+		await this.startDiscussionContextItem().waitFor();
+		await this.getPage().pause();
 		await this.startDiscussionContextItem().click();
 		await this.buttonCreateDiscussion().click();
 		await expect(this.discussionCreated(message)).toBeVisible();
