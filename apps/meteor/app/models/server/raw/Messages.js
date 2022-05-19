@@ -192,7 +192,7 @@ export class MessagesRaw extends BaseRaw {
 	async countRoomsWithStarredMessages(options) {
 		const [queryResult] = await this.col
 			.aggregate(
-				[{ $match: { starred: { $exists: true } } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }],
+				[{ $match: { 'starred._id': { $exists: true } } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }],
 				options,
 			)
 			.toArray();
@@ -224,8 +224,8 @@ export class MessagesRaw extends BaseRaw {
 
 	findStarred(options) {
 		const query = {
-			_hidden: { $ne: true },
-			starred: { $exists: true },
+			'_hidden': { $ne: true },
+			'starred._id': { $exists: true },
 		};
 
 		return this.find(query, options);
