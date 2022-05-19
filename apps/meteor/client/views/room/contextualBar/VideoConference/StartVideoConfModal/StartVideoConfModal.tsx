@@ -5,15 +5,21 @@ import React, { ReactElement } from 'react';
 import StartDirectVideoConfModal from './StartDirectVideoConfModal';
 import StartGroupVideoConfModal from './StartGroupVideoConfModal';
 
-const StartVideoConfModal = ({ room, onClose }: { room: IRoom; onClose: () => void }): ReactElement => {
+type StartVideoConfModalProps = {
+	room: IRoom;
+	onClose: () => void;
+	onConfirm: () => void;
+};
+
+const StartVideoConfModal = ({ room, onClose, onConfirm }: StartVideoConfModalProps): ReactElement => {
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 
 	if (isDirectMessageRoom(room) && !isMultipleDirectMessageRoom(room) && directUserId) {
-		return <StartDirectVideoConfModal room={room} uid={directUserId} onClose={onClose} />;
+		return <StartDirectVideoConfModal room={room} uid={directUserId} onClose={onClose} onConfirm={onConfirm} />;
 	}
 
-	return <StartGroupVideoConfModal room={room} onClose={onClose} />;
+	return <StartGroupVideoConfModal room={room} onClose={onClose} onConfirm={onConfirm} />;
 };
 
 export default StartVideoConfModal;
