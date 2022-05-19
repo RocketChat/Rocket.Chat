@@ -1,4 +1,4 @@
-import { hasPermission } from '../../../app/authorization/client';
+import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {
@@ -72,5 +72,54 @@ export const {
 		i18nLabel: 'Email_Inboxes',
 		tag: 'Alpha',
 		permissionGranted: (): boolean => hasPermission('manage-email-inbox'),
+	},
+	{
+		icon: 'emoji',
+		href: 'emoji-custom',
+		i18nLabel: 'Custom_Emoji',
+		permissionGranted: (): boolean => hasPermission('manage-emoji'),
+	},
+	{
+		icon: 'code',
+		href: 'admin-integrations',
+		i18nLabel: 'Integrations',
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission([
+				'manage-outgoing-integrations',
+				'manage-own-outgoing-integrations',
+				'manage-incoming-integrations',
+				'manage-own-incoming-integrations',
+			]),
+	},
+	{
+		icon: 'discover',
+		href: 'admin-oauth-apps',
+		i18nLabel: 'OAuth Apps',
+		permissionGranted: (): boolean => hasAllPermission('manage-oauth-apps'),
+	},
+	{
+		icon: 'mail',
+		href: 'admin-mailer',
+		i18nLabel: 'Mailer',
+		permissionGranted: (): boolean => hasAllPermission('access-mailer'),
+	},
+	{
+		icon: 'user',
+		href: 'custom-user-status',
+		i18nLabel: 'Custom_User_Status',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['manage-user-status']),
+	},
+	{
+		icon: 'lock',
+		href: 'admin-permissions',
+		i18nLabel: 'Permissions',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
+	},
+	{
+		icon: 'customize',
+		href: 'admin-settings',
+		i18nLabel: 'Settings',
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
 ]);
