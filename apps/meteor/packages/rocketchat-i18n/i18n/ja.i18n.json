@@ -2607,7 +2607,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "ユーザーグループフィルター",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "ユーザーがグループに属しているかどうかを確認するためのLDAP検索フィルター。",
   "LDAP_Sync_User_Data_RolesMap": "ユーザーデータグループマップ",
-  "LDAP_Sync_User_Data_RolesMap_Description": "LDAPグループをRocket.Chatユーザーロールにマッピングします<br/>例：「{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}」は、rocket-admin LDAPグループをRocketの「admin」ロールにマッピングします。",
+  "LDAP_Sync_User_Data_RolesMap_Description": "LDAPグループをRocket.Chatユーザーロールにマッピングします<br/>例：「{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}」は、rocket-admin LDAPグループをRocketの「admin」ロールにマッピングします。",
   "LDAP_Teams_BaseDN": "LDAPチームのBaseDN",
   "LDAP_Teams_BaseDN_Description": "ユーザーチームの検索用のLDAP BaseDN。",
   "LDAP_Teams_Name_Field": "LDAPチーム名の属性",
