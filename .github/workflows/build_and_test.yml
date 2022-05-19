@@ -189,15 +189,17 @@ jobs:
 
       - name: Start up Rocket.Chat
         run: |
-          # TODO move this to a different job
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-          IMAGE_NAME="rocket.chat"
-          if [[ '${{ matrix.release }}' = 'preview' ]]; then
-            IMAGE_NAME="${IMAGE_NAME}.preview"
+
+          IMAGE_TAG="pr-${{ github.event.number }}"
+
+          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
+          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
+            IMAGE_TAG="${IMAGE_TAG}.alpine"
           fi;
 
           # TODO this needs to be different on develop and on release
-          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:pr-${{ github.event.number }}"
+          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
 
           docker run --name rocketchat -d \
             --link mongo \
