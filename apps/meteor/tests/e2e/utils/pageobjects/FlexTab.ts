@@ -548,6 +548,11 @@ class FlexTab extends BasePage {
 			'div.thread-list.js-scroll-thread ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',
 		);
 	}
+
+	public async doAddRole(role: string): Promise<void> {
+		await this.usersAddUserRoleList().click();
+		await this.getPage().locator(`li[value=${role}]`).click();
+	}
 }
 
 export default FlexTab;
