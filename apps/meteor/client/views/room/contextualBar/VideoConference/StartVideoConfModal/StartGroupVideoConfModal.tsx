@@ -34,7 +34,7 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 				<RoomAvatar room={room} size='x124' />
 				<VideoConfModalTitle>{t('Start_conference_call')}</VideoConfModalTitle>
 				<VideoConfModalInfo>
-					{room.usersCount && t('__userCount__people_will_be_invited', { userCount: room.usersCount - 1 })}
+					{room.usersCount && t('__usersCount__people_will_be_invited', { usersCount: room.usersCount - 1 })}
 				</VideoConfModalInfo>
 				<VideoConfModalControllers>
 					<VideoConfController
