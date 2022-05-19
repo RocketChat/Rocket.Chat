@@ -5,7 +5,7 @@ import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings } from '../../sdk/index';
 
-const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
+const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
 const STATUS_MAP: { [k: string]: number } = {
 	[UserStatus.OFFLINE]: 0,
@@ -35,7 +35,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
-			if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
+			if (!isMessageParserDisabled && message.msg) {
 				message.md = parser(message.msg);
 			}
 
