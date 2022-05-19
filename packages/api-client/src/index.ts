@@ -1,4 +1,4 @@
-import qs from 'query-string';
+import { stringify } from 'query-string';
 
 import type { Serialized } from '../../core-typings/dist';
 import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from '../../rest-typings/dist';
@@ -165,8 +165,47 @@ export class RestClient implements RestClientInterface {
 	}
 
 	protected getParams(data: Record<string, object | number | string | boolean> | void): string {
-		return data ? qs.stringify(data, { arrayFormat: 'bracket' }) : '';
+		return data ? stringify(data, { arrayFormat: 'bracket' }) : '';
 	}
+
+	upload: RestClientInterface['upload'] = (endpoint, params, events) => {
+		if (!params) {
+			throw new Error('Missing params');
+		}
+		const xhr = new XMLHttpRequest();
+		const data = new FormData();
+
+		params &&
+			Object.entries(params as any).forEach(([key, value]) => {
+				if (value instanceof File) {
+					data.append(key, value, value.name);
+					return;
+				}
+				value && data.append(key, value as any);
+			});
+
+		xhr.open('POST', `${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, true);
+		Object.entries(this.getCredentialsAsHeaders()).forEach(([key, value]) => {
+			xhr.setRequestHeader(key, value);
+		});
+
+		if (events?.load) {
+			xhr.upload.addEventListener('load', events.load);
+		}
+		if (events?.progress) {
+			xhr.upload.addEventListener('progress', events.progress);
+		}
+		if (events?.error) {
+			xhr.addEventListener('error', events.error);
+		}
+		if (events?.abort) {
+			xhr.addEventListener('abort', events.abort);
+		}
+
+		xhr.send(data);
+
+		return xhr;
+	};
 
 	use(middleware: Middleware<RestClientInterface['send']>): void {
 		const fn = this.send.bind(this);

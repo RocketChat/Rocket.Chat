@@ -88,9 +88,23 @@ export type RoomsEndpoints = {
 			rid: string;
 		};
 	};
+
 	'/v1/rooms.changeArchivationState': {
 		POST: (params: { rid: string; action?: string }) => {
 			success: boolean;
 		};
+	};
+
+	'/v1/rooms.upload/:rid': {
+		POST: (params: {
+			file: File;
+			description?: string;
+			avatar?: string;
+			emoji?: string;
+			alias?: string;
+			groupable?: boolean;
+			msg?: string;
+			tmid?: string;
+		}) => { message: IMessage };
 	};
 };

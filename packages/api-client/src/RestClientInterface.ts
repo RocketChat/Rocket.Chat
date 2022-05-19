@@ -25,6 +25,17 @@ export interface RestClientInterface {
 		options?: Omit<RequestInit, 'method'>,
 	): Promise<Serialized<OperationResult<'POST', MatchPathPattern<TPath>>>>;
 
+	upload<TPath extends PathFor<'POST'>>(
+		endpoint: TPath,
+		params: void extends OperationParams<'POST', MatchPathPattern<TPath>> ? void : OperationParams<'POST', MatchPathPattern<TPath>>,
+		events?: {
+			load?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
+			progress?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
+			abort?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
+			error?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
+		},
+	): XMLHttpRequest;
+
 	put<TPath extends PathFor<'PUT'>>(
 		endpoint: TPath,
 		params: void extends OperationParams<'PUT', MatchPathPattern<TPath>> ? void : OperationParams<'PUT', MatchPathPattern<TPath>>,
