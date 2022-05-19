@@ -3,39 +3,39 @@
 const path = require('path');
 const fs = require('fs');
 const { spawn } = require('child_process');
-const net = require('net');
+// const net = require('net');
 
 const processes = [];
 
 const baseDir = path.resolve(__dirname, '..');
 const srcDir = path.resolve(baseDir);
 
-const isPortTaken = (port) =>
-	new Promise((resolve, reject) => {
-		const tester = net
-			.createServer()
-			.once('error', (err) => (err.code === 'EADDRINUSE' ? resolve(true) : reject(err)))
-			.once('listening', () => tester.once('close', () => resolve(false)).close())
-			.listen(port);
-	});
+// const isPortTaken = (port) =>
+// 	new Promise((resolve, reject) => {
+// 		const tester = net
+// 			.createServer()
+// 			.once('error', (err) => (err.code === 'EADDRINUSE' ? resolve(true) : reject(err)))
+// 			.once('listening', () => tester.once('close', () => resolve(false)).close())
+// 			.listen(port);
+// 	});
 
-const waitPortRelease = (port, count = 0) =>
-	new Promise((resolve, reject) => {
-		isPortTaken(port).then((taken) => {
-			if (!taken) {
-				return resolve();
-			}
-			if (count > 60) {
-				return reject();
-			}
-			console.log('Port', port, 'not released, waiting 1s...');
-			setTimeout(() => {
-				waitPortRelease(port, ++count)
-					.then(resolve)
-					.catch(reject);
-			}, 1000);
-		});
-	});
+// const waitPortRelease = (port, count = 0) =>
+// 	new Promise((resolve, reject) => {
+// 		isPortTaken(port).then((taken) => {
+// 			if (!taken) {
+// 				return resolve();
+// 			}
+// 			if (count > 60) {
+// 				return reject();
+// 			}
+// 			console.log('Port', port, 'not released, waiting 1s...');
+// 			setTimeout(() => {
+// 				waitPortRelease(port, ++count)
+// 					.then(resolve)
+// 					.catch(reject);
+// 			}, 1000);
+// 		});
+// 	});
 
 const appOptions = {
 	env: {
@@ -56,16 +56,18 @@ function killAllProcesses(mainExitCode) {
 		p.kill();
 	});
 
-	waitPortRelease(appOptions.env.PORT)
-		.then(() => {
-			console.log(`Port ${appOptions.env.PORT} was released, exiting with code ${mainExitCode}`);
-			process.exit(mainExitCode);
-		})
-		.catch((error) => {
-			console.error(`Error waiting port ${appOptions.env.PORT} to be released, exiting with code ${mainExitCode}`);
-			console.error(error);
-			process.exit(mainExitCode);
-		});
+	// TODO dont need to wait rocket.chat process port to release because it is now on Docker
+	// waitPortRelease(appOptions.env.PORT)
+	// 	.then(() => {
+	// 		console.log(`Port ${appOptions.env.PORT} was released, exiting with code ${mainExitCode}`);
+	// 		process.exit(mainExitCode);
+	// 	})
+	// 	.catch((error) => {
+	// 		console.error(`Error waiting port ${appOptions.env.PORT} to be released, exiting with code ${mainExitCode}`);
+	// 		console.error(error);
+	// 		process.exit(mainExitCode);
+	// 	});
+	process.exit(mainExitCode);
 }
 
 function startProcess(opts) {
