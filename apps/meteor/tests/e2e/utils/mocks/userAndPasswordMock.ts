@@ -28,6 +28,13 @@ export const registerUser: IRegister = {
 	name: faker.name.findName(),
 };
 
+export const createRegisterUser = (): IRegister => ({
+	email: validEmail,
+	password: 'any_password',
+	name: faker.name.findName(),
+	username: faker.internet.userName(),
+});
+
 export const validUser: ILogin = {
 	email: validEmail,
 	password: 'any_password',
