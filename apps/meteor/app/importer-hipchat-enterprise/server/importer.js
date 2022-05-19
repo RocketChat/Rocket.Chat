@@ -51,9 +51,9 @@ export class HipChatEnterpriseImporter extends Base {
 			}
 
 			this.converter.addUser(newUser);
-			SettingsRaw.incrementValueById('Hipchat_Enterprise_Importer_Count');
 		}
 
+		SettingsRaw.incrementValueById('Hipchat_Enterprise_Importer_Count', count);
 		super.updateRecord({ 'count.users': count });
 		super.addCountToTotal(count);
 	}

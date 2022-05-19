@@ -155,7 +155,6 @@ export class SlackUsersImporter extends Base {
 								Users.setEmailVerified(userId, u.email);
 								u.rocketId = userId;
 							});
-							SettingsRaw.incrementValueById('Slack_Users_Importer_Count');
 						}
 
 						if (this.admins.includes(u.user_id)) {
@@ -166,6 +165,7 @@ export class SlackUsersImporter extends Base {
 					});
 				}
 
+				SettingsRaw.incrementValueById('Slack_Users_Importer_Count', this.users.users.length);
 				super.updateProgress(ProgressStep.FINISHING);
 				super.updateProgress(ProgressStep.DONE);
 			} catch (e) {

@@ -117,10 +117,10 @@ export class CsvImporter extends Base {
 						username,
 						name,
 					});
-					SettingsRaw.incrementValueById('CSV_Importer_Count');
 				}
 
-				super.updateRecord({ 'count.users': parsedUsers.length });
+				SettingsRaw.incrementValueById('CSV_Importer_Count', usersCount);
+				super.updateRecord({ 'count.users': usersCount });
 				return increaseProgressCount();
 			}
 
