@@ -175,14 +175,13 @@ export class RestClient implements RestClientInterface {
 		const xhr = new XMLHttpRequest();
 		const data = new FormData();
 
-		params &&
-			Object.entries(params as any).forEach(([key, value]) => {
-				if (value instanceof File) {
-					data.append(key, value, value.name);
-					return;
-				}
-				value && data.append(key, value as any);
-			});
+		Object.entries(params as any).forEach(([key, value]) => {
+			if (value instanceof File) {
+				data.append(key, value, value.name);
+				return;
+			}
+			value && data.append(key, value as any);
+		});
 
 		xhr.open('POST', `${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, true);
 		Object.entries(this.getCredentialsAsHeaders()).forEach(([key, value]) => {
