@@ -257,7 +257,11 @@ jobs:
             docker stop rocketchat
             docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
             docker start rocketchat
-            sleep 10 # this sleep should be removed once we have a better way to wait for the server to start
+
+            until echo "$(docker logs rocketchat)" | grep -q "SERVER RUNNING"; do
+              echo "Waiting Rocket.Chat to start up"
+              sleep 10
+            done
 
             npm run testci -- --test=testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100;
           done;
@@ -274,7 +278,11 @@ jobs:
             docker stop rocketchat
             docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
             docker start rocketchat
-            sleep 10 # this sleep should be removed once we have a better way to wait for the server to start
+
+            until echo "$(docker logs rocketchat)" | grep -q "SERVER RUNNING"; do
+              echo "Waiting Rocket.Chat to start up"
+              sleep 10
+            done
 
             npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && docker logs rocketchat --tail=100;
           done;
@@ -290,7 +298,11 @@ jobs:
           docker stop rocketchat
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
           docker start rocketchat
-          sleep 10 # this sleep should be removed once we have a better way to wait for the server to start
+
+          until echo "$(docker logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            sleep 10
+          done
 
           cd ./apps/meteor
           npm run testci -- --test=test:playwright
