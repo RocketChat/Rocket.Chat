@@ -3,23 +3,26 @@ import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
-import { App } from './types';
+import ScreenshotCarouselAnchor from './components/ScreenshotCarouselAnchor';
+import { AppInfo } from './definitions/AppInfo';
 
 type AppDetailsPageContentProps = {
-	app: App;
+	app: AppInfo;
 };
 
 const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
-	const t = useTranslation();
-
 	const {
 		author: { homepage, support },
 		detailedDescription,
 		description,
 		categories = [],
+		screenshots,
 	} = app;
 
+	const t = useTranslation();
+
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
+	const isCarouselVisible = screenshots && Boolean(screenshots.length);
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto'>
@@ -41,6 +44,8 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 
 			<Box display='flex' flexDirection='column'>
 				<Margins block='x17'>
+					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
+
 					<Box is='section'>
 						<Box fontScale='h4' mbe='x8'>
 							{t('Description')}

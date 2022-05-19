@@ -1,6 +1,7 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useRef, FC, MouseEventHandler } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -26,13 +27,18 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	});
 
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
-
 	const data = useAppInfo(id);
 
-	const { settings, apis } = { settings: {}, apis: [], ...data };
+	const [currentRouteName] = useCurrentRoute();
+	if (!currentRouteName) {
+		throw new Error('No current route name');
+	}
 
-	const showApis = apis.length;
-	const { installed } = data || {};
+	const router = useRoute(currentRouteName);
+	const handleReturn = useMutableCallback((): void => router.push({}));
+
+	const { installed, settings, apis } = data || {};
+	const showApis = apis?.length;
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
@@ -40,7 +46,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 		try {
 			await Apps.setAppSettings(
 				id,
-				Object.values(settings).map((value) => ({ ...value, value: current?.[value.id] })),
+				Object.values(settings || {}).map((value) => ({ ...value, value: current?.[value.id] })),
 			);
 		} catch (e) {
 			handleAPIError(e);
@@ -87,7 +93,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 	return (
 		<Page flexDirection='column'>
-			<Page.Header title={t('Back')} isAppDetails>
+			<Page.Header title={t('App_Info')} onClickBack={handleReturn}>
 				<ButtonGroup>
 					<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
 						{!isSaving && t('Save_changes')}
@@ -119,10 +125,10 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 							</Tabs>
 
 							{isDetailsTabSelected && <AppDetailsPageContent app={data} />}
-							{areApisVisible && <APIsDisplay apis={apis} />}
+							{areApisVisible && <APIsDisplay apis={apis || []} />}
 							{isLogsTabSelected && <AppLogsPage id={id} />}
 							{isSettingsTabSelected && (
-								<SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef} />
+								<SettingsDisplay settings={settings || {}} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef} />
 							)}
 						</>
 					)}
