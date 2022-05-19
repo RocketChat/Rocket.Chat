@@ -7,10 +7,9 @@ import {
 	VideoConfModalInfo,
 	VideoConfModalTitle,
 	VideoConfModalControllers,
-	VideoConfModalController,
 	VideoConfModalFooter,
-	VideoConfModalControllerButton,
-	VideoConfModalFooterButton,
+	VideoConfController,
+	VideoConfButton,
 	useVideoConfControllers,
 } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement } from 'react';
@@ -22,9 +21,10 @@ type StartDirectVideoConfModalProps = {
 	room: IDirectMessageRoom;
 	uid: IUser['_id'];
 	onClose: () => void;
+	onConfirm: () => void;
 };
 
-const StartDirectVideoConfModal = ({ room, uid, onClose }: StartDirectVideoConfModalProps): ReactElement => {
+const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm }: StartDirectVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleVideo } = useVideoConfControllers();
 
@@ -38,31 +38,27 @@ const StartDirectVideoConfModal = ({ room, uid, onClose }: StartDirectVideoConfM
 					<Box mis='x8'>{room.fname}</Box>
 				</VideoConfModalInfo>
 				<VideoConfModalControllers>
-					<VideoConfModalController>
-						<VideoConfModalControllerButton
-							primary={controllersConfig.mic}
-							text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-							title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-							icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-							onClick={handleToggleMic}
-						/>
-					</VideoConfModalController>
-					<VideoConfModalController>
-						<VideoConfModalControllerButton
-							primary={controllersConfig.video}
-							text={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-							title={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-							icon={controllersConfig.video ? 'video' : 'video-off'}
-							onClick={handleToggleVideo}
-						/>
-					</VideoConfModalController>
+					<VideoConfController
+						primary={controllersConfig.mic}
+						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+						onClick={handleToggleMic}
+					/>
+					<VideoConfController
+						primary={controllersConfig.video}
+						text={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
+						title={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
+						icon={controllersConfig.video ? 'video' : 'video-off'}
+						onClick={handleToggleVideo}
+					/>
 				</VideoConfModalControllers>
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
-				<VideoConfModalFooterButton primary icon='phone'>
+				<VideoConfButton onClick={onConfirm} primary icon='phone'>
 					{t('Start_call')}
-				</VideoConfModalFooterButton>
-				<VideoConfModalFooterButton onClick={onClose}>{t('Cancel')}</VideoConfModalFooterButton>
+				</VideoConfButton>
+				<VideoConfButton onClick={onClose}>{t('Cancel')}</VideoConfButton>
 			</VideoConfModalFooter>
 		</VideoConfModal>
 	);

@@ -4789,9 +4789,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
   dependencies:
+    "@rocket.chat/css-in-js": ~0.31.11
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": ~0.31.11
     "@rocket.chat/fuselage-hooks": ^0.31.11
+    "@rocket.chat/styled": ^0.31.11
     "@types/jest": ^27.4.1
     eslint: ^8.12.0
     jest: ^27.5.1
