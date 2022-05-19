@@ -105,18 +105,6 @@ export default {
 				totalTeams: 0,
 				totalRoomsInsideTeams: 0,
 				totalDefaultRoomsInsideTeams: 0,
-				teamStats: [
-					{
-						teamId: '',
-						mainRoom: '',
-						totalRooms: 0,
-						totalMessages: 0,
-						totalPublicRooms: 0,
-						totalPrivateRooms: 0,
-						totalDefaultRooms: 0,
-						totalMembers: 0,
-					},
-				],
 			},
 			totalLivechatVisitors: 0,
 			totalLivechatAgents: 0,

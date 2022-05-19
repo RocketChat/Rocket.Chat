@@ -46,21 +46,10 @@ export interface IRecordsWithTotal<T> {
 	total: number;
 }
 
-export interface ITeamStatData {
-	teamId: string;
-	mainRoom: string;
-	totalRooms: number;
-	totalMessages: number;
-	totalPublicRooms: number;
-	totalPrivateRooms: number;
-	totalDefaultRooms: number;
-	totalMembers: number;
-}
 export interface ITeamStats {
 	totalTeams: number;
 	totalRoomsInsideTeams: number;
 	totalDefaultRoomsInsideTeams: number;
-	teamStats: Array<ITeamStatData>;
 }
 
 // TODO: move to service sdk package

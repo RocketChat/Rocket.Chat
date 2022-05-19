@@ -31,7 +31,7 @@ import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Analytics } from '../../../../server/sdk';
+import { Analytics, Team } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
@@ -448,6 +448,12 @@ export const statistics = {
 		statsPms.push(
 			getEnterpriseStatistics().then((result) => {
 				statistics.enterprise = result;
+			}),
+		);
+
+		statsPms.push(
+			Team.getStatistics().then((result) => {
+				statistics.teams = result;
 			}),
 		);
 
