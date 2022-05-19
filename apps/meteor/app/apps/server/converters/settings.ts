@@ -1,8 +1,8 @@
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISetting } from '@rocket.chat/core-typings';
 
 import { Settings } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
-import type { ISetting } from '@rocket.chat/core-typings';
 
 export class AppSettingsConverter {
 	orch: AppServerOrchestrator;
@@ -11,13 +11,13 @@ export class AppSettingsConverter {
 		this.orch = orch;
 	}
 
-	async convertById(settingId: string) {
+	async convertById(settingId: string): Promise<ISetting> {
 		const setting = await Settings.findOneNotHiddenById(settingId);
 
 		return this.convertToApp(setting);
 	}
 
-	convertToApp(setting: ISetting) {
+	convertToApp(setting: ISetting): ISetting {
 		return {
 			id: setting._id,
 			type: this._convertTypeToApp(setting.type),
@@ -34,7 +34,7 @@ export class AppSettingsConverter {
 		};
 	}
 
-	_convertTypeToApp(type: string) {
+	_convertTypeToApp(type: string): string {
 		switch (type) {
 			case 'boolean':
 				return SettingType.BOOLEAN;

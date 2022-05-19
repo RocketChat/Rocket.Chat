@@ -1,8 +1,8 @@
+import type { IUpload } from '@rocket.chat/core-typings';
+
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 import { Uploads } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
-
-import type { IUpload } from '@rocket.chat/core-typings';
 
 export class AppUploadsConverter {
 	orch: AppServerOrchestrator;
@@ -11,13 +11,21 @@ export class AppUploadsConverter {
 		this.orch = orch;
 	}
 
-	convertById(id: string) {
+	convertById(id: string):
+		| {
+				_unmappedProperties_: unknown;
+		  }
+		| undefined {
 		const upload = Promise.await(Uploads.findOneById(id));
 
 		return this.convertToApp(upload);
 	}
 
-	convertToApp(upload: IUpload) {
+	convertToApp(upload: IUpload):
+		| {
+				_unmappedProperties_: unknown;
+		  }
+		| undefined {
 		if (!upload) {
 			return undefined;
 		}
@@ -39,12 +47,12 @@ export class AppUploadsConverter {
 			url: 'url',
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
-			room: (upload: IUpload) => {
+			room: (upload: IUpload): unknown => {
 				const result = this.orch.getConverters()?.get('rooms').convertById(upload.rid);
 				delete upload.rid;
 				return result;
 			},
-			user: (upload: IUpload) => {
+			user: (upload: IUpload): unknown => {
 				if (!upload.userId) {
 					return undefined;
 				}
@@ -53,7 +61,7 @@ export class AppUploadsConverter {
 				delete upload.userId;
 				return result;
 			},
-			visitor: (upload: IUpload) => {
+			visitor: (upload: IUpload): unknown => {
 				if (!upload.visitorToken) {
 					return undefined;
 				}
@@ -67,7 +75,7 @@ export class AppUploadsConverter {
 		return transformMappedData(upload, map);
 	}
 
-	convertToRocketChat(upload: IUpload) {
+	convertToRocketChat(upload: IUpload): unknown {
 		if (!upload) {
 			return undefined;
 		}

@@ -1,10 +1,9 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { Rooms, Users, LivechatVisitors, LivechatDepartment } from '../../../models/server';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 import { AppServerOrchestrator } from '../orchestrator';
-
-import type { IRoom } from '@rocket.chat/core-typings';
 
 export class AppRoomsConverter {
 	orch: AppServerOrchestrator;
@@ -13,19 +12,27 @@ export class AppRoomsConverter {
 		this.orch = orch;
 	}
 
-	convertById(roomId: string) {
+	convertById(roomId: string):
+		| {
+				_unmappedProperties_: unknown;
+		  }
+		| undefined {
 		const room = Rooms.findOneById(roomId);
 
 		return this.convertRoom(room);
 	}
 
-	convertByName(roomName: string) {
+	convertByName(roomName: string):
+		| {
+				_unmappedProperties_: unknown;
+		  }
+		| undefined {
 		const room = Rooms.findOneByName(roomName);
 
 		return this.convertRoom(room);
 	}
 
-	convertAppRoom(room: IRoom) {
+	convertAppRoom(room: IRoom): unknown {
 		if (!room) {
 			return undefined;
 		}
@@ -110,7 +117,11 @@ export class AppRoomsConverter {
 		return Object.assign(newRoom, room._unmappedProperties_);
 	}
 
-	convertRoom(room: IRoom) {
+	convertRoom(room: IRoom):
+		| {
+				_unmappedProperties_: unknown;
+		  }
+		| undefined {
 		if (!room) {
 			return undefined;
 		}
@@ -133,17 +144,17 @@ export class AppRoomsConverter {
 			_USERNAMES: '_USERNAMES',
 			description: 'description',
 			source: 'source',
-			isDefault: (room: IRoom) => {
+			isDefault: (room: IRoom): boolean => {
 				const result = !!room.default;
 				delete room.default;
 				return result;
 			},
-			isReadOnly: (room: IRoom) => {
+			isReadOnly: (room: IRoom): boolean => {
 				const result = !!room.ro;
 				delete room.ro;
 				return result;
 			},
-			displaySystemMessages: (room: IRoom) => {
+			displaySystemMessages: (room: IRoom): unknown => {
 				const { sysMes } = room;
 
 				if (typeof sysMes === 'undefined') {
@@ -153,12 +164,12 @@ export class AppRoomsConverter {
 				delete room.sysMes;
 				return sysMes;
 			},
-			type: (room: IRoom) => {
+			type: (room: IRoom): string => {
 				const result = this._convertTypeToApp(room.t);
 				delete room.t;
 				return result;
 			},
-			creator: (room: IRoom) => {
+			creator: (room: IRoom): unknown => {
 				const { u } = room;
 
 				if (!u) {
@@ -169,7 +180,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters()?.get('users').convertById(u._id);
 			},
-			visitor: (room: IRoom) => {
+			visitor: (room: IRoom): unknown => {
 				const { v } = room;
 
 				if (!v) {
@@ -180,7 +191,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters()?.get('visitors').convertById(v._id);
 			},
-			department: (room: IRoom) => {
+			department: (room: IRoom): unknown => {
 				const { departmentId } = room;
 
 				if (!departmentId) {
@@ -191,7 +202,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters()?.get('departments').convertById(departmentId);
 			},
-			servedBy: (room: IRoom) => {
+			servedBy: (room: IRoom): unknown => {
 				const { servedBy } = room;
 
 				if (!servedBy) {
@@ -202,7 +213,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters()?.get('users').convertById(servedBy._id);
 			},
-			responseBy: (room: IRoom) => {
+			responseBy: (room: IRoom): unknown => {
 				const { responseBy } = room;
 
 				if (!responseBy) {
@@ -213,7 +224,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters()?.get('users').convertById(responseBy._id);
 			},
-			parentRoom: (room: IRoom) => {
+			parentRoom: (room: IRoom): unknown => {
 				const { prid } = room;
 
 				if (!prid) {
@@ -229,7 +240,7 @@ export class AppRoomsConverter {
 		return transformMappedData(room, map);
 	}
 
-	_convertTypeToApp(typeChar: string) {
+	_convertTypeToApp(typeChar: string): string {
 		switch (typeChar) {
 			case 'c':
 				return RoomType.CHANNEL;

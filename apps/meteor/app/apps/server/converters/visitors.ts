@@ -1,8 +1,8 @@
+import type { IVisitor } from '@rocket.chat/core-typings';
+
 import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 import { AppServerOrchestrator } from '../orchestrator';
-
-import type { IVisitor } from '@rocket.chat/core-typings';
 
 export class AppVisitorsConverter {
 	orch: AppServerOrchestrator;
@@ -11,19 +11,31 @@ export class AppVisitorsConverter {
 		this.orch = orch;
 	}
 
-	convertById(id: string) {
+	convertById(id: string):
+		| {
+				_unmappedProperties_: unknown;
+		  }
+		| undefined {
 		const visitor = LivechatVisitors.findOneById(id);
 
 		return this.convertVisitor(visitor);
 	}
 
-	convertByToken(token: string) {
-		const visitor = LivechatVisitors.getVisitorByToken(token);
+	convertByToken(token: string):
+		| {
+				_unmappedProperties_: unknown;
+		  }
+		| undefined {
+		const visitor = LivechatVisitors.getVisitorByToken(token, {});
 
 		return this.convertVisitor(visitor);
 	}
 
-	convertVisitor(visitor: IVisitor) {
+	convertVisitor(visitor: IVisitor):
+		| {
+				_unmappedProperties_: unknown;
+		  }
+		| undefined {
 		if (!visitor) {
 			return undefined;
 		}
@@ -44,7 +56,7 @@ export class AppVisitorsConverter {
 		return transformMappedData(visitor, map);
 	}
 
-	convertAppVisitor(visitor: IVisitor) {
+	convertAppVisitor(visitor: IVisitor): unknown {
 		if (!visitor) {
 			return undefined;
 		}

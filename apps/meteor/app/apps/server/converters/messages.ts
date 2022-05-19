@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Random } from 'meteor/random';
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 
 import { Messages, Rooms, Users } from '../../../models/server';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 import { AppServerOrchestrator } from '../orchestrator';
-
-import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 
 export class AppMessagesConverter {
 	orch: AppServerOrchestrator;
@@ -13,13 +13,13 @@ export class AppMessagesConverter {
 		this.orch = orch;
 	}
 
-	convertById(msgId: string) {
+	convertById(msgId: string): unknown {
 		const msg = Messages.findOneById(msgId);
 
 		return this.convertMessage(msg);
 	}
 
-	convertMessage(msgObj: IMessage) {
+	convertMessage(msgObj: IMessage): unknown {
 		if (!msgObj) {
 			return undefined;
 		}
@@ -41,12 +41,12 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
-			room: (message: IMessage) => {
+			room: (message: IMessage): unknown => {
 				const result = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 				delete message.rid;
 				return result;
 			},
-			editor: (message: IMessage) => {
+			editor: (message: IMessage): unknown => {
 				const { editedBy } = message;
 				delete message.editedBy;
 
@@ -56,12 +56,12 @@ export class AppMessagesConverter {
 
 				return this.orch.getConverters()?.get('users').convertById(editedBy._id);
 			},
-			attachments: (message: IMessage) => {
+			attachments: (message: IMessage): unknown => {
 				const result = this._convertAttachmentsToApp(message.attachments);
 				delete message.attachments;
 				return result;
 			},
-			sender: (message: IMessage) => {
+			sender: (message: IMessage): unknown => {
 				if (!message.u || !message.u._id) {
 					return undefined;
 				}
@@ -82,7 +82,7 @@ export class AppMessagesConverter {
 		return transformMappedData(msgObj, map);
 	}
 
-	convertAppMessage(message: IMessage) {
+	convertAppMessage(message: IMessage): unknown {
 		if (!message || !message.room) {
 			return undefined;
 		}
@@ -148,7 +148,7 @@ export class AppMessagesConverter {
 		return Object.assign(newMessage, message._unmappedProperties_);
 	}
 
-	_convertAppAttachments(attachments: MessageAttachment[]) {
+	_convertAppAttachments(attachments: MessageAttachment[]): unknown[] | undefined {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -190,7 +190,11 @@ export class AppMessagesConverter {
 		);
 	}
 
-	_convertAttachmentsToApp(attachments: MessageAttachment[]) {
+	_convertAttachmentsToApp(attachments: MessageAttachment[]):
+		| {
+				_unmappedProperties_: unknown;
+		  }[]
+		| undefined {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -217,7 +221,7 @@ export class AppMessagesConverter {
 			actions: 'actions',
 			type: 'type',
 			description: 'description',
-			author: (attachment: MessageAttachment) => {
+			author: (attachment: MessageAttachment): { name: MessageAttachment; link: MessageAttachment; icon: MessageAttachment } => {
 				const { author_name: name, author_link: link, author_icon: icon } = attachment;
 
 				delete attachment.author_name;
@@ -226,7 +230,9 @@ export class AppMessagesConverter {
 
 				return { name, link, icon };
 			},
-			title: (attachment: MessageAttachment) => {
+			title: (
+				attachment: MessageAttachment,
+			): { value: MessageAttachment; link: MessageAttachment; displayDownloadLink: MessageAttachment } => {
 				const { title: value, title_link: link, title_link_download: displayDownloadLink } = attachment;
 
 				delete attachment.title;
@@ -235,7 +241,7 @@ export class AppMessagesConverter {
 
 				return { value, link, displayDownloadLink };
 			},
-			timestamp: (attachment: MessageAttachment) => {
+			timestamp: (attachment: MessageAttachment): Date => {
 				const result = new Date(attachment.ts);
 				delete attachment.ts;
 				return result;
