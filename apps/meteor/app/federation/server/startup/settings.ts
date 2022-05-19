@@ -69,7 +69,7 @@ settingsRegistry.addGroup('Federation', function () {
 const updateSettings = async function (): Promise<void> {
 	// Get the key pair
 
-	if (getFederationDiscoveryMethod() === 'hub' && !Promise.await(isRegisteringOrEnabled())) {
+	if (getFederationDiscoveryMethod() === 'hub' && !(await isRegisteringOrEnabled())) {
 		// Register with hub
 		try {
 			await updateStatus(STATUS_REGISTERING);
@@ -89,20 +89,18 @@ const updateSettings = async function (): Promise<void> {
 };
 
 // Add settings listeners
-settings.watch('FEDERATION_Enabled', function enableOrDisable(value) {
+settings.watch('FEDERATION_Enabled', async function enableOrDisable(value) {
 	setupLogger.info(`Federation is ${value ? 'enabled' : 'disabled'}`);
 
 	if (value) {
-		Promise.await(updateSettings());
+		await updateSettings();
 
 		enableCallbacks();
 	} else {
-		Promise.await(updateStatus(STATUS_DISABLED));
+		await updateStatus(STATUS_DISABLED);
 
 		disableCallbacks();
 	}
-
-	value && updateSettings();
 });
 
 settings.watchMultiple(['FEDERATION_Discovery_Method', 'FEDERATION_Domain'], updateSettings);

@@ -57,10 +57,20 @@ const PermissionsTable = (): ReactElement => {
 				</Page.Header>
 				<Margins blockEnd='x16'>
 					<Tabs>
-						<Tabs.Item selected={type === 'permissions'} onClick={handlePermissionsTab} disabled={!canViewPermission}>
+						<Tabs.Item
+							data-qa='PermissionTable-Permissions'
+							selected={type === 'permissions'}
+							onClick={handlePermissionsTab}
+							disabled={!canViewPermission}
+						>
 							{t('Permissions')}
 						</Tabs.Item>
-						<Tabs.Item selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
+						<Tabs.Item
+							data-qa='PermissionTable-Settings'
+							selected={type === 'settings'}
+							onClick={handleSettingsTab}
+							disabled={!canViewSettingPermission}
+						>
 							{t('Settings')}
 						</Tabs.Item>
 					</Tabs>

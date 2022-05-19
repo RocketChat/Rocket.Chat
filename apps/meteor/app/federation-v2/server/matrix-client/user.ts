@@ -1,4 +1,4 @@
-import { MatrixProfileInfo } from '@rocket.chat/forked-matrix-bot-sdk';
+import type { MatrixProfileInfo } from '@rocket.chat/forked-matrix-bot-sdk';
 import { IUser } from '@rocket.chat/core-typings';
 
 import { matrixBridge } from '../bridge';

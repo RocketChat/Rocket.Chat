@@ -81,6 +81,10 @@ class LoginPage extends BasePage {
 		return this.getPage().locator('//span[@class="rc-header__block"]');
 	}
 
+	public getSideBarAvatarButton(): Locator {
+		return this.getPage().locator('[data-qa="sidebar-avatar-button"]');
+	}
+
 	public async open(path: string): Promise<void> {
 		await super.goto(path);
 	}
@@ -134,6 +138,11 @@ class LoginPage extends BasePage {
 		await this.submit();
 		await expect(this.confirmPasswordInvalidText()).toBeVisible();
 		await expect(this.confirmPasswordInvalidText()).toHaveText('The password confirmation does not match password');
+	}
+
+	public async logout(): Promise<void> {
+		await this.getSideBarAvatarButton().click();
+		await this.getPage().locator('li.rcx-option >> text="Logout"').click();
 	}
 }
 
