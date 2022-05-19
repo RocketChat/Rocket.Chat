@@ -1,18 +1,20 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist"
-  },
-  "include": [
-    "./src/**/*"
-  ],
-  "references": [
-    {
-      "path": "../core-typings"
-    },
-    {
-      "path": "../rest-typings"
-    }
-  ]
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"paths": {
+			"@dic": ["../../apps/meteor/packages/rocketchat-i18n/i18n/*"]
+		}
+	},
+	"include": ["./src/**/*", "./src/en.json"],
+
+	"references": [
+		{
+			"path": "../core-typings"
+		},
+		{
+			"path": "../rest-typings"
+		}
+	]
 }
