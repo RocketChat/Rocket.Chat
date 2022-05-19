@@ -24,7 +24,7 @@ type BodyProps = {
 
 const isBigEmoji = (tokens: MarkdownAST): tokens is [ASTBigEmoji] => tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
-const MessageBodyRender: FC<BodyProps> = ({
+const ASTMessageRender: FC<BodyProps> = ({
 	tokens,
 	mentions = [],
 	channels = [],
@@ -72,4 +72,4 @@ const MessageBodyRender: FC<BodyProps> = ({
 	);
 };
 
-export default memo(MessageBodyRender);
+export default memo(ASTMessageRender);

@@ -3,7 +3,7 @@ import { parser } from '@rocket.chat/message-parser';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
-import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
+import ASTMessageRender from '../../../../components/Message/MessageBodyRender/ASTMessageRender';
 import { useMessageActions } from '../../contexts/MessageContext';
 
 const EncryptedMessageRender = ({ message }: { message: IMessage }): ReactElement => {
@@ -19,7 +19,7 @@ const EncryptedMessageRender = ({ message }: { message: IMessage }): ReactElemen
 	}
 
 	return (
-		<MessageBodyRender
+		<ASTMessageRender
 			onUserMentionClick={openUserCard}
 			onChannelMentionClick={openRoom}
 			mentions={message?.mentions || []}
