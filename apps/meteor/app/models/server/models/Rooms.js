@@ -26,6 +26,7 @@ export class Rooms extends Base {
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
+		this.tryEnsureIndex({ encrypted: 1 }, { sparse: true }); // used on statistics
 
 		this.tryEnsureIndex(
 			{
@@ -1465,19 +1466,6 @@ export class Rooms extends Base {
 
 	countDiscussions() {
 		return this.find({ prid: { $exists: true } }).count();
-	}
-
-	countRoomsInsideTeams() {
-		return this.find({ teamId: { $exists: true }, teamMain: { $exists: false } }).count();
-	}
-
-	countAutojoinRoomsInsideTeams() {
-		const query = {
-			teamId: { $exists: true },
-			teamMain: { $exists: false },
-			teamDefault: true,
-		};
-		return this.find(query).count();
 	}
 
 	setOTRForDMByRoomID(rid) {
