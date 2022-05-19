@@ -19,6 +19,7 @@ export const validUserInserted: ILogin = {
 	email: 'user.name.test@email.com',
 	password: 'any_password',
 };
+
 const validEmail = faker.internet.email();
 
 export const registerUser: IRegister = {

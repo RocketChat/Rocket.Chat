@@ -2615,7 +2615,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "Gebruikersgroepfilter",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "Het LDAP-zoekfilter dat wordt gebruikt om te controleren of een gebruiker deel uitmaakt van een groep.",
   "LDAP_Sync_User_Data_RolesMap": "User Data Group Map",
-  "LDAP_Sync_User_Data_RolesMap_Description": "Wijs LDAP-groepen toe aan Rocket.Chat-gebruikersrollen <br/>Als voorbeeld zal `{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}` de rocket-admin LDAP-groep toewijzen aan Rocket's rol \"admin\".",
+  "LDAP_Sync_User_Data_RolesMap_Description": "Wijs LDAP-groepen toe aan Rocket.Chat-gebruikersrollen <br/>Als voorbeeld zal `{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}` de rocket-admin LDAP-groep toewijzen aan Rocket's rol \"admin\".",
   "LDAP_Teams_BaseDN": "LDAP-teams BaseDN",
   "LDAP_Teams_BaseDN_Description": "De LDAP BaseDN gebruikt om gebruikersteams op te zoeken.",
   "LDAP_Teams_Name_Field": "LDAP-teamnaam attribuut",

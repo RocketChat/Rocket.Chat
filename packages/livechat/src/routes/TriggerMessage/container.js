@@ -8,15 +8,16 @@ import TriggerMessage from './component';
 
 
 export class TriggerMessageContainer extends Component {
-	handleStart() {
+	handleStart(props) {
 		parentCall('setFullScreenDocumentMobile');
 		parentCall('openWidget');
+		props.onRestore();
 		route('/');
 	}
 
 	render = (props) => {
 		parentCall('resetDocumentStyle');
-		return <TriggerMessage onStartChat={this.handleStart} {...props} />;
+		return <TriggerMessage onStartChat={() => this.handleStart(props)} {...props} />;
 	}
 }
 
