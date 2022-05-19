@@ -14,7 +14,7 @@ export type ConferenceInstructions = {
 };
 
 export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'];
-export interface IVideoConferenceUser extends Required<Pick<IUser, '_id' | 'username' | 'name'>> {
+export interface IVideoConferenceUser extends Pick<IUser, '_id' | 'username' | 'name'> {
 	ts: Date;
 }
 
@@ -26,24 +26,38 @@ export enum VideoConferenceStatus {
 
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;
-	users: IVideoConferenceUser[];
 	rid: string;
-	anonymousUsers: number;
-	title: string;
+	users: IVideoConferenceUser[];
+	status: VideoConferenceStatus;
 	messages: {
-		calling?: IMessage['_id'];
-		missed?: IMessage['_id'];
 		started?: IMessage['_id'];
 		ended?: IMessage['_id'];
 	};
-	status: VideoConferenceStatus;
 	url?: string;
 
-	createdBy: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
+	createdBy: Pick<IUser, '_id' | 'username' | 'name'>;
 	createdAt: Date;
 
-	endedBy?: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
+	endedBy?: Pick<IUser, '_id' | 'username' | 'name'>;
 	endedAt?: Date;
 }
 
+export interface IDirectVideoConference extends IVideoConference {
+	type: 'direct';
+}
+
+export interface IGroupVideoConference extends IVideoConference {
+	type: 'videoconference';
+	anonymousUsers: number;
+	title: string;
+}
+
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions;
+
+export const isDirectVideoConference = (call: IVideoConference): call is IDirectVideoConference => {
+	return call?.type === 'direct';
+};
+
+export const isGroupVideoConference = (call: IVideoConference): call is IGroupVideoConference => {
+	return call?.type === 'videoconference';
+};

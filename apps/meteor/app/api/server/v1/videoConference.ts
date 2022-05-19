@@ -1,10 +1,10 @@
-import { isVideoConfStartProps } from '@rocket.chat/rest-typings';
+import { isVideoConfStartProps, isVideoConfJoinProps, isVideoConfCancelProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../../models/server';
 import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { startVideoConference } from '../../../../server/lib/startVideoConference';
+import { VideoConf } from '../../../../server/sdk';
 
 API.v1.addRoute(
 	'video-conference/jitsi.update-timeout',
@@ -43,8 +43,58 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				data: await startVideoConference(userId, roomId),
+				data: await VideoConf.start(userId, roomId),
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'video-conference.join',
+	{ authRequired: true, validateParams: isVideoConfJoinProps },
+	{
+		async post() {
+			const { callId, state } = this.bodyParams;
+			const { userId } = this;
+
+			const call = await VideoConf.get(callId);
+			if (!call) {
+				return API.v1.failure('invalid-params');
+			}
+
+			if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+				return API.v1.failure('invalid-params');
+			}
+
+			return API.v1.success({
+				url: await VideoConf.join(userId, callId, {
+					...(state?.cam !== undefined ? { cam: state.cam } : {}),
+					...(state?.mic !== undefined ? { mic: state.mic } : {}),
+				}),
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'video-conference.cancel',
+	{ authRequired: true, validateParams: isVideoConfCancelProps },
+	{
+		async post() {
+			const { callId } = this.bodyParams;
+			const { userId } = this;
+
+			const call = await VideoConf.get(callId);
+			if (!call) {
+				return API.v1.failure('invalid-params');
+			}
+
+			if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+				return API.v1.failure('invalid-params');
+			}
+
+			await VideoConf.cancel(userId, callId);
+			return API.v1.success();
 		},
 	},
 );
