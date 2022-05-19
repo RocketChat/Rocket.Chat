@@ -1,5 +1,6 @@
-import React, { useEffect, useState, ComponentProps } from 'react';
-import { Box, Icon } from '@rocket.chat/fuselage';
+import React from 'react';
+import type { ComponentProps } from 'react';
+import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
 
 type VideoConfPopupTitleProps = {
   text: string;
@@ -8,30 +9,13 @@ type VideoConfPopupTitleProps = {
 };
 
 const VideoConfPopupTitle = ({ text, counter = false, icon }: VideoConfPopupTitleProps) => {
-  const [dots, setDots] = useState(['']);
-
-  useEffect(() => {
-    if (counter) {
-      const dotsInterval = setInterval(() => {
-        setDots((prevState) => {
-          if (prevState.length === 3) {
-            return ['.'];
-          }
-  
-          return ([...prevState, '.'])
-        });
-      }, 1000);
-
-      return () => clearInterval(dotsInterval);
-    }
-  }, []);
-
   return (
     <Box mbs='x8' display='flex' alignItems='center'>
       <Icon size='x20' name={icon} />
       <Box mis='x4' fontScale='p1b'>
-        {text} {dots}
+        {text} 
       </Box>
+      {counter && <Throbber size='x8' mis='x4' inheritColor />}
     </Box>
   );
 }

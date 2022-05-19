@@ -16,7 +16,8 @@ export type TimedVideoConfPopupProps = {
 
 const TimedVideoConfPopup = ({ id, room, position, current, total }: TimedVideoConfPopupProps): ReactElement => {
 	const dismissPopup = useVideoConfPopupDismiss();
-	const isIn = false;
+	// flag to change popup type
+	const isIn = true;
 
 	useEffect(() => {
 		setTimeout(() => {
