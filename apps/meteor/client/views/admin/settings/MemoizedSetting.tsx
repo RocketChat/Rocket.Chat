@@ -1,5 +1,6 @@
+import { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { Callout, Field, Margins } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import React, { FC, memo, ReactElement } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
 import AssetSettingInput from './inputs/AssetSettingInput';
@@ -18,23 +19,39 @@ import SelectSettingInput from './inputs/SelectSettingInput';
 import SelectTimezoneSettingInput from './inputs/SelectTimezoneSettingInput';
 import StringSettingInput from './inputs/StringSettingInput';
 
+type MemoizedSettingProps = {
+	type: ISettingBase['type'];
+	hint?: ReactElement;
+	callout?: ReactElement;
+	value?: SettingValue;
+	editor?: SettingEditor;
+	onChangeValue?: (value: unknown) => void;
+	onChangeEditor?: (value: unknown) => void;
+	onResetButtonClick?: () => void;
+	className?: string;
+	invisible?: boolean;
+	label?: string;
+	sectionChanged?: boolean;
+	hasResetButton?: boolean;
+};
+
 const MemoizedSetting = ({
 	type,
 	hint = undefined,
 	callout = undefined,
 	value = undefined,
 	editor = undefined,
-	onChangeValue = () => {},
-	onChangeEditor = () => {},
+	onChangeValue,
+	onChangeEditor,
 	className = undefined,
 	invisible = undefined,
 	...inputProps
-}) => {
+}: MemoizedSettingProps): ReactElement => {
 	if (invisible) {
-		return null;
+		return <></>;
 	}
 
-	const InputComponent =
+	const InputComponent: FC<any> =
 		{
 			boolean: BooleanSettingInput,
 			string: StringSettingInput,
@@ -51,7 +68,7 @@ const MemoizedSetting = ({
 			asset: AssetSettingInput,
 			roomPick: RoomPickSettingInput,
 			timezone: SelectTimezoneSettingInput,
-		}[type] || GenericSettingInput;
+		}[type as string] || GenericSettingInput;
 
 	return (
 		<Field className={className}>
