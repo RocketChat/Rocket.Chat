@@ -205,7 +205,7 @@ export const fileUpload = async (
 					uploadNextFile();
 				},
 				onSubmit: (fileName: string, description?: string): void => {
-					Object.defineProperty(file, 'name', {
+					Object.defineProperty(file.file, 'name', {
 						writable: true,
 						value: fileName,
 					});
