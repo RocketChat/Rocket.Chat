@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IMessage} from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -16,7 +17,7 @@ interface IHelpCommand {
 	command: string;
 }
 
-function Help(_command: 'help', _params: string, item: Record<string, string>): void {
+function Help(_command: 'help', _params: string, item: IMessage): void {
 	const userId = Meteor.userId() as string;
 	const user = Users.findOneById(userId);
 
