@@ -117,6 +117,7 @@ export class App extends Component {
 		} else {
 			dispatchRestore();
 		}
+		Triggers.callbacks.emit('chat-opened-by-visitor');
 	}
 
 	handleOpenWindow = () => {

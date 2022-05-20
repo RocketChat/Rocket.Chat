@@ -145,7 +145,7 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
-	const showRealName = useSetting('UI_Use_Real_Name');
+	const useRealName = useSetting('UI_Use_Real_Name');
 
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const avatarTemplate = useAvatarTemplate();
@@ -164,11 +164,11 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 			t,
 			SideBarItemTemplate: sideBarItemTemplate,
 			avatarTemplate,
-			showRealName,
+			useRealName,
 			extended,
 			sidebarViewMode,
 		}),
-		[avatarTemplate, extended, items, showRealName, sideBarItemTemplate, sidebarViewMode, t],
+		[avatarTemplate, extended, items, useRealName, sideBarItemTemplate, sidebarViewMode, t],
 	);
 
 	const changeSelection = useMutableCallback((dir) => {
