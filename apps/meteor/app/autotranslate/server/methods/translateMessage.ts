@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 import { TranslationProviderRegistry } from '..';
 
 Meteor.methods({
@@ -8,7 +8,7 @@ Meteor.methods({
 		if (!TranslationProviderRegistry.enabled) {
 			return;
 		}
-		const room = Rooms.findOneById(message && message.rid);
+		const room = Rooms.findOneById(message?.rid);
 		if (message && room) {
 			TranslationProviderRegistry.translateMessage(message, room, targetLanguage);
 		}

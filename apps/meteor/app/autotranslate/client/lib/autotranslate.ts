@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import mem from 'mem';
+import { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 
-import { Subscriptions, Messages } from '../../../models';
-import { hasPermission } from '../../../authorization';
+import { Subscriptions, Messages } from '../../../models/client';
+import { hasPermission } from '../../../authorization/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 
 let userLanguage = 'en';
@@ -12,29 +13,29 @@ let username = '';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const user = Meteor.user();
+		const user: Pick<IUser, 'language' | 'username'> | null = Meteor.user();
 		if (!user) {
 			return;
 		}
 		userLanguage = user.language || 'en';
-		username = user.username;
+		username = user.username || '';
 	});
 });
 
 export const AutoTranslate = {
 	initialized: false,
 	providersMetadata: {},
-	messageIdsToWait: {},
-	supportedLanguages: [],
+	messageIdsToWait: {} as { [messageId: string]: string },
+	supportedLanguages: [] as ISupportedLanguage[],
 
 	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
 
-	getLanguage(rid) {
-		let subscription = {};
+	getLanguage(rid: IRoom['_id']): string {
+		let subscription: ISubscription | undefined;
 		if (rid) {
 			subscription = this.findSubscriptionByRid(rid);
 		}
-		const language = (subscription && subscription.autoTranslateLanguage) || userLanguage || window.defaultUserLanguage();
+		const language = (subscription?.autoTranslateLanguage || userLanguage || window.defaultUserLanguage?.()) as string;
 		if (language.indexOf('-') !== -1) {
 			if (!_.findWhere(this.supportedLanguages, { language })) {
 				return language.substr(0, 2);
@@ -43,7 +44,7 @@ export const AutoTranslate = {
 		return language;
 	},
 
-	translateAttachments(attachments, language) {
+	translateAttachments(attachments: MessageAttachmentDefault[], language: string): MessageAttachmentDefault[] {
 		for (const attachment of attachments) {
 			if (attachment.author_name !== username) {
 				if (attachment.text && attachment.translations && attachment.translations[language]) {
@@ -54,7 +55,9 @@ export const AutoTranslate = {
 					attachment.description = attachment.translations[language];
 				}
 
+				// @ts-expect-error - not sure what to do with this
 				if (attachment.attachments && attachment.attachments.length > 0) {
+					// @ts-expect-error - not sure what to do with this
 					attachment.attachments = this.translateAttachments(attachment.attachments, language);
 				}
 			}
@@ -62,7 +65,7 @@ export const AutoTranslate = {
 		return attachments;
 	},
 
-	init() {
+	init(): void {
 		if (this.initialized) {
 			return;
 		}
@@ -82,7 +85,7 @@ export const AutoTranslate = {
 		});
 
 		Subscriptions.find().observeChanges({
-			changed: (id, fields) => {
+			changed: (_id: string, fields: ISubscription) => {
 				if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
 					mem.clear(this.findSubscriptionByRid);
 				}
@@ -93,17 +96,17 @@ export const AutoTranslate = {
 	},
 };
 
-export const createAutoTranslateMessageRenderer = () => {
+export const createAutoTranslateMessageRenderer = (): ((message: ITranslatedMessage) => ITranslatedMessage) => {
 	AutoTranslate.init();
 
-	return (message) => {
+	return (message: ITranslatedMessage): ITranslatedMessage => {
 		const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
 		const autoTranslateLanguage = AutoTranslate.getLanguage(message.rid);
 		if (message.u && message.u._id !== Meteor.userId()) {
 			if (!message.translations) {
 				message.translations = {};
 			}
-			if (!!(subscription && subscription.autoTranslate) !== !!message.autoTranslateShowInverse) {
+			if (!!subscription?.autoTranslate !== !!message.autoTranslateShowInverse) {
 				message.translations.original = message.html;
 				if (message.translations[autoTranslateLanguage]) {
 					message.html = message.translations[autoTranslateLanguage];
@@ -120,10 +123,10 @@ export const createAutoTranslateMessageRenderer = () => {
 	};
 };
 
-export const createAutoTranslateMessageStreamHandler = () => {
+export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslatedMessage) => void) => {
 	AutoTranslate.init();
 
-	return (message) => {
+	return (message: ITranslatedMessage): void => {
 		if (message.u && message.u._id !== Meteor.userId()) {
 			const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
 			const language = AutoTranslate.getLanguage(message.rid);

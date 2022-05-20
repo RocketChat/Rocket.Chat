@@ -11,9 +11,9 @@ import './autotranslate';
 import './methods/getSupportedLanguages';
 import './methods/saveSettings';
 import './methods/translateMessage';
-import './googleTranslate.js';
-import './deeplTranslate.js';
-import './msTranslate.js';
-import './methods/getProviderUiMetadata.js';
+import './googleTranslate';
+import './deeplTranslate';
+import './msTranslate';
+import './methods/getProviderUiMetadata';
 
 export { AutoTranslate, TranslationProviderRegistry };
