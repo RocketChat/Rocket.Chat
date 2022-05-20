@@ -1,8 +1,10 @@
 import { ILivechatCustomField, ILivechatVisitor, ILivechatVisitorDTO, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { check } from 'meteor/check';
-import s from 'underscore.string';
+import { UpdateQuery } from 'mongodb';
 
 import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
+
+const getTypedKeys = Object.keys as <T extends object>(obj: T) => Array<keyof T>;
 
 export const Contacts = {
 	registerContact({
@@ -13,20 +15,16 @@ export const Contacts = {
 		username,
 		customFields = {},
 		contactManager,
-	}: Pick<ILivechatVisitorDTO, 'token' | 'name' | 'email' | 'username' | 'phone'> & {
+	}: Pick<ILivechatVisitorDTO, 'token' | 'name' | 'email' | 'username'> & {
 		customFields?: Record<string, unknown>;
 		contactManager?: ILivechatVisitor['contactManager'];
+		phone?: string;
 	}): string {
 		check(token, String);
 
-		const visitorEmail = email && s.trim(email).toLowerCase();
+		const visitorEmail = email?.trim().toLowerCase();
 
 		let contactId;
-		const updateUser: any = {
-			$set: {
-				token,
-			},
-		};
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
 
@@ -51,23 +49,27 @@ export const Contacts = {
 			}
 		}
 
-		updateUser.$set.name = name;
-		updateUser.$set.phone = (phone && [{ phoneNumber: phone }]) || null;
-		updateUser.$set.visitorEmails = (visitorEmail && [{ address: visitorEmail }]) || null;
-
 		const allowedCF = (LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }) as ILivechatCustomField[]).map(
 			({ _id }) => _id,
 		);
 
-		const livechatData = Object.keys(customFields)
+		const livechatData = getTypedKeys(customFields)
 			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
 			.reduce((obj, key) => {
-				(obj as any)[key] = customFields[key];
+				obj[key] = customFields[key];
 				return obj;
-			}, {});
+			}, {} as Record<string, unknown>);
 
-		updateUser.$set.livechatData = livechatData;
-		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
+		const updateUser: UpdateQuery<ILivechatVisitor> = {
+			$set: {
+				token,
+				name,
+				...(phone && { phone: [{ phoneNumber: phone }] }),
+				...(visitorEmail && { visitorEmails: [{ address: visitorEmail }] }),
+				livechatData,
+				...(contactManager?.username && { contactManager: { username: contactManager.username } }),
+			},
+		};
 
 		LivechatVisitors.updateById(contactId, updateUser);
 
