@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import { int } from 'aws-sdk/clients/datapipeline';
 import React, { FC, useMemo } from 'react';
 
 import { PricingPlan } from './definitions/PricingPlan';
@@ -9,7 +8,7 @@ import { formatPricingPlan, formatPrice } from './helpers';
 type PriceDisplayProps = {
 	purchaseType: string;
 	pricingPlans: PricingPlan[];
-	price: int;
+	price: number;
 	showType?: boolean;
 	marginInline?: string;
 };
