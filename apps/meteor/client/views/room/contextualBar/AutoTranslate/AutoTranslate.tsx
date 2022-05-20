@@ -11,7 +11,7 @@ type AutoTranslateProps = {
 	handleSwitch: (event?: any) => void;
 	translateEnable: boolean | undefined;
 	handleChangeLanguage: (value: string) => void;
-	handleClose: () => void;
+	handleClose?: () => void;
 };
 
 const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, handleChangeLanguage, handleClose }: AutoTranslateProps) => {
