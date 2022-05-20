@@ -1,10 +1,34 @@
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 
+type CreateChannelProps = {
+	values: {
+		name: string;
+		type?: boolean;
+		readOnly?: boolean;
+		encrypted?: boolean;
+		broadcast?: boolean;
+		users?: string[];
+	};
+	handlers: {
+		handleName?: () => void;
+		handleDescription?: () => void;
+		handleEncrypted?: () => void;
+		handleReadOnly?: () => void;
+	};
+	hasUnsavedChanges: boolean;
+	onChangeUsers: () => void;
+	onChangeType: () => void;
+	onChangeBroadcast: () => void;
+	canOnlyCreateOneType?: boolean;
+	e2eEnabledForPrivateByDefault?: boolean;
+	onCreate: () => void;
+	onClose: () => void;
+};
 const CreateChannel = ({
 	values,
 	handlers,
@@ -16,7 +40,7 @@ const CreateChannel = ({
 	e2eEnabledForPrivateByDefault,
 	onCreate,
 	onClose,
-}) => {
+}: CreateChannelProps): ReactElement => {
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
@@ -25,11 +49,11 @@ const CreateChannel = ({
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
-	const [nameError, setNameError] = useState();
+	const [nameError, setNameError] = useState<string>();
 
 	const checkName = useDebouncedCallback(
-		async (name) => {
-			setNameError(false);
+		async (name: string) => {
+			setNameError(undefined);
 			if (hasUnsavedChanges) {
 				return;
 			}
@@ -98,7 +122,7 @@ const CreateChannel = ({
 									{values.type ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
 								</Field.Description>
 							</Box>
-							<ToggleSwitch checked={values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType} />
+							<ToggleSwitch checked={!!values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType} />
 						</Box>
 					</Field>
 					<Field>
