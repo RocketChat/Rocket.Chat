@@ -4,6 +4,7 @@ import React, { FC } from 'react';
 type AgentInfoActionProps = {
 	icon: IconProps['name'];
 	label?: string;
+	title?: string;
 };
 
 const AgentInfoAction: FC<AgentInfoActionProps> = ({ icon, label, ...props }) => (

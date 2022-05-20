@@ -168,7 +168,7 @@ const AgentsRoute: FC = () => {
 		if (!context) {
 			return <></>;
 		}
-		const handleVerticalBarCloseButtonClick = () => {
+		const handleVerticalBarCloseButtonClick = (): void => {
 			agentsRoute.push({});
 		};
 

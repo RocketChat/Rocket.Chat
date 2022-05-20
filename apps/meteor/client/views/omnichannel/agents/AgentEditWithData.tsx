@@ -26,7 +26,11 @@ const AgentEditWithData: FC<AgentEditWithDataProps> = ({ uid, reload }) => {
 		error: availableDepartmentsError,
 	} = useEndpointData('livechat/department');
 
-	if ([state, availableDepartmentsState, userDepartmentsState].includes(AsyncStatePhase.LOADING)) {
+	if (
+		[state, availableDepartmentsState, userDepartmentsState].includes(AsyncStatePhase.LOADING) ||
+		!userDepartments ||
+		!availableDepartments
+	) {
 		return <FormSkeleton />;
 	}
 
@@ -34,9 +38,7 @@ const AgentEditWithData: FC<AgentEditWithDataProps> = ({ uid, reload }) => {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
-	return (
-		<AgentEdit uid={uid} data={data.user} userDepartments={userDepartments} availableDepartments={availableDepartments} reset={reload} />
-	);
+	return <AgentEdit uid={uid} data={data} userDepartments={userDepartments} availableDepartments={availableDepartments} reset={reload} />;
 };
 
 export default AgentEditWithData;

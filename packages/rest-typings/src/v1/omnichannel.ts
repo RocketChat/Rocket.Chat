@@ -142,13 +142,13 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	'livechat/users/manger/:_id': {
+	'livechat/users/manager/:_id': {
 		GET: (
 			params: PaginatedRequest<{
 				text: string;
 			}>,
 		) => { user: ILivechatAgent };
-		DELETE: () => { success: boolean };
+		DELETE: () => void;
 	};
 
 	'livechat/users/manager': {
@@ -163,7 +163,7 @@ export type OmnichannelEndpoints = {
 			params: PaginatedRequest<{
 				text: string;
 			}>,
-		) => { user: ILivechatAgent };
+		) => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> };
 		DELETE: () => { success: boolean };
 	};
 
@@ -225,7 +225,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/agents/:uid/departments': {
-		GET: (params: { enableDepartmentsOnly: 'true' | 'false' | '0' | '1' }) => { departments: ILivechatDepartment[] };
+		GET: (params: { enableDepartmentsOnly: 'true' | 'false' | '0' | '1' }) => { departments: ILivechatDepartmentAgents[] };
 	};
 
 	'canned-responses': {
