@@ -34,7 +34,9 @@ const AgentEditWithData: FC<AgentEditWithDataProps> = ({ uid, reload }) => {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
-	return <AgentEdit uid={uid} data={data} userDepartments={userDepartments} availableDepartments={availableDepartments} reset={reload} />;
+	return (
+		<AgentEdit uid={uid} data={data.user} userDepartments={userDepartments} availableDepartments={availableDepartments} reset={reload} />
+	);
 };
 
 export default AgentEditWithData;

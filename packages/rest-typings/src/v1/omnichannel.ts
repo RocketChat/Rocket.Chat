@@ -142,12 +142,32 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	'livechat/users/:type/:_id': {
-		GET: () => { user: ILivechatAgent[] };
+	'livechat/users/manger/:_id': {
+		GET: (
+			params: PaginatedRequest<{
+				text: string;
+			}>,
+		) => { user: ILivechatAgent };
 		DELETE: () => { success: boolean };
 	};
 
-	'livechat/users/:type': {
+	'livechat/users/manager': {
+		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
+			users: ILivechatAgent[];
+		}>;
+		POST: (params: { username: string }) => { success: boolean };
+	};
+
+	'livechat/users/agent/:_id': {
+		GET: (
+			params: PaginatedRequest<{
+				text: string;
+			}>,
+		) => { user: ILivechatAgent };
+		DELETE: () => { success: boolean };
+	};
+
+	'livechat/users/agent': {
 		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
 			users: ILivechatAgent[];
 		}>;

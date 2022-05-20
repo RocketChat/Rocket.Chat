@@ -1,4 +1,4 @@
-import React, { FC, Key, ReactElement } from 'react';
+import React, { FC, Key, ReactNode, ReactElement } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
@@ -8,12 +8,11 @@ import AddAgent from './AddAgent';
 type AgentPageProps = {
 	reload: () => void;
 	data: any;
-	header: string;
+	header: ReactNode;
 	setParams: (params: any) => void;
 	params: any;
 	title: string;
 	renderRow: (props: { _id?: Key }) => ReactElement;
-	onChange: (filter: { text: string }) => void;
 };
 
 const AgentsPage: FC<AgentPageProps> = ({ data, reload, header, setParams, params, title, renderRow, children }) => (
