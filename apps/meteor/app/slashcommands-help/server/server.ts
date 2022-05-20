@@ -4,6 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
+import { Users } from '../../models/server';
 
 /*
  * Help is a named function that will replace /help commands
@@ -17,6 +18,8 @@ interface IHelpCommand {
 
 function Help(_command: 'help', _params: string, item: Record<string, string>): void {
 	const userId = Meteor.userId() as string;
+	const user = Users.findOneById(userId);
+
 	const keys: IHelpCommand[] = [
 		{
 			key: 'Open_channel_user_search',
@@ -56,7 +59,7 @@ function Help(_command: 'help', _params: string, item: Record<string, string>): 
 			msg: TAPi18n.__(key.key, {
 				postProcess: 'sprintf',
 				sprintf: [key.command],
-				lng: settings.get('Language') || 'en',
+				lng: user?.language || settings.get('Language') || 'en',
 			}),
 		});
 	});
