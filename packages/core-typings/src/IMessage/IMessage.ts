@@ -15,6 +15,7 @@ type MessageUrl = {
 	source?: string;
 	meta: Record<string, string>;
 	headers?: { contentLength: string; contentType: string };
+	ignoreParse?: boolean;
 };
 
 type VoipMessageTypesValues =
@@ -158,6 +159,8 @@ export interface IMessage extends IRocketChatRecord {
 	// Tokenization fields
 	tokens?: Token[];
 	html?: string;
+	// Messages sent from visitors have this field
+	token?: string;
 }
 
 export type MessageSystem = {

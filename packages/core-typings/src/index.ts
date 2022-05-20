@@ -43,7 +43,7 @@ export * from './IExportOperation';
 export * from './INotification';
 export * from './INps';
 
-export * from './ISession';
+// export * from './ISession';
 export * from './IEmoji';
 export * from './IEmojiCustom';
 export * from './ICustomEmojiDescriptor';
@@ -56,6 +56,7 @@ export * from './IEmailMessageHistory';
 export * from './ReadReceipt';
 export * from './IUpload';
 export * from './IOEmbedCache';
+export * from './IOembed';
 // TODO: not sure if this is the right place to put this
 
 export * from './IEmailInbox';

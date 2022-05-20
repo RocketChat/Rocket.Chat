@@ -3,31 +3,38 @@ import QueryString from 'querystring';
 
 import { camelCase } from 'change-case';
 import _ from 'underscore';
+import { OEmbedMeta, OEmbedUrlContent, ParsedUrl, OEmbedProvider } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
+type OEmbedExecutor = {
+	providers: Providers;
+};
+
 class Providers {
+	private providers: OEmbedProvider[];
+
 	constructor() {
 		this.providers = [];
 	}
 
-	static getConsumerUrl(provider, url) {
-		const urlObj = URL.parse(provider.endPoint, true);
-		urlObj.query.url = url;
-		delete urlObj.search;
+	static getConsumerUrl(provider: OEmbedProvider, url: string): string {
+		const urlObj = new URL.URL(provider.endPoint);
+		urlObj.searchParams.set('url', url);
+
 		return URL.format(urlObj);
 	}
 
-	registerProvider(provider) {
+	registerProvider(provider: OEmbedProvider): number {
 		return this.providers.push(provider);
 	}
 
-	getProviders() {
+	getProviders(): OEmbedProvider[] {
 		return this.providers;
 	}
 
-	getProviderForUrl(url) {
+	getProviderForUrl(url: string): OEmbedProvider | undefined {
 		return _.find(this.providers, function (provider) {
 			const candidate = _.find(provider.urls, function (re) {
 				return re.test(url);
@@ -83,9 +90,9 @@ providers.registerProvider({
 	endPoint: 'https://open.spotify.com/oembed',
 });
 
-export const oembed = {};
-
-oembed.providers = providers;
+export const oembed: OEmbedExecutor = {
+	providers,
+};
 
 callbacks.add(
 	'oembed:beforeGetUrlContent',
@@ -94,15 +101,22 @@ callbacks.add(
 			const url = URL.format(data.parsedUrl);
 			const provider = providers.getProviderForUrl(url);
 			if (provider != null) {
-				let consumerUrl = Providers.getConsumerUrl(provider, url);
-				consumerUrl = URL.parse(consumerUrl, true);
-				_.extend(data.parsedUrl, consumerUrl);
-				data.urlObj.port = consumerUrl.port;
-				data.urlObj.hostname = consumerUrl.hostname;
-				data.urlObj.pathname = consumerUrl.pathname;
-				data.urlObj.query = consumerUrl.query;
-				delete data.urlObj.search;
-				delete data.urlObj.host;
+				const consumerUrl = Providers.getConsumerUrl(provider, url);
+
+				const parsedConsumerUrl = URL.parse(consumerUrl, true);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				data.parsedUrl = {
+					...data.parsedUrl,
+					...parsedConsumerUrl,
+				};
+
+				data.urlObj.port = parsedConsumerUrl.port;
+				data.urlObj.hostname = parsedConsumerUrl.hostname;
+				data.urlObj.pathname = parsedConsumerUrl.pathname;
+				data.urlObj.query = parsedConsumerUrl.query;
+
+				data.urlObj.search = null;
+				data.urlObj.host = null;
 			}
 		}
 		return data;
@@ -111,7 +125,19 @@ callbacks.add(
 	'oembed-providers-before',
 );
 
-const cleanupOembed = (data) => {
+const cleanupOembed = (data: {
+	url: string;
+	meta: OEmbedMeta;
+	headers: { [k: string]: string };
+	parsedUrl: ParsedUrl;
+	content: OEmbedUrlContent;
+}): {
+	url: string;
+	meta: Omit<OEmbedMeta, 'oembedHtml'>;
+	headers: { [k: string]: string };
+	parsedUrl: ParsedUrl;
+	content: OEmbedUrlContent;
+} => {
 	if (!data?.meta) {
 		return data;
 	}

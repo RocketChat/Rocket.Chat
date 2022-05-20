@@ -1,3 +1,5 @@
+import Url from 'url';
+
 import { Meteor } from 'meteor/meteor';
 import { FilterQuery } from 'mongodb';
 import type {
@@ -9,6 +11,9 @@ import type {
 	OmnichannelAgentStatus,
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
+	ParsedUrl,
+	OEmbedMeta,
+	OEmbedUrlContent,
 } from '@rocket.chat/core-typings';
 
 import type { Logger } from '../app/logger/server';
@@ -105,6 +110,17 @@ type ChainedCallbackSignatures = {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
+	'oembed:beforeGetUrlContent': (data: { urlObj: Url.UrlWithParsedQuery; parsedUrl: ParsedUrl }) => {
+		urlObj: Url.UrlWithParsedQuery;
+		parsedUrl: ParsedUrl;
+	};
+	'oembed:afterParseContent': (data: {
+		url: string;
+		meta: OEmbedMeta;
+		headers: { [k: string]: string };
+		parsedUrl: ParsedUrl;
+		content: OEmbedUrlContent;
+	}) => unknown;
 };
 
 type Hook =
