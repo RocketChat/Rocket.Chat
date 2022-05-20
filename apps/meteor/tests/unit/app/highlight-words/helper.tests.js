@@ -4,7 +4,7 @@ import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from '../../.
 
 describe('helper', () => {
 	describe('highlightWords', () => {
-		it('highlights the correct words', () => {
+		it('highlights the correct word', () => {
 			const res = highlightWords(
 				'here is some word',
 				['word'].map((highlight) => ({
@@ -15,6 +15,19 @@ describe('helper', () => {
 			);
 
 			expect(res).to.be.equal('here is some <mark class="highlight-text">word</mark>');
+		});
+
+		it('highlights the correct multiple words', () => {
+			const res = highlightWords(
+				'here is some word and another word',
+				['word'].map((highlight) => ({
+					highlight,
+					regex: getRegexHighlight(highlight),
+					urlRegex: getRegexHighlightUrl(highlight),
+				})),
+			);
+
+			expect(res).to.be.equal('here is some <mark class="highlight-text">word</mark> and another <mark class="highlight-text">word</mark>');
 		});
 
 		describe('handles links', () => {
