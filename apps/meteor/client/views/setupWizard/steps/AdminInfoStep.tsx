@@ -2,20 +2,12 @@ import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ComponentProps } from 'react';
 
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const AdminInfoStep = (): ReactElement => {
 	const t = useTranslation();
 	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
 	const usernameRegExp = new RegExp(`^${regexpForUsernameValidation}$`);
-
-	const eventLoadedStats = useEndpointAction('POST', 'statistics.telemetry', {
-		params: [{ eventName: 'setupWizardStats', stepName: 'AdminInfo', eventType: 'Loaded' }],
-	});
-	const eventCompletedStats = useEndpointAction('POST', 'statistics.telemetry', {
-		params: [{ eventName: 'setupWizardStats', stepName: 'AdminInfo', eventType: 'Completed' }],
-	});
 
 	const {
 		setupWizardData: { adminData },
@@ -37,11 +29,9 @@ const AdminInfoStep = (): ReactElement => {
 
 	const handleSubmit: ComponentProps<typeof AdminInfoPage>['onSubmit'] = async (data) => {
 		setSetupWizardData((prevState) => ({ ...prevState, adminData: data }));
-		eventCompletedStats();
 		goToNextStep();
 	};
 
-	eventLoadedStats();
 	return (
 		<AdminInfoPage
 			validatePassword={(password): boolean => password.length > 0}

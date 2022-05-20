@@ -5,8 +5,10 @@ import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics';
 import { settings } from '../../app/settings/server';
 
-export async function sendStatistics(logger, data) {
-	data.host = Meteor.absoluteUrl();
+async function generateStatistics(logger) {
+	const cronStatistics = await statistics.save();
+
+	cronStatistics.host = Meteor.absoluteUrl();
 
 	if (!settings.get('Statistics_reporting')) {
 		return;
@@ -21,7 +23,7 @@ export async function sendStatistics(logger, data) {
 		}
 
 		HTTP.post('https://collector.rocket.chat/', {
-			data,
+			data: cronStatistics,
 			headers,
 		});
 	} catch (error) {
@@ -49,18 +51,14 @@ export function statsCron(SyncedCron, logger) {
 			return;
 		}
 
-		const cronStatistics = Promise.await(statistics.save());
-		sendStatistics(logger, cronStatistics);
+		generateStatistics(logger);
 
 		SyncedCron.add({
 			name,
 			schedule(parser) {
 				return parser.cron('12 * * * *');
 			},
-			job: () => {
-				const cronStatistics = Promise.await(statistics.save());
-				sendStatistics(logger, cronStatistics);
-			},
+			job: () => generateStatistics(logger),
 		});
 	});
 }

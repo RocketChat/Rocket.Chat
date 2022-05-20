@@ -9,7 +9,6 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { ISetting } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
-import { Settings as SettingsRaw } from '../../models/server';
 import { replaceVariables } from './replaceVariables';
 import { Apps } from '../../apps/server';
 import { validateEmail } from '../../../lib/emailValidator';
@@ -169,8 +168,6 @@ export const sendNoWrap = ({
 	if (settings.get('email_plain_text_only')) {
 		html = undefined;
 	}
-
-	SettingsRaw.incrementValueById('Triggered_Emails_Count');
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 

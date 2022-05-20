@@ -1,7 +1,6 @@
 import { RegisteredServerPage, StandaloneServerPage } from '@rocket.chat/onboarding-ui';
 import React, { ReactElement, ComponentProps, useState } from 'react';
 
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const SERVER_OPTIONS = {
@@ -21,29 +20,19 @@ const RegisterServerStep = (): ReactElement => {
 	} = useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
 
-	const eventLoadedStats = useEndpointAction('POST', 'statistics.telemetry', {
-		params: [{ eventName: 'setupWizardStats', stepName: 'RegisterServer', eventType: 'Loaded' }],
-	});
-	const eventCompletedStats = useEndpointAction('POST', 'statistics.telemetry', {
-		params: [{ eventName: 'setupWizardStats', stepName: 'RegisterServer', eventType: 'Completed' }],
-	});
-
 	const handleRegister: ComponentProps<typeof RegisteredServerPage>['onSubmit'] = async (data) => {
 		if (data.registerType !== 'standalone') {
 			setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
-			eventCompletedStats();
 			await registerServer(data);
 		}
 	};
 
 	const handleConfirmStandalone: ComponentProps<typeof StandaloneServerPage>['onSubmit'] = async ({ registerType }) => {
 		if (registerType !== 'registered') {
-			eventCompletedStats();
 			return completeSetupWizard();
 		}
 	};
 
-	eventLoadedStats();
 	if (serverOption === SERVER_OPTIONS.STANDALONE) {
 		return (
 			<StandaloneServerPage

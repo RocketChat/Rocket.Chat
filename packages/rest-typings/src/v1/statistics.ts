@@ -6,14 +6,7 @@ type SlashCommand = { command: string };
 
 type SettingsCounter = { settingsId: string };
 
-type SetupWizardStep = { stepName: string; eventType: string };
-
-export type TelemetryMap = {
-	otrStats: OTREnded;
-	slashCommandsStats: SlashCommand;
-	updateCounter: SettingsCounter;
-	setupWizardStats: SetupWizardStep;
-};
+export type TelemetryMap = { otrStats: OTREnded; slashCommandsStats: SlashCommand; updateCounter: SettingsCounter };
 
 export type TelemetryEvents = keyof TelemetryMap;
 
