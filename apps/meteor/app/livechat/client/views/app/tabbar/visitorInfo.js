@@ -382,7 +382,7 @@ Template.visitorInfo.onCreated(function () {
 	this.room = new ReactiveVar({});
 
 	this.updateVisitor = async (visitorId) => {
-		const { visitor } = await APIClient.get(`/v1/livechat/visitors.info?visitorId=${visitorId}`);
+		const { visitor } = await APIClient.get('/v1/livechat/visitors.info', { visitorId });
 		this.user.set(visitor);
 	};
 
@@ -409,7 +409,7 @@ Template.visitorInfo.onCreated(function () {
 	});
 
 	const loadRoomData = async (rid) => {
-		const { room } = await APIClient.get(`/v1/rooms.info?roomId=${rid}`);
+		const { room } = await APIClient.get('/v1/rooms.info', { roomId: rid });
 		this.updateRoom(room);
 	};
 
@@ -420,7 +420,7 @@ Template.visitorInfo.onCreated(function () {
 
 	this.autorun(async () => {
 		if (this.departmentId.get()) {
-			const { department } = await APIClient.get(`/v1/livechat/department/${this.departmentId.get()}?includeAgents=false`);
+			const { department } = await APIClient.get(`/v1/livechat/department/${this.departmentId.get()}`, { includeAgents: false });
 			this.department.set(department);
 		}
 	});
