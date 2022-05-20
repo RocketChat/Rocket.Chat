@@ -1,0 +1,126 @@
+{
+	"name": "@rocket.chat/livechat",
+	"version": "1.13.3",
+	"files": [
+		"/build"
+	],
+	"private": true,
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RocketChat/Rocket.Chat.Livechat"
+	},
+	"scripts": {
+		"clean": "rimraf dist",
+		"build": "webpack-cli --mode production",
+		"start": "webpack-dev-server --mode development",
+		"lint": "run-s eslint stylelint",
+		"eslint": "eslint src",
+		"stylelint": "stylelint 'src/**/*.scss'",
+		"storybook": "start-storybook -p 9001 -c .storybook",
+		"loki:test": "loki test --chromeDockerImage=chinello/alpine-chrome:latest --chromeFlags=\"--headless --no-sandbox --disable-gpu --disable-features=VizDisplayCompositor\" --verboseRenderer --requireReference --reactUri file:./storybook-static",
+		"loki:test-ci": "loki test --chromeFlags=\"--headless --no-sandbox --disable-gpu --disable-features=VizDisplayCompositor\" --verboseRenderer --requireReference --reactUri file:./storybook-static",
+		"loki:update": "loki update --chromeDockerImage=chinello/alpine-chrome:latest --chromeFlags=\"--headless --no-sandbox --disable-gpu --disable-features=VizDisplayCompositor\" --verboseRenderer --requireReference --reactUri file:./storybook-static",
+		"build-storybook": "build-storybook",
+		"build-storybook:loki": "cross-env NODE_ENV=loki build-storybook",
+		"update-storybook": "cross-env NODE_ENV=loki run-s build-storybook loki:update"
+	},
+	"devDependencies": {
+		"@babel/preset-env": "^7.11.5",
+		"@rocket.chat/eslint-config": "^0.4.0",
+		"@storybook/addon-actions": "^6.0.12",
+		"@storybook/addon-backgrounds": "^6.0.12",
+		"@storybook/addon-essentials": "^6.0.16",
+		"@storybook/addon-knobs": "^6.0.12",
+		"@storybook/addon-viewport": "^6.0.12",
+		"@storybook/react": "^6.0.12",
+		"@storybook/storybook-deployer": "^2.8.6",
+		"@storybook/theming": "^6.0.12",
+		"@types/react-dom": "^18",
+		"autoprefixer": "^9.8.6",
+		"babel-eslint": "^10.1.0",
+		"babel-loader": "^8.1.0",
+		"babel-plugin-jsx-pragmatic": "^1.0.2",
+		"cross-env": "^7.0.2",
+		"css-loader": "^4.2.2",
+		"cssnano": "^4.1.10",
+		"desvg-loader": "^0.1.0",
+		"eslint": "^7.5.0",
+		"eslint-plugin-import": "^2.22.0",
+		"eslint-plugin-react": "^7.20.5",
+		"eslint-plugin-react-hooks": "^4.1.0",
+		"file-loader": "^6.1.0",
+		"gh-release": "^3.5.0",
+		"html-webpack-plugin": "^4.4.1",
+		"husky": "^4.2.5",
+		"if-env": "^1.0.4",
+		"image-webpack-loader": "^6.0.0",
+		"loki": "^0.24.0",
+		"lorem-ipsum": "^2.0.3",
+		"mini-css-extract-plugin": "^0.11.0",
+		"npm-run-all": "^4.1.5",
+		"postcss-css-variables": "^0.17.0",
+		"postcss-dir-pseudo-class": "^5.0.0",
+		"postcss-flexbugs-fixes": "^4.2.1",
+		"postcss-ie11-supports": "^0.1.3",
+		"postcss-loader": "^3.0.0",
+		"postcss-logical": "^4.0.2",
+		"postcss-selector-not": "^4.0.0",
+		"react-dom": "^18.1.0",
+		"rimraf": "^3.0.2",
+		"sass": "^1.49.10",
+		"sass-loader": "^9.0.2",
+		"serve": "^11.3.2",
+		"style-loader": "^1.2.1",
+		"stylelint": "^13.6.1",
+		"stylelint-order": "^4.1.0",
+		"svg-loader": "^0.0.2",
+		"ts-loader": "^8.3.0",
+		"typescript": "^4.6.3",
+		"url-loader": "^4.1.0",
+		"webpack": "^4.44.1",
+		"webpack-cli": "^3.3.12",
+		"webpack-dev-server": "^3.11.0"
+	},
+	"dependencies": {
+		"@kossnocorp/desvg": "^0.2.0",
+		"@rocket.chat/fuselage-tokens": "~0.31.11",
+		"@rocket.chat/logo": "^0.31.11",
+		"@rocket.chat/sdk": "^1.0.0-alpha.42",
+		"@rocket.chat/ui-kit": "^0.14.1",
+		"crypto-js": "^4.1.1",
+		"css-vars-ponyfill": "^2.3.2",
+		"date-fns": "^2.15.0",
+		"desvg": "^1.0.2",
+		"emoji-mart": "^3.0.0",
+		"history": "^5.0.0",
+		"i18next": "^21.3.3",
+		"markdown-it": "^11.0.0",
+		"mem": "^6.1.0",
+		"mitt": "^2.1.0",
+		"preact": "^10.4.6",
+		"preact-router": "^3.2.1",
+		"query-string": "^6.13.1",
+		"react-i18next": "^11.13.0",
+		"whatwg-fetch": "^3.4.0"
+	},
+	"browserslist": [
+		"> 1%",
+		"last 2 versions",
+		"not ie < 11"
+	],
+	"houston": {
+		"updateFiles": [
+			"package.json"
+		]
+	},
+	"loki": {
+		"configurations": {
+			"chrome": {
+				"target": "chrome.docker",
+				"width": 365,
+				"height": 500
+			}
+		}
+	}
+}
