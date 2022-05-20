@@ -1,5 +1,5 @@
+import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '@rocket.chat/core-typings';
 import { FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
-import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
 
 import { ICreateRoomParams } from './IRoomService';
@@ -111,4 +111,5 @@ export interface ITeamService {
 	removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeAllMembersFromTeam(teamId: string): Promise<void>;
 	removeRolesFromMember(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<boolean>;
+	getStatistics(): Promise<ITeamStats>;
 }
