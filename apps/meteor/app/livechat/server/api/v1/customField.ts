@@ -8,29 +8,25 @@ import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFiel
 
 API.v1.addRoute('livechat/custom.field', {
 	post() {
-		try {
-			check(this.bodyParams, {
-				token: String,
-				key: String,
-				value: String,
-				overwrite: Boolean,
-			});
+		check(this.bodyParams, {
+			token: String,
+			key: String,
+			value: String,
+			overwrite: Boolean,
+		});
 
-			const { token, key, value, overwrite } = this.bodyParams;
+		const { token, key, value, overwrite } = this.bodyParams;
 
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
-			}
-
-			if (!Livechat.setCustomFields({ token, key, value, overwrite })) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({ field: { key, value, overwrite } });
-		} catch (e) {
-			return API.v1.failure(e);
+		const guest = findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
 		}
+
+		if (!Livechat.setCustomFields({ token, key, value, overwrite })) {
+			return API.v1.failure();
+		}
+
+		return API.v1.success({ field: { key, value, overwrite } });
 	},
 });
 
@@ -53,14 +49,20 @@ API.v1.addRoute('livechat/custom.fields', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		const fields = this.bodyParams.customFields.map((customField) => {
+		const fields: {
+			Key: string;
+			value: string;
+			overwrite: boolean;
+		}[] = [];
+
+		for (const customField of this.bodyParams.customFields) {
 			const data = Object.assign({ token }, customField);
 			if (!Livechat.setCustomFields(data)) {
 				return API.v1.failure();
 			}
 
-			return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
-		});
+			fields.push({ Key: customField.key, value: customField.value, overwrite: customField.overwrite });
+		}
 
 		return API.v1.success({ fields });
 	},
@@ -70,24 +72,22 @@ API.v1.addRoute(
 	'livechat/custom-fields',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { text } = this.queryParams;
 
-			const customFields = Promise.await(
-				findLivechatCustomFields({
-					userId: this.userId,
-					text,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const result = await findLivechatCustomFields({
+				userId: this.userId,
+				text,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 
-			return API.v1.success(customFields);
+			return API.v1.success(result);
 		},
 	},
 );
@@ -96,11 +96,14 @@ API.v1.addRoute(
 	'livechat/custom-fields/:_id',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				_id: String,
 			});
-			const { customField } = Promise.await(findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams._id }));
+			const { customField } = await findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams._id });
+			if (!customField) {
+				return API.v1.notFound(`No custom field found with id ${this.urlParams._id}`);
+			}
 
 			return API.v1.success({
 				customField,

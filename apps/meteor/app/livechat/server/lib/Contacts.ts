@@ -1,16 +1,28 @@
+import { ILivechatCustomField, ILivechatVisitor, ILivechatVisitorDTO, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { check } from 'meteor/check';
 import s from 'underscore.string';
 
-import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models';
+import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
 
 export const Contacts = {
-	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
+	registerContact({
+		token,
+		name,
+		email,
+		phone,
+		username,
+		customFields = {},
+		contactManager,
+	}: Pick<ILivechatVisitorDTO, 'token' | 'name' | 'email' | 'username' | 'phone'> & {
+		customFields?: Record<string, unknown>;
+		contactManager?: ILivechatVisitor['contactManager'];
+	}): string {
 		check(token, String);
 
-		const visitorEmail = s.trim(email).toLowerCase();
+		const visitorEmail = email && s.trim(email).toLowerCase();
 
 		let contactId;
-		const updateUser = {
+		const updateUser: any = {
 			$set: {
 				token,
 			},
@@ -27,7 +39,7 @@ export const Contacts = {
 
 			let existingUser = null;
 
-			if (visitorEmail !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(visitorEmail))) {
+			if (visitorEmail && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(visitorEmail))) {
 				contactId = existingUser._id;
 			} else {
 				const userData = {
@@ -43,12 +55,14 @@ export const Contacts = {
 		updateUser.$set.phone = (phone && [{ phoneNumber: phone }]) || null;
 		updateUser.$set.visitorEmails = (visitorEmail && [{ address: visitorEmail }]) || null;
 
-		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }).map(({ _id }) => _id);
+		const allowedCF = (LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }) as ILivechatCustomField[]).map(
+			({ _id }) => _id,
+		);
 
 		const livechatData = Object.keys(customFields)
 			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
 			.reduce((obj, key) => {
-				obj[key] = customFields[key];
+				(obj as any)[key] = customFields[key];
 				return obj;
 			}, {});
 
@@ -57,7 +71,7 @@ export const Contacts = {
 
 		LivechatVisitors.updateById(contactId, updateUser);
 
-		const rooms = LivechatRooms.findByVisitorId(contactId).fetch();
+		const rooms: IOmnichannelRoom[] = LivechatRooms.findByVisitorId(contactId).fetch();
 
 		rooms?.length &&
 			rooms.forEach((room) => {

@@ -23,7 +23,7 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const agent = room && room.servedBy && findAgent(room.servedBy._id);
+			const agent = room?.servedBy && findAgent(room.servedBy._id);
 			if (!agent) {
 				throw new Meteor.Error('invalid-agent');
 			}
@@ -36,43 +36,39 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 });
 
 API.v1.addRoute('livechat/agent.next/:token', {
-	get() {
-		try {
-			check(this.urlParams, {
-				token: String,
-			});
+	async get() {
+		check(this.urlParams, {
+			token: String,
+		});
 
-			check(this.queryParams, {
-				department: Match.Maybe(String),
-			});
+		check(this.queryParams, {
+			department: Match.Maybe(String),
+		});
 
-			const { token } = this.urlParams;
-			const room = findOpenRoom(token);
-			if (room) {
-				return API.v1.success();
-			}
-
-			let { department } = this.queryParams;
-			if (!department) {
-				const requireDeparment = Livechat.getRequiredDepartment();
-				if (requireDeparment) {
-					department = requireDeparment._id;
-				}
-			}
-
-			const agentData = Promise.await(Livechat.getNextAgent(department));
-			if (!agentData) {
-				throw new Meteor.Error('agent-not-found');
-			}
-
-			const agent = findAgent(agentData.agentId);
-			if (!agent) {
-				throw new Meteor.Error('invalid-agent');
-			}
-
-			return API.v1.success({ agent });
-		} catch (e) {
-			return API.v1.failure(e);
+		const { token } = this.urlParams;
+		const room = findOpenRoom(token);
+		if (room) {
+			return API.v1.success();
 		}
+
+		let { department } = this.queryParams;
+		if (!department) {
+			const requireDeparment = Livechat.getRequiredDepartment();
+			if (requireDeparment) {
+				department = requireDeparment._id;
+			}
+		}
+
+		const agentData = await Livechat.getNextAgent(department);
+		if (!agentData) {
+			throw new Meteor.Error('agent-not-found');
+		}
+
+		const agent = findAgent(agentData.agentId);
+		if (!agent) {
+			throw new Meteor.Error('agent-not-found');
+		}
+
+		return API.v1.success({ agent });
 	},
 });

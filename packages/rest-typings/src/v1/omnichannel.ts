@@ -12,6 +12,7 @@ import type {
 	IOmnichannelRoom,
 	IRoom,
 	ISetting,
+	ILivechatCustomField,
 } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -111,12 +112,7 @@ export type OmnichannelEndpoints = {
 
 	'livechat/custom-fields': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
-			customFields: [
-				{
-					_id: string;
-					label: string;
-				},
-			];
+			customFields: ILivechatCustomField[];
 		}>;
 	};
 	'livechat/rooms': {
@@ -235,5 +231,54 @@ export type OmnichannelEndpoints = {
 		) => PaginatedResult<{
 			cannedResponses: IOmnichannelCannedResponse[];
 		}>;
+	};
+
+	'livechat/agent.next/:token': {
+		GET: (params: { token: string; department?: string }) => { agent: ILivechatAgent };
+	};
+
+	'livechat/config': {
+		GET: (params: { token: string; department?: string; businessUnit: string }) => { config: any };
+	};
+
+	'omnichannel/contact': {
+		POST: (params: {
+			_id?: string;
+			token: string;
+			name: string;
+			username: string;
+			email?: string;
+			phone?: string;
+			customFields?: Record<string, unknown>;
+			contactManager?: {
+				username: string;
+			};
+		}) => { contact: string };
+
+		GET: (params: { contactId: string }) => { contact: ILivechatVisitor };
+	};
+
+	'omnichannel/contact.search': {
+		GET: (params: { email?: string; phone?: string }) => { contact: ILivechatVisitor };
+	};
+
+	'livechat/custom.field': {
+		POST: (params: { token: string; key: string; value: string; overwrite: boolean }) => {
+			field: { key: string; value: string; overwrite: boolean };
+		};
+	};
+
+	'livechat/custom.fields': {
+		POST: (params: { token: string; customFields: { key: string; value: string; overwrite: boolean } }) => {
+			fields: {
+				Key: string;
+				value: string;
+				overwrite: boolean;
+			}[];
+		};
+	};
+
+	'livechat/custom-fields/:_id': {
+		GET: (params: { id: string }) => { customField: ILivechatCustomField | null };
 	};
 };
