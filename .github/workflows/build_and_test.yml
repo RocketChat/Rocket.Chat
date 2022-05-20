@@ -207,8 +207,8 @@ jobs:
             --link mongo \
             -p 3000:3000 \
             -e TEST_MODE=true \
-            -e MONGO_URL=$MONGO_URL \
-            -e MONGO_OPLOG_URL=$MONGO_OPLOG_URL \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             ${IMAGE_NAME}
 
       - uses: actions/checkout@v3
