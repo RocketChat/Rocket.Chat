@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"description": "Rocket.Chat DDP-Streamer service",
 	"scripts": {
-		"build": "tsc -p tsconfig.json",
+		"build": "tsc -p tsconfig.lib.json",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [
