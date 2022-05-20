@@ -98,8 +98,16 @@ function ContactNewEdit({ id, data, close }) {
 	);
 
 	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
-	const emailAlreadyExistsAction = useEndpoint('GET', `/v1/omnichannel/contact.search?email=${email}`);
-	const phoneAlreadyExistsAction = useEndpoint('GET', `/v1/omnichannel/contact.search?phone=${phone}`);
+	const emailAlreadyExistsAction = useEndpoint(
+		'GET',
+		'/v1/omnichannel/contact.search',
+		useMemo(() => ({ email }), [email]),
+	);
+	const phoneAlreadyExistsAction = useEndpoint(
+		'GET',
+		'/v1/omnichannel/contact.search',
+		useMemo(() => ({ phone }), [phone]),
+	);
 
 	const checkEmailExists = useMutableCallback(async () => {
 		if (!validateEmail(email)) {

@@ -1,7 +1,7 @@
 import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useCurrentRoute, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
@@ -59,7 +59,14 @@ const ContactInfo = ({ id, rid, route }) => {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const { value: data, phase: state, error } = useEndpointData(`/v1/omnichannel/contact?contactId=${id}`);
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(
+		'/v1/omnichannel/contact',
+		useMemo(() => ({ contactId: id }), [id]),
+	);
 
 	const [currentRouteName] = useCurrentRoute();
 	const liveRoute = useRoute('live');
