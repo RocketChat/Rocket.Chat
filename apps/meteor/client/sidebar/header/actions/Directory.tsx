@@ -1,9 +1,9 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { FC } from 'react';
 
-const Directory = (props) => {
+const Directory: FC = (props) => {
 	const directoryRoute = useRoute('directory');
 	const { sidebar } = useLayout();
 	const handleDirectory = useMutableCallback(() => {

@@ -1,9 +1,9 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { FC } from 'react';
 
-const Home = (props) => {
+const Home: FC = (props) => {
 	const homeRoute = useRoute('home');
 	const { sidebar } = useLayout();
 	const showHome = useSetting('Layout_Show_Home_Button');
