@@ -10,7 +10,7 @@ import type ContactManager from './ContactManager';
 import type CustomFieldsAdditionalFormContainer from './CustomFieldsAdditionalFormContainer';
 import type DepartmentBusinessHours from './DepartmentBusinessHours';
 import type DepartmentForwarding from './DepartmentForwarding';
-import type EENumberInput from './EENumberInput';
+import type EeNumberInput from './EeNumberInput';
 import type EeTextAreaInput from './EeTextAreaInput';
 import type EeTextInput from './EeTextInput';
 import type MaxChatsPerAgentContainer from './MaxChatsPerAgentContainer';
@@ -23,7 +23,7 @@ declare module '../../../../client/views/omnichannel/additionalForms' {
 		useCustomFieldsAdditionalForm: () => React.LazyExoticComponent<typeof CustomFieldsAdditionalFormContainer>;
 		useMaxChatsPerAgent?: () => React.LazyExoticComponent<typeof MaxChatsPerAgentContainer>;
 		useMaxChatsPerAgentDisplay?: () => React.LazyExoticComponent<typeof MaxChatsPerAgentDisplay>;
-		useEeNumberInput?: () => React.LazyExoticComponent<typeof EENumberInput>;
+		useEeNumberInput?: () => React.LazyExoticComponent<typeof EeNumberInput>;
 		useEeTextAreaInput?: () => React.LazyExoticComponent<typeof EeTextAreaInput>;
 		useBusinessHoursMultiple?: () => React.LazyExoticComponent<typeof BusinessHoursMultipleContainer>;
 		useEeTextInput?: () => React.LazyExoticComponent<typeof EeTextInput>;
