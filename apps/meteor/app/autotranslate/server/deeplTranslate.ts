@@ -5,10 +5,18 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
+import {
+	IMessage,
+	IDeepLTranslation,
+	MessageAttachment,
+	IProviderMetadata,
+	ITranslationResult,
+	ISupportedLanguage,
+} from '@rocket.chat/core-typings';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 
 /**
  * DeepL translation service provider class representation.
@@ -19,6 +27,10 @@ import { settings } from '../../settings';
  * @augments AutoTranslate
  */
 class DeeplAutoTranslate extends AutoTranslate {
+	apiKey: string;
+
+	apiEndPointUrl: string;
+
 	/**
 	 * setup api reference to deepl translate to be used as message translation provider.
 	 * @constructor
@@ -28,7 +40,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		this.name = 'deepl-translate';
 		this.apiEndPointUrl = 'https://api.deepl.com/v2/translate';
 		// Get the service provide API key.
-		settings.watch('AutoTranslate_DeepLAPIKey', (value) => {
+		settings.watch<string>('AutoTranslate_DeepLAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}
@@ -38,7 +50,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @private implements super abstract method.
 	 * @return {object}
 	 */
-	_getProviderMetadata() {
+	_getProviderMetadata(): IProviderMetadata {
 		return {
 			name: this.name,
 			displayName: TAPi18n.__('AutoTranslate_DeepL'),
@@ -51,7 +63,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @private implements super abstract method.
 	 * @return {object}
 	 */
-	_getSettings() {
+	_getSettings(): IProviderMetadata['settings'] {
 		return {
 			apiKey: this.apiKey,
 			apiEndPointUrl: this.apiEndPointUrl,
@@ -66,9 +78,9 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {string} target
 	 * @returns {object} code : value pair
 	 */
-	getSupportedLanguages(target) {
+	getSupportedLanguages(target: string): ISupportedLanguage[] {
 		if (!this.apiKey) {
-			return;
+			return [];
 		}
 
 		if (this.supportedLanguages[target]) {
@@ -184,8 +196,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translateMessage(message, targetLanguages) {
-		const translations = {};
+	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
+		const translations: { [k: string]: string } = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
 		const query = `text=${msgs.join('&text=')}`;
@@ -197,7 +209,9 @@ class DeeplAutoTranslate extends AutoTranslate {
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
+						// eslint-disable-next-line @typescript-eslint/camelcase
 						auth_key: this.apiKey,
+						// eslint-disable-next-line @typescript-eslint/camelcase
 						target_lang: language,
 					},
 					query,
@@ -213,7 +227,9 @@ class DeeplAutoTranslate extends AutoTranslate {
 					// store translation only when the source and target language are different.
 					// multiple lines might contain different languages => Mix the text between source and detected target if neccessary
 					const translatedText = result.data.translations
-						.map((translation, index) => (translation.detected_source_language !== language ? translation.text : msgs[index]))
+						.map((translation: IDeepLTranslation, index: number) =>
+							translation.detected_source_language !== language ? translation.text : msgs[index],
+						)
 						.join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
@@ -231,9 +247,9 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		const translations = {};
-		const query = `text=${encodeURIComponent(attachment.description || attachment.text)}`;
+	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
+		const translations: { [k: string]: string } = {};
+		const query = `text=${encodeURIComponent(attachment.description || attachment.text || '')}`;
 		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -242,7 +258,9 @@ class DeeplAutoTranslate extends AutoTranslate {
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
+						// eslint-disable-next-line @typescript-eslint/camelcase
 						auth_key: this.apiKey,
+						// eslint-disable-next-line @typescript-eslint/camelcase
 						target_lang: language,
 					},
 					query,
@@ -254,8 +272,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 					Array.isArray(result.data.translations) &&
 					result.data.translations.length > 0
 				) {
-					if (result.data.translations.map((translation) => translation.detected_source_language).join() !== language) {
-						translations[language] = result.data.translations.map((translation) => translation.text);
+					if (result.data.translations.map((translation: IDeepLTranslation) => translation.detected_source_language).join() !== language) {
+						translations[language] = result.data.translations.map((translation: IDeepLTranslation) => translation.text);
 					}
 				}
 			} catch (e) {

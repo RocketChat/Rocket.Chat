@@ -1,18 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
-import { Subscriptions } from '../../../models';
+import { hasPermission } from '../../../authorization/server';
+import { Subscriptions } from '../../../models/server';
 
 Meteor.methods({
 	'autoTranslate.saveSettings'(rid, field, value, options) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'saveAutoTranslateSettings',
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'auto-translate')) {
+		if (!hasPermission(userId, 'auto-translate')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', {
 				method: 'autoTranslate.saveSettings',
 			});
@@ -28,7 +29,7 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
 				method: 'saveAutoTranslateSettings',
