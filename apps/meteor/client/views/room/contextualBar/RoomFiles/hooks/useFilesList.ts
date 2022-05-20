@@ -18,7 +18,7 @@ export const useFilesList = (
 } => {
 	const [filesList, setFilesList] = useState(() => new FilesList(options));
 	const reload = useCallback(() => setFilesList(new FilesList(options)), [options]);
-	const room = useUserRoom(options.rid);
+	const room = useUserRoom(options.rid as string);
 	const uid = useUserId();
 
 	useComponentDidUpdate(() => {
@@ -79,7 +79,7 @@ export const useFilesList = (
 	);
 
 	// TODO: chapter day : frontend create useStreamUpdatesForUploadList
-	useStreamUpdatesForMessageList(filesList as unknown as MessageList, uid, options.rid);
+	useStreamUpdatesForMessageList(filesList as unknown as MessageList, uid, options.rid || null);
 
 	return {
 		reload,
