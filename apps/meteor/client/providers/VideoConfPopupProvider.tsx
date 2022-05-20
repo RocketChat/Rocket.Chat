@@ -1,7 +1,10 @@
+import { IRoom } from '@rocket.chat/core-typings';
 import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement, useState, ReactNode } from 'react';
 
-import { VideoConfPopupContext, VideoConfPopupPayload } from '../contexts/VideoConfPopupContext';
+import { VideoConfPopupContext } from '../contexts/VideoConfPopupContext';
+import type { VideoConfIncomingCall, VideoConfPopupPayload } from '../contexts/VideoConfPopupContext';
+import { VideoConfManager, useVideoConfIncomingCalls } from '../lib/VideoConfManager';
 import VideoConfPopupPortal from '../portals/VideoConfPopupPortal';
 import VideoConfPopup from '../views/room/contextualBar/VideoConference/VideoConfPopup';
 
@@ -11,6 +14,11 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	const contextValue = {
 		dispatch: (option: Omit<VideoConfPopupPayload, 'id'>): void => setPopUps((popUps) => [...popUps, { id: option.room._id, ...option }]),
 		dismiss: (rid: VideoConfPopupPayload['room']['_id']): void => setPopUps((prevState) => prevState.filter((popUp) => popUp.id !== rid)),
+		startCall: (rid: IRoom['_id']): Promise<void> => VideoConfManager.startCall(rid),
+		acceptCall: (callId: string): void => VideoConfManager.acceptIncomingCall(callId),
+		muteCall: (callId: string): void => VideoConfManager.muteIncomingCall(callId),
+		abortCall: (): void => VideoConfManager.abortCall(),
+		useIncomingCalls: (): VideoConfIncomingCall[] => useVideoConfIncomingCalls(),
 	};
 
 	return (

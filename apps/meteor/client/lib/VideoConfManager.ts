@@ -1,4 +1,4 @@
-import type { IRoom, IUser, VideoConferenceInstructions } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -7,7 +7,6 @@ import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
-import { tryAssignmentAsync } from '../../lib/utils/tryAssignment';
 import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-VideoConf'));
@@ -52,13 +51,14 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 	'preference/changed': { key: keyof CallPreferences; value: boolean };
 
+	// The list of incoming calls has changed in some way
 	'incoming/changed': void;
 }> {
 	private userId: string | undefined;
 
 	private currentCallHandler = 0;
 
-	private currentCallId: string | undefined;
+	private currentCallData: DirectCallParams | undefined;
 
 	private startingNewCall = false;
 
@@ -90,7 +90,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 			return true;
 		}
 
-		if (this.currentCallHandler || this.currentCallId) {
+		if (this.currentCallHandler || this.currentCallData) {
 			return true;
 		}
 
@@ -101,8 +101,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		return this.incomingDirectCalls.size > 0;
 	}
 
-	public getIncomingDirectCalls(): IncomingDirectCall[] {
-		return [...this.incomingDirectCalls.values()];
+	public getIncomingDirectCalls(): DirectCallParams[] {
+		return [...this.incomingDirectCalls.values()].map(({ uid, rid, callId }) => ({ uid, rid, callId }));
 	}
 
 	public async startCall(roomId: IRoom['_id']): Promise<void> {
@@ -113,14 +113,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		debug && console.log(`[VideoConf] Starting new call on room ${roomId}`);
 		this.startingNewCall = true;
 
-		const data = await tryAssignmentAsync<VideoConferenceInstructions>(
-			async () => (await APIClient.v1.post('video-conference.start', {}, { roomId })).data,
-			(e) => {
-				debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
-				this.startingNewCall = false;
-				throw e;
-			},
-		);
+		const { data } = await APIClient.v1.post('video-conference.start', {}, { roomId }).catch((e: unknown) => {
+			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
+			this.startingNewCall = false;
+			return Promise.reject(e);
+		});
 
 		this.startingNewCall = false;
 
@@ -213,25 +210,30 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 			},
 		};
 
-		const url = await tryAssignmentAsync<string>(
-			async () => (await APIClient.v1.post('video-conference.join', {}, params)).url,
-			(e) => {
-				debug && console.error(`[VideoConf] Failed to join call ${callId}`);
-				throw e;
-			},
-		);
+		const { url } = await APIClient.v1.post('video-conference.join', {}, params).catch((e) => {
+			debug && console.error(`[VideoConf] Failed to join call ${callId}`);
+			return Promise.reject(e);
+		});
 
 		debug && console.log(`[VideoConf] Opening ${url}.`);
 		window.open(url);
 	}
 
+	public abortCall(): void {
+		if (!this.currentCallData) {
+			return;
+		}
+
+		this.giveUp(this.currentCallData);
+	}
+
 	private async callUser({ uid, rid, callId }: DirectCallParams): Promise<void> {
-		if (this.currentCallHandler || this.currentCallId) {
+		if (this.currentCallHandler || this.currentCallData) {
 			throw new Error('Video Conference State Error.');
 		}
 
 		let attempt = 1;
-		this.currentCallId = callId;
+		this.currentCallData = { callId, rid, uid };
 		this.currentCallHandler = setInterval(() => {
 			if (!this.currentCallHandler) {
 				debug && console.warn(`[VideoConf] Ringing interval was not properly cleared.`);
@@ -261,7 +263,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
 			this.currentCallHandler = 0;
-			this.currentCallId = undefined;
+			this.currentCallData = undefined;
 		}
 
 		debug && console.log(`[VideoConf] Notifying user ${uid} that we are no longer calling.`);
@@ -294,7 +296,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 			}
 		});
 		this.incomingDirectCalls.clear();
-		this.currentCallId = undefined;
+		this.currentCallData = undefined;
 		this.acceptingCallId = undefined;
 		this._preferences = {};
 		this.emit('incoming/changed');
@@ -409,7 +411,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	}
 
 	private onDirectCallAccepted(params: DirectCallParams): void {
-		if (params.callId !== this.currentCallId) {
+		if (!params.callId || params.callId !== this.currentCallData?.callId) {
 			debug && console.log(`[VideoConf] User ${params.uid} has accepted a call ${params.callId} from us, but we're not calling.`);
 			return;
 		}
@@ -423,14 +425,14 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		}
 
 		this.emit('direct/accepted', params);
-		this.currentCallId = undefined;
+		this.currentCallData = undefined;
 	}
 })();
 
-export const useVideoConfIncomingCalls = (): IncomingDirectCall[] => {
-	const subscribeIncomingCalls: Subscription<IncomingDirectCall[]> = useMemo(
+export const useVideoConfIncomingCalls = (): DirectCallParams[] => {
+	const subscribeIncomingCalls: Subscription<DirectCallParams[]> = useMemo(
 		() => ({
-			getCurrentValue: (): IncomingDirectCall[] => VideoConfManager.getIncomingDirectCalls(),
+			getCurrentValue: (): DirectCallParams[] => VideoConfManager.getIncomingDirectCalls(),
 			subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('incoming/changed', cb),
 		}),
 		[],
