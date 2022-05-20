@@ -166,6 +166,7 @@ jobs:
       matrix:
         node-version: ['14.18.3']
         mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
+        test-type: ['unit', 'api', 'ui-legacy', 'ui']
 
     steps:
       - name: Launch MongoDB
@@ -239,14 +240,11 @@ jobs:
         run: yarn
 
       - name: Unit Test
+        if: ${{ matrix.test-type == 'unit' }}
         run: yarn testunit
 
-      - name: Install Playwright
-        run: |
-          cd ./apps/meteor
-          npx playwright install --with-deps
-
       - name: E2E Test API
+        if: ${{ matrix.test-type == 'api' }}
         run: |
           docker logs rocketchat --tail=50
 
@@ -270,6 +268,7 @@ jobs:
           exit $s
 
       - name: E2E Test UI (Legacy - Cypress)
+        if: ${{ matrix.test-type == 'ui-legacy' }}
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
@@ -297,7 +296,14 @@ jobs:
           done;
           exit $s
 
+      - name: Install Playwright
+        if: ${{ matrix.test-type == 'ui' }}
+        run: |
+          cd ./apps/meteor
+          npx playwright install --with-deps
+
       - name: E2E Test UI
+        if: ${{ matrix.test-type == 'ui' }}
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
