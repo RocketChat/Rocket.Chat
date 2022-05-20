@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
-import { useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
 import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
@@ -17,7 +17,6 @@ import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
-import EncryptedMessageContentBody from './EncryptedMessageContentBody';
 import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
@@ -31,6 +30,8 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 		broadcast,
 		actions: { openRoom, openThread, replyBroadcast },
 	} = useMessageActions();
+
+	const t = useTranslation();
 
 	const runActionLink = useMessageRunActionLink();
 
@@ -48,7 +49,9 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 		<>
 			{!message.blocks && (
 				<MessageBody data-qa-type='message-body'>
-					{isEncryptedMessage ? <EncryptedMessageContentBody message={message} /> : <MessageContentBody message={message} />}
+					{!isEncryptedMessage && <MessageContentBody message={message} />}
+					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}
+					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</MessageBody>
 			)}
 			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
