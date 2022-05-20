@@ -1,15 +1,20 @@
+import { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import React, { useMemo, ReactElement } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import DeleteTeamModal from './DeleteTeamModal';
-import StepOne from './StepOne';
-import StepTwo from './StepTwo';
 
-const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }) => {
+type DeleteTeamModalWithRoomsProps = {
+	teamId: string;
+	onConfirm: (rooms: IRoom[]) => void;
+	onCancel: () => void;
+};
+
+const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }: DeleteTeamModalWithRoomsProps): ReactElement => {
 	const { value, phase } = useEndpointData(
 		'teams.listRooms',
 		useMemo(() => ({ teamId }), [teamId]),
@@ -26,7 +31,5 @@ const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }) => {
 	}
 	return <DeleteTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;
 };
-
-export { StepOne, StepTwo };
 
 export default DeleteTeamModalWithRooms;

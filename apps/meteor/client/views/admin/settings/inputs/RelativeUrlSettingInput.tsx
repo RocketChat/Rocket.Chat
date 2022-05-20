@@ -1,8 +1,21 @@
 import { Box, Field, Flex, UrlInput } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { EventHandler, ReactElement, SyntheticEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+
+type RelativeUrlSettingInputProps = {
+	_id: string;
+	label: string;
+	value?: string;
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string) => void;
+	onResetButtonClick?: () => void;
+};
 
 function RelativeUrlSettingInput({
 	_id,
@@ -15,11 +28,11 @@ function RelativeUrlSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}) {
+}: RelativeUrlSettingInputProps): ReactElement {
 	const getAbsoluteUrl = useAbsoluteUrl();
 
-	const handleChange = (event) => {
-		onChangeValue && onChangeValue(event.currentTarget.value);
+	const handleChange: EventHandler<SyntheticEvent<HTMLInputElement>> = (event) => {
+		onChangeValue?.(event.currentTarget.value);
 	};
 
 	return (
@@ -35,7 +48,7 @@ function RelativeUrlSettingInput({
 			<UrlInput
 				data-qa-setting-id={_id}
 				id={_id}
-				value={getAbsoluteUrl(value)}
+				value={getAbsoluteUrl(value || '')}
 				placeholder={placeholder}
 				disabled={disabled}
 				readOnly={readonly}
