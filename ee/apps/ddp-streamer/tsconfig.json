@@ -34,7 +34,6 @@
 		"preserveSymlinks": true,
 
 		"outDir": "./dist",
-
 		"skipLibCheck": true
 
 		// "sourceMap": true,
