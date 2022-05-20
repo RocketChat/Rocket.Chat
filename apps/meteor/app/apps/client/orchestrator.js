@@ -6,7 +6,7 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { settings } from '../../settings/client';
 import { CachedCollectionManager } from '../../ui-cached-collection';
-import { APIClient } from '../../utils';
+import { APIClient } from '../../utils/client';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
@@ -156,7 +156,7 @@ class AppClientOrchestrator {
 	syncApp = (appId) => APIClient.post(`/apps/${appId}/sync`);
 
 	setAppStatus = async (appId, status) => {
-		const { status: effectiveStatus } = await APIClient.post(`apps/${appId}/status`, { status });
+		const { status: effectiveStatus } = await APIClient.post(`/apps/${appId}/status`, { status });
 		return effectiveStatus;
 	};
 

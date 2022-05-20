@@ -124,8 +124,8 @@ function EmailInboxForm({ id, data }) {
 	const close = useCallback(() => router.push({}), [router]);
 
 	const saveEmailInbox = useEndpoint('POST', '/v1/email-inbox');
-	const deleteAction = useEndpoint('DELETE', `email-inbox/${id}`);
-	const emailAlreadyExistsAction = useEndpoint('GET', `email-inbox.search?email=${email}`);
+	const deleteAction = useEndpoint('DELETE', `/v1/email-inbox/${id}`);
+	const emailAlreadyExistsAction = useEndpoint('GET', `/v1/email-inbox.search?email=${email}`);
 
 	useComponentDidUpdate(() => {
 		setEmailError(!validateEmail(email) ? t('Validate_email_address') : null);
