@@ -1,18 +1,18 @@
 import { MarkdownAST } from '@rocket.chat/message-parser';
 import React, { FC, memo } from 'react';
 
-import Heading from '../Heading';
-import OrderedList from '../OrderedList';
 import Quote from '../Quote';
-import TaskList from '../TaskList';
-import UnorderedList from '../UnorderedList';
 import { MessageBodyContext } from '../contexts/MessageBodyContext';
 import { ChannelMention } from '../definitions/ChannelMention';
 import { UserMention } from '../definitions/UserMention';
 import { isBigEmoji } from '../isBigEmoji';
 import ThreadMessageEmoji from './ThreadMessageEmoji';
 import ThreadPreviewCode from './ThreadPreviewCode';
+import ThreadPreviewHeading from './ThreadPreviewHeading';
+import ThreadPreviewOrderedList from './ThreadPreviewOrderedList';
 import ThreadPreviewParagraph from './ThreadPreviewParagraph';
+import ThreadPreviewTaskList from './ThreadPreviewTaskList';
+import ThreadPreviewUnorderedList from './ThreadPreviewUnorderedList';
 
 type ASTThreadPreviewRenderProps = {
 	tokens: MarkdownAST;
@@ -35,7 +35,7 @@ const ASTThreadPreviewRender: FC<ASTThreadPreviewRenderProps> = ({ tokens, menti
 		<MessageBodyContext.Provider value={{ mentions, channels }}>
 			{tokens.map((block, index) => {
 				if (block.type === 'UNORDERED_LIST') {
-					return <UnorderedList value={block.value} key={index} />;
+					return <ThreadPreviewUnorderedList value={block.value} key={index} />;
 				}
 
 				if (block.type === 'QUOTE') {
@@ -43,11 +43,11 @@ const ASTThreadPreviewRender: FC<ASTThreadPreviewRenderProps> = ({ tokens, menti
 				}
 
 				if (block.type === 'TASKS') {
-					return <TaskList value={block.value} key={index} />;
+					return <ThreadPreviewTaskList value={block.value} key={index} />;
 				}
 
 				if (block.type === 'ORDERED_LIST') {
-					return <OrderedList value={block.value} key={index} />;
+					return <ThreadPreviewOrderedList value={block.value} key={index} />;
 				}
 
 				if (block.type === 'PARAGRAPH') {
@@ -59,7 +59,7 @@ const ASTThreadPreviewRender: FC<ASTThreadPreviewRenderProps> = ({ tokens, menti
 				}
 
 				if (block.type === 'HEADING') {
-					return <Heading value={block.value} level={block.level} key={index} />;
+					return <ThreadPreviewHeading value={block.value} key={index} />;
 				}
 
 				return null;
