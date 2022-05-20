@@ -43,7 +43,11 @@ export class AppUsersConverter {
 			lastLoginAt: user.lastLogin,
 			appId: user.appId,
 			customFields: user.customFields,
-			...(user?.settings?.preferences?.language && { userPreferredLanguage: user.settings.preferences.language }),
+			settings: {
+				preferences: {
+					...(user?.settings?.preferences?.language && { language: user.settings.preferences.language }),
+				},
+			},
 		};
 	}
 
