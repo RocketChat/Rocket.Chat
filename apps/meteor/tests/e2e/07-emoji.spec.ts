@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-
+import { test, expect } from './fixtures/test';
 import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';
 import LoginPage from './utils/pageobjects/LoginPage';

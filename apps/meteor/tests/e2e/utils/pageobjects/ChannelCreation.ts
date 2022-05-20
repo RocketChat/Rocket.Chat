@@ -1,5 +1,6 @@
-import { Locator, expect } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
+import { expect } from '../../fixtures/test';
 import BasePage from './BasePage';
 import { ENTER } from '../mocks/keyboardKeyMock';
 

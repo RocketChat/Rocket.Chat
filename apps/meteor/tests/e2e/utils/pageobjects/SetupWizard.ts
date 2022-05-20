@@ -1,5 +1,6 @@
-import { expect, Locator } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
+import { expect } from '../../fixtures/test';
 import BasePage from './BasePage';
 import { reason, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from '../mocks/userAndPasswordMock';
 import { IRegister } from '../interfaces/Login';

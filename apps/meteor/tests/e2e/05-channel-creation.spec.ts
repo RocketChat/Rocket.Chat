@@ -1,6 +1,6 @@
-import { test } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
+import { test } from './fixtures/test';
 import ChannelCreation from './utils/pageobjects/ChannelCreation';
 import LoginPage from './utils/pageobjects/LoginPage';
 import { validUserInserted, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';

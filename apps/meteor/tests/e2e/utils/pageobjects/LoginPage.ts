@@ -1,5 +1,6 @@
-import { Locator, expect } from '@playwright/test';
+import { Locator } from '@playwright/test';
 
+import { expect } from '../../fixtures/test';
 import { ILogin, IRegister } from '../interfaces/Login';
 import BasePage from './BasePage';
 import { HOME_SELECTOR, REGISTER_STEP2_BUTTON } from '../mocks/waitSelectorsMock';

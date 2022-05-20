@@ -1,6 +1,7 @@
-import { test, expect, Page } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
+import { Page } from '@playwright/test';
 
+import { test, expect } from './fixtures/test';
 import { BASE_API_URL } from './utils/mocks/urlMock';
 import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
 import LoginPage from './utils/pageobjects/LoginPage';
