@@ -85,14 +85,14 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 	// Invite && Auto-join if the user is Rocket.Chat controlled
 	if (!invitedUserIsRemote) {
 		// Invite the user to the room
-		await matrixBridge.getIntent(inviterUser.mui).invite(matrixRoomId, invitedUserMatrixId);
+		await matrixBridge.getInstance().getIntent(inviterUser.mui).invite(matrixRoomId, invitedUserMatrixId);
 
 		console.log(`[${inviterId}-${invitedId}-${roomId}] Auto-join room...`);
 
-		await matrixBridge.getIntent(invitedUserMatrixId).join(matrixRoomId);
+		await matrixBridge.getInstance().getIntent(invitedUserMatrixId).join(matrixRoomId);
 	} else {
 		// Invite the user to the room but don't wait as this is dependent on the user accepting the invite because we don't control this user
-		matrixBridge.getIntent(inviterUser.mui).invite(matrixRoomId, invitedUserMatrixId);
+		matrixBridge.getInstance().getIntent(inviterUser.mui).invite(matrixRoomId, invitedUserMatrixId);
 	}
 
 	// Add the matrix user to the invited room
@@ -104,7 +104,7 @@ export const createRemote = async (u: IUser): Promise<ICreateUserResult> => {
 
 	console.log(`Creating remote user ${matrixUserId}...`);
 
-	const intent = matrixBridge.getIntent(matrixUserId);
+	const intent = matrixBridge.getInstance().getIntent(matrixUserId);
 
 	await intent.ensureProfile(u.name);
 
@@ -120,7 +120,7 @@ export const createRemote = async (u: IUser): Promise<ICreateUserResult> => {
 export const createLocal = async (matrixUserId: string): Promise<ICreateUserResult> => {
 	console.log(`Creating local user ${matrixUserId}...`);
 
-	const intent = matrixBridge.getIntent(matrixUserId);
+	const intent = matrixBridge.getInstance().getIntent(matrixUserId);
 
 	let currentProfile: MatrixProfileInfo = {};
 
