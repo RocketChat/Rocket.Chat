@@ -12,7 +12,6 @@ env:
   DOCKERFILE: /tmp/build/Dockerfile
 
 jobs:
-
   get-version:
     name: get version
     runs-on: ubuntu-18.04
@@ -337,4 +336,4 @@ jobs:
         SERVICE_NAME: ${{ env.SERVICE_NAME }}
         WORKING_DIRECTORY: /tmp/build
         ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-        
+        IMAGE_TYPE: debug
