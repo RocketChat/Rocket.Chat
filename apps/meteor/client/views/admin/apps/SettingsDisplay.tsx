@@ -3,13 +3,12 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useEffect, MutableRefObject } from 'react';
 
+import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
 import { useForm } from '../../../hooks/useForm';
 import AppSettingsAssembler from './AppSettingsAssembler';
 
 type SettingsDisplayProps = {
-	settings: {
-		[id: string]: ISetting;
-	};
+	settings: ISettings;
 	setHasUnsavedChanges: (hasUnsavedChanges: boolean) => void;
 	settingsRef: MutableRefObject<Record<string, ISetting['value']>>;
 };

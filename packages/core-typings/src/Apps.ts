@@ -10,6 +10,23 @@ export type AppScreenshot = {
 	modifiedAt: string;
 };
 
+export type PricingPlan = {
+	id: string;
+	enabled: boolean;
+	price: number;
+	trialDays: number;
+	strategy: string;
+	isPerSeat: boolean;
+	tiers?: Tiers[];
+};
+
+export type Tiers = {
+	perUnit: boolean;
+	minimum: number;
+	maximum: number;
+	price: number;
+};
+
 export type App = {
 	id: string;
 	iconFileData: string;
@@ -28,7 +45,7 @@ export type App = {
 	version: string;
 	price: number;
 	purchaseType: string;
-	pricingPlans: unknown[];
+	pricingPlans: PricingPlan[];
 	iconFileContent: string;
 	installed?: boolean;
 	isEnterpriseOnly?: boolean;

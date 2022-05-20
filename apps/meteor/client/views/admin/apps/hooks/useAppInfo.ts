@@ -1,6 +1,7 @@
 import { useEndpoint, EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
+import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { AppsContext } from '../AppsContext';
 import { AppInfo } from '../definitions/AppInfo';
@@ -64,14 +65,12 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 							.catch(() => ({
 								settings: {},
 							})),
-				app.installed &&
-					getSettings().catch(() => ({
-						settings: {},
-					})),
-				app.installed &&
-					getApis().catch(() => ({
-						apis: [],
-					})),
+				getSettings().catch(() => ({
+					settings: {},
+				})),
+				getApis().catch(() => ({
+					apis: [],
+				})),
 				getScreenshots().catch(() => ({
 					screenshots: [],
 				})),
@@ -79,9 +78,9 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 
 			setAppData({
 				...app,
-				bundledIn,
-				settings: settings ? settings.settings : {},
-				apis: apis ? apis.apis : {},
+				bundledIn: bundledIn as App['bundledIn'],
+				settings: settings.settings as ISettings,
+				apis: apis ? apis.apis : [],
 				screenshots: screenshots ? screenshots.screenshots : [],
 			});
 		};
