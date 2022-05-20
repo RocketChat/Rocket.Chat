@@ -1,5 +1,10 @@
+import { MongoInternals } from 'meteor/mongo';
+
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
+
+const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 function getCustomOAuthServices(): Record<
 	string,
@@ -9,6 +14,8 @@ function getCustomOAuthServices(): Record<
 		users: number;
 	}
 > {
+	const readPreference = readSecondaryPreferred(db);
+
 	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/im);
 	return Object.fromEntries(
 		Object.entries(customOauth).map(([key, value]) => {
@@ -18,7 +25,7 @@ function getCustomOAuthServices(): Record<
 				{
 					enabled: Boolean(value),
 					mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${name}-merge_roles`),
-					users: Users.countActiveUsersByService(name),
+					users: Users.countActiveUsersByService(name, { readPreference }),
 				},
 			];
 		}),
@@ -26,9 +33,11 @@ function getCustomOAuthServices(): Record<
 }
 
 export function getServicesStatistics(): Record<string, unknown> {
+	const readPreference = readSecondaryPreferred(db);
+
 	return {
 		ldap: {
-			users: Users.countActiveUsersByService('ldap'),
+			users: Users.countActiveUsersByService('ldap', { readPreference }),
 			enabled: settings.get('LDAP_Enable'),
 			loginFallback: settings.get('LDAP_Login_Fallback'),
 			encryption: settings.get('LDAP_Encryption'),
@@ -53,7 +62,7 @@ export function getServicesStatistics(): Record<string, unknown> {
 		},
 		saml: {
 			enabled: settings.get('SAML_Custom_Default'),
-			users: Users.countActiveUsersByService('saml'),
+			users: Users.countActiveUsersByService('saml', { readPreference }),
 			signatureValidationType: settings.get('SAML_Custom_Default_signature_validation_type'),
 			generateUsername: settings.get('SAML_Custom_Default_generate_username'),
 			updateSubscriptionsOnLogin: settings.get('SAML_Custom_Default_channels_update'),
@@ -61,66 +70,66 @@ export function getServicesStatistics(): Record<string, unknown> {
 		},
 		cas: {
 			enabled: settings.get('CAS_enabled'),
-			users: Users.countActiveUsersByService('cas'),
+			users: Users.countActiveUsersByService('cas', { readPreference }),
 			allowUserCreation: settings.get('CAS_Creation_User_Enabled'),
 			alwaysSyncUserData: settings.get('CAS_Sync_User_Data_Enabled'),
 		},
 		oauth: {
 			apple: {
 				enabled: settings.get('Accounts_OAuth_Apple'),
-				users: Users.countActiveUsersByService('apple'),
+				users: Users.countActiveUsersByService('apple', { readPreference }),
 			},
 			dolphin: {
 				enabled: settings.get('Accounts_OAuth_Dolphin'),
-				users: Users.countActiveUsersByService('dolphin'),
+				users: Users.countActiveUsersByService('dolphin', { readPreference }),
 			},
 			drupal: {
 				enabled: settings.get('Accounts_OAuth_Drupal'),
-				users: Users.countActiveUsersByService('drupal'),
+				users: Users.countActiveUsersByService('drupal', { readPreference }),
 			},
 			facebook: {
 				enabled: settings.get('Accounts_OAuth_Facebook'),
-				users: Users.countActiveUsersByService('facebook'),
+				users: Users.countActiveUsersByService('facebook', { readPreference }),
 			},
 			github: {
 				enabled: settings.get('Accounts_OAuth_Github'),
-				users: Users.countActiveUsersByService('github'),
+				users: Users.countActiveUsersByService('github', { readPreference }),
 			},
 			githubEnterprise: {
 				enabled: settings.get('Accounts_OAuth_GitHub_Enterprise'),
-				users: Users.countActiveUsersByService('github_enterprise'),
+				users: Users.countActiveUsersByService('github_enterprise', { readPreference }),
 			},
 			gitlab: {
 				enabled: settings.get('Accounts_OAuth_Gitlab'),
-				users: Users.countActiveUsersByService('gitlab'),
+				users: Users.countActiveUsersByService('gitlab', { readPreference }),
 			},
 			google: {
 				enabled: settings.get('Accounts_OAuth_Google'),
-				users: Users.countActiveUsersByService('google'),
+				users: Users.countActiveUsersByService('google', { readPreference }),
 			},
 			linkedin: {
 				enabled: settings.get('Accounts_OAuth_Linkedin'),
-				users: Users.countActiveUsersByService('linkedin'),
+				users: Users.countActiveUsersByService('linkedin', { readPreference }),
 			},
 			meteor: {
 				enabled: settings.get('Accounts_OAuth_Meteor'),
-				users: Users.countActiveUsersByService('meteor'),
+				users: Users.countActiveUsersByService('meteor', { readPreference }),
 			},
 			nextcloud: {
 				enabled: settings.get('Accounts_OAuth_Nextcloud'),
-				users: Users.countActiveUsersByService('nextcloud'),
+				users: Users.countActiveUsersByService('nextcloud', { readPreference }),
 			},
 			tokenpass: {
 				enabled: settings.get('Accounts_OAuth_Tokenpass'),
-				users: Users.countActiveUsersByService('tokenpass'),
+				users: Users.countActiveUsersByService('tokenpass', { readPreference }),
 			},
 			twitter: {
 				enabled: settings.get('Accounts_OAuth_Twitter'),
-				users: Users.countActiveUsersByService('twitter'),
+				users: Users.countActiveUsersByService('twitter', { readPreference }),
 			},
 			wordpress: {
 				enabled: settings.get('Accounts_OAuth_Wordpress'),
-				users: Users.countActiveUsersByService('wordpress'),
+				users: Users.countActiveUsersByService('wordpress', { readPreference }),
 			},
 			custom: getCustomOAuthServices(),
 		},

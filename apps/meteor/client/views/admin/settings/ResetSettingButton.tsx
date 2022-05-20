@@ -1,8 +1,8 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ComponentProps, ReactElement } from 'react';
 
-function ResetSettingButton(props) {
+function ResetSettingButton(props: ComponentProps<typeof Button>): ReactElement {
 	const t = useTranslation();
 
 	return (
