@@ -131,8 +131,6 @@ export type UrlParams<T extends string> = string extends T
 	: T extends `${infer _Start}:${infer Param}/${infer Rest}`
 	? { [k in Param | keyof UrlParams<Rest>]: string }
 	: T extends `${infer _Start}:${infer Param}`
-	? { [k in Param | keyof UrlParams<_Start>]: string }
-	: T extends `${infer _Start}:${infer Param}`
 	? { [k in Param]: string }
 	: undefined | {};
 
