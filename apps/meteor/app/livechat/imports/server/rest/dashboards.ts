@@ -1,5 +1,4 @@
 import { Match, check } from 'meteor/check';
-import { OperationResult } from '@rocket.chat/rest-typings';
 import { IAgentProductivityTotalizers, IConversationTotalizers, IChatTotalizers, IProductivityTotalizers } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
@@ -16,6 +15,21 @@ import {
 	getChatsMetrics,
 } from '../../../server/lib/analytics/dashboards';
 import { Users } from '../../../../models/server';
+
+type ChatsPerDepartmentResponse = {
+	[departmentName: string]: {
+		open: number;
+		closed: number;
+	};
+};
+
+type ChatsPerAgentResponse = {
+	[agentId: string]: {
+		open: number;
+		closed: number;
+		onhold: number;
+	};
+};
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversation-totalizers',
@@ -210,10 +224,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const result = findAllChatMetricsByAgent({ start: startDate, end: endDate, departmentId }) as OperationResult<
-				'GET',
-				'livechat/analytics/dashboards/charts/chats-per-agent'
-			>;
+			const result = findAllChatMetricsByAgent({ start: startDate, end: endDate, departmentId }) as ChatsPerAgentResponse;
 
 			return API.v1.success(result);
 		},
@@ -263,10 +274,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const result = findAllChatMetricsByDepartment({ start: startDate, end: endDate, departmentId }) as OperationResult<
-				'GET',
-				'livechat/analytics/dashboards/charts/chats-per-department'
-			>;
+			const result = findAllChatMetricsByDepartment({ start: startDate, end: endDate, departmentId }) as ChatsPerDepartmentResponse;
 
 			return API.v1.success(result);
 		},
