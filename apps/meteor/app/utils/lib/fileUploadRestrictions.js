@@ -19,7 +19,7 @@ export const fileUploadMediaWhiteList = function (customWhiteList) {
 	});
 };
 
-export const fileUploadMediaBlackList = function () {
+const fileUploadMediaBlackList = function () {
 	const blacklist = settings.get('FileUpload_MediaTypeBlackList');
 	if (!blacklist) {
 		return;
