@@ -1,7 +1,6 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import {
 	findVisitorInfo,
 	findVisitedPages,
@@ -9,7 +8,6 @@ import {
 	searchChats,
 	findVisitorsToAutocomplete,
 	findVisitorsByEmailOrPhoneOrNameOrUsername,
-	findVisitorsToAutocompleteByName,
 } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute(
@@ -112,7 +110,6 @@ API.v1.addRoute(
 	},
 );
 
-/* deprecated endpoint - "livechat/visitors.autocomplete", use "livechat/visitors.autocompleteByName" instead */
 API.v1.addRoute(
 	'livechat/visitors.autocomplete',
 	{ authRequired: true },
@@ -128,31 +125,7 @@ API.v1.addRoute(
 				selector: JSON.parse(selector),
 			});
 
-			return API.v1.success(
-				deprecationWarning({
-					endpoint: 'livechat/visitors.autocomplete',
-					response,
-				}),
-			);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/visitors.autocompleteByName',
-	{ authRequired: true },
-	{
-		async get() {
-			const { term } = this.requestParams();
-
-			check(term, Match.Maybe(String));
-
-			const result = await findVisitorsToAutocompleteByName({
-				userId: this.userId,
-				term,
-			});
-
-			return API.v1.success(result);
+			return API.v1.success(response);
 		},
 	},
 );
