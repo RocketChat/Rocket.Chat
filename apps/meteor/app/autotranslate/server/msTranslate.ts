@@ -5,6 +5,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
+import { IMessage, IProviderMetadata, ISupportedLanguage, ITranslationResult, MessageAttachment } from '@rocket.chat/core-typings';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { msLogger } from './logger';
@@ -19,6 +20,16 @@ import { settings } from '../../settings/server';
  * @augments AutoTranslate
  */
 class MsAutoTranslate extends AutoTranslate {
+	apiKey: string;
+
+	apiEndPointUrl: string;
+
+	apiDetectText: string;
+
+	apiGetLanguages: string;
+
+	breakSentence: string;
+
 	/**
 	 * setup api reference to Microsoft translate to be used as message translation provider.
 	 * @constructor
@@ -31,7 +42,7 @@ class MsAutoTranslate extends AutoTranslate {
 		this.apiGetLanguages = 'https://api.cognitive.microsofttranslator.com/languages?api-version=3.0';
 		this.breakSentence = 'https://api.cognitive.microsofttranslator.com/breaksentence?api-version=3.0';
 		// Get the service provide API key.
-		settings.watch('AutoTranslate_MicrosoftAPIKey', (value) => {
+		settings.watch<string>('AutoTranslate_MicrosoftAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}
@@ -41,7 +52,7 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @private implements super abstract method.
 	 * @return {object}
 	 */
-	_getProviderMetadata() {
+	_getProviderMetadata(): IProviderMetadata {
 		return {
 			name: this.name,
 			displayName: TAPi18n.__('AutoTranslate_Microsoft'),
@@ -54,7 +65,7 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @private implements super abstract method.
 	 * @return {object}
 	 */
-	_getSettings() {
+	_getSettings(): IProviderMetadata['settings'] {
 		return {
 			apiKey: this.apiKey,
 			apiEndPointUrl: this.apiEndPointUrl,
@@ -69,9 +80,9 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @param {string} target
 	 * @returns {object} code : value pair
 	 */
-	getSupportedLanguages(target) {
+	getSupportedLanguages(target: string): ISupportedLanguage[] {
 		if (!this.apiKey) {
-			return;
+			return [];
 		}
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
@@ -92,8 +103,13 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @throws Communication Errors
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translate(data, targetLanguages) {
-		let translations = {};
+	_translate(
+		data: {
+			Text: string;
+		}[],
+		targetLanguages: string[],
+	): ITranslationResult {
+		let translations: { [k: string]: string } = {};
 		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages = targetLanguages.map((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -115,7 +131,12 @@ class MsAutoTranslate extends AutoTranslate {
 			translations = Object.assign(
 				{},
 				...targetLanguages.map((language) => ({
-					[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
+					[language]: result.data
+						.map(
+							(line: { translations: { to: string; text: string }[] }) =>
+								line.translations.find((translation) => translation.to === language)?.text,
+						)
+						.join('\n'),
 				})),
 			);
 		}
@@ -130,7 +151,7 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translateMessage(message, targetLanguages) {
+	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
 		// There are multi-sentence-messages where multiple sentences come from different languages
 		// This is a problem for translation services since the language detection fails.
 		// Thus, we'll split the message in sentences, get them translated, and join them again after translation
@@ -150,12 +171,12 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAttachmentDescriptions(attachment, targetLanguages) {
+	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
 		try {
 			return this._translate(
 				[
 					{
-						Text: attachment.description || attachment.text,
+						Text: attachment.description || attachment.text || '',
 					},
 				],
 				targetLanguages,
