@@ -18,6 +18,7 @@ const SwitchDepartmentConnector = ({ ref, ...props }) => (
 				} = {},
 				guest,
 			} = {},
+			iframe,
 			room,
 			loading = false,
 			dispatch,
@@ -33,7 +34,7 @@ const SwitchDepartmentConnector = ({ ref, ...props }) => (
 					iconColor: customIconColor,
 				}}
 				loading={loading}
-				guest={guest}
+				iframe={iframe}
 				departments={departments.filter((dept) => dept.showOnRegistration && dept._id !== guest?.department)}
 				dispatch={dispatch}
 				room={room}

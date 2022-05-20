@@ -42,7 +42,7 @@ export const loadConfig = async () => {
 	const {
 		token,
 		businessUnit = null,
-		guest: { department } = {},
+		iframe: { guest: { department } = {} } = {},
 	} = store.state;
 
 	Livechat.credentials.token = token;
@@ -50,7 +50,7 @@ export const loadConfig = async () => {
 	const {
 		agent,
 		room,
-		guest,
+		guest: user,
 		resources: { sound: src = null } = {},
 		queueInfo,
 		...config
@@ -64,8 +64,7 @@ export const loadConfig = async () => {
 		config,
 		agent: agent && agent.hiddenInfo ? { hiddenInfo: true } : agent, // TODO: revert it when the API is updated
 		room,
-		user: guest,
-		guest,
+		user,
 		queueInfo,
 		sound: { src, enabled: true, play: false },
 		messages: [],
