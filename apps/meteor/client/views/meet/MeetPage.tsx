@@ -25,7 +25,14 @@ const MeetPage: FC = () => {
 	const closeCallTab = (): void => window.close();
 
 	const setupCallForVisitor = useCallback(async () => {
-		const room = (await APIClient.get(`/v1/livechat/room?token=${visitorToken}&rid=${roomId}` as any)) as any;
+		if (!visitorToken || !roomId) {
+			throw new Error('Missing parameters');
+		}
+
+		const room = (await APIClient.get('/v1/livechat/room', {
+			token: visitorToken,
+			rid: roomId,
+		})) as any;
 		if (room?.room?.v?.token === visitorToken) {
 			setVisitorId(room.room.v._id);
 			setVisitorName(room.room.fname);
@@ -37,7 +44,11 @@ const MeetPage: FC = () => {
 	}, [visitorToken, roomId]);
 
 	const setupCallForAgent = useCallback(async () => {
-		const room = (await APIClient.get(`/v1/rooms.info` as any, { roomId } as any)) as any;
+		if (!roomId) {
+			throw new Error('Missing parameters');
+		}
+
+		const room = (await APIClient.get('/v1/rooms.info', { roomId })) as any;
 		if (room?.room?.servedBy?._id === Meteor.userId()) {
 			setVisitorName(room.room.fname);
 			room?.room?.responseBy?.username ? setAgentName(room.room.responseBy.username) : setAgentName(room.room.servedBy.username);

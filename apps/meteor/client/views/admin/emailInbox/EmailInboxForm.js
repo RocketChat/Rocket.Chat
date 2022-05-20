@@ -125,7 +125,7 @@ function EmailInboxForm({ id, data }) {
 
 	const saveEmailInbox = useEndpoint('POST', '/v1/email-inbox');
 	const deleteAction = useEndpoint('DELETE', `/v1/email-inbox/${id}`);
-	const emailAlreadyExistsAction = useEndpoint('GET', `/v1/email-inbox.search?email=${email}`);
+	const emailAlreadyExistsAction = useEndpoint('GET', '/v1/email-inbox.search');
 
 	useComponentDidUpdate(() => {
 		setEmailError(!validateEmail(email) ? t('Validate_email_address') : null);
@@ -202,7 +202,7 @@ function EmailInboxForm({ id, data }) {
 		if (!email && !validateEmail(email)) {
 			return;
 		}
-		const { emailInbox } = await emailAlreadyExistsAction();
+		const { emailInbox } = await emailAlreadyExistsAction({ email });
 
 		if (!emailInbox || (id && emailInbox._id === id)) {
 			return;

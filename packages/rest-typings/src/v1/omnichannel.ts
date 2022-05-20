@@ -38,7 +38,17 @@ export type OmnichannelEndpoints = {
 		POST: (params: { roomId: IRoom['_id'] }) => void;
 	};
 	'/v1/livechat/room.join': {
-		GET: (params: { roomId: IRoom['_id'] }) => { success: boolean };
+		GET: (params: { roomId: IRoom['_id'] }) => void;
+	};
+	'/v1/livechat/room.info': {
+		GET: (params: { roomId: IRoom['_id'] }) => {
+			room: IOmnichannelRoom;
+		};
+	};
+	'/v1/livechat/room': {
+		GET: (params: { token: string; rid: IRoom['_id'] }) => {
+			room: IOmnichannelRoom;
+		};
 	};
 	'/v1/livechat/monitors.list': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
