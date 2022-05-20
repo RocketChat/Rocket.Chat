@@ -7,3 +7,4 @@ export { getStatistics } from './functions/getStatistics';
 export { updateCounter } from './functions/updateStatsCounter';
 export { slashCommandsStats } from './functions/slashCommandsStats';
 export { otrStats } from './functions/otrStats';
+export { setupWizardStats } from './functions/setupWizardStats';

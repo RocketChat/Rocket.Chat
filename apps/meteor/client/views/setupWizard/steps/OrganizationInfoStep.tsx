@@ -3,6 +3,7 @@ import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
 import { useRole, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, ReactElement } from 'react';
 
+import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const getSettingOptions = (
@@ -27,6 +28,13 @@ const OrganizationInfoStep = (): ReactElement => {
 	const t = useTranslation();
 	const hasAdminRole = useRole('admin');
 
+	const eventLoadedStats = useEndpointAction('POST', 'statistics.telemetry', {
+		params: [{ eventName: 'setupWizardStats', stepName: 'OrganizationInfo', eventType: 'Loaded' }],
+	});
+	const eventCompletedStats = useEndpointAction('POST', 'statistics.telemetry', {
+		params: [{ eventName: 'setupWizardStats', stepName: 'OrganizationInfo', eventType: 'Completed' }],
+	});
+
 	const {
 		setupWizardData: { organizationData },
 		setSetupWizardData,
@@ -49,9 +57,11 @@ const OrganizationInfoStep = (): ReactElement => {
 			return completeSetupWizard();
 		}
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));
+		eventCompletedStats();
 		goToNextStep();
 	};
 
+	eventLoadedStats();
 	return (
 		<OrganizationInfoPage
 			initialValues={organizationData}

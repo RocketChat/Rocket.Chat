@@ -245,6 +245,12 @@ class SideNav extends BasePage {
 		await this.searchInput().type(target, { delay: 300 });
 		await this.getPage().keyboard.press(ENTER);
 	}
+
+	public async doLogout(): Promise<void> {
+		await this.getPage().goto('/home');
+		await this.sidebarUserMenu().click();
+		await this.logout().click();
+	}
 }
 
 export default SideNav;
