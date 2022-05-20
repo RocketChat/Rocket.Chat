@@ -74441,6 +74441,83 @@
           ]
         }
       ]
+    },
+    "4.7.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25544",
+          "title": "[FIX] Initial User not added to default channel",
+          "userLogin": "geekgonecrazy",
+          "description": "If injecting initial user.  The user wasn’t added to the default General channel",
+          "milestone": "4.7.2",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25520",
+          "title": "[FIX] User abandonment setting is working again",
+          "userLogin": "cauefcr",
+          "description": "A setting watcher and the query for grabbing abandoned chats were broken, now they're not.",
+          "milestone": "4.7.2",
+          "contributors": [
+            "cauefcr",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "25495",
+          "title": "[FIX] Dynamic load matrix is enabled and handle failure ",
+          "userLogin": "ggazzo",
+          "milestone": "4.7.2",
+          "contributors": [
+            "ggazzo",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "25409",
+          "title": "[FIX] One of the triggers was not working correctly",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.7.2",
+          "contributors": [
+            "MartinSchoeler",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "25407",
+          "title": "[FIX] UI/UX issues on Live Chat widget",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.7.2",
+          "contributors": [
+            "MartinSchoeler",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "25312",
+          "title": "Chore: Add Livechat repo into Monorepo packages",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.7.2",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow",
+            "MartinSchoeler"
+          ]
+        }
+      ]
     }
   }
 }
