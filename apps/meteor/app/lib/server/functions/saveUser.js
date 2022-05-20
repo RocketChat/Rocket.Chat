@@ -14,6 +14,7 @@ import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -346,6 +347,8 @@ export const saveUser = function (userId, userData) {
 
 	validateUserEditing(userId, userData);
 
+	const oldUserData = Users.findOneById(userId);
+
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
 		if (
@@ -410,6 +413,16 @@ export const saveUser = function (userId, userData) {
 	Meteor.users.update({ _id: userData._id }, updateUser);
 
 	callbacks.run('afterSaveUser', userData);
+
+	// App IPostUserUpdated event hook
+	const userUpdated = Users.findOneById(userId);
+	Promise.await(
+		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+			user: userUpdated,
+			previousUser: oldUserData,
+			performedBy: Meteor.user(),
+		}),
+	);
 
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
