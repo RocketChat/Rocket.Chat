@@ -233,8 +233,12 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
+	'livechat/agent.info/:rid/:token': {
+		GET: (params: { rid: string; token: string }) => { agent: ILivechatAgent };
+	};
+
 	'livechat/agent.next/:token': {
-		GET: (params: { token: string; department?: string }) => { agent: ILivechatAgent };
+		GET: (params: { token: string; department?: string }) => { agent: ILivechatAgent } | void;
 	};
 
 	'livechat/config': {

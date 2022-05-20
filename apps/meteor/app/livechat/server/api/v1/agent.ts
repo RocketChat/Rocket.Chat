@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
@@ -64,7 +65,7 @@ API.v1.addRoute('livechat/agent.next/:token', {
 			throw new Meteor.Error('agent-not-found');
 		}
 
-		const agent = findAgent(agentData.agentId);
+		const agent: ILivechatAgent = findAgent(agentData.agentId);
 		if (!agent) {
 			throw new Meteor.Error('agent-not-found');
 		}
