@@ -85,8 +85,6 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 			},
 		};
 
-		console.log(query, update);
-
 		return this.update(query, update);
 	}
 

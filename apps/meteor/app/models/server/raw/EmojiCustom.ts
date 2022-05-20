@@ -49,7 +49,6 @@ export class EmojiCustomRaw extends BaseRaw<T> {
 				aliases,
 			},
 		};
-		console.log(aliases);
 
 		return this.updateOne({ _id }, update);
 	}
