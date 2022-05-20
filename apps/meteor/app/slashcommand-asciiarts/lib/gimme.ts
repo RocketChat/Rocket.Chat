@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 /*
@@ -6,7 +7,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
  * @param {Object} message - The message object
  */
 
-function Gimme(_command: 'gimme', params: Record<string, any>, item: Record<string, string>): void {
+function Gimme(_command: 'gimme', params: string, item: IMessage): void {
 	const msg = item;
 	msg.msg = `༼ つ ◕_◕ ༽つ ${params}`;
 	Meteor.call('sendMessage', msg);
