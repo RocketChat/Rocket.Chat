@@ -1,8 +1,8 @@
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';

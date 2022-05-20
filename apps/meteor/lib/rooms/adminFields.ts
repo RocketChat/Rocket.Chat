@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
 export const adminFields: Partial<Record<keyof IRoom, 1>> = {
+	_id: 1,
 	prid: 1,
 	fname: 1,
 	name: 1,

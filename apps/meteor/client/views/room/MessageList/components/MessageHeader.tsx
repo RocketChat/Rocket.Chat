@@ -6,9 +6,9 @@ import {
 	MessageUsername,
 	MessageStatusPrivateIndicator,
 } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { UserPresence } from '../../../../lib/presence';

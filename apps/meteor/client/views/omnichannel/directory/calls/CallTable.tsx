@@ -1,12 +1,11 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback, FC } from 'react';
 
 import GenericTable from '../../../../components/GenericTable';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 
 const useQuery = (

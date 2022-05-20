@@ -1,9 +1,9 @@
 import { ResponsivePie } from '@nivo/pie';
 import { Box, Flex, Icon, Margins, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
 import LegendSymbol from '../data/LegendSymbol';
