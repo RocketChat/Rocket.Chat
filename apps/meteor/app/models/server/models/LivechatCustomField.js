@@ -8,6 +8,8 @@ import { Base } from './_Base';
 export class LivechatCustomField extends Base {
 	constructor() {
 		super('livechat_custom_field');
+
+		this.tryEnsureIndex({ scope: 1 });
 	}
 
 	// FIND

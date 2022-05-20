@@ -129,4 +129,5 @@ export type EventSignatures = {
 	'voip.events'(userId: string, data: VoipEventDataSignature): void;
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
+	'connector.statuschanged'(enabled: boolean): void;
 };

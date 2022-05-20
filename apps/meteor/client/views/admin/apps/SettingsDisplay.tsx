@@ -1,8 +1,8 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Box, Divider } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useEffect, MutableRefObject } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import AppSettingsAssembler from './AppSettingsAssembler';
 

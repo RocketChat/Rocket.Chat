@@ -110,14 +110,14 @@
 										</li>
 									{{/if}}
 								{{/if}}
-								{{# unless $eq (preference 'enableLegacyMessages') true}}
+								{{# if $eq (preference 'enableNewMessageTemplate') true}}
 										{{> MessageList rid=rid }}
-								{{/unless}}
-								{{# if $eq (preference 'enableLegacyMessages') true}}
+								{{/if}}
+								{{# unless $eq (preference 'enableNewMessageTemplate') true}}
 									{{# with messageContext}}
 										{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room  actions=actions subscription=subscription settings=settings u=u}}{{/each}}
 									{{/with}}
-								{{/if}}
+								{{/unless}}
 
 								{{#if hasMoreNext}}
 									<li class="load-more">

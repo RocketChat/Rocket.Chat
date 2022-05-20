@@ -1,8 +1,7 @@
 import { Message, MessageMetricsItem, MessageBlock } from '@rocket.chat/fuselage';
-import React, { useCallback, FC } from 'react';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useCallback, FC, MouseEvent as ReactMouseEvent } from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import * as NotificationStatus from '../NotificationStatus';
 import { followStyle, anchor } from '../helpers/followSyle';
@@ -17,7 +16,7 @@ type ThreadReplyOptions = {
 	counter: number;
 	participants: number;
 	following: boolean;
-	openThread: () => any;
+	openThread: (e: ReactMouseEvent<Element, MouseEvent>) => void;
 };
 
 const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, counter, participants, following, lm, openThread }) => {

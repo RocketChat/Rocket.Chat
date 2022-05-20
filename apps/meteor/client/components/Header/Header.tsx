@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { useLayout } from '../../contexts/LayoutContext';
 import HeaderDivider from './HeaderDivider';
 
 const Header: FC<any> = (props) => {
