@@ -1,20 +1,33 @@
 import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useMemo, useState } from 'react';
+import React, { ComponentProps, memo, MouseEventHandler, ReactElement, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
 
-const query = (term = '') => ({ selector: JSON.stringify({ term }) });
+const query = (
+	term = '',
+): {
+	selector: string;
+} => ({ selector: JSON.stringify({ term }) });
 
-const UserAutoCompleteMultiple = (props) => {
+type UserAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> &
+	Omit<ComponentProps<typeof Option>, 'value'> & {
+		onChange?: MouseEventHandler<HTMLButtonElement>;
+		value: any;
+		filter?: string;
+	};
+
+const UserAutoCompleteMultiple = (props: UserAutoCompleteMultipleProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: data } = useEndpointData(
 		'users.autocomplete',
 		useMemo(() => query(debouncedFilter), [debouncedFilter]),
 	);
-	const options = useMemo(() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [], [data]);
+
+	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name })) || [], [data]);
+
 	const onClickRemove = useMutableCallback((e) => {
 		e.stopPropagation();
 		e.preventDefault();
@@ -26,8 +39,8 @@ const UserAutoCompleteMultiple = (props) => {
 			{...props}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value: selected }) =>
-				selected?.map((value) => (
+			renderSelected={({ value: selected }): ReactElement =>
+				selected?.map((value: any) => (
 					<Chip key={value} {...props} height='x20' value={value} onClick={onClickRemove} mie='x4'>
 						<UserAvatar size='x20' username={value} />
 						<Box is='span' margin='none' mis='x4'>
@@ -36,7 +49,7 @@ const UserAutoCompleteMultiple = (props) => {
 					</Chip>
 				))
 			}
-			renderItem={({ value, label, ...props }) => (
+			renderItem={({ value, label, ...props }): ReactElement => (
 				<Option key={value} {...props}>
 					<Option.Avatar>
 						<UserAvatar username={value} size='x20' />
