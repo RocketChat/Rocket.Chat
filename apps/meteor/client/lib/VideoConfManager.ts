@@ -122,10 +122,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 			},
 		);
 
+		this.startingNewCall = false;
+
 		switch (data.type) {
 			case 'direct':
-				this.startingNewCall = false;
 				return this.callUser({ uid: data.callee, rid: roomId, callId: data.callId });
+			case 'videoconference':
+				return this.joinCall(data.callId);
 		}
 	}
 
@@ -164,7 +167,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		debug && console.log(`[VideoConf] Notifying user ${callData.uid} that we accept their call.`);
 		Notifications.notifyUser(callData.uid, 'video-conference.accepted', { callId, uid: this.userId, rid: callData.rid });
 
-		this.joinDirectCall(callData);
+		this.joinCall(callId);
 	}
 
 	public muteIncomingCall(callId: string): void {
@@ -199,8 +202,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.emit('preference/changed', { key, value });
 	}
 
-	private async joinDirectCall({ uid, callId }: DirectCallParams): Promise<void> {
-		debug && console.log(`[VideoConf] Opening a call with ${uid}.`);
+	public async joinCall(callId: string): Promise<void> {
+		debug && console.log(`[VideoConf] Joining call ${callId}.`);
 
 		const params = {
 			callId,
@@ -250,7 +253,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		Notifications.notifyUser(uid, 'video-conference.call', { uid: this.userId, rid, callId });
 
 		// Immediately open the call in a new tab
-		this.joinDirectCall({ uid, rid, callId });
+		this.joinCall(callId);
 	}
 
 	private async giveUp({ uid, rid, callId }: DirectCallParams): Promise<void> {

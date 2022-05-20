@@ -1,5 +1,5 @@
 import type { UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
-import type { IVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IVideoConference, IGroupVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
@@ -17,6 +17,22 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 			users: [],
 			messages: {},
 			status: VideoConferenceStatus.CALLING,
+			createdBy,
+			createdAt: new Date(),
+		};
+
+		return (await this.insertOne(call)).insertedId;
+	}
+
+	public async createGroup(rid: IRoom['_id'], title: string, createdBy: Pick<IUser, '_id' | 'name' | 'username'>): Promise<string> {
+		const call: InsertionModel<IGroupVideoConference> = {
+			type: 'videoconference',
+			rid,
+			users: [],
+			messages: {},
+			status: VideoConferenceStatus.STARTED,
+			anonymousUsers: 0,
+			title,
 			createdBy,
 			createdAt: new Date(),
 		};
