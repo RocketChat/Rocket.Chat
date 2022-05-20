@@ -1,12 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { hasAtLeastOnePermission } from './hasPermission';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { APIClient } from '../../utils/client';
 import { Roles } from '../../models/client';
 import { rolesStreamer } from './lib/streamer';
-import { registerAdminSidebarItem } from '../../../client/views/admin';
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(async () => {
@@ -18,14 +16,6 @@ Meteor.startup(() => {
 		Roles.ready.set(true);
 	});
 
-	registerAdminSidebarItem({
-		href: 'admin-permissions',
-		i18nLabel: 'Permissions',
-		icon: 'lock',
-		permissionGranted() {
-			return hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']);
-		},
-	});
 	const events = {
 		changed: (role) => {
 			delete role.type;

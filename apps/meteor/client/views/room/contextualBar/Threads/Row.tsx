@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, MouseEvent } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';
 import { callWithErrorHandling } from '../../../../lib/utils/callWithErrorHandling';

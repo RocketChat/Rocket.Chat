@@ -1,7 +1,6 @@
 import { Icon, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ComponentProps } from 'react';
-
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 type OTRStatesProps = {
 	title: string;

@@ -1,8 +1,6 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const UserPageHeaderContent = (): ReactElement => {
 	const usersRoute = useRoute('admin-users');
