@@ -16,7 +16,7 @@ import { isFederationMatrixEnabled } from './tools';
 
 	const [, , port] = settings.get<string>('Federation_Matrix_bridge_url').split(':') as bridgeUrlTuple;
 
-	matrixBridge.run(port);
+	matrixBridge.getInstance().run(port);
 
 	// TODO: Changes here should re-initialize the bridge instead of needing a restart
 	// Add settings listeners

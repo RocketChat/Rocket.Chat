@@ -20,7 +20,7 @@ settings.change('Livechat_max_queue_wait_time', function () {
 });
 
 Meteor.startup(async function () {
-	settings.change('Livechat_abandoned_rooms_action', function (value) {
+	settings.watch('Livechat_abandoned_rooms_action', function (value) {
 		updatePredictedVisitorAbandonment();
 		if (!value || value === 'none') {
 			return visitorActivityMonitor.stop();
