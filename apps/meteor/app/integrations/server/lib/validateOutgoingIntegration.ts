@@ -2,21 +2,22 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
-import s from 'underscore.string';
+import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 
-import { Rooms, Users, Subscriptions } from '../../../models';
-import { hasPermission, hasAllPermission } from '../../../authorization';
-import { integrations } from '../../lib/rocketchat';
+import { Rooms, Users, Subscriptions } from '../../../models/server';
+import { hasPermission, hasAllPermission } from '../../../authorization/server';
+import { outgoingEvents } from '../../lib/outgoingEvents';
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
 const validChannelChars = ['@', '#'];
 
-function _verifyRequiredFields(integration) {
+function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOutgoingIntegration): void {
 	if (
 		!integration.event ||
 		!Match.test(integration.event, String) ||
 		integration.event.trim() === '' ||
-		!integrations.outgoingEvents[integration.event]
+		!outgoingEvents[integration.event]
 	) {
 		throw new Meteor.Error('error-invalid-event-type', 'Invalid event type', {
 			function: 'validateOutgoing._verifyRequiredFields',
@@ -29,7 +30,7 @@ function _verifyRequiredFields(integration) {
 		});
 	}
 
-	if (integrations.outgoingEvents[integration.event].use.targetRoom && !integration.targetRoom) {
+	if (outgoingEvents[integration.event].use.targetRoom && !integration.targetRoom) {
 		throw new Meteor.Error('error-invalid-targetRoom', 'Invalid Target Room', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});
@@ -41,13 +42,7 @@ function _verifyRequiredFields(integration) {
 		});
 	}
 
-	for (const [index, url] of integration.urls.entries()) {
-		if (url.trim() === '') {
-			delete integration.urls[index];
-		}
-	}
-
-	integration.urls = _.without(integration.urls, [undefined]);
+	integration.urls = integration.urls.filter((url) => url && url.trim() !== '');
 
 	if (integration.urls.length === 0) {
 		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', {
@@ -56,7 +51,7 @@ function _verifyRequiredFields(integration) {
 	}
 }
 
-function _verifyUserHasPermissionForChannels(integration, userId, channels) {
+function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channels: string[]): void {
 	for (let channel of channels) {
 		if (scopedChannels.includes(channel)) {
 			if (channel === 'all_public_channels') {
@@ -102,18 +97,22 @@ function _verifyUserHasPermissionForChannels(integration, userId, channels) {
 	}
 }
 
-function _verifyRetryInformation(integration) {
+function _verifyRetryInformation(integration: IOutgoingIntegration): void {
 	if (!integration.retryFailedCalls) {
 		return;
 	}
 
 	// Don't allow negative retry counts
-	integration.retryCount = integration.retryCount && parseInt(integration.retryCount) > 0 ? parseInt(integration.retryCount) : 4;
+	integration.retryCount =
+		integration.retryCount && parseInt(String(integration.retryCount)) > 0 ? parseInt(String(integration.retryCount)) : 4;
 	integration.retryDelay =
 		!integration.retryDelay || !integration.retryDelay.trim() ? 'powers-of-ten' : integration.retryDelay.toLowerCase();
 }
 
-integrations.validateOutgoing = function _validateOutgoing(integration, userId) {
+export const validateOutgoingIntegration = function (
+	integration: INewOutgoingIntegration | IUpdateOutgoingIntegration,
+	userId: IUser['_id'],
+): IOutgoingIntegration {
 	if (integration.channel && Match.test(integration.channel, String) && integration.channel.trim() === '') {
 		delete integration.channel;
 	}
@@ -121,14 +120,14 @@ integrations.validateOutgoing = function _validateOutgoing(integration, userId) 
 	// Moved to it's own function to statisfy the complexity rule
 	_verifyRequiredFields(integration);
 
-	let channels = [];
-	if (integrations.outgoingEvents[integration.event].use.channel) {
+	let channels: string[] = [];
+	if (outgoingEvents[integration.event].use.channel) {
 		if (!Match.test(integration.channel, String)) {
 			throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
 				function: 'validateOutgoing',
 			});
 		} else {
-			channels = _.map(integration.channel.split(','), (channel) => s.trim(channel));
+			channels = parseCSV(integration.channel);
 
 			for (const channel of channels) {
 				if (!validChannelChars.includes(channel[0]) && !scopedChannels.includes(channel.toLowerCase())) {
@@ -144,22 +143,31 @@ integrations.validateOutgoing = function _validateOutgoing(integration, userId) 
 		});
 	}
 
-	if (integrations.outgoingEvents[integration.event].use.triggerWords && integration.triggerWords) {
+	const user = Users.findOne({ username: integration.username });
+
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user (did you delete the `rocket.cat` user?)', { function: 'validateOutgoing' });
+	}
+
+	const integrationData: IOutgoingIntegration = {
+		...integration,
+		type: 'webhook-outgoing',
+		channel: channels,
+		userId: user._id,
+		_createdAt: new Date(),
+		_createdBy: Users.findOne(userId, { fields: { username: 1 } }),
+	};
+
+	if (outgoingEvents[integration.event].use.triggerWords && integration.triggerWords) {
 		if (!Match.test(integration.triggerWords, [String])) {
 			throw new Meteor.Error('error-invalid-triggerWords', 'Invalid triggerWords', {
 				function: 'validateOutgoing',
 			});
 		}
 
-		integration.triggerWords.forEach((word, index) => {
-			if (!word || word.trim() === '') {
-				delete integration.triggerWords[index];
-			}
-		});
-
-		integration.triggerWords = _.without(integration.triggerWords, [undefined]);
+		integrationData.triggerWords = integration.triggerWords.filter((word) => word && word.trim() !== '');
 	} else {
-		delete integration.triggerWords;
+		delete integrationData.triggerWords;
 	}
 
 	if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
@@ -170,31 +178,21 @@ integrations.validateOutgoing = function _validateOutgoing(integration, userId) 
 				comments: false,
 			});
 
-			integration.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-			integration.scriptError = undefined;
+			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+			integrationData.scriptError = undefined;
 		} catch (e) {
-			integration.scriptCompiled = undefined;
-			integration.scriptError = _.pick(e, 'name', 'message', 'stack');
+			integrationData.scriptCompiled = undefined;
+			integrationData.scriptError = _.pick(e, 'name', 'message', 'stack');
 		}
 	}
 
 	if (typeof integration.runOnEdits !== 'undefined') {
 		// Verify this value is only true/false
-		integration.runOnEdits = integration.runOnEdits === true;
+		integrationData.runOnEdits = integration.runOnEdits === true;
 	}
 
-	_verifyUserHasPermissionForChannels(integration, userId, channels);
-	_verifyRetryInformation(integration);
+	_verifyUserHasPermissionForChannels(userId, channels);
+	_verifyRetryInformation(integrationData);
 
-	const user = Users.findOne({ username: integration.username });
-
-	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user (did you delete the `rocket.cat` user?)', { function: 'validateOutgoing' });
-	}
-
-	integration.type = 'webhook-outgoing';
-	integration.userId = user._id;
-	integration.channel = channels;
-
-	return integration;
+	return integrationData;
 };
