@@ -307,6 +307,7 @@ const DevicesTable = (): ReactElement => {
 					{t('IP_Address')}
 				</GenericTableHeaderCell>
 			),
+			<GenericTableHeaderCell width={'10%'}>{' '}</GenericTableHeaderCell>
 		],
 		[t, mediaQuery],
 	);

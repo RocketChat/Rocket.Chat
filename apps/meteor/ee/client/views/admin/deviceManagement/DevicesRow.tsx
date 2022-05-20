@@ -1,5 +1,6 @@
-import { TableRow, TableCell, Icon, Box } from '@rocket.chat/fuselage';
+import { TableRow, TableCell, Icon, Box, Menu } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, ReactElement, FC } from 'react';
 import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
 
@@ -13,6 +14,8 @@ const DeviceIcon: FC<{ deviceType: string }> = ({ deviceType }) =>
 
 
 const DevicesRow = ({ _id, userId, ip, device: { name, type, os: { name:OSName } }, loginAt }: any): ReactElement => {
+
+    const t = useTranslation();
 
     const formatDateAndTime = useFormatDateAndTime();
 
@@ -29,6 +32,21 @@ const DevicesRow = ({ _id, userId, ip, device: { name, type, os: { name:OSName }
             {mediaQuery && <TableCell>{formatDateAndTime(loginAt)}</TableCell>}
             {mediaQuery && <TableCell withTruncatedText>{_id}</TableCell>}
             {mediaQuery && <TableCell>{ip}</TableCell>}
+            <TableCell>
+                <Menu
+                    title={t('Options')}
+                    options={{
+                        logout: {
+                            action: () => console.log("Logout"),
+                            label: t('Logout_Device')
+                        },
+                        block_ip_addresses: {
+                            action: () => console.log("Block"),
+                            label: t('Block_IP_Address')
+                        }
+                    }}
+                />
+            </TableCell>
         </TableRow>
     );
 };
