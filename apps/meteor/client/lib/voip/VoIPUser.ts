@@ -919,7 +919,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 						connectivityArray.push(this.sendKeepAliveAndWaitForResponse(true));
 					}
 					const values = await Promise.all(connectivityArray);
-					// for (let i = 0; i < values.length; i++) {
 					for (const i in values) {
 						if (values[i]) {
 							keepAliveResponse = values[i];
