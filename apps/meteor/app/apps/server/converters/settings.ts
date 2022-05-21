@@ -14,13 +14,14 @@ export class AppSettingsConverter {
 	async convertById(settingId: string): Promise<ISetting> {
 		const setting = await Settings.findOneNotHiddenById(settingId);
 
-		return this.convertToApp(setting);
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		return this.convertToApp(setting!);
 	}
 
 	convertToApp(setting: ISetting): ISetting {
 		return {
-			id: setting._id,
-			type: this._convertTypeToApp(setting.type),
+			_id: setting._id,
+			type: this._convertTypeToApp(setting.type) as SettingType,
 			packageValue: setting.packageValue,
 			values: setting.values,
 			value: setting.value,
@@ -30,7 +31,32 @@ export class AppSettingsConverter {
 			i18nLabel: setting.i18nLabel,
 			i18nDescription: setting.i18nDescription,
 			createdAt: setting.ts,
-			updatedAt: setting._updatedAt,
+			_updatedAt: setting._updatedAt,
+
+			blocked: setting.blocked,
+			sorter: setting.sorter,
+			env: setting.env,
+			section: setting.section,
+			tab: setting.tab,
+			enableQuery: setting.enableQuery,
+			displayQuery: setting.displayQuery,
+			properties: setting.properties,
+			enterprise: setting.enterprise,
+			modules: setting.modules,
+			invalidValue: setting.invalidValue,
+			valueSource: setting.valueSource,
+			secret: setting.secret,
+			autocomplete: setting.autocomplete,
+			processEnvValue: setting.processEnvValue,
+			meteorSettingsValue: setting.meteorSettingsValue,
+			ts: setting.ts,
+			multiline: setting.multiline,
+			placeholder: setting.placeholder,
+			wizard: setting.wizard,
+			persistent: setting.persistent,
+			readonly: setting.readonly,
+			alert: setting.alert,
+			private: setting.private,
 		};
 	}
 
