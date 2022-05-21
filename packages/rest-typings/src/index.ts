@@ -153,7 +153,7 @@ export * from './v1/channels/ChannelsModeratorsProps';
 export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
-export * from './v1/dm/DmDeleteProps';
+export * from './v1/dm';
 export * from './v1/integrations';
 export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';

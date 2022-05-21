@@ -1,16 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 
 import { Rooms, Users, Subscriptions } from '../../../models/server';
 
 export const getRoomByNameOrIdWithOptionToJoin = ({
 	currentUserId = '',
 	nameOrId = '',
-	type = '',
+	type,
 	tryDirectByUserIdOnly = false,
 	joinChannel = true,
 	errorOnEmpty = true,
+}: {
+	currentUserId?: string;
+	nameOrId: string;
+	type?: RoomType;
+	tryDirectByUserIdOnly?: boolean;
+	joinChannel?: boolean;
+	errorOnEmpty?: boolean;
 }): IRoom | undefined => {
 	let room: IRoom;
 

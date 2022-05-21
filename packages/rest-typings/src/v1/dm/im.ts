@@ -2,11 +2,15 @@ import type { IMessage, IRoom, IUser, IUpload } from '@rocket.chat/core-typings'
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { DmCreateProps } from './DmCreateProps';
 import type { DmDeleteProps } from './DmDeleteProps';
+import type { DmFileProps } from './DmFileProps';
+import type { DmMemberProps } from './DmMembersProps';
+import type { DmMessagesProps } from './DmMessagesProps';
 
 export type ImEndpoints = {
 	'im.create': {
-		POST: (params: { username?: Exclude<IUser['username'], undefined>; usernames?: string; excludeSelf?: boolean }) => {
+		POST: (params: DmCreateProps) => {
 			room: IRoom & { rid: IRoom['_id'] };
 		};
 	};
@@ -28,7 +32,7 @@ export type ImEndpoints = {
 		};
 	};
 	'im.files': {
-		GET: (params: PaginatedRequest<{ roomId?: IRoom['_id']; username?: string; query?: string; fields?: string }>) => PaginatedResult<{
+		GET: (params: DmFileProps) => PaginatedResult<{
 			files: IUpload[];
 		}>;
 	};
@@ -48,19 +52,12 @@ export type ImEndpoints = {
 	};
 
 	'im.members': {
-		GET: (params: PaginatedRequest<{ roomId?: IRoom['_id']; username?: string; filter?: string; status?: string[] }>) => PaginatedResult<{
+		GET: (params: DmMemberProps) => PaginatedResult<{
 			members: Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'>[];
 		}>;
 	};
 	'im.messages': {
-		GET: (
-			params: PaginatedRequest<{
-				roomId?: IRoom['_id'];
-				username?: string;
-				query?: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-				fields?: string;
-			}>,
-		) => PaginatedResult<{
+		GET: (params: DmMessagesProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};

@@ -51,6 +51,7 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 					currentUserId: user._id,
 					nameOrId: channelValue,
 					tryDirectByUserIdOnly: true,
+					type: 'd',
 				});
 				if (room) {
 					break;

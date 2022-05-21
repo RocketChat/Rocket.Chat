@@ -96,6 +96,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		? T
 		: Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+	/* @deprecated */
 	requestParams(): OperationParams<TMethod, TPathPattern>;
 	getLoggedInUser(): IUser | undefined;
 	getPaginationItems(): {

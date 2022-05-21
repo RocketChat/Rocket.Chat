@@ -5,7 +5,7 @@ import { RecordList } from './RecordList';
 type FilesMessage = Omit<IUpload, 'rid'> & Required<Pick<IUpload, 'rid'>>;
 
 export type FilesListOptions = {
-	rid: IUpload['rid'];
+	rid: Required<IUpload>['rid'];
 	type: string;
 	text: string;
 };
