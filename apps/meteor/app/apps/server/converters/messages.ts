@@ -1,6 +1,16 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Random } from 'meteor/random';
-import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type {
+	AudioAttachmentProps,
+	IEditedMessage,
+	ImageAttachmentProps,
+	IMessage,
+	MessageAttachment,
+	MessageAttachmentAction,
+	MessageAttachmentDefault,
+	MessageQuoteAttachment,
+	VideoAttachmentProps,
+} from '@rocket.chat/core-typings';
 
 import { Messages, Rooms, Users } from '../../../models/server';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
@@ -43,12 +53,12 @@ export class AppMessagesConverter {
 			blocks: 'blocks',
 			room: (message: IMessage): unknown => {
 				const result = this.orch.getConverters()?.get('rooms').convertById(message.rid);
-				delete message.rid;
+				delete (message as any).rid; // The operand of a 'delete' operator must be optional.ts(2790)
 				return result;
 			},
-			editor: (message: IMessage): unknown => {
+			editor: (message: IEditedMessage): unknown => {
 				const { editedBy } = message;
-				delete message.editedBy;
+				delete (message as any).editedBy; // The operand of a 'delete' operator must be optional.ts(2790)
 
 				if (!editedBy) {
 					return undefined;
@@ -57,7 +67,8 @@ export class AppMessagesConverter {
 				return this.orch.getConverters()?.get('users').convertById(editedBy._id);
 			},
 			attachments: (message: IMessage): unknown => {
-				const result = this._convertAttachmentsToApp(message.attachments);
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const result = this._convertAttachmentsToApp(message.attachments!);
 				delete message.attachments;
 				return result;
 			},
@@ -73,7 +84,7 @@ export class AppMessagesConverter {
 					user = this.orch.getConverters()?.get('users').convertToApp(message.u);
 				}
 
-				delete message.u;
+				delete (message as any).u; // The operand of a 'delete' operator must be optional.ts(2790)
 
 				return user;
 			},
@@ -82,20 +93,20 @@ export class AppMessagesConverter {
 		return transformMappedData(msgObj, map);
 	}
 
-	convertAppMessage(message: IMessage): unknown {
-		if (!message || !message.room) {
+	convertAppMessage(message: IEditedMessage): unknown {
+		if (!message || !message.rid) {
 			return undefined;
 		}
 
-		const room = Rooms.findOneById(message.room.id);
+		const room = Rooms.findOneById(message.rid);
 
 		if (!room) {
 			throw new Error('Invalid room provided on the message.');
 		}
 
 		let u;
-		if (message.sender && message.sender.id) {
-			const user = Users.findOneById(message.sender.id);
+		if (message.u && message.u._id) {
+			const user = Users.findOneById(message.u._id);
 
 			if (user) {
 				u = {
@@ -105,47 +116,48 @@ export class AppMessagesConverter {
 				};
 			} else {
 				u = {
-					_id: message.sender.id,
-					username: message.sender.username,
-					name: message.sender.name,
+					_id: message.u._id,
+					username: message.u.username,
+					name: message.u.name,
 				};
 			}
 		}
 
 		let editedBy;
-		if (message.editor) {
-			const editor = Users.findOneById(message.editor.id);
+		if (message.editedBy) {
+			const editor = Users.findOneById(message.editedBy._id);
 			editedBy = {
 				_id: editor._id,
 				username: editor.username,
 			};
 		}
 
-		const attachments = this._convertAppAttachments(message.attachments);
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		const attachments = this._convertAppAttachments(message.attachments!);
 
 		const newMessage = {
-			_id: message.id || Random.id(),
-			...('threadId' in message && { tmid: message.threadId }),
+			_id: message._id || Random.id(),
+			...('threadId' in message && { tmid: message.tmid }),
 			rid: room._id,
 			u,
-			msg: message.text,
-			ts: message.createdAt || new Date(),
-			_updatedAt: message.updatedAt || new Date(),
+			msg: message.msg,
+			ts: message.ts || new Date(),
+			_updatedAt: message.editedAt || new Date(),
 			...(editedBy && { editedBy }),
 			...('editedAt' in message && { editedAt: message.editedAt }),
 			...('emoji' in message && { emoji: message.emoji }),
-			...('avatarUrl' in message && { avatar: message.avatarUrl }),
+			...('avatarUrl' in message && { avatar: message.avatar }),
 			...('alias' in message && { alias: message.alias }),
-			...('customFields' in message && { customFields: message.customFields }),
+			...('customFields' in message && { customFields: (message as any).customFields }),
 			...('groupable' in message && { groupable: message.groupable }),
 			...(attachments && { attachments }),
 			...('reactions' in message && { reactions: message.reactions }),
-			...('parseUrls' in message && { parseUrls: message.parseUrls }),
+			...('parseUrls' in message && { parseUrls: message.urls }),
 			...('blocks' in message && { blocks: message.blocks }),
-			...('token' in message && { token: message.token }),
+			...('token' in message && { token: (message as any).token }),
 		};
 
-		return Object.assign(newMessage, message._unmappedProperties_);
+		return Object.assign(newMessage, (message as any)._unmappedProperties_);
 	}
 
 	_convertAppAttachments(attachments: MessageAttachment[]): unknown[] | undefined {
@@ -157,40 +169,46 @@ export class AppMessagesConverter {
 			Object.assign(
 				{
 					collapsed: attachment.collapsed,
-					color: attachment.color,
-					text: attachment.text,
-					ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
-					message_link: attachment.timestampLink,
-					thumb_url: attachment.thumbnailUrl,
-					author_name: attachment.author ? attachment.author.name : undefined,
-					author_link: attachment.author ? attachment.author.link : undefined,
-					author_icon: attachment.author ? attachment.author.icon : undefined,
-					title: attachment.title ? attachment.title.value : undefined,
-					title_link: attachment.title ? attachment.title.link : undefined,
-					title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
-					image_dimensions: attachment.imageDimensions,
-					image_preview: attachment.imagePreview,
-					image_url: attachment.imageUrl,
-					image_type: attachment.imageType,
-					image_size: attachment.imageSize,
-					audio_url: attachment.audioUrl,
-					audio_type: attachment.audioType,
-					audio_size: attachment.audioSize,
-					video_url: attachment.videoUrl,
-					video_type: attachment.videoType,
-					video_size: attachment.videoSize,
-					fields: attachment.fields,
-					button_alignment: attachment.actionButtonsAlignment,
-					actions: attachment.actions,
-					type: attachment.type,
+					color: (attachment as MessageAttachmentDefault).color,
+					text: (attachment as MessageAttachmentDefault).text,
+					ts: attachment.ts ? attachment.ts.toJSON() : attachment.ts,
+					message_link: (attachment as MessageQuoteAttachment).message_link,
+					thumb_url: (attachment as MessageAttachmentDefault).thumb_url,
+					author_name: (attachment as MessageAttachmentDefault).author_name
+						? (attachment as MessageAttachmentDefault).author_name
+						: undefined,
+					author_link: (attachment as MessageAttachmentDefault).author_link
+						? (attachment as MessageAttachmentDefault).author_link
+						: undefined,
+					author_icon: (attachment as MessageAttachmentDefault).author_icon
+						? (attachment as MessageAttachmentDefault).author_icon
+						: undefined,
+					title: attachment.title ? attachment.title : undefined,
+					title_link: attachment.title ? attachment.title_link : undefined,
+					title_link_download: attachment.title ? attachment.title_link_download : undefined,
+					image_dimensions: (attachment as MessageAttachmentDefault).image_dimensions,
+					image_preview: (attachment as ImageAttachmentProps).image_preview,
+					image_url: (attachment as MessageAttachmentDefault).image_url,
+					image_type: (attachment as ImageAttachmentProps).image_type,
+					image_size: (attachment as ImageAttachmentProps).image_size,
+					audio_url: (attachment as AudioAttachmentProps).audio_url,
+					audio_type: (attachment as AudioAttachmentProps).audio_type,
+					audio_size: (attachment as AudioAttachmentProps).audio_size,
+					video_url: (attachment as VideoAttachmentProps).video_url,
+					video_type: (attachment as VideoAttachmentProps).video_type,
+					video_size: (attachment as VideoAttachmentProps).video_size,
+					fields: (attachment as MessageAttachmentDefault).fields,
+					button_alignment: (attachment as MessageAttachmentAction).button_alignment,
+					actions: (attachment as MessageAttachmentAction).actions,
+					type: (attachment as any).type,
 					description: attachment.description,
 				},
-				attachment._unmappedProperties_,
+				(attachment as any)._unmappedProperties_,
 			),
 		);
 	}
 
-	_convertAttachmentsToApp(attachments: MessageAttachment[]):
+	_convertAttachmentsToApp(attachments: MessageAttachmentDefault[]):
 		| {
 				_unmappedProperties_: unknown;
 		  }[]
@@ -221,7 +239,7 @@ export class AppMessagesConverter {
 			actions: 'actions',
 			type: 'type',
 			description: 'description',
-			author: (attachment: MessageAttachment): { name: MessageAttachment; link: MessageAttachment; icon: MessageAttachment } => {
+			author: (attachment: MessageAttachmentDefault): { name: string | undefined; link: string | undefined; icon: string | undefined } => {
 				const { author_name: name, author_link: link, author_icon: icon } = attachment;
 
 				delete attachment.author_name;
@@ -232,7 +250,7 @@ export class AppMessagesConverter {
 			},
 			title: (
 				attachment: MessageAttachment,
-			): { value: MessageAttachment; link: MessageAttachment; displayDownloadLink: MessageAttachment } => {
+			): { value: string | undefined; link: string | undefined; displayDownloadLink: boolean | undefined } => {
 				const { title: value, title_link: link, title_link_download: displayDownloadLink } = attachment;
 
 				delete attachment.title;
@@ -241,8 +259,8 @@ export class AppMessagesConverter {
 
 				return { value, link, displayDownloadLink };
 			},
-			timestamp: (attachment: MessageAttachment): Date => {
-				const result = new Date(attachment.ts);
+			timestamp: (attachment: MessageAttachmentDefault): Date => {
+				const result = attachment.ts ? new Date(attachment.ts) : new Date();
 				delete attachment.ts;
 				return result;
 			},
