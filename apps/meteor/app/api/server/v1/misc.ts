@@ -316,7 +316,7 @@ API.v1.addRoute(
 
 			const { query } = this.queryParams;
 
-			const result = Meteor.runAsUser(this.userId, () => Meteor.call('spotlight', query));
+			const result = Meteor.call('spotlight', query);
 
 			return API.v1.success(result);
 		},
@@ -339,17 +339,15 @@ API.v1.addRoute(
 			const sortBy = sort ? Object.keys(sort)[0] : undefined;
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
-			const result = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('browseChannels', {
-					text,
-					type,
-					workspace,
-					sortBy,
-					sortDirection,
-					offset: Math.max(0, offset),
-					limit: Math.max(0, count),
-				}),
-			);
+			const result = Meteor.call('browseChannels', {
+				text,
+				type,
+				workspace,
+				sortBy,
+				sortDirection,
+				offset: Math.max(0, offset),
+				limit: Math.max(0, count),
+			});
 
 			if (!result) {
 				return API.v1.failure('Please verify the parameters');
@@ -413,7 +411,11 @@ API.v1.addRoute(
 	},
 );
 
-const mountResult = ({ id, error, result }: { id: string, error?: unknown, result: unknown } | { id: string, error: unknown, result?: unknown }) => ({
+const mountResult = ({
+	id,
+	error,
+	result,
+}: { id: string; error?: unknown; result: unknown } | { id: string; error: unknown; result?: unknown }) => ({
 	message: EJSON.stringify({
 		msg: 'result',
 		id,
@@ -457,10 +459,8 @@ const methodCall = () => ({
 			const result = Meteor.call(method, ...params);
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
-			if(error instanceof Error)
-				SystemLogger.error(`Exception while invoking method ${method}`, error.message);
-			else
-				SystemLogger.error(`Exception while invoking method ${method}`, error);
+			if (error instanceof Error) SystemLogger.error(`Exception while invoking method ${method}`, error.message);
+			else SystemLogger.error(`Exception while invoking method ${method}`, error);
 
 			if (settings.get('Log_Level') === '2') {
 				Meteor._debug(`Exception while invoking method ${method}`, error);
