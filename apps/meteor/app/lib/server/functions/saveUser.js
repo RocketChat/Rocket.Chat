@@ -416,9 +416,10 @@ export const saveUser = function (userId, userData) {
 	callbacks.run('afterSaveUser', userData);
 
 	// App IPostUserUpdated event hook
+	const userUpdated = Users.findOneById(userId);
 	Promise.await(
 		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
-			user: userUpdateResult.value,
+			user: userUpdated,
 			previousUser: oldUserData,
 			performedBy: Meteor.user(),
 		}),

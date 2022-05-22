@@ -180,6 +180,26 @@ settingsRegistry.addGroup('Accounts', function () {
 			type: 'string',
 			hidden: true,
 		});
+		this.add('Manual_Entry_User_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('CSV_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Hipchat_Enterprise_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Users_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
 			type: 'boolean',
 		});
