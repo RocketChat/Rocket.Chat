@@ -5,7 +5,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions, Users } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -63,7 +63,7 @@ function inviteAll(type: string): typeof slashCommands.commands[string]['callbac
 					method: 'addAllToRoom',
 				});
 			}
-			const users = cursor.fetch().map((s: any) => s.u.username);
+			const users = cursor.fetch().map((s: ISubscription) => s.u.username);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
 				Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
