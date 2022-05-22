@@ -3601,8 +3601,8 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/apps-engine@npm:alpha":
-  version: 1.31.0-alpha.6070
-  resolution: "@rocket.chat/apps-engine@npm:1.31.0-alpha.6070"
+  version: 1.32.0-alpha.6176
+  resolution: "@rocket.chat/apps-engine@npm:1.32.0-alpha.6176"
   dependencies:
     adm-zip: ^0.4.9
     cryptiles: ^4.1.3
@@ -3610,7 +3610,7 @@ __metadata:
     semver: ^5.5.0
     stack-trace: 0.0.10
     uuid: ^3.2.1
-  checksum: 98aad03f4b6758cc54923f59dc77df4aca2d70aae510b33d6a75d0db660329d4c9d926bcbc8768ce705479a797bf395d62789533f4289a1753c71bd393c8eb74
+  checksum: 8364ce867facb246d14fa570fe3f063132cff2f2685d40e8eb93cf7008fa6a3a156fea5404a0608ce20d39aaf82a5662dee6a67efb15e535c4e9d86ddbe35cc9
   languageName: node
   linkType: hard
 
