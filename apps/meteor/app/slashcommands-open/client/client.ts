@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { IMessage } from '@rocket.chat/core-typings';
 
-import { roomTypes } from '../../utils/client';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { Subscriptions, ChatSubscription } from '../../models/client';
 
-function Open(_command: 'open', params: string, _item: Record<string, string>): void {
+function Open(_command: 'open', params: string, _item: IMessage): void {
 	const dict: Record<string, string[]> = {
 		'#': ['c', 'p'],
 		'@': ['d'],
@@ -22,7 +23,7 @@ function Open(_command: 'open', params: string, _item: Record<string, string>): 
 	const subscription = ChatSubscription.findOne(query);
 
 	if (subscription) {
-		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+		roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	}
 
 	if (type && type.indexOf('d') === -1) {
@@ -33,21 +34,13 @@ function Open(_command: 'open', params: string, _item: Record<string, string>): 
 			return;
 		}
 		const subscription = Subscriptions.findOne(query);
-		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+		roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	});
 }
 
-slashCommands.add(
-	'open',
-	Open,
-	{
-		description: 'Opens_a_channel_group_or_direct_message',
-		params: 'room_name',
-		clientOnly: true,
-		permission: ['view-c-room', 'view-c-room', 'view-d-room', 'view-joined-room', 'create-d'],
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('open', Open, {
+	description: 'Opens_a_channel_group_or_direct_message',
+	params: 'room_name',
+	clientOnly: true,
+	permission: ['view-c-room', 'view-c-room', 'view-d-room', 'view-joined-room', 'create-d'],
+});
