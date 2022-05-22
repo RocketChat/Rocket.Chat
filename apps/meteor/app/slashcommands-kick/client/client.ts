@@ -14,8 +14,4 @@ slashCommands.add(
 		params: '@username',
 		permission: 'remove-user',
 	},
-	undefined,
-	false,
-	undefined,
-	undefined,
 );
