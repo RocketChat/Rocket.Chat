@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
