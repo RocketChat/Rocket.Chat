@@ -13,15 +13,7 @@ function Gimme(_command: 'gimme', params: string, item: IMessage): void {
 	Meteor.call('sendMessage', msg);
 }
 
-slashCommands.add(
-	'gimme',
-	Gimme,
-	{
-		description: 'Slash_Gimme_Description',
-		params: 'your_message_optional',
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('gimme', Gimme, {
+	description: 'Slash_Gimme_Description',
+	params: 'your_message_optional',
+});

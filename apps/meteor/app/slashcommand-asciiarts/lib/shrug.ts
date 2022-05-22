@@ -1,3 +1,4 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -6,21 +7,13 @@ import { slashCommands } from '../../utils/lib/slashCommand';
  * @param {Object} message - The message object
  */
 
-function Shrug(_command: 'shrug', params: Record<string, any>, item: Record<string, any>): void {
+function Shrug(_command: 'shrug', params: string, item: IMessage): void {
 	const msg = item;
 	msg.msg = `${params} ¯\\_(ツ)_/¯`;
 	Meteor.call('sendMessage', msg);
 }
 
-slashCommands.add(
-	'shrug',
-	Shrug,
-	{
-		description: 'Slash_Shrug_Description',
-		params: 'your_message_optional',
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('shrug', Shrug, {
+	description: 'Slash_Shrug_Description',
+	params: 'your_message_optional',
+});
