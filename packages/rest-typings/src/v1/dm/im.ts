@@ -74,8 +74,8 @@ export type ImEndpoints = {
 		POST: (params: { roomId: string }) => void;
 	};
 	'im.setTopic': {
-		POST: (params: { roomId: string; topic: string }) => {
-			topic: string;
+		POST: (params: { roomId: string; topic?: string }) => {
+			topic?: string;
 		};
 	};
 };

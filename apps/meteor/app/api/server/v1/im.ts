@@ -344,7 +344,7 @@ API.v1.addRoute(
 			const { sort, fields, query } = this.parseJsonQuery();
 
 			const ourQuery = { rid: room._id, ...query };
-			const sortObj = { ts: sort.ts ?? -1 };
+			const sortObj = { ts: sort?.ts ?? -1 };
 			const messages = await Messages.find(ourQuery, {
 				sort: sortObj,
 				skip: offset,
@@ -525,13 +525,10 @@ API.v1.addRoute(
 			if (!roomId) {
 				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
 			}
+
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
 				return API.v1.unauthorized();
-			}
-
-			if (!topic) {
-				return API.v1.failure('The bodyParam "topic" is required');
 			}
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
