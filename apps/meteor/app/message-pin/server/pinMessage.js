@@ -103,7 +103,7 @@ Meteor.methods({
 		}
 
 		// App IPostMessagePinned event hook
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, Meteor.user(), !originalMessage.pinned));
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, Meteor.user(), originalMessage.pinned));
 
 		return Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {
 			attachments: [
@@ -178,7 +178,7 @@ Meteor.methods({
 		}
 
 		// App IPostMessagePinned event hook
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, Meteor.user(), !originalMessage.pinned));
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, Meteor.user(), originalMessage.pinned));
 
 		return Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 	},

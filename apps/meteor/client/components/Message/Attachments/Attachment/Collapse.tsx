@@ -1,6 +1,6 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, FC } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import Action from './Action';
 
 const Collapse: FC<Omit<ComponentProps<typeof Action>, 'icon'> & { collapsed?: boolean }> = ({ collapsed = false, ...props }) => {

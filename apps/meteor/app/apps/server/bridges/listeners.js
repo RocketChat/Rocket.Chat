@@ -48,6 +48,13 @@ export class AppListenerBridge {
 				case AppInterface.IPostLivechatGuestSaved:
 				case AppInterface.IPostLivechatRoomSaved:
 					return 'livechatEvent';
+				case AppInterface.IPostUserCreated:
+				case AppInterface.IPostUserUpdated:
+				case AppInterface.IPostUserDeleted:
+				case AppInterface.IPostUserLogin:
+				case AppInterface.IPostUserLogout:
+				case AppInterface.IPostUserStatusChanged:
+					return 'userEvent';
 				default:
 					return 'defaultEvent';
 			}
@@ -187,6 +194,36 @@ export class AppListenerBridge {
 				const room = this.orch.getConverters().get('rooms').convertRoom(data);
 
 				return this.orch.getManager().getListenerManager().executeListener(inte, room);
+		}
+	}
+
+	async userEvent(inte, data) {
+		let context;
+		switch (inte) {
+			case AppInterface.IPostUserLoggedIn:
+			case AppInterface.IPostUserLogout:
+				context = this.orch.getConverters().get('users').convertToApp(data.user);
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+			case AppInterface.IPostUserStatusChanged:
+				const { currentStatus, previousStatus } = data;
+				context = {
+					user: this.orch.getConverters().get('users').convertToApp(data.user),
+					currentStatus,
+					previousStatus,
+				};
+
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+			case AppInterface.IPostUserCreated:
+			case AppInterface.IPostUserUpdated:
+			case AppInterface.IPostUserDeleted:
+				context = {
+					user: this.orch.getConverters().get('users').convertToApp(data.user),
+					performedBy: this.orch.getConverters().get('users').convertToApp(data.performedBy),
+				};
+				if (inte === AppInterface.IPostUserUpdated) {
+					context.previousData = this.orch.getConverters().get('users').convertToApp(data.previousUser);
+				}
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
 		}
 	}
 }

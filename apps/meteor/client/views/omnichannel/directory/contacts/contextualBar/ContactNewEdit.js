@@ -1,5 +1,6 @@
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -7,9 +8,6 @@ import { hasAtLeastOnePermission } from '../../../../../../app/authorization/cli
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';

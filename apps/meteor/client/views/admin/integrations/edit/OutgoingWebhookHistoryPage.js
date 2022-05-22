@@ -1,13 +1,10 @@
 import { Button, ButtonGroup, Icon, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useRouteParameter, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import { integrationHistoryStreamer } from '../../../../../app/integrations/client/streamer';
 import Page from '../../../../components/Page';
-import { useRoute, useRouteParameter } from '../../../../contexts/RouterContext';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import HistoryContent from './HistoryContent';

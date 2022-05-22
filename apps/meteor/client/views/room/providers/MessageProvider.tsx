@@ -1,11 +1,9 @@
 import { IMessage } from '@rocket.chat/core-typings';
+import { useLayout, useCurrentRoute, useRoute, useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
-import { useLayout } from '../../../contexts/LayoutContext';
-import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';

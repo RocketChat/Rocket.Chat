@@ -16,10 +16,6 @@ const removeUserReaction = (message, reaction, username) => {
 	if (message.reactions[reaction].usernames.length === 0) {
 		delete message.reactions[reaction];
 	}
-
-	const reactionRemoved = true;
-	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, Meteor.user(), reaction, reactionRemoved));
-
 	return message;
 };
 
@@ -57,6 +53,9 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 	if (userAlreadyReacted === shouldReact) {
 		return;
 	}
+
+	let isReacted;
+
 	if (userAlreadyReacted) {
 		removeUserReaction(message, reaction, user.username);
 		if (_.isEmpty(message.reactions)) {
@@ -73,6 +72,8 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		}
 		callbacks.run('unsetReaction', message._id, reaction);
 		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
+
+		isReacted = false;
 	} else {
 		if (!message.reactions) {
 			message.reactions = {};
@@ -90,9 +91,10 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		callbacks.run('setReaction', message._id, reaction);
 		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 
-		const reactionRemoved = false;
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, reactionRemoved));
+		isReacted = true;
 	}
+
+	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, Meteor.user(), reaction, isReacted));
 
 	msgStream.emit(message.rid, message);
 }

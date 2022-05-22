@@ -1,8 +1,7 @@
+import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useTabBarClose } from '../../../../room/providers/ToolboxProvider';
 import ChatInfo from './ChatInfo';
 import RoomEditWithData from './RoomEditWithData';
