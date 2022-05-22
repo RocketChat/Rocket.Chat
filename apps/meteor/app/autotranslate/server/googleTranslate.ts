@@ -5,6 +5,14 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
+import {
+	IMessage,
+	IProviderMetadata,
+	ISupportedLanguage,
+	ITranslationResult,
+	IGoogleTranslation,
+	MessageAttachment,
+} from '@rocket.chat/core-typings';
 
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -17,6 +25,10 @@ import { settings } from '../../settings/server';
  */
 
 class GoogleAutoTranslate extends AutoTranslate {
+	apiKey: string;
+
+	apiEndPointUrl: string;
+
 	/**
 	 * setup api reference to Google translate to be used as message translation provider.
 	 * @constructor
@@ -26,7 +38,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		this.name = 'google-translate';
 		this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
 		// Get the service provide API key.
-		settings.watch('AutoTranslate_GoogleAPIKey', (value) => {
+		settings.watch<string>('AutoTranslate_GoogleAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}
@@ -36,7 +48,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @private implements super abstract method.
 	 * @returns {object}
 	 */
-	_getProviderMetadata() {
+	_getProviderMetadata(): IProviderMetadata {
 		return {
 			name: this.name,
 			displayName: TAPi18n.__('AutoTranslate_Google'),
@@ -49,7 +61,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @private implements super abstract method.
 	 * @returns {object}
 	 */
-	_getSettings() {
+	_getSettings(): IProviderMetadata['settings'] {
 		return {
 			apiKey: this.apiKey,
 			apiEndPointUrl: this.apiEndPointUrl,
@@ -63,7 +75,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @param {string} target : user language setting or 'en'
 	 * @returns {object} code : value pair
 	 */
-	getSupportedLanguages(target) {
+	getSupportedLanguages(target: string): ISupportedLanguage[] {
 		if (!this.apiKey) {
 			return [];
 		}
@@ -75,11 +87,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 		let result;
 		const params = {
 			key: this.apiKey,
+			...(target && { target }),
 		};
-
-		if (target) {
-			params.target = target;
-		}
 
 		try {
 			result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
@@ -119,8 +128,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translations: Translated messages for each language
 	 */
-	_translateMessage(message, targetLanguages) {
-		const translations = {};
+	_translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult {
+		const translations: { [k: string]: string } = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
 
@@ -149,7 +158,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					Array.isArray(result.data.data.translations) &&
 					result.data.data.translations.length > 0
 				) {
-					const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
+					const txt = result.data.data.translations.map((translation: IGoogleTranslation) => translation.translatedText).join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 				}
 			} catch (e) {
@@ -166,9 +175,9 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated attachment descriptions for each target language
 	 */
-	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		const translations = {};
-		const query = `q=${encodeURIComponent(attachment.description || attachment.text)}`;
+	_translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult {
+		const translations: { [k: string]: string } = {};
+		const query = `q=${encodeURIComponent(attachment.description || attachment.text || '')}`;
 		const supportedLanguages = this.getSupportedLanguages('en');
 
 		targetLanguages.forEach((language) => {
@@ -193,7 +202,9 @@ class GoogleAutoTranslate extends AutoTranslate {
 					Array.isArray(result.data.data.translations) &&
 					result.data.data.translations.length > 0
 				) {
-					translations[language] = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
+					translations[language] = result.data.data.translations
+						.map((translation: IGoogleTranslation) => translation.translatedText)
+						.join('\n');
 				}
 			} catch (e) {
 				SystemLogger.error('Error translating message', e);

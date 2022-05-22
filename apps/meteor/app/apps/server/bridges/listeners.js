@@ -43,6 +43,10 @@ export class AppListenerBridge {
 				case AppInterface.IPostLivechatGuestSaved:
 				case AppInterface.IPostLivechatRoomSaved:
 					return 'livechatEvent';
+				case AppInterface.IPostUserCreated:
+				case AppInterface.IPostUserUpdated:
+				case AppInterface.IPostUserDeleted:
+					return 'userEvent';
 				default:
 					return 'defaultEvent';
 			}
@@ -133,5 +137,18 @@ export class AppListenerBridge {
 
 				return this.orch.getManager().getListenerManager().executeListener(inte, room);
 		}
+	}
+
+	async userEvent(inte, data) {
+		const context = {
+			user: this.orch.getConverters().get('users').convertToApp(data.user),
+			performedBy: this.orch.getConverters().get('users').convertToApp(data.performedBy),
+		};
+
+		if (inte === AppInterface.IPostUserUpdated) {
+			context.previousData = this.orch.getConverters().get('users').convertToApp(data.previousUser);
+		}
+
+		return this.orch.getManager().getListenerManager().executeListener(inte, context);
 	}
 }
