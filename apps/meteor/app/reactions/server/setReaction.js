@@ -16,7 +16,6 @@ const removeUserReaction = (message, reaction, username) => {
 	if (message.reactions[reaction].usernames.length === 0) {
 		delete message.reactions[reaction];
 	}
-
 	return message;
 };
 

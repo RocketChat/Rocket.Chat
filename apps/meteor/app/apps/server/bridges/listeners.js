@@ -22,6 +22,8 @@ export class AppListenerBridge {
 				case AppInterface.IPostMessageReacted:
 				case AppInterface.IPostMessageFollowed:
 				case AppInterface.IPostMessagePinned:
+				case AppInterface.IPostMessageStarred:
+				case AppInterface.IPostMessageReported:
 					return 'messageEvent';
 				case AppInterface.IPreRoomCreatePrevent:
 				case AppInterface.IPreRoomCreateExtend:
@@ -70,27 +72,47 @@ export class AppListenerBridge {
 
 		const params = (() => {
 			switch (inte) {
+				case AppInterface.IPostMessageDeleted:
+					const [userDeleted] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userDeleted),
+					};
 				case AppInterface.IPostMessageReacted:
-					const [userReacted, reaction, isReacted] = payload;
+					const [userReacted, reaction, isRemoved] = payload;
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userReacted),
 						reaction,
-						isReacted,
+						isRemoved,
 					};
 				case AppInterface.IPostMessageFollowed:
-					const [userFollowed, isFollowed] = payload;
+					const [userFollowed, isUnfollow] = payload;
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userFollowed),
-						isFollowed,
+						isUnfollow,
 					};
 				case AppInterface.IPostMessagePinned:
-					const [userPinned, isPinned] = payload;
+					const [userPinned, isUnpinned] = payload;
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userPinned),
-						isPinned,
+						isUnpinned,
+					};
+				case AppInterface.IPostMessageStarred:
+					const [userStarred, isStarred] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userStarred),
+						isStarred,
+					};
+				case AppInterface.IPostMessageReported:
+					const [userReported, reason] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userReported),
+						reason,
 					};
 				default:
 					return msg;
