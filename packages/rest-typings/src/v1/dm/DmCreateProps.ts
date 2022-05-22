@@ -20,7 +20,6 @@ export const isDmCreateProps = ajv.compile<DmCreateProps>({
 					type: 'string',
 				},
 				excludeSelf: {
-					type: 'enum',
 					enum: ['true', 'false'],
 				},
 			},
@@ -34,7 +33,7 @@ export const isDmCreateProps = ajv.compile<DmCreateProps>({
 					type: 'string',
 				},
 				excludeSelf: {
-					type: 'enum',
+					enum: ['true', 'false'],
 				},
 			},
 			required: ['username'],
