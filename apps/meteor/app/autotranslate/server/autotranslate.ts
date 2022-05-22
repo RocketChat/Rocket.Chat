@@ -1,12 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import {
+	IMessage,
+	IRoom,
+	MessageAttachment,
+	ISupportedLanguages,
+	IProviderMetadata,
+	ISupportedLanguage,
+	ITranslationResult,
+} from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { Subscriptions, Messages } from '../../models';
+import { Subscriptions, Messages } from '../../models/server';
 import { Markdown } from '../../markdown/server';
-import { Logger } from '../../logger';
+import { Logger } from '../../logger/server';
+
+const translationLogger = new Logger('AutoTranslate');
 
 const Providers = Symbol('Providers');
 const Provider = Symbol('Provider');
@@ -16,44 +27,57 @@ const Provider = Symbol('Provider');
  * register,load and also returns the active provider.
  */
 export class TranslationProviderRegistry {
-	static [Providers] = {};
+	static [Providers]: { [k: string]: AutoTranslate } = {};
 
 	static enabled = false;
 
-	static [Provider] = null;
+	static [Provider]: string | null = null;
 
 	/**
 	 * Registers the translation provider into the registry.
 	 * @param {*} provider
 	 */
-	static registerProvider(provider) {
+	static registerProvider(provider: AutoTranslate): void {
 		// get provider information
 		const metadata = provider._getProviderMetadata();
+		if (!metadata) {
+			translationLogger.error('Provider metadata is not defined');
+			return;
+		}
+
 		TranslationProviderRegistry[Providers][metadata.name] = provider;
 	}
 
 	/**
 	 * Return the active Translation provider
 	 */
-	static getActiveProvider() {
-		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry[Providers][TranslationProviderRegistry[Provider]] : undefined;
+	static getActiveProvider(): AutoTranslate | null {
+		if (!TranslationProviderRegistry.enabled) {
+			return null;
+		}
+		const provider = TranslationProviderRegistry[Provider];
+		if (!provider) {
+			return null;
+		}
+
+		return TranslationProviderRegistry[Providers][provider];
 	}
 
-	static getSupportedLanguages(...args) {
+	static getSupportedLanguages(target: string): ISupportedLanguage[] | undefined {
+		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(target) : undefined;
+	}
+
+	static translateMessage(message: IMessage, room: IRoom, targetLanguage: string): IMessage | undefined {
 		return TranslationProviderRegistry.enabled
-			? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(...args)
+			? TranslationProviderRegistry.getActiveProvider()?.translateMessage(message, room, targetLanguage)
 			: undefined;
 	}
 
-	static translateMessage(...args) {
-		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.translateMessage(...args) : undefined;
-	}
-
-	static getProviders() {
+	static getProviders(): AutoTranslate[] {
 		return Object.values(TranslationProviderRegistry[Providers]);
 	}
 
-	static setCurrentProvider(provider) {
+	static setCurrentProvider(provider: string): void {
 		if (provider === TranslationProviderRegistry[Provider]) {
 			return;
 		}
@@ -63,13 +87,13 @@ export class TranslationProviderRegistry {
 		TranslationProviderRegistry.registerCallbacks();
 	}
 
-	static setEnable(enabled) {
+	static setEnable(enabled: boolean): void {
 		TranslationProviderRegistry.enabled = enabled;
 
 		TranslationProviderRegistry.registerCallbacks();
 	}
 
-	static registerCallbacks() {
+	static registerCallbacks(): void {
 		if (!TranslationProviderRegistry.enabled) {
 			callbacks.remove('afterSaveMessage', 'autotranslate');
 			return;
@@ -91,7 +115,13 @@ export class TranslationProviderRegistry {
  * @abstract
  * @class
  */
-export class AutoTranslate {
+export abstract class AutoTranslate {
+	name: string;
+
+	languages: string[];
+
+	supportedLanguages: ISupportedLanguages;
+
 	/**
 	 * Encapsulate the api key and provider settings.
 	 * @constructor
@@ -107,7 +137,7 @@ export class AutoTranslate {
 	 * @param {object} message
 	 * @return {object} message
 	 */
-	tokenize(message) {
+	tokenize(message: IMessage): IMessage {
 		if (!message.tokens || !Array.isArray(message.tokens)) {
 			message.tokens = [];
 		}
@@ -118,11 +148,11 @@ export class AutoTranslate {
 		return message;
 	}
 
-	tokenizeEmojis(message) {
-		let count = message.tokens.length;
+	tokenizeEmojis(message: IMessage): IMessage {
+		let count = message.tokens?.length || 0;
 		message.msg = message.msg.replace(/:[+\w\d]+:/g, function (match) {
 			const token = `<i class=notranslate>{${count++}}</i>`;
-			message.tokens.push({
+			message.tokens?.push({
 				token,
 				text: match,
 			});
@@ -132,23 +162,23 @@ export class AutoTranslate {
 		return message;
 	}
 
-	tokenizeURLs(message) {
-		let count = message.tokens.length;
+	tokenizeURLs(message: IMessage): IMessage {
+		let count = message.tokens?.length || 0;
 
-		const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+		const schemes = settings.get<string>('Markdown_SupportSchemesForLink')?.split(',').join('|');
 
 		// Support ![alt text](http://image url) and [text](http://link)
 		message.msg = message.msg.replace(
 			new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${schemes}):\\/\\/[^\\)]+\\))`, 'gm'),
-			function (match, pre, text, post) {
+			function (_match, pre, text, post) {
 				const pretoken = `<i class=notranslate>{${count++}}</i>`;
-				message.tokens.push({
+				message.tokens?.push({
 					token: pretoken,
 					text: pre,
 				});
 
 				const posttoken = `<i class=notranslate>{${count++}}</i>`;
-				message.tokens.push({
+				message.tokens?.push({
 					token: posttoken,
 					text: post,
 				});
@@ -160,15 +190,15 @@ export class AutoTranslate {
 		// Support <http://link|Text>
 		message.msg = message.msg.replace(
 			new RegExp(`((?:<|&lt;)(?:${schemes}):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm'),
-			function (match, pre, text, post) {
+			function (_match, pre, text, post) {
 				const pretoken = `<i class=notranslate>{${count++}}</i>`;
-				message.tokens.push({
+				message.tokens?.push({
 					token: pretoken,
 					text: pre,
 				});
 
 				const posttoken = `<i class=notranslate>{${count++}}</i>`;
-				message.tokens.push({
+				message.tokens?.push({
 					token: posttoken,
 					text: post,
 				});
@@ -180,8 +210,8 @@ export class AutoTranslate {
 		return message;
 	}
 
-	tokenizeCode(message) {
-		let count = message.tokens.length;
+	tokenizeCode(message: IMessage): IMessage {
+		let count = message.tokens?.length || 0;
 		message.html = message.msg;
 		message = Markdown.parseMessageNotEscaped(message);
 
@@ -189,28 +219,26 @@ export class AutoTranslate {
 		const regexWrappedParagraph = new RegExp('^\\s*<p>|</p>\\s*$', 'gm');
 		message.msg = message.msg.replace(regexWrappedParagraph, '');
 
-		for (const tokenIndex in message.tokens) {
-			if (message.tokens.hasOwnProperty(tokenIndex)) {
-				const { token } = message.tokens[tokenIndex];
-				if (token.indexOf('notranslate') === -1) {
-					const newToken = `<i class=notranslate>{${count++}}</i>`;
-					message.msg = message.msg.replace(token, newToken);
-					message.tokens[tokenIndex].token = newToken;
-				}
+		for (const [tokenIndex, value] of message.tokens?.entries() ?? []) {
+			const { token } = value;
+			if (token.indexOf('notranslate') === -1) {
+				const newToken = `<i class=notranslate>{${count++}}</i>`;
+				message.msg = message.msg.replace(token, newToken);
+				message.tokens ? (message.tokens[tokenIndex].token = newToken) : undefined;
 			}
 		}
 
 		return message;
 	}
 
-	tokenizeMentions(message) {
-		let count = message.tokens.length;
+	tokenizeMentions(message: IMessage): IMessage {
+		let count = message.tokens?.length || 0;
 
 		if (message.mentions && message.mentions.length > 0) {
 			message.mentions.forEach((mention) => {
 				message.msg = message.msg.replace(new RegExp(`(@${mention.username})`, 'gm'), (match) => {
 					const token = `<i class=notranslate>{${count++}}</i>`;
-					message.tokens.push({
+					message.tokens?.push({
 						token,
 						text: match,
 					});
@@ -223,7 +251,7 @@ export class AutoTranslate {
 			message.channels.forEach((channel) => {
 				message.msg = message.msg.replace(new RegExp(`(#${channel.name})`, 'gm'), (match) => {
 					const token = `<i class=notranslate>{${count++}}</i>`;
-					message.tokens.push({
+					message.tokens?.push({
 						token,
 						text: match,
 					});
@@ -235,8 +263,8 @@ export class AutoTranslate {
 		return message;
 	}
 
-	deTokenize(message) {
-		if (message.tokens && message.tokens.length > 0) {
+	deTokenize(message: IMessage): string {
+		if (message.tokens && message.tokens?.length > 0) {
 			for (const { token, text, noHtml } of message.tokens) {
 				message.msg = message.msg.replace(token, () => noHtml || text);
 			}
@@ -253,8 +281,8 @@ export class AutoTranslate {
 	 * @param {object} targetLanguage
 	 * @returns {object} unmodified message object.
 	 */
-	translateMessage(message, room, targetLanguage) {
-		let targetLanguages;
+	translateMessage(message: IMessage, room: IRoom, targetLanguage: string): IMessage {
+		let targetLanguages: string[];
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];
 		} else {
@@ -275,14 +303,11 @@ export class AutoTranslate {
 
 		if (message.attachments && message.attachments.length > 0) {
 			Meteor.defer(() => {
-				for (const index in message.attachments) {
-					if (message.attachments.hasOwnProperty(index)) {
-						const attachment = message.attachments[index];
-						if (attachment.description || attachment.text) {
-							const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
-							if (!_.isEmpty(translations)) {
-								Messages.addAttachmentTranslations(message._id, index, translations);
-							}
+				for (const [index, attachment] of message.attachments?.entries() ?? []) {
+					if (attachment.description || attachment.text) {
+						const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
+						if (!_.isEmpty(translations)) {
+							Messages.addAttachmentTranslations(message._id, index, translations);
 						}
 					}
 				}
@@ -299,9 +324,7 @@ export class AutoTranslate {
 	 * @returns { name, displayName, settings }
 		};
 	 */
-	_getProviderMetadata() {
-		Logger.warn('must be implemented by subclass!', '_getProviderMetadata');
-	}
+	abstract _getProviderMetadata(): IProviderMetadata;
 
 	/**
 	 * Provides the possible languages _from_ which a message can be translated into a target language
@@ -310,9 +333,7 @@ export class AutoTranslate {
 	 * @param {string} target - the language into which shall be translated
 	 * @returns [{ language, name }]
 	 */
-	getSupportedLanguages(target) {
-		Logger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
-	}
+	abstract getSupportedLanguages(target: string): ISupportedLanguage[];
 
 	/**
 	 * Performs the actual translation of a message,
@@ -323,9 +344,7 @@ export class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @return {object}
 	 */
-	_translateMessage(message, targetLanguages) {
-		Logger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
-	}
+	abstract _translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult;
 
 	/**
 	 * Performs the actual translation of an attachment (precisely its description),
@@ -335,9 +354,7 @@ export class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		Logger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
-	}
+	abstract _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult;
 }
 
 Meteor.startup(() => {
@@ -345,12 +362,12 @@ Meteor.startup(() => {
 	 *  So the registered provider will be invoked when a message is saved.
 	 *  All the other inactive service provider must be deactivated.
 	 */
-	settings.watch('AutoTranslate_ServiceProvider', (providerName) => {
+	settings.watch<string>('AutoTranslate_ServiceProvider', (providerName) => {
 		TranslationProviderRegistry.setCurrentProvider(providerName);
 	});
 
 	// Get Auto Translate Active flag
-	settings.watch('AutoTranslate_Enabled', (value) => {
+	settings.watch<boolean>('AutoTranslate_Enabled', (value) => {
 		TranslationProviderRegistry.setEnable(value);
 	});
 });
