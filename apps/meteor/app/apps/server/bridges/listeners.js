@@ -19,6 +19,9 @@ export class AppListenerBridge {
 				case AppInterface.IPreMessageUpdatedExtend:
 				case AppInterface.IPreMessageUpdatedModify:
 				case AppInterface.IPostMessageUpdated:
+				case AppInterface.IPostMessageReacted:
+				case AppInterface.IPostMessageFollowed:
+				case AppInterface.IPostMessagePinned:
 					return 'messageEvent';
 				case AppInterface.IPreRoomCreatePrevent:
 				case AppInterface.IPreRoomCreateExtend:
@@ -43,6 +46,13 @@ export class AppListenerBridge {
 				case AppInterface.IPostLivechatGuestSaved:
 				case AppInterface.IPostLivechatRoomSaved:
 					return 'livechatEvent';
+				case AppInterface.IPostUserCreated:
+				case AppInterface.IPostUserUpdated:
+				case AppInterface.IPostUserDeleted:
+				case AppInterface.IPostUserLogin:
+				case AppInterface.IPostUserLogout:
+				case AppInterface.IPostUserStatusChanged:
+					return 'userEvent';
 				default:
 					return 'defaultEvent';
 			}
@@ -55,9 +65,39 @@ export class AppListenerBridge {
 		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
 	}
 
-	async messageEvent(inte, message) {
+	async messageEvent(inte, message, ...payload) {
 		const msg = this.orch.getConverters().get('messages').convertMessage(message);
-		const result = await this.orch.getManager().getListenerManager().executeListener(inte, msg);
+
+		const params = (() => {
+			switch (inte) {
+				case AppInterface.IPostMessageReacted:
+					const [userReacted, reaction, isReacted] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userReacted),
+						reaction,
+						isReacted,
+					};
+				case AppInterface.IPostMessageFollowed:
+					const [userFollowed, isFollowed] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userFollowed),
+						isFollowed,
+					};
+				case AppInterface.IPostMessagePinned:
+					const [userPinned, isPinned] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userPinned),
+						isPinned,
+					};
+				default:
+					return msg;
+			}
+		})();
+
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, params);
 
 		if (typeof result === 'boolean') {
 			return result;
@@ -132,6 +172,36 @@ export class AppListenerBridge {
 				const room = this.orch.getConverters().get('rooms').convertRoom(data);
 
 				return this.orch.getManager().getListenerManager().executeListener(inte, room);
+		}
+	}
+
+	async userEvent(inte, data) {
+		let context;
+		switch (inte) {
+			case AppInterface.IPostUserLoggedIn:
+			case AppInterface.IPostUserLogout:
+				context = this.orch.getConverters().get('users').convertToApp(data.user);
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+			case AppInterface.IPostUserStatusChanged:
+				const { currentStatus, previousStatus } = data;
+				context = {
+					user: this.orch.getConverters().get('users').convertToApp(data.user),
+					currentStatus,
+					previousStatus,
+				};
+
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+			case AppInterface.IPostUserCreated:
+			case AppInterface.IPostUserUpdated:
+			case AppInterface.IPostUserDeleted:
+				context = {
+					user: this.orch.getConverters().get('users').convertToApp(data.user),
+					performedBy: this.orch.getConverters().get('users').convertToApp(data.performedBy),
+				};
+				if (inte === AppInterface.IPostUserUpdated) {
+					context.previousData = this.orch.getConverters().get('users').convertToApp(data.previousUser);
+				}
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
 		}
 	}
 }
