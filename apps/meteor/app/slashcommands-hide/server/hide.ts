@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
-import { Rooms, Subscriptions } from '../../models/server';
+import { Rooms, Subscriptions, Users } from '../../models/server';
 import { slashCommands } from '../../utils/server';
 import { api } from '../../../server/sdk/api';
 
@@ -14,11 +14,19 @@ import { api } from '../../../server/sdk/api';
 
 function Hide(_command: 'hide', param: string, item: IMessage): void {
 	const room = param.trim();
-	const user = Meteor.user();
+	const userId = Meteor.userId();
+	if (!userId) {
+		return;
+	}
+
+	const user = Users.findOneById(userId);
 
 	if (!user) {
 		return;
 	}
+
+	const lng = user.language || settings.get('Language') || 'en';
+
 	// if there is not a param, hide the current room
 	let { rid } = item;
 	if (room !== '') {
@@ -38,7 +46,7 @@ function Hide(_command: 'hide', param: string, item: IMessage): void {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [room],
-					lng: settings.get('Language') || 'en',
+					lng,
 				}),
 			});
 		}
@@ -47,7 +55,7 @@ function Hide(_command: 'hide', param: string, item: IMessage): void {
 				msg: TAPi18n.__('error-logged-user-not-in-room', {
 					postProcess: 'sprintf',
 					sprintf: [room],
-					lng: settings.get('Language') || 'en',
+					lng,
 				}),
 			});
 			return;
@@ -57,7 +65,7 @@ function Hide(_command: 'hide', param: string, item: IMessage): void {
 	Meteor.call('hideRoom', rid, (error: string) => {
 		if (error) {
 			return api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
-				msg: TAPi18n.__(error, { lng: settings.get('Language') || 'en' }),
+				msg: TAPi18n.__(error, { lng }),
 			});
 		}
 	});
