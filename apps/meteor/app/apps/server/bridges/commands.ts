@@ -89,7 +89,9 @@ export class AppCommandsBridge extends CommandBridge {
 		item.callback = this._appCommandExecutor.bind(this);
 		item.providesPreview = command.providesPreview;
 		item.previewer = command.previewer ? this._appCommandPreviewer.bind(this) : item.previewer;
-		item.previewCallback = command.executePreviewItem ? this._appCommandPreviewExecutor.bind(this) : item.previewCallback;
+		item.previewCallback = (
+			command.executePreviewItem ? this._appCommandPreviewExecutor.bind(this) : item.previewCallback
+		) as typeof slashCommands.commands[string]['previewCallback'];
 
 		slashCommands.commands[cmd] = item;
 		this.orch.getNotifier().commandUpdated(cmd);
@@ -109,7 +111,9 @@ export class AppCommandsBridge extends CommandBridge {
 			callback: this._appCommandExecutor.bind(this),
 			providesPreview: command.providesPreview,
 			previewer: !command.previewer ? undefined : this._appCommandPreviewer.bind(this),
-			previewCallback: !command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this),
+			previewCallback: (!command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this)) as
+				| typeof slashCommands.commands[string]['previewCallback']
+				| undefined,
 		};
 
 		slashCommands.commands[command.command.toLowerCase()] = item;
