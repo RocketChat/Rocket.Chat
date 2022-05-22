@@ -5,14 +5,15 @@
 
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IMessage } from '@rocket.chat/core-typings';
 
-import { Rooms, Subscriptions } from '../../models/server';
+import { Rooms, Subscriptions, Users } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { api } from '../../../server/sdk/api';
 
-function inviteAll(type: string): Function {
-	return function inviteAll(command: string, params: string, item: Record<string, string>): void | Promise<void> {
+function inviteAll(type: string): typeof slashCommands.commands[string]['callback'] {
+	return function inviteAll(command: string, params: string, item: IMessage): void {
 		if (!/invite\-all-(to|from)/.test(command)) {
 			return;
 		}
@@ -27,18 +28,26 @@ function inviteAll(type: string): Function {
 		if (!channel) {
 			return;
 		}
-		const userId = Meteor.userId() as string;
+		const userId = Meteor.userId();
+		if (!userId) {
+			return;
+		}
+
+		const user = Users.findOneById(userId);
+		const lng = user?.language || settings.get('Language') || 'en';
+
 		const baseChannel = type === 'to' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
 		const targetChannel = type === 'from' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
 
 		if (!baseChannel) {
-			return api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
 					lng: settings.get('Language') || 'en',
 				}),
 			});
+			return;
 		}
 		const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, {
 			fields: { 'u.username': 1 },
@@ -62,7 +71,7 @@ function inviteAll(type: string): Function {
 					msg: TAPi18n.__('Channel_created', {
 						postProcess: 'sprintf',
 						sprintf: [channel],
-						lng: settings.get('Language') || 'en',
+						lng,
 					}),
 				});
 			} else {
@@ -71,42 +80,27 @@ function inviteAll(type: string): Function {
 					users,
 				});
 			}
-			return api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Users_added', { lng: settings.get('Language') || 'en' }),
+			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+				msg: TAPi18n.__('Users_added', { lng }),
 			});
+			return;
 		} catch (e: any) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
 			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__(msg, { lng: settings.get('Language') || 'en' }),
+				msg: TAPi18n.__(msg, { lng }),
 			});
 		}
 	};
 }
 
-slashCommands.add(
-	'invite-all-to',
-	inviteAll('to'),
-	{
-		description: 'Invite_user_to_join_channel_all_to',
-		params: '#room',
-		permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
-slashCommands.add(
-	'invite-all-from',
-	inviteAll('from'),
-	{
-		description: 'Invite_user_to_join_channel_all_from',
-		params: '#room',
-		permission: 'add-user-to-joined-room',
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('invite-all-to', inviteAll('to'), {
+	description: 'Invite_user_to_join_channel_all_to',
+	params: '#room',
+	permission: ['add-user-to-joined-room', 'add-user-to-any-c-room', 'add-user-to-any-p-room'],
+});
+slashCommands.add('invite-all-from', inviteAll('from'), {
+	description: 'Invite_user_to_join_channel_all_from',
+	params: '#room',
+	permission: 'add-user-to-joined-room',
+});
 module.exports = inviteAll;
