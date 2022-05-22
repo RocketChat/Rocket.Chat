@@ -1,0 +1,22 @@
+<template name="messageBoxAudioMessage" args="rid">
+	{{#if isAllowed}}
+		<div class="rc-message-box__audio-message {{stateClass}}">
+			<div class="rc-message-box__icon rc-message-box__audio-message-cancel js-audio-message-cancel">
+				{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
+			</div>
+			<div class="rc-message-box__audio-message-timer">
+				<span class="rc-message-box__audio-message-timer-dot"></span>
+				<span class="rc-message-box__audio-message-timer-text">{{time}}</span>
+			</div>
+			<div class="rc-message-box__icon rc-message-box__audio-message-done js-audio-message-done">
+				{{> icon block="rc-input__icon-svg" icon="checkmark-circled"}}
+			</div>
+			<div class="rc-message-box__icon rc-message-box__audio-message-mic js-audio-message-record" data-qa-id="audio-record">
+				{{> icon block="rc-input__icon-svg" icon="mic"}}
+			</div>
+			<div class="rc-message-box__icon rc-message-box__audio-message-loading js-audio-message-loading">
+				{{> icon block="rc-input__icon-svg" icon="loading"}}
+			</div>
+		</div>
+	{{/if}}
+</template>
