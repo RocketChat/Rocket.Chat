@@ -44,7 +44,7 @@ function inviteAll(type: string): typeof slashCommands.commands[string]['callbac
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
-					lng: settings.get('Language') || 'en',
+					lng,
 				}),
 			});
 			return;
