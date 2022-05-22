@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -11,7 +12,7 @@ import { api } from '../../../server/sdk/api';
  * @param {Object} message - The message object
  */
 
-function Invite(_command: 'invite', params: string, item: Record<string, string>): void {
+function Invite(_command: 'invite', params: string, item: IMessage): void {
 	const usernames = params
 		.split(/[\s,]/)
 		.map((username) => username.replace(/(^@)|( @)/, ''))
@@ -76,16 +77,8 @@ function Invite(_command: 'invite', params: string, item: Record<string, string>
 	});
 }
 
-slashCommands.add(
-	'invite',
-	Invite,
-	{
-		description: 'Invite_user_to_join_channel',
-		params: '@username',
-		permission: 'add-user-to-joined-room',
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('invite', Invite, {
+	description: 'Invite_user_to_join_channel',
+	params: '@username',
+	permission: 'add-user-to-joined-room',
+});

@@ -8,7 +8,7 @@ import { Utilities } from '../../lib/misc/Utilities';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppCommandsBridge extends CommandBridge {
-	disabledCommands: Map<string, object>;
+	disabledCommands: Map<string, typeof slashCommands.commands[string]>;
 
 	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
@@ -40,7 +40,7 @@ export class AppCommandsBridge extends CommandBridge {
 			throw new Error(`The command is not currently disabled: "${cmd}"`);
 		}
 
-		slashCommands.commands[cmd] = this.disabledCommands.get(cmd);
+		slashCommands.commands[cmd] = this.disabledCommands.get(cmd) as typeof slashCommands.commands[string];
 		this.disabledCommands.delete(cmd);
 
 		this.orch.getNotifier().commandUpdated(cmd);
@@ -59,11 +59,13 @@ export class AppCommandsBridge extends CommandBridge {
 			return;
 		}
 
-		if (typeof slashCommands.commands[cmd] === 'undefined') {
+		const commandObj = slashCommands.commands[cmd];
+
+		if (typeof commandObj === 'undefined') {
 			throw new Error(`Command does not exist in the system currently: "${cmd}"`);
 		}
 
-		this.disabledCommands.set(cmd, slashCommands.commands[cmd]);
+		this.disabledCommands.set(cmd, commandObj);
 		delete slashCommands.commands[cmd];
 
 		this.orch.getNotifier().commandDisabled(cmd);
