@@ -177,7 +177,7 @@ API.v1.addRoute(
 	'rooms.cleanHistory',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const findResult = findRoomByIdOrName({ params: this.bodyParams });
 
 			const {
@@ -200,20 +200,18 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "oldest" is required.');
 			}
 
-			const count = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('cleanRoomHistory', {
-					roomId: findResult._id,
-					latest: new Date(latest),
-					oldest: new Date(oldest),
-					inclusive,
-					limit,
-					excludePinned: [true, 'true', 1, '1'].includes(excludePinned),
-					filesOnly: [true, 'true', 1, '1'].includes(filesOnly),
-					ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads),
-					ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion),
-					fromUsers: users,
-				}),
-			);
+			const count = await Meteor.call('cleanRoomHistory', {
+				roomId: findResult._id,
+				latest: new Date(latest),
+				oldest: new Date(oldest),
+				inclusive,
+				limit,
+				excludePinned: [true, 'true', 1, '1'].includes(excludePinned),
+				filesOnly: [true, 'true', 1, '1'].includes(filesOnly),
+				ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads),
+				ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion),
+				fromUsers: users,
+			});
 
 			return API.v1.success({ count });
 		},
