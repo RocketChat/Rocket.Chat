@@ -19,6 +19,11 @@ export class AppListenerBridge {
 				case AppInterface.IPreMessageUpdatedExtend:
 				case AppInterface.IPreMessageUpdatedModify:
 				case AppInterface.IPostMessageUpdated:
+				case AppInterface.IPostMessageReacted:
+				case AppInterface.IPostMessageFollowed:
+				case AppInterface.IPostMessagePinned:
+				case AppInterface.IPostMessageStarred:
+				case AppInterface.IPostMessageReported:
 					return 'messageEvent';
 				case AppInterface.IPreRoomCreatePrevent:
 				case AppInterface.IPreRoomCreateExtend:
@@ -46,6 +51,9 @@ export class AppListenerBridge {
 				case AppInterface.IPostUserCreated:
 				case AppInterface.IPostUserUpdated:
 				case AppInterface.IPostUserDeleted:
+				case AppInterface.IPostUserLogin:
+				case AppInterface.IPostUserLogout:
+				case AppInterface.IPostUserStatusChanged:
 					return 'userEvent';
 				default:
 					return 'defaultEvent';
@@ -59,9 +67,59 @@ export class AppListenerBridge {
 		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
 	}
 
-	async messageEvent(inte, message) {
+	async messageEvent(inte, message, ...payload) {
 		const msg = this.orch.getConverters().get('messages').convertMessage(message);
-		const result = await this.orch.getManager().getListenerManager().executeListener(inte, msg);
+
+		const params = (() => {
+			switch (inte) {
+				case AppInterface.IPostMessageDeleted:
+					const [userDeleted] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userDeleted),
+					};
+				case AppInterface.IPostMessageReacted:
+					const [userReacted, reaction, isRemoved] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userReacted),
+						reaction,
+						isRemoved,
+					};
+				case AppInterface.IPostMessageFollowed:
+					const [userFollowed, isUnfollow] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userFollowed),
+						isUnfollow,
+					};
+				case AppInterface.IPostMessagePinned:
+					const [userPinned, isUnpinned] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userPinned),
+						isUnpinned,
+					};
+				case AppInterface.IPostMessageStarred:
+					const [userStarred, isStarred] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userStarred),
+						isStarred,
+					};
+				case AppInterface.IPostMessageReported:
+					const [userReported, reason] = payload;
+					return {
+						message: msg,
+						user: this.orch.getConverters().get('users').convertToApp(userReported),
+						reason,
+					};
+				default:
+					return msg;
+			}
+		})();
+
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, params);
 
 		if (typeof result === 'boolean') {
 			return result;
@@ -140,15 +198,32 @@ export class AppListenerBridge {
 	}
 
 	async userEvent(inte, data) {
-		const context = {
-			user: this.orch.getConverters().get('users').convertToApp(data.user),
-			performedBy: this.orch.getConverters().get('users').convertToApp(data.performedBy),
-		};
+		let context;
+		switch (inte) {
+			case AppInterface.IPostUserLoggedIn:
+			case AppInterface.IPostUserLogout:
+				context = this.orch.getConverters().get('users').convertToApp(data.user);
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+			case AppInterface.IPostUserStatusChanged:
+				const { currentStatus, previousStatus } = data;
+				context = {
+					user: this.orch.getConverters().get('users').convertToApp(data.user),
+					currentStatus,
+					previousStatus,
+				};
 
-		if (inte === AppInterface.IPostUserUpdated) {
-			context.previousData = this.orch.getConverters().get('users').convertToApp(data.previousUser);
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+			case AppInterface.IPostUserCreated:
+			case AppInterface.IPostUserUpdated:
+			case AppInterface.IPostUserDeleted:
+				context = {
+					user: this.orch.getConverters().get('users').convertToApp(data.user),
+					performedBy: this.orch.getConverters().get('users').convertToApp(data.performedBy),
+				};
+				if (inte === AppInterface.IPostUserUpdated) {
+					context.previousData = this.orch.getConverters().get('users').convertToApp(data.previousUser);
+				}
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
 		}
-
-		return this.orch.getManager().getListenerManager().executeListener(inte, context);
 	}
 }
