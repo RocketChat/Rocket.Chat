@@ -26,6 +26,7 @@ export class Rooms extends Base {
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
+		this.tryEnsureIndex({ encrypted: 1 }, { sparse: true }); // used on statistics
 
 		this.tryEnsureIndex(
 			{

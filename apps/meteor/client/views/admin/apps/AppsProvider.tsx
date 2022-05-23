@@ -162,7 +162,7 @@ const AppsProvider: FC = ({ children }) => {
 		let installedAppsError = false;
 
 		try {
-			marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
+			marketplaceApps = (await Apps.getAppsFromMarketplace()) as unknown as App[];
 		} catch (e) {
 			dispatchMarketplaceApps({
 				type: 'failure',
