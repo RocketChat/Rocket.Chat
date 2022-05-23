@@ -1661,7 +1661,7 @@
 		padding-bottom: 24px;
 	}
 
-	& ul {
+	& ul.messages-list {
 		padding: 21px 0 10px;
 	}
 
