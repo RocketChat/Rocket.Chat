@@ -481,12 +481,29 @@ export const statistics = {
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 		statistics.totalE2ERooms = await RoomsRaw.findByE2E({ readPreference }).count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
-		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== 'Home';
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.totalEncryptedMessages = await MessagesRaw.countE2EEMessages({ readPreference });
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
 		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
 		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
+
+		const defaultHomeTitle = Settings.findOneById('Layout_Home_Title').packageValue;
+		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;
+
+		const defaultHomeBody = Settings.findOneById('Layout_Home_Body').packageValue;
+		statistics.homeBodyChanged = settings.get('Layout_Home_Body') !== defaultHomeBody;
+
+		const defaultCustomCSS = Settings.findOneById('theme-custom-css').packageValue;
+		statistics.customCSSChanged = settings.get('theme-custom-css') !== defaultCustomCSS;
+
+		const defaultOnLogoutCustomScript = Settings.findOneById('Custom_Script_On_Logout').packageValue;
+		statistics.onLogoutCustomScriptChanged = settings.get('Custom_Script_On_Logout') !== defaultOnLogoutCustomScript;
+
+		const defaultLoggedOutCustomScript = Settings.findOneById('Custom_Script_Logged_Out').packageValue;
+		statistics.loggedOutCustomScriptChanged = settings.get('Custom_Script_Logged_Out') !== defaultLoggedOutCustomScript;
+
+		const defaultLoggedInCustomScript = Settings.findOneById('Custom_Script_Logged_In').packageValue;
+		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
 		await Promise.all(statsPms).catch(log);
 

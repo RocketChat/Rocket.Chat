@@ -162,6 +162,11 @@ export interface IStats {
 	totalE2ERooms: number;
 	logoChange: boolean;
 	homeTitleChanged: boolean;
+	homeBodyChanged: boolean;
+	customCSSChanged: boolean;
+	onLogoutCustomScriptChanged: boolean;
+	loggedOutCustomScriptChanged: boolean;
+	loggedInCustomScriptChanged: boolean;
 	roomsInsideTeams: number;
 	showHomeButton: boolean;
 	totalEncryptedMessages: number;
