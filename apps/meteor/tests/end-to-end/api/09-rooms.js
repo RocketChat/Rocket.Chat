@@ -280,13 +280,13 @@ describe('[Rooms]', function () {
 		it('create a private channel', (done) => {
 			createRoom({ type: 'p', name: `testPrivateChannel${+new Date()}` }).end((err, res) => {
 				privateChannel = res.body.group;
-				done();
+				done(err);
 			});
 		});
 		it('create a direct message', (done) => {
 			createRoom({ type: 'd', username: 'rocket.cat' }).end((err, res) => {
 				directMessageChannel = res.body.room;
-				done();
+				done(err);
 			});
 		});
 		it('should return success when send a valid public channel', (done) => {

@@ -23,32 +23,14 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isIntegrationsCreateProps },
 	{
 		post() {
-			const { userId, bodyParams } = this;
-
-			const integration = ((): IIntegration | undefined => {
-				let integration: IIntegration | undefined;
-
-				switch (bodyParams.type) {
-					case 'webhook-outgoing':
-						Meteor.runAsUser(userId, () => {
-							integration = Meteor.call('addOutgoingIntegration', bodyParams);
-						});
-						break;
-					case 'webhook-incoming':
-						Meteor.runAsUser(userId, () => {
-							integration = Meteor.call('addIncomingIntegration', bodyParams);
-						});
-						break;
-				}
-
-				return integration;
-			})();
-
-			if (!integration) {
-				return API.v1.failure('Invalid integration type.');
+			switch (this.bodyParams.type) {
+				case 'webhook-outgoing':
+					return API.v1.success({ integration: Meteor.call('addOutgoingIntegration', this.bodyParams) });
+				case 'webhook-incoming':
+					return API.v1.success({ integration: Meteor.call('addIncomingIntegration', this.bodyParams) });
 			}
 
-			return API.v1.success({ integration });
+			return API.v1.failure('Invalid integration type.');
 		},
 	},
 );
