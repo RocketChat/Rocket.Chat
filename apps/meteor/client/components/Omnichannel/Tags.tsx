@@ -26,7 +26,7 @@ const Tags = ({
 	const { value: tagsResult, phase: stateTags } = useEndpointData('livechat/tags.list');
 
 	const { useCurrentChatTags } = forms;
-	const EETagsComponent = useCurrentChatTags();
+	const EETagsComponent = useCurrentChatTags?.();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
