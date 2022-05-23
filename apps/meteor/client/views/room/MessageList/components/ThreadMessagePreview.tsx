@@ -20,7 +20,7 @@ import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
-import MessageContentBody from './MessageContentBody';
+import ThreadPreviewBody from './ThreadPreviewBody';
 
 export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }> = ({ message, sequential, ...props }) => {
 	const {
@@ -48,7 +48,13 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 						<ThreadMessageIconThread />
 					</ThreadMessageLeftContainer>
 					<ThreadMessageContainer>
-						<ThreadMessageOrigin>{parentMessage.phase === AsyncStatePhase.RESOLVED ? body : <Skeleton />}</ThreadMessageOrigin>
+						<ThreadMessageOrigin>
+							{parentMessage.phase === AsyncStatePhase.RESOLVED ? (
+								<ThreadPreviewBody message={{ ...parentMessage.value, msg: body }} />
+							) : (
+								<Skeleton />
+							)}
+						</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
@@ -59,9 +65,7 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
-					<ThreadMessageBody>
-						{message.ignored ? t('Message_Ignored') : <MessageContentBody isThreadPreview message={message} />}
-					</ThreadMessageBody>
+					<ThreadMessageBody>{message.ignored ? t('Message_Ignored') : <ThreadPreviewBody message={message} />}</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>
 		</ThreadMessageTemplate>

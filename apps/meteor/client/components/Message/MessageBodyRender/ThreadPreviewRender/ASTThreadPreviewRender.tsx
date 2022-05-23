@@ -62,6 +62,10 @@ const ASTThreadPreviewRender: FC<ASTThreadPreviewRenderProps> = ({ tokens, menti
 					return <ThreadPreviewHeading value={block.value} key={index} />;
 				}
 
+				if (block.type === 'LINE_BREAK') {
+					return ' ';
+				}
+
 				return null;
 			})}
 		</MessageBodyContext.Provider>

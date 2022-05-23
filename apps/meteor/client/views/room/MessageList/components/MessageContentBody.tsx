@@ -2,7 +2,7 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import React, { FC, memo } from 'react';
 
-import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
+import ASTMessageRender from '../../../../components/Message/MessageBodyRender/ASTMessageRender';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useParsedMessage } from '../hooks/useParsedMessage';
 
@@ -14,7 +14,7 @@ const MessageContentBody: FC<{ message: IMessage; isThreadPreview?: boolean }> =
 	const tokens = useParsedMessage(message);
 
 	return (
-		<MessageBodyRender
+		<ASTMessageRender
 			onUserMentionClick={openUserCard}
 			onChannelMentionClick={openRoom}
 			mentions={message?.mentions || []}
