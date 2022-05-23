@@ -61,6 +61,17 @@ type EventLikeCallbackSignatures = {
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 	'onValidateLogin': (login: ILoginAttempt) => void;
+	'oembed:beforeGetUrlContent': (data: { urlObj: Url.UrlWithParsedQuery; parsedUrl: ParsedUrl }) => {
+		urlObj: Url.UrlWithParsedQuery;
+		parsedUrl: ParsedUrl;
+	};
+	'oembed:afterParseContent': (data: {
+		url: string;
+		meta: OEmbedMeta;
+		headers: { [k: string]: string };
+		parsedUrl: ParsedUrl;
+		content: OEmbedUrlContent;
+	}) => unknown;
 };
 
 /**
@@ -110,17 +121,6 @@ type ChainedCallbackSignatures = {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
-	'oembed:beforeGetUrlContent': (data: { urlObj: Url.UrlWithParsedQuery; parsedUrl: ParsedUrl }) => {
-		urlObj: Url.UrlWithParsedQuery;
-		parsedUrl: ParsedUrl;
-	};
-	'oembed:afterParseContent': (data: {
-		url: string;
-		meta: OEmbedMeta;
-		headers: { [k: string]: string };
-		parsedUrl: ParsedUrl;
-		content: OEmbedUrlContent;
-	}) => unknown;
 };
 
 type Hook =
@@ -174,8 +174,6 @@ type Hook =
 	| 'livechat.saveInfo'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
-	| 'oembed:afterParseContent'
-	| 'oembed:beforeGetUrlContent'
 	| 'onCreateUser'
 	| 'onLDAPLogin'
 	| 'onValidateLogin'

@@ -23,7 +23,7 @@ const OEmbed = {};
 //  Priority:
 //  Detected == HTTP Header > Detected == HTML meta > HTTP Header > HTML meta > Detected > Default (utf-8)
 //  See also: https://www.w3.org/International/questions/qa-html-encoding-declarations.en#quickanswer
-const getCharset = function (contentType, body) {
+const getCharset = function (contentType: string, body: Buffer): string {
 	let detectedCharset;
 	let httpHeaderCharset;
 	let htmlMetaCharset;
@@ -57,7 +57,7 @@ const getCharset = function (contentType, body) {
 	return result || 'utf-8';
 };
 
-const toUtf8 = function (contentType, body) {
+const toUtf8 = function (contentType: string, body: Buffer): string {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
@@ -66,25 +66,27 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 		urlObj = URL.parse(urlObj);
 	}
 
-	const portsProtocol = {
-		80: 'http:',
-		8080: 'http:',
-		443: 'https:',
-	};
+	const portsProtocol = new Map<string, string>(
+		Object.entries({
+			80: 'http:',
+			8080: 'http:',
+			443: 'https:',
+		}),
+	);
 
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
-	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
+	const ignoredHosts = settings.get<string>('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
 	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
 		throw new Error('invalid host');
 	}
 
-	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
+	const safePorts = settings.get<string>('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
 
 	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
 		throw new Error('invalid/unsafe port');
 	}
 
-	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
+	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol.get(port) === parsedUrl.protocol)) {
 		throw new Error('invalid/unsafe port');
 	}
 
@@ -92,9 +94,11 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 		urlObj,
 		parsedUrl,
 	});
+
+	/*  This prop is neither passed or returned by the callback, so I'll just comment it from now
 	if (data.attachments != null) {
 		return data;
-	}
+	} */
 
 	const url = URL.format(data.urlObj);
 
@@ -130,7 +134,7 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 
 	return {
 		headers: Object.fromEntries(response.headers),
-		body: toUtf8(response.headers.get('content-type'), buffer),
+		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		parsedUrl,
 		statusCode: response.status,
 	};
@@ -160,7 +164,7 @@ OEmbed.getUrlMeta = function (url, withFragment) {
 	}
 
 	let metas = undefined;
-	if (content && content.body) {
+	if (content?.body) {
 		metas = {};
 		const escapeMeta = (name, value) => {
 			metas[name] = metas[name] || he.unescape(value);

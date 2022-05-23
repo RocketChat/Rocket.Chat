@@ -4059,6 +4059,7 @@ __metadata:
     "@types/express": ^4.17.12
     "@types/fibers": ^3.1.1
     "@types/google-libphonenumber": ^7.4.21
+    "@types/he": ^1.1.2
     "@types/imap": ^0.8.35
     "@types/jsdom": ^16.2.12
     "@types/jsdom-global": ^3.0.2
@@ -6411,6 +6412,13 @@ __metadata:
   dependencies:
     "@types/unist": "*"
   checksum: fff47998f4c11e21a7454b58673f70478740ecdafd95aaf50b70a3daa7da9cdc57315545bf9c039613732c40b7b0e9e49d11d03fe9a4304721cdc3b29a88141e
+  languageName: node
+  linkType: hard
+
+"@types/he@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@types/he@npm:1.1.2"
+  checksum: 71e9786c35330a2003a7692d5dc4f70946e4c45486f84d7a5792360c6c234cd34bf53421856de40a2c4bead9c21a805c309d72d012467f46bb2cce0571a9ba08
   languageName: node
   linkType: hard
 
