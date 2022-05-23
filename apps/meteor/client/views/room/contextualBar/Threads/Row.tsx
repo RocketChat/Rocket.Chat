@@ -46,6 +46,7 @@ const Row: FC<ThreadRowProps> = memo(function Row({ thread, showRealNames, unrea
 			tlm={thread.tlm}
 			ts={thread.ts}
 			u={thread.u}
+			uid={thread.u._id}
 			replies={thread.replies}
 			name={showRealNames ? name : thread.u.username}
 			username={thread.u.username}
