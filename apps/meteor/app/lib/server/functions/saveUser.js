@@ -347,7 +347,7 @@ export const saveUser = function (userId, userData) {
 
 	validateUserEditing(userId, userData);
 
-	const oldUserData = Users.findOneById(userId);
+	const oldUserData = Users.findOneById(userData._id);
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
