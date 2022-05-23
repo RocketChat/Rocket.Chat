@@ -83,13 +83,13 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private onlineNetworkHandler: () => void;
 
-	private optionsKeepaliveInterval = 5;
+	private optionsKeepaliveInterval = 1;
 
 	private optionsKeepAliveDebounceTimeInSec = 5;
 
-	private optionsKeepAliveDebounceCount = 3;
-
 	private attemptRegistration = false;
+
+	private currentStatus: 'connected' | 'disconnected' = 'disconnected';
 
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
@@ -912,24 +912,24 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				return;
 			}
 			if (this._connectionState !== 'SERVER_RECONNECTING') {
-				const keepAliveResponse = await this.sendKeepAliveAndWaitForResponse();
-				if (!keepAliveResponse) {
-					const connectivityArray = new Array(this.optionsKeepAliveDebounceCount).fill(this.sendKeepAliveAndWaitForResponse(true));
-					await Promise.allSettled<boolean>(connectivityArray).then((responses): void => {
-						if (!responses.some((response) => response.status === 'fulfilled' && response.value)) {
-							this.networkEmitter.emit('disconnected');
-						}
-					});
-				}
-				/**
-				 * Either we got connected and managed to send keep-alive
-				 * or while attempting keepAlive with debounce, we got connected at moment,
-				 * |keepAliveResponse| will be turned on.
-				 */
-				if (keepAliveResponse) {
-					this.networkEmitter.emit('connected');
+				let isConnected = false;
+				try {
+					await this.sendKeepAliveAndWaitForResponse();
+					this.currentStatus = 'connected';
+					isConnected = true;
+				} catch (e) {
+					this.currentStatus = 'disconnected';
+					console.error(`[${e}] Failed to do options ping.`);
+				} finally {
+					if (isConnected) {
+						// Send event only if it's a "change" on the status (avoid unnecessary event flooding)
+						this.currentStatus === 'disconnected' && this.networkEmitter.emit('connected');
+					} else {
+						this.currentStatus === 'connected' && this.networkEmitter.emit('disconnected');
+					}
 				}
 			}
+			// Each seconds check if the network can reach asterisk. If not, try to reconnect
 			this.startOptionsPingForUnstableNetworks();
 		}, this.optionsKeepaliveInterval * 1000);
 	}
