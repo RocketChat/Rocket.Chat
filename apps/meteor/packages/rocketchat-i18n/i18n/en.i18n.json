@@ -1971,6 +1971,7 @@
   "Federation_Matrix_homeserver_domain": "Homeserver Domain",
   "Federation_Matrix_bridge_url": "Bridge URL",
   "Federation_Matrix_bridge_localpart": "AppService User Localpart",
+  "Federation_Matrix_registration_file": "Registration File",
   "Field": "Field",
   "Field_removed": "Field removed",
   "Field_required": "Field required",
