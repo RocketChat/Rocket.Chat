@@ -10,14 +10,11 @@ slashCommands.add(
 		params: '#channel',
 		permission: 'view-c-room',
 	},
-	undefined,
-	false,
-	undefined,
 	function (err: Meteor.Error, _result: unknown, params: Record<string, any>) {
 		if (err.error === 'error-user-already-in-room') {
 			params.cmd = 'open';
 			params.msg.msg = params.msg.msg.replace('join', 'open');
-			return slashCommands.run('open', params.params, params.msg, undefined);
+			return slashCommands.run('open', params.params, params.msg, '');
 		}
 	},
 );

@@ -5,9 +5,9 @@ import Inline from './Inline';
 
 const OrderedList: FC<{ value: ASTOrderedList['value'] }> = ({ value }) => (
 	<ol>
-		{value.map((item, index) => (
-			<li key={index}>
-				<Inline value={item.value} />
+		{value.map(({ value, number }, index) => (
+			<li key={index} value={Number(number)}>
+				<Inline value={value} />
 			</li>
 		))}
 	</ol>
