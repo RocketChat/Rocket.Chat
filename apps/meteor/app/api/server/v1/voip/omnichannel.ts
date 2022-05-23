@@ -1,11 +1,26 @@
 import { Match, check } from 'meteor/check';
-import type { IUser } from '@rocket.chat/core-typings';
+import { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
 
 import { API } from '../../api';
 import { Users } from '../../../../models/server/raw/index';
 import { hasPermission } from '../../../../authorization/server/index';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { logger } from './logger';
+
+function filter(
+	array: IVoipExtensionWithAgentInfo[],
+	{ queues, extension, agentId, status }: { queues?: string[]; extension?: string; agentId?: string; status?: string },
+): IVoipExtensionWithAgentInfo[] {
+	const defaultFunc = (): boolean => true;
+	return array.filter((item) => {
+		const queuesCond = queues && Array.isArray(queues) ? (): boolean => item.queues?.some((q) => queues.includes(q)) || false : defaultFunc;
+		const extensionCond = extension?.trim() ? (): boolean => item?.extension === extension : defaultFunc;
+		const agentIdCond = agentId?.trim() ? (): boolean => item?.userId === agentId : defaultFunc;
+		const statusCond = status?.trim() ? (): boolean => item?.state === status : defaultFunc;
+
+		return queuesCond() && extensionCond() && agentIdCond() && statusCond();
+	});
+}
 
 function paginate<T>(array: T[], count = 10, offset = 0): T[] {
 	return array.slice(offset, offset + count);
@@ -204,14 +219,22 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
+			const { status, agentId, queues, extension } = this.requestParams();
+
+			check(status, Match.Maybe(String));
+			check(agentId, Match.Maybe(String));
+			check(queues, Match.Maybe([String]));
+			check(extension, Match.Maybe(String));
+
 			const extensions = await LivechatVoip.getExtensionListWithAgentData();
+			const filteredExts = filter(extensions, { status, agentId, queues, extension });
 
 			// paginating in memory as Asterisk doesn't provide pagination for commands
 			return API.v1.success({
-				extensions: paginate(extensions, count, offset),
+				extensions: paginate(filteredExts, count, offset),
 				offset,
 				count,
-				total: extensions.length,
+				total: filteredExts.length,
 			});
 		},
 	},

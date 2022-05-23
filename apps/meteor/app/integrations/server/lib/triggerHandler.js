@@ -14,7 +14,7 @@ import { Integrations, IntegrationHistory } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
-import { integrations } from '../../lib/rocketchat';
+import { outgoingEvents } from '../../lib/outgoingEvents';
 import { fetch } from '../../../../server/lib/http/fetch';
 
 export class RocketChatIntegrationHandler {
@@ -30,7 +30,7 @@ export class RocketChatIntegrationHandler {
 	addIntegration(record) {
 		outgoingLogger.debug(`Adding the integration ${record.name} of the event ${record.event}!`);
 		let channels;
-		if (record.event && !integrations.outgoingEvents[record.event].use.channel) {
+		if (record.event && !outgoingEvents[record.event].use.channel) {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)
 			channels = ['__any'];
@@ -667,7 +667,7 @@ export class RocketChatIntegrationHandler {
 
 		let word;
 		// Not all triggers/events support triggerWords
-		if (integrations.outgoingEvents[event].use.triggerWords) {
+		if (outgoingEvents[event].use.triggerWords) {
 			if (trigger.triggerWords && trigger.triggerWords.length > 0) {
 				for (const triggerWord of trigger.triggerWords) {
 					if (!trigger.triggerWordAnywhere && message.msg.indexOf(triggerWord) === 0) {
@@ -963,4 +963,4 @@ export class RocketChatIntegrationHandler {
 	}
 }
 const triggerHandler = new RocketChatIntegrationHandler();
-export { integrations, triggerHandler };
+export { triggerHandler };

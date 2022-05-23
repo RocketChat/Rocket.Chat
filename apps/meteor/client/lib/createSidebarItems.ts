@@ -4,6 +4,7 @@ type SidebarItem = {
 	i18nLabel: string;
 	href?: string;
 	icon?: string;
+	tag?: 'Alpha';
 	permissionGranted?: boolean | (() => boolean);
 };
 

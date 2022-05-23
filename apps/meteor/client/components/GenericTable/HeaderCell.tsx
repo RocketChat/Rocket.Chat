@@ -7,8 +7,9 @@ type HeaderCellProps = {
 	active?: boolean;
 	direction?: 'asc' | 'desc';
 	sort?: string;
+	clickable?: boolean;
 	onClick?: (sort: string) => void;
-} & ComponentProps<typeof Box>;
+} & Omit<ComponentProps<typeof Box>, 'onClick'>;
 
 const HeaderCell: FC<HeaderCellProps> = ({ children, active, direction, sort, onClick, ...props }) => {
 	const fn = useCallback(() => onClick && sort && onClick(sort), [sort, onClick]);

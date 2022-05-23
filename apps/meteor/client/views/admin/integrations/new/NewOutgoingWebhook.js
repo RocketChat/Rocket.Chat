@@ -1,9 +1,8 @@
 import { Field, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../hooks/useForm';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';

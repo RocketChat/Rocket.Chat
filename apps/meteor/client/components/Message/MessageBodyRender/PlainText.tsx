@@ -1,8 +1,8 @@
 import { Plain as ASTPlain } from '@rocket.chat/message-parser';
 import React, { FC, memo } from 'react';
 
-import { useMessageListHighlights } from '../../../views/room/MessageList/contexts/MessageListContext';
-import Highlighter from '../../Highlighter';
+import { useMessageListHighlights, useMessageListKatex } from '../../../views/room/MessageList/contexts/MessageListContext';
+import CustomText from '../../CustomText';
 
 type PlainTextType = {
 	value: ASTPlain['value'];
@@ -10,9 +10,16 @@ type PlainTextType = {
 
 const PlainText: FC<PlainTextType> = ({ value: text }) => {
 	const highlights = useMessageListHighlights();
+	const katex = useMessageListKatex();
 
-	if (highlights) {
-		return <Highlighter text={text} wordsToHighlight={highlights} />;
+	// TODO ENG DAY:
+	// Add style for empty paragraphs in fuselage
+	if (!text.trim()) {
+		return <br />;
+	}
+
+	if (highlights || katex) {
+		return <CustomText text={text} wordsToHighlight={highlights} katex={katex} />;
 	}
 
 	return <>{text}</>;

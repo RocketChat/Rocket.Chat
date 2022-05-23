@@ -1,6 +1,6 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 import Content from './Content';
 import Reply from './Reply';
@@ -13,11 +13,11 @@ type BroadcastOptions = {
 
 const BroadcastMetric: FC<BroadcastOptions> = ({ username, mid, replyBroadcast }) => {
 	const t = useTranslation();
-	const { className, ref } = useBlockRendered();
+	const { className, ref } = useBlockRendered<HTMLDivElement>();
 
 	return (
 		<Content>
-			<div className={className} ref={ref as any} />
+			<div className={className} ref={ref} />
 			<Reply data-username={username} data-mid={mid} onClick={replyBroadcast}>
 				{t('Reply')}
 			</Reply>

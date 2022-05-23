@@ -1,12 +1,9 @@
 import { IRoom, IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '@rocket.chat/core-typings';
+import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
-import { useLayout } from '../../../../contexts/LayoutContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useUser, useUserPreference, useUserSubscription } from '../../../../contexts/UserContext';
 import { MessageListContext, MessageListContextValue } from '../contexts/MessageListContext';
 import { useAutotranslateLanguage } from '../hooks/useAutotranslateLanguage';
 
@@ -26,6 +23,10 @@ export const MessageListProvider: FC<{
 	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
 	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
+	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
+	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax'));
+	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax'));
+
 	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
@@ -79,11 +80,16 @@ export const MessageListProvider: FC<{
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
-
+			showReadReceipt,
 			showRoles,
 			showRealName,
 			showUsername,
-			showReadReceipt,
+			...(katexEnabled && {
+				katex: {
+					dollarSyntaxEnabled: katexDollarSyntaxEnabled,
+					parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled,
+				},
+			}),
 			highlights: highlights
 				?.map((str) => str.trim())
 				.map((highlight) => ({
@@ -118,6 +124,9 @@ export const MessageListProvider: FC<{
 			showRealName,
 			showUsername,
 			showReadReceipt,
+			katexEnabled,
+			katexDollarSyntaxEnabled,
+			katexParenthesisSyntaxEnabled,
 			highlights,
 			reactToMessage,
 		],
