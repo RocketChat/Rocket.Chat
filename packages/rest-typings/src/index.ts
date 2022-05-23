@@ -70,7 +70,8 @@ export interface Endpoints
 		CustomSoundEndpoint,
 		EmailInboxEndpoints,
 		WebdavEndpoints,
-		OAuthAppsEndpoint {}
+		OAuthAppsEndpoint,
+		AppsEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
