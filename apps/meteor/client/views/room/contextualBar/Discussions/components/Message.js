@@ -3,12 +3,14 @@ import React from 'react';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { usePresence } from '../../../../../hooks/usePresence';
 
 export default React.memo(function MessageDiscussion({
 	_id,
 	msg,
 	following,
 	username,
+	uid,
 	name = username,
 	ts,
 	dcount,
@@ -23,10 +25,11 @@ export default React.memo(function MessageDiscussion({
 	className = [],
 	...props
 }) {
+	const user = usePresence(uid);
 	return (
 		<Message {...props} className={className}>
 			<Message.LeftContainer>
-				<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
+				<UserAvatar username={username} className='rcx-message__avatar' size='x36' etag={user?.avatarETag} />
 			</Message.LeftContainer>
 			<Message.Container>
 				<Message.Header>
