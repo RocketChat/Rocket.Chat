@@ -157,8 +157,6 @@ export interface IStats {
 	totalPinned: number;
 	totalLinkInvitation: number;
 	totalEmailInvitation: number;
-	roomsWithPinnedMessages: number;
-	roomsWithStarredMessages: number;
 	totalE2ERooms: number;
 	logoChange: boolean;
 	homeTitleChanged: boolean;
