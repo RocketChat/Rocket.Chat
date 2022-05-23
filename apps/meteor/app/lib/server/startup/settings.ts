@@ -9,6 +9,11 @@ settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
 });
 
+settingsRegistry.add('Initial_Channel_Created', false, {
+	type: 'boolean',
+	hidden: true,
+});
+
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
@@ -173,6 +178,26 @@ settingsRegistry.addGroup('Accounts', function () {
 		});
 		this.add('Accounts_SystemBlockedUsernameList', 'admin,administrator,system,user', {
 			type: 'string',
+			hidden: true,
+		});
+		this.add('Manual_Entry_User_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('CSV_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Hipchat_Enterprise_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Users_Importer_Count', 0, {
+			type: 'int',
 			hidden: true,
 		});
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
@@ -3214,6 +3239,15 @@ settingsRegistry.addGroup('Call_Center', function () {
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Enable_Keep_Alive_For_Unstable_Networks', true, {
+				type: 'boolean',
+				public: true,
+				i18nDescription: 'VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description',
+				enableQuery: {
+					_id: 'Livechat_enabled',
 					value: true,
 				},
 			});

@@ -1,7 +1,6 @@
 import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const AppPermissionsReviewModal = ({ appPermissions, cancel, confirm, modalProps = {} }) => {
 	const t = useTranslation();

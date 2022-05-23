@@ -1,5 +1,7 @@
 import type { IVoipRoom, IUser } from '@rocket.chat/core-typings';
 import { ICallerInfo } from '@rocket.chat/core-typings';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useRoute, useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -9,11 +11,6 @@ import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
-import { useSetModal } from '../../contexts/ModalContext';
-import { useRoute } from '../../contexts/RouterContext';
-import { useEndpoint, useStream } from '../../contexts/ServerContext';
-import { useSetting } from '../../contexts/SettingsContext';
-import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { useVoipClient } from './hooks/useVoipClient';
@@ -31,12 +28,12 @@ const stopRingback = (): void => {
 	CustomSounds.remove('telephone');
 };
 
+type NetworkState = 'online' | 'offline';
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
 
 	const result = useVoipClient();
-
 	const user = useUser();
 	const homeRoute = useRoute('home');
 
@@ -52,6 +49,8 @@ export const CallProvider: FC = ({ children }) => {
 	}, [setModal]);
 
 	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
+
+	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
 
 	useEffect(() => {
 		if (!result?.voipClient) {
@@ -208,6 +207,56 @@ export const CallProvider: FC = ({ children }) => {
 		 */
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 	}, [result.voipClient]);
+
+	const onNetworkConnected = useMutableCallback((): void => {
+		if (!result.voipClient) {
+			return;
+		}
+		if (networkStatus === 'offline') {
+			setNetworkStatus('online');
+		}
+	});
+
+	const onNetworkDisconnected = useMutableCallback((): void => {
+		if (!result.voipClient) {
+			return;
+		}
+		// Transitioning from online -> offline
+		// If there is ongoing call, terminate it or if we are processing an incoming/outgoing call
+		// reject it.
+		if (networkStatus === 'online') {
+			setNetworkStatus('offline');
+			switch (result.voipClient.callerInfo.state) {
+				case 'IN_CALL':
+				case 'ON_HOLD':
+					result.voipClient?.endCall();
+					break;
+				case 'OFFER_RECEIVED':
+				case 'ANSWER_SENT':
+					result.voipClient?.rejectCall();
+					break;
+			}
+		}
+	});
+
+	useEffect(() => {
+		if (!result.voipClient) {
+			return;
+		}
+		result.voipClient.onNetworkEvent('connected', onNetworkConnected);
+		result.voipClient.onNetworkEvent('disconnected', onNetworkDisconnected);
+		result.voipClient.onNetworkEvent('connectionerror', onNetworkDisconnected);
+		result.voipClient.onNetworkEvent('localnetworkonline', onNetworkConnected);
+		result.voipClient.onNetworkEvent('localnetworkoffline', onNetworkDisconnected);
+
+		return (): void => {
+			result.voipClient?.offNetworkEvent('connected', onNetworkConnected);
+			result.voipClient?.offNetworkEvent('disconnected', onNetworkDisconnected);
+			result.voipClient?.offNetworkEvent('connectionerror', onNetworkDisconnected);
+			result.voipClient?.offNetworkEvent('localnetworkonline', onNetworkConnected);
+			result.voipClient?.offNetworkEvent('localnetworkoffline', onNetworkDisconnected);
+		};
+	}, [onNetworkConnected, onNetworkDisconnected, result.voipClient]);
 
 	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', 'voip/room');

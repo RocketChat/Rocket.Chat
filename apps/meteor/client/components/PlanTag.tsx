@@ -1,9 +1,9 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useMethod } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useState } from 'react';
 
 import { ILicenseTag } from '../../ee/app/license/definitions/ILicenseTag';
-import { useMethod } from '../contexts/ServerContext';
 
 function PlanTag(): ReactElement {
 	const [plans, setPlans] = useSafely(

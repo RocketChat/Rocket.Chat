@@ -2,14 +2,12 @@ import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue, useStableArray, useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { useUserPreference, useUserSubscriptions, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
-import { useSetting } from '../../contexts/SettingsContext';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useMethodData } from '../../hooks/useMethodData';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
@@ -147,7 +145,7 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
-	const showRealName = useSetting('UI_Use_Real_Name');
+	const useRealName = useSetting('UI_Use_Real_Name');
 
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const avatarTemplate = useAvatarTemplate();
@@ -166,11 +164,11 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 			t,
 			SideBarItemTemplate: sideBarItemTemplate,
 			avatarTemplate,
-			showRealName,
+			useRealName,
 			extended,
 			sidebarViewMode,
 		}),
-		[avatarTemplate, extended, items, showRealName, sideBarItemTemplate, sidebarViewMode, t],
+		[avatarTemplate, extended, items, useRealName, sideBarItemTemplate, sidebarViewMode, t],
 	);
 
 	const changeSelection = useMutableCallback((dir) => {

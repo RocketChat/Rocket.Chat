@@ -1,10 +1,8 @@
 import { Button, ButtonGroup, Icon, Margins } from '@rocket.chat/fuselage';
+import { useSetModal, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import ExternalLink from '../../../../../client/components/ExternalLink';
-import { useSetModal } from '../../../../../client/contexts/ModalContext';
-import { useRoute } from '../../../../../client/contexts/RouterContext';
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import CloseToSeatsCapModal from './CloseToSeatsCapModal';
 import ReachedSeatsCapModal from './ReachedSeatsCapModal';
 import SeatsCapUsage from './SeatsCapUsage';

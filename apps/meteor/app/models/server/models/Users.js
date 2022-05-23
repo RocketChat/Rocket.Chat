@@ -6,7 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
-import { settings } from '../../../settings/server/functions/settings';
+import { settings } from '../../../settings/server';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
 	statusLivechat: 'available',
@@ -59,6 +59,9 @@ export class Users extends Base {
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 		this.tryEnsureIndex({ extension: 1 }, { sparse: true, unique: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
+
+		this.tryEnsureIndex({ 'active': 1, 'services.email2fa.enabled': 1 }, { sparse: true }); // used by statistics
+		this.tryEnsureIndex({ 'active': 1, 'services.totp.enabled': 1 }, { sparse: true }); // used by statistics
 
 		const collectionObj = this.model.rawCollection();
 		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);

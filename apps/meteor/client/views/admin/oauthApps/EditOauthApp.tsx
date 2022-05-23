@@ -1,15 +1,11 @@
 import { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, ReactElement, ComponentProps } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod, useAbsoluteUrl } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 export type EditOAuthAddAppPayload = {
 	name: string;
