@@ -41,7 +41,7 @@ export interface VoIPUserConfiguration {
 	 */
 	connectionRetryCount: number;
 	/**
-	 * Voip Retry count
+	 * Enable Keep Alive for unstable networks
 	 * @defaultValue undefined
 	 */
 	enableKeepAliveUsingOptionsForUnstableNetworks: boolean;
