@@ -178,7 +178,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const findResult = findRoomByIdOrName({ params: this.bodyParams });
+			const { _id } = findRoomByIdOrName({ params: this.bodyParams });
 
 			const {
 				latest,
@@ -201,7 +201,7 @@ API.v1.addRoute(
 			}
 
 			const count = await Meteor.call('cleanRoomHistory', {
-				roomId: findResult._id,
+				roomId: _id,
 				latest: new Date(latest),
 				oldest: new Date(oldest),
 				inclusive,
@@ -213,7 +213,7 @@ API.v1.addRoute(
 				fromUsers: users,
 			});
 
-			return API.v1.success({ count });
+			return API.v1.success({ _id, count });
 		},
 	},
 );
