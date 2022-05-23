@@ -38,7 +38,7 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		return registered ? 'phone' : 'phone-disabled';
 	};
 
-	const getColor = (): string | undefined => {
+	const getColor = (): 'warning' | 'success' | undefined => {
 		if (networkStatus === 'offline') {
 			return 'warning';
 		}
