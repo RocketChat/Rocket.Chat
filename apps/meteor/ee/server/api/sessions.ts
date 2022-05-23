@@ -4,7 +4,6 @@ import { IUser } from '@rocket.chat/core-typings';
 
 import { Users, Sessions } from '../../../app/models/server/raw/index';
 import { API } from '../../../app/api/server/api';
-import { hasPermission } from '../../../app/authorization/server/functions/hasPermission';
 import { hasLicense } from '../../app/license/server/license';
 
 API.v1.addRoute(
@@ -75,15 +74,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/list.all',
-	{ authRequired: true, twoFactorRequired: true },
+	{ authRequired: true, twoFactorRequired: true, permissionsRequired: ['view-device-management'] },
 	{
 		async get() {
-			if (!this.userId) {
-				API.v1.failure('error-invalid-user');
-			}
-			if (!hasPermission(this.userId, 'view-device-management')) {
-				return API.v1.unauthorized();
-			}
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
@@ -115,15 +108,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/logout',
-	{ authRequired: true, twoFactorRequired: true },
+	{ authRequired: true, twoFactorRequired: true, permissionsRequired: ['logout-device-management'] },
 	{
 		async post() {
-			if (!this.userId) {
-				API.v1.failure('error-invalid-user');
-			}
-			if (!hasPermission(this.userId, 'logout-device-management')) {
-				return API.v1.unauthorized();
-			}
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
