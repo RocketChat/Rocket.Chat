@@ -96,23 +96,19 @@ API.v1.addRoute(
 				}),
 			);
 
-			try {
-				const { offset, count } = this.getPaginationItems();
-				let search: string = this.queryParams?.search || '';
+			const { offset, count } = this.getPaginationItems();
+			let search: string = this.queryParams?.search || '';
 
-				const searchUser = await Users.find<Pick<IUser, '_id'>>(
-					{ $text: { $search: search }, active: true },
-					{ projection: { _id: 1 }, limit: 10 },
-				).toArray();
-				if (searchUser?.length) {
-					search += ` ${searchUser.map((user) => user._id).join(' ')}`;
-				}
-
-				const sessions = await Sessions.getAllSessions(search, { offset, count });
-				return API.v1.success(sessions);
-			} catch (error) {
-				return API.v1.failure(`${error}`);
+			const searchUser = await Users.find<Pick<IUser, '_id'>>(
+				{ $text: { $search: search }, active: true },
+				{ projection: { _id: 1 }, limit: 10 },
+			).toArray();
+			if (searchUser?.length) {
+				search += ` ${searchUser.map((user) => user._id).join(' ')}`;
 			}
+
+			const sessions = await Sessions.getAllSessions(search, { offset, count });
+			return API.v1.success(sessions);
 		},
 	},
 );
@@ -136,27 +132,23 @@ API.v1.addRoute(
 				sessionId: String,
 			});
 
-			try {
-				const { sessionId } = this.bodyParams;
-				const sessionObj = await Sessions.findOneBySessionId(sessionId);
+			const { sessionId } = this.bodyParams;
+			const sessionObj = await Sessions.findOneBySessionId(sessionId);
 
-				if (!sessionObj) {
-					return API.v1.notFound('Session not found');
-				}
-
-				Meteor.users.update(sessionObj.userId, {
-					$pull: {
-						'services.resume.loginTokens': {
-							hashedToken: sessionObj.loginToken,
-						},
-					},
-				});
-
-				await Sessions.updateMany({ loginToken: sessionObj.loginToken }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
-				return API.v1.success({ sessionId });
-			} catch (error) {
-				return API.v1.failure(`${error}`);
+			if (!sessionObj) {
+				return API.v1.notFound('Session not found');
 			}
+
+			Meteor.users.update(sessionObj.userId, {
+				$pull: {
+					'services.resume.loginTokens': {
+						hashedToken: sessionObj.loginToken,
+					},
+				},
+			});
+
+			await Sessions.updateMany({ loginToken: sessionObj.loginToken }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
+			return API.v1.success({ sessionId });
 		},
 	},
 );
