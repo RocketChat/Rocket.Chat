@@ -1,5 +1,5 @@
 import { Box, ActionButton } from '@rocket.chat/fuselage';
-import { useLayout, useTranslation, useCurrentRoute } from '@rocket.chat/ui-contexts';
+import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useContext, FC, ReactNode } from 'react';
 
 import BurgerMenu from '../BurgerMenu';
@@ -16,11 +16,6 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 	const t = useTranslation();
 	const [border] = useContext(PageContext);
 	const { isMobile } = useLayout();
-
-	const [currentRouteName] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No current route name');
-	}
 
 	return (
 		<Box borderBlockEndWidth='x2' borderBlockEndColor={borderBlockEndColor ?? border ? 'neutral-200' : 'transparent'}>

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { formatDistanceStrict } from 'date-fns';
-import React, { FC } from 'react';
+import React, { ReactElement } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import AppMenu from './AppMenu';
@@ -9,16 +9,10 @@ import AppStatus from './AppStatus';
 import BundleChips from './BundleChips';
 import { App } from './types';
 
-type AppDetailsPageHeaderProps = {
-	app: App;
-};
-
-const AppDetailsHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
+const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
-
-	const { iconFileData = '', name, author, version, iconFileContent, installed, modifiedAt, bundledIn, description } = app;
-
-	const lastUpdated = formatDistanceStrict(new Date(modifiedAt), new Date(), { addSuffix: false });
+	const { iconFileData, name, author, version, iconFileContent, installed, modifiedAt, bundledIn, description } = app;
+	const lastUpdated = modifiedAt && formatDistanceStrict(new Date(modifiedAt), new Date(), { addSuffix: false });
 
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>

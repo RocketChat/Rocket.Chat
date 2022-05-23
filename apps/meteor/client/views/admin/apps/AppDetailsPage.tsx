@@ -1,8 +1,8 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useRef, FC, MouseEventHandler } from 'react';
+import { useTranslation, useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import React, { useState, useCallback, useRef, FC } from 'react';
 
 import { ISettings, ISettingsPayload } from '../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -21,14 +21,13 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
-	const [selectedTab, setSelectedTab] = useState({
-		isSelectedDetails: true,
-		isSelectedLogs: false,
-		isSelectedSettings: false,
-	});
 
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
-	const data = useAppInfo(id);
+	const appData = useAppInfo(id);
+
+	const [, urlParams] = useCurrentRoute();
+	const appsRoute = useRoute('admin-apps');
+	const tab = useRouteParameter('tab');
 
 	const [currentRouteName] = useCurrentRoute();
 	if (!currentRouteName) {
@@ -38,7 +37,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
-	const { installed, settings, apis } = data || {};
+	const { installed, settings, apis } = appData || {};
 	const showApis = apis?.length;
 
 	const saveAppSettings = useCallback(async () => {
@@ -58,42 +57,9 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 		setIsSaving(false);
 	}, [id, settings]);
 
-	const isClickedTabDetails = useCallback(
-		(e: React.MouseEvent<HTMLElement, MouseEvent>): boolean => e.currentTarget.innerText === t('Details'),
-		[t],
-	);
-
-	const isClickedTabLogs = useCallback(
-		(e: React.MouseEvent<HTMLElement, MouseEvent>): boolean => e.currentTarget.innerText === t('Logs'),
-		[t],
-	);
-
-	const isClickedTabSettings = useCallback(
-		(e: React.MouseEvent<HTMLElement, MouseEvent>): boolean => e.currentTarget.innerText === t('Settings'),
-		[t],
-	);
-
-	const selectTab: MouseEventHandler<HTMLElement> = useCallback(
-		(e) => {
-			setSelectedTab({
-				isSelectedDetails: isClickedTabDetails(e),
-				isSelectedLogs: isClickedTabLogs(e),
-				isSelectedSettings: isClickedTabSettings(e),
-			});
-		},
-		[isClickedTabDetails, isClickedTabLogs, isClickedTabSettings],
-	);
-
-	const { isSelectedDetails, isSelectedLogs, isSelectedSettings } = selectedTab;
-
-	const isDetailsTabSelected = isSelectedDetails;
-	const areApisVisible = Boolean(isSelectedDetails && !!showApis);
-
-	const isLogsTabSelected = isSelectedLogs;
-	const isLogsTabEnabled = Boolean(installed);
-
-	const isSettingsTabSelected = Boolean(isSelectedSettings && settings && Object.values(settings).length);
-	const isSettingsTabEnabled = Boolean(installed && settings && Object.values(settings).length);
+	const handleTabClick = (tab: 'details' | 'logs' | 'settings'): void => {
+		appsRoute.replace({ ...urlParams, tab });
+	};
 
 	return (
 		<Page flexDirection='column'>
@@ -107,31 +73,31 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 			</Page.Header>
 			<Page.ScrollableContentWithShadow padding='x24'>
 				<Box w='full' alignSelf='center'>
-					{!data && <LoadingDetails />}
-					{data && (
+					{!appData && <LoadingDetails />}
+					{appData && (
 						<>
-							<AppDetailsHeader app={data} />
+							<AppDetailsHeader app={appData} />
 
 							<Tabs mis='-x24' mb='x36'>
-								<Tabs.Item onClick={selectTab} selected={isSelectedDetails}>
+								<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>
 									{t('Details')}
 								</Tabs.Item>
-								{isLogsTabEnabled && (
-									<Tabs.Item onClick={selectTab} selected={isSelectedLogs}>
+								{Boolean(installed) && (
+									<Tabs.Item onClick={(): void => handleTabClick('logs')} selected={tab === 'logs'}>
 										{t('Logs')}
 									</Tabs.Item>
 								)}
-								{isSettingsTabEnabled && (
-									<Tabs.Item onClick={selectTab} selected={isSelectedSettings} disabled={!isSettingsTabEnabled}>
+								{Boolean(installed && settings && Object.values(settings).length) && (
+									<Tabs.Item onClick={(): void => handleTabClick('settings')} selected={tab === 'settings'}>
 										{t('Settings')}
 									</Tabs.Item>
 								)}
 							</Tabs>
 
-							{isDetailsTabSelected && <AppDetailsPageContent app={data} />}
-							{areApisVisible && <APIsDisplay apis={apis || []} />}
-							{isLogsTabSelected && <AppLogsPage id={id} />}
-							{isSettingsTabSelected && (
+							{Boolean(!tab || tab === 'details') && <AppDetailsPageContent app={appData} />}
+							{Boolean((!tab || tab === 'details') && !!showApis) && <APIsDisplay apis={apis || []} />}
+							{tab === 'logs' && <AppLogsPage id={id} />}
+							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay
 									settings={settings || ({} as ISettings)}
 									setHasUnsavedChanges={setHasUnsavedChanges}
