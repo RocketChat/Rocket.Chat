@@ -1,6 +1,11 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, FC } from 'react';
+
+const className = css`
+	white-space: normal;
+`;
 
 const Attachment: FC<ComponentProps<typeof Box>> = (props) => {
 	const { width } = useAttachmentDimensions();
@@ -13,7 +18,7 @@ const Attachment: FC<ComponentProps<typeof Box>> = (props) => {
 			display='flex'
 			overflow='hidden'
 			flexDirection='column'
-			style={{ whiteSpace: 'normal' }}
+			className={className}
 			{...props}
 		/>
 	);

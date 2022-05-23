@@ -1,5 +1,5 @@
 import { isActionAttachment, MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, ComponentProps } from 'react';
 
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment } from './ActionAttachtment';
@@ -11,7 +11,7 @@ const applyMarkdownIfRequires = (
 	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
 	key: MarkdownFields,
 	text: string,
-	variant: 'inline' | 'inlineWithoutBreaks' | 'document' = 'inline',
+	variant: ComponentProps<typeof MarkdownText>['variant'] = 'inline',
 ): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant={variant} content={text} /> : text);
 
 const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
