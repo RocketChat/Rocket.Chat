@@ -3,7 +3,7 @@ import * as colors from 'colorette';
 
 // force enable colors on dev env
 if (process.env.NODE_ENV !== 'production') {
-	colors.options.enabled = true;
+	// colors.options.enabled = true;
 }
 
 type LogColors = 'white' | 'blue' | 'green' | 'magenta' | 'red';
