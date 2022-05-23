@@ -103,7 +103,7 @@ const MarketplaceRow: FC<MarketplaceRowProps> = ({ medium, large, ...props }) =>
 			)}
 			<Table.Cell withTruncatedText>
 				<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
-					<AppStatus app={props} showStatus={isStatusVisible} marginInline='x8' />
+					<AppStatus app={props} showStatus={isStatusVisible} isAppDetailsPage={false} marginInline='x8' />
 					{installed && <AppMenu app={props} invisible={!isStatusVisible} marginInline='x8' />}
 				</Box>
 			</Table.Cell>
