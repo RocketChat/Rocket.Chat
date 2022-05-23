@@ -72,7 +72,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 			LivechatUnitMonitors.removeByMonitorId(userId);
 		}
 
-		if (user.roles.find((r: string) => r === 'livechat-agent' || r === 'livechat-monitor')){
+		if (user.roles.find((r: string) => r === 'livechat-agent' || r === 'livechat-monitor')) {
 			// Remove user as contact manager for all visitors
 			LivechatVisitors.removeContactManagerByUsername(user.username);
 		}
