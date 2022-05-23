@@ -1,16 +1,13 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Tile } from '@rocket.chat/fuselage';
 import React, { forwardRef, ReactNode } from 'react';
 
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 
-const dropdownStyle = css`
-	z-index: 9999;
-	opacity: 1;
-	bottom: 0;
-	left: 0;
-	right: 0;
-`;
+const dropdownStyle = {
+	bottom: 0,
+	left: 0,
+	right: 0,
+};
 
 export const ToolboxDropdownMobile = forwardRef<
 	HTMLElement,
@@ -26,9 +23,12 @@ export const ToolboxDropdownMobile = forwardRef<
 			paddingBlock='x12'
 			paddingInline={0}
 			elevation='2'
+			mi='x12'
+			zIndex={9999}
 			ref={ref}
-			className={dropdownStyle}
+			style={dropdownStyle}
 			maxHeight='50%'
+			opacity={1}
 			h='full'
 			{...rest}
 		>
