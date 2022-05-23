@@ -1,5 +1,6 @@
 import type { IRole } from './IRole';
 
+type sessionType = 'session' | 'computed-session' | 'user_daily';
 export interface ISessionDevice {
 	type: string;
 	name: string;
@@ -10,11 +11,9 @@ export interface ISessionDevice {
 	};
 	version: string;
 }
-
 export interface ISession {
 	_id: string;
-
-	type: string;
+	type: sessionType;
 	mostImportantRole: IRole['_id'];
 	userId: string;
 	lastActivityAt?: Date;
