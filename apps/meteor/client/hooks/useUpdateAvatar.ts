@@ -55,7 +55,6 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']): 
 
 	const updateAvatar = useCallback(async () => {
 		if (isAvatarReset(avatarObj)) {
-			console.log('lancou o reset ;-;');
 			return resetAvatarAction();
 		}
 		if (isAvatarUrl(avatarObj)) {
