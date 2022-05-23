@@ -34,7 +34,7 @@ import {
 	SessionInviteOptions,
 	RequestPendingError,
 } from 'sip.js';
-import { OutgoingByeRequest, URI } from 'sip.js/lib/core';
+import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
 import { toggleMediaStreamTracks } from './Helper';
@@ -82,6 +82,14 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	private offlineNetworkHandler: () => void;
 
 	private onlineNetworkHandler: () => void;
+
+	private optionsKeepaliveInterval = 5;
+
+	private optionsKeepAliveDebounceTimeInSec = 5;
+
+	private optionsKeepAliveDebounceCount = 3;
+
+	private attemptRegistration = false;
 
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
@@ -136,12 +144,16 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.userAgent.transport.isConnected();
 		this._opInProgress = Operation.OP_CONNECT;
 		try {
-			this.registerer = new Registerer(this.userAgent);
+			this.registerer = new Registerer(this.userAgent /* , { expires: 60 }*/);
+
 			this.userAgent.transport.onConnect = this.onConnected.bind(this);
 			this.userAgent.transport.onDisconnect = this.onDisconnected.bind(this);
 			window.addEventListener('online', this.onlineNetworkHandler);
 			window.addEventListener('offline', this.offlineNetworkHandler);
 			await this.userAgent.start();
+			if (this.config.enableKeepAliveUsingOptionsForUnstableNetworks) {
+				this.startOptionsPingForUnstableNetworks();
+			}
 		} catch (error) {
 			this._connectionState = 'ERROR';
 			throw error;
@@ -156,10 +168,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		/**
 		 * Re-registration post network recovery should be attempted
 		 * if it was previously registered or incall/onhold
-		 * */
+		 */
 
 		if (this.registerer && this.callState !== 'INITIAL') {
-			this.attemptRegistrationPostRecovery();
+			this.attemptRegistration = true;
 		}
 	}
 
@@ -176,8 +188,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * In case of remote side disconnection, if config.connectionRetryCount is -1,
 			 * attemptReconnection attempts continuously. Else stops after |config.connectionRetryCount|
 			 *
-			 * */
-			this.attemptReconnection();
+			 */
+			// this.attemptReconnection();
+			this.attemptReconnection(0, false);
 		}
 	}
 
@@ -193,7 +206,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * the code will check if the endpoint was previously registered before the disconnection.
 			 * If such is the case, it will first unregister and then reregister.
 			 * */
-			this.attemptReconnection(1, true);
+			this.attemptReconnection();
+			if (this.registerer && this.callState !== 'INITIAL') {
+				this.attemptRegistration = true;
+			}
 		}
 	}
 
@@ -528,11 +544,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 * there is a UA using this socket. This is implemented below
 	 */
 
-	sendOptions(): void {
+	sendOptions(outgoingRequestDelegate?: OutgoingRequestDelegate): void {
 		const uri = new URI('sip', this.config.authUserName, this.config.sipRegistrarHostnameOrIP);
 		const outgoingMessage = this.userAgent?.userAgentCore.makeOutgoingRequestMessage('OPTIONS', uri, uri, uri, {});
 		if (outgoingMessage) {
-			this.userAgent?.userAgentCore.request(outgoingMessage);
+			this.userAgent?.userAgentCore.request(outgoingMessage, outgoingRequestDelegate);
 		}
 	}
 	/**
@@ -804,7 +820,8 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 * In case of computer waking from sleep or asterisk getting restored, connect and disconnect events are generated.
 	 * In this case, re-registration should be triggered (by calling) only when onConnected gets called and not otherwise.
 	 */
-	attemptReconnection(reconnectionAttempt = 0, checkRegistration = false): void {
+
+	async attemptReconnection(reconnectionAttempt = 0, checkRegistration = false): Promise<void> {
 		const reconnectionAttempts = this.connectionRetryCount;
 		this._connectionState = 'SERVER_RECONNECTING';
 		if (!this.userAgent) {
@@ -820,6 +837,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		}
 
 		const reconnectionDelay = Math.pow(2, reconnectionAttempt % 4);
+
 		console.error(`Attempting to reconnect with backoff due to network loss. Backoff time [${reconnectionDelay}]`);
 		setTimeout(() => {
 			if (this.stop) {
@@ -832,10 +850,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				?.reconnect()
 				.then(() => {
 					this._connectionState = 'SERVER_CONNECTED';
-					if (!checkRegistration || !this.registerer || this.callState === 'INITIAL') {
-						return;
-					}
-					this.attemptRegistrationPostRecovery();
 				})
 				.catch(() => {
 					this.attemptReconnection(++reconnectionAttempt, checkRegistration);
@@ -843,7 +857,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		}, reconnectionDelay * 1000);
 	}
 
-	async attemptRegistrationPostRecovery(): Promise<void> {
+	async attemptPostRecoveryRoutine(): Promise<void> {
 		/**
 		 * It might happen that the whole network loss can happen
 		 * while there is ongoing call. In that case, we want to maintain
@@ -851,7 +865,91 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		 *
 		 * So after re-registration, it should remain in the same state.
 		 * */
+		this.sendOptions({
+			onAccept: (): void => {
+				this.attemptPostRecoveryRegistrationRoutine();
+			},
+			onReject: (error: unknown): void => {
+				console.error(`[${error}] Failed to do options in attemptPostRecoveryRoutine()`);
+			},
+		});
+	}
 
+	async sendKeepAliveAndWaitForResponse(withDebounce = false): Promise<boolean> {
+		const promise = new Promise<boolean>((resolve) => {
+			let keepAliveAccepted = false;
+			let responseWaitTime = this.optionsKeepaliveInterval / 2;
+			if (withDebounce) {
+				responseWaitTime += this.optionsKeepAliveDebounceTimeInSec;
+			}
+
+			this.sendOptions({
+				onAccept: (): void => {
+					keepAliveAccepted = true;
+				},
+				onReject: (_error: unknown): void => {
+					console.error('Failed to do options.');
+				},
+			});
+			setTimeout(async () => {
+				if (!keepAliveAccepted) {
+					resolve(false);
+				} else {
+					if (this.attemptRegistration) {
+						this.attemptPostRecoveryRoutine();
+						this.attemptRegistration = false;
+					}
+					resolve(true);
+				}
+			}, responseWaitTime * 1000);
+		});
+		return promise;
+	}
+
+	async startOptionsPingForUnstableNetworks(): Promise<void> {
+		setTimeout(async () => {
+			if (!this.userAgent || this.stop) {
+				return;
+			}
+			if (this._connectionState !== 'SERVER_RECONNECTING') {
+				let keepAliveResponse = await this.sendKeepAliveAndWaitForResponse();
+				if (!keepAliveResponse) {
+					const connectivityArray = [];
+					for (let i = 0; i < this.optionsKeepAliveDebounceCount; i++) {
+						connectivityArray.push(this.sendKeepAliveAndWaitForResponse(true));
+					}
+					const values = await Promise.all(connectivityArray);
+					for (const i in values) {
+						if (values[i]) {
+							keepAliveResponse = values[i];
+							break;
+						}
+					}
+					if (!keepAliveResponse) {
+						this.networkEmitter.emit('disconnected');
+					}
+				}
+				/**
+				 * Either we got connected and managed to send keep-alive
+				 * or while attempting keepAlive with debounce, we got connected at moment,
+				 * |keepAliveResponse| will be turned on.
+				 */
+				if (keepAliveResponse) {
+					this.networkEmitter.emit('connected');
+				}
+			}
+			this.startOptionsPingForUnstableNetworks();
+		}, this.optionsKeepaliveInterval * 1000);
+	}
+
+	async attemptPostRecoveryRegistrationRoutine(): Promise<void> {
+		/**
+		 * It might happen that the whole network loss can happen
+		 * while there is ongoing call. In that case, we want to maintain
+		 * the call.
+		 *
+		 * So after re-registration, it should remain in the same state.
+		 * */
 		const promise = new Promise<void>((_resolve, _reject) => {
 			this.registerer?.unregister({
 				all: true,
@@ -867,7 +965,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				},
 			});
 		});
-		await promise;
+		try {
+			await promise;
+		} catch (error) {
+			console.error(`[${error}] While waiting for unregister promise`);
+		}
 		this.registerer?.register({
 			requestDelegate: {
 				onReject: (error): void => {
