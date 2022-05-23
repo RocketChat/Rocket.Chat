@@ -34,7 +34,7 @@ type CallPreferences = {
 };
 
 export const VideoConfManager = new (class VideoConfManager extends Emitter<{
-	// We gave up on calling a remote user
+	// We gave up on calling a remote user or they rejected our call
 	'direct/cancel': DirectCallParams;
 
 	// A remote user is calling us
@@ -165,6 +165,18 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		Notifications.notifyUser(callData.uid, 'video-conference.accepted', { callId, uid: this.userId, rid: callData.rid });
 
 		this.joinCall(callId);
+	}
+
+	public rejectIncomingCall(callId: string): void {
+		this.muteIncomingCall(callId);
+
+		const callData = this.incomingDirectCalls.get(callId);
+		if (!callData) {
+			return;
+		}
+
+		Notifications.notifyUser(callData.uid, 'video-conference.rejected', { callId, uid: this.userId, rid: callData.rid });
+		this.loseIncomingCall(callId);
 	}
 
 	public muteIncomingCall(callId: string): void {
@@ -313,6 +325,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.hookNotification('video-conference.call', (params: DirectCallParams) => this.onDirectCall(params));
 		this.hookNotification('video-conference.canceled', (params: DirectCallParams) => this.onDirectCallCanceled(params));
 		this.hookNotification('video-conference.accepted', (params: DirectCallParams) => this.onDirectCallAccepted(params));
+		this.hookNotification('video-conference.rejected', (params: DirectCallParams) => this.onDirectCallRejected(params));
 	}
 
 	private abortIncomingCall(callId: string): void {
@@ -426,6 +439,26 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		this.emit('direct/accepted', params);
 		this.currentCallData = undefined;
+	}
+
+	private onDirectCallRejected(params: DirectCallParams): void {
+		if (!params.callId || params.callId !== this.currentCallData?.callId) {
+			debug && console.log(`[VideoConf] User ${params.uid} has rejected a call ${params.callId} from us, but we're not calling.`);
+			return;
+		}
+
+		debug && console.log(`[VideoConf] User ${params.uid} has rejected our call ${params.callId}.`);
+
+		// Stop ringing
+		if (this.currentCallHandler) {
+			clearInterval(this.currentCallHandler);
+			this.currentCallHandler = 0;
+		}
+
+		this.emit('direct/cancel', params);
+		this.currentCallData = undefined;
+
+		APIClient.v1.post('video-conference.cancel', { callId: params.callId });
 	}
 })();
 
