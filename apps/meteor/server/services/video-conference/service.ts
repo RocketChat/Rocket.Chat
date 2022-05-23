@@ -12,6 +12,7 @@ import type {
 	IVideoConferenceMessage,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus, isDirectVideoConference, isGroupVideoConference } from '@rocket.chat/core-typings';
+import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
@@ -161,12 +162,31 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.createMessage('video-direct-calling', rid, user);
 	}
 
-	private async createGroupCallMessage(rid: IRoom['_id'], user: IUser, title: string): Promise<IMessage['_id']> {
+	private async createGroupCallMessage(rid: IRoom['_id'], user: IUser, callId: string, title: string): Promise<IMessage['_id']> {
 		return this.createMessage('video-conference-started', rid, user, {
 			videoConf: {
 				title,
 			},
+			blocks: [await this.buildActionsBlock(callId, [{ action: 'join', text: 'Join' }])],
 		} as Partial<IVideoConferenceMessage>);
+	}
+
+	private async buildActionsBlock(callId: string, actions: { action: string; text: string }[]): Promise<MessageSurfaceLayout[number]> {
+		return {
+			type: 'actions',
+			appId: 'videoconf-core',
+			elements: actions.map(({ action, text }) => ({
+				appId: 'videoconf-core',
+				blockId: callId,
+				actionId: action,
+				type: 'button',
+				text: {
+					type: 'plain_text',
+					text,
+					emoji: true,
+				},
+			})),
+		};
 	}
 
 	private async changeMessageType(messageId: string, newType: MessageTypesValues): Promise<void> {
@@ -219,7 +239,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const url = await this.generateNewUrl(callId);
 		this.VideoConference.setUrlById(callId, url);
 
-		const messageId = await this.createGroupCallMessage(rid, user, title);
+		const messageId = await this.createGroupCallMessage(rid, user, callId, title);
 		this.VideoConference.setMessageById(callId, 'started', messageId);
 
 		return {
