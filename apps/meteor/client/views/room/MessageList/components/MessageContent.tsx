@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
-import { MessageBody } from '@rocket.chat/fuselage';
+import { MessageBody, MessageUikitBlock } from '@rocket.chat/fuselage';
 import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
@@ -54,7 +54,11 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</MessageBody>
 			)}
-			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+			{message.blocks && (
+				<MessageUikitBlock>
+					<MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />
+				</MessageUikitBlock>
+			)}
 			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
