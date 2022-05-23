@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { Rooms, Messages } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -8,7 +9,7 @@ import { api } from '../../../server/sdk/api';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 
-function Unarchive(_command: 'unarchive', params: string, item: Record<string, string>): void | Promise<void> | Function {
+function Unarchive(_command: 'unarchive', params: string, item: IMessage): void {
 	let channel = params.trim();
 	let room;
 
@@ -23,13 +24,14 @@ function Unarchive(_command: 'unarchive', params: string, item: Record<string, s
 	const userId = Meteor.userId() as string;
 
 	if (!room) {
-		return api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Channel_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
 				lng: settings.get('Language') || 'en',
 			}),
 		});
+		return;
 	}
 
 	// You can not archive direct messages.
@@ -58,20 +60,10 @@ function Unarchive(_command: 'unarchive', params: string, item: Record<string, s
 			lng: settings.get('Language') || 'en',
 		}),
 	});
-
-	return Unarchive;
 }
 
-slashCommands.add(
-	'unarchive',
-	Unarchive,
-	{
-		description: 'Unarchive',
-		params: '#channel',
-		permission: 'unarchive-room',
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('unarchive', Unarchive, {
+	description: 'Unarchive',
+	params: '#channel',
+	permission: 'unarchive-room',
+});
