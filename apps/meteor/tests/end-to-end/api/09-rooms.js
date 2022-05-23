@@ -285,7 +285,6 @@ describe('[Rooms]', function () {
 		});
 		it('create a direct message', (done) => {
 			createRoom({ type: 'd', username: 'rocket.cat' }).end((err, res) => {
-				console.log('AAAAA->', res.body);
 				directMessageChannel = res.body.room.rid;
 				done(err);
 			});
@@ -331,8 +330,8 @@ describe('[Rooms]', function () {
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
-				// .expect('Content-Type', 'application/json')
-				// .expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
 				.expect((res) => {
 					console.log('rooms.cleanHistory', res.body);
 					expect(res.body).to.have.property('success', true);

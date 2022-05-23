@@ -30,7 +30,7 @@ export const createRoom = ({ name, type, username, token, agentId, members = [],
 		.set(customCredentials || credentials)
 		.send({
 			...params,
-			members,
+			...(members && { members }),
 		});
 };
 
