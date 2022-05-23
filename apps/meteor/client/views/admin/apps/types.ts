@@ -1,5 +1,7 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
+import { PricingPlan } from './definitions/PricingPlan';
+
 export type App = {
 	id: string;
 	iconFileData: string;
@@ -14,7 +16,7 @@ export type App = {
 	version: string;
 	price: number;
 	purchaseType: string;
-	pricingPlans: unknown[];
+	pricingPlans: PricingPlan[];
 	iconFileContent: string;
 	installed?: boolean;
 	isEnterpriseOnly?: boolean;
