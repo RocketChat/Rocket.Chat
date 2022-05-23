@@ -915,8 +915,8 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				const keepAliveResponse = await this.sendKeepAliveAndWaitForResponse();
 				if (!keepAliveResponse) {
 					const connectivityArray = new Array(this.optionsKeepAliveDebounceCount).fill(this.sendKeepAliveAndWaitForResponse(true));
-					await Promise.race(connectivityArray).then((response): void => {
-						if (!response) {
+					await Promise.allSettled<boolean>(connectivityArray).then((responses): void => {
+						if (!responses.some((response) => response.status === 'fulfilled' && response.value)) {
 							this.networkEmitter.emit('disconnected');
 						}
 					});
