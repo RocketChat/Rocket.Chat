@@ -88,7 +88,7 @@ API.v1.addRoute(
 
 			const canAccess = (await canAccessRoomIdAsync(room._id, this.userId)) || hasPermission(this.userId, 'view-room-administration');
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
 			Meteor.call('eraseRoom', room._id);

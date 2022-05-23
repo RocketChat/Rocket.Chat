@@ -778,7 +778,7 @@ describe('[Direct Messages]', function () {
 					.send({
 						roomId: testDM._id,
 					})
-					.expect(403)
+					.expect(400)
 					.expect('Content-Type', 'application/json')
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
