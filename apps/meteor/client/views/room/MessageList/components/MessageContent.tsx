@@ -1,9 +1,10 @@
 /* eslint-disable complexity */
 import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
-import { useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
+import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
 import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
@@ -16,9 +17,9 @@ import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
+import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
 import ReadReceipt from './MessageReadReceipt';
-import MessageRender from './MessageRender';
 import PreviewList from './UrlPreview';
 
 const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
@@ -30,6 +31,8 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 		actions: { openRoom, openThread, replyBroadcast },
 	} = useMessageActions();
 
+	const t = useTranslation();
+
 	const runActionLink = useMessageRunActionLink();
 
 	const oembedIsEnabled = useMessageOembedIsEnabled();
@@ -40,13 +43,21 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	const mineUid = useUserId();
 
+	const isEncryptedMessage = isE2EEMessage(message);
+
 	return (
 		<>
-			<MessageBody data-qa-type='message-body'>
-				<MessageRender message={message} />
-			</MessageBody>
+			{!message.blocks && (
+				<MessageBody data-qa-type='message-body'>
+					{!isEncryptedMessage && <MessageContentBody message={message} />}
+					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}
+					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
+				</MessageBody>
+			)}
 			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+
+			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 
 			{message.actionLinks?.length && (
 				<MessageActions
@@ -92,8 +103,6 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
 				<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
-
-			{oembedIsEnabled && message.urls && <PreviewList urls={message.urls} />}
 
 			{shouldShowReadReceipt && <ReadReceipt unread={message.unread} />}
 		</>
