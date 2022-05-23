@@ -1,3 +1,4 @@
+import { RoomType } from '@rocket.chat/core-typings';
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
@@ -8,7 +9,7 @@ import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple'
 type CreateChannelProps = {
 	values: {
 		name: string;
-		type?: boolean;
+		type: RoomType;
 		readOnly?: boolean;
 		encrypted?: boolean;
 		broadcast?: boolean;
@@ -21,11 +22,11 @@ type CreateChannelProps = {
 		handleReadOnly?: () => void;
 	};
 	hasUnsavedChanges: boolean;
-	onChangeUsers: () => void;
-	onChangeType: () => void;
-	onChangeBroadcast: () => void;
-	canOnlyCreateOneType?: boolean;
-	e2eEnabledForPrivateByDefault?: boolean;
+	onChangeUsers: (value: string, action: string) => void;
+	onChangeType: (value: string) => void;
+	onChangeBroadcast: (value: string) => void;
+	canOnlyCreateOneType?: false | 'p' | 'c';
+	e2eEnabledForPrivateByDefault?: unknown;
 	onCreate: () => void;
 	onClose: () => void;
 };
