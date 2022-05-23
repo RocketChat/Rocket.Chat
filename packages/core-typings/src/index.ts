@@ -97,8 +97,6 @@ export * from './IOmnichannelAgent';
 export * from './OmichannelRoutingConfig';
 export * from './IVoipExtension';
 export * from './voip';
-export * from './voip/VoIPUserConfiguration';
-export * from './voip/VoIpCallerInfo';
 export * from './ACDQueues';
 export * from './IVoipConnectorResult';
 export * from './IVoipServerConfig';
