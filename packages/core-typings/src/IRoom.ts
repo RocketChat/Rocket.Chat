@@ -262,3 +262,12 @@ export type RoomAdminFieldsType =
 	| 'broadcast'
 	| 'uids'
 	| 'avatarETag';
+
+export interface IRoomWithRetentionPolicy extends IRoom {
+	retention: {
+		maxAge: number;
+		filesOnly: boolean;
+		excludePinned: boolean;
+		ignoreThreads: boolean;
+	};
+}
