@@ -1,34 +1,24 @@
 import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { IMessage } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../utils';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { ChatSubscription, Subscriptions } from '../../models';
+import { slashCommands } from '../../utils/lib/slashCommand';
+import { Subscriptions, ChatSubscription } from '../../models/client';
 
-function Open(command, params /* , item*/) {
-	const dict = {
+function Open(_command: 'open', params: string, _item: IMessage): void {
+	const dict: Record<string, string[]> = {
 		'#': ['c', 'p'],
 		'@': ['d'],
 	};
 
-	if (command !== 'open' || !Match.test(params, String)) {
-		return;
-	}
-
-	let room = params.trim();
-	const type = dict[room[0]];
-	room = room.replace(/#|@/, '');
+	const room = params.trim().replace(/#|@/, '');
+	const type = dict[params.trim()[0]] || [];
 
 	const query = {
 		name: room,
+		...(type && { t: { $in: type } }),
 	};
-
-	if (type) {
-		query.t = {
-			$in: type,
-		};
-	}
 
 	const subscription = ChatSubscription.findOne(query);
 
@@ -39,7 +29,7 @@ function Open(command, params /* , item*/) {
 	if (type && type.indexOf('d') === -1) {
 		return;
 	}
-	return Meteor.call('createDirectMessage', room, function (err) {
+	return Meteor.call('createDirectMessage', room, function (err: Meteor.Error) {
 		if (err) {
 			return;
 		}

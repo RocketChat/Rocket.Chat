@@ -66,14 +66,6 @@ function Help(_command: 'help', _params: string, item: IMessage): void {
 	});
 }
 
-slashCommands.add(
-	'help',
-	Help,
-	{
-		description: 'Show_the_keyboard_shortcut_list',
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('help', Help, {
+	description: 'Show_the_keyboard_shortcut_list',
+});
