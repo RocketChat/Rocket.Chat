@@ -200,6 +200,10 @@ export class MessagesRaw extends BaseRaw {
 		);
 	}
 
+	async addBlocksById(_id, blocks) {
+		await this.updateOne({ _id }, { $addToSet: { blocks: { $each: blocks } } });
+	}
+
 	async countRoomsWithStarredMessages(options) {
 		const [queryResult] = await this.col
 			.aggregate(

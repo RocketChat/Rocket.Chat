@@ -13,6 +13,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus, isDirectVideoConference, isGroupVideoConference } from '@rocket.chat/core-typings';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
@@ -123,6 +124,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (call.messages.started) {
 			await this.changeMessageType(call.messages.started, 'video-direct-missed');
+			if (call.type === 'direct') {
+				await this.addMessageBlocks(call.messages.started, [
+					await this.buildActionsBlock(call._id, [{ action: 'join', text: TAPi18n.__('Join_call') }]),
+				]);
+			}
 		}
 
 		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
@@ -167,7 +173,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			videoConf: {
 				title,
 			},
-			blocks: [await this.buildActionsBlock(callId, [{ action: 'join', text: 'Join' }])],
+			blocks: [await this.buildActionsBlock(callId, [{ action: 'join', text: TAPi18n.__('Join_call') }])],
 		} as Partial<IVideoConferenceMessage>);
 	}
 
@@ -191,6 +197,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async changeMessageType(messageId: string, newType: MessageTypesValues): Promise<void> {
 		await this.Messages.setTypeById(messageId, newType);
+	}
+
+	private async addMessageBlocks(messageId: string, blocks: MessageSurfaceLayout): Promise<void> {
+		await this.Messages.addBlocksById(messageId, blocks);
 	}
 
 	private async startDirect(caller: IUser['_id'], { _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>): Promise<DirectCallInstructions> {

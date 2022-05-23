@@ -48,8 +48,8 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		return this.updateOne({ _id }, update, options);
 	}
 
-	public setEndedById(callId: string, endedBy: { _id: string; name: string; username: string }): void {
-		this.updateOneById(callId, {
+	public async setEndedById(callId: string, endedBy: { _id: string; name: string; username: string }): Promise<void> {
+		await this.updateOneById(callId, {
 			$set: {
 				endedBy,
 				endedAt: new Date(),
@@ -57,16 +57,16 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		});
 	}
 
-	public setUrlById(callId: string, url: string): void {
-		this.updateOneById(callId, {
+	public async setUrlById(callId: string, url: string): Promise<void> {
+		await this.updateOneById(callId, {
 			$set: {
 				url,
 			},
 		});
 	}
 
-	public addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'>): void {
-		this.updateOneById(callId, {
+	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'>): Promise<void> {
+		await this.updateOneById(callId, {
 			$addToSet: {
 				users: {
 					_id: user._id,
@@ -78,8 +78,8 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		});
 	}
 
-	public setMessageById(callId: string, messageType: keyof IVideoConference['messages'], messageId: string): void {
-		this.updateOneById(callId, {
+	public async setMessageById(callId: string, messageType: keyof IVideoConference['messages'], messageId: string): Promise<void> {
+		await this.updateOneById(callId, {
 			$set: {
 				[`messages.${messageType}`]: messageId,
 			},
