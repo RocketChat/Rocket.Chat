@@ -27,7 +27,7 @@ export interface IMediaService {
 		enlarge: boolean,
 		fit?: keyof sharp.FitEnum | undefined,
 	): Promise<ResizeResult>;
-	isImage(buff: Buffer): boolean;
+	isImage(buff: Buffer): Promise<boolean>;
 	stripExifFromImageStream(stream: Stream): Readable;
 	stripExifFromBuffer(buffer: Buffer): Promise<Buffer>;
 }
