@@ -322,7 +322,7 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
-		it.only('should return success when send a valid Direct Message channel', (done) => {
+		it('should return success when send a valid Direct Message channel', (done) => {
 			request
 				.post(api('rooms.cleanHistory'))
 				.set(credentials)

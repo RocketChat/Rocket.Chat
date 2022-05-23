@@ -7,7 +7,7 @@ import { Rooms, Messages } from '../../../models/server';
 import { Avatars } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
 
-export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<unknown> {
+export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<void> {
 	const fileStore = FileUpload.getStore('Avatars');
 
 	const current = await Avatars.findOneByRoomId(rid);
