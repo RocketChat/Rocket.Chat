@@ -66,6 +66,10 @@ const ASTMessageRender: FC<BodyProps> = ({
 					return <Heading value={block.value} level={block.level} key={index} />;
 				}
 
+				if (block.type === 'LINE_BREAK') {
+					return <br key={index} />;
+				}
+
 				return null;
 			})}
 		</MessageBodyContext.Provider>

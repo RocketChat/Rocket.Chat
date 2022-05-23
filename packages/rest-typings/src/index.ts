@@ -16,6 +16,7 @@ import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { GroupsEndpoints } from './v1/groups';
 import type { ImEndpoints } from './v1/im';
 import type { InstancesEndpoints } from './v1/instances';
+import type { IntegrationsEndpoints } from './v1/integrations';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
@@ -61,6 +62,7 @@ export interface Endpoints
 		MiscEndpoints,
 		PermissionsEndpoints,
 		InstancesEndpoints,
+		IntegrationsEndpoints,
 		VoipEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
@@ -152,6 +154,7 @@ export * from './v1/channels/ChannelsModeratorsProps';
 export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
+export * from './v1/integrations';
 export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
