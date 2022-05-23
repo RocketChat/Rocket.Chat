@@ -3,12 +3,6 @@ import React, { forwardRef, ReactNode } from 'react';
 
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 
-const dropdownStyle = {
-	bottom: 0,
-	left: 0,
-	right: 0,
-};
-
 export const ToolboxDropdownMobile = forwardRef<
 	HTMLElement,
 	{
@@ -26,8 +20,9 @@ export const ToolboxDropdownMobile = forwardRef<
 			mi='x12'
 			zIndex={9999}
 			ref={ref}
-			style={dropdownStyle}
 			maxHeight='50%'
+			insetBlockEnd={0}
+			insetInline={0}
 			opacity={1}
 			h='full'
 			{...rest}
