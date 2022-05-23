@@ -5,7 +5,17 @@ import React, { ComponentProps, FC } from 'react';
 const Attachment: FC<ComponentProps<typeof Box>> = (props) => {
 	const { width } = useAttachmentDimensions();
 	return (
-		<Box rcx-message-attachment mb='x4' maxWidth={width} width='full' display='flex' overflow='hidden' flexDirection='column' {...props} />
+		<Box
+			rcx-message-attachment
+			mb='x4'
+			maxWidth={width}
+			width='full'
+			display='flex'
+			overflow='hidden'
+			flexDirection='column'
+			style={{ whiteSpace: 'normal' }}
+			{...props}
+		/>
 	);
 };
 
