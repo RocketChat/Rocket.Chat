@@ -1,68 +1,17 @@
-import { MatrixBridgedUser, MatrixBridgedRoom, Users, Rooms } from '../../../models/server';
-import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../lib/server';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
+
+import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '../../../models/server';
+import { addUserToRoom, removeUserFromRoom } from '../../../lib/server';
 import { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 import { AddMemberToRoomMembership } from '../definitions/IMatrixEventContent/IMatrixEventContentAddMemberToRoom';
-import { setRoomJoinRules } from './setRoomJoinRules';
-import { setRoomName } from './setRoomName';
-import { addToQueue } from '../queue';
 import { matrixClient } from '../matrix-client';
+import { processFirstAccessFromExternalServer } from './createRoom';
 
-const ensureRoom = async (
-	matrixRoomId: string,
-	roomId: string,
-	username: string,
-	roomState?: IMatrixEvent<MatrixEventType>[],
-): Promise<string> => {
-	const room = await Rooms.findOneById(roomId);
-	// If the room does not exist, create it
-	if (!room) {
-		// Create temp room name
-		const roomName = `Federation-${matrixRoomId.split(':')[0].replace('!', '')}`;
+const extractServerNameFromMatrixUserId = (matrixRoomId = ''): string => matrixRoomId.split(':')[1];
 
-		// @ts-ignore TODO: typing of legacy functions
-		const { rid: createdRoomId } = createRoom('c', roomName, username);
-
-		roomId = createdRoomId;
-
-		MatrixBridgedRoom.insert({ rid: roomId, mri: matrixRoomId });
-
-		// TODO: this should be better
-		/* eslint-disable no-await-in-loop */
-		for (const state of roomState || []) {
-			switch (state.type) {
-				case 'm.room.create':
-					continue;
-				case 'm.room.join_rules': {
-					// @ts-ignore
-					// eslint-disable-next-line @typescript-eslint/camelcase
-					await setRoomJoinRules({ room_id: roomId, ...state });
-
-					break;
-				}
-				case 'm.room.name': {
-					// @ts-ignore
-					// eslint-disable-next-line @typescript-eslint/camelcase
-					await setRoomName({ room_id: roomId, ...state });
-
-					break;
-				}
-				case 'm.room.member': {
-					// @ts-ignore
-					if (state.content.membership === 'join') {
-						// @ts-ignore
-						// eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/no-use-before-define
-						await handleRoomMembership({ room_id: roomId, ...state });
-					}
-
-					break;
-				}
-			}
-		}
-		/* eslint-enable no-await-in-loop */
-	}
-
-	return roomId;
+const addUserToRoomAsync = async (roomId: string, affectedUser: IUser, senderUser?: IUser): Promise<void> => {
+	new Promise((resolve) => resolve(addUserToRoom(roomId, affectedUser as any, senderUser as any)));
 };
 
 export const handleRoomMembership = async (event: IMatrixEvent<MatrixEventType.ROOM_MEMBERSHIP>): Promise<void> => {
@@ -70,15 +19,17 @@ export const handleRoomMembership = async (event: IMatrixEvent<MatrixEventType.R
 		room_id: matrixRoomId,
 		sender: senderMatrixUserId,
 		state_key: affectedMatrixUserId,
-		content: { membership },
+		content: { membership, is_direct: isDirect = false },
 		invite_room_state: roomState,
 	} = event;
 
 	// Find the bridged room id
 	let roomId = await MatrixBridgedRoom.getId(matrixRoomId);
+	const fromADifferentServer =
+		extractServerNameFromMatrixUserId(senderMatrixUserId) !== extractServerNameFromMatrixUserId(affectedMatrixUserId);
 
 	// If there is no room id, throw error
-	if (!roomId) {
+	if (!roomId && !fromADifferentServer) {
 		throw new Error(`Could not find room with matrixRoomId: ${matrixRoomId}`);
 	}
 
@@ -102,31 +53,32 @@ export const handleRoomMembership = async (event: IMatrixEvent<MatrixEventType.R
 		affectedUser = Users.findOneById(uid);
 	}
 
+	if (!roomId && fromADifferentServer) {
+		roomId = await processFirstAccessFromExternalServer(
+			matrixRoomId,
+			senderMatrixUserId,
+			affectedMatrixUserId,
+			senderUser,
+			affectedUser,
+			isDirect,
+			roomState as IMatrixEvent<MatrixEventType>[],
+		);
+	}
+
+	if (!roomId) {
+		return;
+	}
+
 	switch (membership) {
 		case AddMemberToRoomMembership.JOIN:
-			roomId = await ensureRoom(matrixRoomId, roomId, senderUser.username, roomState);
-
-			addUserToRoom(roomId, affectedUser);
+			await addUserToRoomAsync(roomId, affectedUser);
 			break;
 		case AddMemberToRoomMembership.INVITE:
-			// Re-run the state first
-			if (!roomId) {
-				for (const state of roomState || []) {
-					// eslint-disable-next-line @typescript-eslint/camelcase,no-await-in-loop
-					addToQueue({ ...state, room_id: matrixRoomId });
-				}
-
-				addToQueue(event);
-
-				return;
-			}
-
-			// If the room exists, then just add the user
 			// TODO: this should be a local invite
-			addUserToRoom(roomId, affectedUser, senderUser);
+			await addUserToRoomAsync(roomId, affectedUser, senderUser);
 			break;
 		case AddMemberToRoomMembership.LEAVE:
-			removeUserFromRoom(roomId, affectedUser, {
+			await removeUserFromRoom(roomId, affectedUser, {
 				byUser: senderUser,
 			});
 			break;
