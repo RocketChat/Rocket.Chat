@@ -72,9 +72,10 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 			LivechatUnitMonitors.removeByMonitorId(userId);
 		}
 
-		// Remove user as contact manager for all visitors
-		LivechatVisitors.removeContactManagerByUsername(user.username);
-
+		if (user.roles.find((r: string) => r === 'livechat-agent' || 'livechat-monitor')){
+			// Remove user as contact manager for all visitors
+			LivechatVisitors.removeContactManagerByUsername(user.username);
+		}
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
 			FileUpload.getStore('Avatars').deleteByName(user.username);
