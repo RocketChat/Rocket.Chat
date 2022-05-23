@@ -168,6 +168,14 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole>;
 	}
 
+	findByScope<P>(scope: IRole['scope'], options?: FindOneOptions<IRole>): P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole> {
+		const query: FilterQuery<IRole> = {
+			scope,
+		};
+
+		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole>;
+	}
+
 	updateById(
 		_id: IRole['_id'],
 		name: IRole['name'],

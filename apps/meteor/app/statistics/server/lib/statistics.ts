@@ -24,6 +24,7 @@ import {
 	EmailInbox,
 	LivechatBusinessHours,
 	Messages as MessagesRaw,
+	Roles as RolesRaw,
 	InstanceStatus,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
@@ -484,6 +485,8 @@ export const statistics = {
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.totalEncryptedMessages = await MessagesRaw.countE2EEMessages({ readPreference });
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
+		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
+		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
 
 		await Promise.all(statsPms).catch(log);
 

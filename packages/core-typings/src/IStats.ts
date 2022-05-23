@@ -167,4 +167,6 @@ export interface IStats {
 	totalEncryptedMessages: number;
 	totalLinkInvitationUses: number;
 	totalManuallyAddedUsers: number;
+	totalSubscriptionRoles: number;
+	totalUserRoles: number;
 }

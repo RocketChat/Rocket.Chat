@@ -255,6 +255,8 @@ export default {
 			totalEncryptedMessages: 0,
 			totalLinkInvitationUses: 0,
 			totalManuallyAddedUsers: 0,
+			totalSubscriptionRoles: 0,
+			totalUserRoles: 0,
 		},
 		instances: [],
 	},
