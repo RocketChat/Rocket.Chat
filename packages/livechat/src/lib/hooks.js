@@ -64,8 +64,7 @@ const api = {
 	async setDepartment(value) {
 		const { config: { departments = [] }, user: { department: existingDepartment } = {} } = store.state;
 
-		const dept = departments.find((dep) => dep._id === value || dep.name === value);
-		const department = (dept && dept._id) || '';
+		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		updateIframeGuestData({ department });
 
