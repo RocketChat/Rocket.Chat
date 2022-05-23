@@ -232,9 +232,13 @@ export class Subscriptions extends Base {
 			_id,
 		};
 
-		const update = {
+		const update = hideMentionStatus === true ? {
 			$set: {
 				hideMentionStatus,
+			},
+		} : {
+			$unset: {
+				hideMentionStatus: 1,
 			},
 		};
 
