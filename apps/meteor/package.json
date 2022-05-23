@@ -90,7 +90,7 @@
 		"@types/body-parser": "^1.19.0",
 		"@types/chai": "^4.2.22",
 		"@types/chai-datetime": "0.0.37",
-		"@types/chai-dom": "0.0.12",
+		"@types/chai-dom": "0.0.13",
 		"@types/chai-spies": "^1.0.3",
 		"@types/clipboard": "^2.0.7",
 		"@types/cookie-parser": "^1.4.2",
