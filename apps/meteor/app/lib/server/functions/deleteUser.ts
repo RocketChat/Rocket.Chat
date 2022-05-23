@@ -62,20 +62,18 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
-		if (user.roles.find((r: string) => r === 'livechat-agent')) {
+		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent
 			LivechatDepartmentAgents.removeByAgentId(userId);
-		}
-
-		if (user.roles.find((r: string) => r === 'livechat-monitor')) {
-			// Remove user as Unit Monitor
-			LivechatUnitMonitors.removeByMonitorId(userId);
-		}
-
-		if (user.roles.find((r: string) => r === 'livechat-agent' || r === 'livechat-monitor')) {
-			// Remove user as contact manager for all visitors
 			LivechatVisitors.removeContactManagerByUsername(user.username);
 		}
+
+		if (user.roles.includes('livechat-monitor')) {
+			// Remove user as Unit Monitor
+			LivechatUnitMonitors.removeByMonitorId(userId);
+			LivechatVisitors.removeContactManagerByUsername(user.username);
+		}
+
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
 			FileUpload.getStore('Avatars').deleteByName(user.username);
