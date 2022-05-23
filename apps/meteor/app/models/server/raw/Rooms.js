@@ -460,4 +460,21 @@ export class RoomsRaw extends BaseRaw {
 			},
 		]);
 	}
+
+	findByE2E(options) {
+		return this.find(
+			{
+				encrypted: true,
+			},
+			options,
+		);
+	}
+
+	findRoomsInsideTeams(autoJoin = false) {
+		return this.find({
+			teamId: { $exists: true },
+			teamMain: { $exists: false },
+			...(autoJoin && { teamDefault: true }),
+		});
+	}
 }

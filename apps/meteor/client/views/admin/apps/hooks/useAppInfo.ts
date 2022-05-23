@@ -1,7 +1,7 @@
 import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { AppSettingsManager } from '@rocket.chat/apps-engine/server/managers/AppSettingsManager';
 import { useState, useEffect, useContext } from 'react';
 
+import { ISettingsReturn } from '../../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { AppsContext } from '../AppsContext';
 import { AppInfo } from '../definitions/AppInfo';
@@ -28,20 +28,19 @@ const getBundledIn = async (appId: string, appVersion: string): Promise<App['bun
 	}
 };
 
-const getSettings = async (appId: string, installed: boolean): Promise<ReturnType<AppSettingsManager['getAppSettings']>> => {
+const getSettings = async (appId: string, installed?: boolean): Promise<ISettingsReturn | undefined> => {
 	if (!installed) {
-		return {};
+		return;
 	}
 
 	try {
 		return Apps.getAppSettings(appId);
 	} catch (e) {
 		handleAPIError(e);
-		return {};
 	}
 };
 
-const getApis = async (appId: string, installed: boolean): Promise<Array<IApiEndpointMetadata>> => {
+const getApis = async (appId: string, installed?: boolean): Promise<Array<IApiEndpointMetadata>> => {
 	if (!installed) {
 		return [];
 	}
