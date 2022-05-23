@@ -1914,7 +1914,7 @@
   "How_long_to_wait_to_consider_visitor_abandonment": "认为访客放弃需要等待多久？",
   "How_long_to_wait_to_consider_visitor_abandonment_in_seconds": "认为访客放弃需要等待多久？",
   "How_responsive_was_the_chat_agent": "在线客服的反应速度如何？",
-  "How_satisfied_were_you_with_this_chat": "您是否满意这次聊天？",
+  "How_satisfied_were_you_with_this_chat": "您对这次聊天是否满意？",
   "How_to_handle_open_sessions_when_agent_goes_offline": "客服离线时如何处理正在进行的会话",
   "Idle_Time_Limit": "空闲时间限制",
   "Idle_Time_Limit_Description": "自动将状态切换为离开的等待时间，计数单位为秒",
