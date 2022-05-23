@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
@@ -10,7 +11,7 @@ import { api } from '../../../server/sdk/api';
  * Mute is a named function that will replace /mute commands
  */
 
-function Mute(_command: 'mute', params: string, item: Record<string, string>): void {
+function Mute(_command: 'mute', params: string, item: IMessage): void {
 	const username = params.trim().replace('@', '');
 	if (username === '') {
 		return;
@@ -46,16 +47,8 @@ function Mute(_command: 'mute', params: string, item: Record<string, string>): v
 	});
 }
 
-slashCommands.add(
-	'mute',
-	Mute,
-	{
-		description: 'Mute_someone_in_room',
-		params: '@username',
-		permission: 'mute-user',
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('mute', Mute, {
+	description: 'Mute_someone_in_room',
+	params: '@username',
+	permission: 'mute-user',
+});

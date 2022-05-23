@@ -14,7 +14,7 @@ const getInitialValue = (data) => {
 		username: data.username ?? '',
 		name: data.name ?? '',
 		alias: data.alias ?? '',
-		avatarUrl: data.avatarUrl ?? '',
+		avatar: data.avatar ?? '',
 		emoji: data.emoji ?? '',
 		scriptEnabled: data.scriptEnabled,
 		script: data.script,

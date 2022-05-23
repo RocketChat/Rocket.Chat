@@ -4792,6 +4792,8 @@
   "Visitor_page_URL": "Visitor page URL",
   "Visitor_time_on_site": "Visitor time on site",
   "Voice_Call": "Voice Call",
+  "VoIP_Enable_Keep_Alive_For_Unstable_Networks": "Enable Keep-Alive using SIP-OPTIONS for unstable networks",
+  "VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description": "Enables or Disables Keep-Alive using SIP-OPTIONS based on network quality",
   "VoIP_Enabled": "VoIP Enabled",
   "VoIP_Extension": "VoIP Extension",
   "Voip_Server_Configuration": "Server Configuration",
