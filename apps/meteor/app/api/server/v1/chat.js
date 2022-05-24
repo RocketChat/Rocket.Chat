@@ -375,7 +375,7 @@ API.v1.addRoute(
 	'chat.getMessageReadReceipts',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { messageId } = this.queryParams;
 			if (!messageId) {
 				return API.v1.failure({
@@ -384,9 +384,8 @@ API.v1.addRoute(
 			}
 
 			try {
-				const messageReadReceipts = Meteor.runAsUser(this.userId, () => Meteor.call('getReadReceipts', { messageId }));
 				return API.v1.success({
-					receipts: messageReadReceipts,
+					receipts: await Meteor.call('getReadReceipts', { messageId }),
 				});
 			} catch (error) {
 				return API.v1.failure({
@@ -411,7 +410,7 @@ API.v1.addRoute(
 				return API.v1.failure('The required "description" param is missing.');
 			}
 
-			Meteor.runAsUser(this.userId, () => Meteor.call('reportMessage', messageId, description));
+			Meteor.call('reportMessage', messageId, description);
 
 			return API.v1.success();
 		},

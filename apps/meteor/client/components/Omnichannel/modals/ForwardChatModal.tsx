@@ -109,9 +109,8 @@ const ForwardChatModal = ({
 					<Field.Row>
 						<UserAutoComplete
 							conditions={conditions}
-							flexGrow={1}
 							placeholder={t('Username')}
-							onChange={(value: string): void => {
+							onChange={(value: any): void => {
 								setValue('username', value);
 							}}
 							value={getValues().username}

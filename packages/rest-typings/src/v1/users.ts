@@ -19,7 +19,9 @@ export type UsersEndpoints = {
 		POST: (params: { emailOrUsername: string }) => void;
 	};
 	'/v1/users.autocomplete': {
-		GET: (params: { selector: string }) => { items: IUser[] };
+		GET: (params: { selector: string }) => {
+			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
+		};
 	};
 	'/v1/users.listTeams': {
 		GET: (params: { userId: IUser['_id'] }) => { teams: Array<ITeam> };

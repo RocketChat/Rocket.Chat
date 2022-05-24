@@ -39,7 +39,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			setUser(undefined);
 			reload.current?.();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	});
 
@@ -50,6 +50,12 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 
 		return setUser(user);
 	});
+
+	const handleChange = (value: unknown): void => {
+		if (typeof value === 'string') {
+			setRid(value);
+		}
+	};
 
 	return (
 		<Page>
@@ -65,7 +71,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 							<Field mbe='x4'>
 								<Field.Label>{t('Choose_a_room')}</Field.Label>
 								<Field.Row>
-									<RoomAutoComplete value={rid} onChange={setRid} placeholder={t('User')} />
+									<RoomAutoComplete value={rid} onChange={handleChange} placeholder={t('User')} />
 								</Field.Row>
 							</Field>
 						)}

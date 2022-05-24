@@ -78,6 +78,9 @@ export function AddUser({ roles, onReload, ...props }) {
 	);
 
 	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
+	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+		params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
+	});
 
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
@@ -94,6 +97,7 @@ export function AddUser({ roles, onReload, ...props }) {
 
 		const result = await saveAction();
 		if (result.success) {
+			eventStats();
 			goToUser(result.user._id);
 			onReload();
 		}

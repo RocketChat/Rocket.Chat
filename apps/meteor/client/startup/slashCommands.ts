@@ -9,9 +9,10 @@ let oldUserId: IUser['_id'] | null = null;
 Tracker.autorun(async () => {
 	const newUserId = Meteor.userId();
 	if (oldUserId === null && newUserId) {
-		const result = await APIClient.get('/v1/commands.list', undefined);
-		result.commands.forEach((command: { command: string }) => {
-			slashCommands.commands[command.command] = command;
+		APIClient.get('/v1/commands.list').then((result) => {
+			result.commands.forEach((command) => {
+				slashCommands.commands[command.command] = command;
+			});
 		});
 	}
 

@@ -27,4 +27,12 @@ export class InvitesRaw extends BaseRaw<T> {
 			},
 		);
 	}
+
+	async countUses(): Promise<number> {
+		const [result] = await this.col
+			.aggregate<{ totalUses: number } | undefined>([{ $group: { _id: null, totalUses: { $sum: '$uses' } } }])
+			.toArray();
+
+		return result?.totalUses || 0;
+	}
 }
