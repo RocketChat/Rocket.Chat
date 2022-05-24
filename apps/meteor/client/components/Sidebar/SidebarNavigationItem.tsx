@@ -5,7 +5,7 @@ import React, { memo, useMemo, FC } from 'react';
 import SidebarGenericItem from './SidebarGenericItem';
 
 type SidebarNavigationItemProps = {
-	permissionGranted?: () => boolean;
+	permissionGranted?: (() => boolean) | boolean;
 	pathGroup: string;
 	pathSection: string;
 	icon?: IconProps['name'];
@@ -26,7 +26,7 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
 	const path = useRoutePath(pathSection, params);
 	const isActive = path === currentPath || false;
-	if (permissionGranted && !permissionGranted()) {
+	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;
 	}
 	return (
