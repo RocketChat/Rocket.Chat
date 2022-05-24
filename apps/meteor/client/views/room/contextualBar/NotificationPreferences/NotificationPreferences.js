@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, FieldGroup, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, FieldGroup, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 

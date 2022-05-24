@@ -1,7 +1,7 @@
 import { FieldGroup, Field, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 
@@ -14,7 +14,14 @@ type AutoTranslateProps = {
 	handleClose?: () => void;
 };
 
-const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, handleChangeLanguage, handleClose }: AutoTranslateProps) => {
+const AutoTranslate = ({
+	language,
+	languages,
+	handleSwitch,
+	translateEnable,
+	handleChangeLanguage,
+	handleClose,
+}: AutoTranslateProps): ReactElement => {
 	const t = useTranslation();
 
 	return (

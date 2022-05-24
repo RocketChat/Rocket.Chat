@@ -1,4 +1,4 @@
-import { Sidebar } from '@rock, IconButtonet.chat/fuselage';
+import { IconButton, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useState } from 'react';
 
