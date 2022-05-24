@@ -25,8 +25,10 @@ const Tags = ({
 
 	const { value: tagsResult, phase: stateTags } = useEndpointData('livechat/tags.list');
 
+	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
 	const { useCurrentChatTags } = forms;
-	const EETagsComponent = useCurrentChatTags();
+	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
+	const EETagsComponent = useCurrentChatTags?.();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
