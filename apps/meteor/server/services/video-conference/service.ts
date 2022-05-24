@@ -242,12 +242,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async getProviderManager(): Promise<AppVideoConfProviderManager> {
 		if (!Apps?.isLoaded()) {
-			throw new Error('A');
+			throw new Error('apps-engine-not-loaded');
 		}
 
 		const manager = Apps.getManager()?.getVideoConfProviderManager();
 		if (!manager) {
-			throw new Error('Failed-to-generate-url');
+			throw new Error('no-videoconf-provider-app');
 		}
 
 		return manager;
