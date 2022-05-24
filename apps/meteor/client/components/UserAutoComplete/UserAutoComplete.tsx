@@ -12,11 +12,12 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term, conditions }) });
 
-type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> &
+type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
 	Omit<ComponentProps<typeof Option>, 'value' | 'onChange'> & {
 		conditions?: { [key: string]: unknown };
 		filter?: string;
 		value: string;
+		onChange?: (value: string) => void;
 	};
 
 const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElement => {
@@ -33,8 +34,8 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 
 	return (
 		<AutoComplete
-			{...props}
 			value={value as any}
+			onChange={props.onChange as any}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ value, label }): ReactElement => {
@@ -43,7 +44,7 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 				}
 
 				return (
-					<Chip height='x20' value={value} onClick={(_e: any): void => props.onChange?.(value, 'remove')} mie='x4'>
+					<Chip height='x20' value={value} onClick={(_e: any): void => props.onChange?.(value)} mie='x4'>
 						<UserAvatar size='x20' username={value} />
 						<Box verticalAlign='middle' is='span' margin='none' mi='x4'>
 							{label}

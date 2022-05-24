@@ -33,7 +33,7 @@ const AddAgent: FC<AddAgentProps> = ({ reload, ...props }) => {
 			<Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
-					<UserAutoComplete value={username} onChange={setUsername} />
+					<UserAutoComplete value={username} onChange={(username: string): void => setUsername(username)} />
 					<Button disabled={!username} onClick={handleSave} mis='x8' primary>
 						{t('Add')}
 					</Button>
