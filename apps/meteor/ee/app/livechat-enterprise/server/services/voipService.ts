@@ -1,5 +1,6 @@
-import { IRoomClosingInfo, IOmniRoomClosingMessage } from '@rocket.chat/core-typings';
+import { IRoomClosingInfo } from '@rocket.chat/core-typings';
 
+import { IOmniRoomClosingMessage } from '../../../../../server/services/omnichannel-voip/internalTypes';
 import { OmnichannelVoipService } from '../../../../../server/services/omnichannel-voip/service';
 import { overwriteClassOnLicense } from '../../../license/server';
 

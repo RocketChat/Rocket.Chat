@@ -7,7 +7,6 @@ import type {
 	IRoomCreationResponse,
 	IUser,
 	ILivechatAgent,
-	IOmniRoomClosingMessage,
 } from '@rocket.chat/core-typings';
 import {
 	ILivechatVisitor,
@@ -28,7 +27,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { FindVoipRoomsParams } from './internalTypes';
+import { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
 import { api } from '../../sdk/api';
 import { calculateOnHoldTimeForRoom } from './helper';
 
