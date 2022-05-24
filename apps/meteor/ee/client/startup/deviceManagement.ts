@@ -4,7 +4,7 @@ import { hasAllPermission } from '../../../app/authorization/client';
 import { registerAdminRoute, registerAdminSidebarItem, unregisterAdminSidebarItem } from '../../../client/views/admin';
 import { onToggledFeature } from '../lib/onToggledFeature';
 
-const [registerRoute, unregisterRoute] = registerAdminRoute('/device-management/:tab?', {
+const [registerRoute, unregisterRoute] = registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
 	lazyRouteComponent: () => import('../views/admin/deviceManagement/DeviceManagementRoute'),
 	ready: false,

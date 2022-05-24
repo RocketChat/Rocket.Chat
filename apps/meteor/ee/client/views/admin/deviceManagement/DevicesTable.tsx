@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, useMemo, useEffect } from 'react';
@@ -307,10 +307,25 @@ const DevicesTable = (): ReactElement => {
 					{t('IP_Address')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell width={'10%'}>{' '}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width={'5%'} key='menu'>{' '}</GenericTableHeaderCell>
 		],
 		[t, mediaQuery],
 	);
+
+	if(!data) {
+		return (
+			<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
+				<States>
+				<StatesIcon name='warning' variation='danger'/>
+				<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
+				<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
+				<StatesActions>
+					<StatesAction onClick={() => console.log('reload')}>{t('Retry')}</StatesAction>
+				</StatesActions>
+				</States>
+			</Box>
+		);
+	};
 
 	return (
 		<>
@@ -320,7 +335,7 @@ const DevicesTable = (): ReactElement => {
 					{headers}
 				</GenericTableHeader>
 				<GenericTableBody>
-					{data && data.sessions && data.sessions.map((session) => <DevicesRow {...session}/>)}
+					{data && data.sessions && data.sessions.map((session) => <DevicesRow key={session._id} {...session} />)}
 				</GenericTableBody>
 			</GenericTable>
 			<Pagination
