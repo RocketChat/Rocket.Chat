@@ -1,4 +1,6 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type MiscEndpoints = {
 	'stdout.queue': {
@@ -16,8 +18,13 @@ export type MiscEndpoints = {
 	// };
 
 	'me': {
-		GET: (params: { fields: { [k: string]: number }; user: IUser }) => {
-			me: IUser;
+		GET: (params: { fields: { [k: string]: number }; user: IUser }) => IUser & {
+			email?: string;
+			settings: {
+				profile: {};
+				preferences: unknown;
+			};
+			avatarUrl: string;
 		};
 	};
 
@@ -29,22 +36,21 @@ export type MiscEndpoints = {
 
 	'spotlight': {
 		GET: (params: { query: string; limit: number; offset: number }) => {
-			results: IUser[];
+			users: Pick<IUser, 'username' | 'nickname' | 'name' | 'status' | 'statusText' | 'avatarETag'>[];
+			rooms: IRoom[];
 		};
 	};
 
 	'directory': {
-		GET: (params: {
-			text: string;
-			type: string;
-			workspace: unknown;
-			sortBy: string | undefined;
-			sortDirection: string;
-			offset: number;
-			limit: number;
-		}) => {
-			results: IUser[];
-		};
+		GET: (
+			params: PaginatedRequest<{
+				text: string;
+				type: string;
+				workspace: string;
+			}>,
+		) => PaginatedResult<{
+			result: (IUser | IRoom | ITeam)[];
+		}>;
 	};
 
 	'method.call': {
