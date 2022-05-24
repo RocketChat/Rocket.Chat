@@ -185,7 +185,7 @@ const getUrlMeta = function (url: string, withFragment?: boolean): OEmbedUrlWith
 			metas[name] = metas[name] || he.unescape(value);
 			return metas[name];
 		};
-		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gim, function (meta, title) {
+		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gim, function (meta: string, title: string): string {
 			return escapeMeta('pageTitle', title);
 		});
 		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gim, function (meta, name, value) {
@@ -201,7 +201,7 @@ const getUrlMeta = function (url: string, withFragment?: boolean): OEmbedUrlWith
 			return escapeMeta(camelCase(name), value);
 		});
 		if (metas.fragment === '!' && withFragment == null) {
-			return OEmbed.getUrlMeta?.(url, true);
+			return getUrlMeta(url, true);
 		}
 		delete metas.oembedHtml;
 	}
@@ -234,7 +234,7 @@ const getUrlMetaWithCache = async function (
 	if (cache != null) {
 		return cache.data;
 	}
-	const data = OEmbed.getUrlMeta(url, withFragment);
+	const data = getUrlMeta(url, withFragment);
 	if (data != null) {
 		try {
 			await OEmbedCache.createWithIdAndData(url, data);
@@ -287,7 +287,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 			if (!isURL(item.url)) {
 				break;
 			}
-			const data = await OEmbed.getUrlMetaWithCache(item.url);
+			const data = await getUrlMetaWithCache(item.url);
 			if (data != null) {
 				if (isOEmbedUrlContentResult(data) && data.attachments) {
 					attachments.push(...data.attachments);
