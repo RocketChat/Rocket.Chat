@@ -9,5 +9,13 @@
 			"changeProcessCWD": true
 		}
 	],
-	"typescript.tsdk": "./node_modules/typescript/lib"
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"cSpell.words": [
+		"contentlength",
+		"contenttype",
+		"jschardet",
+		"metas",
+		"oembed",
+		"Oembed"
+	]
 }

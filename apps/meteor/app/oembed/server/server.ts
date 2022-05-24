@@ -7,6 +7,15 @@ import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
+import {
+	OEmbedUrlContentResult,
+	OEmbedUrlWithMetadata,
+	IMessage,
+	MessageAttachment,
+	isOEmbedUrlContentResult,
+	isOEmbedUrlWithMetadata,
+	OEmbedMeta,
+} from '@rocket.chat/core-typings';
 
 import { Messages } from '../../models/server';
 import { OEmbedCache } from '../../models/server/raw';
@@ -16,8 +25,6 @@ import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { Info } from '../../utils/server';
 import { fetch } from '../../../server/lib/http/fetch';
-
-const OEmbed = {};
 
 //  Detect encoding
 //  Priority:
@@ -61,9 +68,12 @@ const toUtf8 = function (contentType: string, body: Buffer): string {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = async function (urlObj, redirectCount = 5) {
-	if (_.isString(urlObj)) {
-		urlObj = URL.parse(urlObj);
+const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery, redirectCount = 5): Promise<OEmbedUrlContentResult> {
+	let urlObj: URL.UrlWithStringQuery;
+	if (typeof urlObjStr === 'string') {
+		urlObj = URL.parse(urlObjStr);
+	} else {
+		urlObj = urlObjStr;
 	}
 
 	const portsProtocol = new Map<string, string>(
@@ -76,7 +86,7 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = settings.get<string>('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
-	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
+	if (parsedUrl.hostname && (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts))) {
 		throw new Error('invalid host');
 	}
 
@@ -120,6 +130,7 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 
 	let totalSize = 0;
 	const chunks = [];
+	// @ts-expect-error from https://github.com/microsoft/TypeScript/issues/39051
 	for await (const chunk of response.body) {
 		totalSize += chunk.length;
 		chunks.push(chunk);
@@ -131,19 +142,24 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 	}
 
 	const buffer = Buffer.concat(chunks);
+	const responseHeaders: { [key: string]: string } = {};
+	response.headers.forEach((value, key) => {
+		responseHeaders[key] = value;
+	});
 
 	return {
-		headers: Object.fromEntries(response.headers),
+		headers: responseHeaders,
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		parsedUrl,
 		statusCode: response.status,
 	};
 };
 
-OEmbed.getUrlMeta = function (url, withFragment) {
+const getUrlMeta = function (url: string, withFragment?: boolean): OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult {
 	const urlObj = URL.parse(url);
 	if (withFragment != null) {
-		const queryStringObj = querystring.parse(urlObj.query);
+		const queryStringObj = querystring.parse(urlObj.query || '');
+		// eslint-disable-next-line @typescript-eslint/camelcase
 		queryStringObj._escaped_fragment_ = '';
 		urlObj.query = querystring.stringify(queryStringObj);
 		let path = urlObj.pathname;
@@ -163,10 +179,9 @@ OEmbed.getUrlMeta = function (url, withFragment) {
 		return content;
 	}
 
-	let metas = undefined;
+	const metas: { [k: string]: string } = {};
 	if (content?.body) {
-		metas = {};
-		const escapeMeta = (name, value) => {
+		const escapeMeta = (name: string, value: string): string => {
 			metas[name] = metas[name] || he.unescape(value);
 			return metas[name];
 		};
@@ -186,14 +201,13 @@ OEmbed.getUrlMeta = function (url, withFragment) {
 			return escapeMeta(camelCase(name), value);
 		});
 		if (metas.fragment === '!' && withFragment == null) {
-			return OEmbed.getUrlMeta(url, true);
+			return OEmbed.getUrlMeta?.(url, true);
 		}
 		delete metas.oembedHtml;
 	}
-	let headers = undefined;
+	const headers: { [k: string]: string } = {};
 
 	if (content?.headers) {
-		headers = {};
 		const headerObj = content.headers;
 		Object.keys(headerObj).forEach((header) => {
 			headers[camelCase(header)] = headerObj[header];
@@ -211,7 +225,10 @@ OEmbed.getUrlMeta = function (url, withFragment) {
 	});
 };
 
-OEmbed.getUrlMetaWithCache = async function (url, withFragment) {
+const getUrlMetaWithCache = async function (
+	url: string,
+	withFragment?: boolean,
+): Promise<OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult> {
 	const cache = await OEmbedCache.findOneById(url);
 
 	if (cache != null) {
@@ -228,23 +245,22 @@ OEmbed.getUrlMetaWithCache = async function (url, withFragment) {
 	}
 };
 
-const getRelevantHeaders = function (headersObj) {
-	const headers = {};
-	Object.keys(headersObj).forEach((key) => {
-		const value = headersObj[key];
-		const lowerCaseKey = key.toLowerCase();
-		if ((lowerCaseKey === 'contenttype' || lowerCaseKey === 'contentlength') && value && value.trim() !== '') {
-			headers[key] = value;
-		}
-	});
+const isObjWithRequiredHeaders = (obj: any): obj is { contentLength: string; contentType: string } =>
+	'contentLength' in obj && 'contentType' in obj;
 
-	if (Object.keys(headers).length > 0) {
+const getRelevantHeaders = function (headersObj: { [key: string]: string }): { contentLength: string; contentType: string } | void {
+	const headers = {
+		...(headersObj.contentLength && { contentLength: headersObj.contentLength }),
+		...(headersObj.contentType && { contentType: headersObj.contentType }),
+	};
+
+	if (isObjWithRequiredHeaders(headers)) {
 		return headers;
 	}
 };
 
-const getRelevantMetaTags = function (metaObj) {
-	const tags = {};
+const getRelevantMetaTags = function (metaObj: OEmbedMeta): Record<string, string> | void {
+	const tags: Record<string, string> = {};
 	Object.keys(metaObj).forEach((key) => {
 		const value = metaObj[key];
 		if (/^(og|fb|twitter|oembed|msapplication).+|description|title|pageTitle$/.test(key.toLowerCase()) && value && value.trim() !== '') {
@@ -257,33 +273,37 @@ const getRelevantMetaTags = function (metaObj) {
 	}
 };
 
-const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style="max-width: 100%;width:400px;height:225px"');
+const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
+	oembedHtml?.replace('iframe', 'iframe style="max-width: 100%;width:400px;height:225px"');
 
-OEmbed.rocketUrlParser = async function (message) {
+const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	if (Array.isArray(message.urls)) {
-		const attachments = [];
+		const attachments: MessageAttachment[] = [];
 		let changed = false;
 		for await (const item of message.urls) {
 			if (item.ignoreParse === true) {
-				return;
+				break;
 			}
 			if (!isURL(item.url)) {
-				return;
+				break;
 			}
 			const data = await OEmbed.getUrlMetaWithCache(item.url);
 			if (data != null) {
-				if (data.attachments) {
+				if (isOEmbedUrlContentResult(data) && data.attachments) {
 					attachments.push(...data.attachments);
-					return;
+					break;
 				}
-				if (data.meta != null) {
-					item.meta = getRelevantMetaTags(data.meta);
+				if (isOEmbedUrlWithMetadata(data) && data.meta != null) {
+					item.meta = getRelevantMetaTags(data.meta) || {};
 					if (item.meta && item.meta.oembedHtml) {
-						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml);
+						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml) || '';
 					}
 				}
 				if (data.headers != null) {
-					item.headers = getRelevantHeaders(data.headers);
+					const headers = getRelevantHeaders(data.headers);
+					if (headers) {
+						item.headers = headers;
+					}
 				}
 				item.parsedUrl = data.parsedUrl;
 				changed = true;
@@ -297,6 +317,16 @@ OEmbed.rocketUrlParser = async function (message) {
 		}
 	}
 	return message;
+};
+
+const OEmbed: {
+	getUrlMeta: (url: string, withFragment?: boolean) => OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult;
+	getUrlMetaWithCache: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined>;
+	rocketUrlParser: (message: IMessage) => Promise<IMessage>;
+} = {
+	rocketUrlParser,
+	getUrlMetaWithCache,
+	getUrlMeta,
 };
 
 settings.watch('API_Embed', function (value) {
