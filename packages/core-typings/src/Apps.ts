@@ -49,6 +49,7 @@ export type App = {
 	iconFileContent: string;
 	installed?: boolean;
 	isEnterpriseOnly?: boolean;
+	isSubscribed: string;
 	bundledIn: {
 		bundleId: string;
 		bundleName: string;
