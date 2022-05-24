@@ -1,26 +1,37 @@
 import { settings } from '../../settings/server';
 import { matrixBridge } from './bridge';
-import { bridgeUrlTuple } from './config';
 import { bridgeLogger, setupLogger } from './logger';
-import { isFederationMatrixEnabled } from './tools';
 
-((): void => {
-	if (!isFederationMatrixEnabled()) return;
+const watchChanges = (): void => {
+	settings.watchMultiple(
+		[
+			'Federation_Matrix_enabled',
+			'Federation_Matrix_id',
+			'Federation_Matrix_hs_token',
+			'Federation_Matrix_as_token',
+			'Federation_Matrix_homeserver_url',
+			'Federation_Matrix_homeserver_domain',
+			'Federation_Matrix_bridge_url',
+			'Federation_Matrix_bridge_localpart',
+		],
+		async ([enabled]) => {
+			setupLogger.info(`Federation Matrix is ${enabled ? 'enabled' : 'disabled'}`);
+			if (!enabled) {
+				await matrixBridge.stop();
+				return;
+			}
+			await matrixBridge.start();
+		},
+	);
+};
+
+export const startBridge = (): void => {
+	watchChanges();
 
 	bridgeLogger.info(`Running Federation V2:
-	  id: ${settings.get('Federation_Matrix_id')}
+	  id: ${settings.get<string>('Federation_Matrix_id')}
 	  bridgeUrl: ${settings.get<string>('Federation_Matrix_bridge_url')}
-	  homeserverURL: ${settings.get('Federation_Matrix_homeserver_url')}
-	  homeserverDomain: ${settings.get('Federation_Matrix_homeserver_domain')}
+	  homeserverURL: ${settings.get<string>('Federation_Matrix_homeserver_url')}
+	  homeserverDomain: ${settings.get<string>('Federation_Matrix_homeserver_domain')}
 	`);
-
-	const [, , port] = settings.get<string>('Federation_Matrix_bridge_url').split(':') as bridgeUrlTuple;
-
-	matrixBridge.run(port);
-
-	// TODO: Changes here should re-initialize the bridge instead of needing a restart
-	// Add settings listeners
-	settings.watch('Federation_Matrix_enabled', (value) => {
-		setupLogger.info(`Federation Matrix is ${value ? 'enabled' : 'disabled'}`);
-	});
-})();
+};

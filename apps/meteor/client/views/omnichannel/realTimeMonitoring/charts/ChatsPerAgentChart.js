@@ -1,7 +1,7 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';

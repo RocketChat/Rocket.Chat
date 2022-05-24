@@ -1,6 +1,6 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect } from 'react';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 import CustomFieldsAdditionalForm from './CustomFieldsAdditionalForm';
 

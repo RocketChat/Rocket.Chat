@@ -6,7 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
-import { settings } from '../../../settings/server/functions/settings';
+import { settings } from '../../../settings/server';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
 	statusLivechat: 'available',
