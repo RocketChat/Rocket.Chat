@@ -7,7 +7,7 @@ type HeaderProps = {
 	onClose?: () => void;
 };
 
-const Header: FC<HeaderProps> = ({ title, onClose, children = undefined, ...props }) => (
+const Header: FC<HeaderProps> = ({ title, onClose, children, ...props }) => (
 	<Box is='header' display='flex' flexDirection='column' pb='x16' {...props}>
 		{(title || onClose) && (
 			<Box display='flex' flexDirection='row' alignItems='center' pi='x24' justifyContent='space-between' flexGrow={1}>
