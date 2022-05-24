@@ -12,10 +12,11 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term, conditions }) });
 
-type UserAutoCompleteProps = ComponentProps<typeof AutoComplete> &
+type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> &
 	Omit<ComponentProps<typeof Option>, 'value' | 'onChange'> & {
 		conditions?: { [key: string]: unknown };
 		filter?: string;
+		value: string;
 	};
 
 const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElement => {
@@ -33,7 +34,7 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 	return (
 		<AutoComplete
 			{...props}
-			value={value}
+			value={value as any}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ value, label }): ReactElement => {
