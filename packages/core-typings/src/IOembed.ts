@@ -38,7 +38,7 @@ export type OEmbedUrlWithMetadata = {
 	url: string;
 	meta: OEmbedMeta;
 	headers: { [k: string]: string };
-	parsedUrl: Pick<URL.UrlWithStringQuery, "host" | "hash" | "pathname" | "protocol" | "port" | "query" | "search" | "hostname">;
+	parsedUrl: Pick<Url.UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 	content: OEmbedUrlContent;
 };
 

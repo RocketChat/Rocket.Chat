@@ -185,19 +185,19 @@ const getUrlMeta = function (url: string, withFragment?: boolean): OEmbedUrlWith
 			metas[name] = metas[name] || he.unescape(value);
 			return metas[name];
 		};
-		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gim, function (meta: string, title: string): string {
+		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gim, function (_meta, title) {
 			return escapeMeta('pageTitle', title);
 		});
-		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gim, function (meta, name, value) {
+		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gim, function (_meta, name, value) {
 			return escapeMeta(camelCase(name), value);
 		});
-		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gim, function (meta, name, value) {
+		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gim, function (_meta, name, value) {
 			return escapeMeta(camelCase(name), value);
 		});
-		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gim, function (meta, value, name) {
+		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gim, function (_meta, value, name) {
 			return escapeMeta(camelCase(name), value);
 		});
-		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gim, function (meta, value, name) {
+		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gim, function (_meta, value, name) {
 			return escapeMeta(camelCase(name), value);
 		});
 		if (metas.fragment === '!' && withFragment == null) {
