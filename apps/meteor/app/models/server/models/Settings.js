@@ -145,7 +145,7 @@ export class Settings extends Base {
 		return this.update(query, update);
 	}
 
-	incrementValueById(_id) {
+	incrementValueById(_id, value = 1) {
 		const query = {
 			blocked: { $ne: true },
 			_id,
@@ -153,7 +153,7 @@ export class Settings extends Base {
 
 		const update = {
 			$inc: {
-				value: 1,
+				value,
 			},
 		};
 
