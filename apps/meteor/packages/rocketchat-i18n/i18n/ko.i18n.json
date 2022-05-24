@@ -2262,7 +2262,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "사용자 그룹 필터",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "사용자가 그룹에 존재하는지 확인하는 데 사용되는 LDAP 검색 필터입니다.",
   "LDAP_Sync_User_Data_RolesMap": "사용자 데이터 그룹 배치",
-  "LDAP_Sync_User_Data_RolesMap_Description": "LDAP 그룹을 Rocket에 매핑합니다. 채팅 사용자 역할 <br/> 예를 들어, [{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}`은 rocket-admin LDAP 그룹을 Rocket의 \"admin\"역할에 매핑합니다.",
+  "LDAP_Sync_User_Data_RolesMap_Description": "LDAP 그룹을 Rocket에 매핑합니다. 채팅 사용자 역할 <br/> 예를 들어, [{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}`은 rocket-admin LDAP 그룹을 Rocket의 \"admin\"역할에 매핑합니다.",
   "LDAP_Timeout": "제한 시간 (밀리 초)",
   "LDAP_Timeout_Description": "오류를 반환하기 전에 검색 결과를 기다리는 시간 (mileeconds)",
   "LDAP_Unique_Identifier_Field": "고유 식별자 필드",

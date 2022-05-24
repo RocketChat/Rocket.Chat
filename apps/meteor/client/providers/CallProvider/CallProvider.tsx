@@ -1,5 +1,14 @@
-import type { IVoipRoom, IUser } from '@rocket.chat/core-typings';
-import { ICallerInfo } from '@rocket.chat/core-typings';
+import type { IVoipRoom, IUser, VoipEventDataSignature } from '@rocket.chat/core-typings';
+import {
+	ICallerInfo,
+	isVoipEventAgentCalled,
+	isVoipEventAgentConnected,
+	isVoipEventCallerJoined,
+	isVoipEventQueueMemberAdded,
+	isVoipEventQueueMemberRemoved,
+	isVoipEventCallAbandoned,
+} from '@rocket.chat/core-typings';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
@@ -27,12 +36,12 @@ const stopRingback = (): void => {
 	CustomSounds.remove('telephone');
 };
 
+type NetworkState = 'online' | 'offline';
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
 
 	const result = useVoipClient();
-
 	const user = useUser();
 	const homeRoute = useRoute('home');
 
@@ -49,6 +58,8 @@ export const CallProvider: FC = ({ children }) => {
 
 	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
 
+	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
+
 	useEffect(() => {
 		if (!result?.voipClient) {
 			return;
@@ -62,90 +73,54 @@ export const CallProvider: FC = ({ children }) => {
 			return;
 		}
 
-		const handleAgentCalled = async (queue: {
-			queuename: string;
-			callerId: { id: string; name: string };
-			queuedcalls: string;
-		}): Promise<void> => {
-			queueAggregator.callRinging({ queuename: queue.queuename, callerid: queue.callerId });
-			setQueueName(queueAggregator.getCurrentQueueName());
+		const handleEventReceived = async (event: VoipEventDataSignature): Promise<void> => {
+			if (isVoipEventAgentCalled(event)) {
+				const { data } = event;
+				queueAggregator.callRinging({ queuename: data.queue, callerid: data.callerId });
+				setQueueName(queueAggregator.getCurrentQueueName());
+				return;
+			}
+			if (isVoipEventAgentConnected(event)) {
+				const { data } = event;
+				queueAggregator.callPickedup({ queuename: data.queue, queuedcalls: data.queuedCalls, waittimeinqueue: data.waitTimeInQueue });
+				setQueueName(queueAggregator.getCurrentQueueName());
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+			if (isVoipEventCallerJoined(event)) {
+				const { data } = event;
+				queueAggregator.queueJoined({ queuename: data.queue, callerid: data.callerId, queuedcalls: data.queuedCalls });
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+			if (isVoipEventQueueMemberAdded(event)) {
+				const { data } = event;
+				queueAggregator.memberAdded({ queuename: data.queue, queuedcalls: data.queuedCalls });
+				setQueueName(queueAggregator.getCurrentQueueName());
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+			if (isVoipEventQueueMemberRemoved(event)) {
+				const { data } = event;
+				queueAggregator.memberRemoved({ queuename: data.queue, queuedcalls: data.queuedCalls });
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+			if (isVoipEventCallAbandoned(event)) {
+				const { data } = event;
+				queueAggregator.queueAbandoned({ queuename: data.queue, queuedcallafterabandon: data.queuedCallAfterAbandon });
+				setQueueName(queueAggregator.getCurrentQueueName());
+				setQueueCounter(queueAggregator.getCallWaitingCount());
+				return;
+			}
+
+			console.warn('Unknown event received');
 		};
 
-		return subscribeToNotifyUser(`${user._id}/agentcalled`, handleAgentCalled);
-	}, [subscribeToNotifyUser, user, voipEnabled, queueAggregator]);
+		return subscribeToNotifyUser(`${user._id}/voip.events`, handleEventReceived);
+	}, [subscribeToNotifyUser, user, queueAggregator, voipEnabled]);
 
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleQueueJoined = async (joiningDetails: {
-			queuename: string;
-			callerid: { id: string };
-			queuedcalls: string;
-		}): Promise<void> => {
-			queueAggregator.queueJoined(joiningDetails);
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/callerjoined`, handleQueueJoined);
-	}, [subscribeToNotifyUser, user, voipEnabled, queueAggregator]);
-
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleAgentConnected = (queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
-			queueAggregator.callPickedup(queue);
-			setQueueName(queueAggregator.getCurrentQueueName());
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/agentconnected`, handleAgentConnected);
-	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
-
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleMemberAdded = (queue: { queuename: string; queuedcalls: string }): void => {
-			queueAggregator.memberAdded(queue);
-			setQueueName(queueAggregator.getCurrentQueueName());
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/queuememberadded`, handleMemberAdded);
-	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
-
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleMemberRemoved = (queue: { queuename: string; queuedcalls: string }): void => {
-			queueAggregator.memberRemoved(queue);
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/queuememberremoved`, handleMemberRemoved);
-	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
-
-	useEffect(() => {
-		if (!voipEnabled || !user || !queueAggregator) {
-			return;
-		}
-
-		const handleCallAbandon = (queue: { queuename: string; queuedcallafterabandon: string }): void => {
-			queueAggregator.queueAbandoned(queue);
-			setQueueName(queueAggregator.getCurrentQueueName());
-			setQueueCounter(queueAggregator.getCallWaitingCount());
-		};
-
-		return subscribeToNotifyUser(`${user._id}/callabandoned`, handleCallAbandon);
-	}, [queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
-
+	// This was causing event duplication before, so we'll leave this here for now
 	useEffect(() => {
 		if (!voipEnabled || !user || !queueAggregator) {
 			return;
@@ -156,7 +131,7 @@ export const CallProvider: FC = ({ children }) => {
 			openWrapUpModal();
 		};
 
-		return subscribeToNotifyUser(`${user._id}/call.callerhangup`, handleCallHangup);
+		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
 	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
@@ -204,6 +179,56 @@ export const CallProvider: FC = ({ children }) => {
 		 */
 		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 	}, [result.voipClient]);
+
+	const onNetworkConnected = useMutableCallback((): void => {
+		if (!result.voipClient) {
+			return;
+		}
+		if (networkStatus === 'offline') {
+			setNetworkStatus('online');
+		}
+	});
+
+	const onNetworkDisconnected = useMutableCallback((): void => {
+		if (!result.voipClient) {
+			return;
+		}
+		// Transitioning from online -> offline
+		// If there is ongoing call, terminate it or if we are processing an incoming/outgoing call
+		// reject it.
+		if (networkStatus === 'online') {
+			setNetworkStatus('offline');
+			switch (result.voipClient.callerInfo.state) {
+				case 'IN_CALL':
+				case 'ON_HOLD':
+					result.voipClient?.endCall();
+					break;
+				case 'OFFER_RECEIVED':
+				case 'ANSWER_SENT':
+					result.voipClient?.rejectCall();
+					break;
+			}
+		}
+	});
+
+	useEffect(() => {
+		if (!result.voipClient) {
+			return;
+		}
+		result.voipClient.onNetworkEvent('connected', onNetworkConnected);
+		result.voipClient.onNetworkEvent('disconnected', onNetworkDisconnected);
+		result.voipClient.onNetworkEvent('connectionerror', onNetworkDisconnected);
+		result.voipClient.onNetworkEvent('localnetworkonline', onNetworkConnected);
+		result.voipClient.onNetworkEvent('localnetworkoffline', onNetworkDisconnected);
+
+		return (): void => {
+			result.voipClient?.offNetworkEvent('connected', onNetworkConnected);
+			result.voipClient?.offNetworkEvent('disconnected', onNetworkDisconnected);
+			result.voipClient?.offNetworkEvent('connectionerror', onNetworkDisconnected);
+			result.voipClient?.offNetworkEvent('localnetworkonline', onNetworkConnected);
+			result.voipClient?.offNetworkEvent('localnetworkoffline', onNetworkDisconnected);
+		};
+	}, [onNetworkConnected, onNetworkDisconnected, result.voipClient]);
 
 	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', 'voip/room');

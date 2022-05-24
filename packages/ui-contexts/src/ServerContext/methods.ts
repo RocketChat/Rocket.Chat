@@ -1,4 +1,4 @@
-import type { IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISetting, ISupportedLanguage, IUser } from '@rocket.chat/core-typings';
 import type { DeleteWriteOpResultObject } from 'mongodb';
 
 import type { AddWebdavAccountMethod } from './methods/addWebdavAccount';
@@ -123,6 +123,8 @@ export interface ServerMethods {
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
 	'checkRegistrationSecretURL': (hash: string) => boolean;
+	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
+	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 }
 
 export type ServerMethodName = keyof ServerMethods;
