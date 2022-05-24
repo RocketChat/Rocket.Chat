@@ -1,6 +1,6 @@
 import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import React, { HTMLAttributes, memo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import { UserStatus } from '../../../components/UserStatus';
@@ -13,8 +13,7 @@ import AgentInfoAction from './AgentInfoAction';
 
 type AgentInfoProps = {
 	uid: string;
-	children?: ReactElement;
-};
+} & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
