@@ -1094,8 +1094,8 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		return this.findOne({ sessionId });
 	}
 
-	findOneBySessionIdAndUserID(sessionId: string, userId: string): Promise<ISession | null> {
-		return this.findOne({ sessionId, userId });
+	findOneBySessionIdAndUserId(sessionId: string, userId: string): Promise<ISession | null> {
+		return this.findOne({ sessionId, userId, loginToken: { $exists: true, $ne: '' } });
 	}
 
 	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
@@ -1579,27 +1579,46 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		return this.updateMany(query, update);
 	}
 
-	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult> {
+	async logoutBySessionIdAndUserId({
+		sessionId,
+		userId,
+	}: {
+		sessionId: ISession['sessionId'];
+		userId: IUser['_id'];
+	}): Promise<UpdateWriteOpResult> {
 		const query = {
-			instanceId,
 			sessionId,
 			userId,
 			logoutAt: { $exists: false },
 		};
 		const session = await this.findOne(query);
 		const logoutAt = new Date();
-		const update = {
+		const updateObj = {
 			$set: {
 				logoutAt,
 				logoutBy: userId,
 			},
 		};
 
-		if (!session?.loginToken) {
-			return this.updateOne(query, update);
-		}
+		return this.updateMany({ userId, loginToken: session?.loginToken }, updateObj);
+	}
 
-		return this.updateMany({ userId, loginToken: session?.loginToken }, update);
+	async logoutByloginTokenAndUserId({
+		loginToken,
+		userId,
+	}: {
+		loginToken: ISession['loginToken'];
+		userId: IUser['_id'];
+	}): Promise<UpdateWriteOpResult> {
+		const logoutAt = new Date();
+		const updateObj = {
+			$set: {
+				logoutAt,
+				logoutBy: userId,
+			},
+		};
+
+		return this.updateMany({ userId, loginToken }, updateObj);
 	}
 
 	async createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteOpResultObject | undefined> {

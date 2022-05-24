@@ -1,4 +1,5 @@
 import type { IRole } from './IRole';
+import type { IUser } from './IUser';
 
 type sessionType = 'session' | 'computed-session' | 'user_daily';
 export interface ISessionDevice {
@@ -31,8 +32,7 @@ export interface ISession {
 	loginAt: Date;
 	logoutAt?: Date;
 	closedAt?: Date;
-	logoutBy?: string;
-	count?: number;
+	logoutBy?: IUser['_id'];
 	loginToken?: string;
 }
 

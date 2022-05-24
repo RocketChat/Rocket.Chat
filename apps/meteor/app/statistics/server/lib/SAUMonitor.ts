@@ -122,8 +122,9 @@ export class SAUMonitorClass {
 			if (!this.isRunning()) {
 				return;
 			}
+			const { id: sessionId } = connection;
 
-			await Sessions.logoutByInstanceIdAndSessionIdAndUserId(connection.instanceId, connection.id, userId);
+			await Sessions.logoutBySessionIdAndUserId({ sessionId, userId });
 		});
 	}
 

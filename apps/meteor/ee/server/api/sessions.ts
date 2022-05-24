@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import { IUser } from '@rocket.chat/core-typings';
 
@@ -52,21 +51,15 @@ API.v1.addRoute(
 			});
 
 			const { sessionId } = this.bodyParams;
-			const sessionObj = await Sessions.findOneBySessionIdAndUserID(sessionId, this.userId);
+			const sessionObj = await Sessions.findOneBySessionIdAndUserId(sessionId, this.userId);
 
-			if (!sessionObj) {
+			if (!sessionObj?.loginToken) {
 				return API.v1.notFound('Session not found');
 			}
 
-			Meteor.users.update(this.userId, {
-				$pull: {
-					'services.resume.loginTokens': {
-						hashedToken: sessionObj.loginToken,
-					},
-				},
-			});
+			await Users.unsetOneLoginToken(this.userId, sessionObj.loginToken);
 
-			await Sessions.updateMany({ loginToken: sessionObj.loginToken }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
+			await Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId });
 			return API.v1.success({ sessionId });
 		},
 	},
@@ -126,15 +119,9 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			Meteor.users.update(sessionObj.userId, {
-				$pull: {
-					'services.resume.loginTokens': {
-						hashedToken: sessionObj.loginToken,
-					},
-				},
-			});
+			await Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken);
 
-			await Sessions.updateMany({ loginToken: sessionObj.loginToken }, { $set: { logoutAt: new Date(), logoutBy: this.userId } });
+			await Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId });
 			return API.v1.success({ sessionId });
 		},
 	},
