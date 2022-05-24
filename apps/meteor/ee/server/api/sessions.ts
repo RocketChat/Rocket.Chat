@@ -28,7 +28,29 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const search: string = this.queryParams?.search || '';
 
-			const sessions = await Sessions.getByUserId(this.userId, search, { offset, count });
+			const sessions = await Sessions.aggregateSessionsByUserId(this.userId, search, { offset, count });
+			return API.v1.success(sessions);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'sessions/info',
+	{ authRequired: true },
+	{
+		async get() {
+			if (!hasLicense('device-management')) {
+				return API.v1.unauthorized();
+			}
+			check(this.queryParams, {
+				sessionId: String,
+			});
+
+			const { sessionId } = this.queryParams;
+			const sessions = await Sessions.findOneBySessionIdAndUserId(sessionId, this.userId);
+			if (!sessions) {
+				return API.v1.notFound('Session not found');
+			}
 			return API.v1.success(sessions);
 		},
 	},
@@ -93,26 +115,26 @@ API.v1.addRoute(
 				search += ` ${searchUser.map((user) => user._id).join(' ')}`;
 			}
 
-			const sessions = await Sessions.getAllSessions(search, { offset, count });
+			const sessions = await Sessions.aggregateSessionsAndPopulate(search, { offset, count });
 			return API.v1.success(sessions);
 		},
 	},
 );
 
 API.v1.addRoute(
-	'sessions/:sessionId/details',
+	'sessions/info.admin',
 	{ authRequired: true, twoFactorRequired: true, permissionsRequired: ['view-device-management'] },
 	{
 		async get() {
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
-			check(this.urlParams, {
+			check(this.queryParams, {
 				sessionId: String,
 			});
 
-			const { sessionId } = this.urlParams;
-			const { sessions } = await Sessions.getAllSessions(sessionId, { offset: 0, count: 1 });
+			const { sessionId } = this.queryParams;
+			const { sessions } = await Sessions.aggregateSessionsAndPopulate(sessionId, { offset: 0, count: 1 });
 			if (!sessions?.length) {
 				return API.v1.notFound('Session not found');
 			}

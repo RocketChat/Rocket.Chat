@@ -749,10 +749,10 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		this.secondaryCollection = colSecondary;
 	}
 
-	async getByUserId(
+	async aggregateSessionsByUserId(
 		uid: string,
 		search?: string | null,
-		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
+		{ offset, count }: IPaginationOptions = { offset: 0, count: 10 },
 	): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
@@ -846,7 +846,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		return { sessions, total, count, offset };
 	}
 
-	async getAllSessions(
+	async aggregateSessionsAndPopulate(
 		search = '',
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 10 },
 	): Promise<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>> {

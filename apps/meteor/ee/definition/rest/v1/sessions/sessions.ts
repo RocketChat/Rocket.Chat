@@ -9,15 +9,17 @@ declare module '@rocket.chat/rest-typings' {
 		'sessions/list': {
 			GET: (params: PaginatedRequest<{ search?: string }>) => PaginatedResult<{ sessions: DeviceManagementSession[] }>;
 		};
+		'sessions/info': {
+			GET: (params: { sessionId: string }) => DeviceManagementSession;
+		};
 		'sessions/logout.me': {
 			POST: (params: { sessionId: string }) => Pick<ISession, 'sessionId'>;
 		};
-
 		'sessions/list.all': {
 			GET: (params: PaginatedRequest<{ search?: string }>) => PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>;
 		};
-		'sessions/:sessionId/details': {
-			GET: () => DeviceManagementPopulatedSession;
+		'sessions/info.admin': {
+			GET: (params: { sessionId: string }) => DeviceManagementPopulatedSession;
 		};
 		'sessions/logout': {
 			POST: (params: { sessionId: string }) => Pick<ISession, 'sessionId'>;
