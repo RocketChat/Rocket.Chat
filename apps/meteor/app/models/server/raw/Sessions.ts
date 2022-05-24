@@ -779,7 +779,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 		const sortOperator = {
 			$sort: {
-				createdAt: -1,
+				loginAt: -1,
 			},
 		};
 		const groupOperator = {
@@ -906,7 +906,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 		const sortOperator = {
 			$sort: {
-				createdAt: -1,
+				loginAt: -1,
 			},
 		};
 		const groupOperator = {
@@ -1032,13 +1032,14 @@ export class SessionsRaw extends BaseRaw<ISession> {
 
 	protected modelIndexes(): IndexSpecification[] {
 		return [
-			{ key: { createdAt: 1 } },
-			{ key: { ip: 1, loginAt: 1 } },
+			{ key: { createdAt: -1 } },
+			{ key: { loginAt: -1 } },
+			{ key: { ip: 1, loginAt: -1 } },
 			{ key: { userId: 1, sessionId: 1 } },
-			{ key: { loginToken: 1, logoutAt: 1, userId: 1 } },
 			{ key: { type: 1, year: 1, month: 1, day: 1 } },
 			{ key: { sessionId: 1, instanceId: 1, year: 1, month: 1, day: 1 } },
 			{ key: { _computedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 45 },
+			{ key: { 'loginToken': 1, 'logoutAt': 1, 'userId': 1, 'device.name': 1, 'device.os.name': 1, 'logintAt': -1 } },
 			{
 				key: {
 					'device.name': 'text',
@@ -1046,6 +1047,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 					'device.os.name': 'text',
 					'sessionId': 'text',
 					'userId': 'text',
+					'logintAt': -1,
 				},
 				weights: {
 					'device.name': 10,
