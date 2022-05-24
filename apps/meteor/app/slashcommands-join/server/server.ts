@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions } from '../../models/server';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
 
-function Join(_command: 'join', params: string, item: Record<string, string>): void {
+function Join(_command: 'join', params: string, item: IMessage): void {
 	let channel = params.trim();
 	if (channel === '') {
 		return;
@@ -45,16 +46,8 @@ function Join(_command: 'join', params: string, item: Record<string, string>): v
 	Meteor.call('joinRoom', room._id);
 }
 
-slashCommands.add(
-	'join',
-	Join,
-	{
-		description: 'Join_the_given_channel',
-		params: '#channel',
-		permission: 'view-c-room',
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('join', Join, {
+	description: 'Join_the_given_channel',
+	params: '#channel',
+	permission: 'view-c-room',
+});

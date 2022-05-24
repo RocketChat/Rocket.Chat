@@ -36,10 +36,15 @@ export interface VoIPUserConfiguration {
 	 */
 	iceServers: Array<object>;
 	/**
-	 * Voip Retru count
+	 * Voip Retry count
 	 * @defaultValue undefined
 	 */
 	connectionRetryCount: number;
+	/**
+	 * Enable Keep Alive for unstable networks
+	 * @defaultValue undefined
+	 */
+	enableKeepAliveUsingOptionsForUnstableNetworks: boolean;
 }
 
 export interface IMediaStreamRenderer {

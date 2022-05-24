@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { useMessageOembedIsEnabled, useMessageOembedMaxWidth } from '../../../contexts/MessageContext';
+import { useMessageOembedMaxWidth } from '../../../contexts/MessageContext';
 import OEmbedResolver from './OEmbedResolver';
 import UrlPreview from './UrlPreview';
 
@@ -108,11 +108,10 @@ const isPreviewData = (data: PreviewData | false): data is PreviewData => !!data
 const isMetaPreview = (_data: PreviewData['data'], type: PreviewTypes): _data is PreviewMetadata => type === 'oembed';
 
 const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
-	const oembedIsEnabled = useMessageOembedIsEnabled();
 	const oembedWidth = useMessageOembedMaxWidth();
 
-	if (!oembedIsEnabled || !urls) {
-		return null;
+	if (!urls) {
+		throw new Error('urls is undefined - PreviewList');
 	}
 
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);

@@ -358,6 +358,15 @@ Accounts.validateLoginAttempt(function (login) {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
+	/**
+	 * Trigger the event only when the
+	 * user does login in Rocket.chat
+	 */
+	if (login.type !== 'resume') {
+		// App IPostUserLoggedIn event hook
+		Promise.await(Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user));
+	}
+
 	return true;
 });
 
