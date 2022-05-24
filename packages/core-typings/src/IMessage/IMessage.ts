@@ -12,6 +12,7 @@ type MentionType = 'user' | 'team';
 
 type MessageUrl = {
 	url: string;
+	source?: string;
 	meta: Record<string, string>;
 	headers?: { contentLength: string; contentType: string };
 };
@@ -171,7 +172,9 @@ export interface IEditedMessage extends IMessage {
 export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
 
 export interface ITranslatedMessage extends IMessage {
-	translations: { [key: string]: unknown };
+	translations: { [key: string]: string } & { original?: string };
+	autoTranslateShowInverse?: boolean;
+	autoTranslateFetching?: boolean;
 }
 
 export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage => 'translations' in message;
