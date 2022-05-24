@@ -1,22 +1,15 @@
-import React, { useCallback, useMemo, useEffect, memo, FC } from 'react';
+import { useRoutePath, useCurrentRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useCallback, useEffect, memo, FC } from 'react';
 
 import { menu, SideNav } from '../../../../app/ui-utils/client';
 import PlanTag from '../../../components/PlanTag';
 import Sidebar from '../../../components/Sidebar';
-import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
-import { useRoutePath, useCurrentRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { isLayoutEmbedded } from '../../../lib/utils/isLayoutEmbedded';
 import SettingsProvider from '../../../providers/SettingsProvider';
 import AdminSidebarPages from './AdminSidebarPages';
-import AdminSidebarSettings from './AdminSidebarSettings';
 
 const AdminSidebar: FC = () => {
 	const t = useTranslation();
-
-	const canViewSettings = useAtLeastOnePermission(
-		useMemo(() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'], []),
-	);
 
 	const closeAdminFlex = useCallback(() => {
 		if (isLayoutEmbedded()) {
@@ -52,7 +45,6 @@ const AdminSidebar: FC = () => {
 				/>
 				<Sidebar.Content>
 					<AdminSidebarPages currentPath={currentPath || ''} />
-					{canViewSettings && <AdminSidebarSettings currentPath={currentPath || ''} />}
 				</Sidebar.Content>
 			</Sidebar>
 		</SettingsProvider>

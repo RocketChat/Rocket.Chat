@@ -1,8 +1,7 @@
 import { Box, InputBox, Menu, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, useEffect } from 'react';
-
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 
 const date = new Date();
 

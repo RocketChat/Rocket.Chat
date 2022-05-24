@@ -9,13 +9,13 @@ import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
-import type { DmEndpoints } from './v1/dm';
 import type { DnsEndpoints } from './v1/dns';
 import type { E2eEndpoints } from './v1/e2e';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { GroupsEndpoints } from './v1/groups';
-import type { ImEndpoints } from './v1/im';
+import type { ImEndpoints, DmEndpoints } from './v1/dm';
 import type { InstancesEndpoints } from './v1/instances';
+import type { IntegrationsEndpoints } from './v1/integrations';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
@@ -31,14 +31,15 @@ import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
+import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
-	extends BannersEndpoints,
+	extends ChannelsEndpoints,
+		BannersEndpoints,
 		ChatEndpoints,
-		ChannelsEndpoints,
 		CloudEndpoints,
 		CustomUserStatusEndpoints,
 		DmEndpoints,
@@ -60,13 +61,16 @@ export interface Endpoints
 		MiscEndpoints,
 		PermissionsEndpoints,
 		InstancesEndpoints,
+		IntegrationsEndpoints,
 		VoipEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
 		CustomSoundEndpoint,
+		EmailInboxEndpoints,
 		WebdavEndpoints,
-		OAuthAppsEndpoint {}
+		OAuthAppsEndpoint,
+		AppsEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
@@ -134,6 +138,24 @@ export * from './v1/permissions';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
+export * from './v1/channels/ChannelsAddAllProps';
+export * from './v1/channels/ChannelsArchiveProps';
+export * from './v1/channels/ChannelsUnarchiveProps';
+export * from './v1/channels/ChannelsHistoryProps';
+export * from './v1/channels/ChannelsRolesProps';
+export * from './v1/channels/ChannelsJoinProps';
+export * from './v1/channels/ChannelsKickProps';
+export * from './v1/channels/ChannelsLeaveProps';
+export * from './v1/channels/ChannelsMessagesProps';
+export * from './v1/channels/ChannelsOpenProps';
+export * from './v1/channels/ChannelsSetAnnouncementProps';
+export * from './v1/channels/ChannelsGetAllUserMentionsByChannelProps';
+export * from './v1/channels/ChannelsModeratorsProps';
+export * from './v1/channels/ChannelsConvertToTeamProps';
+export * from './v1/channels/ChannelsSetReadOnlyProps';
+export * from './v1/channels/ChannelsDeleteProps';
+export * from './v1/dm';
+export * from './v1/integrations';
 export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';

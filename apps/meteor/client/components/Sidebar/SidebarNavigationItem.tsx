@@ -1,7 +1,7 @@
 import { Box, Icon, IconProps, Tag } from '@rocket.chat/fuselage';
+import { useRoutePath } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo, FC } from 'react';
 
-import { useRoutePath } from '../../contexts/RouterContext';
 import SidebarGenericItem from './SidebarGenericItem';
 
 type SidebarNavigationItemProps = {

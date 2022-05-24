@@ -1,15 +1,12 @@
 import { IRole } from '@rocket.chat/core-typings';
 import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useRef, ReactElement } from 'react';
 
 import Page from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoComplete from '../../../../components/UserAutoComplete';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import UsersInRoleTable from './UsersInRoleTable';
 
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
@@ -42,7 +39,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			setUser(undefined);
 			reload.current?.();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	});
 
@@ -53,6 +50,12 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 
 		return setUser(user);
 	});
+
+	const handleChange = (value: unknown): void => {
+		if (typeof value === 'string') {
+			setRid(value);
+		}
+	};
 
 	return (
 		<Page>
@@ -68,7 +71,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 							<Field mbe='x4'>
 								<Field.Label>{t('Choose_a_room')}</Field.Label>
 								<Field.Row>
-									<RoomAutoComplete value={rid} onChange={setRid} placeholder={t('User')} />
+									<RoomAutoComplete value={rid} onChange={handleChange} placeholder={t('User')} />
 								</Field.Row>
 							</Field>
 						)}

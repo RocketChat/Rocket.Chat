@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { appLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
@@ -20,12 +18,7 @@ registerAdminRoute('/marketplace/:context?/:id?/:version?', {
 	lazyRouteComponent: () => import('./apps/AppsRoute'),
 });
 
-registerAdminRoute('/apps/:context?/:id?/:version?', {
-	name: 'admin-apps',
-	lazyRouteComponent: () => import('./apps/AppsRoute'),
-});
-
-registerAdminRoute('/apps/:context?/:id?/:version?', {
+registerAdminRoute('/apps/:context?/:id?/:version?/:tab?', {
 	name: 'admin-apps',
 	lazyRouteComponent: () => import('./apps/AppsRoute'),
 });
@@ -124,11 +117,9 @@ registerAdminRoute('/email-inboxes/:context?/:_id?', {
 	lazyRouteComponent: () => import('./emailInbox/EmailInboxRoute'),
 });
 
-Meteor.startup(() => {
-	registerAdminRoute('/:group+', {
-		name: 'admin',
-		lazyRouteComponent: () => import('./settings/SettingsRoute'),
-	});
+registerAdminRoute('/settings/:group?', {
+	name: 'admin-settings',
+	lazyRouteComponent: () => import('./settings/SettingsRoute'),
 });
 
 registerAdminRoute('/chatpal', {

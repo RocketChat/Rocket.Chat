@@ -1,7 +1,7 @@
 import { IconProps } from '@rocket.chat/fuselage';
+import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, FC } from 'react';
 
-import { TranslationKey, useTranslation } from '../../contexts/TranslationContext';
 import SidebarNavigationItem from './SidebarNavigationItem';
 
 type Item = {

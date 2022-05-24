@@ -1,11 +1,10 @@
 import { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import UserAutoComplete from '../../UserAutoComplete';
@@ -110,9 +109,8 @@ const ForwardChatModal = ({
 					<Field.Row>
 						<UserAutoComplete
 							conditions={conditions}
-							flexGrow={1}
 							placeholder={t('Username')}
-							onChange={(value: string): void => {
+							onChange={(value: any): void => {
 								setValue('username', value);
 							}}
 							value={getValues().username}
