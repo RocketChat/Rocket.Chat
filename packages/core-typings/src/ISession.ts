@@ -70,3 +70,8 @@ export type OSSessionAggregation = Pick<ISession, '_id'> & {
 	count: number;
 	time: number;
 };
+
+export type DeviceManagementSession = Pick<ISession, '_id' | 'sessionId' | 'device' | 'host' | 'ip' | 'logoutAt' | 'userId'>;
+export type DeviceManagementPopulatedSession = DeviceManagementSession & {
+	_user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'>;
+};

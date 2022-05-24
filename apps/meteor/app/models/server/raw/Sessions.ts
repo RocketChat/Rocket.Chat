@@ -14,6 +14,8 @@ import type {
 	OSSessionAggregation,
 	UserSessionAggregationResult,
 	DeviceSessionAggregationResult,
+	DeviceManagementSession,
+	DeviceManagementPopulatedSession,
 	OSSessionAggregationResult,
 	IUser,
 	IPaginationOptions,
@@ -751,7 +753,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		uid: string,
 		search?: string | null,
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
-	): Promise<PaginatedResult<{ sessions: ISession[] }>> {
+	): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
 		const matchOperator = {
@@ -785,20 +787,8 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const groupOperator = {
 			$group: {
 				_id: '$loginToken',
-				instanceId: {
-					$first: '$instanceId',
-				},
 				sessionId: {
 					$first: '$sessionId',
-				},
-				day: {
-					$first: '$day',
-				},
-				month: {
-					$first: '$month',
-				},
-				year: {
-					$first: '$year',
 				},
 				userId: {
 					$first: '$userId',
@@ -812,21 +802,6 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				ip: {
 					$first: '$ip',
 				},
-				mostImportantRole: {
-					$first: '$mostImportantRole',
-				},
-				roles: {
-					$first: '$roles',
-				},
-				type: {
-					$first: '$type',
-				},
-				_updatedAt: {
-					$first: '$_updatedAt',
-				},
-				createdAt: {
-					$first: '$createdAt',
-				},
 				loginAt: {
 					$first: '$loginAt',
 				},
@@ -839,20 +814,11 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const projectOperator = {
 			$project: {
 				_id: '$sessionId',
-				instanceId: 1,
 				sessionId: 1,
-				day: 1,
-				month: 1,
-				year: 1,
 				userId: 1,
 				device: 1,
 				host: 1,
 				ip: 1,
-				mostImportantRole: 1,
-				roles: 1,
-				type: 1,
-				_updatedAt: 1,
-				createdAt: 1,
 				loginAt: 1,
 			},
 		};
@@ -875,7 +841,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				docs: sessions,
 				count: [{ total } = { total: 0 }],
 			},
-		] = await this.col.aggregate<{ docs: ISession[]; count: { total: number }[] }>(queryArray).toArray();
+		] = await this.col.aggregate<{ docs: DeviceManagementSession[]; count: { total: number }[] }>(queryArray).toArray();
 
 		return { sessions, total, count, offset };
 	}
@@ -883,7 +849,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	async getAllSessions(
 		search = '',
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 10 },
-	): Promise<PaginatedResult<{ sessions: ISession & { _user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'> }[] }>> {
+	): Promise<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
 		const matchOperator = {
@@ -912,29 +878,11 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const groupOperator = {
 			$group: {
 				_id: '$loginToken',
-				day: {
-					$first: '$day',
-				},
-				instanceId: {
-					$first: '$instanceId',
-				},
-				month: {
-					$first: '$month',
-				},
 				sessionId: {
 					$first: '$sessionId',
 				},
 				userId: {
 					$first: '$userId',
-				},
-				year: {
-					$first: '$year',
-				},
-				_updatedAt: {
-					$first: '$_updatedAt',
-				},
-				createdAt: {
-					$first: '$createdAt',
 				},
 				device: {
 					$first: '$device',
@@ -947,12 +895,6 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				},
 				loginAt: {
 					$first: '$loginAt',
-				},
-				mostImportantRole: {
-					$first: '$mostImportantRole',
-				},
-				roles: {
-					$first: '$roles',
 				},
 			},
 		};
@@ -978,20 +920,11 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const projectOperator = {
 			$project: {
 				_id: '$sessionId',
-				day: 1,
-				instanceId: 1,
-				month: 1,
 				sessionId: 1,
-				year: 1,
-				_updatedAt: 1,
-				createdAt: 1,
 				device: 1,
-				devices: 1,
 				host: 1,
 				ip: 1,
 				loginAt: 1,
-				mostImportantRole: 1,
-				roles: 1,
 				userId: 1,
 				_user: {
 					name: 1,
@@ -1022,7 +955,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			},
 		] = await this.col
 			.aggregate<{
-				docs: ISession & { _user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'> }[];
+				docs: DeviceManagementPopulatedSession[];
 				count: { total: number }[];
 			}>(queryArray)
 			.toArray();
