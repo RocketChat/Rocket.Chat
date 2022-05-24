@@ -1,3 +1,5 @@
+import { IInvite } from '@rocket.chat/core-typings';
+
 import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 import { removeInvite } from '../../../invites/server/functions/removeInvite';
@@ -22,7 +24,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { rid, days, maxUses } = this.bodyParams;
-			const result = await findOrCreateInvite(this.userId, { rid, days, maxUses });
+			const result = (await findOrCreateInvite(this.userId, { rid, days, maxUses })) as IInvite;
 
 			return API.v1.success(result);
 		},

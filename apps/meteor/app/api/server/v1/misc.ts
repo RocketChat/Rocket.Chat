@@ -192,7 +192,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const types = settings.get('API_Shield_Types');
+			const types = settings.get<string>('API_Shield_Types');
 			if (
 				type &&
 				types !== '*' &&
@@ -300,7 +300,7 @@ API.v1.addRoute(
 			`
 					.trim()
 					.replace(/\>[\s]+\</gm, '><'),
-			};
+			} as any;
 		},
 	},
 );

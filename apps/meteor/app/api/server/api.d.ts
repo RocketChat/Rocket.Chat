@@ -109,6 +109,15 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	};
 	/* @deprecated */
 	getUserFromParams(): IUser;
+	/* @deprecated */
+	getUserInfo(me: IUser): IUser & {
+		email?: string;
+		settings: {
+			profile: {};
+			preferences: unknown;
+		};
+		avatarUrl: string;
+	};
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;

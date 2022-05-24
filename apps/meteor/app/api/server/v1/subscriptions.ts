@@ -1,38 +1,34 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Subscriptions } from '../../../models/server';
+import { Subscriptions } from '../../../models/server/raw';
 import { API } from '../api';
 
 API.v1.addRoute(
 	'subscriptions.get',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { updatedSince } = this.queryParams;
 
-			let updatedSinceDate: Date;
+			let updatedSinceDate: Date | undefined;
 			if (updatedSince) {
 				if (isNaN(Date.parse(updatedSince))) {
 					throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
-				} else {
-					updatedSinceDate = new Date(updatedSince);
 				}
+				updatedSinceDate = new Date(updatedSince);
 			}
 
-			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('subscriptions/get', updatedSinceDate);
-			});
+			const result = await Meteor.call('subscriptions/get', updatedSinceDate);
 
-			if (Array.isArray(result)) {
-				result = {
-					update: result,
-					remove: [],
-				};
-			}
-
-			return API.v1.success(result);
+			return API.v1.success(
+				Array.isArray(result)
+					? {
+							update: result,
+							remove: [],
+					  }
+					: result,
+			);
 		},
 	},
 );
@@ -41,17 +37,15 @@ API.v1.addRoute(
 	'subscriptions.getOne',
 	{ authRequired: true },
 	{
-		get() {
-			const { roomId } = this.requestParams();
+		async get() {
+			const { roomId } = this.queryParams;
 
 			if (!roomId) {
 				return API.v1.failure("The 'roomId' param is required");
 			}
 
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
-
 			return API.v1.success({
-				subscription,
+				subscription: await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId),
 			});
 		},
 	},
@@ -74,7 +68,7 @@ API.v1.addRoute(
 				rid: String,
 			});
 
-			Meteor.runAsUser(this.userId, () => Meteor.call('readMessages', this.bodyParams.rid));
+			Meteor.call('readMessages', this.bodyParams.rid);
 
 			return API.v1.success();
 		},
@@ -87,11 +81,12 @@ API.v1.addRoute(
 	{
 		post() {
 			const { roomId, firstUnreadMessage } = this.bodyParams;
+
 			if (!roomId && firstUnreadMessage && !firstUnreadMessage._id) {
 				return API.v1.failure('At least one of "roomId" or "firstUnreadMessage._id" params is required');
 			}
 
-			Meteor.runAsUser(this.userId, () => Meteor.call('unreadMessages', firstUnreadMessage, roomId));
+			Meteor.call('unreadMessages', firstUnreadMessage, roomId);
 
 			return API.v1.success();
 		},
