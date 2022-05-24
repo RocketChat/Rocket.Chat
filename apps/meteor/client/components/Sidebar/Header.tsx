@@ -2,7 +2,6 @@ import { Box, ActionButton } from '@rocket.chat/fuselage';
 import React, { FC, ReactElement } from 'react';
 
 type HeaderProps = {
-	children?: React.ReactNode;
 	title?: ReactElement | string;
 	onClose?: () => void;
 };
