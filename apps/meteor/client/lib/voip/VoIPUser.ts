@@ -83,13 +83,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private onlineNetworkHandler: () => void;
 
-	private optionsKeepaliveInterval = 1;
+	private optionsKeepaliveInterval = 5;
 
 	private optionsKeepAliveDebounceTimeInSec = 5;
 
 	private attemptRegistration = false;
-
-	private currentStatus: 'connected' | 'disconnected' = 'disconnected';
 
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
@@ -97,6 +95,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 		this.connectionRetryCount = this.config.connectionRetryCount;
 		this.stop = false;
+
 		this.onlineNetworkHandler = this.onNetworkRestored.bind(this);
 		this.offlineNetworkHandler = this.onNetworkLost.bind(this);
 	}
@@ -915,18 +914,13 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				let isConnected = false;
 				try {
 					await this.sendKeepAliveAndWaitForResponse();
-					this.currentStatus = 'connected';
 					isConnected = true;
 				} catch (e) {
-					this.currentStatus = 'disconnected';
 					console.error(`[${e}] Failed to do options ping.`);
 				} finally {
-					if (isConnected) {
-						// Send event only if it's a "change" on the status (avoid unnecessary event flooding)
-						this.currentStatus === 'disconnected' && this.networkEmitter.emit('connected');
-					} else {
-						this.currentStatus === 'connected' && this.networkEmitter.emit('disconnected');
-					}
+					// Send event only if it's a "change" on the status (avoid unnecessary event flooding)
+					!isConnected && this.networkEmitter.emit('disconnected');
+					isConnected && this.networkEmitter.emit('connected');
 				}
 			}
 			// Each seconds check if the network can reach asterisk. If not, try to reconnect
