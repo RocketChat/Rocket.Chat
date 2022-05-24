@@ -1,4 +1,4 @@
-import { Box, ActionButton } from '@rocket.chat/fuselage';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import React from 'react';
 
 const Header = ({ title, onClose, children = undefined, ...props }) => (
@@ -10,7 +10,7 @@ const Header = ({ title, onClose, children = undefined, ...props }) => (
 						{title}
 					</Box>
 				)}
-				{onClose && <ActionButton ghost small icon='cross' onClick={onClose} />}
+				{onClose && <IconButton small icon='cross' onClick={onClose} />}
 			</Box>
 		)}
 		{children}

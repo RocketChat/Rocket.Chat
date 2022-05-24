@@ -225,7 +225,7 @@ const AccountProfilePage = () => {
 		<Page>
 			<Page.Header title={t('Profile')}>
 				<ButtonGroup>
-					<Button primary danger disabled={!hasUnsavedChanges} onClick={reset}>
+					<Button danger disabled={!hasUnsavedChanges} onClick={reset}>
 						{t('Reset')}
 					</Button>
 					<Button data-qa='AccountProfilePageSaveButton' primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
@@ -247,7 +247,7 @@ const AccountProfilePage = () => {
 							{t('Logout_Others')}
 						</Button>
 						{allowDeleteOwnAccount && (
-							<Button danger onClick={handleDeleteOwnAccount}>
+							<Button secondaryDanger onClick={handleDeleteOwnAccount}>
 								<Icon name='trash' size='x20' mie='x4' />
 								{t('Delete_my_account')}
 							</Button>

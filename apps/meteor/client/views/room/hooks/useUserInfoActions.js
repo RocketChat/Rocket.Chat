@@ -62,10 +62,10 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 			<Modal.Content fontScale='p2'>{text}</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button ghost onClick={close}>
+					<Button secondary onClick={close}>
 						{t('Cancel')}
 					</Button>
-					<Button ref={refAutoFocus} primary danger onClick={confirm}>
+					<Button ref={refAutoFocus} danger onClick={confirm}>
 						{confirmText}
 					</Button>
 				</ButtonGroup>

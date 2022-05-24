@@ -82,7 +82,7 @@ const GenericModal: FC<GenericModalProps> = ({
 					{dontAskAgain}
 					<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
 						{onCancel && (
-							<Button ghost onClick={onCancel}>
+							<Button secondary onClick={onCancel}>
 								{cancelText ?? t('Cancel')}
 							</Button>
 						)}

@@ -1,4 +1,4 @@
-import { Button, Icon, TableCell } from '@rocket.chat/fuselage';
+import { IconButton, TableCell } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -24,9 +24,7 @@ const SendTestButton = ({ id }: SendTestButtonProps): ReactElement => {
 
 	return (
 		<TableCell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Send_Test_Email')} onClick={handleOnClick}>
-				<Icon name='send' size='x20' />
-			</Button>
+			<IconButton icon='send' small title={t('Send_Test_Email')} onClick={handleOnClick} />
 		</TableCell>
 	);
 };

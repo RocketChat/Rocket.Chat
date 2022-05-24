@@ -93,7 +93,7 @@ const PruneMessages = ({
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					<Button primary danger disabled={validateText && true} onClick={onClickPrune}>
+					<Button danger disabled={validateText && true} onClick={onClickPrune}>
 						{t('Prune')}
 					</Button>
 				</ButtonGroup>

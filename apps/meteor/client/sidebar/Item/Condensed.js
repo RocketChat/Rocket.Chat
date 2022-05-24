@@ -1,4 +1,4 @@
-import { Sidebar, ActionButton } from '@rocket.chat/fuselage';
+import { Sidebar } from '@rock, IconButtonet.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useState } from 'react';
 
@@ -27,7 +27,7 @@ const Condensed = ({ icon, title = '', titleIcon, avatar, actions, href, menuOpt
 				{badges && <Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>}
 				{menu && (
 					<Sidebar.Item.Menu {...handleMenuEvent}>
-						{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}
+						{menuVisibility ? menu() : <IconButton square mini rcx-sidebar-item__menu icon='kebab' />}
 					</Sidebar.Item.Menu>
 				)}
 			</Sidebar.Item.Content>
