@@ -66,6 +66,9 @@ export class Users extends Base {
 			},
 			{ name: 'search_name_username_1' },
 		);
+		this.tryEnsureIndex({ 'active': 1, 'services.email2fa.enabled': 1 }, { sparse: true }); // used by statistics
+		this.tryEnsureIndex({ 'active': 1, 'services.totp.enabled': 1 }, { sparse: true }); // used by statistics
+
 		const collectionObj = this.model.rawCollection();
 		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}

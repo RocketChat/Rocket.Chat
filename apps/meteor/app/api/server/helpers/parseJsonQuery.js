@@ -15,6 +15,13 @@ API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	if (this.queryParams.sort) {
 		try {
 			sort = JSON.parse(this.queryParams.sort);
+			Object.entries(sort).forEach(([key, value]) => {
+				if (value !== 1 && value !== -1) {
+					throw new Meteor.Error('error-invalid-sort-parameter', `Invalid sort parameter: ${key}`, {
+						helperMethod: 'parseJsonQuery',
+					});
+				}
+			});
 		} catch (e) {
 			this.logger.warn(`Invalid sort parameter provided "${this.queryParams.sort}":`, e);
 			throw new Meteor.Error('error-invalid-sort', `Invalid sort parameter provided: "${this.queryParams.sort}"`, {
@@ -27,6 +34,14 @@ API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	if (this.queryParams.fields) {
 		try {
 			fields = JSON.parse(this.queryParams.fields);
+
+			Object.entries(fields).forEach(([key, value]) => {
+				if (value !== 1 && value !== 0) {
+					throw new Meteor.Error('error-invalid-sort-parameter', `Invalid fields parameter: ${key}`, {
+						helperMethod: 'parseJsonQuery',
+					});
+				}
+			});
 		} catch (e) {
 			this.logger.warn(`Invalid fields parameter provided "${this.queryParams.fields}":`, e);
 			throw new Meteor.Error('error-invalid-fields', `Invalid fields parameter provided: "${this.queryParams.fields}"`, {

@@ -1,11 +1,27 @@
-import { Sessions } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
+import { Integrations } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 265,
 	async up() {
-		await Promise.allSettled(
-			['instanceId_1_sessionId_1_year_1_month_1_day_1', 'instanceId_1_sessionId_1', 'type_1'].map((idx) => Sessions.col.dropIndex(idx)),
-		);
+		// Load all integrations that have an `avatarUrl` and don't have an `avatar`
+		const integrations = await Integrations.find<{ _id: string; avatarUrl: string }>(
+			{
+				avatarUrl: {
+					$exists: true,
+					$ne: '',
+				},
+				$or: [{ avatar: { $exists: false } }, { avatar: '' }],
+			},
+			{
+				projection: {
+					avatarUrl: 1,
+				},
+			},
+		).toArray();
+
+		for (const { _id, avatarUrl } of integrations) {
+			Integrations.updateOne({ _id }, { $set: { avatar: avatarUrl }, $unset: { avatarUrl: 1 } });
+		}
 	},
 });
