@@ -1034,16 +1034,14 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	}
 
 	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
-		const query = {
+		return this.find({
 			year,
 			month,
 			day,
 			type: 'session',
 			closedAt: { $exists: false },
 			lastActivityAt: { $exists: false },
-		};
-
-		return this.find(query);
+		});
 	}
 
 	async getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<
@@ -1498,20 +1496,21 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	}
 
 	async updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data = {}): Promise<UpdateWriteOpResult> {
-		const query = {
-			year,
-			month,
-			day,
-			type: 'session',
-			closedAt: { $exists: false },
-			lastActivityAt: { $exists: false },
-		};
-
 		const update = {
 			$set: data,
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(
+			{
+				year,
+				month,
+				day,
+				type: 'session',
+				closedAt: { $exists: false },
+				lastActivityAt: { $exists: false },
+			},
+			update,
+		);
 	}
 
 	async logoutBySessionIdAndUserId({
