@@ -16,6 +16,9 @@ declare module '@rocket.chat/rest-typings' {
 		'sessions/list.all': {
 			GET: (params: PaginatedRequest<{ search?: string }>) => PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>;
 		};
+		'sessions/:sessionId/details': {
+			GET: () => DeviceManagementPopulatedSession;
+		};
 		'sessions/logout': {
 			POST: (params: { sessionId: string }) => Pick<ISession, 'sessionId'>;
 		};

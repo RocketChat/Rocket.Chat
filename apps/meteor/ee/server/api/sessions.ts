@@ -100,6 +100,28 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'sessions/:sessionId/details',
+	{ authRequired: true, twoFactorRequired: true, permissionsRequired: ['view-device-management'] },
+	{
+		async get() {
+			if (!hasLicense('device-management')) {
+				return API.v1.unauthorized();
+			}
+			check(this.urlParams, {
+				sessionId: String,
+			});
+
+			const { sessionId } = this.urlParams;
+			const { sessions } = await Sessions.getAllSessions(sessionId, { offset: 0, count: 1 });
+			if (!sessions?.length) {
+				return API.v1.notFound('Session not found');
+			}
+			return API.v1.success(sessions[0]);
+		},
+	},
+);
+
+API.v1.addRoute(
 	'sessions/logout',
 	{ authRequired: true, twoFactorRequired: true, permissionsRequired: ['logout-device-management'] },
 	{
