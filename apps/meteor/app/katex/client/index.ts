@@ -180,7 +180,11 @@ class Katex {
 		return result;
 	}
 
-	renderMessage = (message: string | IMessage): string | IMessage => {
+	public renderMessage(message: string): string;
+
+	public renderMessage(message: IMessage): IMessage;
+
+	public renderMessage(message: string | IMessage): string | IMessage {
 		if (typeof message === 'string') {
 			return this.render(message, this.renderLatex);
 		}
@@ -203,20 +207,40 @@ class Katex {
 		});
 
 		return message;
-	};
+	}
 }
 
-export const createKatexMessageRendering = (options: {
-	dollarSyntax: boolean;
-	parenthesisSyntax: boolean;
-}): ((message: string | IMessage) => string | IMessage) => {
+export function createKatexMessageRendering(
+	options: {
+		dollarSyntax: boolean;
+		parenthesisSyntax: boolean;
+	},
+	_isMessage: true,
+): (message: IMessage) => IMessage;
+export function createKatexMessageRendering(
+	options: {
+		dollarSyntax: boolean;
+		parenthesisSyntax: boolean;
+	},
+	_isMessage: false,
+): (message: string) => string;
+export function createKatexMessageRendering(
+	options: {
+		dollarSyntax: boolean;
+		parenthesisSyntax: boolean;
+	},
+	_isMessage: true | false,
+): ((message: string) => string) | ((message: IMessage) => IMessage) {
 	const instance = new Katex(KatexPackage, options);
-	return (message): string | IMessage => instance.renderMessage(message);
-};
+	if (_isMessage) {
+		return (message: IMessage): IMessage => instance.renderMessage(message);
+	}
+	return (message: string): string => instance.renderMessage(message);
+}
 
-export const getKatexHtml = (
-	text: string,
-	katex: { dollarSyntaxEnabled: boolean; parenthesisSyntaxEnabled: boolean },
-): string | IMessage => {
-	return createKatexMessageRendering({ dollarSyntax: katex.dollarSyntaxEnabled, parenthesisSyntax: katex.parenthesisSyntaxEnabled })(text);
+export const getKatexHtml = (text: string, katex: { dollarSyntaxEnabled: boolean; parenthesisSyntaxEnabled: boolean }): string => {
+	return createKatexMessageRendering(
+		{ dollarSyntax: katex.dollarSyntaxEnabled, parenthesisSyntax: katex.parenthesisSyntaxEnabled },
+		false,
+	)(text);
 };
