@@ -1,11 +1,11 @@
-import uuid from 'uuid';
+import { v4 } from 'uuid';
 
 export const enableBlobUrlsMock = (): void => {
 	const urlByBlob = new WeakMap<Blob, string>();
 	const blobByUrl = new Map<string, Blob>();
 
 	window.URL.createObjectURL = (blob: Blob): string => {
-		const url = urlByBlob.get(blob) ?? `blob://${uuid.v4()}`;
+		const url = urlByBlob.get(blob) ?? `blob://${v4()}`;
 		urlByBlob.set(blob, url);
 		blobByUrl.set(url, blob);
 		return url;

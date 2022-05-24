@@ -344,6 +344,12 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	// TODO: Prevent flood from database on username change, what causes changes on all past messages from that user
 	// and most of those messages are not loaded by the clients.
 	watch<IUser>(Users, ({ clientAction, id, data, diff, unset }) => {
+		// LivechatCount is updated each time an agent is routed to a chat. This prop is not used on the UI so we don't need
+		// to broadcast events originated by it when it's the only update on the user
+		if (diff && Object.keys(diff).length === 1 && 'livechatCount' in diff) {
+			return;
+		}
+
 		broadcast('watch.users', { clientAction, data, diff, unset, id });
 	});
 

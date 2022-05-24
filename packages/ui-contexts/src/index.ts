@@ -24,6 +24,7 @@ export { useConnectionStatus } from './hooks/useConnectionStatus';
 export { useCurrentRoute } from './hooks/useCurrentRoute';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
+export type { EndpointFunction } from './hooks/useEndpoint';
 export { useIsPrivilegedSettingsContext } from './hooks/useIsPrivilegedSettingsContext';
 export { useIsSettingsContextLoading } from './hooks/useIsSettingsContextLoading';
 export { useLanguage } from './hooks/useLanguage';

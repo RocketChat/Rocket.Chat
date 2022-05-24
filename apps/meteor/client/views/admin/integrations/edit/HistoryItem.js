@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { integrations as eventList } from '../../../../../app/integrations/lib/rocketchat';
+import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 
@@ -92,7 +92,7 @@ function HistoryItem({ data, ...props }) {
 					<Field.Label>{t('Event_Trigger')}</Field.Label>
 					<Field.Row>
 						<Box withRichContent w='full'>
-							<code>{t(eventList.outgoingEvents[event].label)}</code>
+							<code>{t(outgoingEvents[event].label)}</code>
 						</Box>
 					</Field.Row>
 				</Field>
