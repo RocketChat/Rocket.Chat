@@ -36,7 +36,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		try {
 			await addUser({ roleId: _id, username: user, roomId: rid });
 			dispatchToastMessage({ type: 'success', message: t('User_added') });
-			setUser(undefined);
+			setUser('');
 			reload.current?.();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
