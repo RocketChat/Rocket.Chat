@@ -91,9 +91,7 @@ API.v1.addRoute(
 			const user = this.getUserFromParams();
 			const { confirmRelinquish = false } = this.requestParams();
 
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('deleteUser', user._id, confirmRelinquish);
-			});
+			Meteor.call('deleteUser', user._id, confirmRelinquish);
 
 			return API.v1.success();
 		},
@@ -115,9 +113,7 @@ API.v1.addRoute(
 
 			const { confirmRelinquish = false } = this.requestParams();
 
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('deleteUserOwnAccount', password, confirmRelinquish);
-			});
+			Meteor.call('deleteUserOwnAccount', password, confirmRelinquish);
 
 			return API.v1.success();
 		},
@@ -157,10 +153,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			Meteor.runAsUser(this.userId, () => {
-				const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
-				Meteor.call('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
-			});
+			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
+			Meteor.call('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
 			return API.v1.success({
 				user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }),
 			});
@@ -666,10 +660,7 @@ API.v1.addRoute(
 	{
 		post() {
 			const user = this.getUserFromParams();
-			let data;
-			Meteor.runAsUser(this.userId, () => {
-				data = Meteor.call('createToken', user._id);
-			});
+			const data = Meteor.call('createToken', user._id);
 			return data ? API.v1.success({ data }) : API.v1.unauthorized();
 		},
 	},
@@ -786,7 +777,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
-			const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUsernameSuggestion'));
+			const result = Meteor.call('getUsernameSuggestion');
 
 			return API.v1.success({ result });
 		},
@@ -802,7 +793,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor }));
+			const token = Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
 
 			return API.v1.success({ token });
 		},
@@ -818,7 +809,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:regenerateToken', { tokenName }));
+			const token = Meteor.call('personalAccessTokens:regenerateToken', { tokenName });
 
 			return API.v1.success({ token });
 		},
@@ -834,18 +825,18 @@ API.v1.addRoute(
 				throw new Meteor.Error('not-authorized', 'Not Authorized');
 			}
 			const loginTokens = Users.getLoginTokensByUserId(this.userId).fetch()[0];
-			const getPersonalAccessTokens = () =>
-				loginTokens.services.resume.loginTokens
-					.filter((loginToken) => loginToken.type && loginToken.type === 'personalAccessToken')
-					.map((loginToken) => ({
-						name: loginToken.name,
-						createdAt: loginToken.createdAt,
-						lastTokenPart: loginToken.lastTokenPart,
-						bypassTwoFactor: loginToken.bypassTwoFactor,
-					}));
 
 			return API.v1.success({
-				tokens: loginTokens ? getPersonalAccessTokens() : [],
+				tokens: loginTokens
+					? loginTokens.services.resume.loginTokens
+							.filter((loginToken) => loginToken.type && loginToken.type === 'personalAccessToken')
+							.map((loginToken) => ({
+								name: loginToken.name,
+								createdAt: loginToken.createdAt,
+								lastTokenPart: loginToken.lastTokenPart,
+								bypassTwoFactor: loginToken.bypassTwoFactor,
+							}))
+					: [],
 			});
 		},
 	},
@@ -860,11 +851,9 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			Meteor.runAsUser(this.userId, () =>
-				Meteor.call('personalAccessTokens:removeToken', {
-					tokenName,
-				}),
-			);
+			Meteor.call('personalAccessTokens:removeToken', {
+				tokenName,
+			});
 
 			return API.v1.success();
 		},
@@ -944,7 +933,7 @@ API.v1.addRoute(
 
 			if (from) {
 				const ts = new Date(from);
-				const diff = (Date.now() - ts) / 1000 / 60;
+				const diff = (Date.now() - Number(ts)) / 1000 / 60;
 
 				if (diff < 10) {
 					return API.v1.success({
@@ -968,10 +957,13 @@ API.v1.addRoute(
 	{
 		get() {
 			const { fullExport = false } = this.queryParams;
-			const result = Meteor.runAsUser(this.userId, () => Meteor.call('requestDataDownload', { fullExport: fullExport === 'true' }));
+			const result = Meteor.call('requestDataDownload', { fullExport: fullExport === 'true' }) as {
+				requested: boolean;
+				exportOperation: IExportOperation;
+			};
 
 			return API.v1.success({
-				requested: result.requested,
+				requested: Boolean(result.requested),
 				exportOperation: result.exportOperation,
 			});
 		},
@@ -983,26 +975,22 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			try {
-				const hashedToken = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
+			const hashedToken = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
 
-				if (!(await UsersRaw.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
-				}
-
-				const me = await UsersRaw.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
-
-				const token = me.services.resume.loginTokens.find((token) => token.hashedToken === hashedToken);
-
-				const tokenExpires = new Date(token.when.getTime() + settings.get('Accounts_LoginExpiration') * 1000);
-
-				return API.v1.success({
-					token: this.request.headers['x-auth-token'],
-					tokenExpires,
-				});
-			} catch (error) {
-				return API.v1.failure(error);
+			if (!(await UsersRaw.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
+				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
+
+			const me = (await UsersRaw.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } })) as Pick<IUser, 'services'>;
+
+			const token = me.services.resume.loginTokens.find((token) => token.hashedToken === hashedToken);
+
+			const tokenExpires = new Date(token.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000);
+
+			return API.v1.success({
+				token: this.request.headers['x-auth-token'],
+				tokenExpires: tokenExpires.toISOString(),
+			});
 		},
 	},
 );
@@ -1011,7 +999,7 @@ API.v1.addRoute(
 	'users.autocomplete',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { selector } = this.queryParams;
 
 			if (!selector) {
@@ -1019,12 +1007,10 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findUsersToAutocomplete({
-						uid: this.userId,
-						selector: JSON.parse(selector),
-					}),
-				),
+				await findUsersToAutocomplete({
+					uid: this.userId,
+					selector: JSON.parse(selector),
+				}),
 			);
 		},
 	},
@@ -1035,7 +1021,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			API.v1.success(Meteor.call('removeOtherTokens'));
+			return API.v1.success(Meteor.call('removeOtherTokens'));
 		},
 	},
 );
@@ -1045,30 +1031,28 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
 	{
 		post() {
-			// reset own keys
-			if (this.isUserFromParams()) {
-				resetUserE2EEncriptionKey(this.userId, false);
+			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
+				// reset other user keys
+				const user = this.getUserFromParams();
+				if (!user) {
+					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+				}
+
+				if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
+					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				}
+
+				if (!hasPermission(Meteor.userId(), 'edit-other-user-e2ee')) {
+					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				}
+
+				if (!resetUserE2EEncriptionKey(user._id, true)) {
+					return API.v1.failure();
+				}
+
 				return API.v1.success();
 			}
-
-			// reset other user keys
-			const user = this.getUserFromParams();
-			if (!user) {
-				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
-			}
-
-			if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			if (!hasPermission(Meteor.userId(), 'edit-other-user-e2ee')) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			if (!resetUserE2EEncriptionKey(user._id, true)) {
-				return API.v1.failure();
-			}
-
+			resetUserE2EEncriptionKey(this.userId, false);
 			return API.v1.success();
 		},
 	},
@@ -1078,29 +1062,28 @@ API.v1.addRoute(
 	'users.resetTOTP',
 	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
 	{
-		post() {
-			// reset own keys
-			if (this.isUserFromParams()) {
-				Promise.await(resetTOTP(this.userId, false));
+		async post() {
+			// // reset own keys
+			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
+				// reset other user keys
+				if (!hasPermission(this.userId, 'edit-other-user-totp')) {
+					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				}
+
+				if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
+					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				}
+
+				const user = this.getUserFromParams();
+				if (!user) {
+					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+				}
+
+				await resetTOTP(user._id, true);
+
 				return API.v1.success();
 			}
-
-			// reset other user keys
-			const user = this.getUserFromParams();
-			if (!user) {
-				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
-			}
-
-			if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			if (!hasPermission(Meteor.userId(), 'edit-other-user-totp')) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			Promise.await(resetTOTP(user._id, true));
-
+			await resetTOTP(this.userId, false);
 			return API.v1.success();
 		},
 	},
@@ -1110,7 +1093,7 @@ API.v1.addRoute(
 	'users.listTeams',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
@@ -1126,7 +1109,7 @@ API.v1.addRoute(
 			// If the caller has permission to view all teams, there's no need to filter the teams
 			const adminId = hasPermission(this.userId, 'view-all-teams') ? undefined : this.userId;
 
-			const teams = Promise.await(Team.findBySubscribedUserIds(userId, adminId));
+			const teams = await Team.findBySubscribedUserIds(userId, adminId);
 
 			return API.v1.success({
 				teams,
