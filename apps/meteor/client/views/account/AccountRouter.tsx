@@ -4,7 +4,7 @@ import React, { Suspense, ReactElement, useEffect } from 'react';
 import { SideNav } from '../../../app/ui-utils/client';
 import PageSkeleton from '../../components/PageSkeleton';
 
-const AccountRouter = ({ renderRoute }: { renderRoute: () => ReactElement }): ReactElement => {
+const AccountRouter = ({ renderRoute }: { renderRoute?: () => ReactElement }): ReactElement => {
 	const [routeName] = useCurrentRoute();
 	const defaultRoute = useRoute('profile');
 
