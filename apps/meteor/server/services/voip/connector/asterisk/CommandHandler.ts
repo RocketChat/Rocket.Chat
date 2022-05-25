@@ -15,9 +15,8 @@
  */
 import { Db } from 'mongodb';
 import type { IVoipConnectorResult, IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
-import { IManagementConfigData, ServerType } from '@rocket.chat/core-typings';
+import { IManagementConfigData, ServerType, Commands } from '@rocket.chat/core-typings';
 
-import { Commands } from './Commands';
 import { IConnection } from './IConnection';
 import { Logger } from '../../../../lib/logger/Logger';
 import { CommandType, CommandParams } from './asterisk.types';

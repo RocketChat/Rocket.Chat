@@ -8,8 +8,8 @@
  * they will be executed by |PJSIPEndpoint| class.
  */
 import { Db } from 'mongodb';
+import { Commands } from '@rocket.chat/core-typings';
 
-import { Commands } from '../Commands';
 import { ACDQueue } from './ACDQueue';
 import { PJSIPEndpoint } from './PJSIPEndpoint';
 import { Logger } from '../../../../../lib/logger/Logger';

@@ -3,8 +3,6 @@ import mem from 'mem';
 import {
 	ServerType,
 	isICallServerConfigData,
-	IVoipCallServerConfig,
-	IVoipManagementServerConfig,
 	IQueueMembershipDetails,
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
@@ -16,8 +14,7 @@ import { IVoipService } from '../../sdk/types/IVoipService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
-import { CommandType } from './connector/asterisk/Command';
-import { Commands } from './connector/asterisk/Commands';
+import { CommandType } from './connector/asterisk/asterisk.types';
 import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
 import { api } from '../../sdk/api';
 
@@ -90,16 +87,12 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		}
 	}
 
-	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
-		return getServerConfigDataFromSettings(type);
-	}
-
 	getConnector(): CommandHandler {
 		return this.commandHandler;
 	}
 
 	async getQueueSummary(): Promise<IVoipConnectorResult> {
-		return this.commandHandler.executeCommand(Commands.queue_summary);
+		return this.commandHandler.executeCommand('queue_summary');
 	}
 
 	private cachedQueueSummary(): () => Promise<IVoipConnectorResult> {
@@ -117,18 +110,18 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 		const queueInfo: { name: string; members: string[] }[] = [];
 		for await (const queue of queues) {
-			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
+			const queueDetails = (await this.commandHandler.executeCommand('queue_details', {
 				queueName: queue,
 			})) as IVoipConnectorResult;
 			const details = queueDetails.result as IQueueDetails;
 			if (!details.members || !details.members.length) {
 				// Go to the next queue if queue does not have any
-				// memmbers.
+				// members.
 				continue;
 			}
 			queueInfo.push({
 				name: queue,
-				members: (queueDetails.result as IQueueDetails).members.map((member) => member.name.replace('PJSIP/', '')),
+				members: (queueDetails.result as IQueueDetails).members?.map((member) => member.name.replace('PJSIP/', '')) || [],
 			});
 		}
 
@@ -141,16 +134,16 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 			callWaitingCount: 0,
 			extension,
 		};
-		const queueSummary = (await this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
+		const queueSummary = (await this.commandHandler.executeCommand('queue_summary')) as IVoipConnectorResult;
 
 		for await (const queue of queueSummary.result as IQueueSummary[]) {
-			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
+			const queueDetails = (await this.commandHandler.executeCommand('queue_details', {
 				queueName: queue.name,
 			})) as IVoipConnectorResult;
 
 			const details = queueDetails.result as IQueueDetails;
 
-			if (!details.members.length) {
+			if (!details.members?.length) {
 				// Go to the next queue if queue does not have any
 				// memmbers.
 				continue;
@@ -175,10 +168,10 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 			queues: [],
 			extension,
 		};
-		const queueSummary = (await this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
+		const queueSummary = (await this.commandHandler.executeCommand('queue_summary')) as IVoipConnectorResult;
 
 		for await (const queue of queueSummary.result as IQueueSummary[]) {
-			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
+			const queueDetails = (await this.commandHandler.executeCommand('queue_details', {
 				queueName: queue.name,
 			})) as IVoipConnectorResult;
 
@@ -186,7 +179,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 			if (!details.members || !details.members.length) {
 				// Go to the next queue if queue does not have any
-				// memmbers.
+				// members.
 				continue;
 			}
 			const isAMember = details.members.some((element) => element.name.endsWith(extension));
@@ -205,22 +198,22 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 	}
 
 	async getExtensionList(): Promise<IVoipConnectorResult> {
-		return this.commandHandler.executeCommand(Commands.extension_list, undefined);
+		return this.commandHandler.executeCommand('extension_list', undefined);
 	}
 
 	async getExtensionDetails(requestParams: { extension: string }): Promise<IVoipConnectorResult> {
-		return this.commandHandler.executeCommand(Commands.extension_info, requestParams);
+		return this.commandHandler.executeCommand('extension_info', requestParams);
 	}
 
 	async getRegistrationInfo(requestParams: { extension: string }): Promise<{ result: IRegistrationInfo }> {
-		const config = this.getServerConfigData(ServerType.CALL_SERVER);
+		const config = getServerConfigDataFromSettings(ServerType.CALL_SERVER);
 		if (!config) {
 			this.logger.warn({ msg: 'API = connector.extension.getRegistrationInfo callserver settings not found' });
 			this.logger.warn('Check call server settings, without them you wont be be able to send/receive calls on RocketChat');
 			throw new Error('Not found');
 		}
 
-		const endpointDetails = await this.commandHandler.executeCommand(Commands.extension_info, requestParams);
+		const endpointDetails = await this.commandHandler.executeCommand('extension_info', requestParams);
 
 		if (!isIExtensionDetails(endpointDetails.result)) {
 			throw new Error('getRegistrationInfo Invalid endpointDetails response');

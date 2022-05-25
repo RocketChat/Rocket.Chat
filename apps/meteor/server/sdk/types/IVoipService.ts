@@ -1,10 +1,9 @@
-import { IVoipCallServerConfig, IVoipManagementServerConfig, ServerType, IRegistrationInfo } from '@rocket.chat/core-typings';
+import { IRegistrationInfo } from '@rocket.chat/core-typings';
 import type { IVoipConnectorResult, IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
 
 import type { CommandHandler } from '../../services/voip/connector/asterisk/CommandHandler';
 
 export interface IVoipService {
-	getServerConfigData(serverType: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig;
 	getConnector(): CommandHandler;
 	getConnectorVersion(): string;
 	getQueueSummary(): Promise<IVoipConnectorResult>;

@@ -30,13 +30,12 @@
  */
 import _ from 'underscore';
 import { Db } from 'mongodb';
-import { EndpointState, IExtensionDetails, EndpointListEvent, EndpointInfoEvent } from '@rocket.chat/core-typings';
+import { EndpointState, IExtensionDetails, EndpointListEvent, EndpointInfoEvent, Commands } from '@rocket.chat/core-typings';
 import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
 
 import { Command } from '../Command';
 import { CommandType, CommandParams, PJSIPCommandResult, AmiCommand } from '../asterisk.types';
 import { Logger } from '../../../../../lib/logger/Logger';
-import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
 
 export class PJSIPEndpoint extends Command {

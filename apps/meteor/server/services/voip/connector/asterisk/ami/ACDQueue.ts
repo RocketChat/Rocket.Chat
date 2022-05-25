@@ -11,10 +11,10 @@ import type {
 	ACDQueueStatusEvent,
 	ACDQueueMemberEvent,
 } from '@rocket.chat/core-typings';
+import { Commands } from '@rocket.chat/core-typings';
 
 import { Command } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
-import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
 import { AmiCommand, CommandType, ACDCommandResult, CommandParams } from '../asterisk.types';
 

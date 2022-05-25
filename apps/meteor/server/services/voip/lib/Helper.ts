@@ -2,6 +2,8 @@ import { ServerType, IVoipManagementServerConfig, IVoipCallServerConfig } from '
 
 import { settings } from '../../../../app/settings/server';
 
+export function getServerConfigDataFromSettings(type: ServerType.CALL_SERVER): IVoipCallServerConfig;
+export function getServerConfigDataFromSettings(type: ServerType.MANAGEMENT): IVoipManagementServerConfig;
 export function getServerConfigDataFromSettings(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
 	switch (type) {
 		case ServerType.CALL_SERVER: {

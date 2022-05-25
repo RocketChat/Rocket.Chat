@@ -37,6 +37,7 @@ import {
 	IContactStatus,
 	isICallHangupEvent,
 	ICallHangup,
+	Commands,
 } from '@rocket.chat/core-typings';
 
 import { Command } from '../Command';
@@ -47,7 +48,6 @@ import { UsersRaw } from '../../../../../../app/models/server/raw/Users';
 import { PbxEventsRaw } from '../../../../../../app/models/server/raw/PbxEvents';
 import { api } from '../../../../../sdk/api';
 import { ACDQueue } from './ACDQueue';
-import { Commands } from '../Commands';
 import { CommandParams, CommandType } from '../asterisk.types';
 
 export class ContinuousMonitor extends Command {

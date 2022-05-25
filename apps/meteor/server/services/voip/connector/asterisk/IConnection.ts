@@ -1,7 +1,6 @@
-import type { VoipPropagatedEvents } from '@rocket.chat/core-typings';
+import type { VoipPropagatedEvents, ICallbackContext } from '@rocket.chat/core-typings';
 
 import { Command } from './Command';
-import { ICallbackContext } from './ICallbackContext';
 
 export type IConnectionEvent =
 	| VoipPropagatedEvents
