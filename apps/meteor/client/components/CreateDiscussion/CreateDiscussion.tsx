@@ -94,7 +94,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									value={parentRoom}
 									onChange={handleParentRoom}
 									placeholder={t('Discussion_target_channel_description')}
-									disabled={defaultParentRoom}
+									disabled={Boolean(defaultParentRoom)}
 								/>
 							)}
 						</Field.Row>
