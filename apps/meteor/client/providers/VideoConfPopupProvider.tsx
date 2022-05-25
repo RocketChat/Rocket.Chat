@@ -14,7 +14,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 		() => ({
 			dispatch: (option: Omit<VideoConfPopupPayload, 'id'>): void => setPopUps((popUps) => [...popUps, { id: option.room._id, ...option }]),
 			dismiss: (rid: VideoConfPopupPayload['room']['_id']): void => setPopUps((prevState) => prevState.filter((popUp) => popUp.id !== rid)),
-			startCall: (rid: IRoom['_id']): Promise<void> => VideoConfManager.startCall(rid),
+			startCall: (rid: IRoom['_id'], title?: string): Promise<void> => VideoConfManager.startCall(rid, title),
 			acceptCall: (callId: string): void => VideoConfManager.acceptIncomingCall(callId),
 			joinCall: (callId: string): Promise<void> => VideoConfManager.joinCall(callId),
 			muteCall: (callId: string): void => VideoConfManager.muteIncomingCall(callId),

@@ -172,7 +172,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 							appId: 'videoconf-core',
 							blockId: callId,
 							actionId: 'join',
-							title,
+							value: title,
 							type: 'button',
 							text: {
 								type: 'plain_text',
