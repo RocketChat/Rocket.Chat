@@ -104,7 +104,7 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 				<Card.Divider />
 				<Card.Col>
 					<Card.Col.Section>
-						<Card.Col.Title>{t('Rooms')}</Card.Col.Title>
+						<Card.Col.Title>{t('Total_rooms')}</Card.Col.Title>
 						<TextSeparator
 							label={
 								<>
