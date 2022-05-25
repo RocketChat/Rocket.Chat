@@ -26,7 +26,9 @@ function MessageBlock({ mid: _mid, rid, blocks, appId }) {
 	const context = {
 		action: ({ actionId, value, blockId, mid = _mid, appId }) => {
 			if (appId === 'videoconf-core' && actionId === 'join') {
-				return setModal(<JoinVideoConfModal onClose={handleCloseModal} room={room} onConfirm={() => joinCall(blockId)} />);
+				return setModal(
+					<JoinVideoConfModal confTitle={value} onClose={handleCloseModal} room={room} onConfirm={() => joinCall(blockId)} />,
+				);
 			}
 
 			ActionManager.triggerBlockAction({

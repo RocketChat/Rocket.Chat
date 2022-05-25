@@ -127,8 +127,8 @@ addAction('video-conf', ({ room }) => {
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 
-	const handleStartConference = useMutableCallback(() => {
-		startCall(room._id);
+	const handleStartConference = useMutableCallback((confTitle) => {
+		startCall(room._id, confTitle);
 		handleCloseVideoConf();
 	});
 
