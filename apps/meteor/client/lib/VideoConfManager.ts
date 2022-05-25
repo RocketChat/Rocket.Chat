@@ -105,7 +105,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		return [...this.incomingDirectCalls.values()].map(({ uid, rid, callId }) => ({ uid, rid, callId }));
 	}
 
-	public async startCall(roomId: IRoom['_id']): Promise<void> {
+	public async startCall(roomId: IRoom['_id'], title?: string): Promise<void> {
 		if (!this.userId || this.isBusy()) {
 			throw new Error('Video manager is busy.');
 		}
@@ -113,7 +113,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		debug && console.log(`[VideoConf] Starting new call on room ${roomId}`);
 		this.startingNewCall = true;
 
-		const { data } = await APIClient.v1.post('video-conference.start', {}, { roomId }).catch((e: unknown) => {
+		const { data } = await APIClient.v1.post('video-conference.start', {}, { roomId, title }).catch((e: unknown) => {
 			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
 			this.startingNewCall = false;
 			return Promise.reject(e);
