@@ -3,7 +3,7 @@
 		{{> loading class="loading-animation--primary"}}
 	{{else}}
 		{{#if hasResults}}
-			<ul aria-live="polite">
+			<ul class="messages-list" aria-live="polite">
 				{{#with messageContext}}
 					{{#each msg in messages}}
 						{{> nrr nrrargs 'message' shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}

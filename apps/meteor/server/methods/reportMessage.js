@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import { Messages } from '../../app/models/server';
 import { Reports, Rooms } from '../../app/models/server/raw';
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
+import { AppEvents, Apps } from '../../app/apps/server';
 
 Meteor.methods({
 	async reportMessage(messageId, description) {
@@ -40,6 +41,8 @@ Meteor.methods({
 		}
 
 		await Reports.createWithMessageDescriptionAndUserId(message, description, uid);
+
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReported, message, Meteor.user(), description));
 
 		return true;
 	},

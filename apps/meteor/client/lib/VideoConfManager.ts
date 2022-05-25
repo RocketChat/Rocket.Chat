@@ -265,9 +265,6 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		debug && console.log(`[VideoConf] Ringing user ${uid} for the first time.`);
 		Notifications.notifyUser(uid, 'video-conference.call', { uid: this.userId, rid, callId });
-
-		// Immediately open the call in a new tab
-		this.joinCall(callId);
 	}
 
 	private async giveUp({ uid, rid, callId }: DirectCallParams): Promise<void> {
@@ -439,6 +436,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		this.emit('direct/accepted', params);
 		this.currentCallData = undefined;
+
+		// Immediately open the call in a new tab
+		this.joinCall(params.callId);
 	}
 
 	private onDirectCallRejected(params: DirectCallParams): void {

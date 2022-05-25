@@ -473,6 +473,10 @@ export class RoomsRaw extends BaseRaw {
 		]);
 	}
 
+	setAsBridged(roomId) {
+		return this.updateOne({ _id: roomId }, { $set: { bridged: true } });
+	}
+
 	findByE2E(options) {
 		return this.find(
 			{
