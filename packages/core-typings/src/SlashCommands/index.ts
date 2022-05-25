@@ -1,7 +1,12 @@
 import type { IMessage } from '../IMessage';
 import type { RequiredField } from '../utils';
 
-type SlashCommandCallback<T extends string = string> = (command: T, params: string, message: RequiredField<Partial<IMessage>, 'rid'>, triggerId?: string) => void;
+type SlashCommandCallback<T extends string = string> = (
+	command: T,
+	params: string,
+	message: RequiredField<Partial<IMessage>, 'rid'>,
+	triggerId?: string,
+) => void;
 
 export type SlashCommandPreviewItem = {
 	id: string;
