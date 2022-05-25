@@ -234,6 +234,23 @@ const LiveChatRoomJoinSchema: JSONSchemaType<LiveChatRoomJoin> = {
 
 export const isLiveChatRoomJoinProps = ajv.compile(LiveChatRoomJoinSchema);
 
+type LivechatMonitorsListProps = {
+	text: string;
+};
+
+const LivechatMonitorsListSchema: JSONSchemaType<LivechatMonitorsListProps> = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+		},
+	},
+	required: ['text'],
+	additionalProperties: false,
+};
+
+export const isLivechatMonitorsListProps = ajv.compile(LivechatMonitorsListSchema);
+
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
 		GET: () => {
@@ -256,8 +273,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: LiveChatRoomJoin) => { success: boolean };
 	};
 	'livechat/monitors.list': {
-		// TO-DO
-		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<LivechatMonitorsListProps>) => PaginatedResult<{
 			monitors: ILivechatMonitor[];
 		}>;
 	};
