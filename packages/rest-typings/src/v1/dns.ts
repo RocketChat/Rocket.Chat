@@ -1,11 +1,49 @@
+import Ajv, { JSONSchemaType } from 'ajv';
+
+const ajv = new Ajv();
+
+type DnsResolveTxtProps = {
+	url: string;
+};
+
+const dnsResolveTxtPropsSchema: JSONSchemaType<DnsResolveTxtProps> = {
+	type: 'object',
+	properties: {
+		url: {
+			type: 'string',
+		},
+	},
+	required: ['url'],
+	additionalProperties: false,
+};
+
+export const isDnsResolveTxtProps = ajv.compile(dnsResolveTxtPropsSchema);
+
+type DnsResolveSrvProps = {
+	url: string;
+};
+
+const DnsResolveSrvSchema: JSONSchemaType<DnsResolveSrvProps> = {
+	type: 'object',
+	properties: {
+		url: {
+			type: 'string',
+		},
+	},
+	required: ['url'],
+	additionalProperties: false,
+};
+
+export const isDnsResolveSrvProps = ajv.compile(DnsResolveSrvSchema);
+
 export type DnsEndpoints = {
 	'dns.resolve.srv': {
-		GET: (params: { url: string }) => {
+		GET: (params: DnsResolveSrvProps) => {
 			resolved: Record<string, string | number>;
 		};
 	};
 	'dns.resolve.txt': {
-		POST: (params: { url: string }) => {
+		POST: (params: DnsResolveTxtProps) => {
 			resolved: string;
 			// resolved: Record<string, string | number>;
 		};

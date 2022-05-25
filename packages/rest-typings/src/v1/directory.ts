@@ -6,10 +6,10 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 const ajv = new Ajv();
 
 type DirectoryProps = {
-	query: { [key: string]: string };
+	query: {}; // { [key: string]: number }
 	count: number;
 	offset: number;
-	sort: { [key: string]: number };
+	sort: {}; // { [key: string]: number }
 };
 
 const DirectorySchema: JSONSchemaType<DirectoryProps> = {
@@ -17,6 +17,9 @@ const DirectorySchema: JSONSchemaType<DirectoryProps> = {
 	properties: {
 		query: {
 			type: 'object',
+			properties: {
+				type: 'number',
+			},
 		},
 		count: {
 			type: 'number',
@@ -26,6 +29,9 @@ const DirectorySchema: JSONSchemaType<DirectoryProps> = {
 		},
 		sort: {
 			type: 'object',
+			properties: {
+				type: 'number',
+			},
 		},
 	},
 	required: ['query', 'count', 'offset', 'sort'],

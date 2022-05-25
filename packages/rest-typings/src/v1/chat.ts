@@ -251,7 +251,7 @@ export const isChatDeleteProps = ajv.compile(ChatDeleteSchema);
 
 type ChatReact = { emoji: string; messageId: IMessage['_id'] } | { reaction: string; messageId: IMessage['_id'] };
 
-const ChatReactSchema = {
+const ChatReactSchema: JSONSchemaType<ChatReact> = {
 	oneOf: [
 		{
 			type: 'object',
