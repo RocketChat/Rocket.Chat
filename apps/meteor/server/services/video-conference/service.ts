@@ -3,7 +3,6 @@ import type {
 	IRoom,
 	IUser,
 	IVideoConference,
-	MessageTypesValues,
 	VideoConferenceInstructions,
 	DirectCallInstructions,
 	ConferenceInstructions,
@@ -21,7 +20,7 @@ import { VideoConferenceRaw } from '../../../app/models/server/raw/VideoConferen
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { settings } from '../../../app/settings/server';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 
 // This class is only here for testing, this code will be handled by apps
 class JitsiApp {
@@ -123,12 +122,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (call.messages.started) {
-			await this.changeMessageType(call.messages.started, 'video-direct-missed');
-			if (call.type === 'direct') {
-				await this.addMessageBlocks(call.messages.started, [
-					await this.buildActionsBlock(call._id, [{ action: 'join', text: TAPi18n.__('Join_call') }]),
-				]);
-			}
+			const text = TAPi18n.__('video_direct_missed', { username: call.createdBy.username as string });
+			await this.Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
 		}
 
 		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
@@ -138,69 +133,68 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.VideoConference.findOneById(callId);
 	}
 
-	private async createMessage(
-		type: MessageTypesValues,
-		rid: IRoom['_id'],
-		user: IUser,
-		extraData: Partial<IMessage> = {},
-	): Promise<IMessage['_id']> {
-		const readReceipt = settings.get('Message_Read_Receipt_Enabled');
-
+	private async createMessage(rid: IRoom['_id'], user: IUser, extraData: Partial<IMessage> = {}): Promise<IMessage['_id']> {
 		const record = {
-			t: type,
-			rid,
-			ts: new Date(),
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-			groupable: false,
-			...(readReceipt ? { unread: true } : {}),
+			msg: '',
 			...extraData,
 		};
 
-		const id = (await this.Messages.insertOne(record)).insertedId;
-		this.Rooms.incMsgCountById(rid, 1);
-		return id;
+		const room = await this.Rooms.findOneById(rid);
+
+		const message = sendMessage(user, record, room, false);
+		return message._id;
 	}
 
 	private async createDirectCallMessage(rid: IRoom['_id'], user: IUser): Promise<IMessage['_id']> {
-		return this.createMessage('video-direct-calling', rid, user);
+		const text = TAPi18n.__('video_direct_calling', {
+			username: user.username || '',
+		});
+
+		return this.createMessage(rid, user, {
+			blocks: [await this.buildMessageBlock(text)],
+		});
 	}
 
 	private async createGroupCallMessage(rid: IRoom['_id'], user: IUser, callId: string, title: string): Promise<IMessage['_id']> {
-		return this.createMessage('video-conference-started', rid, user, {
-			videoConf: {
-				title,
-			},
-			blocks: [await this.buildActionsBlock(callId, [{ action: 'join', text: TAPi18n.__('Join_call') }])],
+		const text = TAPi18n.__('video_conference_started', {
+			conference: title,
+			username: user.username || '',
+		});
+
+		return this.createMessage(rid, user, {
+			blocks: [
+				this.buildMessageBlock(text),
+				{
+					type: 'actions',
+					appId: 'videoconf-core',
+					elements: [
+						{
+							appId: 'videoconf-core',
+							blockId: callId,
+							actionId: 'join',
+							title,
+							type: 'button',
+							text: {
+								type: 'plain_text',
+								text: TAPi18n.__('Join_call'),
+								emoji: true,
+							},
+						},
+					],
+				},
+			],
 		} as Partial<IVideoConferenceMessage>);
 	}
 
-	private async buildActionsBlock(callId: string, actions: { action: string; text: string }[]): Promise<MessageSurfaceLayout[number]> {
+	private buildMessageBlock(text: string): MessageSurfaceLayout[number] {
 		return {
-			type: 'actions',
-			appId: 'videoconf-core',
-			elements: actions.map(({ action, text }) => ({
-				appId: 'videoconf-core',
-				blockId: callId,
-				actionId: action,
-				type: 'button',
-				text: {
-					type: 'plain_text',
-					text,
-					emoji: true,
-				},
-			})),
+			type: 'section',
+			text: {
+				type: 'plain_text',
+				text,
+				emoji: true,
+			},
 		};
-	}
-
-	private async changeMessageType(messageId: string, newType: MessageTypesValues): Promise<void> {
-		await this.Messages.setTypeById(messageId, newType);
-	}
-
-	private async addMessageBlocks(messageId: string, blocks: MessageSurfaceLayout): Promise<void> {
-		await this.Messages.addBlocksById(messageId, blocks);
 	}
 
 	private async startDirect(caller: IUser['_id'], { _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>): Promise<DirectCallInstructions> {

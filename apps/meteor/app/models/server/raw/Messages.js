@@ -200,6 +200,17 @@ export class MessagesRaw extends BaseRaw {
 		);
 	}
 
+	setBlocksById(_id, blocks) {
+		this.updateOne(
+			{ _id },
+			{
+				$set: {
+					blocks,
+				},
+			},
+		);
+	}
+
 	async addBlocksById(_id, blocks) {
 		await this.updateOne({ _id }, { $addToSet: { blocks: { $each: blocks } } });
 	}
