@@ -1,9 +1,9 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { VFC } from 'react';
 
 import Medium from '../Medium';
 
-const MediumSkeleton = ({ showAvatar }) => (
+const MediumSkeleton: VFC<{ showAvatar: boolean }> = ({ showAvatar }) => (
 	<Box height='x36'>
 		<Medium
 			title={<Skeleton width='100%' />}
