@@ -186,6 +186,14 @@ API.v1.addRoute(
 		get() {
 			const { type, icon } = this.queryParams;
 			let { channel, name } = this.queryParams;
+
+			if (typeof channel !== 'string') {
+				throw new Meteor.Error('error-invalid-channel', 'Channel is required', { method: 'shield.svg' });
+			}
+			if (typeof name !== 'string') {
+				throw new Meteor.Error('error-invalid-name', 'Name is required', { method: 'shield.svg' });
+			}
+
 			if (!settings.get('API_Enable_Shields')) {
 				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 					route: '/api/v1/shield.svg',
@@ -411,66 +419,158 @@ API.v1.addRoute(
 	},
 );
 
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+	interface Endpoints {
+		'method.call/:method': {
+			POST: (params: { method: string; args: any[] }) => any;
+		};
+		'method.callAnon/:method': {
+			POST: (params: { method: string; args: any[] }) => any;
+		};
+	}
+}
+
 const mountResult = ({
 	id,
 	error,
 	result,
-}: { id: string; error?: unknown; result: unknown } | { id: string; error: unknown; result?: unknown }) => ({
+}: {
+	id: string;
+	error?: unknown;
+	result?: unknown;
+}): {
+	message: string;
+} => ({
 	message: EJSON.stringify({
 		msg: 'result',
 		id,
-		error,
-		result,
+		error: error as any,
+		result: result as any,
 	}),
-});
-
-const methodCall = () => ({
-	post() {
-		check(this.bodyParams, {
-			message: String,
-		});
-
-		const { method, params, id } = EJSON.parse(this.bodyParams.message);
-
-		const connectionId =
-			this.token ||
-			crypto
-				.createHash('md5')
-				.update(this.requestIp + this.request.headers['user-agent'])
-				.digest('hex');
-
-		const rateLimiterInput = {
-			userId: this.userId,
-			clientAddress: this.requestIp,
-			type: 'method',
-			name: method,
-			connectionId,
-		};
-
-		try {
-			DDPRateLimiter._increment(rateLimiterInput);
-			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
-			if (!rateLimitResult.allowed) {
-				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
-					timeToReset: rateLimitResult.timeToReset,
-				});
-			}
-
-			const result = Meteor.call(method, ...params);
-			return API.v1.success(mountResult({ id, result }));
-		} catch (error) {
-			if (error instanceof Error) SystemLogger.error(`Exception while invoking method ${method}`, error.message);
-			else SystemLogger.error(`Exception while invoking method ${method}`, error);
-
-			if (settings.get('Log_Level') === '2') {
-				Meteor._debug(`Exception while invoking method ${method}`, error);
-			}
-			return API.v1.success(mountResult({ id, error }));
-		}
-	},
 });
 
 // had to create two different endpoints for authenticated and non-authenticated calls
 // because restivus does not provide 'this.userId' if 'authRequired: false'
-API.v1.addRoute('method.call/:method', { authRequired: true, rateLimiterOptions: false }, methodCall());
-API.v1.addRoute('method.callAnon/:method', { authRequired: false, rateLimiterOptions: false }, methodCall());
+API.v1.addRoute(
+	'method.call/:method',
+	{ authRequired: true, rateLimiterOptions: false },
+	{
+		post() {
+			check(this.bodyParams, {
+				message: String,
+			});
+
+			const { method, params, id } = EJSON.parse(this.bodyParams.message);
+
+			if (typeof method !== 'string') {
+				return API.v1.failure('Method must be a string');
+			}
+
+			if (!Array.isArray(params)) {
+				return API.v1.failure('Params must be an array');
+			}
+
+			if (typeof id !== 'string') {
+				return API.v1.failure('Id must be a string');
+			}
+
+			const connectionId =
+				this.token ||
+				crypto
+					.createHash('md5')
+					.update(this.requestIp + this.request.headers['user-agent'])
+					.digest('hex');
+
+			const rateLimiterInput = {
+				userId: this.userId,
+				clientAddress: this.requestIp,
+				type: 'method',
+				name: method,
+				connectionId,
+			};
+
+			try {
+				DDPRateLimiter._increment(rateLimiterInput);
+				const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
+				if (!rateLimitResult.allowed) {
+					throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
+						timeToReset: rateLimitResult.timeToReset,
+					});
+				}
+
+				const result = Meteor.call(method, ...params);
+				return API.v1.success(mountResult({ id, result }));
+			} catch (error) {
+				if (error instanceof Error) SystemLogger.error(`Exception while invoking method ${method}`, error.message);
+				else SystemLogger.error(`Exception while invoking method ${method}`, error);
+
+				if (settings.get('Log_Level') === '2') {
+					Meteor._debug(`Exception while invoking method ${method}`, error);
+				}
+				return API.v1.success(mountResult({ id, error }));
+			}
+		},
+	},
+);
+API.v1.addRoute(
+	'method.callAnon/:method',
+	{ authRequired: false, rateLimiterOptions: false },
+	{
+		post() {
+			check(this.bodyParams, {
+				message: String,
+			});
+
+			const { method, params, id } = EJSON.parse(this.bodyParams.message);
+
+			if (typeof method !== 'string') {
+				return API.v1.failure('Method must be a string');
+			}
+
+			if (!Array.isArray(params)) {
+				return API.v1.failure('Params must be an array');
+			}
+
+			if (typeof id !== 'string') {
+				return API.v1.failure('Id must be a string');
+			}
+
+			const connectionId =
+				this.token ||
+				crypto
+					.createHash('md5')
+					.update(this.requestIp + this.request.headers['user-agent'])
+					.digest('hex');
+
+			const rateLimiterInput = {
+				userId: this.userId,
+				clientAddress: this.requestIp,
+				type: 'method',
+				name: method,
+				connectionId,
+			};
+
+			try {
+				DDPRateLimiter._increment(rateLimiterInput);
+				const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
+				if (!rateLimitResult.allowed) {
+					throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
+						timeToReset: rateLimitResult.timeToReset,
+					});
+				}
+
+				const result = Meteor.call(method, ...params);
+				return API.v1.success(mountResult({ id, result }));
+			} catch (error) {
+				if (error instanceof Error) SystemLogger.error(`Exception while invoking method ${method}`, error.message);
+				else SystemLogger.error(`Exception while invoking method ${method}`, error);
+
+				if (settings.get('Log_Level') === '2') {
+					Meteor._debug(`Exception while invoking method ${method}`, error);
+				}
+				return API.v1.success(mountResult({ id, error }));
+			}
+		},
+	},
+);
