@@ -34,7 +34,7 @@ type DestructuredRange = { start: DestructuredDate; end: DestructuredDate };
 type DateRange = { start: Date; end: Date };
 
 type CustomSortOp = 'loginAt' | 'device.name' | 'device.os.name';
-type CustomSortOpAdmin = CustomSortOp | 'loginAt' | 'device.name' | 'device.os.name' | '_user.username' | '_user.name';
+type CustomSortOpAdmin = CustomSortOp | '_user.username' | '_user.name';
 
 const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): FilterQuery<ISession> => {
 	if (start.year === end.year && start.month === end.month) {
