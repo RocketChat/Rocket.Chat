@@ -1,4 +1,3 @@
-import { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
@@ -15,11 +14,13 @@ import { getClientAddress } from '../../../../server/lib/getClientAddress';
 
 type DateObj = { day: number; month: number; year: number };
 
-const getDateObj = (dateTime = new Date()): DateObj => ({
-	day: dateTime.getDate(),
-	month: dateTime.getMonth() + 1,
-	year: dateTime.getFullYear(),
-});
+const getDateObj = (dateTime = new Date()): DateObj => {
+	return {
+		day: dateTime.getDate(),
+		month: dateTime.getMonth() + 1,
+		year: dateTime.getFullYear(),
+	};
+};
 
 const logger = new Logger('SAUMonitor');
 
@@ -319,13 +320,6 @@ export class SAUMonitorClass {
 		date.setDate(date.getDate() - 0); // yesterday
 		const yesterday = getDateObj(date);
 
-		const match: FilterQuery<Pick<ISession, 'type' | 'year' | 'month' | 'day'>> = {
-			type: 'session',
-			year: { $lte: yesterday.year },
-			month: { $lte: yesterday.month },
-			day: { $lte: yesterday.day },
-		};
-
 		for await (const record of aggregates.dailySessionsOfYesterday(Sessions.col, yesterday)) {
 			await Sessions.updateOne(
 				{ _id: `${record.userId}-${record.year}-${record.month}-${record.day}` },
@@ -334,11 +328,19 @@ export class SAUMonitorClass {
 			);
 		}
 
-		await Sessions.updateMany(match, {
-			$set: {
-				type: 'computed-session',
-				_computedAt: new Date(),
+		await Sessions.updateMany(
+			{
+				type: 'session',
+				year: { $lte: yesterday.year },
+				month: { $lte: yesterday.month },
+				day: { $lte: yesterday.day },
 			},
-		});
+			{
+				$set: {
+					type: 'computed-session',
+					_computedAt: new Date(),
+				},
+			},
+		);
 	}
 }
