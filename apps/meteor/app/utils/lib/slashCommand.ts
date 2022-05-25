@@ -51,7 +51,7 @@ export const slashCommands = {
 		callback?: SlashCommand<T>['callback'],
 		options: SlashCommandOptions = {},
 		result?: SlashCommand<T>['result'],
-		providesPreview = false,
+		providesPreview?: boolean,
 		previewer?: SlashCommand<T>['previewer'],
 		previewCallback?: SlashCommand<T>['previewCallback'],
 	): void {
@@ -63,7 +63,7 @@ export const slashCommands = {
 			permission: options.permission,
 			clientOnly: options.clientOnly || false,
 			result,
-			providesPreview,
+			providesPreview: Boolean(providesPreview),
 			previewer,
 			previewCallback,
 		} as SlashCommand<string>;
