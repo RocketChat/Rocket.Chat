@@ -2,107 +2,35 @@ import { Db } from 'mongodb';
 import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
 
 import { IConnection } from './IConnection';
+import type { AmiCommand, CommandType, CommandParams } from './asterisk.types';
 
-/**
- * This class serves as a a base class for the different kind of call server objects
- * @remarks
- */
-export enum CommandType {
-	ARI,
-	AMI,
-	AGI,
-}
+export abstract class Command {
+	public type: CommandType;
 
-export class Command {
-	protected _type: CommandType;
+	public commandText: string;
 
-	public get type(): CommandType {
-		return this._type;
-	}
+	public parametersNeeded: boolean;
 
-	private _commandText: string;
+	public connection: IConnection;
 
-	public get commandText(): string {
-		return this._commandText;
-	}
+	public actionid: string;
 
-	private _parametersNeeded: boolean;
+	public returnResolve: (result: IVoipConnectorResult) => void;
 
-	public get parametersNeeded(): boolean {
-		return this._parametersNeeded;
-	}
+	public returnReject: (result: any) => void;
 
-	protected _connection: IConnection;
-
-	get connection(): IConnection {
-		return this._connection;
-	}
-
-	set connection(connection: IConnection) {
-		this._connection = connection;
-	}
-
-	private _actionid: any | undefined;
-
-	get actionid(): any {
-		return this._actionid;
-	}
-
-	set actionid(id) {
-		this._actionid = id;
-	}
-
-	private _result: any;
-
-	get result(): any {
-		return this._result;
-	}
-
-	set result(res) {
-		this._result = res;
-	}
-
-	private _returnResolve: (result: any) => void;
-
-	get returnResolve(): (result: any) => void {
-		return this._returnResolve;
-	}
-
-	set returnResolve(resolve) {
-		this._returnResolve = resolve;
-	}
-
-	private _returnReject: (result: any) => void;
-
-	get returnReject(): any {
-		return this._returnReject;
-	}
-
-	set returnReject(reject) {
-		this._returnReject = reject;
-	}
-
-	private _db: Db;
-
-	get db(): any {
-		return this._db;
-	}
-
-	set db(db: Db) {
-		this._db = db;
-	}
+	public db: Db;
 
 	constructor(command: string, parametersNeeded: boolean, db: Db) {
-		this._commandText = command;
-		this._actionid = -1;
-		this._parametersNeeded = parametersNeeded;
-		this.result = {};
-		this._db = db;
+		this.commandText = command;
+		this.actionid = '-1';
+		this.parametersNeeded = parametersNeeded;
+		this.db = db;
 	}
 
 	protected prepareCommandAndExecution(
-		amiCommand: any,
-		actionResultCallback: (err: any, res: any) => void,
+		amiCommand: AmiCommand,
+		actionResultCallback: (err: Error, res: any) => void,
 		eventHandlerSetupCallback: () => void,
 	): Promise<any> {
 		const returnPromise = new Promise((_resolve, _reject) => {
@@ -114,17 +42,5 @@ export class Command {
 		return returnPromise;
 	}
 
-	executeCommand(_data: any): Promise<IVoipConnectorResult> {
-		return new Promise((_resolve, _reject) => {
-			_reject('unimplemented');
-		});
-	}
-
-	initMonitor(_data: any): boolean {
-		return true;
-	}
-
-	cleanMonitor(): boolean {
-		return true;
-	}
+	abstract executeCommand(_data?: CommandParams): Promise<IVoipConnectorResult>;
 }

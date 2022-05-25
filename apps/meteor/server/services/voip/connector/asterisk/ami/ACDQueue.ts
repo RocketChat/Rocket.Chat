@@ -3,23 +3,34 @@
  * @remarks
  */
 import { Db } from 'mongodb';
-import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
+import type { IVoipConnectorResult, IQueueSummary, IQueueDetails } from '@rocket.chat/core-typings';
 
-import { Command, CommandType } from '../Command';
+import { Command } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
+import {
+	AmiCommand,
+	CommandType,
+	ACDQueueSummaryEvent,
+	ACDCommandResult,
+	ACDQueueStatusEvent,
+	ACDQueueMemberEvent,
+	CommandParams,
+} from '../asterisk.types';
 
 export class ACDQueue extends Command {
 	private logger: Logger;
 
+	private result: ACDCommandResult;
+
 	constructor(command: string, parametersNeeded: boolean, db: Db) {
 		super(command, parametersNeeded, db);
-		this._type = CommandType.AMI;
+		this.type = CommandType.AMI;
 		this.logger = new Logger('ACDQueue');
 	}
 
-	onQueueSummary(event: any): void {
+	onQueueSummary(event: ACDQueueSummaryEvent): void {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onQueueSummary() Unusual behavior. ActionId does not belong to this object',
@@ -28,7 +39,7 @@ export class ACDQueue extends Command {
 			});
 			return;
 		}
-		const queue = {
+		const queue: IQueueSummary = {
 			name: event.queue,
 			loggedin: event.loggedin,
 			available: event.available,
@@ -37,6 +48,7 @@ export class ACDQueue extends Command {
 			talktime: event.talktime,
 			logestholdtime: event.logestholdtime,
 		};
+
 		const { result } = this;
 		if (result.queueSummary) {
 			result.queueSummary.push(queue);
@@ -46,7 +58,7 @@ export class ACDQueue extends Command {
 		}
 	}
 
-	onQueueSummaryComplete(event: any): void {
+	onQueueSummaryComplete(event: ACDQueueSummaryEvent): void {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onQueueSummaryComplete() Unusual behavior. ActionId does not belong to this object',
@@ -67,7 +79,7 @@ export class ACDQueue extends Command {
 	/**  Callback for receiving Queue parameters for queuestatus action.
 	 *
 	 */
-	onQueueParams(event: any): void {
+	onQueueParams(event: ACDQueueStatusEvent): void {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onQueueParams() Unusual behavior. ActionId does not belong to this object',
@@ -76,7 +88,7 @@ export class ACDQueue extends Command {
 			});
 			return;
 		}
-		const queue = {
+		const queue: IQueueDetails = {
 			name: event.queue,
 			strategy: event.strategy,
 			calls: event.calls,
@@ -85,6 +97,7 @@ export class ACDQueue extends Command {
 			completed: event.completed,
 			abandoned: event.abandoned,
 			logestholdtime: event.logestholdtime,
+			members: [],
 		};
 		this.result.queueStatus = queue;
 	}
@@ -92,7 +105,7 @@ export class ACDQueue extends Command {
 	/**  Callback for receiving Queue members for queuestatus action.
 	 *
 	 */
-	onQueueMember(event: any): void {
+	onQueueMember(event: ACDQueueMemberEvent): void {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onQueueMember() Unusual behavior. ActionId does not belong to this object',
@@ -116,20 +129,20 @@ export class ACDQueue extends Command {
 			pausedreason: event.pausedreason,
 			wrapuptime: event.wrapuptime,
 		};
-		if (this.result.queueStatus.name !== event.queue) {
+		if (this.result.queueStatus?.name !== event.queue) {
 			this.logger.error({ msg: `onQueueMember() : Unknown error. Queue ${event.queue} not found` });
 		} else {
-			if (!this.result.queueStatus.members) {
+			if (!this.result?.queueStatus?.members) {
 				this.result.queueStatus.members = [];
 			}
-			this.result.queueStatus.members.push(member);
+			this.result.queueStatus?.members.push(member);
 		}
 	}
 
 	/**  Callback when all the data is received for queuestatus action.
 	 *
 	 */
-	onQueueStatusComplete(event: any): void {
+	onQueueStatusComplete(event: ACDQueueStatusEvent): void {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onQueueStatusComplete() Unusual behavior. ActionId does not belong to this object',
@@ -147,10 +160,10 @@ export class ACDQueue extends Command {
 	 * Callback for indicatiing command execution status.
 	 * Received actionid for the first time.
 	 */
-	onActionResult(error: any, result: any): void {
-		if (error) {
-			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
-			this.returnReject(`error${error} while executing command`);
+	onActionResult(err: Error, result: any): void {
+		if (err) {
+			this.logger.error({ msg: 'onActionResult()', err });
+			this.returnReject(`error${err} while executing command`);
 		} else {
 			// Set up actionid for future reference in case of success.
 			this.actionid = result.actionid;
@@ -198,20 +211,15 @@ export class ACDQueue extends Command {
 		}
 	}
 
-	async executeCommand(data: any): Promise<IVoipConnectorResult> {
-		let amiCommand = {};
+	async executeCommand(data?: CommandParams): Promise<IVoipConnectorResult> {
 		// set up the specific action based on the value of |Commands|
-		if (this.commandText === Commands.queue_summary.toString()) {
-			amiCommand = {
-				action: 'queuesummary',
-			};
-		} else if (this.commandText === Commands.queue_details.toString()) {
-			amiCommand = {
-				action: 'queuestatus',
-				queue: data.queueName,
-			};
-		}
+		const amiCommand: AmiCommand = {
+			...(Commands.queue_summary.toString() === this.commandText && { action: 'queuesummary' }),
+			...(Commands.queue_details.toString() === this.commandText && { action: 'queuestatus', queue: data?.queueName }),
+		};
+
 		this.logger.debug({ msg: `Executing AMI command ${JSON.stringify(amiCommand)}`, data });
+
 		const actionResultCallback = this.onActionResult.bind(this);
 		const eventHandlerSetupCallback = this.setupEventHandlers.bind(this);
 		return super.prepareCommandAndExecution(amiCommand, actionResultCallback, eventHandlerSetupCallback);

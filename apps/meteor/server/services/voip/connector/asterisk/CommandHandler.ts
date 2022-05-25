@@ -20,11 +20,12 @@ import { IManagementConfigData, ServerType } from '@rocket.chat/core-typings';
 import { Commands } from './Commands';
 import { IConnection } from './IConnection';
 import { Logger } from '../../../../lib/logger/Logger';
-import { Command, CommandType } from './Command';
+import { CommandType, CommandParams } from './asterisk.types';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
 import { WebsocketConnection } from '../websocket/WebsocketConnection';
 import { getServerConfigDataFromSettings } from '../../lib/Helper';
+import { ContinuousMonitor } from './ami/ContinuousMonitor';
 
 const version = 'Asterisk Connector 1.0';
 
@@ -33,7 +34,7 @@ export class CommandHandler {
 
 	private logger: Logger;
 
-	private continuousMonitor: Command;
+	private continuousMonitor: ContinuousMonitor;
 
 	private db: Db;
 
@@ -72,7 +73,7 @@ export class CommandHandler {
 				(config.configData as IManagementConfigData).password,
 			);
 			this.connections.set(commandType, connection);
-			this.continuousMonitor = CommandFactory.getCommandObject(Commands.event_stream, this.db);
+			this.continuousMonitor = CommandFactory.getCommandObject('event_stream', this.db) as ContinuousMonitor;
 			this.continuousMonitor.connection = this.connections.get(this.continuousMonitor.type) as IConnection;
 			this.continuousMonitor.initMonitor({});
 		} catch (error: any) {
@@ -88,8 +89,8 @@ export class CommandHandler {
 	 * This function returns a promise. Caller can wait for the promise to resolve
 	 * or rejected.
 	 */
-	executeCommand(commandToExecute: Commands, commandData?: any): Promise<IVoipConnectorResult> {
-		this.logger.debug({ msg: `executeCommand() executing ${Commands[commandToExecute]}` });
+	executeCommand(commandToExecute: keyof typeof Commands, commandData?: CommandParams): Promise<IVoipConnectorResult> {
+		this.logger.debug({ msg: `executeCommand() executing ${commandToExecute}` });
 		const command = CommandFactory.getCommandObject(commandToExecute, this.db);
 		const connection = this.connections.get(command.type) as IConnection;
 		if (!connection || !connection.isConnected()) {

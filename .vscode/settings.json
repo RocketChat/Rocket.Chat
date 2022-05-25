@@ -10,5 +10,26 @@
 		}
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",
-	"cSpell.words": ["photoswipe"]
+	"cSpell.words": [
+		"actionid",
+		"callstaken",
+		"holdtime",
+		"incall",
+		"indicatiing",
+		"lastcall",
+		"lastpause",
+		"logestholdtime",
+		"loggedin",
+		"pausedreason",
+		"photoswipe",
+		"queuemember",
+		"queueparams",
+		"queuestatus",
+		"queuestatuscomplete",
+		"queuesummary",
+		"queuesummarycomplete",
+		"stateinterface",
+		"talktime",
+		"wrapuptime"
+	]
 }

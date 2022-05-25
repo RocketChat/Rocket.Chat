@@ -1,5 +1,30 @@
+import type { VoipPropagatedEvents } from '@rocket.chat/core-typings';
+
 import { Command } from './Command';
 import { ICallbackContext } from './ICallbackContext';
+
+export type IConnectionEvent =
+	| VoipPropagatedEvents
+	| 'queuesummary'
+	| 'queuesummarycomplete'
+	| 'queueparams'
+	| 'queuemember'
+	| 'queuestatuscomplete'
+	| 'queuecallerjoin'
+	| 'agentcalled'
+	| 'queuememberremoved'
+	| 'queuecallerabandon'
+	| 'agentconnect'
+	| 'hold'
+	| 'unhold'
+	| 'contactstatus'
+	| 'hangup'
+	| 'endpointlist'
+	| 'endpointlistcomplete'
+	| 'authdetail'
+	| 'endpointdetail'
+	| 'endpointdetailcomplete';
+
 /**
  * Delegate interface for Asterisk management connection.
  * @remarks
@@ -31,13 +56,13 @@ export interface IConnection {
 	 * Called for setting up event handling
 	 * @remarks
 	 */
-	on(event: string, callbackContext: ICallbackContext): void;
+	on(event: IConnectionEvent, callbackContext: ICallbackContext): void;
 
 	/**
 	 * Called for resetting all event handlers
 	 * @remarks
 	 */
-	off(event: string, command: Command): void;
+	off(event: IConnectionEvent, command: Command): void;
 	/**
 	 * Called for closing the connection.
 	 * @remarks

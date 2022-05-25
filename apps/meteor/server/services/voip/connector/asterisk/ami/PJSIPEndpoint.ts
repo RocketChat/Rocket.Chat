@@ -33,7 +33,8 @@ import { Db } from 'mongodb';
 import { EndpointState, IExtensionDetails } from '@rocket.chat/core-typings';
 import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
 
-import { Command, CommandType } from '../Command';
+import { Command } from '../Command';
+import { CommandType, CommandParams, EndpointListEvent, PJSIPCommandResult, AmiCommand, EndpointInfoEvent } from '../asterisk.types';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
@@ -41,10 +42,12 @@ import { CallbackContext } from './CallbackContext';
 export class PJSIPEndpoint extends Command {
 	private logger: Logger;
 
+	private result: PJSIPCommandResult;
+
 	constructor(command: string, parametersNeeded: boolean, db: Db) {
 		super(command, parametersNeeded, db);
 		this.logger = new Logger('PJSIPEndpoint');
-		this._type = CommandType.AMI;
+		this.type = CommandType.AMI;
 	}
 
 	private getState(endpointState: string): EndpointState {
@@ -80,7 +83,7 @@ export class PJSIPEndpoint extends Command {
 	 * @remark
 	 * This event is generated as a result of the execution of |pjsipshowendpoints|
 	 */
-	onEndpointList(event: any): void {
+	onEndpointList(event: EndpointListEvent): void {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onEndpointList() Unusual behavior. ActionId does not belong to this object',
@@ -117,7 +120,7 @@ export class PJSIPEndpoint extends Command {
 	 * Event handler for endpointlistcomplete event indicating that all the data
 	 * is received.
 	 */
-	onEndpointListComplete(event: any): void {
+	onEndpointListComplete(event: EndpointListEvent): void {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onEndpointListComplete() Unusual behavior. ActionId does not belong to this object',
@@ -127,6 +130,11 @@ export class PJSIPEndpoint extends Command {
 			return;
 		}
 		this.resetEventHandlers();
+		if (!this.result.endpoints) {
+			this.returnResolve({ result: [] });
+			return;
+		}
+
 		const extensions = _.sortBy(this.result.endpoints, function (o: any) {
 			return o.extension;
 		});
@@ -143,7 +151,7 @@ export class PJSIPEndpoint extends Command {
 	 * becomes difficult, it is recommended that there should be a separate handling
 	 * for each event.
 	 */
-	onEndpointInfo(event: any): void {
+	onEndpointInfo(event: EndpointInfoEvent): void {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onEndpointInfo() Unusual behavior. ActionId does not belong to this object',
@@ -164,11 +172,11 @@ export class PJSIPEndpoint extends Command {
 			result.endpoint = endpointDetails;
 		}
 		if (event.event.toLowerCase() === 'endpointdetail') {
-			(result.endpoint as IExtensionDetails).extension = event.objectname;
-			(result.endpoint as IExtensionDetails).state = this.getState(event.devicestate);
+			result.endpoint.extension = event.objectname;
+			result.endpoint.state = this.getState(event.devicestate);
 		} else if (event.event.toLowerCase() === 'authdetail') {
-			(result.endpoint as IExtensionDetails).password = event.password;
-			(result.endpoint as IExtensionDetails).authtype = event.authtype;
+			result.endpoint.password = event.password;
+			result.endpoint.authtype = event.authtype;
 		}
 	}
 
@@ -195,10 +203,10 @@ export class PJSIPEndpoint extends Command {
 	 * Callback for indicatiing command execution status.
 	 * Received actionid for the first time.
 	 */
-	onActionResult(error: any, result: any): void {
-		if (error) {
-			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
-			this.returnReject(`error${error} while executing command`);
+	onActionResult(err: Error, result: any): void {
+		if (err) {
+			this.logger.error({ msg: 'onActionResult()', err });
+			this.returnReject(`error${err} while executing command`);
 		} else {
 			// Set up actionid for future reference in case of success.
 			this.actionid = result.actionid;
@@ -246,21 +254,13 @@ export class PJSIPEndpoint extends Command {
 		}
 	}
 
-	async executeCommand(data: any): Promise<IVoipConnectorResult> {
-		let amiCommand = {};
+	async executeCommand(data?: CommandParams): Promise<IVoipConnectorResult> {
+		const amiCommand: AmiCommand = {
+			...(this.commandText === Commands.extension_list.toString() && { command: 'pjsipshowendpoints' }),
+			...(this.commandText === Commands.extension_info.toString() && { command: 'pjsipshowendpoint', endpoint: data?.extension }),
+		};
 		// set up the specific action based on the value of |Commands|
-		if (this.commandText === Commands.extension_list.toString()) {
-			amiCommand = {
-				action: 'pjsipshowendpoints',
-			};
-		} else if (this.commandText === Commands.extension_info.toString()) {
-			// |pjsipshowendpoint| needs input parameter |endpoint| indicating
-			// which endpoint information is to be queried.
-			amiCommand = {
-				action: 'pjsipshowendpoint',
-				endpoint: data.extension,
-			};
-		}
+
 		this.logger.debug({ msg: `executeCommand() executing AMI command ${JSON.stringify(amiCommand)}`, data });
 		const actionResultCallback = this.onActionResult.bind(this);
 		const eventHandlerSetupCallback = this.setupEventHandlers.bind(this);

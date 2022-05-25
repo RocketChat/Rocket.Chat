@@ -9,18 +9,13 @@
  * happens in /etc/asterisk/manager.conf file.
  *
  */
+import Manager from 'asterisk-manager';
+
+import { AsteriskManagerEvent } from '../asterisk.types';
 import { IConnection } from '../IConnection';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Command } from '../Command';
 import { CallbackContext } from './CallbackContext';
-
-/**
- * Note : asterisk-manager does not provide any types.
- * We will have to write TS definitions to use import.
- * This shall be done in future.
- */
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Manager = require('asterisk-manager');
 
 function makeLoggerDummy(logger: Logger): Logger {
 	logger.log = function log(..._args: any[]): void {};
@@ -33,8 +28,12 @@ function makeLoggerDummy(logger: Logger): Logger {
 
 type ConnectionState = 'UNKNOWN' | 'AUTHENTICATED' | 'ERROR';
 
+type ResolveFunc = (value: void | PromiseLike<void>) => void;
+
+type RejectFunc = (reason?: any) => void;
+
 export class AMIConnection implements IConnection {
-	connection: typeof Manager | undefined;
+	connection: Manager | undefined;
 
 	connectionState: ConnectionState;
 
@@ -46,7 +45,7 @@ export class AMIConnection implements IConnection {
 
 	password: string;
 
-	eventHandlers: Map<string, any>;
+	eventHandlers: Map<string, CallbackContext[]>;
 
 	private logger: Logger;
 
@@ -65,7 +64,7 @@ export class AMIConnection implements IConnection {
 	nearEndDisconnect = false;
 
 	// if it is a test connection
-	// Reconnectivity logic should not be applied.
+	// Reconnection logic should not be applied.
 	connectivityCheck = false;
 
 	constructor() {
@@ -80,12 +79,12 @@ export class AMIConnection implements IConnection {
 			return;
 		}
 		this.connection.removeAllListeners();
-		this.connection = null;
+		this.connection = undefined;
 	}
 
 	reconnect(): void {
 		this.logger.debug({
-			msg: 'reconnect ()',
+			msg: 'Trying to reconnect to AMI',
 			initialBackoffDurationMS: this.initialBackoffDurationMS,
 			currentReconnectionAttempt: this.currentReconnectionAttempt,
 		});
@@ -101,13 +100,13 @@ export class AMIConnection implements IConnection {
 			try {
 				await this.attemptConnection();
 			} catch (error: unknown) {
-				this.logger.error({ msg: 'reconnect () attemptConnection() has thrown error', error });
+				this.logger.error({ msg: 'Reconnection failed', error });
 			}
 		}, backoffTime);
 		this.currentReconnectionAttempt += 1;
 	}
 
-	onManagerError(reject: any, error: unknown): void {
+	onManagerError(reject: RejectFunc, error?: Error): void {
 		this.logger.error({ msg: 'onManagerError () Connection Error', error });
 		this.cleanup();
 		this.connectionState = 'ERROR';
@@ -119,12 +118,12 @@ export class AMIConnection implements IConnection {
 		}
 	}
 
-	onManagerConnect(_resolve: any, _reject: any): void {
+	onManagerConnect(_resolve: ResolveFunc, _reject: RejectFunc): void {
 		this.logger.debug({ msg: 'onManagerConnect () Connection Success' });
-		this.connection.login(this.onManagerLogin.bind(this, _resolve, _reject));
+		this.connection?.login(this.onManagerLogin.bind(this, _resolve, _reject, undefined));
 	}
 
-	onManagerLogin(resolve: any, reject: any, error: unknown): void {
+	onManagerLogin(resolve: ResolveFunc, reject: RejectFunc, error?: Error): void {
 		if (error) {
 			this.logger.error({ msg: 'onManagerLogin () Authentication Error. Not going to reattempt. Fix the credentaials' });
 			// Do not reattempt if we have login failure
@@ -150,15 +149,15 @@ export class AMIConnection implements IConnection {
 			 * the connectivity.
 			 */
 			if (!this.connectivityCheck) {
-				this.connection.on('managerevent', this.eventHandlerCallback.bind(this));
+				this.connection?.on('managerevent', this.eventHandlerCallback.bind(this));
 			}
 			this.logger.debug({ msg: 'onManagerLogin () Authentication Success, Connected' });
 			resolve();
 		}
 	}
 
-	onManagerClose(hadError: unknown): void {
-		this.logger.error({ msg: 'onManagerClose ()', hadError });
+	onManagerClose(err: Error): void {
+		this.logger.error({ msg: 'onManagerClose ()', err });
 		this.cleanup();
 		if (!this.nearEndDisconnect) {
 			this.reconnect();
@@ -175,13 +174,13 @@ export class AMIConnection implements IConnection {
 		this.connection = new Manager(undefined, this.connectionIpOrHostname, this.userName, this.password, true);
 
 		const returnPromise = new Promise<void>((_resolve, _reject) => {
-			this.connection.on('connect', this.onManagerConnect.bind(this, _resolve, _reject));
-			this.connection.on('error', this.onManagerError.bind(this, _reject));
+			this.connection?.on('connect', this.onManagerConnect.bind(this, _resolve, _reject));
+			this.connection?.on('error', this.onManagerError.bind(this, _reject));
 
-			this.connection.on('close', this.onManagerClose.bind(this));
-			this.connection.on('timeout', this.onManagerTimeout.bind(this));
+			this.connection?.on('close', this.onManagerClose.bind(this));
+			this.connection?.on('timeout', this.onManagerTimeout.bind(this));
 
-			this.connection.connect(this.connectionPort, this.connectionIpOrHostname);
+			this.connection?.connect(this.connectionPort, this.connectionIpOrHostname);
 		});
 		return returnPromise;
 	}
@@ -217,12 +216,12 @@ export class AMIConnection implements IConnection {
 		password: string,
 		connectivityCheck = false,
 	): Promise<void> {
-		this.logger.log({ msg: 'connect()' });
 		this.connectionIpOrHostname = connectionIpOrHostname;
 		this.connectionPort = connectionPort;
 		this.userName = userName;
 		this.password = password;
 		this.connectivityCheck = connectivityCheck;
+
 		await this.attemptConnection();
 	}
 
@@ -234,21 +233,25 @@ export class AMIConnection implements IConnection {
 	}
 
 	// Executes an action on asterisk and returns the result.
-	executeCommand(action: object, actionResultCallback: any): void {
-		if (this.connectionState !== 'AUTHENTICATED' || (this.connection && !this.connection.isConnected())) {
+	executeCommand(action: object, actionResultCallback: (err: Error, res: unknown) => void): void {
+		if (this.connectionState !== 'AUTHENTICATED' || !this.connection?.isConnected()) {
 			this.logger.warn({ msg: 'executeCommand() Cant execute command at this moment. Connection is not active' });
 			throw Error('Cant execute command at this moment. Connection is not active');
 		}
 		this.logger.info({ msg: 'executeCommand()' });
-		this.connection.action(action, actionResultCallback);
+		this.connection?.action(action, actionResultCallback);
 	}
 
-	eventHandlerCallback(event: any): void {
+	eventHandlerCallback(event: AsteriskManagerEvent): void {
+		if (!event.event) {
+			return;
+		}
+
 		if (!this.eventHandlers.has(event.event.toLowerCase())) {
 			this.logger.info({ msg: `No event handler set for ${event.event}` });
 			return;
 		}
-		const handlers: CallbackContext[] = this.eventHandlers.get(event.event.toLowerCase());
+		const handlers = this.eventHandlers.get(event.event.toLowerCase()) as CallbackContext[];
 		this.logger.debug({ msg: `eventHandlerCallback() Handler count = ${handlers.length}` });
 		/* Go thru all the available handlers  and call each one of them if the actionid matches */
 		for (const handler of handlers) {
@@ -274,14 +277,13 @@ export class AMIConnection implements IConnection {
 	}
 
 	off(event: string, command: Command): void {
-		this.logger.info({ msg: 'off()' });
 		if (!this.eventHandlers.has(event)) {
 			this.logger.warn({ msg: `off() No event handler found for ${event}` });
 			return;
 		}
+
 		this.logger.debug({ msg: `off() Event found ${event}` });
-		const handlers = this.eventHandlers.get(event);
-		this.logger.debug({ msg: `off() Handler array length = ${handlers.length}` });
+		const handlers = this.eventHandlers.get(event) as CallbackContext[];
 		for (const handler of handlers) {
 			if (!handler.isValidContext(command.actionid)) {
 				continue;
@@ -300,7 +302,7 @@ export class AMIConnection implements IConnection {
 	closeConnection(): void {
 		this.logger.info({ msg: 'closeConnection()' });
 		this.nearEndDisconnect = true;
-		this.connection.disconnect();
+		this.connection?.disconnect();
 		this.cleanup();
 	}
 }

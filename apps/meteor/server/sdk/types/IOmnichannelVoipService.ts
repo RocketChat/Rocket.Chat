@@ -12,7 +12,7 @@ import type {
 import { VoipClientEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
-import { FindVoipRoomsParams } from '../../services/omnichannel-voip/internalTypes';
+import { FindVoipRoomsParams } from '../../services/omnichannel-voip/service.types';
 
 export interface IOmnichannelVoipService {
 	getFreeExtensions(): Promise<string[]>;

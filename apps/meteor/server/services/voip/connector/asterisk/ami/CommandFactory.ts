@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 /**
  * Factory class for creating a command specific object.
  * @remarks
@@ -18,22 +19,22 @@ import { ContinuousMonitor } from './ContinuousMonitor';
 export class CommandFactory {
 	static logger: Logger = new Logger('CommandFactory');
 
-	static getCommandObject(command: Commands, db: Db): Command {
+	static getCommandObject(command: keyof typeof Commands, db: Db): PJSIPEndpoint | ACDQueue | ContinuousMonitor {
 		this.logger.debug({ msg: `Creating command object for ${Commands[command]}` });
-		switch (command) {
-			case Commands.ping:
-				return new Command(Commands.ping.toString(), false, db);
-			case Commands.extension_info:
-			case Commands.extension_list: {
-				return new PJSIPEndpoint(command.toString(), false, db);
-			}
-			case Commands.queue_details:
-			case Commands.queue_summary: {
-				return new ACDQueue(command.toString(), false, db);
-			}
-			case Commands.event_stream: {
-				return new ContinuousMonitor(command.toString(), false, db);
-			}
+		if (command === 'ping') {
+			// @ts-expect-error = create custom class for this command when know how its used
+			return new Command(command.toString(), false, db);
 		}
+		if (command === 'event_stream') {
+			return new ContinuousMonitor(command.toString(), false, db);
+		}
+		if (command === 'extension_info' || command === 'extension_list') {
+			return new PJSIPEndpoint(command.toString(), false, db);
+		}
+		if (command === 'queue_details' || command === 'queue_summary') {
+			return new ACDQueue(command.toString(), false, db);
+		}
+
+		throw new Error(`CommandFactory: Unknown command ${command}`);
 	}
 }

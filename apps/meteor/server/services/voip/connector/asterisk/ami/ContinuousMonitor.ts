@@ -6,14 +6,14 @@
  *
  *
  * @remarks :
- * To begin with, we need 2 events tobe monitored
+ * To begin with, we need 2 events to be monitored
  * QueueCallerJoin.count would give us the total elements in the queue.
  * AgentCalled.queue and AgentCalled.destcalleridnum to signify which agent is currently ringing to serve the call.
  * (AgentConnect.calleridnum, connectedlinenum, queue) to signify which agent ansered the call from which queue.
  *
  */
 import { Db } from 'mongodb';
-import type { IQueueDetails } from '@rocket.chat/core-typings';
+import type { IQueueDetails, IVoipConnectorResult } from '@rocket.chat/core-typings';
 import {
 	IAgentCalledEvent,
 	IAgentConnectEvent,
@@ -39,7 +39,7 @@ import {
 	ICallHangup,
 } from '@rocket.chat/core-typings';
 
-import { Command, CommandType } from '../Command';
+import { Command } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { CallbackContext } from './CallbackContext';
 // import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
@@ -48,6 +48,7 @@ import { PbxEventsRaw } from '../../../../../../app/models/server/raw/PbxEvents'
 import { api } from '../../../../../sdk/api';
 import { ACDQueue } from './ACDQueue';
 import { Commands } from '../Commands';
+import { CommandParams, CommandType } from '../asterisk.types';
 
 export class ContinuousMonitor extends Command {
 	private logger: Logger;
@@ -58,7 +59,7 @@ export class ContinuousMonitor extends Command {
 
 	constructor(command: string, parametersNeeded: boolean, db: Db) {
 		super(command, parametersNeeded, db);
-		this._type = CommandType.AMI;
+		this.type = CommandType.AMI;
 		this.logger = new Logger('ContinuousMonitor');
 		this.users = new UsersRaw(db.collection('users'));
 		this.pbxEvents = new PbxEventsRaw(db.collection('pbx_events'));
@@ -317,5 +318,9 @@ export class ContinuousMonitor extends Command {
 	cleanMonitor(): boolean {
 		this.resetEventHandlers();
 		return true;
+	}
+
+	executeCommand(_data?: CommandParams): Promise<IVoipConnectorResult> {
+		return Promise.resolve({ result: undefined });
 	}
 }

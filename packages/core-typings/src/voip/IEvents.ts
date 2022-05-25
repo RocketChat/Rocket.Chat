@@ -1,5 +1,6 @@
 export interface IEventBase {
 	event: string;
+	actionid: string;
 }
 /**  Not all events will contain following
  * fields. In the minimal, every event will contain
