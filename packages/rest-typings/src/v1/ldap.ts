@@ -1,3 +1,24 @@
+import Ajv, { JSONSchemaType } from 'ajv';
+
+const ajv = new Ajv();
+
+type ldapTestSearchProps = {
+	username: string;
+};
+
+const ldapTestSearchPropsSchema: JSONSchemaType<ldapTestSearchProps> = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+	},
+	required: ['username'],
+	additionalProperties: false,
+};
+
+export const isLdapTestSearch = ajv.compile(ldapTestSearchPropsSchema);
+
 export type LDAPEndpoints = {
 	'ldap.testConnection': {
 		POST: () => {
@@ -5,7 +26,7 @@ export type LDAPEndpoints = {
 		};
 	};
 	'ldap.testSearch': {
-		POST: (params: { username: string }) => {
+		POST: (params: ldapTestSearchProps) => {
 			message: string;
 		};
 	};

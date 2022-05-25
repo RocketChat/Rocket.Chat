@@ -1,11 +1,31 @@
 import type { ILicense } from '@rocket.chat/core-typings';
+import Ajv, { JSONSchemaType } from 'ajv';
+
+const ajv = new Ajv();
+
+type licensesAddProps = {
+	license: string;
+};
+
+const licensesAddPropsSchema: JSONSchemaType<licensesAddProps> = {
+	type: 'object',
+	properties: {
+		license: {
+			type: 'string',
+		},
+	},
+	required: ['license'],
+	additionalProperties: false,
+};
+
+export const isLicensesAddProps = ajv.compile(licensesAddPropsSchema);
 
 export type LicensesEndpoints = {
 	'licenses.get': {
 		GET: () => { licenses: Array<ILicense> };
 	};
 	'licenses.add': {
-		POST: (params: { license: string }) => void;
+		POST: (params: licensesAddProps) => void;
 	};
 	'licenses.maxActiveUsers': {
 		GET: () => { maxActiveUsers: number | null; activeUsers: number };
