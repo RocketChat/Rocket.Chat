@@ -9,7 +9,7 @@ import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import MarkdownText from '../../MarkdownText';
 import Attachment from './Attachment';
 
-const quoteAttachmentStyle = css`
+const hover = css`
 	&:hover,
 	&:focus {
 		.rcx-attachment__details {
@@ -17,11 +17,6 @@ const quoteAttachmentStyle = css`
 			border-color: ${colors.n300} !important;
 			border-inline-start-color: ${colors.n600} !important;
 		}
-	}
-
-	blockquote.rcx-attachment__details {
-		blockquote.rcx-attachment__details {
-			margin-block-end: -12px
 	}
 `;
 
@@ -37,7 +32,7 @@ export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 	const format = useTimeAgo();
 	return (
 		<>
-			<Attachment.Content className={quoteAttachmentStyle} width='full'>
+			<Attachment.Content className={hover} width='full'>
 				<Attachment.Details
 					is='blockquote'
 					borderRadius='x2'
