@@ -6,7 +6,7 @@ import { UserStatus } from '../../../client/components/UserStatus';
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
-import AgentOrContactCardUsername from '../../../client/views/omnichannel/components/AgentOrContactCardUsername';
+import AgentOrContactDetails from '../../../client/views/omnichannel/components/AgentOrContactDetails';
 import Info from '../../../client/views/omnichannel/components/Info';
 
 const wordBreak = css`
@@ -27,7 +27,7 @@ function ContactManagerInfo({ username }) {
 		<>
 			<Info className={wordBreak} style={{ display: 'flex' }}>
 				<UserAvatar title={username} username={username} />
-				<AgentOrContactCardUsername mis='x10' name={username} status={<UserStatus status={status} />} />
+				<AgentOrContactDetails mis='x10' name={username} status={<UserStatus status={status} />} />
 				{name && (
 					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
 						({name})

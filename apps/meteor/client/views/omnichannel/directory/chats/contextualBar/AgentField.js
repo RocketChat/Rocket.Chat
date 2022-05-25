@@ -6,7 +6,7 @@ import { UserStatus } from '../../../../../components/UserStatus';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import AgentOrContactCardUsername from '../../../components/AgentOrContactCardUsername';
+import AgentOrContactDetails from '../../../components/AgentOrContactDetails';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
@@ -32,7 +32,7 @@ const AgentField = ({ agent, isSmall = false }) => {
 			<Label>{t('Agent')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<UserAvatar size={isSmall ? 'x28' : 'x40'} title={username} username={username} />
-				<AgentOrContactCardUsername mis={isSmall ? 'x8' : 'x10'} name={displayName} status={<UserStatus status={status} />} />
+				<AgentOrContactDetails mis={isSmall ? 'x8' : 'x10'} name={displayName} status={<UserStatus status={status} />} />
 				{username && (
 					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
 						({username})

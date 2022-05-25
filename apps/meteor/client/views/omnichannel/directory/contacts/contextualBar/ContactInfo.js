@@ -11,7 +11,7 @@ import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
-import AgentOrContactCardUsername from '../../../components/AgentOrContactCardUsername';
+import AgentOrContactDetails from '../../../components/AgentOrContactDetails';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
@@ -106,7 +106,7 @@ const ContactInfo = ({ id, rid, route }) => {
 							<Label>{`${t('Name')} / ${t('Username')}`}</Label>
 							<Info style={{ display: 'flex' }}>
 								<UserAvatar size='x40' title={username} username={username} />
-								<AgentOrContactCardUsername mis='x10' name={displayName} status={<UserStatus status={status} />} />
+								<AgentOrContactDetails mis='x10' name={displayName} status={<UserStatus status={status} />} />
 								{username && (
 									<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
 										({username})

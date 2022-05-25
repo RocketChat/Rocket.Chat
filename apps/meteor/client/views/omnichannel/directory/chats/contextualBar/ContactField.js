@@ -6,7 +6,7 @@ import { UserStatus } from '../../../../../components/UserStatus';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import AgentOrContactCardUsername from '../../../components/AgentOrContactCardUsername';
+import AgentOrContactDetails from '../../../components/AgentOrContactDetails';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
@@ -39,7 +39,7 @@ const ContactField = ({ contact, room }) => {
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<AgentOrContactCardUsername mis='x10' name={displayName} status={<UserStatus status={status} />} />
+				<AgentOrContactDetails mis='x10' name={displayName} status={<UserStatus status={status} />} />
 				{username && (
 					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
 						({username})

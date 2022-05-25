@@ -3,12 +3,12 @@ import React, { ReactElement, ReactNode, ComponentProps } from 'react';
 
 import * as UserStatus from '../../../components/UserStatus';
 
-type AgentOrContactCardUsernameProps = ComponentProps<typeof Box> & {
+type AgentOrContactDetailsProps = ComponentProps<typeof Box> & {
 	name: ReactNode;
 	status: ReactNode;
 };
 
-const AgentOrContactCardUsername = ({ name, status = <UserStatus.Offline />, ...props }: AgentOrContactCardUsernameProps): ReactElement => (
+const AgentOrContactDetails = ({ name, status = <UserStatus.Offline />, ...props }: AgentOrContactDetailsProps): ReactElement => (
 	<Box
 		display='flex'
 		title={name}
@@ -28,4 +28,4 @@ const AgentOrContactCardUsername = ({ name, status = <UserStatus.Offline />, ...
 	</Box>
 );
 
-export default AgentOrContactCardUsername;
+export default AgentOrContactDetails;
