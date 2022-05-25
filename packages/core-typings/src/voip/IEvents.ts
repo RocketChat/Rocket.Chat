@@ -1,7 +1,11 @@
-export interface IEventBase {
+import type { IQueueMember, IQueueDetails } from '../ACDQueues';
+// Each event from asterisk has a different shape, and it solely depends on what asterisk wants to send
+// There are even some props that are not required _all the times_, so different payloads from same event may have different shapes :')
+export type AsteriskManagerEvent = {
 	event: string;
 	actionid: string;
-}
+} & { [key: string]: string };
+
 /**  Not all events will contain following
  * fields. In the minimal, every event will contain
  * event name.
@@ -13,7 +17,7 @@ export interface IEventBase {
  * IQueueEvent represents all the queue events which have the parameters
  * listed below.
  */
-export interface IQueueEvent extends IEventBase {
+export interface IQueueEvent extends AsteriskManagerEvent {
 	privilege: string;
 	systemname: string;
 	channel: string;
@@ -50,7 +54,7 @@ export interface IQueueEvent extends IEventBase {
 
 export type ContactStatuses = 'NonQualified' | 'Reachable' | 'Removed';
 
-export interface IContactStatus extends IEventBase {
+export interface IContactStatus extends AsteriskManagerEvent {
 	event: 'ContactStatus';
 	privilege: string;
 	systemname: string;
@@ -105,6 +109,51 @@ export interface ICallHangup extends IQueueEvent {
 	'event': 'Hangup';
 	'cause-txt': string; // A description of why the channel was hung up.
 }
+
+export type EndpointListEvent = AsteriskManagerEvent & {
+	aor: string;
+	objectname: string;
+	devicestate: string;
+};
+
+export type EndpointInfoEvent = AsteriskManagerEvent & {
+	event: string;
+	objectname: string;
+	devicestate: string;
+	password: string;
+	authtype: string;
+};
+
+export type ACDQueueSummaryEvent = AsteriskManagerEvent & {
+	queue: string;
+	loggedin: string;
+	available: string;
+	callers: string;
+	holdtime: string;
+	talktime: string;
+	// TODO: check if this is a typo
+	logestholdtime: string;
+};
+
+export type ACDQueueInfo = {
+	name: string;
+	loggedin: string;
+	available: string;
+	callers: string;
+	holdtime: string;
+	talktime: string;
+	logestholdtime: string;
+};
+
+export type ACDQueueStatusEvent = AsteriskManagerEvent &
+	IQueueDetails & {
+		queue: string;
+	};
+
+export type ACDQueueMemberEvent = AsteriskManagerEvent &
+	IQueueMember & {
+		queue: string;
+	};
 
 export const isIAgentConnectEvent = (v: any): v is IAgentConnectEvent => v?.event === 'AgentConnect';
 export const isIAgentCalledEvent = (v: any): v is IAgentCalledEvent => v?.event === 'AgentCalled';

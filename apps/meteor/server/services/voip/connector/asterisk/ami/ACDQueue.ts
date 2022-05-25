@@ -3,21 +3,20 @@
  * @remarks
  */
 import { Db } from 'mongodb';
-import type { IVoipConnectorResult, IQueueSummary, IQueueDetails } from '@rocket.chat/core-typings';
+import type {
+	IVoipConnectorResult,
+	IQueueSummary,
+	IQueueDetails,
+	ACDQueueSummaryEvent,
+	ACDQueueStatusEvent,
+	ACDQueueMemberEvent,
+} from '@rocket.chat/core-typings';
 
 import { Command } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
-import {
-	AmiCommand,
-	CommandType,
-	ACDQueueSummaryEvent,
-	ACDCommandResult,
-	ACDQueueStatusEvent,
-	ACDQueueMemberEvent,
-	CommandParams,
-} from '../asterisk.types';
+import { AmiCommand, CommandType, ACDCommandResult, CommandParams } from '../asterisk.types';
 
 export class ACDQueue extends Command {
 	private logger: Logger;

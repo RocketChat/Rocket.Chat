@@ -10,8 +10,8 @@
  *
  */
 import Manager from 'asterisk-manager';
+import { AsteriskManagerEvent } from '@rocket.chat/core-typings';
 
-import { AsteriskManagerEvent } from '../asterisk.types';
 import { IConnection } from '../IConnection';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Command } from '../Command';

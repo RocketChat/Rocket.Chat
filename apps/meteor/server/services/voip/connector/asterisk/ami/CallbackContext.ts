@@ -1,9 +1,10 @@
 /**
  * This class is a callback context for AMI event handlers.
  */
+import { AsteriskManagerEvent } from '@rocket.chat/core-typings';
+
 import { Command } from '../Command';
 import { ICallbackContext } from '../ICallbackContext';
-import { AsteriskManagerEvent } from '../asterisk.types';
 
 type EventCallback = (...args: any[]) => void;
 

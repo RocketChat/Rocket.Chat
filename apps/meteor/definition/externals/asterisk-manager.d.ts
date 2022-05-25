@@ -4,6 +4,8 @@ type RejectFunc = (reason?: any) => void;
 
 type EventCallback = (...args: any[]) => void;
 
+type ValidEvents = 'managerevent' | 'close' | 'connect' | 'error' | 'timeout';
+
 declare module 'asterisk-manager' {
 	class Manager {
 		constructor(opts: unknown, ip: string, username: string, password: string, auth: boolean);
@@ -12,7 +14,7 @@ declare module 'asterisk-manager' {
 
 		login(cb: (resolve: ResolveFunc, reject: RejectFunc, error?: Error) => void): void;
 
-		on(event: string, cb: EventCallback): void;
+		on(event: ValidEvents, cb: EventCallback): void;
 
 		connect(port: string, hostnameOrIp: string): void;
 

@@ -17,7 +17,7 @@ import type { IQueueDetails, IVoipConnectorResult } from '@rocket.chat/core-typi
 import {
 	IAgentCalledEvent,
 	IAgentConnectEvent,
-	IEventBase,
+	AsteriskManagerEvent,
 	IQueueCallerAbandon,
 	IQueueCallerJoinEvent,
 	IQueueEvent,
@@ -236,7 +236,7 @@ export class ContinuousMonitor extends Command {
 		}
 	}
 
-	async onEvent(event: IEventBase): Promise<void> {
+	async onEvent(event: AsteriskManagerEvent): Promise<void> {
 		this.logger.debug(`Received event ${event.event}`);
 		// Event received when a queue member is notified of a call in queue
 		if (isIAgentCalledEvent(event)) {

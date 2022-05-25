@@ -9,21 +9,20 @@
  */
 import { Db } from 'mongodb';
 
-import { Command } from '../Command';
 import { Commands } from '../Commands';
 import { ACDQueue } from './ACDQueue';
 import { PJSIPEndpoint } from './PJSIPEndpoint';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { ContinuousMonitor } from './ContinuousMonitor';
+import { PingCommand } from './Ping';
 
 export class CommandFactory {
 	static logger: Logger = new Logger('CommandFactory');
 
-	static getCommandObject(command: keyof typeof Commands, db: Db): PJSIPEndpoint | ACDQueue | ContinuousMonitor {
+	static getCommandObject(command: keyof typeof Commands, db: Db): PJSIPEndpoint | ACDQueue | ContinuousMonitor | PingCommand {
 		this.logger.debug({ msg: `Creating command object for ${Commands[command]}` });
 		if (command === 'ping') {
-			// @ts-expect-error = create custom class for this command when know how its used
-			return new Command(command.toString(), false, db);
+			return new PingCommand(command.toString(), false, db);
 		}
 		if (command === 'event_stream') {
 			return new ContinuousMonitor(command.toString(), false, db);
