@@ -4739,7 +4739,7 @@ __metadata:
     "@rocket.chat/logo": ~0.31.12
     "@rocket.chat/memo": ~0.31.12
     "@rocket.chat/message-parser": ~0.31.12
-    "@rocket.chat/mp3-encoder": ^0.24.0
+    "@rocket.chat/mp3-encoder": ~0.31.13-dev.2
     "@rocket.chat/onboarding-ui": ~0.31.12
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.12
@@ -4815,7 +4815,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^2.34.0
     "@typescript-eslint/parser": ^3.0.0
     adm-zip: 0.5.9
-    agenda: "https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442"
+    agenda: "git+https://git@github.com/RocketChat/agenda.git#commit=c2cfcc532b8409561104dca980e6adbbcbdf5442"
     ajv: ^8.11.0
     apn: 2.2.0
     archiver: ^3.1.1
@@ -4834,7 +4834,7 @@ __metadata:
     bson: ^4.6.3
     busboy: ^1.6.0
     bytebuffer: 5.0.1
-    cas: "https://github.com/kcbanner/node-cas/tarball/fcd27dad333223b3b75a048bce27973fb3ca0f62"
+    cas: "git+https://git@github.com/kcbanner/node-cas.git#commit=fcd27dad333223b3b75a048bce27973fb3ca0f62"
     chai: ^4.3.6
     chai-datetime: ^1.8.0
     chai-dom: ^1.11.0
@@ -4902,7 +4902,7 @@ __metadata:
     katex: ^0.11.1
     ldap-escape: ^2.0.6
     ldapjs: ^2.3.2
-    less: "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6"
+    less: "git+https://git@github.com/meteor/less.js.git#commit=8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6"
     less-plugin-autoprefixer: ^2.1.0
     limax: ^3.0.0
     localforage: ^1.10.0
@@ -4999,12 +4999,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/mp3-encoder@npm:^0.24.0":
-  version: 0.24.0
-  resolution: "@rocket.chat/mp3-encoder@npm:0.24.0"
+"@rocket.chat/mp3-encoder@npm:~0.31.13-dev.2":
+  version: 0.31.13-dev.2
+  resolution: "@rocket.chat/mp3-encoder@npm:0.31.13-dev.2"
   dependencies:
-    lamejs: "git+https://github.com/zhuker/lamejs.git"
-  checksum: 24b819efb2188f69dd95a44a84297b3ae5683e53f4d575648e94ae255d85364976c374a6f06ec6094ffc51e7f9bf3ecc22e3d52c5e925d46315deadb27ad76d1
+    lamejs: "git+https://git@github.com/zhuker/lamejs.git#commit=564612b5b57336238a5920ba4c301b49f7cb2bab"
+  checksum: fe747ed04760c66731039f915c86a0b16d2400fb5debdb97c703db41289b71c6c51285e86f89c454fa6885133afc4287cd7f16da4d1da1df17225a59402fd8e8
   languageName: node
   linkType: hard
 
@@ -8596,9 +8596,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agenda@https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442":
+"agenda@git+https://git@github.com/RocketChat/agenda.git#commit=c2cfcc532b8409561104dca980e6adbbcbdf5442":
   version: 3.1.2
-  resolution: "agenda@https://github.com/RocketChat/agenda.git#commit=c2cfcc532b8409561104dca980e6adbbcbdf5442"
+  resolution: "agenda@https://git@github.com/RocketChat/agenda.git#commit=c2cfcc532b8409561104dca980e6adbbcbdf5442"
   dependencies:
     cron: ~1.8.0
     date.js: ~0.3.3
@@ -8606,7 +8606,7 @@ __metadata:
     human-interval: ~1.0.0
     moment-timezone: ~0.5.27
     mongodb: ~3.5.0
-  checksum: f5f68008298f9482631f1f494e392cd6b8ba7971a3b0ece81ae2abe60f53d67973ff4476156fa5c9c41b8b58c4ccd284e95c545e0523996dfd05f9a80b843e07
+  checksum: acb4ebb7e7356f6e53e810d821eb6aa3d88bbfb9e85183e707517bee6d1eea1f189f38bdf0dd2b91360492ab7643134d510c320d2523d86596498ab98e59735b
   languageName: node
   linkType: hard
 
@@ -11241,9 +11241,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cas@https://github.com/kcbanner/node-cas/tarball/fcd27dad333223b3b75a048bce27973fb3ca0f62":
+"cas@git+https://git@github.com/kcbanner/node-cas.git#commit=fcd27dad333223b3b75a048bce27973fb3ca0f62":
   version: 0.0.5
-  resolution: "cas@https://github.com/kcbanner/node-cas.git#commit=fcd27dad333223b3b75a048bce27973fb3ca0f62"
+  resolution: "cas@https://git@github.com/kcbanner/node-cas.git#commit=fcd27dad333223b3b75a048bce27973fb3ca0f62"
   dependencies:
     cheerio: 0.19.0
   checksum: 3db182211097cb567d1d7331b03d0fb9ab78467d45158df3da869152dcebcb8c226a0cad18037bddcf5367fc80e1f5e575b66ee53c4e7a68e03e3bd48b65d91b
@@ -21689,12 +21689,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lamejs@git+https://github.com/zhuker/lamejs.git":
-  version: 1.2.1
-  resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
+"lamejs@git+https://git@github.com/zhuker/lamejs.git#commit=564612b5b57336238a5920ba4c301b49f7cb2bab":
+  version: 1.2.0
+  resolution: "lamejs@https://git@github.com/zhuker/lamejs.git#commit=564612b5b57336238a5920ba4c301b49f7cb2bab"
   dependencies:
     use-strict: 1.0.1
-  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
+  checksum: ebf4cf6699b71a06e84975f48343fb0cd70bfea2c9a7d0c307484da8b13444762f0fcade70d6b1b59ac9816c26588629f0ce0a4766a76fad5666d30a47fca6ba
   languageName: node
   linkType: hard
 
@@ -21801,9 +21801,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"less@https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6":
+"less@git+https://git@github.com/meteor/less.js.git#commit=8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6":
   version: 2.5.0
-  resolution: "less@https://github.com/meteor/less.js.git#commit=8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6"
+  resolution: "less@https://git@github.com/meteor/less.js.git#commit=8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6"
   dependencies:
     errno: ^0.1.1
     graceful-fs: ^3.0.5
