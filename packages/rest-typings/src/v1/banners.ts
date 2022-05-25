@@ -22,7 +22,7 @@ const BannersGetNewSchema: JSONSchemaType<BannersGetNew> = {
 	additionalProperties: false,
 };
 
-export const isBannersGetNew = ajv.compile(BannersGetNewSchema);
+export const isBannersGetNewProps = ajv.compile(BannersGetNewSchema);
 
 type BannersId = {
 	platform: BannerPlatform;
@@ -39,7 +39,7 @@ const BannersIdSchema: JSONSchemaType<BannersId> = {
 	additionalProperties: false,
 };
 
-export const isBannersId = ajv.compile(BannersIdSchema);
+export const isBannersIdProps = ajv.compile(BannersIdSchema);
 
 type Banners = {
 	platform: BannerPlatform;
@@ -56,7 +56,7 @@ const BannersSchema: JSONSchemaType<Banners> = {
 	additionalProperties: false,
 };
 
-export const isBanners = ajv.compile(BannersSchema);
+export const isBannersProps = ajv.compile(BannersSchema);
 
 type BannersDismiss = {
 	bannerId: string;
@@ -73,7 +73,7 @@ const BannersDismissSchema: JSONSchemaType<BannersDismiss> = {
 	additionalProperties: false,
 };
 
-export const isBannersDismiss = ajv.compile(BannersDismissSchema);
+export const isBannersDismissProps = ajv.compile(BannersDismissSchema);
 
 export type BannersEndpoints = {
 	/* @deprecated */
