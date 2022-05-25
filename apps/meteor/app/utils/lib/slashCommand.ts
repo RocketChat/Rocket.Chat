@@ -11,8 +11,8 @@ import type {
 export const slashCommands = {
 	commands: {} as Record<string, SlashCommand>,
 	add<T extends string>(
-		command: T,
-		callback?: SlashCommand['callback'],
+		command: string,
+		callback?: SlashCommand<T>['callback'],
 		options: SlashCommandOptions = {},
 		result?: SlashCommand['result'],
 		providesPreview = false,
