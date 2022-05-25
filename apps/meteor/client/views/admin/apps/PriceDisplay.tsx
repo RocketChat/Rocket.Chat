@@ -1,8 +1,8 @@
+import type { PricingPlan } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
-import { PricingPlan } from './definitions/PricingPlan';
 import { formatPricingPlan, formatPrice } from './helpers';
 
 type PriceDisplayProps = {
@@ -26,6 +26,7 @@ const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: PricingP
 		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
 			return { type, price: '-' };
 		}
+
 		return { type, price: formatPricingPlan(pricingPlans[0]) };
 	}
 
@@ -51,9 +52,7 @@ const PriceDisplay: FC<PriceDisplayProps> = ({ purchaseType, pricingPlans, price
 					{t(type as TranslationKey)}
 				</Box>
 			)}
-			<Box color='hint' withTruncatedText>
-				{!showType && type === 'Free' ? t(type) : formattedPrice}
-			</Box>
+			<Box withTruncatedText>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
 		</Box>
 	);
 };
