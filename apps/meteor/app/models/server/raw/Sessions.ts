@@ -18,7 +18,6 @@ import type {
 	DeviceManagementPopulatedSession,
 	OSSessionAggregationResult,
 	IUser,
-	IPaginationOptions,
 } from '@rocket.chat/core-typings';
 import { PaginatedResult } from '@rocket.chat/rest-typings';
 
@@ -33,6 +32,9 @@ type DestructuredDateWithType = {
 };
 type DestructuredRange = { start: DestructuredDate; end: DestructuredDate };
 type DateRange = { start: Date; end: Date };
+
+type CustomSortOp = 'loginAt' | 'device.name' | 'device.os.name';
+type CustomSortOpAdmin = CustomSortOp | 'loginAt' | 'device.name' | 'device.os.name' | '_user.username' | '_user.name';
 
 const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): FilterQuery<ISession> => {
 	if (start.year === end.year && start.month === end.month) {
@@ -749,11 +751,19 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		this.secondaryCollection = colSecondary;
 	}
 
-	async aggregateSessionsByUserId(
-		uid: string,
-		search?: string | null,
-		{ offset, count }: IPaginationOptions = { offset: 0, count: 10 },
-	): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>> {
+	async aggregateSessionsByUserId({
+		uid,
+		sort,
+		search,
+		offset = 0,
+		count = 10,
+	}: {
+		uid: string;
+		sort?: { [key in CustomSortOp]: 1 | -1 };
+		search?: string | null;
+		offset?: number;
+		count?: number;
+	}): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
 		const matchOperator = {
@@ -779,11 +789,14 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				],
 			},
 		};
+
 		const sortOperator = {
 			$sort: {
 				loginAt: -1,
 			},
 		};
+		const customSortOp = !sort || sort.loginAt ? [] : [{ $sort: sort }];
+
 		const groupOperator = {
 			$group: {
 				_id: '$loginToken',
@@ -825,7 +838,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 
 		const facetOperator = {
 			$facet: {
-				docs: [sortOperator, ...skipOperator, limitOperator],
+				docs: [sortOperator, ...skipOperator, limitOperator, ...customSortOp],
 				count: [
 					{
 						$count: 'total',
@@ -846,10 +859,17 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		return { sessions, total, count, offset };
 	}
 
-	async aggregateSessionsAndPopulate(
-		search = '',
-		{ offset, count }: IPaginationOptions = { offset: 0, count: 10 },
-	): Promise<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>> {
+	async aggregateSessionsAndPopulate({
+		sort,
+		search,
+		offset = 0,
+		count = 10,
+	}: {
+		sort?: { [key in CustomSortOpAdmin]: 1 | -1 };
+		search?: string | null;
+		offset?: number;
+		count?: number;
+	}): Promise<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>> {
 		const searchQuery = search ? [{ $text: { $search: search } }] : [];
 
 		const matchOperator = {
@@ -870,11 +890,14 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				],
 			},
 		};
+
 		const sortOperator = {
 			$sort: {
 				loginAt: -1,
 			},
 		};
+		const customSortOp = !sort || sort.loginAt ? [] : [{ $sort: sort }];
+
 		const groupOperator = {
 			$group: {
 				_id: '$loginToken',
@@ -937,7 +960,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 
 		const facetOperator = {
 			$facet: {
-				docs: [sortOperator, ...skipOperator, limitOperator, lookupOperator, unwindOperator, projectOperator],
+				docs: [sortOperator, ...skipOperator, limitOperator, lookupOperator, unwindOperator, projectOperator, ...customSortOp],
 				count: [
 					{
 						$count: 'total',

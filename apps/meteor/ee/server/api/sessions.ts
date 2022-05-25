@@ -21,14 +21,20 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					offset: Match.Maybe(String),
 					count: Match.Maybe(String),
-					search: Match.Maybe(String),
+					filter: Match.Maybe(String),
 				}),
 			);
 
 			const { offset, count } = this.getPaginationItems();
-			const search: string = this.queryParams?.search || '';
+			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
+			const search = this.queryParams?.filter || '';
 
-			const sessions = await Sessions.aggregateSessionsByUserId(this.userId, search, { offset, count });
+			const sortKeys = ['loginAt', 'device.name', 'device.os.name'];
+			if (!Object.keys(sort).filter((key) => sortKeys.includes(key)).length) {
+				return API.v1.failure('error-invalid-sort');
+			}
+
+			const sessions = await Sessions.aggregateSessionsByUserId({ uid: this.userId, search, sort, offset, count });
 			return API.v1.success(sessions);
 		},
 	},
@@ -100,12 +106,18 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					offset: Match.Maybe(String),
 					count: Match.Maybe(String),
-					search: Match.Maybe(String),
+					filter: Match.Maybe(String),
 				}),
 			);
 
 			const { offset, count } = this.getPaginationItems();
-			let search: string = this.queryParams?.search || '';
+			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
+			let search: string = this.queryParams?.filter || '';
+
+			const sortKeys = ['loginAt', 'device.name', 'device.os.name', '_user.username', '_user.name'];
+			if (!Object.keys(sort).filter((key) => sortKeys.includes(key)).length) {
+				return API.v1.failure('error-invalid-sort');
+			}
 
 			const searchUser = await Users.find<Pick<IUser, '_id'>>(
 				{ $text: { $search: search }, active: true },
@@ -120,7 +132,7 @@ API.v1.addRoute(
 				search += ` ${searchUser.map((user) => user._id).join(' ')}`;
 			}
 
-			const sessions = await Sessions.aggregateSessionsAndPopulate(search, { offset, count });
+			const sessions = await Sessions.aggregateSessionsAndPopulate({ search, sort, offset, count });
 			return API.v1.success(sessions);
 		},
 	},
@@ -138,8 +150,8 @@ API.v1.addRoute(
 				sessionId: String,
 			});
 
-			const { sessionId } = this.queryParams;
-			const { sessions } = await Sessions.aggregateSessionsAndPopulate(sessionId, { offset: 0, count: 1 });
+			const sessionId = this.queryParams?.sessionId as string;
+			const { sessions } = await Sessions.aggregateSessionsAndPopulate({ search: sessionId, count: 1 });
 			if (!sessions?.length) {
 				return API.v1.notFound('Session not found');
 			}

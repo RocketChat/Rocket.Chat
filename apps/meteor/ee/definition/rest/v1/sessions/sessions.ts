@@ -7,7 +7,7 @@ declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface Endpoints {
 		'sessions/list': {
-			GET: (params: PaginatedRequest<{ search?: string }>) => PaginatedResult<{ sessions: DeviceManagementSession[] }>;
+			GET: (params: PaginatedRequest<{ filter?: string }>) => PaginatedResult<{ sessions: DeviceManagementSession[] }>;
 		};
 		'sessions/info': {
 			GET: (params: { sessionId: string }) => DeviceManagementSession;
@@ -16,7 +16,7 @@ declare module '@rocket.chat/rest-typings' {
 			POST: (params: { sessionId: string }) => Pick<ISession, 'sessionId'>;
 		};
 		'sessions/list.all': {
-			GET: (params: PaginatedRequest<{ search?: string }>) => PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>;
+			GET: (params: PaginatedRequest<{ filter?: string }>) => PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>;
 		};
 		'sessions/info.admin': {
 			GET: (params: { sessionId: string }) => DeviceManagementPopulatedSession;
