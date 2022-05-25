@@ -98,7 +98,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	readonly request: Request;
 	/* @deprecated */
 	requestParams(): OperationParams<TMethod, TPathPattern>;
-	getLoggedInUser(): IUser | undefined;
+	getLoggedInUser(): TOptions extends { authRequired: true } ? IUser : IUser | undefined;
 	getPaginationItems(): {
 		readonly offset: number;
 		readonly count: number;

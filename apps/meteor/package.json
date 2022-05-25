@@ -214,6 +214,7 @@
 		"@types/cookie": "^0.5.1",
 		"@types/lodash": "^4.14.182",
 		"@types/lodash.debounce": "^4.0.6",
+		"@types/object-path": "^0.11.1",
 		"@types/proxy-from-env": "^1.0.1",
 		"@types/speakeasy": "^2.0.7",
 		"adm-zip": "0.5.9",
