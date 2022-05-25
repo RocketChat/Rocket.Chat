@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
@@ -318,7 +319,7 @@ export class SAUMonitorClass {
 		date.setDate(date.getDate() - 0); // yesterday
 		const yesterday = getDateObj(date);
 
-		const match = {
+		const match: FilterQuery<Pick<ISession, 'type' | 'year' | 'month' | 'day'>> = {
 			type: 'session',
 			year: { $lte: yesterday.year },
 			month: { $lte: yesterday.month },

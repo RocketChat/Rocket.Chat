@@ -759,7 +759,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		count = 10,
 	}: {
 		uid: string;
-		sort?: { [key in CustomSortOp]: 1 | -1 };
+		sort?: Record<CustomSortOp, 1 | -1>;
 		search?: string | null;
 		offset?: number;
 		count?: number;
@@ -865,7 +865,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		offset = 0,
 		count = 10,
 	}: {
-		sort?: { [key in CustomSortOpAdmin]: 1 | -1 };
+		sort?: Record<CustomSortOpAdmin, 1 | -1>;
 		search?: string | null;
 		offset?: number;
 		count?: number;
