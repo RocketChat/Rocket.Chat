@@ -1,3 +1,4 @@
+import { IMethodConnection } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { checkCodeForUser, ITwoFactorOptions } from './code/index';
@@ -17,7 +18,7 @@ export function twoFactorRequired<TFunction extends (this: Meteor.MethodThisType
 			if (twoFactor.twoFactorCode && twoFactor.twoFactorMethod) {
 				checkCodeForUser({
 					user: this.userId,
-					connection: this.connection || undefined,
+					connection: this.connection as IMethodConnection | null,
 					code: twoFactor.twoFactorCode,
 					method: twoFactor.twoFactorMethod,
 					options,
@@ -30,7 +31,7 @@ export function twoFactorRequired<TFunction extends (this: Meteor.MethodThisType
 		}
 
 		if (!this.twoFactorChecked) {
-			checkCodeForUser({ user: this.userId, connection: this.connection || undefined, options });
+			checkCodeForUser({ user: this.userId, connection: this.connection as IMethodConnection | null, options });
 		}
 
 		return fn.apply(this, args);

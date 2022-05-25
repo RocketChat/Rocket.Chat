@@ -21,5 +21,5 @@ export interface ILoginAttempt {
 	methodName: string;
 	methodArguments: IMethodArgument[];
 	connection: IMethodConnection;
-	user?: IUser;
+	user: IUser;
 }
