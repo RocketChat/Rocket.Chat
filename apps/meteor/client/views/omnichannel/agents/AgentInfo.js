@@ -35,7 +35,7 @@ export const AgentInfo = memo(function AgentInfo({ uid, children, ...props }) {
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
 			<Box alignSelf='center'>
-				<UserInfo.Avatar size={'x332'} username={username} />
+				<UserInfo.Avatar data-qa='AgentUserInfoAvatar' size={'x332'} username={username} />
 			</Box>
 
 			<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center' flexShrink={0}>
@@ -44,12 +44,12 @@ export const AgentInfo = memo(function AgentInfo({ uid, children, ...props }) {
 
 			<Margins block='x4'>
 				<Box mb='x2'>
-					<UserInfo.Username name={username} status={<UserStatus status={userStatus} />} />
+					<UserInfo.Username data-qa='AgentInfoUserInfoUserName' name={username} status={<UserStatus status={userStatus} />} />
 				</Box>
 
 				{statusLivechat && (
 					<>
-						<UserInfo.Label>{t('Livechat_status')}</UserInfo.Label>
+						<UserInfo.Label data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</UserInfo.Label>
 						<UserInfo.Info>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</UserInfo.Info>
 					</>
 				)}
