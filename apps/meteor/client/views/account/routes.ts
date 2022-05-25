@@ -1,6 +1,6 @@
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
-export const registerAccountRoute = createRouteGroup('account', '/account', () => import('./AccountRouter'));
+export const registerAccountRoute = createRouteGroup('account', '/account', (): any => import('./AccountRouter'));
 
 registerAccountRoute('/preferences', {
 	name: 'preferences',
@@ -9,20 +9,20 @@ registerAccountRoute('/preferences', {
 
 registerAccountRoute('/profile', {
 	name: 'profile',
-	lazyRouteComponent: () => import('./AccountProfilePage'),
+	lazyRouteComponent: () => import('./profile/AccountProfileRoute'),
 });
 
 registerAccountRoute('/security', {
 	name: 'security',
-	lazyRouteComponent: () => import('./security/AccountSecurityPage'),
+	lazyRouteComponent: () => import('./security/AccountSecurityRoute'),
 });
 
 registerAccountRoute('/integrations', {
 	name: 'integrations',
-	lazyRouteComponent: () => import('./AccountIntegrationsPage'),
+	lazyRouteComponent: () => import('./integrations/AccountIntegrationsRoute'),
 });
 
 registerAccountRoute('/tokens', {
 	name: 'tokens',
-	lazyRouteComponent: () => import('./tokens/AccountTokensPage'),
+	lazyRouteComponent: () => import('./tokens/AccountTokensRoute'),
 });

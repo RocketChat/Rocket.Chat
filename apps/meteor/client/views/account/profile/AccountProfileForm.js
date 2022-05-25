@@ -15,12 +15,12 @@ import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
-import { validateEmail } from '../../../lib/emailValidator';
-import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
-import CustomFieldsForm from '../../components/CustomFieldsForm';
-import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
-import UserStatusMenu from '../../components/UserStatusMenu';
-import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
+import { validateEmail } from '../../../../lib/emailValidator';
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import CustomFieldsForm from '../../../components/CustomFieldsForm';
+import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../components/UserStatus';
+import UserStatusMenu from '../../../components/UserStatusMenu';
+import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 
 function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();
