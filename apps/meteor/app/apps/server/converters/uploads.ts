@@ -1,4 +1,4 @@
-import type { IUpload } from '@rocket.chat/core-typings';
+import type { IRoom, IUpload, IUser, IVisitor } from '@rocket.chat/core-typings';
 
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 import { Uploads } from '../../../models/server/raw';
@@ -18,7 +18,8 @@ export class AppUploadsConverter {
 		| undefined {
 		const upload = Promise.await(Uploads.findOneById(id));
 
-		return this.convertToApp(upload);
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		return this.convertToApp(upload!);
 	}
 
 	convertToApp(upload: IUpload):
@@ -47,27 +48,27 @@ export class AppUploadsConverter {
 			url: 'url',
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
-			room: (upload: IUpload): unknown => {
-				const result = this.orch.getConverters()?.get('rooms').convertById(upload.rid);
-				delete upload.rid;
+			room: (upload: IRoom): unknown => {
+				const result = this.orch.getConverters()?.get('rooms').convertById(upload._id);
+				delete (upload as any)._id;
 				return result;
 			},
-			user: (upload: IUpload): unknown => {
-				if (!upload.userId) {
+			user: (upload: IUser): unknown => {
+				if (!upload._id) {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters()?.get('users').convertById(upload.userId);
-				delete upload.userId;
+				const result = this.orch.getConverters()?.get('users').convertById(upload._id);
+				delete (upload as any)._id;
 				return result;
 			},
-			visitor: (upload: IUpload): unknown => {
-				if (!upload.visitorToken) {
+			visitor: (upload: IVisitor): unknown => {
+				if (!upload.token) {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters()?.get('visitors').convertByToken(upload.visitorToken);
-				delete upload.visitorToken;
+				const result = this.orch.getConverters()?.get('visitors').convertByToken(upload.token);
+				delete (upload as any).token;
 				return result;
 			},
 		};
@@ -85,7 +86,7 @@ export class AppUploadsConverter {
 		const { id: rid } = upload.room;
 
 		const newUpload = {
-			_id: upload.id,
+			_id: upload._id,
 			name: upload.name,
 			size: upload.size,
 			type: upload.type,
@@ -105,6 +106,6 @@ export class AppUploadsConverter {
 			visitorToken,
 		};
 
-		return Object.assign(newUpload, upload._unmappedProperties_);
+		return Object.assign(newUpload, (upload as any)._unmappedProperties_);
 	}
 }
