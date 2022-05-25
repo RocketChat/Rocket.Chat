@@ -1,40 +1,33 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 const ajv = new Ajv();
 
-type DirectoryProps = {
-	query: {}; // { [key: string]: number }
-	count: number;
-	offset: number;
-	sort: {}; // { [key: string]: number }
-};
+type DirectoryProps = PaginatedRequest<{}>;
 
-const DirectorySchema: JSONSchemaType<DirectoryProps> = {
+const DirectorySchema = {
 	type: 'object',
 	properties: {
 		query: {
-			type: 'object',
-			properties: {
-				type: 'number',
-			},
+			type: 'string',
+			nullable: true,
 		},
 		count: {
 			type: 'number',
+			nullable: true,
 		},
 		offset: {
 			type: 'number',
+			nullable: true,
 		},
 		sort: {
-			type: 'object',
-			properties: {
-				type: 'number',
-			},
+			type: 'string',
+			nullable: true,
 		},
 	},
-	required: ['query', 'count', 'offset', 'sort'],
 	additionalProperties: false,
 };
 

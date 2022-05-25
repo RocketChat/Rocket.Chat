@@ -99,11 +99,11 @@ const LivechatDepartmentAutocompleteSchema: JSONSchemaType<LivechatDepartmentAut
 
 export const isLivechatDepartmentAutocompleteProps = ajv.compile(LivechatDepartmentAutocompleteSchema);
 
-type livechatDepartmentDepartmentIdAgentsGET = {
+type LivechatDepartmentDepartmentIdAgentsGET = {
 	sort: string;
 };
 
-const livechatDepartmentDepartmentIdAgentsGETSchema: JSONSchemaType<livechatDepartmentDepartmentIdAgentsGET> = {
+const LivechatDepartmentDepartmentIdAgentsGETSchema: JSONSchemaType<LivechatDepartmentDepartmentIdAgentsGET> = {
 	type: 'object',
 	properties: {
 		sort: {
@@ -114,7 +114,34 @@ const livechatDepartmentDepartmentIdAgentsGETSchema: JSONSchemaType<livechatDepa
 	additionalProperties: false,
 };
 
-export const islivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile(livechatDepartmentDepartmentIdAgentsGETSchema);
+export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile(LivechatDepartmentDepartmentIdAgentsGETSchema);
+
+type LivechatDepartmentDepartmentIdAgentsPOST = {
+	upsert: string[];
+	remove: string[];
+};
+
+const LivechatDepartmentDepartmentIdAgentsPOSTSchema: JSONSchemaType<LivechatDepartmentDepartmentIdAgentsPOST> = {
+	type: 'object',
+	properties: {
+		upsert: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		remove: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+	required: ['upsert', 'remove'],
+	additionalProperties: false,
+};
+
+export const isLivechatDepartmentDepartmentIdAgentsPOSTProps = ajv.compile(LivechatDepartmentDepartmentIdAgentsPOSTSchema);
 
 type LivechatVisitorTokenGet = {
 	token: string;
@@ -234,9 +261,7 @@ const LiveChatRoomJoinSchema: JSONSchemaType<LiveChatRoomJoin> = {
 
 export const isLiveChatRoomJoinProps = ajv.compile(LiveChatRoomJoinSchema);
 
-type LivechatMonitorsListProps = {
-	text: string;
-};
+type LivechatMonitorsListProps = PaginatedRequest<{ text: string }>;
 
 const LivechatMonitorsListSchema: JSONSchemaType<LivechatMonitorsListProps> = {
 	type: 'object',
@@ -244,12 +269,376 @@ const LivechatMonitorsListSchema: JSONSchemaType<LivechatMonitorsListProps> = {
 		text: {
 			type: 'string',
 		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['text'],
 	additionalProperties: false,
 };
 
 export const isLivechatMonitorsListProps = ajv.compile(LivechatMonitorsListSchema);
+
+type LivechatTagsListProps = PaginatedRequest<{ text: string }, 'name'>;
+
+const LivechatTagsListSchema: JSONSchemaType<LivechatTagsListProps> = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['text'],
+	additionalProperties: false,
+};
+
+export const isLivechatTagsListProps = ajv.compile(LivechatTagsListSchema);
+
+type LivechatDepartmentProps = PaginatedRequest<{
+	text: string;
+	onlyMyDepartments?: booleanString;
+	enabled?: booleanString;
+	excludeDepartmentId?: string;
+}>;
+
+const LivechatDepartmentSchema: JSONSchemaType<LivechatDepartmentProps> = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+		},
+		onlyMyDepartments: {
+			type: 'string',
+			nullable: true,
+		},
+		enabled: {
+			type: 'string',
+			nullable: true,
+		},
+		excludeDepartmentId: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['text'],
+	additionalProperties: false,
+};
+
+export const isLivechatDepartmentProps = ajv.compile(LivechatDepartmentSchema);
+
+type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string }>;
+
+const LivechatDepartmentsAvailableByUnitIdSchema: JSONSchemaType<LivechatDepartmentsAvailableByUnitIdProps> = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['text'],
+	additionalProperties: false,
+};
+
+export const isLivechatDepartmentsAvailableByUnitIdProps = ajv.compile(LivechatDepartmentsAvailableByUnitIdSchema);
+
+type LivechatDepartmentsByUnitProps = PaginatedRequest<{ text: string }>;
+
+const LivechatDepartmentsByUnitSchema: JSONSchemaType<LivechatDepartmentsByUnitProps> = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['text'],
+	additionalProperties: false,
+};
+
+export const isLivechatDepartmentsByUnitProps = ajv.compile(LivechatDepartmentsByUnitSchema);
+
+type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{ text: string }>;
+
+const LivechatDepartmentsByUnitIdSchema: JSONSchemaType<LivechatDepartmentsByUnitIdProps> = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['text'],
+	additionalProperties: false,
+};
+
+export const isLivechatDepartmentsByUnitIdProps = ajv.compile(LivechatDepartmentsByUnitIdSchema);
+
+type LivechatUsersManagerGETProps = PaginatedRequest<{ text: string }>;
+
+const LivechatUsersManagerGETSchema: JSONSchemaType<LivechatUsersManagerGETProps> = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['text'],
+	additionalProperties: false,
+};
+
+export const isLivechatUsersManagerGETProps = ajv.compile(LivechatUsersManagerGETSchema);
+
+type LivechatUsersManagerPOSTProps = PaginatedRequest<{ username: string }>;
+
+const LivechatUsersManagerPOSTSchema: JSONSchemaType<LivechatUsersManagerPOSTProps> = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['username'],
+	additionalProperties: false,
+};
+
+export const isLivechatUsersManagerPOSTProps = ajv.compile(LivechatUsersManagerPOSTSchema);
+
+type LivechatQueueProps = {
+	agentId?: string;
+	includeOfflineAgents?: booleanString;
+	departmentId?: string;
+	offset: number;
+	count: number;
+	sort: string;
+};
+
+const LivechatQueuePropsSchema: JSONSchemaType<LivechatQueueProps> = {
+	type: 'object',
+	properties: {
+		agentId: {
+			type: 'string',
+			nullable: true,
+		},
+		includeOfflineAgents: {
+			type: 'string',
+			nullable: true,
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
+	},
+	required: ['count', 'offset', 'sort'],
+	additionalProperties: false,
+};
+
+export const isLivechatQueueProps = ajv.compile(LivechatQueuePropsSchema);
+
+type CannedResponsesProps = PaginatedRequest<{
+	scope?: string;
+	departmentId?: string;
+	text?: string;
+}>;
+
+const CannedResponsesPropsSchema: JSONSchemaType<CannedResponsesProps> = {
+	type: 'object',
+	properties: {
+		scope: {
+			type: 'string',
+			nullable: true,
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+		text: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isCannedResponsesProps = ajv.compile(CannedResponsesPropsSchema);
+
+type LivechatCustomFieldsProps = PaginatedRequest<{ text: string }>;
+
+const LivechatCustomFieldsSchema: JSONSchemaType<LivechatCustomFieldsProps> = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['text'],
+	additionalProperties: false,
+};
+
+export const isLivechatCustomFieldsProps = ajv.compile(LivechatCustomFieldsSchema);
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
@@ -273,26 +662,17 @@ export type OmnichannelEndpoints = {
 		GET: (params: LiveChatRoomJoin) => { success: boolean };
 	};
 	'livechat/monitors.list': {
-		GET: (params: PaginatedRequest<LivechatMonitorsListProps>) => PaginatedResult<{
+		GET: (params: LivechatMonitorsListProps) => PaginatedResult<{
 			monitors: ILivechatMonitor[];
 		}>;
 	};
 	'livechat/tags.list': {
-		// TO-DO
-		GET: (params: PaginatedRequest<{ text: string }, 'name'>) => PaginatedResult<{
+		GET: (params: LivechatTagsListProps) => PaginatedResult<{
 			tags: ILivechatTag[];
 		}>;
 	};
 	'livechat/department': {
-		GET: (
-			// TO-DO
-			params: PaginatedRequest<{
-				text: string;
-				onlyMyDepartments?: booleanString;
-				enabled?: boolean;
-				excludeDepartmentId?: string;
-			}>,
-		) => PaginatedResult<{
+		GET: (params: LivechatDepartmentProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 		POST: (params: { department: Partial<ILivechatDepartment>; agents: string[] }) => {
@@ -317,39 +697,34 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/department/:departmentId/agents': {
-		GET: (params: livechatDepartmentDepartmentIdAgentsGET) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
-		POST: (params: { upsert: string[]; remove: string[] }) => void; // TO-DO
+		GET: (params: LivechatDepartmentDepartmentIdAgentsGET) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
+		POST: (params: LivechatDepartmentDepartmentIdAgentsPOST) => void;
 	};
 	'livechat/departments.available-by-unit/:id': {
-		// TO-DO
-		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
+		GET: (params: LivechatDepartmentsAvailableByUnitIdProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 	};
 	'livechat/departments.by-unit/': {
-		// TO-DO
-		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
+		GET: (params: LivechatDepartmentsByUnitProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 	};
 
 	'livechat/departments.by-unit/:id': {
-		// TO-DO
-		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
+		GET: (params: LivechatDepartmentsByUnitIdProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 	};
 
 	'livechat/department.listByIds': {
-		// TO-DO
 		GET: (params: { ids: string[]; fields?: Record<string, unknown> }) => {
 			departments: ILivechatDepartment[];
 		};
 	};
 
 	'livechat/custom-fields': {
-		// TO-DO
-		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
+		GET: (params: LivechatCustomFieldsProps) => PaginatedResult<{
 			customFields: [
 				{
 					_id: string;
@@ -407,15 +782,13 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/users/manager': {
-		// TO-DO
-		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
+		GET: (params: LivechatUsersManagerGETProps) => PaginatedResult<{
 			users: ILivechatAgent[];
 		}>;
-		POST: (params: { username: string }) => { success: boolean };
+		POST: (params: LivechatUsersManagerPOSTProps) => { success: boolean };
 	};
 
 	'livechat/visitor': {
-		// TO-DO
 		POST: (params: { visitor: ILivechatVisitorDTO }) => {
 			visitor: ILivechatVisitor;
 		};
@@ -447,15 +820,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/queue': {
-		GET: (params: {
-			// TO-DO
-			agentId?: ILivechatAgent['_id'];
-			includeOfflineAgents?: boolean;
-			departmentId?: ILivechatAgent['_id'];
-			offset: number;
-			count: number;
-			sort: string;
-		}) => {
+		GET: (params: LivechatQueueProps) => {
 			queue: {
 				chats: number;
 				department: { _id: string; name: string };
@@ -471,14 +836,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'canned-responses': {
-		GET: (
-			// TO-DO
-			params: PaginatedRequest<{
-				scope?: string;
-				departmentId?: string;
-				text?: string;
-			}>,
-		) => PaginatedResult<{
+		GET: (params: CannedResponsesProps) => PaginatedResult<{
 			cannedResponses: IOmnichannelCannedResponse[];
 		}>;
 	};
