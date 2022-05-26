@@ -20,39 +20,37 @@ export const isValidQuery: {
 	},
 );
 
-export const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperations: string[], parent = ''): boolean => {
-	return Object.entries(removeDangerousProps(query)).every(([key, value]) => {
-		const path = parent ? `${ parent }.${ key }` : key;
-		if (parent === '' && path.startsWith('$')) {
-			if (!allowedOperations.includes(path)) {
-				isValidQuery.errors.push(`Invalid operation: ${ path }`);
-				return false;
-			}
-			if (!Array.isArray(value)) {
-				isValidQuery.errors.push(`Invalid parameter for operation: ${ path } : ${ value }`);
-				return false;
-			}
-			return value.every((v) => verifyQuery(v, allowedAttributes, allowedOperations));
-		}
-
-		if (
-			!allowedAttributes.some((allowedAttribute) => {
-				if (allowedAttribute.endsWith('.*')) {
-					return path.startsWith(allowedAttribute.replace('.*', ''));
-				}
-				if (allowedAttribute.endsWith('*') && !allowedAttribute.endsWith('.*')) {
-					return true;
-				}
-				return path === allowedAttribute;
-			})
-		) {
-			isValidQuery.errors.push(`Invalid attribute: ${ path }`);
+export const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperations: string[], parent = ''): boolean => Object.entries(removeDangerousProps(query)).every(([key, value]) => {
+	const path = parent ? `${ parent }.${ key }` : key;
+	if (parent === '' && path.startsWith('$')) {
+		if (!allowedOperations.includes(path)) {
+			isValidQuery.errors.push(`Invalid operation: ${ path }`);
 			return false;
 		}
-
-		if (value instanceof Object) {
-			return verifyQuery(value, allowedAttributes, allowedOperations, path);
+		if (!Array.isArray(value)) {
+			isValidQuery.errors.push(`Invalid parameter for operation: ${ path } : ${ value }`);
+			return false;
 		}
-		return true;
-	});
-};
+		return value.every((v) => verifyQuery(v, allowedAttributes, allowedOperations));
+	}
+
+	if (
+		!allowedAttributes.some((allowedAttribute) => {
+			if (allowedAttribute.endsWith('.*')) {
+				return path.startsWith(allowedAttribute.replace('.*', ''));
+			}
+			if (allowedAttribute.endsWith('*') && !allowedAttribute.endsWith('.*')) {
+				return true;
+			}
+			return path === allowedAttribute;
+		})
+	) {
+		isValidQuery.errors.push(`Invalid attribute: ${ path }`);
+		return false;
+	}
+
+	if (value instanceof Object) {
+		return verifyQuery(value, allowedAttributes, allowedOperations, path);
+	}
+	return true;
+});
