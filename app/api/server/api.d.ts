@@ -1,5 +1,8 @@
+import type { ValidateFunction } from 'ajv';
+
 import type { JoinPathPattern, Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '../../../definition/rest';
 import type { IUser } from '../../../definition/IUser';
+import type { IRoom } from '../../../definition/IRoom';
 import { IMethodConnection } from '../../../definition/IMethodThisType';
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
@@ -30,11 +33,11 @@ type UnauthorizedResult<T> = {
 	};
 };
 
-type NotFoundResult<T> = {
-	statusCode: 403;
+type NotFoundResult = {
+	statusCode: 404;
 	body: {
 		success: false;
-		error: T | 'Resource not found';
+		error: string;
 	};
 };
 
@@ -46,7 +49,7 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
-type Options =
+type Options = (
 	| {
 			permissionsRequired?: string[];
 			authRequired?: boolean;
@@ -56,7 +59,10 @@ type Options =
 			authRequired: true;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
-	  };
+	  }
+) & {
+	validateParams?: ValidateFunction;
+};
 
 type Request = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -65,24 +71,41 @@ type Request = {
 	body: any;
 };
 
+type PartialThis = {
+	readonly request: Request & { query: Record<string, string> };
+};
+
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	urlParams: UrlParams<TPathPattern>;
 	// TODO make it unsafe
-	readonly queryParams: TMethod extends 'GET' ? Partial<OperationParams<TMethod, TPathPattern>> : Record<string, string>;
+	readonly queryParams: TMethod extends 'GET'
+		? TOptions extends { validateParams: ValidateFunction<infer T> }
+			? T
+			: Partial<OperationParams<TMethod, TPathPattern>>
+		: Record<string, string>;
 	// TODO make it unsafe
-	readonly bodyParams: TMethod extends 'GET' ? Record<string, unknown> : Partial<OperationParams<TMethod, TPathPattern>>;
+	readonly bodyParams: TMethod extends 'GET'
+		? Record<string, unknown>
+		: TOptions extends { validateParams: ValidateFunction<infer T> }
+		? T
+		: Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+	/* @deprecated */
 	requestParams(): OperationParams<TMethod, TPathPattern>;
+	getLoggedInUser(): IUser | undefined;
 	getPaginationItems(): {
 		readonly offset: number;
 		readonly count: number;
 	};
 	parseJsonQuery(): {
-		sort: Record<string, unknown>;
-		fields: Record<string, unknown>;
+		sort: Record<string, 1 | -1>;
+		fields: Record<string, 0 | 1>;
 		query: Record<string, unknown>;
 	};
+	/* @deprecated */
 	getUserFromParams(): IUser;
+	insertUserObject<T>({ object, userId }: { object: { [key: string]: unknown }; userId: string }): { [key: string]: unknown } & T;
+	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;
@@ -96,7 +119,8 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
 	| SuccessResult<OperationResult<TMethod, TPathPattern>>
 	| FailureResult<unknown, unknown, unknown, unknown>
-	| UnauthorizedResult<unknown>;
+	| UnauthorizedResult<unknown>
+	| NotFoundResult;
 
 type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
@@ -113,6 +137,15 @@ type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}>
 };
 
 declare class APIClass<TBasePath extends string = '/'> {
+	fieldSeparator: string;
+
+	limitedUserFieldsToExclude(fields: { [x: string]: unknown }, limitedUserFieldsToExclude: unknown): { [x: string]: unknown };
+
+	limitedUserFieldsToExcludeIfIsPrivilegedUser(
+		fields: { [x: string]: unknown },
+		limitedUserFieldsToExcludeIfIsPrivilegedUser: unknown,
+	): { [x: string]: unknown };
+
 	processTwoFactor({
 		userId,
 		request,
@@ -149,6 +182,8 @@ declare class APIClass<TBasePath extends string = '/'> {
 		operations: Operations<TPathPattern, TOptions>,
 	): void;
 
+	addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void;
+
 	success<T>(result: T): SuccessResult<T>;
 
 	success(): SuccessResult<void>;
@@ -164,9 +199,9 @@ declare class APIClass<TBasePath extends string = '/'> {
 
 	failure(): FailureResult<void>;
 
-	unauthorized<T>(msg?: T): UnauthorizedResult<T>;
+	notFound(msg?: string): NotFoundResult;
 
-	notFound<T>(msg?: T): NotFoundResult<T>;
+	unauthorized<T>(msg?: T): UnauthorizedResult<T>;
 
 	defaultFieldsToExclude: {
 		joinCode: 0;
@@ -179,4 +214,10 @@ declare class APIClass<TBasePath extends string = '/'> {
 export declare const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
+	helperMethods: Map<string, (...args: any[]) => unknown>;
+};
+
+export declare const defaultRateLimiterOptions: {
+	numRequestsAllowed: number;
+	intervalTimeInMS: number;
 };

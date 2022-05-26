@@ -422,6 +422,9 @@ export class APIClass extends Restivus {
 							connection,
 						});
 
+						this.queryOperations = options.queryOperations;
+						this.queryFields = options.queryFields;
+
 						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
 
 						log.http({
