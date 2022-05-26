@@ -1,6 +1,7 @@
 import { check, Match } from 'meteor/check';
 import { IUser } from '@rocket.chat/core-typings';
 
+import { isSessionsProps } from '../../definition/rest/v1/sessions/SessionsProps';
 import { Users, Sessions } from '../../../app/models/server/raw/index';
 import { API } from '../../../app/api/server/api';
 import { hasLicense } from '../../app/license/server/license';
@@ -42,15 +43,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/info',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isSessionsProps },
 	{
 		async get() {
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
-			check(this.queryParams, {
-				sessionId: String,
-			});
 
 			const { sessionId } = this.queryParams;
 			const sessions = await Sessions.findOneBySessionIdAndUserId(sessionId, this.userId);
@@ -64,7 +62,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/logout.me',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isSessionsProps },
 	{
 		async post() {
 			if (!this.userId) {
@@ -74,9 +72,6 @@ API.v1.addRoute(
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
-			check(this.bodyParams, {
-				sessionId: String,
-			});
 
 			const { sessionId } = this.bodyParams;
 			const sessionObj = await Sessions.findOneBySessionIdAndUserId(sessionId, this.userId);
@@ -142,15 +137,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/info.admin',
-	{ authRequired: true, twoFactorRequired: true, permissionsRequired: ['view-device-management'] },
+	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsProps, permissionsRequired: ['view-device-management'] },
 	{
 		async get() {
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
-			check(this.queryParams, {
-				sessionId: String,
-			});
 
 			const sessionId = this.queryParams?.sessionId as string;
 			const { sessions } = await Sessions.aggregateSessionsAndPopulate({ search: sessionId, count: 1 });
@@ -164,16 +156,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/logout',
-	{ authRequired: true, twoFactorRequired: true, permissionsRequired: ['logout-device-management'] },
+	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsProps, permissionsRequired: ['logout-device-management'] },
 	{
 		async post() {
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
-
-			check(this.bodyParams, {
-				sessionId: String,
-			});
 
 			const { sessionId } = this.bodyParams;
 			const sessionObj = await Sessions.findOneBySessionId(sessionId);
