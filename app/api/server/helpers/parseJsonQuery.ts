@@ -95,7 +95,7 @@ API.helperMethods.set(
 			}
 		}
 
-		let query: Record<string, any> | undefined;
+		let query: Record<string, any> = {};
 		if (this.queryParams.query) {
 			this.logger.warn('attribute query is deprecated');
 			try {
