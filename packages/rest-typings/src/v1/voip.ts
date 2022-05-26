@@ -320,7 +320,7 @@ const VoipEventsSchema: JSONSchemaType<VoipEvents> = {
 
 export const isVoipEventsProps = ajv.compile<VoipEvents>(VoipEventsSchema);
 
-type VoipRoom = { token: string; agentId: ILivechatAgent['_id'] } | { rid: string; token: string };
+type VoipRoom = { token: string; agentId: ILivechatAgent['_id']; direction: IVoipRoom['direction'] } | { rid: string; token: string };
 
 const VoipRoomSchema: JSONSchemaType<VoipRoom> = {
 	oneOf: [
@@ -332,6 +332,10 @@ const VoipRoomSchema: JSONSchemaType<VoipRoom> = {
 				},
 				agentId: {
 					type: 'string',
+				},
+				direction: {
+					type: 'string',
+					enum: ['inbound', 'outbound'],
 				},
 			},
 			required: ['token', 'agentId'],

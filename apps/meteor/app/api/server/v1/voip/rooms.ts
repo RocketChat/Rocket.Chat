@@ -1,6 +1,7 @@
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IVoipRoom } from '@rocket.chat/core-typings';
+import { isVoipRoomProps } from '@rocket.chat/rest-typings/dist/v1/voip';
 
 import { API } from '../../api';
 import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
@@ -86,17 +87,16 @@ API.v1.addRoute(
 		authRequired: true,
 		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
 		permissionsRequired: ['inbound-voip-calls'],
+		validateParams: isVoipRoomProps,
 	},
 	{
 		async get() {
-			const defaultCheckParams = {
-				token: String,
-				agentId: Match.Maybe(String),
-				rid: Match.Maybe(String),
+			const { token, agentId, direction } = this.queryParams as {
+				token: string;
+				agentId: ILivechatAgent['_id'];
+				direction: IVoipRoom['direction'];
 			};
-			check(this.queryParams, defaultCheckParams);
-
-			const { token, rid, agentId } = this.queryParams;
+			const { rid } = this.queryParams as { rid: string; token: string };
 			const guest = await LivechatVisitors.getVisitorByToken(token, {});
 			if (!guest) {
 				return API.v1.failure('invalid-token');
@@ -119,7 +119,11 @@ API.v1.addRoute(
 				const agent = { agentId: _id, username };
 				const rid = Random.id();
 
-				return API.v1.success(await LivechatVoip.getNewRoom(guest, agent, rid, { projection: API.v1.defaultFieldsToExclude }));
+				if (direction !== 'inbound' && direction !== 'outbound') {
+					return API.v1.failure('invalid-direction');
+				}
+
+				return API.v1.success(await LivechatVoip.getNewRoom(guest, agent, rid, direction, { projection: API.v1.defaultFieldsToExclude }));
 			}
 
 			const room = await VoipRoom.findOneByIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });

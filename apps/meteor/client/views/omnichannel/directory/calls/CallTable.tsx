@@ -1,3 +1,4 @@
+import { IVoipRoom } from '@rocket.chat/core-typings';
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
@@ -53,6 +54,21 @@ const CallTable: FC = () => {
 	const userIdLoggedIn = Meteor.userId();
 	const query = useQuery(debouncedParams, debouncedSort, userIdLoggedIn);
 	const directoryRoute = useRoute('omnichannel-directory');
+
+	const resolveDirectionLabel = useCallback(
+		(direction: Partial<IVoipRoom['direction']>) => {
+			if (direction === 'inbound') {
+				return t('Incoming');
+			}
+
+			if (direction === 'outbound') {
+				return t('Outgoing');
+			}
+
+			return t('Not_Available');
+		},
+		[t],
+	);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -117,21 +133,21 @@ const CallTable: FC = () => {
 					{t('Talk_Time')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
-					key={'source'}
+					key={'direction'}
 					direction={sort[1]}
-					active={sort[0] === 'source'}
+					active={sort[0] === 'direction'}
 					onClick={onHeaderClick}
-					sort='source'
+					sort='direction'
 					w='x200'
 				>
-					{t('Source')}
+					{t('Direction')}
 				</GenericTable.HeaderCell>,
 			].filter(Boolean),
 		[sort, onHeaderClick, t],
 	);
 
 	const renderRow = useCallback(
-		({ _id, fname, callStarted, queue, callDuration, v }) => {
+		({ _id, fname, callStarted, queue, callDuration, v, direction }) => {
 			const duration = moment.duration(callDuration / 1000, 'seconds');
 			return (
 				<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id, v?.token)} action qa-user-id={_id}>
@@ -140,11 +156,11 @@ const CallTable: FC = () => {
 					<Table.Cell withTruncatedText>{queue}</Table.Cell>
 					<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
 					<Table.Cell withTruncatedText>{duration.isValid() && duration.humanize()}</Table.Cell>
-					<Table.Cell withTruncatedText>{t('Incoming')}</Table.Cell>
+					<Table.Cell withTruncatedText>{resolveDirectionLabel(direction)}</Table.Cell>
 				</Table.Row>
 			);
 		},
-		[onRowClick, t],
+		[onRowClick, resolveDirectionLabel],
 	);
 
 	return (

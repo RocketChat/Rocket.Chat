@@ -210,6 +210,8 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 		status: 'online' | 'busy' | 'away' | 'offline';
 		phone?: string | null;
 	};
+	// Outbound means the call was initiated from Rocket.Chat and vise versa
+	direction: 'inbound' | 'outbound';
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
