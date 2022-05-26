@@ -1,5 +1,4 @@
-import vm from 'vm';
-
+import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
@@ -71,11 +70,16 @@ function getIntegrationScript(integration) {
 		incomingLogger.info({ msg: 'Will evaluate script of Trigger', name: integration.name });
 		incomingLogger.debug(script);
 
-		const vmScript = vm.createScript(script, 'script.js');
-		vmScript.runInNewContext(sandbox);
-		if (sandbox.Script) {
+		const vmScript = new VMScript(`${script}; Script;`, 'script.js');
+		const vm = new VM({
+			sandbox,
+		});
+
+		const ScriptClass = vm.run(vmScript);
+
+		if (ScriptClass) {
 			compiledScripts[integration._id] = {
-				script: new sandbox.Script(),
+				script: new ScriptClass(),
 				store,
 				_updatedAt: integration._updatedAt,
 			};
@@ -92,10 +96,8 @@ function getIntegrationScript(integration) {
 		throw API.v1.failure('error-evaluating-script');
 	}
 
-	if (!sandbox.Script) {
-		incomingLogger.error({ msg: 'Class "Script" not in Trigger', name: integration.name });
-		throw API.v1.failure('class-script-not-found');
-	}
+	incomingLogger.error({ msg: 'Class "Script" not in Trigger', name: integration.name });
+	throw API.v1.failure('class-script-not-found');
 }
 
 function createIntegration(options, user) {
@@ -205,9 +207,12 @@ function executeIntegrationRest() {
 			sandbox.script = script;
 			sandbox.request = request;
 
-			const result = Future.fromPromise(
-				vm.runInNewContext(
-					`
+			const vm = new VM({
+				timeout: 3000,
+				sandbox,
+			});
+
+			const scriptResult = vm.run(`
 				new Promise((resolve, reject) => {
 					Fiber(() => {
 						scriptTimeout(reject);
@@ -218,13 +223,9 @@ function executeIntegrationRest() {
 						}
 					}).run();
 				}).catch((error) => { throw new Error(error); });
-			`,
-					sandbox,
-					{
-						timeout: 3000,
-					},
-				),
-			).wait();
+			`);
+
+			const result = Future.fromPromise(scriptResult).wait();
 
 			if (!result) {
 				incomingLogger.debug({
