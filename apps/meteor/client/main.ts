@@ -20,3 +20,4 @@ import './startup';
 import './views/admin';
 import './views/teams';
 import './templates';
+import './views/voip-exp';

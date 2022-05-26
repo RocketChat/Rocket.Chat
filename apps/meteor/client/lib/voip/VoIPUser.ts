@@ -21,6 +21,10 @@ import {
 	IState,
 	VoipEvents,
 	WorkflowTypes,
+	IDeviceInfo,
+	DeviceEventKeys,
+	ISelectedDevices,
+	IDevice,
 } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import {
@@ -37,9 +41,11 @@ import {
 import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
+import { DeviceManager } from './DeviceManager';
 import { toggleMediaStreamTracks } from './Helper';
+import LocalStream from './LocalStream';
 import { QueueAggregator } from './QueueAggregator';
-import Stream from './Stream';
+import RemoteStream from './RemoteStream';
 
 export class VoIPUser extends Emitter<VoipEvents> {
 	state: IState = {
@@ -49,7 +55,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private session: Session | undefined;
 
-	private remoteStream: Stream | undefined;
+	private remoteStream: RemoteStream | undefined;
+
+	// private localStream: LocalStream | undefined;
 
 	userAgentOptions: UserAgentOptions = {};
 
@@ -91,6 +99,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private attemptRegistration = false;
 
+	private deviceManager: DeviceManager;
+
+	// private selectedDevices: ISelectedDevices;
+
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
 		this.mediaStreamRendered = mediaRenderer;
@@ -99,6 +111,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.stop = false;
 		this.onlineNetworkHandler = this.onNetworkRestored.bind(this);
 		this.offlineNetworkHandler = this.onNetworkLost.bind(this);
+		this.deviceManager = new DeviceManager(this.config);
 	}
 
 	/**
@@ -389,7 +402,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			throw new Error('Remote media stream is undefined.');
 		}
 
-		this.remoteStream = new Stream(remoteStream);
+		this.remoteStream = new RemoteStream(remoteStream);
 		const mediaElement = this.mediaStreamRendered?.remoteMediaElement;
 		if (mediaElement) {
 			this.remoteStream.init(mediaElement);
@@ -971,5 +984,79 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				},
 			},
 		});
+	}
+
+	/* Input output device management */
+	async getAvailableDevices(): Promise<IDeviceInfo | undefined> {
+		return this.deviceManager.getMediaDevices();
+	}
+
+	onDeviceEvent(event: DeviceEventKeys, handler: () => void): void {
+		this.deviceManager.on(event, handler);
+	}
+
+	offDeviceEvent(event: DeviceEventKeys, handler: () => void): void {
+		this.deviceManager.off(event, handler);
+	}
+
+	async changeAudioInputDevice(selectedAudioDevices: IDevice): Promise<boolean> {
+		if (!this.session) {
+			console.warn('changeAudioInputDevice() : No session. Returning');
+			return false;
+		}
+		this.deviceManager.changeAudioInputDevice(selectedAudioDevices);
+		// const stream = await this.getStream(this.deviceManager.getConstraints('audio'));
+		const newStream = await LocalStream.requestNewStream(this.deviceManager.getConstraints('audio'), this.session);
+		if (!newStream) {
+			console.warn('changeAudioInputDevice() : Unable to get local stream. Returning');
+			return false;
+		}
+		const { peerConnection } = this.session?.sessionDescriptionHandler as SessionDescriptionHandler;
+		if (!peerConnection) {
+			console.warn('changeAudioInputDevice() : No peer connection. Returning');
+			return false;
+		}
+		LocalStream.replaceTrack(peerConnection, newStream, 'audio');
+		return true;
+	}
+
+	changeAudioOutputDevice(selectedAudioDevices: IDevice): void {
+		this.deviceManager.changeAudioOutputDevice(selectedAudioDevices);
+		if (this.mediaStreamRendered) {
+			// SinkId is an experimental feature.
+			// So supressing error.
+			// @Dev take a look while code review.
+			// @ts-ignore
+			(this.mediaStreamRendered.remoteMediaElement as HTMLAudioElement).setSinkId(this.deviceManager.getAudioOutputDeviceId());
+			this.mediaStreamRendered.remoteMediaElement.setMediaKeys;
+		}
+	}
+
+	async changeVideoInputDevice(selectedVideoDevices: IDevice): Promise<boolean> {
+		if (!this.session) {
+			console.warn('changeVideoInputDevice() : No session. Returning');
+			return false;
+		}
+		if (!this.config.enableVideo || this.deviceManager.hasVideoInputDevice()) {
+			console.warn('changeVideoInputDevice() : Unable change video device. Returning');
+			return false;
+		}
+		this.deviceManager.changeVideoInputDevice(selectedVideoDevices);
+		const newStream = await LocalStream.requestNewStream(this.deviceManager.getConstraints('video'), this.session);
+		if (!newStream) {
+			console.warn('changeVideoInputDevice() : Unable to get local stream. Returning');
+			return false;
+		}
+		const { peerConnection } = this.session?.sessionDescriptionHandler as SessionDescriptionHandler;
+		if (!peerConnection) {
+			console.warn('changeVideoInputDevice() : No peer connection. Returning');
+			return false;
+		}
+		LocalStream.replaceTrack(peerConnection, newStream, 'video');
+		return true;
+	}
+
+	setSelectedDevices(selectedDevices: ISelectedDevices): void {
+		this.deviceManager.setSelectedDevices(selectedDevices);
 	}
 }
