@@ -76433,6 +76433,192 @@
           ]
         }
       ]
+    },
+    "4.7.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25510",
+          "title": "Release 4.7.1",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "felipe-menelau",
+            "d-gubert",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "25471",
+          "title": "[FIX] Spotlight results showing usernames instead of real names",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.7.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "25434",
+          "title": "[FIX] LDAP sync removing users from channels when multiple groups are mapped to it",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.7.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "25441",
+          "title": "[NEW] Use setting to determine if initial general channel is needed",
+          "userLogin": "felipe-menelau",
+          "description": "- Adds flag responsible for overwriting #general channel creation",
+          "milestone": "4.7.1",
+          "contributors": [
+            "felipe-menelau",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.7.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25580",
+          "title": "Release 4.7.2",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "tiagoevanp",
+            "d-gubert",
+            "MartinSchoeler",
+            "ggazzo",
+            "cauefcr",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "25544",
+          "title": "[FIX] Initial User not added to default channel",
+          "userLogin": "geekgonecrazy",
+          "description": "If injecting initial user.  The user wasn’t added to the default General channel",
+          "milestone": "4.7.2",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25520",
+          "title": "[FIX] User abandonment setting was not working doe to failing event hook",
+          "userLogin": "cauefcr",
+          "description": "A setting watcher and the query for grabbing abandoned chats were broken, now they're not.",
+          "milestone": "4.7.2",
+          "contributors": [
+            "cauefcr",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "25495",
+          "title": "[FIX] Dynamic load matrix is enabled and handle failure ",
+          "userLogin": "ggazzo",
+          "milestone": "4.7.2",
+          "contributors": [
+            "ggazzo",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "25409",
+          "title": "[FIX] One of the triggers was not working correctly",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.7.2",
+          "contributors": [
+            "MartinSchoeler",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "25407",
+          "title": "[FIX] UI/UX issues on Live Chat widget",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.7.2",
+          "contributors": [
+            "MartinSchoeler",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "25312",
+          "title": "Chore: Add Livechat repo into Monorepo packages",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.7.2",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow",
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "4.8.0-rc.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25629",
+          "title": "Regression: Assets & Slack Bridge Setting Page not rendering",
+          "userLogin": "dougfabris",
+          "milestone": "4.8.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "25627",
+          "title": "Regression: Subscription menu not appearing for non installed but subscribed apps",
+          "userLogin": "rique223",
+          "description": "Fixed a problem on which the AppMenu component did not appear for apps that had an active subscription but weren't installed, now the rendering of the component is also based on the isSubscribed flag, and the appearance of the uninstall and enable/disable options are based on the app.installed flag so that the correct options appear on all the edge cases.\r\nDemo gif:\r\n![subscription-manager-fix](https://user-images.githubusercontent.com/43561537/170132040-dc8535c0-8056-4fb2-b008-afaece744868.gif)",
+          "milestone": "4.8.0",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "25521",
+          "title": "Chore: Rewrite im and dm endpoints to ts",
+          "userLogin": "albuquerquefabio",
+          "description": "- Endpoints rewritten to TS\r\n  - dm.create\r\n  - dm.delete\r\n  - dm.close\r\n  - dm.counters\r\n  - dm.files\r\n  - dm.history\r\n  - dm.members\r\n  - dm.messages\r\n  - dm.messages.others\r\n  - dm.list\r\n  - dm.list.everyone\r\n  - dm.open\r\n  - dm.setTopic\r\n  - im.create\r\n  - im.delete\r\n  - im.close\r\n  - im.counters\r\n  - im.files\r\n  - im.history\r\n  - im.members\r\n  - im.messages\r\n  - im.messages.others\r\n  - im.list\r\n  - im.list.everyone\r\n  - im.open\r\n  - im.setTopic\r\n- Some lines of code was refactored on `apps/meteor/app/api/server/v1/im.ts`\r\n- Unnecessary functions were deleted on `apps/meteor/app/lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin.ts`\r\n- New types was added on `apps/meteor/app/api/server/api.d.ts`",
+          "contributors": [
+            "albuquerquefabio",
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }

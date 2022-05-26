@@ -1,6 +1,63 @@
 
 # 4.8.0 (Under Release Candidate Process)
 
+## 4.8.0-rc.1
+`2022-05-26  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Rewrite im and dm endpoints to ts ([#25521](https://github.com/RocketChat/Rocket.Chat/pull/25521))
+
+  - Endpoints rewritten to TS
+    - dm.create
+    - dm.delete
+    - dm.close
+    - dm.counters
+    - dm.files
+    - dm.history
+    - dm.members
+    - dm.messages
+    - dm.messages.others
+    - dm.list
+    - dm.list.everyone
+    - dm.open
+    - dm.setTopic
+    - im.create
+    - im.delete
+    - im.close
+    - im.counters
+    - im.files
+    - im.history
+    - im.members
+    - im.messages
+    - im.messages.others
+    - im.list
+    - im.list.everyone
+    - im.open
+    - im.setTopic  
+  - Some lines of code was refactored on `apps/meteor/app/api/server/v1/im.ts`  
+  - Unnecessary functions were deleted on `apps/meteor/app/lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin.ts`  
+  - New types was added on `apps/meteor/app/api/server/api.d.ts`
+
+- Regression: Assets & Slack Bridge Setting Page not rendering ([#25629](https://github.com/RocketChat/Rocket.Chat/pull/25629))
+
+- Regression: Subscription menu not appearing for non installed but subscribed apps ([#25627](https://github.com/RocketChat/Rocket.Chat/pull/25627))
+
+  Fixed a problem on which the AppMenu component did not appear for apps that had an active subscription but weren't installed, now the rendering of the component is also based on the isSubscribed flag, and the appearance of the uninstall and enable/disable options are based on the app.installed flag so that the correct options appear on all the edge cases.
+  Demo gif:
+  ![subscription-manager-fix](https://user-images.githubusercontent.com/43561537/170132040-dc8535c0-8056-4fb2-b008-afaece744868.gif)
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@albuquerquefabio](https://github.com/albuquerquefabio)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rique223](https://github.com/rique223)
+
 ## 4.8.0-rc.0
 `2022-05-23  ·  17 🎉  ·  12 🚀  ·  56 🐛  ·  135 🔍  ·  48 👩‍💻👨‍💻`
 
@@ -790,6 +847,88 @@
 - [@ujorgeleite](https://github.com/ujorgeleite)
 - [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 4.7.2
+`2022-05-20  ·  5 🐛  ·  2 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Dynamic load matrix is enabled and handle failure  ([#25495](https://github.com/RocketChat/Rocket.Chat/pull/25495))
+
+- Initial User not added to default channel ([#25544](https://github.com/RocketChat/Rocket.Chat/pull/25544))
+
+  If injecting initial user.  The user wasn’t added to the default General channel
+
+- One of the triggers was not working correctly ([#25409](https://github.com/RocketChat/Rocket.Chat/pull/25409))
+
+- UI/UX issues on Live Chat widget ([#25407](https://github.com/RocketChat/Rocket.Chat/pull/25407))
+
+- User abandonment setting was not working doe to failing event hook ([#25520](https://github.com/RocketChat/Rocket.Chat/pull/25520))
+
+  A setting watcher and the query for grabbing abandoned chats were broken, now they're not.
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Add Livechat repo into Monorepo packages ([#25312](https://github.com/RocketChat/Rocket.Chat/pull/25312))
+
+- Release 4.7.2 ([#25580](https://github.com/RocketChat/Rocket.Chat/pull/25580))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@cauefcr](https://github.com/cauefcr)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 4.7.1
+`2022-05-13  ·  1 🎉  ·  2 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🎉 New features
+
+
+- Use setting to determine if initial general channel is needed ([#25441](https://github.com/RocketChat/Rocket.Chat/pull/25441))
+
+  - Adds flag responsible for overwriting #general channel creation
+
+### 🐛 Bug fixes
+
+
+- LDAP sync removing users from channels when multiple groups are mapped to it ([#25434](https://github.com/RocketChat/Rocket.Chat/pull/25434))
+
+- Spotlight results showing usernames instead of real names ([#25471](https://github.com/RocketChat/Rocket.Chat/pull/25471))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 4.7.1 ([#25510](https://github.com/RocketChat/Rocket.Chat/pull/25510))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@felipe-menelau](https://github.com/felipe-menelau)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 4.7.0
 `2022-05-04  ·  4 🎉  ·  7 🚀  ·  33 🐛  ·  69 🔍  ·  35 👩‍💻👨‍💻`
