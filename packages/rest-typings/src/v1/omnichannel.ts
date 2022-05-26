@@ -335,7 +335,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/inquiries.take': {
-		POST: (params: { userId: string; inquiryId: string }) => { inquiry: any };
+		POST: (params: { userId?: string; inquiryId: string }) => { inquiry: IOmnichannelRoom };
 	};
 
 	'livechat/inquiries.queued': {
