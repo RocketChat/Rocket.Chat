@@ -12,6 +12,8 @@ type MediumProps = {
 	unread?: boolean;
 	menu?: () => React.ReactNode;
 	badges?: React.ReactNode;
+	selected?: boolean;
+	menuOptions?: any;
 };
 
 const Medium: VFC<MediumProps> = ({ icon, title = '', avatar, actions, href, badges, unread, menu, ...props }) => {

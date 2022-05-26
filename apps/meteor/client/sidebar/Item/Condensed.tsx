@@ -3,7 +3,7 @@ import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fusela
 import React, { FC, memo, ReactElement, useState } from 'react';
 
 type CondensedProps = {
-	title: ReactElement;
+	title: ReactElement | string;
 	titleIcon?: ReactElement;
 	avatar: ReactElement | boolean;
 	icon?: IconProps['name'];
@@ -11,7 +11,10 @@ type CondensedProps = {
 	href?: string;
 	unread?: boolean;
 	menu?: () => ReactElement;
+	menuOptions?: any;
+	selected?: boolean;
 	badges?: ReactElement;
+	clickable?: boolean;
 };
 
 const Condensed: FC<CondensedProps> = ({ icon, title = '', avatar, actions, href, unread, menu, badges, ...props }) => {
