@@ -3,10 +3,10 @@ import { findAppearance } from '../../../server/api/lib/appearance';
 
 API.v1.addRoute(
 	'livechat/appearance',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			const { appearance } = await findAppearance({ userId: this.userId });
+			const { appearance } = await findAppearance();
 
 			return API.v1.success({
 				appearance,

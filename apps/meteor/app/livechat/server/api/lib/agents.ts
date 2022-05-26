@@ -1,10 +1,14 @@
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+
 import { LivechatDepartmentAgents } from '../../../../models/server/raw';
 
-export async function findAgentDepartments({ userId, enabledDepartmentsOnly, agentId }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findAgentDepartments({
+	enabledDepartmentsOnly,
+	agentId,
+}: {
+	enabledDepartmentsOnly?: boolean;
+	agentId: string;
+}): Promise<{ departments: ILivechatDepartmentAgents[] }> {
 	if (enabledDepartmentsOnly) {
 		return {
 			departments: await LivechatDepartmentAgents.findActiveDepartmentsByAgentId(agentId).toArray(),

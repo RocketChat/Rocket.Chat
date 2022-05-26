@@ -1,10 +1,8 @@
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { ISetting } from '@rocket.chat/core-typings';
+
 import { Settings } from '../../../../models/server/raw';
 
-export async function findAppearance({ userId }) {
-	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findAppearance(): Promise<{ appearance: ISetting[] }> {
 	const query = {
 		_id: {
 			$in: [

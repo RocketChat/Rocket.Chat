@@ -15,6 +15,8 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { department } = this.requestParams();
+			check(department, Match.Maybe(String));
+
 			const ourQuery: Partial<ILivechatInquiryRecord> = { status: LivechatInquiryStatus.QUEUED };
 
 			if (department) {
@@ -50,7 +52,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.take',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async post() {
 			check(this.bodyParams, {
@@ -72,7 +74,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.queued',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -97,7 +99,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.queuedForUser',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -122,7 +124,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/inquiries.getOne',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			const { roomId } = this.queryParams;
@@ -132,7 +134,6 @@ API.v1.addRoute(
 
 			return API.v1.success(
 				await findOneInquiryByRoomId({
-					userId: this.userId,
 					roomId,
 				}),
 			);

@@ -59,7 +59,7 @@ export type OmnichannelEndpoints = {
 	'livechat/department': {
 		GET: (
 			params: PaginatedRequest<{
-				text: string;
+				text?: string;
 				onlyMyDepartments?: booleanString;
 				enabled?: boolean;
 				excludeDepartmentId?: string;
@@ -69,7 +69,7 @@ export type OmnichannelEndpoints = {
 		}>;
 		POST: (params: { department: Partial<ILivechatDepartment>; agents: string[] }) => {
 			department: ILivechatDepartment;
-			agents: any[];
+			agents: ILivechatDepartmentAgents[];
 		};
 	};
 	'livechat/department/:_id': {
@@ -216,23 +216,19 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/queue': {
-		GET: (params: {
-			agentId?: ILivechatAgent['_id'];
-			includeOfflineAgents?: boolean;
-			departmentId?: ILivechatAgent['_id'];
-			offset: number;
-			count: number;
-			sort: string;
-		}) => {
+		GET: (
+			params: PaginatedRequest<{
+				agentId?: ILivechatAgent['_id'];
+				includeOfflineAgents?: booleanString;
+				departmentId?: ILivechatAgent['_id'];
+			}>,
+		) => PaginatedResult<{
 			queue: {
 				chats: number;
 				department: { _id: string; name: string };
 				user: { _id: string; username: string; status: string };
 			}[];
-			count: number;
-			offset: number;
-			total: number;
-		};
+		}>;
 	};
 	'livechat/agents/:uid/departments?enabledDepartmentsOnly=true': {
 		GET: () => { departments: ILivechatDepartment[] };
@@ -331,7 +327,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/inquiries.list': {
-		GET: (params: { department: string }) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
+		GET: (params: { department?: string }) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
 	};
 
 	'livechat/inquiries.take': {
@@ -339,7 +335,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/inquiries.queued': {
-		GET: (params: { department: string }) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
+		GET: (params: { department?: string }) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
 	};
 
 	'livechat/inquiries.getOne': {

@@ -4,10 +4,10 @@ import { deprecationWarning } from '../../../../api/server/helpers/deprecationWa
 
 API.v1.addRoute(
 	'livechat/office-hours',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-business-hours'] },
 	{
 		async get() {
-			const { officeHours } = await findLivechatOfficeHours({ userId: this.userId });
+			const { officeHours } = await findLivechatOfficeHours();
 			return API.v1.success(
 				deprecationWarning({
 					endpoint: 'livechat/office-hours',

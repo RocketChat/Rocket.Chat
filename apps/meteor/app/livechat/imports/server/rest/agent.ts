@@ -1,17 +1,21 @@
+import { check, Match } from 'meteor/check';
+
 import { API } from '../../../../api/server';
 import { findAgentDepartments } from '../../../server/api/lib/agents';
 
 API.v1.addRoute(
 	'livechat/agents/:agentId/departments',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
 			const { agentId } = this.urlParams;
 			const { enabledDepartmentsOnly } = this.queryParams;
 
+			check(agentId, String);
+			check(enabledDepartmentsOnly, Match.Optional(String));
+
 			const departments = await findAgentDepartments({
-				userId: this.userId,
-				enabledDepartmentsOnly: enabledDepartmentsOnly && enabledDepartmentsOnly === 'true',
+				enabledDepartmentsOnly: enabledDepartmentsOnly === 'true',
 				agentId,
 			});
 
