@@ -3,6 +3,7 @@ import { EJSON } from 'meteor/ejson';
 
 import { hasPermission } from '../../../authorization/server';
 import { isValidQuery } from '../lib/isValidQuery';
+import { clean } from '../lib/cleanQuery';
 import { API } from '../api';
 
 const pathAllowConf = {
@@ -95,11 +96,12 @@ API.helperMethods.set(
 			}
 		}
 
-		let query: Record<string, any> | undefined;
+		let query: Record<string, any> = {};
 		if (this.queryParams.query) {
 			this.logger.warn('attribute query is deprecated');
 			try {
 				query = EJSON.parse(this.queryParams.query);
+				query = clean(query, pathAllowConf.def);
 			} catch (e) {
 				this.logger.warn(`Invalid query parameter provided "${this.queryParams.query}":`, e);
 				throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: "${this.queryParams.query}"`, {
