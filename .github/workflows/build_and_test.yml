@@ -119,7 +119,9 @@ jobs:
 
       - name: yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
-        run: yarn
+        run: |
+          yarn cache clean
+          yarn
 
       - run: yarn lint
 
