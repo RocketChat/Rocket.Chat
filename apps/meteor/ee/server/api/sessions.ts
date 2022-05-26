@@ -122,7 +122,7 @@ API.v1.addRoute(
 			const searchUser = await Users.find<Pick<IUser, '_id'>>(
 				{ $text: { $search: search }, active: true },
 				{
-					projection: { _id: 1, score: { $meta: 'textScore' } },
+					projection: { _id: 1 },
 					limit: 5,
 					sort: { score: { $meta: 'textScore' } },
 				},
