@@ -70142,6 +70142,19 @@
           ]
         }
       ]
+    },
+    "4.4.4": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
     }
   }
 }
