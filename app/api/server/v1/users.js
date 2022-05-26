@@ -26,6 +26,7 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
+import { isValidQuery } from '../lib/isValidQuery';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -233,7 +234,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.list', { authRequired: true }, {
+API.v1.addRoute('users.list', { authRequired: true, queryOperations: ['$or', '$and'] }, {
 	get() {
 		if (!hasPermission(this.userId, 'view-d-room')) {
 			return API.v1.unauthorized();
@@ -246,6 +247,22 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const nonEmptyFields = getNonEmptyFields(fields);
 
 		const inclusiveFields = getInclusiveFields(nonEmptyFields);
+		const inclusiveFieldsKeys = Object.keys(inclusiveFields);
+
+		if (
+			!isValidQuery(
+				nonEmptyQuery,
+				[
+					...inclusiveFieldsKeys,
+					inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
+					inclusiveFieldsKeys.includes('username') && 'username.*',
+					inclusiveFieldsKeys.includes('name') && 'name.*',
+				].filter(Boolean),
+				this.queryOperations,
+			)
+		) {
+			throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
+		}
 
 		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
 

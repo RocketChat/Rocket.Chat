@@ -397,6 +397,9 @@ export class APIClass extends Restivus {
 							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
 						}
 
+						this.queryOperations = options.queryOperations;
+						this.queryFields = options.queryFields;
+
 						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
