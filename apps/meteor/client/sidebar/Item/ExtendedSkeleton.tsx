@@ -1,5 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { VFC } from 'react';
 
 import Extended from './Extended';
 

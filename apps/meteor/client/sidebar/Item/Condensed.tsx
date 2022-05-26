@@ -27,7 +27,7 @@ const Condensed: FC<CondensedProps> = ({ icon, title = '', avatar, actions, href
 	};
 
 	return (
-		<Sidebar.Item {...props} href={href} clickable={!!href}>
+		<Sidebar.Item {...props} {...({ href } as any)} clickable={!!href}>
 			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 			<Sidebar.Item.Content>
 				<Sidebar.Item.Wrapper>

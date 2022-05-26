@@ -4,39 +4,21 @@ import React, { memo, useState, VFC } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
-/**
- * @param {Object} props
- * @param {React.ReactNode} props.icon
- * @param {React.ReactNode} props.title
- * @param {any} props.avatar
- * @param {any} props.actions
- * @param {any} props.href
- * @param {any} props.time
- * @param {any} props.menu
- * @param {any} props.menuOptions
- * @param {React.ReactNode} props.subtitle
- * @param {any} props.titleIcon
- * @param {any} props.badges
- * @param {any} props.threadUnread
- * @param {any} props.unread
- * @param {any} props.selected
- */
-
 type ExtendedProps = {
 	icon?: IconProps['name'];
 	title?: React.ReactNode;
-	titleIcon?: React.ReactNode;
 	avatar?: React.ReactNode | boolean;
 	actions?: React.ReactNode;
 	href?: string;
 	time?: any;
 	menu?: () => React.ReactNode;
-	menuOptions?: any;
 	subtitle?: React.ReactNode;
 	badges?: React.ReactNode;
-	threadUnread?: boolean;
 	unread?: boolean;
 	selected?: boolean;
+	menuOptions?: any;
+	titleIcon?: React.ReactNode;
+	threadUnread?: boolean;
 };
 
 const Extended: VFC<ExtendedProps> = ({
@@ -47,8 +29,11 @@ const Extended: VFC<ExtendedProps> = ({
 	href,
 	time,
 	menu,
+	menuOptions: _menuOptions,
 	subtitle = '',
+	titleIcon: _titleIcon,
 	badges,
+	threadUnread: _threadUnread,
 	unread,
 	selected,
 	...props
@@ -67,7 +52,7 @@ const Extended: VFC<ExtendedProps> = ({
 	};
 
 	return (
-		aria-selected={selected} selected={selected} highlighted={unread} {...props} href={String(href)} clickable={!!href}>
+		<Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} {...(href as any)} clickable={!!href}>
 			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 			<Sidebar.Item.Content>
 				<Sidebar.Item.Content>
