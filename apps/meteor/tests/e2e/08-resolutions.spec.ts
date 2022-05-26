@@ -89,19 +89,19 @@ test.describe('[Resolution]', function () {
 
 				test('expect close the sidenav when press the preferences link', async () => {
 					await sideNav.preferences().click();
-					await sideNav.getPage().mouse.click(640, 30);
+					await sideNav.getPage().mouse.click(640, 100);
 					await expect(await sideNav.isSideBarOpen()).toBeTruthy;
 				});
 
 				test('expect close the sidenav when press the profile link', async () => {
 					await sideNav.profile().click();
-					await sideNav.getPage().mouse.click(640, 30);
+					await sideNav.getPage().mouse.click(640, 100);
 					await expect(await sideNav.isSideBarOpen()).toBeTruthy;
 				});
 
 				test('expect close the preferences nav', async () => {
 					await sideNav.preferencesClose().click();
-					await sideNav.getPage().mouse.click(640, 30);
+					await sideNav.getPage().mouse.click(640, 100);
 					await expect(await sideNav.isSideBarOpen()).toBeFalsy;
 				});
 			});
