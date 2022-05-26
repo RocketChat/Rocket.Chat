@@ -10,8 +10,8 @@ const channelsGetAllUserMentionsByChannelPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: { type: 'string' },
-		offset: { type: 'string' },
-		count: { type: 'string' },
+		offset: { type: 'number' },
+		count: { type: 'number' },
 		sort: { type: 'string' },
 		query: { type: 'string' },
 	},

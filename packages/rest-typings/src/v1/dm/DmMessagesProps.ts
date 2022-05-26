@@ -32,13 +32,13 @@ export const isDmMessagesProps = ajv.compile<DmMessagesProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'string',
+					type: 'number',
 				},
 				count: {
-					type: 'string',
+					type: 'number',
 				},
 				offset: {
-					type: 'string',
+					type: 'number',
 				},
 			},
 			required: ['roomId'],
@@ -57,13 +57,13 @@ export const isDmMessagesProps = ajv.compile<DmMessagesProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'string',
+					type: 'number',
 				},
 				count: {
-					type: 'string',
+					type: 'number',
 				},
 				offset: {
-					type: 'string',
+					type: 'number',
 				},
 			},
 			required: ['username'],

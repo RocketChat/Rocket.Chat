@@ -27,13 +27,13 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'string',
+					type: 'number',
 				},
 				count: {
-					type: 'string',
+					type: 'number',
 				},
 				offset: {
-					type: 'string',
+					type: 'number',
 				},
 			},
 			required: ['roomId'],
@@ -49,13 +49,13 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'string',
+					type: 'number',
 				},
 				count: {
-					type: 'string',
+					type: 'number',
 				},
 				offset: {
-					type: 'string',
+					type: 'number',
 				},
 			},
 			required: ['username'],

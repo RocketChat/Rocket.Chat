@@ -18,8 +18,8 @@ const channelsMessagesPropsSchema = {
 	properties: {
 		roomId: { type: 'string' },
 		query: { type: 'string' },
-		count: { type: 'string' },
-		offset: { type: 'string' },
+		count: { type: 'number' },
+		offset: { type: 'number' },
 		sort: {
 			type: 'string',
 		},
