@@ -3,7 +3,7 @@ import Ajv from 'ajv';
 const ajv = new Ajv({ coerceTypes: true });
 
 export type SessionsProps = {
-	sessionId?: string;
+	sessionId: string;
 };
 
 export const isSessionsProps = ajv.compile<SessionsProps>({
