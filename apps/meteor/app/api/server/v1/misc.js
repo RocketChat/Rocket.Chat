@@ -97,8 +97,6 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
  *                            type: object
  *                          tokenpass:
  *                            type: object
- *                          blockstack:
- *                            type: object
  *                          password:
  *                            type: object
  *                            properties:
