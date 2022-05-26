@@ -39,13 +39,13 @@ export const isDmMemberProps = ajv.compile<DmMemberProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
-					type: 'number',
+					type: 'string',
 				},
 				offset: {
-					type: 'number',
+					type: 'string',
 				},
 			},
 			required: ['roomId'],

@@ -39,10 +39,10 @@ const channelsHistoryPropsSchema = {
 			enum: ['true', 'false'],
 		},
 		count: {
-			type: 'number',
+			type: 'string',
 		},
 		offset: {
-			type: 'number',
+			type: 'string',
 		},
 		sort: {
 			type: 'string',

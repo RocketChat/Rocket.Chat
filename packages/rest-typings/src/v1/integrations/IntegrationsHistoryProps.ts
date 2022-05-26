@@ -10,8 +10,8 @@ const integrationsHistorySchema = {
 	type: 'object',
 	properties: {
 		id: { type: 'string', nullable: false, minLength: 1 },
-		offset: { type: 'number', nullable: true },
-		count: { type: 'number', nullable: true },
+		offset: { type: 'string', nullable: true },
+		count: { type: 'string', nullable: true },
 		sort: { type: 'string', nullable: true },
 		query: { type: 'string', nullable: true },
 	},
