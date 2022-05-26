@@ -85,9 +85,11 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			await Users.unsetOneLoginToken(this.userId, sessionObj.loginToken);
+			Promise.all([
+				Users.unsetOneLoginToken(this.userId, sessionObj.loginToken),
+				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId }),
+			]);
 
-			await Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId });
 			return API.v1.success({ sessionId });
 		},
 	},
@@ -180,9 +182,11 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			await Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken);
+			Promise.all([
+				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),
+				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId }),
+			]);
 
-			await Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId });
 			return API.v1.success({ sessionId });
 		},
 	},
