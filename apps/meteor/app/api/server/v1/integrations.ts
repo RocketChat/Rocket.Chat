@@ -22,33 +22,15 @@ API.v1.addRoute(
 	'integrations.create',
 	{ authRequired: true, validateParams: isIntegrationsCreateProps },
 	{
-		post() {
-			const { userId, bodyParams } = this;
-
-			const integration = ((): IIntegration | undefined => {
-				let integration: IIntegration | undefined;
-
-				switch (bodyParams.type) {
-					case 'webhook-outgoing':
-						Meteor.runAsUser(userId, () => {
-							integration = Meteor.call('addOutgoingIntegration', bodyParams);
-						});
-						break;
-					case 'webhook-incoming':
-						Meteor.runAsUser(userId, () => {
-							integration = Meteor.call('addIncomingIntegration', bodyParams);
-						});
-						break;
-				}
-
-				return integration;
-			})();
-
-			if (!integration) {
-				return API.v1.failure('Invalid integration type.');
+		async post() {
+			switch (this.bodyParams.type) {
+				case 'webhook-outgoing':
+					return API.v1.success({ integration: await Meteor.call('addOutgoingIntegration', this.bodyParams) });
+				case 'webhook-incoming':
+					return API.v1.success({ integration: await Meteor.call('addIncomingIntegration', this.bodyParams) });
 			}
 
-			return API.v1.success({ integration });
+			return API.v1.failure('Invalid integration type.');
 		},
 	},
 );
@@ -57,7 +39,7 @@ API.v1.addRoute(
 	'integrations.history',
 	{ authRequired: true, validateParams: isIntegrationsHistoryProps },
 	{
-		get() {
+		async get() {
 			const { userId, queryParams } = this;
 
 			if (!hasAtLeastOnePermission(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'])) {
@@ -80,8 +62,8 @@ API.v1.addRoute(
 				projection,
 			});
 
-			const history = Promise.await(cursor.toArray());
-			const total = Promise.await(cursor.count());
+			const history = await cursor.toArray();
+			const total = await cursor.count();
 
 			return API.v1.success({
 				history,

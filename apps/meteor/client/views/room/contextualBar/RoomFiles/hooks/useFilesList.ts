@@ -1,10 +1,11 @@
 import { useUserRoom, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useScrollableMessageList } from '../../../../../hooks/lists/useScrollableMessageList';
+import { useScrollableRecordList } from '../../../../../hooks/lists/useScrollableRecordList';
 import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
 import { FilesList, FilesListOptions } from '../../../../../lib/lists/FilesList';
+import { MessageList } from '../../../../../lib/lists/MessageList';
 import { getConfig } from '../../../../../lib/utils/getConfig';
 
 export const useFilesList = (
@@ -17,7 +18,7 @@ export const useFilesList = (
 } => {
 	const [filesList, setFilesList] = useState(() => new FilesList(options));
 	const reload = useCallback(() => setFilesList(new FilesList(options)), [options]);
-	const room = useUserRoom(options.rid);
+	const room = useUserRoom(options.rid as string);
 	const uid = useUserId();
 
 	useComponentDidUpdate(() => {
@@ -58,14 +59,17 @@ export const useFilesList = (
 			});
 
 			return {
-				items: files,
+				items: files.map((file) => ({
+					...file,
+					_updatedAt: new Date(file._updatedAt),
+				})),
 				itemCount: total,
 			};
 		},
 		[getFiles, options.rid, options.type, options.text],
 	);
 
-	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
+	const { loadMoreItems, initialItemCount } = useScrollableRecordList(
 		filesList,
 		fetchMessages,
 		useMemo(() => {
@@ -73,7 +77,9 @@ export const useFilesList = (
 			return filesListSize ? parseInt(filesListSize, 10) : undefined;
 		}, []),
 	);
-	useStreamUpdatesForMessageList(filesList, uid, options.rid);
+
+	// TODO: chapter day : frontend create useStreamUpdatesForUploadList
+	useStreamUpdatesForMessageList(filesList as unknown as MessageList, uid, options.rid || null);
 
 	return {
 		reload,
