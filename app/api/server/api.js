@@ -403,13 +403,13 @@ export class APIClass extends Restivus {
 							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
 						}
 
-						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this)) || API.v1.success();
+						this.queryOperations = options.queryOperations;
+						this.queryFields = options.queryFields;
 
-						log.http({
-							status: result.statusCode,
-							responseTime: Date.now() - startTime,
-						});
+						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this)) || API.v1.success();
 					} catch (e) {
+						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+
 						const apiMethod = {
 							'error-too-many-requests': 'tooManyRequests',
 							'error-unauthorized': 'unauthorized',
