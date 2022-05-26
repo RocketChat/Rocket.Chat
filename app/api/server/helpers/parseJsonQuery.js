@@ -3,6 +3,7 @@ import { EJSON } from 'meteor/ejson';
 
 import { hasPermission } from '../../../authorization';
 import { clean } from '../lib/cleanQuery';
+import { isValidQuery } from '../lib/isValidQuery';
 import { API } from '../api';
 
 const pathAllowConf = {
@@ -87,6 +88,10 @@ API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 			} else {
 				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExclude));
 			}
+		}
+
+		if (this.queryFields && !isValidQuery(query, this.queryFields || ['*'], this.queryOperations ?? pathAllowConf.def)) {
+			throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 		}
 
 		Object.keys(query).forEach((k) => {
