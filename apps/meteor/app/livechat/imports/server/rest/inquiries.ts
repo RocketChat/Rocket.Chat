@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { check, Match } from 'meteor/check';
 import { ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import { Users, LivechatInquiry } from '../../../../models/server/raw/index';
@@ -52,13 +53,18 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (this.bodyParams.userId && !(await Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } }))) {
+			check(this.bodyParams, {
+				userId: Match.Optional(String),
+				inquiryId: String,
+			});
+
+			const { userId, inquiryId } = this.bodyParams;
+
+			if (userId && !(await Users.findOneById(userId, { fields: { _id: 1 } }))) {
 				return API.v1.failure('The user is invalid');
 			}
 			return API.v1.success({
-				inquiry: Meteor.runAsUser(this.bodyParams.userId || this.userId, () =>
-					Meteor.call('livechat:takeInquiry', this.bodyParams.inquiryId),
-				),
+				inquiry: Meteor.runAsUser(userId || this.userId, () => Meteor.call('livechat:takeInquiry', inquiryId)),
 			});
 		},
 	},

@@ -6,11 +6,11 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const settings = await findIntegrationSettings({
-				userId: this.userId,
-			});
-
-			return API.v1.success(settings);
+			return API.v1.success(
+				await findIntegrationSettings({
+					userId: this.userId,
+				}),
+			);
 		},
 	},
 );
