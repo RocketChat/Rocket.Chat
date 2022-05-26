@@ -160,3 +160,4 @@ export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
+export * from './helpers/WithItemCount';

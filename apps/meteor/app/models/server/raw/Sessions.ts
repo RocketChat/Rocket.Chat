@@ -19,7 +19,7 @@ import type {
 	OSSessionAggregationResult,
 	IUser,
 } from '@rocket.chat/core-typings';
-import { PaginatedResult } from '@rocket.chat/rest-typings';
+import { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
 
 import { BaseRaw, IndexSpecification, ModelOptionalId } from './BaseRaw';
 
@@ -854,7 +854,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				docs: sessions,
 				count: [{ total } = { total: 0 }],
 			},
-		] = await this.col.aggregate<{ docs: DeviceManagementSession[]; count: { total: number }[] }>(queryArray).toArray();
+		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementSession[] }>>(queryArray).toArray();
 
 		return { sessions, total, count, offset };
 	}
@@ -976,12 +976,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				docs: sessions,
 				count: [{ total } = { total: 0 }],
 			},
-		] = await this.col
-			.aggregate<{
-				docs: DeviceManagementPopulatedSession[];
-				count: { total: number }[];
-			}>(queryArray)
-			.toArray();
+		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementPopulatedSession[] }>>(queryArray).toArray();
 
 		return { sessions, total, count, offset };
 	}
