@@ -1,5 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
@@ -16,6 +17,7 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
 
 type ReceivingPopupProps = {
 	id: string;
@@ -32,6 +34,12 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onConfirm
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
+	const setPreferences = useSetPreferences();
+
+	const handleJoinCall = useMutableCallback(() => {
+		setPreferences(controllersConfig);
+		onConfirm();
+	});
 
 	return (
 		<VideoConfPopup position={position}>
@@ -68,7 +76,7 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onConfirm
 					/>
 				</VideoConfPopupControllers>
 				<VideoConfPopupFooter>
-					<VideoConfButton primary onClick={onConfirm}>
+					<VideoConfButton primary onClick={handleJoinCall}>
 						{t('Accept')}
 					</VideoConfButton>
 					{onClose && (

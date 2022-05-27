@@ -137,8 +137,7 @@ addAction('video-conf', ({ room }) => {
 
 		if (room.t === 'd') {
 			dispatchPopup({ rid: room._id });
-			VideoConfManager.once('direct/cancel', () => dismissPopup(room._id));
-			VideoConfManager.once('direct/accepted', () => dismissPopup(room._id));
+			VideoConfManager.once('direct/stopped', () => dismissPopup(room._id));
 		}
 	});
 

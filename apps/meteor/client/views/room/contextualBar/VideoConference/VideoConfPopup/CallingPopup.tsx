@@ -1,5 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
@@ -15,6 +16,7 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useChangePreference } from '../../../../../contexts/VideoConfPopupContext';
 
 type CallingPopupProps = {
 	id: string;
@@ -27,6 +29,17 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
+	const changePreference = useChangePreference();
+
+	const handleToggleMicPref = useMutableCallback(() => {
+		changePreference('mic', !controllersConfig.mic);
+		handleToggleMic();
+	});
+
+	const handleToggleCamPref = useMutableCallback(() => {
+		changePreference('cam', !controllersConfig.cam);
+		handleToggleCam();
+	});
 
 	return (
 		<VideoConfPopup>
@@ -51,14 +64,14 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMic}
+						onClick={handleToggleMicPref}
 					/>
 					<VideoConfController
 						primary={controllersConfig.cam}
 						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCam}
+						onClick={handleToggleCamPref}
 					/>
 				</VideoConfPopupControllers>
 				<VideoConfPopupFooter>

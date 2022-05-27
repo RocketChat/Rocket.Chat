@@ -1,5 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { TextInput } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfModal,
@@ -16,6 +17,7 @@ import {
 import React, { ReactElement, useState, ChangeEvent } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
 
 type StartGroupVideoConfModalProps = {
 	room: IRoom;
@@ -27,6 +29,12 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 	const t = useTranslation();
 	const [confTitle, setConfTitle] = useState<string | undefined>(undefined);
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
+	const setPreferences = useSetPreferences();
+
+	const handleStartCall = useMutableCallback(() => {
+		setPreferences(controllersConfig);
+		onConfirm(confTitle);
+	});
 
 	return (
 		<VideoConfModal>
@@ -62,7 +70,7 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 				</VideoConfModalField>
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
-				<VideoConfButton onClick={(): void => onConfirm(confTitle)} primary icon='phone'>
+				<VideoConfButton onClick={handleStartCall} primary icon='phone'>
 					{t('Start_call')}
 				</VideoConfButton>
 				<VideoConfButton onClick={onClose}>{t('Cancel')}</VideoConfButton>

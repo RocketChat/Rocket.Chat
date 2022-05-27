@@ -49,6 +49,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	// A remote user accepted our call
 	'direct/accepted': DirectCallParams;
 
+	// We stopped calling a remote user
+	'direct/stopped': DirectCallParams;
+
 	'preference/changed': { key: keyof CallPreferences; value: boolean };
 
 	// The list of incoming calls has changed in some way
@@ -78,10 +81,6 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		return this._preferences;
 	}
 
-	public set preferences(value: CallPreferences) {
-		this._preferences = value;
-	}
-
 	constructor() {
 		super();
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
@@ -90,19 +89,22 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	}
 
 	public isBusy(): boolean {
+		return this.isCalling();
+	}
+
+	public isRinging(): boolean {
+		return this.incomingDirectCalls.size > 0;
+	}
+
+	public isCalling(): boolean {
 		if (this.startingNewCall) {
 			return true;
 		}
-
 		if (this.currentCallHandler || this.currentCallData) {
 			return true;
 		}
 
 		return false;
-	}
-
-	public isRinging(): boolean {
-		return this.incomingDirectCalls.size > 0;
 	}
 
 	public getIncomingDirectCalls(): DirectCallParams[] {
@@ -213,6 +215,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	public changePreference(key: keyof CallPreferences, value: boolean): void {
 		this._preferences[key] = value;
 		this.emit('preference/changed', { key, value });
+	}
+
+	public setPreferences(prefs: Partial<CallPreferences>): void {
+		for (const key in prefs) {
+			if (prefs.hasOwnProperty(key)) {
+				const prefKey = key as keyof CallPreferences;
+				this.changePreference(prefKey, prefs[prefKey] as boolean);
+			}
+		}
 	}
 
 	public async joinCall(callId: string): Promise<void> {
@@ -439,6 +450,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		}
 
 		this.emit('direct/accepted', params);
+		this.emit('direct/stopped', params);
 		this.currentCallData = undefined;
 
 		// Immediately open the call in a new tab
@@ -460,6 +472,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		}
 
 		this.emit('direct/cancel', params);
+		this.emit('direct/stopped', params);
 		this.currentCallData = undefined;
 
 		APIClient.v1.post('video-conference.cancel', { callId: params.callId });

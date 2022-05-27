@@ -25,6 +25,8 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			rejectIncomingCall: (callId: string): void => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: (): void => VideoConfManager.abortCall(),
 			useIncomingCalls: (): VideoConfIncomingCall[] => useVideoConfIncomingCalls(),
+			setPreferences: (prefs: Partial<typeof VideoConfManager['preferences']>): void => VideoConfManager.setPreferences(prefs),
+			changePreference: (key: string, value: boolean): void => VideoConfManager.changePreference(key, value),
 		}),
 		[],
 	);
