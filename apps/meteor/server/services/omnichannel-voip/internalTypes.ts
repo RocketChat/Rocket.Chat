@@ -1,3 +1,5 @@
+import { IVoipRoom } from '@rocket.chat/core-typings';
+
 export type FindVoipRoomsParams = {
 	agents?: string[];
 	open?: boolean;
@@ -12,4 +14,5 @@ export type FindVoipRoomsParams = {
 		fields?: Record<string, unknown>;
 		offset?: number;
 	};
+	direction?: IVoipRoom['direction'];
 };

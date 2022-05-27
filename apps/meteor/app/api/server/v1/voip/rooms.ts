@@ -25,6 +25,7 @@ const validateDateParams = (property: string, date: DateParam = {}): DateParam =
 const parseAndValidate = (property: string, date?: string): DateParam => {
 	return validateDateParams(property, parseDateParams(date));
 };
+const VoipRoomDirectionValidator = Match.Maybe(Match.Where((value: string) => ['inbound', 'outbound'].includes(value)));
 /**
  * @openapi
  *  /voip/server/api/v1/voip/room
@@ -142,7 +143,7 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
-			const { agents, open, tags, queue, visitorId } = this.requestParams();
+			const { agents, open, tags, queue, visitorId, direction } = this.requestParams();
 			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.requestParams();
 
 			check(agents, Match.Maybe([String]));
@@ -150,6 +151,7 @@ API.v1.addRoute(
 			check(tags, Match.Maybe([String]));
 			check(queue, Match.Maybe(String));
 			check(visitorId, Match.Maybe(String));
+			check(direction, VoipRoomDirectionValidator);
 
 			// Reusing same L room permissions for simplicity
 			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
@@ -170,6 +172,7 @@ API.v1.addRoute(
 					visitorId,
 					createdAt,
 					closedAt,
+					direction,
 					options: { sort, offset, count, fields },
 				}),
 			);

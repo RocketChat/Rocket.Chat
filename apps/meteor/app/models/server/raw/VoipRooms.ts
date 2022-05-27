@@ -108,6 +108,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		tags,
 		queue,
 		visitorId,
+		direction,
 		options = {},
 	}: {
 		agents?: string[];
@@ -117,6 +118,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		tags?: string[];
 		queue?: string;
 		visitorId?: string;
+		direction?: IVoipRoom['direction'];
 		options?: {
 			sort?: Record<string, unknown>;
 			count?: number;
@@ -160,6 +162,9 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		}
 		if (queue) {
 			query.queue = queue;
+		}
+		if (direction) {
+			query.direction = direction;
 		}
 
 		return this.find(query, {

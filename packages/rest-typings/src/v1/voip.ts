@@ -417,6 +417,7 @@ type VoipRooms = {
 	tags?: string[];
 	queue?: string;
 	visitorId?: string;
+	direction?: IVoipRoom['direction'];
 };
 
 const VoipRoomsSchema: JSONSchemaType<VoipRooms> = {
@@ -455,6 +456,11 @@ const VoipRoomsSchema: JSONSchemaType<VoipRooms> = {
 		},
 		visitorId: {
 			type: 'string',
+			nullable: true,
+		},
+		direction: {
+			type: 'string',
+			enum: ['inbound', 'outbound'],
 			nullable: true,
 		},
 	},
