@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
+import { useVideoConfIncomingCalls } from '../../lib/VideoConfManager';
 import { useQueryOptions } from './useQueryOptions';
 
 const query = { open: { $ne: false } };
@@ -26,6 +27,8 @@ export const useRoomList = (): Array<ISubscription> => {
 
 	const inquiries = useQueuedInquiries();
 
+	const incomingCalls = useVideoConfIncomingCalls();
+
 	let queue: IRoom[] = emptyQueue;
 	if (inquiries.enabled) {
 		queue = inquiries.queue;
@@ -33,6 +36,7 @@ export const useRoomList = (): Array<ISubscription> => {
 
 	useEffect(() => {
 		setRoomList(() => {
+			const incomingCall = new Set();
 			const favorite = new Set();
 			const team = new Set();
 			const omnichannel = new Set();
@@ -44,6 +48,10 @@ export const useRoomList = (): Array<ISubscription> => {
 			const onHold = new Set();
 
 			rooms.forEach((room) => {
+				if (incomingCalls.find((call) => call.rid === room.rid)) {
+					return incomingCall.add(room);
+				}
+
 				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
 					return unread.add(room);
 				}
@@ -81,6 +89,7 @@ export const useRoomList = (): Array<ISubscription> => {
 
 			const groups = new Map();
 			showOmnichannel && groups.set('Omnichannel', []);
+			incomingCall.size && groups.set('Incoming Calls', incomingCall);
 			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', queue);
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
@@ -96,6 +105,7 @@ export const useRoomList = (): Array<ISubscription> => {
 	}, [
 		rooms,
 		showOmnichannel,
+		incomingCalls,
 		inquiries.enabled,
 		queue,
 		sidebarShowUnread,

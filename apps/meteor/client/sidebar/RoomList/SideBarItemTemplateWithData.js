@@ -1,4 +1,4 @@
-import { Badge, Sidebar } from '@rocket.chat/fuselage';
+import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
@@ -34,6 +34,7 @@ function SideBarItemTemplateWithData({
 	style,
 	// sidebarViewMode,
 	isAnonymous,
+	videoConfActions,
 }) {
 	const { sidebar } = useLayout();
 
@@ -58,7 +59,7 @@ function SideBarItemTemplateWithData({
 	const highlighted = !hideUnreadStatus && (alert || unread);
 	const icon = (
 		<Sidebar.Item.Icon highlighted={highlighted}>
-			<RoomIcon highlighted={highlighted} room={room} placement='sidebar' />
+			<RoomIcon highlighted={highlighted} room={room} isIncomingCall={videoConfActions} placement='sidebar' />
 		</Sidebar.Item.Icon>
 	);
 
@@ -98,6 +99,14 @@ function SideBarItemTemplateWithData({
 			style={style}
 			badges={badges}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
+			actions={
+				videoConfActions && (
+					<>
+						<SidebarItemAction onClick={videoConfActions.acceptCall} primary success icon='phone' />
+						<SidebarItemAction onClick={videoConfActions.rejectCall} primary danger icon='phone-off' />
+					</>
+				)
+			}
 			menu={
 				!isAnonymous &&
 				!isQueued &&
