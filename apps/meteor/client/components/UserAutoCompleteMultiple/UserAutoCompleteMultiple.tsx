@@ -1,6 +1,6 @@
 import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { ComponentProps, memo, MouseEventHandler, ReactElement, useMemo, useState } from 'react';
+import React, { ComponentProps, memo, ReactElement, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
@@ -11,14 +11,14 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term }) });
 
-type UserAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> &
-	Omit<ComponentProps<typeof Option>, 'value' | 'is' | 'className'> & {
-		onChange?: MouseEventHandler<HTMLButtonElement>;
+type UserAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
+	Omit<ComponentProps<typeof Option>, 'value' | 'is' | 'className' | 'onChange'> & {
+		onChange: (value: unknown, action: 'remove' | undefined) => void;
 		value: any;
 		filter?: string;
 	};
 
-const UserAutoCompleteMultiple = (props: UserAutoCompleteMultipleProps): ReactElement => {
+const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultipleProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: data } = useEndpointData(
@@ -31,12 +31,13 @@ const UserAutoCompleteMultiple = (props: UserAutoCompleteMultipleProps): ReactEl
 	const onClickRemove = useMutableCallback((e) => {
 		e.stopPropagation();
 		e.preventDefault();
-		props.onChange(e.currentTarget.value, 'remove');
+		onChange?.(e.currentTarget.value, 'remove');
 	});
 
 	return (
 		<AutoComplete
 			{...props}
+			onChange={onChange}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ value: selected }): ReactElement =>
