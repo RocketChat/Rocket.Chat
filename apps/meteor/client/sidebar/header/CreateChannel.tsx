@@ -1,4 +1,3 @@
-import { RoomType } from '@rocket.chat/core-typings';
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
@@ -6,14 +5,15 @@ import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 
-type CreateChannelProps = {
+export type CreateChannelProps = {
 	values: {
 		name: string;
-		type: RoomType;
+		type: boolean;
 		readOnly?: boolean;
 		encrypted?: boolean;
 		broadcast?: boolean;
 		users?: string[];
+		description?: string;
 	};
 	handlers: {
 		handleName?: () => void;
@@ -23,10 +23,10 @@ type CreateChannelProps = {
 	};
 	hasUnsavedChanges: boolean;
 	onChangeUsers: (value: string, action: string) => void;
-	onChangeType: (value: string) => void;
-	onChangeBroadcast: (value: string) => void;
+	onChangeType: React.FormEventHandler<HTMLElement>;
+	onChangeBroadcast: React.FormEventHandler<HTMLElement>;
 	canOnlyCreateOneType?: false | 'p' | 'c';
-	e2eEnabledForPrivateByDefault?: unknown;
+	e2eEnabledForPrivateByDefault?: boolean;
 	onCreate: () => void;
 	onClose: () => void;
 };
@@ -77,8 +77,8 @@ const CreateChannel = ({
 		checkName(values.name);
 	}, [checkName, values.name]);
 
-	const e2edisabled = useMemo(
-		() => !values.type || values.broadcast || !e2eEnabled || e2eEnabledForPrivateByDefault,
+	const e2edisabled = useMemo<boolean>(
+		() => !values.type || values.broadcast || Boolean(!e2eEnabled) || Boolean(e2eEnabledForPrivateByDefault),
 		[e2eEnabled, e2eEnabledForPrivateByDefault, values.broadcast, values.type],
 	);
 

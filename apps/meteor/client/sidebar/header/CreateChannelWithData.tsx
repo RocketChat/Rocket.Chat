@@ -6,7 +6,7 @@ import React, { memo, ReactElement, useCallback, useMemo } from 'react';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
-import CreateChannel from './CreateChannel';
+import CreateChannel, { CreateChannelProps } from './CreateChannel';
 
 type CreateChannelWithDataProps = {
 	onClose: () => void;
@@ -99,7 +99,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 		} else {
 			const roomData = await createChannel(params);
 			console.log(roomData);
-			!teamId && goToRoom(roomData.channel._id);
+			!teamId && goToRoom((roomData as any).channel._id);
 		}
 
 		onClose();
@@ -108,14 +108,14 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 
 	return (
 		<CreateChannel
-			values={values}
+			values={values as CreateChannelProps['values']}
 			handlers={handlers}
 			hasUnsavedChanges={hasUnsavedChanges}
 			onChangeUsers={onChangeUsers}
 			onChangeType={onChangeType}
 			onChangeBroadcast={onChangeBroadcast}
 			canOnlyCreateOneType={canOnlyCreateOneType}
-			e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}
+			e2eEnabledForPrivateByDefault={Boolean(e2eEnabledForPrivateByDefault)}
 			onClose={onClose}
 			onCreate={onCreate}
 		/>
