@@ -3,10 +3,11 @@ import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks'
 import { Option, Badge } from '@rocket.chat/fuselage';
 import { useUser, useSetting, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 
+import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
-import { useStartCall } from '../../../client/contexts/VideoConfPopupContext';
+import { useVideoConfPopupDispatch, useStartCall, useVideoConfPopupDismiss } from '../../../client/contexts/VideoConfPopupContext';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
@@ -125,11 +126,20 @@ addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
 	const startCall = useStartCall();
 
+	const dispatchPopup = useVideoConfPopupDispatch();
+	const dismissPopup = useVideoConfPopupDismiss();
+
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 
 	const handleStartConference = useMutableCallback((confTitle) => {
 		startCall(room._id, confTitle);
 		handleCloseVideoConf();
+
+		if (room.t === 'd') {
+			dispatchPopup({ rid: room._id });
+			VideoConfManager.once('direct/cancel', () => dismissPopup(room._id));
+			VideoConfManager.once('direct/accepted', () => dismissPopup(room._id));
+		}
 	});
 
 	const handleOpenVideoConf = useMutableCallback((): void =>

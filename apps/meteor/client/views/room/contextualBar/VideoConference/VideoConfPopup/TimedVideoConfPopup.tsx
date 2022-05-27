@@ -1,23 +1,32 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import React, { useEffect, ReactElement } from 'react';
 
-import { useVideoConfPopupDismiss } from '../../../../../contexts/VideoConfPopupContext';
+import {
+	useVideoConfPopupDismiss,
+	useAcceptCall,
+	useAbortCall,
+	useRejectIncomingCall,
+} from '../../../../../contexts/VideoConfPopupContext';
+import { useHandleRoom } from '../../../../../lib/RoomManager';
 import CallingPopup from './CallingPopup';
 import ReceivingPopup from './ReceivingPopup';
 
 export type TimedVideoConfPopupProps = {
 	id: string;
-	room: IRoom;
+	rid: IRoom['_id'];
+	isReceiving?: boolean;
 	position: number;
 	current: number;
 	total: number;
 	onClose?: (id: string) => void;
 };
 
-const TimedVideoConfPopup = ({ id, room, position, current, total }: TimedVideoConfPopupProps): ReactElement => {
+const TimedVideoConfPopup = ({ id, rid, isReceiving = false, position, current, total }: TimedVideoConfPopupProps): ReactElement | null => {
 	const dismissPopup = useVideoConfPopupDismiss();
-	// flag to change popup type
-	const isIn = true;
+	const acceptCall = useAcceptCall();
+	const abortCall = useAbortCall();
+	const rejectCall = useRejectIncomingCall();
+	const { value: room } = useHandleRoom(rid);
 
 	useEffect(() => {
 		setTimeout(() => {
@@ -25,11 +34,41 @@ const TimedVideoConfPopup = ({ id, room, position, current, total }: TimedVideoC
 		}, 30000);
 	}, [dismissPopup, id]);
 
-	if (isIn) {
-		return <CallingPopup room={room} id={id} onClose={dismissPopup} />;
+	const handleConfirm = (): void => {
+		acceptCall(id);
+		dismissPopup(id);
+	};
+
+	const handleClose = (id: string): void => {
+		if (isReceiving) {
+			rejectCall(id);
+			dismissPopup(id);
+			return;
+		}
+
+		abortCall();
+		dismissPopup(id);
+	};
+
+	if (!room) {
+		return null;
 	}
 
-	return <ReceivingPopup room={room} id={id} position={position} current={current} total={total} onClose={dismissPopup} />;
+	if (isReceiving) {
+		return (
+			<ReceivingPopup
+				room={room}
+				id={id}
+				position={position}
+				current={current}
+				total={total}
+				onClose={handleClose}
+				onConfirm={handleConfirm}
+			/>
+		);
+	}
+
+	return <CallingPopup room={room} id={id} onClose={handleClose} />;
 };
 
 export default TimedVideoConfPopup;
