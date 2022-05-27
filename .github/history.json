@@ -76619,6 +76619,119 @@
           ]
         }
       ]
+    },
+    "3.18.6": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.4.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.7.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.8.0-rc.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25618",
+          "title": "Regression: Change logic to check if connection is online on unstable networks",
+          "userLogin": "KevLehman",
+          "milestone": "4.8.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "25639",
+          "title": "Regression: Missing settings group descriptions",
+          "userLogin": "dougfabris",
+          "description": "<img width='100%' height='auto' src='https://user-images.githubusercontent.com/27704687/170372985-d849d71e-389b-49c0-a2b3-2bbd08d65c41.gif' />",
+          "milestone": "4.8.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "25648",
+          "title": "Chore: Rest API query parameters handling",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25651",
+          "title": "Regression: VoIp wrap up modal not opening after call disconnect",
+          "userLogin": "aleksandernsilva",
+          "description": "This PR fixes a bug preventing the wrap up call modal from being displayed after caller or agent ends the call.",
+          "contributors": [
+            "aleksandernsilva"
+          ]
+        },
+        {
+          "pr": "25638",
+          "title": "[FIX] Remove 'total' text in admin info page",
+          "userLogin": "guijun13",
+          "description": "- Remove initial 'total' text from rooms and messages groups in the admin info page\r\n- Add 'total' before 'rooms' and 'messages' title on the same section. To use the new 'Total Rooms', was created a new key in the en.i18n.json file.",
+          "contributors": [
+            "guijun13"
+          ]
+        },
+        {
+          "pr": "25641",
+          "title": "Chore: Increase performance and security of integrations’ scripts",
+          "userLogin": "rodrigok",
+          "description": "Replace internal VM implementation with VM2 which implements many more mechanisms to ensure timeout, security and allow easier configuration for future improvements on the integrations' feature.",
+          "contributors": [
+            "rodrigok",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "25613",
+          "title": "[FIX] Quote message spacing",
+          "userLogin": "hugocostadev",
+          "contributors": [
+            "hugocostadev"
+          ]
+        }
+      ]
     }
   }
 }
