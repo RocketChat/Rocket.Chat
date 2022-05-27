@@ -1,5 +1,5 @@
 import type { ILicense } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
@@ -7,7 +7,7 @@ type licensesAddProps = {
 	license: string;
 };
 
-const licensesAddPropsSchema: JSONSchemaType<licensesAddProps> = {
+const licensesAddPropsSchema = {
 	type: 'object',
 	properties: {
 		license: {

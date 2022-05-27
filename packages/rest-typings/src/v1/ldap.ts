@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
@@ -6,7 +6,7 @@ type ldapTestSearchProps = {
 	username: string;
 };
 
-const ldapTestSearchPropsSchema: JSONSchemaType<ldapTestSearchProps> = {
+const ldapTestSearchPropsSchema = {
 	type: 'object',
 	properties: {
 		username: {

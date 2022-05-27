@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -14,7 +14,7 @@ type ImFilesProps = {
 	query: string;
 };
 
-const ImFilesPropsSchema: JSONSchemaType<ImFilesProps> = {
+const ImFilesPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -44,7 +44,7 @@ type ImMembersProps = {
 	status?: string[];
 };
 
-const ImMembersPropsSchema: JSONSchemaType<ImMembersProps> = {
+const ImMembersPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -74,18 +74,34 @@ const ImMembersPropsSchema: JSONSchemaType<ImMembersProps> = {
 
 export const isImMembersProps = ajv.compile(ImMembersPropsSchema);
 
-type ImHistoryProps = {
+type ImHistoryProps = PaginatedRequest<{
 	roomId: string;
 	latest?: string;
-};
+}>;
 
-const ImHistoryPropsSchema: JSONSchemaType<ImHistoryProps> = {
+const ImHistoryPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
 			type: 'string',
 		},
 		latest: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -100,7 +116,7 @@ type ImCloseProps = {
 	roomId: string;
 };
 
-const ImClosePropsSchema: JSONSchemaType<ImCloseProps> = {
+const ImClosePropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -117,7 +133,7 @@ type ImDeleteProps = {
 	roomId: string;
 };
 
-const ImDeletePropsSchema: JSONSchemaType<ImDeleteProps> = {
+const ImDeletePropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -134,7 +150,7 @@ type ImLeaveProps = {
 	roomId: string;
 };
 
-const ImLeavePropsSchema: JSONSchemaType<ImLeaveProps> = {
+const ImLeavePropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -152,7 +168,7 @@ type ImKickProps = {
 	userId: string;
 };
 
-const ImKickPropsSchema: JSONSchemaType<ImKickProps> = {
+const ImKickPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -168,15 +184,31 @@ const ImKickPropsSchema: JSONSchemaType<ImKickProps> = {
 
 export const isImKickProps = ajv.compile(ImKickPropsSchema);
 
-type ImMessagesProps = {
+type ImMessagesProps = PaginatedRequest<{
 	roomId: string;
-};
+}>;
 
-const ImMessagesPropsSchema: JSONSchemaType<ImMessagesProps> = {
+const ImMessagesPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
 			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['roomId'],
@@ -217,7 +249,7 @@ export type ImEndpoints = {
 		};
 	};
 	'im.history': {
-		GET: (params: PaginatedRequest<ImHistoryProps>) => PaginatedRequest<{
+		GET: (params: ImHistoryProps) => PaginatedRequest<{
 			messages: IMessage[];
 		}>;
 	};
@@ -234,7 +266,7 @@ export type ImEndpoints = {
 		POST: (params: ImLeaveProps) => {};
 	};
 	'im.messages': {
-		GET: (params: PaginatedRequest<ImMessagesProps>) => PaginatedResult<{
+		GET: (params: ImMessagesProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};

@@ -1,11 +1,13 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/core-typings';
+
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 const ajv = new Ajv();
 
 type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
 
-const roleCreatePropsSchema: JSONSchemaType<RoleCreateProps> = {
+const roleCreatePropsSchema = {
 	type: 'object',
 	properties: {
 		name: {
@@ -36,7 +38,7 @@ type RoleUpdateProps = {
 	name: IRole['name'];
 } & Partial<RoleCreateProps>;
 
-const roleUpdatePropsSchema: JSONSchemaType<RoleUpdateProps> = {
+const roleUpdatePropsSchema = {
 	type: 'object',
 	properties: {
 		roleId: {
@@ -67,7 +69,7 @@ export const isRoleUpdateProps = ajv.compile(roleUpdatePropsSchema);
 
 type RoleDeleteProps = { roleId: IRole['_id'] };
 
-const roleDeletePropsSchema: JSONSchemaType<RoleDeleteProps> = {
+const roleDeletePropsSchema = {
 	type: 'object',
 	properties: {
 		roleId: {
@@ -88,7 +90,7 @@ type RoleAddUserToRoleProps = {
 	roomId?: string;
 };
 
-const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
+const roleAddUserToRolePropsSchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -122,7 +124,7 @@ type RoleRemoveUserFromRoleProps = {
 	scope?: string;
 };
 
-const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRoleProps> = {
+const roleRemoveUserFromRolePropsSchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -150,6 +152,44 @@ const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRolePr
 };
 
 export const isRoleRemoveUserFromRoleProps = ajv.compile(roleRemoveUserFromRolePropsSchema);
+
+type RolesGetUsersInRoleProps = PaginatedRequest<{
+	roomId?: string;
+	role: string;
+}>;
+
+const RolesGetUsersInRolePropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+		role: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['role'],
+	additionalProperties: false,
+};
+
+export const isRolesGetUsersInRoleProps = ajv.compile(RolesGetUsersInRolePropsSchema);
 
 type RoleSyncProps = {
 	updatedSince?: string;
@@ -182,7 +222,7 @@ export type RolesEndpoints = {
 	};
 
 	'roles.getUsersInRole': {
-		GET: (params: { roomId?: string; role: string; offset?: number; count?: number }) => {
+		GET: (params: RolesGetUsersInRoleProps) => {
 			users: IUserInRole[];
 			total: number;
 		};

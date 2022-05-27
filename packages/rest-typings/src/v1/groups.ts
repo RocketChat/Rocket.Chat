@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -13,7 +13,7 @@ type GroupsFilesProps = {
 	query: string;
 };
 
-const GroupsFilesPropsSchema: JSONSchemaType<GroupsFilesProps> = {
+const GroupsFilesPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -43,7 +43,7 @@ type GroupsMembersProps = {
 	status?: string[];
 };
 
-const GroupsMembersPropsSchema: JSONSchemaType<GroupsMembersProps> = {
+const GroupsMembersPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -77,7 +77,7 @@ type GroupsArchiveProps = {
 	roomId: IRoom['_id'];
 };
 
-const GroupsArchivePropsSchema: JSONSchemaType<GroupsArchiveProps> = {
+const GroupsArchivePropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -94,7 +94,7 @@ type GroupsUnarchiveProps = {
 	roomId: IRoom['_id'];
 };
 
-const GroupsUnarchivePropsSchema: JSONSchemaType<GroupsUnarchiveProps> = {
+const GroupsUnarchivePropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -118,7 +118,7 @@ type GroupsCreateProps = {
 	};
 };
 
-const GroupsCreatePropsSchema: JSONSchemaType<GroupsCreateProps> = {
+const GroupsCreatePropsSchema = {
 	type: 'object',
 	properties: {
 		name: {
@@ -160,7 +160,7 @@ type GroupsConvertToTeamProps = {
 	roomName: string;
 };
 
-const GroupsConvertToTeamPropsSchema: JSONSchemaType<GroupsConvertToTeamProps> = {
+const GroupsConvertToTeamPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -180,7 +180,7 @@ type GroupsCountersProps = {
 	roomId: string;
 };
 
-const GroupsCountersPropsSchema: JSONSchemaType<GroupsCountersProps> = {
+const GroupsCountersPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -197,7 +197,7 @@ type GroupsCloseProps = {
 	roomId: string;
 };
 
-const GroupsClosePropsSchema: JSONSchemaType<GroupsCloseProps> = {
+const GroupsClosePropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -214,7 +214,7 @@ type GroupsDeleteProps = {
 	roomId: string;
 };
 
-const GroupsDeletePropsSchema: JSONSchemaType<GroupsDeleteProps> = {
+const GroupsDeletePropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -231,7 +231,7 @@ type GroupsLeaveProps = {
 	roomId: string;
 };
 
-const GroupsLeavePropsSchema: JSONSchemaType<GroupsLeaveProps> = {
+const GroupsLeavePropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -248,7 +248,7 @@ type GroupsRolesProps = {
 	roomId: string;
 };
 
-const GroupsRolesPropsSchema: JSONSchemaType<GroupsRolesProps> = {
+const GroupsRolesPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -266,7 +266,7 @@ type GroupsKickProps = {
 	userId: string;
 };
 
-const GroupsKickPropsSchema: JSONSchemaType<GroupsKickProps> = {
+const GroupsKickPropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -282,15 +282,31 @@ const GroupsKickPropsSchema: JSONSchemaType<GroupsKickProps> = {
 
 export const isGroupsKickProps = ajv.compile(GroupsKickPropsSchema);
 
-type GroupsMessageProps = {
+type GroupsMessageProps = PaginatedRequest<{
 	roomId: IRoom['_id'];
-};
+}>;
 
-const GroupsMessagePropsSchema: JSONSchemaType<GroupsMessageProps> = {
+const GroupsMessagePropsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
 			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['roomId'],
@@ -360,7 +376,7 @@ export type GroupsEndpoints = {
 		GET: (params: GroupsRolesProps) => { roles: IGetRoomRoles[] };
 	};
 	'groups.messages': {
-		GET: (params: PaginatedRequest<GroupsMessageProps>) => PaginatedResult<{
+		GET: (params: GroupsMessageProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
