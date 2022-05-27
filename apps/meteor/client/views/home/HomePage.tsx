@@ -1,23 +1,16 @@
-import { Box } from '@rocket.chat/fuselage';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import Page from '../../components/Page/Page';
-import PageHeader from '../../components/Page/PageHeader';
-import PageScrollableContentWithShadow from '../../components/Page/PageScrollableContentWithShadow';
+import CustomHomePage from './CustomHomePage';
+
+// TODO: use a setting to determine if the user has a custom home page
+const custom = true;
 
 const HomePage = (): ReactElement => {
-	const title = useSetting('Layout_Home_Title') as string;
-	const body = useSetting('Layout_Home_Body') as string;
+	if (custom) {
+		return <CustomHomePage />;
+	}
 
-	return (
-		<Page>
-			<PageHeader title={title} />
-			<PageScrollableContentWithShadow>
-				<Box withRichContent dangerouslySetInnerHTML={{ __html: body }} />
-			</PageScrollableContentWithShadow>
-		</Page>
-	);
+	return <></>; // TODO: render a default home page
 };
 
 export default HomePage;
