@@ -8,7 +8,7 @@ import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageActi
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { isURL } from '../../../../../../lib/utils/isURL';
 import { openUserCard } from '../../../lib/UserCard';
-import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
 import { ChatMessage, Rooms, Messages } from '../../../../../models';
 import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
