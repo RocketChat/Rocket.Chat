@@ -1,6 +1,6 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import React, { memo, ReactElement } from 'react';
 
 import { useSidebarPaletteColor } from '../hooks/useSidebarPaletteColor';
 import UserAvatarButton from './UserAvatarButton';
@@ -11,7 +11,7 @@ import Login from './actions/Login';
 import Search from './actions/Search';
 import Sort from './actions/Sort';
 
-const HeaderWithData = () => {
+const HeaderWithData = (): ReactElement => {
 	const user = useUser();
 	const t = useTranslation();
 	useSidebarPaletteColor();
@@ -19,7 +19,7 @@ const HeaderWithData = () => {
 	return (
 		<>
 			<Sidebar.TopBar.Section className='sidebar--custom-colors'>
-				<UserAvatarButton user={user} />
+				<UserAvatarButton />
 				<Sidebar.TopBar.Actions>
 					<Home title={t('Home')} />
 					<Search title={t('Search')} data-qa='sidebar-search' />
