@@ -7,10 +7,10 @@ import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import Section from '../Section';
-import DownloadDataButton from '../data/DownloadDataButton';
-import PeriodSelector from '../data/PeriodSelector';
-import { usePeriodLabel } from '../data/usePeriodLabel';
-import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
+import DownloadDataButton from '../dataView/DownloadDataButton';
+import PeriodSelector from '../dataView/PeriodSelector';
+import { usePeriodLabel } from '../dataView/usePeriodLabel';
+import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useMessagesSent } from './useMessagesSent';
 
 const MessagesSentSection = (): ReactElement => {
