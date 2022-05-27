@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ coerceTypes: true });
 
 export type DmMessagesProps = PaginatedRequest<
 	(
