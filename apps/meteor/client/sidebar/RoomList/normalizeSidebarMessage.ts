@@ -2,7 +2,10 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { filterMarkdown } from '../../../app/markdown/lib/markdown';
 
-export const normalizeSidebarMessage = (message, t) => {
+export const normalizeSidebarMessage = (
+	message: { attachments: { title?: string; description?: string }[]; msg?: string },
+	t: (key: string) => string,
+): string | undefined => {
 	if (message.msg) {
 		return escapeHTML(filterMarkdown(message.msg));
 	}
@@ -10,11 +13,11 @@ export const normalizeSidebarMessage = (message, t) => {
 	if (message.attachments) {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
-		if (attachment && attachment.description) {
+		if (attachment?.description) {
 			return escapeHTML(attachment.description);
 		}
 
-		if (attachment && attachment.title) {
+		if (attachment?.title) {
 			return escapeHTML(attachment.title);
 		}
 
