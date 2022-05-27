@@ -4,7 +4,7 @@ import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement, useState, ReactNode, useEffect, useMemo } from 'react';
 
 import { VideoConfPopupContext, VideoConfIncomingCall, VideoConfPopupPayload } from '../contexts/VideoConfPopupContext';
-import { VideoConfManager, useVideoConfIncomingCalls } from '../lib/VideoConfManager';
+import { VideoConfManager, useVideoConfIncomingCalls, useIsRinging } from '../lib/VideoConfManager';
 import VideoConfPopupPortal from '../portals/VideoConfPopupPortal';
 import VideoConfPopup from '../views/room/contextualBar/VideoConference/VideoConfPopup';
 
@@ -12,6 +12,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	const [popUps, setPopUps] = useState<VideoConfPopupPayload[]>([]);
 	const incomingCalls = useVideoConfIncomingCalls();
 	const customSound = useCustomSound();
+	const isRinging = useIsRinging();
 
 	const contextValue = useMemo(
 		() => ({
@@ -21,12 +22,13 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			startCall: (rid: IRoom['_id']): Promise<void> => VideoConfManager.startCall(rid),
 			acceptCall: (callId: string): void => VideoConfManager.acceptIncomingCall(callId),
 			joinCall: (callId: string): Promise<void> => VideoConfManager.joinCall(callId),
-			muteCall: (callId: string): void => VideoConfManager.muteIncomingCall(callId),
+			muteCall: (): void => VideoConfManager.muteIncomingCalls(),
 			rejectIncomingCall: (callId: string): void => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: (): void => VideoConfManager.abortCall(),
 			useIncomingCalls: (): VideoConfIncomingCall[] => useVideoConfIncomingCalls(),
 			setPreferences: (prefs: Partial<typeof VideoConfManager['preferences']>): void => VideoConfManager.setPreferences(prefs),
-			changePreference: (key: string, value: boolean): void => VideoConfManager.changePreference(key, value),
+			changePreference: (key: 'cam' | 'mic', value: boolean): void => VideoConfManager.changePreference(key, value),
+			useIsRinging: (): boolean => useIsRinging(),
 		}),
 		[],
 	);
@@ -34,16 +36,24 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	useEffect(() => {
 		if (incomingCalls.length) {
 			incomingCalls.map((incomingCall) => contextValue.dispatch({ id: incomingCall.callId, rid: incomingCall.rid, isReceiving: true }));
+		}
 
+		return setPopUps([]);
+	}, [incomingCalls, contextValue]);
+
+	useEffect(() => {
+		if (isRinging) {
+			customSound.play('calling');
 			const soundInterval = setInterval(() => {
 				customSound.play('calling');
 			}, 3000);
 
-			return (): void => clearInterval(soundInterval);
+			return (): void => {
+				customSound.pause('calling');
+				clearInterval(soundInterval);
+			};
 		}
-
-		return setPopUps([]);
-	}, [incomingCalls, contextValue, customSound]);
+	}, [isRinging, customSound]);
 
 	return (
 		<VideoConfPopupContext.Provider value={contextValue}>

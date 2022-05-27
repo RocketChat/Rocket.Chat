@@ -19,12 +19,13 @@ type VideoConfPopupContextValue = {
 	startCall: (rid: IRoom['_id'], title?: string) => void;
 	acceptCall: (callId: string) => void;
 	joinCall: (callId: string) => void;
-	muteCall: (callId: string) => void;
+	muteCall: () => void;
 	abortCall: () => void;
 	useIncomingCalls: () => VideoConfIncomingCall[];
 	rejectIncomingCall: (callId: string) => void;
 	setPreferences: (prefs: { mic?: boolean; cam?: boolean }) => void;
-	changePreference: (key: string, value: boolean) => void;
+	changePreference: (key: 'cam' | 'mic', value: boolean) => void;
+	useIsRinging: () => boolean;
 };
 
 export const VideoConfPopupContext = createContext<VideoConfPopupContextValue>({
@@ -39,6 +40,7 @@ export const VideoConfPopupContext = createContext<VideoConfPopupContextValue>({
 	rejectIncomingCall: () => undefined,
 	setPreferences: () => undefined,
 	changePreference: () => undefined,
+	useIsRinging: () => false,
 });
 
 export const useVideoConfPopupDispatch = (): VideoConfPopupContextValue['dispatch'] => useContext(VideoConfPopupContext).dispatch;
@@ -53,3 +55,4 @@ export const useRejectIncomingCall = (): VideoConfPopupContextValue['rejectIncom
 export const useGetIncomingCalls = (): VideoConfPopupContextValue['useIncomingCalls'] => useContext(VideoConfPopupContext).useIncomingCalls;
 export const useSetPreferences = (): VideoConfPopupContextValue['setPreferences'] => useContext(VideoConfPopupContext).setPreferences;
 export const useChangePreference = (): VideoConfPopupContextValue['changePreference'] => useContext(VideoConfPopupContext).changePreference;
+export const useGetIsRinging = (): VideoConfPopupContextValue['useIsRinging'] => useContext(VideoConfPopupContext).useIsRinging;

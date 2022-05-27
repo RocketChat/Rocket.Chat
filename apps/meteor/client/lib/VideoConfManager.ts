@@ -56,6 +56,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 	// The list of incoming calls has changed in some way
 	'incoming/changed': void;
+
+	// The list of ringing incoming calls may have changed
+	'ringing/changed': void;
 }> {
 	private userId: string | undefined;
 
@@ -93,7 +96,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	}
 
 	public isRinging(): boolean {
-		return this.incomingDirectCalls.size > 0;
+		for (const [callId] of this.incomingDirectCalls) {
+			if (!this.mutedCalls.has(callId)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public isCalling(): boolean {
@@ -185,12 +194,20 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.loseIncomingCall(callId);
 	}
 
+	public muteIncomingCalls(): void {
+		// Mute all calls that are currently ringing
+		for (const [callId] of this.incomingDirectCalls) {
+			this.muteIncomingCall(callId);
+		}
+	}
+
 	public muteIncomingCall(callId: string): void {
 		// Muting will stop a callId from ringing, but it doesn't affect any part of the existing workflow
 
 		this.mutedCalls.add(callId);
 		// Remove it from the muted list once enough time has passed
 		setTimeout(() => this.mutedCalls.delete(callId), CALL_TIMEOUT * 20);
+		this.emit('ringing/changed');
 	}
 
 	public updateUser(): void {
@@ -324,6 +341,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.acceptingCallId = undefined;
 		this._preferences = {};
 		this.emit('incoming/changed');
+		this.emit('ringing/changed');
 	}
 
 	private async hookNotification(eventName: string, cb: (...params: any[]) => void): Promise<void> {
@@ -363,6 +381,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		this.incomingDirectCalls.delete(callId);
 		this.emit('incoming/changed');
+		this.emit('ringing/changed');
 
 		debug && console.log(`[VideoConf] Call ${callId} from ${lostCall.uid} was lost.`);
 		this.emit('direct/lost', { callId, uid: lostCall.uid, rid: lostCall.rid });
@@ -387,6 +406,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		});
 
 		this.emit('incoming/changed');
+		this.emit('ringing/changed');
 		this.emit('direct/ringing', { callId, uid, rid });
 	}
 
@@ -489,6 +509,18 @@ export const useVideoConfIncomingCalls = (): DirectCallParams[] => {
 	);
 
 	return useSubscription(subscribeIncomingCalls);
+};
+
+export const useIsRinging = (): boolean => {
+	const subscribeIsRinging: Subscription<boolean> = useMemo(
+		() => ({
+			getCurrentValue: (): boolean => VideoConfManager.isRinging(),
+			subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('ringing/changed', cb),
+		}),
+		[],
+	);
+
+	return useSubscription(subscribeIsRinging);
 };
 
 Meteor.startup(() => Tracker.autorun(() => VideoConfManager.updateUser()));
