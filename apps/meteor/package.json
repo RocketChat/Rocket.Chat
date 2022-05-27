@@ -293,7 +293,7 @@
 		"mailparser": "^3.4.0",
 		"marked": "^0.7.0",
 		"mem": "^8.1.1",
-		"meteor-node-stubs": "^1.2.1",
+		"meteor-node-stubs": "^1.2.3",
 		"mime-db": "^1.52.0",
 		"mime-type": "^4.0.0",
 		"mkdirp": "^1.0.4",
