@@ -30,10 +30,14 @@ class JitsiApp {
 
 	static async customizeUrl(
 		call: IVideoConference,
-		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
+		user: AtLeast<IUser, '_id' | 'username' | 'name'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
-		const configs = [`userInfo.displayName="${user.name}"`, `config.prejoinPageEnabled=false`, `config.requireDisplayName=false`];
+		const configs = [`config.prejoinPageEnabled=false`, `config.requireDisplayName=false`];
+
+		if (user) {
+			configs.push(`userInfo.displayName="${user.name}"`);
+		}
 
 		if (isGroupVideoConference(call)) {
 			configs.push(`config.callDisplayName="${call.title || 'Video Conference'}"`);
@@ -47,7 +51,7 @@ class JitsiApp {
 		if (options.cam !== undefined) {
 			configs.push(`config.startWithVideoMuted=${options.cam ? 'false' : 'true'}`);
 		}
-		console.log(user.username, options, configs);
+		console.log(user?.username, options, configs);
 
 		const configHash = configs.join('&');
 		const url = `${call.url}#${configHash}`;
@@ -155,7 +159,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	private async createGroupCallMessage(rid: IRoom['_id'], user: IUser, callId: string, title: string): Promise<IMessage['_id']> {
+	private async createGroupCallMessage(
+		rid: IRoom['_id'],
+		user: IUser,
+		callId: string,
+		title: string,
+		_url: string,
+	): Promise<IMessage['_id']> {
 		const text = TAPi18n.__('video_conference_started', {
 			conference: title,
 			username: user.username || '',
@@ -179,6 +189,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 								text: TAPi18n.__('Join_call'),
 								emoji: true,
 							},
+							// url,
 						},
 					],
 				},
@@ -243,7 +254,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const url = await this.generateNewUrl(callId);
 		this.VideoConference.setUrlById(callId, url);
 
-		const messageId = await this.createGroupCallMessage(rid, user, callId, title);
+		const call = await this.get(callId);
+
+		const joinUrl = call && (await this.getUrl(call));
+		const messageId = await this.createGroupCallMessage(rid, user, callId, title, joinUrl || url);
 		this.VideoConference.setMessageById(callId, 'started', messageId);
 
 		return {
@@ -273,8 +287,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async getUrl(
 		call: IVideoConference,
-		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
-		options: VideoConferenceJoinOptions,
+		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
+		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
 		if (!call.url) {
 			call.url = await this.generateNewUrl(call._id);
