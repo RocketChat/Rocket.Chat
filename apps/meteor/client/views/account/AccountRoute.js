@@ -6,6 +6,7 @@ import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import AccountIntegrationsPage from './AccountIntegrationsPage';
 import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
+import { AccountPreferencesFormProvider } from './providers/AccountPreferencesFormProvider';
 import AccountSecurityPage from './security/AccountSecurityPage';
 import AccountTokensPage from './tokens/AccountTokensPage';
 import './sidebarItems';
@@ -36,7 +37,11 @@ const AccountRoute = () => {
 	}
 
 	if (page === 'preferences') {
-		return <AccountPreferencesPage />;
+		return (
+			<AccountPreferencesFormProvider>
+				<AccountPreferencesPage />
+			</AccountPreferencesFormProvider>
+		);
 	}
 
 	if (page === 'security') {

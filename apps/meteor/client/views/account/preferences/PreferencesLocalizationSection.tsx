@@ -1,19 +1,27 @@
 import { Accordion, Field, Select, FieldGroup } from '@rocket.chat/fuselage';
 import { useUserPreference, useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import React, { ComponentProps, FC, useMemo } from 'react';
 
 import { useForm } from '../../../hooks/useForm';
+import { useAccountPreferencesForm } from '../contexts/AccountPreferencesFormContext';
 
-const PreferencesLocalizationSection = ({ onChange, commitRef, ...props }) => {
+type PreferencesLocalizationFormValues = {
+	language: string;
+};
+
+type PreferencesLocalizationSectionProps = Partial<ComponentProps<typeof Accordion.Item>>;
+
+const PreferencesLocalizationSection: FC<PreferencesLocalizationSectionProps> = ({ ...props }) => {
 	const t = useTranslation();
 	const userLanguage = useUserPreference('language') || '';
 	const languages = useLanguages();
+	const { commitRef, onChange } = useAccountPreferencesForm();
 
-	const languageOptions = useMemo(() => languages.map(({ key, name }) => [key, name]).sort(([a], [b]) => a - b), [languages]);
+	const languageOptions = useMemo<[string, string][]>(() => languages.map(({ key, name }) => [key, name]), [languages]);
 
 	const { values, handlers, commit } = useForm({ language: userLanguage }, onChange);
 
-	const { language } = values;
+	const { language } = values as PreferencesLocalizationFormValues;
 	const { handleLanguage } = handlers;
 
 	commitRef.current.localization = commit;

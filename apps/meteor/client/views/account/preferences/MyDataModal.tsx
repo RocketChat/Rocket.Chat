@@ -1,11 +1,11 @@
 import { ButtonGroup, Button, Icon, Box, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import React, { FC, ReactElement } from 'react';
 
 type MyDataModalProps = {
 	onCancel: () => void;
 	title: string;
-	text: string;
+	text?: ReactElement;
 };
 
 const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) => {

@@ -1,9 +1,21 @@
 import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Button, Box } from '@rocket.chat/fuselage';
-import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { useUserPreference, useSetting, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import React, { ComponentProps, FC, useCallback, useEffect, useState, useMemo } from 'react';
 
 import { KonchatNotification } from '../../../../app/ui';
 import { useForm } from '../../../hooks/useForm';
+import { useAccountPreferencesForm } from '../contexts/AccountPreferencesFormContext';
+
+type PreferencesNotificationsFormValues = {
+	desktopNotificationRequireInteraction: boolean;
+	desktopNotifications: string;
+	pushNotifications: string;
+	emailNotificationMode: string;
+};
+
+type PreferencesNotificationsSectionProps = Partial<ComponentProps<typeof Accordion.Item>>;
+
+type options = [string, string][];
 
 const notificationOptionsLabelMap = {
 	all: 'All_messages',
@@ -16,18 +28,23 @@ const emailNotificationOptionsLabelMap = {
 	nothing: 'Email_Notification_Mode_Disabled',
 };
 
-const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
+const PreferencesNotificationsSection: FC<PreferencesNotificationsSectionProps> = ({ ...props }) => {
 	const t = useTranslation();
+	const { commitRef, onChange } = useAccountPreferencesForm();
 
-	const [notificationsPermission, setNotificationsPermission] = useState();
+	const [notificationsPermission, setNotificationsPermission] = useState('');
 
 	const userDesktopNotificationRequireInteraction = useUserPreference('desktopNotificationRequireInteraction');
 	const userDesktopNotifications = useUserPreference('desktopNotifications');
 	const userMobileNotifications = useUserPreference('pushNotifications');
-	const userEmailNotificationMode = useUserPreference('emailNotificationMode');
+	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
 
-	const defaultDesktopNotifications = useSetting('Accounts_Default_User_Preferences_desktopNotifications');
-	const defaultMobileNotifications = useSetting('Accounts_Default_User_Preferences_pushNotifications');
+	const defaultDesktopNotifications = useSetting(
+		'Accounts_Default_User_Preferences_desktopNotifications',
+	) as keyof typeof notificationOptionsLabelMap;
+	const defaultMobileNotifications = useSetting(
+		'Accounts_Default_User_Preferences_pushNotifications',
+	) as keyof typeof notificationOptionsLabelMap;
 	const canChangeEmailNotification = useSetting('Accounts_AllowEmailNotifications');
 
 	const { values, handlers, commit } = useForm(
@@ -40,7 +57,8 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 		onChange,
 	);
 
-	const { desktopNotificationRequireInteraction, desktopNotifications, pushNotifications, emailNotificationMode } = values;
+	const { desktopNotificationRequireInteraction, desktopNotifications, pushNotifications, emailNotificationMode } =
+		values as PreferencesNotificationsFormValues;
 
 	const { handleDesktopNotificationRequireInteraction, handleDesktopNotifications, handlePushNotifications, handleEmailNotificationMode } =
 		handlers;
@@ -61,25 +79,33 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 		window.Notification && Notification.requestPermission().then((val) => setNotificationsPermission(val));
 	}, []);
 
-	const notificationOptions = useMemo(() => Object.entries(notificationOptionsLabelMap).map(([key, val]) => [key, t(val)]), [t]);
+	const notificationOptions = useMemo<options>(
+		() => Object.entries(notificationOptionsLabelMap).map(([key, val]) => [key, t(val as TranslationKey)]),
+		[t],
+	);
 
-	const desktopNotificationOptions = useMemo(() => {
+	const emailNotificationOptionsMap = useMemo<options>(
+		() => Object.entries(emailNotificationOptionsLabelMap).map(([key, val]) => [key, t(val as TranslationKey)]),
+		[t],
+	);
+
+	const desktopNotificationOptions = useMemo<options>(() => {
 		const optionsCp = notificationOptions.slice();
-		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultDesktopNotifications])})`]);
+		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultDesktopNotifications] as TranslationKey)})`]);
 		return optionsCp;
 	}, [defaultDesktopNotifications, notificationOptions, t]);
 
-	const mobileNotificationOptions = useMemo(() => {
+	const mobileNotificationOptions = useMemo<options>(() => {
 		const optionsCp = notificationOptions.slice();
-		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultMobileNotifications])})`]);
+		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultMobileNotifications] as TranslationKey)})`]);
 		return optionsCp;
 	}, [defaultMobileNotifications, notificationOptions, t]);
 
-	const emailNotificationOptions = useMemo(() => {
-		const options = Object.entries(emailNotificationOptionsLabelMap).map(([key, val]) => [key, t(val)]);
-		options.unshift(['default', `${t('Default')} (${t(emailNotificationOptionsLabelMap[userEmailNotificationMode])})`]);
+	const emailNotificationOptions = useMemo<options>(() => {
+		const options = emailNotificationOptionsMap.slice();
+		options.unshift(['default', `${t('Default')} (${t(emailNotificationOptionsLabelMap[userEmailNotificationMode] as TranslationKey)})`]);
 		return options;
-	}, [t, userEmailNotificationMode]);
+	}, [t, userEmailNotificationMode, emailNotificationOptionsMap]);
 
 	return (
 		<Accordion.Item title={t('Notifications')} {...props}>
