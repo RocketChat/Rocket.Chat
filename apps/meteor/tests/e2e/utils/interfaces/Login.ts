@@ -6,6 +6,7 @@ export interface ILogin {
 export interface IRegister {
 	email: string;
 	password: string;
+	passwordConfirm?: string;
 	name: string;
 	username?: string;
 }
