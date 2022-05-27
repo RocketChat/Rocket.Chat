@@ -1,39 +1,42 @@
 import { test, expect } from '@playwright/test';
 
-import LoginPage from './utils/pageobjects/LoginPage';
 import { VALID_EMAIL, INVALID_EMAIL, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from './utils/mocks/userAndPasswordMock';
+import { Login } from './page-objects';
 
 test.describe('[Forgot Password]', () => {
-	let loginPage: LoginPage;
+	let login: Login;
 
-	test.beforeEach(async ({ page, baseURL }) => {
-		loginPage = new LoginPage(page);
-		const baseUrl = baseURL as string;
-		await loginPage.goto(baseUrl);
-		await loginPage.gotToForgotPassword();
+	test.beforeEach(async ({ page }) => {
+		login = new Login(page);
+
+		await page.goto('/');
+		await login.btnPasswordForgot.click();
 	});
 
 	test('expect be required', async () => {
-		loginPage.submit();
+		await login.btnFormSubmit.click();
 
-		await expect(loginPage.emailInvalidText()).toBeVisible();
+		expect(await login.textErrorEmail.isVisible()).toBeTruthy();
 	});
 
 	test('expect invalid for email without domain', async () => {
-		await loginPage.emailField().type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
-		await loginPage.submit();
-		await expect(loginPage.emailInvalidText()).toBeVisible();
+		await login.inputEmail.type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
+		await login.btnFormSubmit.click();
+
+		expect(await login.textErrorEmail.isVisible()).toBeTruthy();
 	});
 
 	test('expect be invalid for email with invalid domain', async () => {
-		await loginPage.emailField().type(INVALID_EMAIL);
-		await loginPage.submit();
-		await expect(loginPage.emailInvalidText()).toBeVisible();
+		await login.inputEmail.type(INVALID_EMAIL);
+		await login.btnFormSubmit.click();
+
+		expect(await login.textErrorEmail.isVisible()).toBeTruthy();
 	});
 
 	test('expect user type a valid email', async () => {
-		await loginPage.emailField().type(VALID_EMAIL);
-		await loginPage.submit();
-		await expect(loginPage.getToastMessageSuccess()).toBeVisible();
+		await login.inputEmail.type(VALID_EMAIL);
+		await login.btnFormSubmit.click();
+
+		expect(await login.toastSuccess.isVisible()).toBeTruthy();
 	});
 });

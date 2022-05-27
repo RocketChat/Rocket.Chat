@@ -3,17 +3,13 @@ import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL } from './utils/mocks/urlMock';
 import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/LoginPage';
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import Administration from './utils/pageobjects/Administration';
-import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
+import { Login, MainContent, SideNav, Administration, PreferencesMainContent } from './page-objects';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
-test.describe.skip('[Settings]', async () => {
+test.describe.skip('Settings', async () => {
 	let page: Page;
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let userPreferences: PreferencesMainContent;
@@ -22,14 +18,14 @@ test.describe.skip('[Settings]', async () => {
 		const context = await browser.newContext();
 		page = await context.newPage();
 
-		loginPage = new LoginPage(page);
+		login = new Login(page);
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 		userPreferences = new PreferencesMainContent(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(validUserInserted);
-		await sideNav.general().click();
+		await page.goto('/');
+		await login.doLogin(validUserInserted);
+		await sideNav.general.click();
 	});
 
 	test.beforeAll(async ({ request }) => {
@@ -59,10 +55,10 @@ test.describe.skip('[Settings]', async () => {
 
 		test('(UI) expect option(edit) not be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await mainContent.doSendMessage(`any_message_${uuid()}`);
+			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeFalsy();
+			expect(await page.isVisible('data-qa-id="edit-message"')).toBeFalsy();
 		});
 
 		test('(API) expect enable message editing', async ({ request }) => {
@@ -78,10 +74,10 @@ test.describe.skip('[Settings]', async () => {
 
 		test('(UI) expect option(edit) be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await mainContent.doSendMessage(`any_message_${uuid()}`);
+			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeTruthy();
+			expect(await page.isVisible('data-qa-id="edit-message"')).toBeTruthy();
 		});
 	});
 
@@ -99,10 +95,10 @@ test.describe.skip('[Settings]', async () => {
 
 		test('(UI) expect option(delete) not be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await mainContent.doSendMessage(`any_message_${uuid()}`);
+			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
+			expect(await page.isVisible('data-qa-id="delete-message"')).toBeFalsy();
 		});
 
 		test('(API) expect enable message deleting', async ({ request }) => {
@@ -118,10 +114,10 @@ test.describe.skip('[Settings]', async () => {
 
 		test('(UI) expect option(delete) be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await mainContent.doSendMessage(`any_message_${uuid()}`);
+			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeTruthy();
+			expect(await page.isVisible('data-qa-id="delete-message"')).toBeTruthy();
 		});
 	});
 
@@ -140,7 +136,7 @@ test.describe.skip('[Settings]', async () => {
 		test('(UI) expect option(upload audio) not be visible', async () => {
 			await mainContent.doReload();
 
-			expect(await mainContent.recordBtn().isVisible()).toBeFalsy();
+			expect(await mainContent.btnRecordAudio.isVisible()).toBeFalsy();
 		});
 
 		test('(API) expect enable audio files', async ({ request }) => {
@@ -157,7 +153,7 @@ test.describe.skip('[Settings]', async () => {
 		test('(UI) expect option(upload audio) be visible', async () => {
 			await mainContent.doReload();
 
-			expect(await mainContent.recordBtn().isVisible()).toBeTruthy();
+			expect(await mainContent.btnRecordAudio.isVisible()).toBeTruthy();
 		});
 	});
 
@@ -175,9 +171,9 @@ test.describe.skip('[Settings]', async () => {
 
 		test('(UI) expect option(upload video) not be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.openMoreActionMenu();
+			await mainContent.doOpenMoreActionMenu();
 
-			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeFalsy();
+			expect(await page.isVisible('.rc-popover__content [data-id="video-message"')).toBeFalsy();
 		});
 
 		test('(API) expect enable video files', async ({ request }) => {
@@ -193,9 +189,9 @@ test.describe.skip('[Settings]', async () => {
 
 		test('(UI) expect option(upload video) be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.openMoreActionMenu();
+			await mainContent.doOpenMoreActionMenu();
 
-			expect(await page.isVisible('.rc-popover__content [data-id="video-message"]')).toBeTruthy();
+			expect(await page.isVisible('.rc-popover__content [data-id="video-message"')).toBeTruthy();
 		});
 	});
 
@@ -227,7 +223,7 @@ test.describe.skip('[Settings]', async () => {
 		test('(UI) expect badword be censored', async () => {
 			await mainContent.doReload();
 
-			await mainContent.sendMessage(unauthorizedWord);
+			await mainContent.doSendMessage(unauthorizedWord);
 			await mainContent.waitForLastMessageEqualsText('*'.repeat(unauthorizedWord.length));
 		});
 
@@ -245,7 +241,7 @@ test.describe.skip('[Settings]', async () => {
 		test('(UI) expect badword not be censored', async () => {
 			await mainContent.doReload();
 
-			await mainContent.sendMessage(unauthorizedWord);
+			await mainContent.doSendMessage(unauthorizedWord);
 			await mainContent.waitForLastMessageEqualsText(unauthorizedWord);
 		});
 	});
@@ -264,10 +260,10 @@ test.describe.skip('[Settings]', async () => {
 
 		test.skip('(UI) expect option(star message) not be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await mainContent.doSendMessage(`any_message_${uuid()}`);
+			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeFalsy();
+			expect(await page.isVisible('data-qa-id="star-message"')).toBeFalsy();
 		});
 
 		test('(API) expect enable message starring', async ({ request }) => {
@@ -283,10 +279,10 @@ test.describe.skip('[Settings]', async () => {
 
 		test('(UI) expect option(star message) be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await mainContent.doSendMessage(`any_message_${uuid()}`);
+			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeTruthy();
+			expect(await page.isVisible('data-qa-id="star-message"')).toBeTruthy();
 		});
 	});
 
@@ -304,9 +300,9 @@ test.describe.skip('[Settings]', async () => {
 
 		test('(UI) expect option(upload file) not be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.openMoreActionMenu();
+			await mainContent.doOpenMoreActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeFalsy();
+			expect(await page.isVisible('data-qa-id="file-upload"')).toBeFalsy();
 		});
 
 		test('(API) expect enable file upload', async ({ request }) => {
@@ -322,9 +318,9 @@ test.describe.skip('[Settings]', async () => {
 
 		test('(UI) expect option(upload file) be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.openMoreActionMenu();
+			await mainContent.doOpenMoreActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeTruthy();
+			expect(await page.isVisible('data-qa-id="file-upload"')).toBeTruthy();
 		});
 	});
 
@@ -341,13 +337,13 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test.skip('(UI) expect options(update profile) be disabled', async () => {
-			await sideNav.sidebarUserMenu().click();
-			await sideNav.account().click();
+			await sideNav.sidebarUserMenu.click();
+			await sideNav.account.click();
 
-			expect(userPreferences.avatarFileInput().isDisabled()).toBeTruthy();
-			expect(userPreferences.emailTextInput().isDisabled()).toBeTruthy();
-			expect(userPreferences.realNameTextInput().isDisabled()).toBeTruthy();
-			expect(userPreferences.userNameTextInput().isDisabled()).toBeTruthy();
+			expect(userPreferences.inputAvatarFile.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputEmailText.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputRealNameText.isDisabled()).toBeTruthy();
+			expect(userPreferences.inputUserNameText.isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable profile change', async ({ request }) => {
@@ -375,10 +371,10 @@ test.describe.skip('[Settings]', async () => {
 		});
 
 		test.skip('(UI) expect option(update avatar) be disabled', async () => {
-			await sideNav.sidebarUserMenu().click();
-			await sideNav.account().click();
+			await sideNav.sidebarUserMenu.click();
+			await sideNav.account.click();
 
-			expect(userPreferences.avatarFileInput().isDisabled()).toBeTruthy();
+			expect(userPreferences.inputAvatarFile.isDisabled()).toBeTruthy();
 		});
 
 		test('(API) expect enable avatar change', async ({ request }) => {
@@ -394,9 +390,9 @@ test.describe.skip('[Settings]', async () => {
 	});
 });
 
-test.describe.skip('[Settings (admin)]', async () => {
+test.describe.skip('Settings (admin)', async () => {
 	let page: Page;
-	let loginPage: LoginPage;
+	let login: Login;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let admin: Administration;
@@ -404,15 +400,15 @@ test.describe.skip('[Settings (admin)]', async () => {
 	test.beforeAll(async ({ browser }) => {
 		const context = await browser.newContext();
 		page = await context.newPage();
+		login = new Login(page);
 
-		loginPage = new LoginPage(page);
 		mainContent = new MainContent(page);
 		sideNav = new SideNav(page);
 		admin = new Administration(page);
 
-		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
-		await sideNav.general().click();
+		await page.goto('/');
+		await login.doLogin(adminLogin);
+		await sideNav.general.click();
 	});
 
 	test.beforeAll(async ({ request }) => {
@@ -437,10 +433,10 @@ test.describe.skip('[Settings (admin)]', async () => {
 
 		test('(UI) expect option(pin message) not be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await mainContent.doSendMessage(`any_message_${uuid()}`);
+			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeFalsy();
+			expect(await page.isVisible('data-qa-id="pin-message"')).toBeFalsy();
 		});
 
 		test('(API) expect enable message pinning', async ({ request }) => {
@@ -456,10 +452,10 @@ test.describe.skip('[Settings (admin)]', async () => {
 
 		test('(UI) expect option(pin message) be visible', async () => {
 			await mainContent.doReload();
-			await mainContent.sendMessage(`any_message_${uuid()}`);
-			await mainContent.openMessageActionMenu();
+			await mainContent.doSendMessage(`any_message_${uuid()}`);
+			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeTruthy();
+			expect(await page.isVisible('data-qa-id="pin-message"')).toBeTruthy();
 		});
 	});
 
@@ -477,23 +473,23 @@ test.describe.skip('[Settings (admin)]', async () => {
 
 		test.describe('(UI) expect activate/deactivate flow as admin', () => {
 			test('expect open /users as admin', async () => {
-				await admin.goto('/admin');
-				await admin.usersLink().click();
+				await page.goto('/admin');
+				await admin.linkUsers.click();
 			});
 
 			test('expect find registered user', async () => {
-				await admin.usersFilter().type(registerUser.email, { delay: 200 });
-				await admin.userInTable(registerUser.email).click();
+				await admin.inputSearchUsers.type(registerUser.email, { delay: 200 });
+				await admin.getUserInTable(registerUser.email).click();
 			});
 
 			test('expect activate registered user', async () => {
-				await admin.userInfoActions().locator('button:nth-child(3)').click();
-				await admin.getPage().locator('[value="changeActiveStatus"]').click();
+				await admin.userInfoActions.locator('button:nth-child(3)').click();
+				await page.locator('value="changeActiveStatus"').click();
 			});
 
 			test('expect deactivate registered user', async () => {
-				await admin.userInfoActions().locator('button:nth-child(3)').click();
-				await admin.getPage().locator('[value="changeActiveStatus"]').click();
+				await admin.userInfoActions.locator('button:nth-child(3)').click();
+				await page.locator('value="changeActiveStatus"').click();
 			});
 		});
 
