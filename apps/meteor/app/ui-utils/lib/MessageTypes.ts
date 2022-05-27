@@ -9,7 +9,7 @@ export type MessageType = {
 	/* deprecated */
 	template?: (message: IMessage) => unknown;
 	message: TranslationKey;
-	data?: (message: IMessage) => Record<string, string>;
+	data?: (message: IMessage) => Record<string, string> | undefined;
 };
 class MessageTypesClass {
 	private types = new Map<MessageTypesValues, MessageType>();
