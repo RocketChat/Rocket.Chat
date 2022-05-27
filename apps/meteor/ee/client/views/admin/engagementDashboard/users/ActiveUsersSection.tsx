@@ -5,7 +5,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import CounterSet from '../../../../../../client/components/data/CounterSet';
+import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
