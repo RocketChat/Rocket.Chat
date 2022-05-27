@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
@@ -11,7 +11,7 @@ type DmCreateProps =
 			usernames: string[];
 	  };
 
-const DmCreatePropsSchema: JSONSchemaType<DmCreateProps> = {
+const DmCreatePropsSchema = {
 	oneOf: [
 		{
 			type: 'object',

@@ -13,7 +13,7 @@ import type {
 	IRoom,
 	ISetting,
 } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -26,7 +26,7 @@ type LivechatVisitorsInfo = {
 	visitorId: string;
 };
 
-const LivechatVisitorsInfoSchema: JSONSchemaType<LivechatVisitorsInfo> = {
+const LivechatVisitorsInfoSchema = {
 	type: 'object',
 	properties: {
 		visitorId: {
@@ -43,7 +43,7 @@ type LivechatRoomOnHold = {
 	roomId: IRoom['_id'];
 };
 
-const LivechatRoomOnHoldSchema: JSONSchemaType<LivechatRoomOnHold> = {
+const LivechatRoomOnHoldSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -61,7 +61,7 @@ type LivechatDepartmentId = {
 	includeAgents?: booleanString;
 };
 
-const LivechatDepartmentIdSchema: JSONSchemaType<LivechatDepartmentId> = {
+const LivechatDepartmentIdSchema = {
 	type: 'object',
 	properties: {
 		onlyMyDepartments: {
@@ -83,7 +83,7 @@ type LivechatDepartmentAutocomplete = {
 	onlyMyDepartments: booleanString;
 };
 
-const LivechatDepartmentAutocompleteSchema: JSONSchemaType<LivechatDepartmentAutocomplete> = {
+const LivechatDepartmentAutocompleteSchema = {
 	type: 'object',
 	properties: {
 		selector: {
@@ -103,7 +103,7 @@ type LivechatDepartmentDepartmentIdAgentsGET = {
 	sort: string;
 };
 
-const LivechatDepartmentDepartmentIdAgentsGETSchema: JSONSchemaType<LivechatDepartmentDepartmentIdAgentsGET> = {
+const LivechatDepartmentDepartmentIdAgentsGETSchema = {
 	type: 'object',
 	properties: {
 		sort: {
@@ -121,7 +121,7 @@ type LivechatDepartmentDepartmentIdAgentsPOST = {
 	remove: string[];
 };
 
-const LivechatDepartmentDepartmentIdAgentsPOSTSchema: JSONSchemaType<LivechatDepartmentDepartmentIdAgentsPOST> = {
+const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 	type: 'object',
 	properties: {
 		upsert: {
@@ -147,7 +147,7 @@ type LivechatVisitorTokenGet = {
 	token: string;
 };
 
-const LivechatVisitorTokenGetSchema: JSONSchemaType<LivechatVisitorTokenGet> = {
+const LivechatVisitorTokenGetSchema = {
 	type: 'object',
 	properties: {
 		token: {
@@ -164,7 +164,7 @@ type LivechatVisitorTokenDelete = {
 	token: string;
 };
 
-const LivechatVisitorTokenDeleteSchema: JSONSchemaType<LivechatVisitorTokenDelete> = {
+const LivechatVisitorTokenDeleteSchema = {
 	type: 'object',
 	properties: {
 		token: {
@@ -181,7 +181,7 @@ type LivechatVisitorTokenRoom = {
 	token: string;
 };
 
-const LivechatVisitorTokenRoomSchema: JSONSchemaType<LivechatVisitorTokenRoom> = {
+const LivechatVisitorTokenRoomSchema = {
 	type: 'object',
 	properties: {
 		token: {
@@ -201,7 +201,7 @@ type LivechatVisitorCallStatus = {
 	callId: string;
 };
 
-const LivechatVisitorCallStatusSchema: JSONSchemaType<LivechatVisitorCallStatus> = {
+const LivechatVisitorCallStatusSchema = {
 	type: 'object',
 	properties: {
 		token: {
@@ -228,7 +228,7 @@ type LivechatVisitorStatus = {
 	status: string;
 };
 
-const LivechatVisitorStatusSchema: JSONSchemaType<LivechatVisitorStatus> = {
+const LivechatVisitorStatusSchema = {
 	type: 'object',
 	properties: {
 		token: {
@@ -248,7 +248,7 @@ type LiveChatRoomJoin = {
 	roomId: string;
 };
 
-const LiveChatRoomJoinSchema: JSONSchemaType<LiveChatRoomJoin> = {
+const LiveChatRoomJoinSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -263,7 +263,7 @@ export const isLiveChatRoomJoinProps = ajv.compile(LiveChatRoomJoinSchema);
 
 type LivechatMonitorsListProps = PaginatedRequest<{ text: string }>;
 
-const LivechatMonitorsListSchema: JSONSchemaType<LivechatMonitorsListProps> = {
+const LivechatMonitorsListSchema = {
 	type: 'object',
 	properties: {
 		text: {
@@ -294,7 +294,7 @@ export const isLivechatMonitorsListProps = ajv.compile(LivechatMonitorsListSchem
 
 type LivechatTagsListProps = PaginatedRequest<{ text: string }, 'name'>;
 
-const LivechatTagsListSchema: JSONSchemaType<LivechatTagsListProps> = {
+const LivechatTagsListSchema = {
 	type: 'object',
 	properties: {
 		text: {
@@ -330,7 +330,7 @@ type LivechatDepartmentProps = PaginatedRequest<{
 	excludeDepartmentId?: string;
 }>;
 
-const LivechatDepartmentSchema: JSONSchemaType<LivechatDepartmentProps> = {
+const LivechatDepartmentSchema = {
 	type: 'object',
 	properties: {
 		text: {
@@ -373,7 +373,7 @@ export const isLivechatDepartmentProps = ajv.compile(LivechatDepartmentSchema);
 
 type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string }>;
 
-const LivechatDepartmentsAvailableByUnitIdSchema: JSONSchemaType<LivechatDepartmentsAvailableByUnitIdProps> = {
+const LivechatDepartmentsAvailableByUnitIdSchema = {
 	type: 'object',
 	properties: {
 		text: {
@@ -404,7 +404,7 @@ export const isLivechatDepartmentsAvailableByUnitIdProps = ajv.compile(LivechatD
 
 type LivechatDepartmentsByUnitProps = PaginatedRequest<{ text: string }>;
 
-const LivechatDepartmentsByUnitSchema: JSONSchemaType<LivechatDepartmentsByUnitProps> = {
+const LivechatDepartmentsByUnitSchema = {
 	type: 'object',
 	properties: {
 		text: {
@@ -435,7 +435,7 @@ export const isLivechatDepartmentsByUnitProps = ajv.compile(LivechatDepartmentsB
 
 type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{ text: string }>;
 
-const LivechatDepartmentsByUnitIdSchema: JSONSchemaType<LivechatDepartmentsByUnitIdProps> = {
+const LivechatDepartmentsByUnitIdSchema = {
 	type: 'object',
 	properties: {
 		text: {
@@ -466,7 +466,7 @@ export const isLivechatDepartmentsByUnitIdProps = ajv.compile(LivechatDepartment
 
 type LivechatUsersManagerGETProps = PaginatedRequest<{ text: string }>;
 
-const LivechatUsersManagerGETSchema: JSONSchemaType<LivechatUsersManagerGETProps> = {
+const LivechatUsersManagerGETSchema = {
 	type: 'object',
 	properties: {
 		text: {
@@ -497,7 +497,7 @@ export const isLivechatUsersManagerGETProps = ajv.compile(LivechatUsersManagerGE
 
 type LivechatUsersManagerPOSTProps = PaginatedRequest<{ username: string }>;
 
-const LivechatUsersManagerPOSTSchema: JSONSchemaType<LivechatUsersManagerPOSTProps> = {
+const LivechatUsersManagerPOSTSchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -535,7 +535,7 @@ type LivechatQueueProps = {
 	sort: string;
 };
 
-const LivechatQueuePropsSchema: JSONSchemaType<LivechatQueueProps> = {
+const LivechatQueuePropsSchema = {
 	type: 'object',
 	properties: {
 		agentId: {
@@ -572,7 +572,7 @@ type CannedResponsesProps = PaginatedRequest<{
 	text?: string;
 }>;
 
-const CannedResponsesPropsSchema: JSONSchemaType<CannedResponsesProps> = {
+const CannedResponsesPropsSchema = {
 	type: 'object',
 	properties: {
 		scope: {
@@ -611,7 +611,7 @@ export const isCannedResponsesProps = ajv.compile(CannedResponsesPropsSchema);
 
 type LivechatCustomFieldsProps = PaginatedRequest<{ text: string }>;
 
-const LivechatCustomFieldsSchema: JSONSchemaType<LivechatCustomFieldsProps> = {
+const LivechatCustomFieldsSchema = {
 	type: 'object',
 	properties: {
 		text: {
@@ -639,6 +639,129 @@ const LivechatCustomFieldsSchema: JSONSchemaType<LivechatCustomFieldsProps> = {
 };
 
 export const isLivechatCustomFieldsProps = ajv.compile(LivechatCustomFieldsSchema);
+
+type LivechatRoomsProps = {
+	guest: string;
+	fname: string;
+	servedBy: string[];
+	status: string;
+	department: string;
+	from: string;
+	to: string;
+	customFields: any;
+	current: number;
+	itemsPerPage: number;
+	tags: string[];
+};
+
+const LivechatRoomsSchema = {
+	type: 'object',
+	properties: {
+		guest: {
+			type: 'string',
+		},
+		fname: {
+			type: 'string',
+		},
+		servedBy: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		status: {
+			type: 'string',
+		},
+		department: {
+			type: 'string',
+		},
+		from: {
+			type: 'string',
+		},
+		to: {
+			type: 'string',
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
+		},
+		current: {
+			type: 'number',
+		},
+		itemsPerPage: {
+			type: 'number',
+		},
+		tags: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+	required: ['guest', 'fname', 'servedBy', 'status', 'department', 'from', 'to', 'current', 'itemsPerPage'],
+	additionalProperties: false,
+};
+
+export const isLivechatRoomsProps = ajv.compile(LivechatRoomsSchema);
+
+type LivechatRidMessagesProps = PaginatedRequest<{ query: string }>;
+
+const LivechatRidMessagesSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+		},
+	},
+	required: ['query'],
+	additionalProperties: false,
+};
+
+export const isLivechatRidMessagesProps = ajv.compile(LivechatRidMessagesSchema);
+
+type LivechatUsersAgentProps = PaginatedRequest<{ text?: string }>;
+
+const LivechatUsersAgentSchema = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isLivechatUsersAgentProps = ajv.compile(LivechatUsersAgentSchema);
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
@@ -734,32 +857,17 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'livechat/rooms': {
-		// TO-DO
-		GET: (params: {
-			guest: string;
-			fname: string;
-			servedBy: string[];
-			status: string;
-			department: string;
-			from: string;
-			to: string;
-			customFields: any;
-			current: number;
-			itemsPerPage: number;
-			tags: string[];
-		}) => PaginatedResult<{
+		GET: (params: LivechatRoomsProps) => PaginatedResult<{
 			rooms: IOmnichannelRoom[];
 		}>;
 	};
 	'livechat/:rid/messages': {
-		// TO-DO
-		GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
+		GET: (params: LivechatRidMessagesProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
 	'livechat/users/agent': {
-		// TO-DO
-		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
+		GET: (params: LivechatUsersAgentProps) => PaginatedResult<{
 			users: {
 				_id: string;
 				emails: {

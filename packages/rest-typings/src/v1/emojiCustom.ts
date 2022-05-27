@@ -1,5 +1,5 @@
 import type { ICustomEmojiDescriptor } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -10,7 +10,7 @@ type emojiCustomDeleteProps = {
 	emojiId: ICustomEmojiDescriptor['_id'];
 };
 
-const emojiCustomDeletePropsSchema: JSONSchemaType<emojiCustomDeleteProps> = {
+const emojiCustomDeletePropsSchema = {
 	type: 'object',
 	properties: {
 		emojiId: {
@@ -27,7 +27,7 @@ type emojiCustomList = {
 	query: string;
 };
 
-const emojiCustomListSchema: JSONSchemaType<emojiCustomList> = {
+const emojiCustomListSchema = {
 	type: 'object',
 	properties: {
 		query: {

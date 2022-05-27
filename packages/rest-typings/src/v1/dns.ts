@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
@@ -6,7 +6,7 @@ type DnsResolveTxtProps = {
 	url: string;
 };
 
-const dnsResolveTxtPropsSchema: JSONSchemaType<DnsResolveTxtProps> = {
+const dnsResolveTxtPropsSchema = {
 	type: 'object',
 	properties: {
 		url: {
@@ -23,7 +23,7 @@ type DnsResolveSrvProps = {
 	url: string;
 };
 
-const DnsResolveSrvSchema: JSONSchemaType<DnsResolveSrvProps> = {
+const DnsResolveSrvSchema = {
 	type: 'object',
 	properties: {
 		url: {

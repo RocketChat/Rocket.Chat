@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
 
 const ajv = new Ajv();
@@ -8,7 +8,7 @@ type BannersGetNew = {
 	bid: IBanner['_id'];
 };
 
-const BannersGetNewSchema: JSONSchemaType<BannersGetNew> = {
+const BannersGetNewSchema = {
 	type: 'object',
 	properties: {
 		platform: {
@@ -28,7 +28,7 @@ type BannersId = {
 	platform: BannerPlatform;
 };
 
-const BannersIdSchema: JSONSchemaType<BannersId> = {
+const BannersIdSchema = {
 	type: 'object',
 	properties: {
 		platform: {
@@ -45,7 +45,7 @@ type Banners = {
 	platform: BannerPlatform;
 };
 
-const BannersSchema: JSONSchemaType<Banners> = {
+const BannersSchema = {
 	type: 'object',
 	properties: {
 		platform: {
@@ -62,7 +62,7 @@ type BannersDismiss = {
 	bannerId: string;
 };
 
-const BannersDismissSchema: JSONSchemaType<BannersDismiss> = {
+const BannersDismissSchema = {
 	type: 'object',
 	properties: {
 		bannerId: {

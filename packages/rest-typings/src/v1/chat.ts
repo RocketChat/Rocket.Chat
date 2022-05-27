@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, ReadReceipt } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
@@ -7,7 +7,7 @@ type ChatFollowMessage = {
 	mid: IMessage['_id'];
 };
 
-const chatFollowMessageSchema: JSONSchemaType<ChatFollowMessage> = {
+const chatFollowMessageSchema = {
 	type: 'object',
 	properties: {
 		mid: {
@@ -24,7 +24,7 @@ type ChatUnfollowMessage = {
 	mid: IMessage['_id'];
 };
 
-const chatUnfollowMessageSchema: JSONSchemaType<ChatUnfollowMessage> = {
+const chatUnfollowMessageSchema = {
 	type: 'object',
 	properties: {
 		mid: {
@@ -41,7 +41,7 @@ type ChatGetMessage = {
 	msgId: IMessage['_id'];
 };
 
-const ChatGetMessageSchema: JSONSchemaType<ChatGetMessage> = {
+const ChatGetMessageSchema = {
 	type: 'object',
 	properties: {
 		msgId: {
@@ -58,7 +58,7 @@ type ChatStarMessage = {
 	msgId: IMessage['_id'];
 };
 
-const ChatStarMessageSchema: JSONSchemaType<ChatStarMessage> = {
+const ChatStarMessageSchema = {
 	type: 'object',
 	properties: {
 		msgId: {
@@ -75,7 +75,7 @@ type ChatUnstarMessage = {
 	msgId: IMessage['_id'];
 };
 
-const ChatUnstarMessageSchema: JSONSchemaType<ChatUnstarMessage> = {
+const ChatUnstarMessageSchema = {
 	type: 'object',
 	properties: {
 		msgId: {
@@ -92,7 +92,7 @@ type ChatPinMessage = {
 	msgId: IMessage['_id'];
 };
 
-const ChatPinMessageSchema: JSONSchemaType<ChatPinMessage> = {
+const ChatPinMessageSchema = {
 	type: 'object',
 	properties: {
 		msgId: {
@@ -109,7 +109,7 @@ type ChatUnpinMessage = {
 	messageId: IMessage['_id'];
 };
 
-const ChatUnpinMessageSchema: JSONSchemaType<ChatUnpinMessage> = {
+const ChatUnpinMessageSchema = {
 	type: 'object',
 	properties: {
 		messageId: {
@@ -129,7 +129,7 @@ type ChatGetDiscussions = {
 	count: number;
 };
 
-const ChatGetDiscussionsSchema: JSONSchemaType<ChatGetDiscussions> = {
+const ChatGetDiscussionsSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -157,7 +157,7 @@ type ChatReportMessage = {
 	description: string;
 };
 
-const ChatReportMessageSchema: JSONSchemaType<ChatReportMessage> = {
+const ChatReportMessageSchema = {
 	type: 'object',
 	properties: {
 		messageId: {
@@ -181,7 +181,7 @@ type ChatGetThreadsList = {
 	count: number;
 };
 
-const ChatGetThreadsListSchema: JSONSchemaType<ChatGetThreadsList> = {
+const ChatGetThreadsListSchema = {
 	type: 'object',
 	properties: {
 		rid: {
@@ -212,7 +212,7 @@ type ChatSyncThreadsList = {
 	updatedSince: string;
 };
 
-const ChatSyncThreadsListSchema: JSONSchemaType<ChatSyncThreadsList> = {
+const ChatSyncThreadsListSchema = {
 	type: 'object',
 	properties: {
 		rid: {
@@ -233,7 +233,7 @@ type ChatDelete = {
 	roomId: IRoom['_id'];
 };
 
-const ChatDeleteSchema: JSONSchemaType<ChatDelete> = {
+const ChatDeleteSchema = {
 	type: 'object',
 	properties: {
 		msgId: {
@@ -251,7 +251,7 @@ export const isChatDeleteProps = ajv.compile(ChatDeleteSchema);
 
 type ChatReact = { emoji: string; messageId: IMessage['_id'] } | { reaction: string; messageId: IMessage['_id'] };
 
-const ChatReactSchema: JSONSchemaType<ChatReact> = {
+const ChatReactSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -371,7 +371,7 @@ type ChatGetMessageReadReceipts = {
 	messageId: IMessage['_id'];
 };
 
-const ChatGetMessageReadReceiptsSchema: JSONSchemaType<ChatGetMessageReadReceipts> = {
+const ChatGetMessageReadReceiptsSchema = {
 	type: 'object',
 	properties: {
 		messageId: {

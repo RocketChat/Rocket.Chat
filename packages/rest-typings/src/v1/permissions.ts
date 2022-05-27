@@ -1,13 +1,31 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 import type { IPermission } from '@rocket.chat/core-typings';
 
 const ajv = new Ajv();
+
+type PermissionsListAllProps = {
+	updatedSince?: string;
+};
+
+const permissionListAllSchema = {
+	type: 'object',
+	properties: {
+		updatedSince: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isPermissionsListAll = ajv.compile(permissionListAllSchema);
 
 type PermissionsUpdateProps = {
 	permissions: { _id: string; roles: string[] }[];
 };
 
-const permissionUpdatePropsSchema: JSONSchemaType<PermissionsUpdateProps> = {
+const permissionUpdatePropsSchema = {
 	type: 'object',
 	properties: {
 		permissions: {
@@ -35,7 +53,7 @@ export const isBodyParamsValidPermissionUpdate = ajv.compile(permissionUpdatePro
 
 export type PermissionsEndpoints = {
 	'permissions.listAll': {
-		GET: (params: { updatedSince?: string }) => {
+		GET: (params: PermissionsListAllProps) => {
 			update: IPermission[];
 			remove: IPermission[];
 		};

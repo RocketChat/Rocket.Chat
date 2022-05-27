@@ -1,5 +1,5 @@
 import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
@@ -7,7 +7,7 @@ type CloudManualRegister = {
 	cloudBlob: string;
 };
 
-const CloudManualRegisterSchema: JSONSchemaType<CloudManualRegister> = {
+const CloudManualRegisterSchema = {
 	type: 'object',
 	properties: {
 		cloudBlob: {
@@ -25,7 +25,7 @@ type CloudCreateRegistrationIntent = {
 	email: string;
 };
 
-const CloudCreateRegistrationIntentSchema: JSONSchemaType<CloudCreateRegistrationIntent> = {
+const CloudCreateRegistrationIntentSchema = {
 	type: 'object',
 	properties: {
 		resend: {
@@ -46,7 +46,7 @@ type CloudConfirmationPoll = {
 	resend?: string;
 };
 
-const CloudConfirmationPollSchema: JSONSchemaType<CloudConfirmationPoll> = {
+const CloudConfirmationPollSchema = {
 	type: 'object',
 	properties: {
 		deviceCode: {
