@@ -26,7 +26,7 @@ type StartGroupVideoConfModalProps = {
 const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const [confTitle, setConfTitle] = useState<string | undefined>(undefined);
-	const { controllersConfig, handleToggleMic, handleToggleVideo } = useVideoConfControllers();
+	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 
 	return (
 		<VideoConfModal>
@@ -45,11 +45,11 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 						onClick={handleToggleMic}
 					/>
 					<VideoConfController
-						primary={controllersConfig.video}
-						text={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.video ? 'video' : 'video-off'}
-						onClick={handleToggleVideo}
+						primary={controllersConfig.cam}
+						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						icon={controllersConfig.cam ? 'video' : 'video-off'}
+						onClick={handleToggleCam}
 					/>
 				</VideoConfModalControllers>
 				<VideoConfModalField>

@@ -31,7 +31,7 @@ const MAX_USERS = 6;
 const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const rid = room._id;
-	const { controllersConfig, handleToggleMic, handleToggleVideo } = useVideoConfControllers();
+	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 
 	const params = useMemo(() => ({ roomId: rid }), [rid]);
 
@@ -70,11 +70,11 @@ const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoCo
 						onClick={handleToggleMic}
 					/>
 					<VideoConfController
-						primary={controllersConfig.video}
-						text={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.video ? 'video' : 'video-off'}
-						onClick={handleToggleVideo}
+						primary={controllersConfig.cam}
+						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						icon={controllersConfig.cam ? 'video' : 'video-off'}
+						onClick={handleToggleCam}
 					/>
 				</VideoConfModalControllers>
 			</VideoConfModalContent>

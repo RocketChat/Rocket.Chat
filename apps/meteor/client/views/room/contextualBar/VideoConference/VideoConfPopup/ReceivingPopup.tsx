@@ -23,14 +23,15 @@ type ReceivingPopupProps = {
 	position: number;
 	current: number;
 	total: number;
-	onClose?: (id: string) => void;
+	onClose: (id: string) => void;
+	onConfirm: () => void;
 };
 
-const ReceivingPopup = ({ id, room, position, current, total, onClose }: ReceivingPopupProps): ReactElement => {
+const ReceivingPopup = ({ id, room, position, current, total, onClose, onConfirm }: ReceivingPopupProps): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
-	const { controllersConfig, handleToggleMic, handleToggleVideo } = useVideoConfControllers();
+	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 
 	return (
 		<VideoConfPopup position={position}>
@@ -43,7 +44,7 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose }: Receivi
 					<Box display='flex' alignItems='center' mbs='x8'>
 						<ReactiveUserStatus uid={directUserId} />
 						<Box mis='x8' display='flex'>
-							<Box>{room.name}</Box>
+							<Box>{room.fname}</Box>
 							<Box mis='x4' color='neutral-600'>
 								(object Object)
 							</Box>
@@ -59,15 +60,15 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose }: Receivi
 						onClick={handleToggleMic}
 					/>
 					<VideoConfController
-						primary={controllersConfig.video}
-						text={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.video ? 'video' : 'video-off'}
-						onClick={handleToggleVideo}
+						primary={controllersConfig.cam}
+						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						icon={controllersConfig.cam ? 'video' : 'video-off'}
+						onClick={handleToggleCam}
 					/>
 				</VideoConfPopupControllers>
 				<VideoConfPopupFooter>
-					<VideoConfButton primary onClick={(): void => console.log('accept call')}>
+					<VideoConfButton primary onClick={onConfirm}>
 						{t('Accept')}
 					</VideoConfButton>
 					{onClose && (
