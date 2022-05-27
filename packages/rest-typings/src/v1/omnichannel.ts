@@ -354,7 +354,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/triggers': {
-		GET: (params: { _id: string }) => { triggers: ILivechatTrigger[] };
+		GET: (params: PaginatedRequest<{}>) => PaginatedResult<{ triggers: ILivechatTrigger[] }>;
 	};
 
 	'livechat/triggers/:_id': {
@@ -362,7 +362,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/upload/:rid': {
-		POST: (params: { rid: string }) => {};
+		POST: (params: { rid: string }) => IMessage;
 	};
 
 	'livechat/users/:type': {
@@ -512,28 +512,28 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/visitors.pagesVisited/:roomId': {
-		GET: (params: PaginatedRequest<{ roomId?: string }>) => PaginatedResult<{ pages: IMessage[] }>;
+		GET: (params: PaginatedRequest<{ roomId: string }>) => PaginatedResult<{ pages: IMessage[] }>;
 	};
 
 	'livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId': {
-		GET: (params: PaginatedRequest<{ roomId?: string; visitorId?: string }>) => PaginatedResult<{ history: IMessage[] }>;
+		GET: (params: PaginatedRequest<{ roomId: string; visitorId: string }>) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
 	};
 
 	'livechat/visitors.searchChats/room/:roomId/visitor/:visitorId': {
 		GET: (
 			params: PaginatedRequest<{
-				roomId?: string;
-				visitorId?: string;
+				roomId: string;
+				visitorId: string;
 				searchText?: string;
 				closedChatsOnly?: booleanString;
 				servedChatsOnly?: booleanString;
 			}>,
-		) => PaginatedResult<{ history: IMessage[] }>;
+		) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
 	};
 
 	'livechat/visitors.autocomplete': {
 		GET: (params: { selector: string }) => {
-			items: Array<Pick<ILivechatVisitor, '_id' | 'name' | 'username'>>;
+			items: Array<ILivechatVisitor & { custom_name: string }>;
 		};
 	};
 

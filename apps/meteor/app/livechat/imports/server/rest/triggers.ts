@@ -5,14 +5,13 @@ import { findTriggers, findTriggerById } from '../../../server/api/lib/triggers'
 
 API.v1.addRoute(
 	'livechat/triggers',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
 			const triggers = await findTriggers({
-				userId: this.userId,
 				pagination: {
 					offset,
 					count,
@@ -27,7 +26,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/triggers/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
 			check(this.urlParams, {
@@ -35,7 +34,6 @@ API.v1.addRoute(
 			});
 
 			const trigger = await findTriggerById({
-				userId: this.userId,
 				triggerId: this.urlParams._id,
 			});
 

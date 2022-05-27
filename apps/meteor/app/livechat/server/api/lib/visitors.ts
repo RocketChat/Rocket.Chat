@@ -1,13 +1,61 @@
+import { ILivechatVisitor, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { FilterQuery, SortOptionObject } from 'mongodb';
+import { PaginatedResult } from '@rocket.chat/rest-typings';
+
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/server/raw';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
-export async function findVisitorInfo({ userId, visitorId }) {
+type Pagination<T> = { pagination: { offset: number; count: number; sort: SortOptionObject<T> } };
+
+type FindVisitedPagesParams = {
+	roomId: string;
+} & Pagination<IMessage>;
+type FindVisitedPagesResult = PaginatedResult<{ pages: IMessage[] }>;
+
+type FindChatHistoryParams = {
+	userId: string; // user performing the request
+	roomId: string;
+	visitorId: string;
+} & Pagination<IOmnichannelRoom>;
+type FindChatHistoryResult = PaginatedResult<{ history: IOmnichannelRoom[] }>;
+
+type SearchChatsParams = {
+	userId: string; // user performing the request
+	roomId: string;
+	visitorId: string;
+	searchText?: string;
+	closedChatsOnly: boolean;
+	servedChatsOnly: boolean;
+} & Pagination<IOmnichannelRoom>;
+type SearchChatsResult = PaginatedResult<{ history: IOmnichannelRoom[] }>;
+
+type FindVisitorsToAutocompleteParams = {
+	selector: {
+		term: string;
+		exceptions: string[];
+		conditions: FilterQuery<ILivechatVisitor>;
+	};
+};
+type FindVisitorsToAutocompleteResult = { items: Array<ILivechatVisitor & { custom_name: string }> };
+
+type FindVisitorsByEmailOrPhoneOrNameOrUsernameParams = {
+	term: string;
+} & Pagination<ILivechatVisitor>;
+type FindVisitorsByEmailOrPhoneOrNameOrUsernameResult = PaginatedResult<{ visitors: ILivechatVisitor[] }>;
+
+export async function findVisitorInfo({
+	userId,
+	visitorId,
+}: {
+	userId: string;
+	visitorId: string;
+}): Promise<{ visitor: ILivechatVisitor }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
-	const visitor = await LivechatVisitors.findOneById(visitorId);
+	const visitor = await LivechatVisitors.findOneById(visitorId, {});
 	if (!visitor) {
 		throw new Error('visitor-not-found');
 	}
@@ -17,10 +65,10 @@ export async function findVisitorInfo({ userId, visitorId }) {
 	};
 }
 
-export async function findVisitedPages({ userId, roomId, pagination: { offset, count, sort } }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findVisitedPages({
+	roomId,
+	pagination: { offset, count, sort },
+}: FindVisitedPagesParams): Promise<FindVisitedPagesResult> {
 	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
 		throw new Error('invalid-room');
@@ -43,10 +91,12 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	};
 }
 
-export async function findChatHistory({ userId, roomId, visitorId, pagination: { offset, count, sort } }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+export async function findChatHistory({
+	userId,
+	roomId,
+	visitorId,
+	pagination: { offset, count, sort },
+}: FindChatHistoryParams): Promise<FindChatHistoryResult> {
 	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
 		throw new Error('invalid-room');
@@ -81,10 +131,7 @@ export async function searchChats({
 	closedChatsOnly,
 	servedChatsOnly: served,
 	pagination: { offset, count, sort },
-}) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
+}: SearchChatsParams): Promise<SearchChatsResult> {
 	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
 		throw new Error('invalid-room');
@@ -107,7 +154,7 @@ export async function searchChats({
 		searchText,
 		onlyCount: true,
 	}).toArray();
-	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
+	const cursor = LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
 		open: !closedChatsOnly,
 		served,
@@ -121,14 +168,13 @@ export async function searchChats({
 		history,
 		count: history.length,
 		offset,
-		total: (total && total.count) || 0,
+		total: total?.count || 0,
 	};
 }
 
-export async function findVisitorsToAutocomplete({ userId, selector }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		return { items: [] };
-	}
+export async function findVisitorsToAutocomplete({
+	selector,
+}: FindVisitorsToAutocompleteParams): Promise<FindVisitorsToAutocompleteResult> {
 	const { exceptions = [], conditions = {}, term } = selector;
 
 	const options = {
@@ -149,16 +195,15 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	};
 }
 
-export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term, pagination: { offset, count, sort } }) {
-	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findVisitorsByEmailOrPhoneOrNameOrUsername({
+	term,
+	pagination: { offset, count, sort },
+}: FindVisitorsByEmailOrPhoneOrNameOrUsernameParams): Promise<FindVisitorsByEmailOrPhoneOrNameOrUsernameResult> {
 	const cursor = LivechatVisitors.findVisitorsByEmailOrPhoneOrNameOrUsername(term, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
-		fields: {
+		projection: {
 			_id: 1,
 			username: 1,
 			name: 1,
