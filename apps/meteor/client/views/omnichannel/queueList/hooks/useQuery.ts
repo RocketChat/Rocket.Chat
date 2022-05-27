@@ -1,6 +1,7 @@
 import type { ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 
+type booleanString = 'true' | 'false';
 type useQueryType = (
 	debouncedParams: {
 		servedBy: string;
@@ -12,7 +13,7 @@ type useQueryType = (
 	debouncedSort: [string, 'asc' | 'desc'],
 ) => {
 	agentId?: ILivechatAgent['_id'];
-	includeOfflineAgents?: boolean;
+	includeOfflineAgents?: booleanString;
 	departmentId?: ILivechatAgent['_id'];
 	offset: number;
 	count: number;
@@ -25,7 +26,7 @@ export const useQuery: useQueryType = ({ servedBy, status, departmentId, itemsPe
 	useMemo(() => {
 		const query: {
 			agentId?: string;
-			includeOflineAgents?: boolean;
+			includeOfflineAgents?: booleanString;
 			departmentId?: string;
 			sort: string;
 			count: number;
@@ -39,7 +40,7 @@ export const useQuery: useQueryType = ({ servedBy, status, departmentId, itemsPe
 		};
 
 		if (status !== 'online') {
-			query.includeOflineAgents = true;
+			query.includeOfflineAgents = 'true';
 		}
 		if (servedBy) {
 			query.agentId = servedBy;

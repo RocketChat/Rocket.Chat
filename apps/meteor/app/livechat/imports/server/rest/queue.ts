@@ -11,11 +11,14 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			check(this.requestParams(), {
-				agentId: Match.Optional(String),
-				includeOfflineAgents: Match.Optional(String),
-				departmentId: Match.Optional(String),
-			});
+			check(
+				this.requestParams(),
+				Match.ObjectIncluding({
+					agentId: Match.Optional(String),
+					includeOfflineAgents: Match.Optional(String),
+					departmentId: Match.Optional(String),
+				}),
+			);
 
 			const { agentId, includeOfflineAgents, departmentId } = this.requestParams();
 			const users = await findQueueMetrics({
