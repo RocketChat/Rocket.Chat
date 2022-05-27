@@ -36,24 +36,22 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	useEffect(() => {
 		if (incomingCalls.length) {
 			incomingCalls.map((incomingCall) => contextValue.dispatch({ id: incomingCall.callId, rid: incomingCall.rid, isReceiving: true }));
+
+			if (isRinging) {
+				customSound.play('calling');
+				const soundInterval = setInterval(() => {
+					customSound.play('calling');
+				}, 3000);
+
+				return (): void => {
+					customSound.pause('calling');
+					clearInterval(soundInterval);
+				};
+			}
 		}
 
 		return setPopUps([]);
-	}, [incomingCalls, contextValue]);
-
-	useEffect(() => {
-		if (isRinging) {
-			customSound.play('calling');
-			const soundInterval = setInterval(() => {
-				customSound.play('calling');
-			}, 3000);
-
-			return (): void => {
-				customSound.pause('calling');
-				clearInterval(soundInterval);
-			};
-		}
-	}, [isRinging, customSound]);
+	}, [incomingCalls, contextValue, customSound, isRinging]);
 
 	return (
 		<VideoConfPopupContext.Provider value={contextValue}>
