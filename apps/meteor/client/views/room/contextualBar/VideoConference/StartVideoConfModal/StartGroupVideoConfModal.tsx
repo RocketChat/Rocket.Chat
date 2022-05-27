@@ -20,12 +20,12 @@ import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 type StartGroupVideoConfModalProps = {
 	room: IRoom;
 	onClose: () => void;
-	onConfirm: () => void;
+	onConfirm: (title?: string) => void;
 };
 
 const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
-	const [confName, setConfName] = useState<string | undefined>(undefined);
+	const [confTitle, setConfTitle] = useState<string | undefined>(undefined);
 	const { controllersConfig, handleToggleMic, handleToggleVideo } = useVideoConfControllers();
 
 	return (
@@ -56,13 +56,13 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 					<TextInput
 						width='full'
 						placeholder={t('Conference_name')}
-						value={confName}
-						onChange={(e: ChangeEvent<HTMLInputElement>): void => setConfName(e.target.value)}
+						value={confTitle}
+						onChange={(e: ChangeEvent<HTMLInputElement>): void => setConfTitle(e.target.value)}
 					/>
 				</VideoConfModalField>
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
-				<VideoConfButton onClick={onConfirm} primary icon='phone'>
+				<VideoConfButton onClick={(): void => onConfirm(confTitle)} primary icon='phone'>
 					{t('Start_call')}
 				</VideoConfButton>
 				<VideoConfButton onClick={onClose}>{t('Cancel')}</VideoConfButton>
