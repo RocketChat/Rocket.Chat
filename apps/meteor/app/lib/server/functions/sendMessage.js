@@ -4,7 +4,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
-import { isURL } from '../../../utils/lib/isURL';
+import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
