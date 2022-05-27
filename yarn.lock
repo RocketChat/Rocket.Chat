@@ -4229,6 +4229,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/agenda@workspace:^, @rocket.chat/agenda@workspace:packages/agenda":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/agenda@workspace:packages/agenda"
+  dependencies:
+    "@types/debug": ^4
+    "@types/jest": ^27.4.1
+    cron: ~1.8.0
+    date.js: ~0.3.3
+    debug: ~4.1.1
+    eslint: ^8.12.0
+    human-interval: ~1.0.0
+    jest: ^27.5.1
+    moment-timezone: ~0.5.27
+    ts-jest: ^27.1.4
+    typescript: ~4.3.4
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/apps-engine@npm:^1.31.0":
   version: 1.31.0
   resolution: "@rocket.chat/apps-engine@npm:1.31.0"
@@ -4722,6 +4740,7 @@ __metadata:
     "@nivo/line": 0.62.0
     "@nivo/pie": 0.73.0
     "@playwright/test": ^1.21.1
+    "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/apps-engine": ^1.32.0-alpha
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.12
@@ -4757,7 +4776,6 @@ __metadata:
     "@testing-library/react": ~12.1.5
     "@testing-library/user-event": ^13.5.0
     "@types/adm-zip": ^0.4.34
-    "@types/agenda": ^2.0.9
     "@types/bad-words": ^3.0.1
     "@types/bcrypt": ^5.0.0
     "@types/body-parser": ^1.19.0
@@ -4815,7 +4833,6 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^2.34.0
     "@typescript-eslint/parser": ^3.0.0
     adm-zip: 0.5.9
-    agenda: "https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442"
     ajv: ^8.11.0
     apn: 2.2.0
     archiver: ^3.1.1
@@ -6988,6 +7005,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/debug@npm:^4":
+  version: 4.1.7
+  resolution: "@types/debug@npm:4.1.7"
+  dependencies:
+    "@types/ms": "*"
+  checksum: 0a7b89d8ed72526858f0b61c6fd81f477853e8c4415bb97f48b1b5545248d2ae389931680b94b393b993a7cfe893537a200647d93defe6d87159b96812305adc
+  languageName: node
+  linkType: hard
+
 "@types/dompurify@npm:^2.2.2":
   version: 2.3.3
   resolution: "@types/dompurify@npm:2.3.3"
@@ -7412,6 +7438,13 @@ __metadata:
     "@types/bson": "*"
     "@types/node": "*"
   checksum: e5397ada2ed728997f7c3f5424e8c28f682a635488be967c9c18a5de27b1641cf28bb42bc12026ac6d475c457a880e27097e13c8120350ba13219f4ccc030656
+  languageName: node
+  linkType: hard
+
+"@types/ms@npm:*":
+  version: 0.7.31
+  resolution: "@types/ms@npm:0.7.31"
+  checksum: daadd354aedde024cce6f5aa873fefe7b71b22cd0e28632a69e8b677aeb48ae8caa1c60e5919bb781df040d116b01cb4316335167a3fc0ef6a63fa3614c0f6da
   languageName: node
   linkType: hard
 
@@ -8593,20 +8626,6 @@ __metadata:
   version: 0.4.16
   resolution: "adm-zip@npm:0.4.16"
   checksum: 5ea46664d8b3b073fffeb7f934705fea288708745e708cffc1dd732ce3d2672cecd476b243f9d051892fd12952db2b6bd061975e1ff40057246f6d0cb6534a50
-  languageName: node
-  linkType: hard
-
-"agenda@https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442":
-  version: 3.1.2
-  resolution: "agenda@https://github.com/RocketChat/agenda.git#commit=c2cfcc532b8409561104dca980e6adbbcbdf5442"
-  dependencies:
-    cron: ~1.8.0
-    date.js: ~0.3.3
-    debug: ~4.1.1
-    human-interval: ~1.0.0
-    moment-timezone: ~0.5.27
-    mongodb: ~3.5.0
-  checksum: f5f68008298f9482631f1f494e392cd6b8ba7971a3b0ece81ae2abe60f53d67973ff4476156fa5c9c41b8b58c4ccd284e95c545e0523996dfd05f9a80b843e07
   languageName: node
   linkType: hard
 
@@ -23962,23 +23981,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:~3.5.0":
-  version: 3.5.11
-  resolution: "mongodb@npm:3.5.11"
-  dependencies:
-    bl: ^2.2.1
-    bson: ^1.1.4
-    denque: ^1.4.1
-    require_optional: ^1.0.1
-    safe-buffer: ^5.1.2
-    saslprep: ^1.0.0
-  dependenciesMeta:
-    saslprep:
-      optional: true
-  checksum: 4d4fda3cfe3a35ecf40c3e6c0798d044f1f0a6a24ef3a7d1d784d516b9fb97efd729ed291fa8ec1faeda6915bdaeed37fc122eff5de2c8d73b2aa80278805418
-  languageName: node
-  linkType: hard
-
 "moo@npm:^0.5.0, moo@npm:^0.5.1":
   version: 0.5.1
   resolution: "moo@npm:0.5.1"
@@ -29236,16 +29238,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"require_optional@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "require_optional@npm:1.0.1"
-  dependencies:
-    resolve-from: ^2.0.0
-    semver: ^5.1.0
-  checksum: 64aed45ccff138e3e8abfa104de6f9bd324d27408228dbe0902049f586a2a80caf885e162b4724ee9dd5a2a0369987e8b5c5db86f5eb48a98a9f7c7d00b5c5a5
-  languageName: node
-  linkType: hard
-
 "requires-port@npm:^1.0.0":
   version: 1.0.0
   resolution: "requires-port@npm:1.0.0"
@@ -29285,13 +29277,6 @@ __metadata:
     expand-tilde: ^2.0.0
     global-modules: ^1.0.0
   checksum: ef736b8ed60d6645c3b573da17d329bfb50ec4e1d6c5ffd6df49e3497acef9226f9810ea6823b8ece1560e01dcb13f77a9f6180d4f242d00cc9a8f4de909c65c
-  languageName: node
-  linkType: hard
-
-"resolve-from@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "resolve-from@npm:2.0.0"
-  checksum: 02db4c30fecddef0efafbafb2d66b96c4a80f91d103d9850be3b85d1feb65b6af6c818d137dc546cea7d0288c21e13aa0fb4580af9af34b08052b3516690c5f3
   languageName: node
   linkType: hard
 
