@@ -39,13 +39,15 @@ type TeamMessageTypes =
 	| 'user-added-room-to-team'
 	| 'ujt';
 
-type LivechatMessageTypes = 'livechat_navigation_history'
+type LivechatMessageTypes =
+	| 'livechat_navigation_history'
 	| 'livechat_transfer_history'
 	| 'livechat_transcript_history'
 	| 'livechat_video_call'
 	| 'livechat_webrtc_video_call';
 
-type OmnichannelTypesValues = 'livechat_transfer_history_fallback'
+type OmnichannelTypesValues =
+	| 'livechat_transfer_history_fallback'
 	| 'livechat-close'
 	| 'omnichannel_placed_chat_on_hold'
 	| 'omnichannel_on_hold_chat_resumed';
