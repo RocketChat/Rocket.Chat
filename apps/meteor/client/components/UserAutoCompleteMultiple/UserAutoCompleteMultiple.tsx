@@ -12,7 +12,7 @@ const query = (
 } => ({ selector: JSON.stringify({ term }) });
 
 type UserAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> &
-	Omit<ComponentProps<typeof Option>, 'value'> & {
+	Omit<ComponentProps<typeof Option>, 'value' | 'is' | 'className'> & {
 		onChange?: MouseEventHandler<HTMLButtonElement>;
 		value: any;
 		filter?: string;
