@@ -11,11 +11,10 @@ MessageTypes.registerType({
 	system: true,
 	message: 'New_visitor_navigation',
 	data(message: IOmnichannelSystemMessage) {
-		if (!message.navigation || !message.navigation.page) {
-			return;
-		}
 		return {
-			history: `${(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') + message.navigation.page.location.href}`,
+			history: message.navigation
+				? `${(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') + message.navigation.page.location.href}`
+				: '',
 		};
 	},
 });
@@ -26,7 +25,9 @@ MessageTypes.registerType({
 	message: 'New_chat_transfer',
 	data(message: IOmnichannelSystemMessage) {
 		if (!message.transferData) {
-			return;
+			return {
+				transfer: '',
+			};
 		}
 
 		const { comment } = message.transferData;
@@ -63,7 +64,9 @@ MessageTypes.registerType({
 	message: 'Livechat_chat_transcript_sent',
 	data(message: IOmnichannelSystemMessage) {
 		if (!message.requestData) {
-			return;
+			return {
+				transcript: '',
+			};
 		}
 
 		const { requestData: { type, visitor, user } = { type: 'user' } } = message;
@@ -113,11 +116,8 @@ MessageTypes.registerType({
 	system: true,
 	message: 'Omnichannel_placed_chat_on_hold',
 	data(message: IOmnichannelSystemMessage) {
-		if (!message.comment) {
-			return;
-		}
 		return {
-			comment: message.comment,
+			comment: message.comment ? message.comment : 'No comment provided',
 		};
 	},
 });
@@ -127,11 +127,8 @@ MessageTypes.registerType({
 	system: true,
 	message: 'Omnichannel_on_hold_chat_resumed',
 	data(message: IOmnichannelSystemMessage) {
-		if (!message.comment) {
-			return;
-		}
 		return {
-			comment: message.comment,
+			comment: message.comment ? message.comment : 'No comment provided',
 		};
 	},
 });
