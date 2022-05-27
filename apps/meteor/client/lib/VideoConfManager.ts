@@ -78,6 +78,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		return this._preferences;
 	}
 
+	public set preferences(value: CallPreferences) {
+		this._preferences = value;
+	}
+
 	constructor() {
 		super();
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
