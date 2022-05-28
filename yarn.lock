@@ -3117,13 +3117,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kossnocorp/desvg@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@kossnocorp/desvg@npm:0.2.0"
-  checksum: 53a702af964f3d021955b47389cbdbab445c7bfc412e222cc6e060f7c360fa89b15c5f690fad3a0a1dd1807785124960e7e32449476949e16ffe4b427e13fa2e
-  languageName: node
-  linkType: hard
-
 "@loki/browser@npm:^0.24.0":
   version: 0.24.0
   resolution: "@loki/browser@npm:0.24.0"
@@ -4569,7 +4562,6 @@ __metadata:
   resolution: "@rocket.chat/livechat@workspace:packages/livechat"
   dependencies:
     "@babel/preset-env": ^7.11.5
-    "@kossnocorp/desvg": ^0.2.0
     "@rocket.chat/eslint-config": ^0.4.0
     "@rocket.chat/fuselage-tokens": ~0.31.11
     "@rocket.chat/logo": ^0.31.11
@@ -4594,19 +4586,17 @@ __metadata:
     css-vars-ponyfill: ^2.3.2
     cssnano: ^4.1.10
     date-fns: ^2.15.0
-    desvg: ^1.0.2
     desvg-loader: ^0.1.0
-    emoji-mart: ^3.0.0
+    emojione: ^4.5.0
     eslint: ^7.5.0
     eslint-plugin-import: ^2.22.0
     eslint-plugin-react: ^7.20.5
     eslint-plugin-react-hooks: ^4.1.0
     file-loader: ^6.1.0
     gh-release: ^3.5.0
-    history: ^5.0.0
     html-webpack-plugin: ^4.4.1
     husky: ^4.2.5
-    i18next: ^21.3.3
+    i18next: ^21.8.4
     if-env: ^1.0.4
     image-webpack-loader: ^6.0.0
     loki: ^0.24.0
@@ -4625,9 +4615,9 @@ __metadata:
     postcss-selector-not: ^4.0.0
     preact: ^10.4.6
     preact-router: ^3.2.1
-    query-string: ^6.13.1
+    query-string: ^7.1.1
     react-dom: ^18.1.0
-    react-i18next: ^11.13.0
+    react-i18next: ^11.16.9
     rimraf: ^3.0.2
     sass: ^1.49.10
     sass-loader: ^9.0.2
@@ -4642,7 +4632,7 @@ __metadata:
     webpack: ^4.44.1
     webpack-cli: ^3.3.12
     webpack-dev-server: ^3.11.0
-    whatwg-fetch: ^3.4.0
+    whatwg-fetch: ^3.6.2
   languageName: unknown
   linkType: soft
 
@@ -13906,13 +13896,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"desvg@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "desvg@npm:1.0.2"
-  checksum: 05f489a026e8047e6462f6e4f60fc73355e47c9febba0527ff29af552ca751e7da8387b6c928857d3c26862c4cf7cb5a49cbb6611d1fad496e4f6e8034886a42
-  languageName: node
-  linkType: hard
-
 "detab@npm:2.0.4":
   version: 2.0.4
   resolution: "detab@npm:2.0.4"
@@ -14526,18 +14509,6 @@ __metadata:
   version: 0.8.1
   resolution: "emittery@npm:0.8.1"
   checksum: 2457e8c7b0688bb006126f2c025b2655abe682f66b184954122a8a065b5277f9813d49d627896a10b076b81c513ec5f491fd9c14fbd42c04b95ca3c9f3c365ee
-  languageName: node
-  linkType: hard
-
-"emoji-mart@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "emoji-mart@npm:3.0.1"
-  dependencies:
-    "@babel/runtime": ^7.0.0
-    prop-types: ^15.6.0
-  peerDependencies:
-    react: ^0.14.0 || ^15.0.0-0 || ^16.0.0 || ^17.0.0
-  checksum: 6282c6bfea0b183941c63bf20aee53a317503465266cf634819fd5aab84c42c867ee8b412dca8628dd8a74acdf5bd2006dbac6ac024f8f6a07596471f7bbd35d
   languageName: node
   linkType: hard
 
@@ -18336,7 +18307,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"history@npm:^5.0.0, history@npm:^5.2.0":
+"history@npm:^5.2.0":
   version: 5.3.0
   resolution: "history@npm:5.3.0"
   dependencies:
@@ -18871,7 +18842,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^21.3.3, i18next@npm:~21.6.11":
+"i18next@npm:^21.8.4":
+  version: 21.8.4
+  resolution: "i18next@npm:21.8.4"
+  dependencies:
+    "@babel/runtime": ^7.17.2
+  checksum: 6ebe9b16014057d924c8c1dc5f5b1648485c6c27ce469cb7674aa01b79e30d9d80ca541571c43253c65f5633d5490248563d2f62f759f48b57640de0f9f7307f
+  languageName: node
+  linkType: hard
+
+"i18next@npm:~21.6.11":
   version: 21.6.14
   resolution: "i18next@npm:21.6.14"
   dependencies:
@@ -27776,7 +27756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"query-string@npm:^6.13.1, query-string@npm:^6.13.8, query-string@npm:^6.3.0":
+"query-string@npm:^6.13.8, query-string@npm:^6.3.0":
   version: 6.14.1
   resolution: "query-string@npm:6.14.1"
   dependencies:
@@ -27785,6 +27765,18 @@ __metadata:
     split-on-first: ^1.0.0
     strict-uri-encode: ^2.0.0
   checksum: f2c7347578fa0f3fd4eaace506470cb4e9dc52d409a7ddbd613f614b9a594d750877e193b5d5e843c7477b3b295b857ec328903c943957adc41a3efb6c929449
+  languageName: node
+  linkType: hard
+
+"query-string@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "query-string@npm:7.1.1"
+  dependencies:
+    decode-uri-component: ^0.2.0
+    filter-obj: ^1.1.0
+    split-on-first: ^1.0.0
+    strict-uri-encode: ^2.0.0
+  checksum: b227d1f588ae93f9f0ad078c6b811295fa151dc5a160a03bb2bac5fa0e6919cb1daa570aad1d288e77c8e89fde5362ba505b1014e6e793da9b1e885b59a690a6
   languageName: node
   linkType: hard
 
@@ -28210,7 +28202,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^11.13.0, react-i18next@npm:^11.16.7":
+"react-i18next@npm:^11.16.7":
   version: 11.16.7
   resolution: "react-i18next@npm:11.16.7"
   dependencies:
@@ -28226,6 +28218,25 @@ __metadata:
     react-native:
       optional: true
   checksum: 666594e20dcff000294e904b6ea36f4e5fa2d3b7cebf8c78f04ec3b96ff52d9ad2931adb0d6865ccbd870cc8a782f76a77dfc134653647c8fd73c4217a65e0e6
+  languageName: node
+  linkType: hard
+
+"react-i18next@npm:^11.16.9":
+  version: 11.16.9
+  resolution: "react-i18next@npm:11.16.9"
+  dependencies:
+    "@babel/runtime": ^7.14.5
+    html-escaper: ^2.0.2
+    html-parse-stringify: ^3.0.1
+  peerDependencies:
+    i18next: ">= 19.0.0"
+    react: ">= 16.8.0"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: b79606a0c36a822b3d9a1e4f2bb4b44643c121de9425ddfeea7e63e5136fe33d4b0b42f045f14d53592dcdbde1fb43cd7be4555b22747d2e0f6f754d3a60c711
   languageName: node
   linkType: hard
 
@@ -34395,7 +34406,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"whatwg-fetch@npm:>=0.10.0, whatwg-fetch@npm:^3.4.0":
+"whatwg-fetch@npm:>=0.10.0, whatwg-fetch@npm:^3.6.2":
   version: 3.6.2
   resolution: "whatwg-fetch@npm:3.6.2"
   checksum: ee976b7249e7791edb0d0a62cd806b29006ad7ec3a3d89145921ad8c00a3a67e4be8f3fb3ec6bc7b58498724fd568d11aeeeea1f7827e7e1e5eae6c8a275afed
