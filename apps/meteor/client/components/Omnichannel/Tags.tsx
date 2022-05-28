@@ -10,7 +10,7 @@ import { formsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 
 const Tags = ({
-	tags,
+	tags = [],
 	handler,
 	error,
 	tagRequired,

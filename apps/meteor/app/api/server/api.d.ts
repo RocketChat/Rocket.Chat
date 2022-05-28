@@ -143,7 +143,7 @@ type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}>
 };
 
 declare class APIClass<TBasePath extends string = '/'> {
-	fieldSeparator(fieldSeparator: unknown): void;
+	fieldSeparator: string;
 
 	limitedUserFieldsToExclude(fields: { [x: string]: unknown }, limitedUserFieldsToExclude: unknown): { [x: string]: unknown };
 
