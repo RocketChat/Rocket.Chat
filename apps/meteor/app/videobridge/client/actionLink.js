@@ -34,7 +34,12 @@ actionLinks.register('joinJitsiCall', function (message, params, instance) {
 	});
 
 	if (jitsiTimeout > clickTime) {
-		instance.tabBar.open('video');
+		if (instance instanceof Function) {
+			instance('video');
+		} else {
+			instance.tabBar.open('video');
+		}
+
 		return;
 	}
 
@@ -50,7 +55,11 @@ actionLinks.register('joinJitsiCall', function (message, params, instance) {
 		}
 
 		if (result?.jitsiTimeout && result.jitsiTimeout instanceof Date && result.jitsiTimeout > clickTime) {
-			instance.tabBar.open('video');
+			if (instance instanceof Function) {
+				instance('video');
+			} else {
+				instance.tabBar.open('video');
+			}
 			return;
 		}
 

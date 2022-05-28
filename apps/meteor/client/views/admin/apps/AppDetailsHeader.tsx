@@ -11,7 +11,7 @@ import { App } from './types';
 
 const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
-	const { iconFileData, name, author, version, iconFileContent, installed, modifiedAt, bundledIn, description } = app;
+	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, description } = app;
 	const lastUpdated = modifiedAt && formatDistanceStrict(new Date(modifiedAt), new Date(), { addSuffix: false });
 
 	return (
@@ -29,7 +29,7 @@ const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 					<Box display='flex' flexDirection='row' alignItems='center'>
 						<AppStatus app={app} installed={installed} isAppDetailsPage={true} mie='x8' />
 					</Box>
-					{installed && <AppMenu app={app} />}
+					{(installed || isSubscribed) && <AppMenu app={app} />}
 				</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
 					<Box fontScale='p2m' mie='x16'>
