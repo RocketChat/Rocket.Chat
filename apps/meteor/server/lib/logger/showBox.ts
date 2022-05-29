@@ -1,5 +1,9 @@
 import s from 'underscore.string';
-import * as colors from 'colorette';
+import { createColors } from 'colorette';
+
+const colors = createColors({
+	useColor: process.env.NODE_ENV !== 'production',
+});
 
 type LogColors = 'white' | 'blue' | 'green' | 'magenta' | 'red';
 
