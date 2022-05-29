@@ -58,7 +58,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doSendMessage(`any_message_${uuid()}`);
 			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('data-qa-id="edit-message"')).toBeFalsy();
+			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeFalsy();
 		});
 
 		test('(API) expect enable message editing', async ({ request }) => {
@@ -77,7 +77,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doSendMessage(`any_message_${uuid()}`);
 			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('data-qa-id="edit-message"')).toBeTruthy();
+			expect(await page.isVisible('[data-qa-id="edit-message"]')).toBeTruthy();
 		});
 	});
 
@@ -98,7 +98,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doSendMessage(`any_message_${uuid()}`);
 			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('data-qa-id="delete-message"')).toBeFalsy();
+			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
 		});
 
 		test('(API) expect enable message deleting', async ({ request }) => {
@@ -117,7 +117,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doSendMessage(`any_message_${uuid()}`);
 			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('data-qa-id="delete-message"')).toBeTruthy();
+			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeTruthy();
 		});
 	});
 
@@ -173,7 +173,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doReload();
 			await mainContent.doOpenMoreActionMenu();
 
-			expect(await page.isVisible('.rc-popover__content [data-id="video-message"')).toBeFalsy();
+			expect(await page.isVisible('.[rc-popover__content [data-id="video-mes]sage"')).toBeFalsy();
 		});
 
 		test('(API) expect enable video files', async ({ request }) => {
@@ -191,7 +191,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doReload();
 			await mainContent.doOpenMoreActionMenu();
 
-			expect(await page.isVisible('.rc-popover__content [data-id="video-message"')).toBeTruthy();
+			expect(await page.isVisible('.[rc-popover__content [data-id="video-mes]sage"')).toBeTruthy();
 		});
 	});
 
@@ -263,7 +263,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doSendMessage(`any_message_${uuid()}`);
 			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('data-qa-id="star-message"')).toBeFalsy();
+			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeFalsy();
 		});
 
 		test('(API) expect enable message starring', async ({ request }) => {
@@ -282,7 +282,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doSendMessage(`any_message_${uuid()}`);
 			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('data-qa-id="star-message"')).toBeTruthy();
+			expect(await page.isVisible('[data-qa-id="star-message"]')).toBeTruthy();
 		});
 	});
 
@@ -302,7 +302,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doReload();
 			await mainContent.doOpenMoreActionMenu();
 
-			expect(await page.isVisible('data-qa-id="file-upload"')).toBeFalsy();
+			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeFalsy();
 		});
 
 		test('(API) expect enable file upload', async ({ request }) => {
@@ -320,7 +320,7 @@ test.describe.skip('Settings', async () => {
 			await mainContent.doReload();
 			await mainContent.doOpenMoreActionMenu();
 
-			expect(await page.isVisible('data-qa-id="file-upload"')).toBeTruthy();
+			expect(await page.isVisible('[data-qa-id="file-upload"]')).toBeTruthy();
 		});
 	});
 
@@ -436,7 +436,7 @@ test.describe.skip('Settings (admin)', async () => {
 			await mainContent.doSendMessage(`any_message_${uuid()}`);
 			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('data-qa-id="pin-message"')).toBeFalsy();
+			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeFalsy();
 		});
 
 		test('(API) expect enable message pinning', async ({ request }) => {
@@ -455,7 +455,7 @@ test.describe.skip('Settings (admin)', async () => {
 			await mainContent.doSendMessage(`any_message_${uuid()}`);
 			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('data-qa-id="pin-message"')).toBeTruthy();
+			expect(await page.isVisible('[data-qa-id="pin-message"]')).toBeTruthy();
 		});
 	});
 

@@ -83,7 +83,7 @@ test.describe('Permissions', () => {
 		test('expect not be abble to "mention all"', async () => {
 			await mainContent.doSendMessage('@all any_message');
 
-			expect(mainContent.lastMessage).toContainText('not allowed');
+			expect(mainContent.lastMessage).toContainText(' is not allowed');
 		});
 
 		test('expect not be abble to "delete own message"', async () => {
@@ -91,7 +91,7 @@ test.describe('Permissions', () => {
 			await mainContent.doSendMessage(`any_message_${uuid()}`);
 			await mainContent.doOpenMessageActionMenu();
 
-			expect(await page.isVisible('data-qa-id="delete-message"')).toBeFalsy();
+			expect(await page.isVisible('[data-qa-id="delete-message"]')).toBeFalsy();
 		});
 	});
 });

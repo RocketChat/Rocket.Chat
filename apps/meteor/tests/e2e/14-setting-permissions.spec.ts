@@ -93,7 +93,7 @@ test.describe('Rocket.Chat Settings based permissions', () => {
 		});
 
 		test('New settings value visible for admin as well', async () => {
-			await page.locator('data-qa-section="Content"').click();
+			await page.locator('[data-qa-section="Content"]').click();
 			await admin.inputHomeTitle.waitFor();
 			const text = await admin.inputHomeTitle.inputValue();
 			await admin.generalHomeTitleReset.click();

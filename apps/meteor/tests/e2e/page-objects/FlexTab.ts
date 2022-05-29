@@ -332,12 +332,6 @@ export class FlexTab extends BasePage {
 		};
 
 		const operate = async (tab: string, panel: string, more: boolean): Promise<void> => {
-			if (!desiredState) {
-				await expect(locator[panel]).toBeVisible();
-			} else {
-				await expect(locator[panel]).not.toBeVisible();
-			}
-
 			if (more) {
 				await this.btnHeaderMore.click();
 			}
