@@ -56,7 +56,7 @@ const CallTable: FC = () => {
 	const directoryRoute = useRoute('omnichannel-directory');
 
 	const resolveDirectionLabel = useCallback(
-		(direction: Nullable<IVoipRoom['direction']>) => {
+		(direction: IVoipRoom['direction']) => {
 			if (direction === 'inbound') {
 				return t('Incoming');
 			}
