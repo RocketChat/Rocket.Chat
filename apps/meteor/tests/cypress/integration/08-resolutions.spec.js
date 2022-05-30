@@ -27,7 +27,7 @@ describe('[Resolution]', () => {
 			sideNav.sideNavBar.should('not.have.attr', 'data-qa-opened', 'false');
 		});
 
-		describe('moving elements:', () => {
+		describe.skip('moving elements:', () => {
 			beforeEach(() => {
 				sideNav.sideNavBar
 					.parent()
