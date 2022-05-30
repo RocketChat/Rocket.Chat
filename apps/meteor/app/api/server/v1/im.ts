@@ -201,7 +201,6 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			console.log(sort, fields, query, offset, count);
 			const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
@@ -211,22 +210,23 @@ API.v1.addRoute(
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
 
-			const files = await Uploads.find<IUpload & { userId: string }>(ourQuery, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			})
-				.map((file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
-					if (file.userId) {
-						return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
-							object: { ...file },
-							userId: file.userId,
-						});
-					}
-					return file;
-				})
-				.toArray();
+			const files = (
+				await Uploads.find<IUpload & { userId: string }>(ourQuery, {
+					sort: sort || { name: 1 },
+					skip: offset,
+					limit: count,
+					projection: fields,
+				}).toArray()
+			).map((file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
+				if (file.userId) {
+					return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
+						object: { ...file },
+						userId: file.userId,
+					});
+				}
+				return file;
+			});
+
 			const total = await Uploads.find(ourQuery).count();
 			return API.v1.success({
 				files,
@@ -261,8 +261,6 @@ API.v1.addRoute(
 				unreads: unreads === 'true',
 				showThreadMessages: showThreadMessages === 'true',
 			};
-
-			console.log(this.queryParams);
 
 			const result = Meteor.call('getChannelHistory', objectParams);
 
