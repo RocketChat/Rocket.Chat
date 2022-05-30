@@ -165,7 +165,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		user: IUser,
 		callId: string,
 		title: string,
-		_url: string,
+		url: string,
 	): Promise<IMessage['_id']> {
 		const text = TAPi18n.__('video_conference_started', {
 			conference: title,
@@ -190,7 +190,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 								text: TAPi18n.__('Join_call'),
 								emoji: true,
 							},
-							// url,
+							url,
 						},
 					],
 				},
