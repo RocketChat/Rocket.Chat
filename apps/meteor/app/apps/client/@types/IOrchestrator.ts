@@ -1,5 +1,6 @@
 import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo';
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings/ISetting';
+import { App } from '@rocket.chat/core-typings';
 
 export interface IDetailedDescription {
 	raw: string;
@@ -110,26 +111,6 @@ export enum EAppPurchaseType {
 	PurchaseTypeSubscription = 'subscription',
 }
 
-export interface IAppFromMarketplace {
-	appId: string;
-	latest: ILatest;
-	isAddon: boolean;
-	isEnterpriseOnly: boolean;
-	isBundle: boolean;
-	bundledAppIds: any[];
-	bundledIn: IBundledIn[];
-	isPurchased: boolean;
-	isSubscribed: boolean;
-	subscriptionInfo: ISubscriptionInfo;
-	price: number;
-	purchaseType: EAppPurchaseType;
-	isUsageBased: boolean;
-	createdAt: Date;
-	modifiedAt: Date;
-	pricingPlans: IPricingPlan[];
-	addonId: string;
-}
-
 export interface ILanguageInfo {
 	Params: string;
 	Description: string;
@@ -165,7 +146,7 @@ export interface IDeletedInstalledApp {
 }
 
 export interface IAppSynced {
-	app: IAppFromMarketplace;
+	app: App;
 	success: boolean;
 }
 

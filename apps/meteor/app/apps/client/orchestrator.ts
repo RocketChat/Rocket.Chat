@@ -13,19 +13,10 @@ import { settings } from '../../settings/client';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { createDeferredValue } from '../lib/misc/DeferredValue';
 import {
-	IPricingPlan,
-	EAppPurchaseType,
-	IAppFromMarketplace,
-	IAppLanguage,
 	IAppExternalURL,
 	ICategory,
 	IDeletedInstalledApp,
 	IAppSynced,
-	IAppScreenshots,
-	IAuthor,
-	IDetailedChangelog,
-	IDetailedDescription,
-	ISubscriptionInfo,
 	ISettingsReturn,
 	ISettingsPayload,
 	ISettingsSetReturn,
@@ -36,42 +27,6 @@ import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
 const { APIClient } = require('../../utils');
 const { hasAtLeastOnePermission } = require('../../authorization');
-
-export interface IAppsFromMarketplace {
-	price: number;
-	pricingPlans: IPricingPlan[];
-	purchaseType: EAppPurchaseType;
-	isEnterpriseOnly: boolean;
-	modifiedAt: Date;
-	internalId: string;
-	id: string;
-	name: string;
-	nameSlug: string;
-	version: string;
-	categories: string[];
-	description: string;
-	detailedDescription: IDetailedDescription;
-	detailedChangelog: IDetailedChangelog;
-	requiredApiVersion: string;
-	author: IAuthor;
-	classFile: string;
-	iconFile: string;
-	iconFileData: string;
-	status: string;
-	isVisible: boolean;
-	createdDate: Date;
-	modifiedDate: Date;
-	isPurchased: boolean;
-	isSubscribed: boolean;
-	subscriptionInfo: ISubscriptionInfo;
-	compiled: boolean;
-	compileJobId: string;
-	changesNote: string;
-	languages: string[];
-	privacyPolicySummary: string;
-	internalChangesNote: string;
-	permissions: IPermission[];
-}
 
 class AppClientOrchestrator {
 	private _appClientUIHost: RealAppsEngineUIHost;
@@ -123,10 +78,6 @@ class AppClientOrchestrator {
 		}
 	}
 
-	public screenshots(appId: string): IAppScreenshots {
-		return APIClient.get(`apps/${appId}/screenshots`);
-	}
-
 	public isEnabled(): Promise<boolean> | undefined {
 		return this.deferredIsEnabled;
 	}
@@ -136,9 +87,9 @@ class AppClientOrchestrator {
 		return apps;
 	}
 
-	public async getAppsFromMarketplace(): Promise<IAppsFromMarketplace[]> {
-		const appsOverviews: IAppFromMarketplace[] = await APIClient.get('apps', { marketplace: 'true' });
-		return appsOverviews.map((app: IAppFromMarketplace) => {
+	public async getAppsFromMarketplace(): Promise<App[]> {
+		const appsOverviews: App[] = await APIClient.get('apps', { marketplace: 'true' });
+		return appsOverviews.map((app: App) => {
 			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt } = app;
 			return {
 				...latest,
@@ -156,7 +107,7 @@ class AppClientOrchestrator {
 		return apps;
 	}
 
-	public async getAppsLanguages(): Promise<IAppLanguage> {
+	public async getAppsLanguages(): Promise<string> {
 		const { apps } = await APIClient.get('apps/languages');
 		return apps;
 	}

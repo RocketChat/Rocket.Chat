@@ -27,6 +27,27 @@ export type Tiers = {
 	price: number;
 };
 
+export type License = {
+	license: string;
+	version: number;
+	expireDate: string;
+};
+
+export type SubscriptionInfo = {
+	typeOf: string;
+	status: string;
+	statusFromBilling: boolean;
+	isSeatBased: boolean;
+	seats: number;
+	maxSeats: number;
+	license: License;
+	startDate: string;
+	periodEnd: string;
+	endDate: string;
+	externallyManaged: boolean;
+	isSubscribedViaBundle: boolean;
+};
+
 export type App = {
 	id: string;
 	iconFileData: string;
@@ -49,6 +70,7 @@ export type App = {
 	iconFileContent: string;
 	installed?: boolean;
 	isEnterpriseOnly?: boolean;
+	isPurchased?: string;
 	bundledIn: {
 		bundleId: string;
 		bundleName: string;
@@ -58,6 +80,7 @@ export type App = {
 	marketplaceVersion: string;
 	latest: App;
 	status?: AppStatus;
+	subscriptionInfo: SubscriptionInfo;
 	licenseValidation?: {
 		errors: { [key: string]: string };
 		warnings: { [key: string]: string };
@@ -65,4 +88,5 @@ export type App = {
 	marketplace: unknown;
 	modifiedAt: string;
 	permissions: unknown[];
+	languages: string[];
 };
