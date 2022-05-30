@@ -14,7 +14,13 @@ addMigration({
 		const settings = mongo.db.collection('rocketchat_settings');
 		await settings.deleteMany({
 			_id: {
-				$in: ['Blockstack_Enable', 'Blockstack_Auth_Description', 'Blockstack_ButtonLabelText', 'Blockstack_Generate_Username'],
+				$in: [
+					'Blockstack',
+					'Blockstack_Enable',
+					'Blockstack_Auth_Description',
+					'Blockstack_ButtonLabelText',
+					'Blockstack_Generate_Username',
+				],
 			},
 		});
 	},
