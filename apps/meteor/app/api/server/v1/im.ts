@@ -253,8 +253,8 @@ API.v1.addRoute(
 
 			const objectParams = {
 				rid: room._id,
-				latest: latest ? new Date(latest).toISOString() : new Date().toISOString(),
-				oldest: oldest && new Date(oldest).toISOString(),
+				latest: latest ? new Date(latest) : new Date(),
+				oldest: oldest && new Date(oldest),
 				inclusive: inclusive === 'true',
 				offset,
 				count,
