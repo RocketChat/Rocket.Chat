@@ -20,7 +20,7 @@ import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
-import MessageRender from './MessageRender';
+import MessageContentBody from './MessageContentBody';
 
 export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }> = ({ message, sequential, ...props }) => {
 	const {
@@ -60,7 +60,7 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
-						{message.ignored ? t('Message_Ignored') : <MessageRender isThreadPreview message={message} />}
+						{message.ignored ? t('Message_Ignored') : <MessageContentBody isThreadPreview message={message} />}
 					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>

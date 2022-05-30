@@ -1,62 +1,35 @@
-import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import { useEndpoint, EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
-import { ISettingsReturn } from '../../../../../app/apps/client/@types/IOrchestrator';
+import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { AppsContext } from '../AppsContext';
 import { AppInfo } from '../definitions/AppInfo';
-import { handleAPIError } from '../helpers';
 import { App } from '../types';
 
-const getBundledIn = async (appId: string, appVersion: string): Promise<App['bundledIn']> => {
-	try {
-		const { bundledIn } = (await Apps.getLatestAppFromMarketplace(appId, appVersion)) as App;
-		if (!bundledIn) {
-			return [];
-		}
+const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
+	const { bundledIn = [] } = app;
 
-		return await Promise.all(
-			bundledIn.map(async (bundle) => {
-				const apps = await Apps.getAppsOnBundle(bundle.bundleId);
-				bundle.apps = apps.slice(0, 4);
-				return bundle;
-			}),
-		);
-	} catch (e) {
-		handleAPIError(e);
-		return [];
-	}
-};
-
-const getSettings = async (appId: string, installed?: boolean): Promise<ISettingsReturn | undefined> => {
-	if (!installed) {
-		return;
-	}
-
-	try {
-		return Apps.getAppSettings(appId);
-	} catch (e) {
-		handleAPIError(e);
-	}
-};
-
-const getApis = async (appId: string, installed?: boolean): Promise<Array<IApiEndpointMetadata>> => {
-	if (!installed) {
-		return [];
-	}
-
-	try {
-		return Apps.getAppApis(appId);
-	} catch (e) {
-		handleAPIError(e);
-		return [];
-	}
+	return Promise.all(
+		bundledIn.map(async (bundle) => {
+			const apps = await Apps.getAppsOnBundle(bundle.bundleId);
+			bundle.apps = apps.slice(0, 4);
+			return bundle;
+		}),
+	);
 };
 
 export const useAppInfo = (appId: string): AppInfo | undefined => {
 	const { installedApps, marketplaceApps } = useContext(AppsContext);
 
 	const [appData, setAppData] = useState<AppInfo>();
+
+	const getSettings = useEndpoint('GET', `/apps/${appId}/settings`);
+	const getScreenshots = useEndpoint('GET', `/apps/${appId}/screenshots`);
+	const getApis = useEndpoint('GET', `/apps/${appId}/apis`);
+
+	// TODO: remove EndpointFunction<'GET', 'apps/:id'>
+	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as EndpointFunction<'GET', '/apps/:id'>;
 
 	useEffect(() => {
 		const apps: App[] = [];
@@ -80,16 +53,40 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 				marketplace: false,
 			};
 
-			const [bundledIn, settings, apis] = await Promise.all([
-				app.marketplace === false ? [] : getBundledIn(app.id, app.version),
-				getSettings(app.id, app.installed),
-				getApis(app.id, app.installed),
+			const [bundledIn, settings, apis, screenshots] = await Promise.all([
+				app.marketplace === false
+					? []
+					: getBundledIn({
+							marketplace: 'true',
+							update: 'true',
+							appVersion: appId,
+					  })
+							.then(({ app }) => getBundledInApp(app))
+							.catch(() => ({
+								settings: {},
+							})),
+				getSettings().catch(() => ({
+					settings: {},
+				})),
+				getApis().catch(() => ({
+					apis: [],
+				})),
+				getScreenshots().catch(() => ({
+					screenshots: [],
+				})),
 			]);
-			setAppData({ ...app, bundledIn, settings, apis });
+
+			setAppData({
+				...app,
+				bundledIn: bundledIn as App['bundledIn'],
+				settings: settings.settings as ISettings,
+				apis: apis ? apis.apis : [],
+				screenshots: screenshots ? screenshots.screenshots : [],
+			});
 		};
 
 		fetchAppInfo();
-	}, [appId, installedApps, marketplaceApps]);
+	}, [appId, getApis, getBundledIn, getScreenshots, getSettings, installedApps, marketplaceApps]);
 
 	return appData;
 };

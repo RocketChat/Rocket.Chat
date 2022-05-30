@@ -43,6 +43,14 @@ const NotificationPreferences = ({
 					onChange={formHandlers?.handleShowCounter}
 					defaultChecked={formValues?.showCounter}
 				/>
+				{!formValues?.showCounter && (
+					<NotificationToogle
+						label={t('Show_mentions')}
+						description={t('Display_mentions_counter')}
+						onChange={formHandlers?.handleShowMentions}
+						defaultChecked={formValues?.showMentions}
+					/>
+				)}
 				<FieldGroup>
 					<NotificationByDevice device={t('Desktop')} icon={'computer'}>
 						<Preferences
