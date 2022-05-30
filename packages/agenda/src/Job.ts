@@ -151,7 +151,7 @@ export class Job {
 		return this;
 	}
 
-	public unique(unique: IJobAttributes['unique'], opts: IJobAttributes['uniqueOpts']): Job {
+	public unique(unique: IJobAttributes['unique'], opts?: IJobAttributes['uniqueOpts']): Job {
 		this.attrs.unique = unique;
 		this.attrs.uniqueOpts = opts;
 		return this;
