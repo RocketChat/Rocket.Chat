@@ -1,4 +1,3 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import Ajv, { JSONSchemaType } from 'ajv';
 
 const ajv = new Ajv();
