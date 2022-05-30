@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ coerceTypes: true });
 
 export type ChannelsHistoryProps = {
 	roomId: string;
