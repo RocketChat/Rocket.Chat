@@ -29,7 +29,6 @@ import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
 import { api } from '../../sdk/api';
-import { calculateOnHoldTimeForRoom } from './helper';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -280,7 +279,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		}
 
 		let { closeInfo, closeSystemMsgData } = await this.getBaseRoomClosingData(closerParam, room, sysMessageId, options);
-		const finalClosingData = this.getRoomClosingData(closeInfo, closeSystemMsgData, sysMessageId, options);
+		const finalClosingData = this.getRoomClosingData(closeInfo, closeSystemMsgData, room, sysMessageId, options);
 		closeInfo = finalClosingData.closeInfo;
 		closeSystemMsgData = finalClosingData.closeSystemMsgData;
 
@@ -300,7 +299,8 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 	getRoomClosingData(
 		closeInfo: IRoomClosingInfo,
-		closeSystemMsgData: any,
+		closeSystemMsgData: IOmniRoomClosingMessage,
+		_room: IVoipRoom,
 		_sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
 		_options?: { comment?: string; tags?: string[] },
 	): { closeInfo: IRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage } {
@@ -315,13 +315,11 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 	): Promise<{ closeInfo: IRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage }> {
 		const now = new Date();
 		const closer = isILivechatVisitor(closerParam) ? 'visitor' : 'user';
-		const callTotalHoldTime = await calculateOnHoldTimeForRoom(room, now);
 
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
 			callDuration: now.getTime() - room.ts.getTime(),
 			closer,
-			callTotalHoldTime,
 			closedBy: {
 				_id: closerParam._id,
 				username: closerParam.username,
