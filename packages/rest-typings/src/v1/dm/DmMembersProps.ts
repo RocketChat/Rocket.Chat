@@ -39,7 +39,7 @@ export const isDmMemberProps = ajv.compile<DmMemberProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',
@@ -70,7 +70,7 @@ export const isDmMemberProps = ajv.compile<DmMemberProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',

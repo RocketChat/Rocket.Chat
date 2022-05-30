@@ -201,6 +201,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
+			console.log(sort, fields, query, offset, count);
 			const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
@@ -260,6 +261,9 @@ API.v1.addRoute(
 				unreads: unreads === 'true',
 				showThreadMessages: showThreadMessages === 'true',
 			};
+
+			console.log(this.queryParams);
+
 			const result = Meteor.call('getChannelHistory', objectParams);
 
 			if (!result) {
