@@ -16,7 +16,7 @@ export default class Agents extends BasePage {
 	}
 
 	public userOption(): Locator {
-		return this.getPage().locator('li.rcx-option >> text="Rocket.Cat"');
+		return this.getPage().locator('.rcx-option >> text="Rocket.Cat"');
 	}
 
 	public btnAddAgents(): Locator {

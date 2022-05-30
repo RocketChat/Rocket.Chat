@@ -86,7 +86,7 @@ class SideNav extends BasePage {
 	}
 
 	public omnichannel(): Locator {
-		return this.getPage().locator('li.rcx-option >> text="Omnichannel"');
+		return this.getPage().locator('.rcx-option >> text="Omnichannel"');
 	}
 
 	public logout(): Locator {
