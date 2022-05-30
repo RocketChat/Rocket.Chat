@@ -1,15 +1,16 @@
+import type { PaginatedRequest } from '@rocket.chat/rest-typings/src/helpers/PaginatedRequest';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({ coerceTypes: true });
 
-export type ChannelsHistoryProps = {
+export type ChannelsHistoryProps = PaginatedRequest<{
 	roomId: string;
 	latest?: string;
 	showThreadMessages?: 'false' | 'true';
 	oldest?: string;
 	unreads?: 'true' | 'false';
 	inclusive?: 'false' | 'true';
-};
+}>;
 
 const channelsHistoryPropsSchema = {
 	type: 'object',

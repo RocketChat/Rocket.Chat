@@ -63,7 +63,7 @@ Meteor.methods({
 			options.fields = { editedAt: 0 };
 		}
 
-		const records = _.isUndefined(oldest)
+		const msgs = _.isUndefined(oldest)
 			? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
 					rid,
 					latest,
@@ -71,7 +71,7 @@ Meteor.methods({
 					options,
 					showThreadMessages,
 					inclusive,
-			  ).fetch()
+			  )
 			: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 					rid,
 					oldest,
@@ -80,7 +80,10 @@ Meteor.methods({
 					options,
 					showThreadMessages,
 					inclusive,
-			  ).fetch();
+			  );
+
+		const total = msgs.count() || 0;
+		const records = msgs.fetch();
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 
@@ -114,11 +117,17 @@ Meteor.methods({
 				messages: messages || [],
 				firstUnread,
 				unreadNotLoaded,
+				offset,
+				count,
+				total,
 			};
 		}
 
 		return {
 			messages: messages || [],
+			offset,
+			count,
+			total,
 		};
 	},
 });
