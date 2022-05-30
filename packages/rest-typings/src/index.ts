@@ -34,6 +34,7 @@ import type { VoipEndpoints } from './v1/voip';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
+import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
@@ -70,6 +71,7 @@ export interface Endpoints
 		EmailInboxEndpoints,
 		WebdavEndpoints,
 		OAuthAppsEndpoint,
+		SubscriptionsEndpoints,
 		AppsEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any

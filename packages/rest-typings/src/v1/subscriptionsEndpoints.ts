@@ -2,7 +2,7 @@ import type { IRoom, ISubscription, IMessage } from '@rocket.chat/core-typings';
 
 export type SubscriptionsEndpoints = {
 	'subscriptions.get': {
-		GET: (params: { updatedSince: Date | unknown }) => {
+		GET: (params: { updatedSince: string }) => {
 			update: ISubscription[];
 			remove: ISubscription[];
 		};
