@@ -28,7 +28,7 @@
 		"obj:dev": "TEST_MODE=true yarn dev",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
-		"typecheck": "cross-env NODE_OPTIONS=\"--max-old-space-size=4092\" tsc --noEmit --skipLibCheck",
+		"typecheck": "cross-env NODE_OPTIONS=\"--max-old-space-size=8184\" tsc --noEmit --skipLibCheck",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"testci": "node .scripts/start.js",
