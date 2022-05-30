@@ -54,7 +54,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</MessageBody>
 			)}
-			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} fixedWidth />}
 			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
