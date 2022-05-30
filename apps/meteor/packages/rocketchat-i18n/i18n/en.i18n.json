@@ -1990,6 +1990,7 @@
   "Federation_Matrix_as_token": "AppService Token",
   "Federation_Matrix_homeserver_url": "Homeserver URL",
   "Federation_Matrix_homeserver_domain": "Homeserver Domain",
+  "Federation_Matrix_only_owners_can_invite_users": "Only owners can invite users",
   "Federation_Matrix_bridge_url": "Bridge URL",
   "Federation_Matrix_bridge_localpart": "AppService User Localpart",
   "Federation_Matrix_registration_file": "Registration File",
