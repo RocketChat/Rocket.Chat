@@ -164,7 +164,7 @@ export function JitsiMeetExternalAPI(
 	this.frame.width = '100%';
 	this.frame.height = '100%';
 	this.frame.setAttribute('allowFullScreen', 'true');
-	this.frame.setAttribute('allow', 'microphone; camera');
+	this.frame.setAttribute('allow', 'microphone; camera; display-capture');
 	this.frame = this.iframeHolder.appendChild(this.frame);
 	this.postis = postis({
 		window: this.frame.contentWindow,
