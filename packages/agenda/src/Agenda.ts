@@ -49,10 +49,6 @@ type AgendaCallback = (error: unknown, result: unknown) => void;
 export type RepeatOptions = { timezone?: string; skipImmediate?: boolean };
 
 export class Agenda extends EventEmitter {
-	public static get Job(): typeof Job {
-		return Job;
-	}
-
 	private _name: string | undefined;
 
 	private _processEvery: number;
