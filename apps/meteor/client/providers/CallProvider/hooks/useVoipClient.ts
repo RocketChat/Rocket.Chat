@@ -72,7 +72,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 							iceServers,
 							Number(voipRetryCount),
 							Boolean(enableKeepAlive),
-							'video',
+							'audio',
 						);
 						// Today we are hardcoding workflow mode.
 						// In future, this should be ready from configuration

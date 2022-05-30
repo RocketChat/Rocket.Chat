@@ -146,7 +146,7 @@ export const VoipFooter = ({
 								<Icon name='phone-off' size='x16' />
 							</Button>
 						)}
-						{callerState === 'OFFER_RECEIVED' && (
+						{(callerState === 'OFFER_RECEIVED' || callerState === 'OFFER_SENT') && (
 							<Button title={tooltips.endCall} small square danger primary onClick={callActions.reject}>
 								<Icon name='phone-off' size='x16' />
 							</Button>

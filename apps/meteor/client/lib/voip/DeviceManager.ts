@@ -14,8 +14,7 @@ export class DeviceManager extends Emitter<DeviceEvents> {
 
 	constructor(private readonly config: VoIPUserConfiguration) {
 		super();
-		navigator.mediaDevices.addEventListener('devicechange', async (event) => {
-			console.error(`ROCKETCHAT_DEBUG device change${JSON.stringify(event)}`);
+		navigator.mediaDevices.addEventListener('devicechange', async () => {
 			await this.fetchAvailableDevices();
 			this.emit('devicechanged');
 		});
@@ -44,7 +43,6 @@ export class DeviceManager extends Emitter<DeviceEvents> {
 		this.deviceInfo.audioOutputDevices = [];
 		this.deviceInfo.videoInputDevices = [];
 		devices.forEach((device) => {
-			console.log(`ROCKETCHAT_DEBUG${JSON.stringify(device)}`);
 			const mediaDevice: IDevice = {
 				id: device.deviceId,
 				label: device.label,

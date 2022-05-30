@@ -1,4 +1,5 @@
-import type { ICallerInfo } from './ICallerInfo';
+import type { ICallerInfo } from '@rocket.chat/core-typings/src/voip/ICallerInfo';
+import type { ICallDetails } from './ICallDetails'
 
 export type VoipEvents = {
 	registered: undefined;
@@ -7,7 +8,7 @@ export type VoipEvents = {
 	unregistrationerror: unknown;
 	connected: undefined;
 	connectionerror: unknown;
-	callestablished: undefined;
+	callestablished: ICallDetails;
 	incomingcall: ICallerInfo;
 	callterminated: undefined;
 	hold: undefined;
