@@ -11,7 +11,7 @@ import type {
 	IVideoConferenceMessage,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus, isDirectVideoConference, isGroupVideoConference } from '@rocket.chat/core-typings';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import type { MessageSurfaceLayout, ContextBlock } from '@rocket.chat/ui-kit';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
@@ -21,6 +21,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { getURL } from '../../../app/utils/server';
 
 // This class is only here for testing, this code will be handled by apps
 class JitsiApp {
@@ -193,6 +194,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 						},
 					],
 				},
+				{
+					type: 'context',
+					elements: [],
+				},
 			],
 		} as Partial<IVideoConferenceMessage>);
 	}
@@ -302,8 +307,37 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async addUserToCall(call: IVideoConference, { _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
 		await this.VideoConference.addUserById(call._id, { _id, username, name });
 
-		if (call.type !== 'direct') {
-			// #ToDo: Add user avatar to the "started" message blocks
+		if (call.type === 'direct' || !call.messages.started) {
+			return;
 		}
+
+		const message = await this.Messages.findOneById<IMessage>(call.messages.started, {});
+		if (!message) {
+			return;
+		}
+
+		const blocks = message.blocks || [];
+
+		const avatarsBlock = (blocks.find((block) => block.type === 'context') || { type: 'context', elements: [] }) as ContextBlock;
+		if (!blocks.includes(avatarsBlock)) {
+			blocks.push(avatarsBlock);
+		}
+
+		const imageUrl = getURL(`/avatar/${username}`, { cdn: false, full: true });
+
+		if (avatarsBlock.elements.find((el) => el.type === 'image' && el.imageUrl === imageUrl)) {
+			return;
+		}
+
+		avatarsBlock.elements = [
+			...avatarsBlock.elements,
+			{
+				type: 'image',
+				imageUrl,
+				altText: name || username || '',
+			},
+		];
+
+		await this.Messages.setBlocksById(call.messages.started, blocks);
 	}
 }
