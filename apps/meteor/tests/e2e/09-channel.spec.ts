@@ -115,7 +115,7 @@ test.describe('[Channel]', () => {
 			test('expect add people to the room', async () => {
 				await flexTab.addPeopleToChannel(targetUser);
 				hasUserAddedInChannel = true;
-				expect(await flexTab.toastSuccess.isVisible()).toBeTruthy();
+				await expect(flexTab.toastSuccess).toBeVisible();
 			});
 		});
 
