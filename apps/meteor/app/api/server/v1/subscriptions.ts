@@ -1,12 +1,20 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import {
+	isSubscriptionsGetProps,
+	isSubscriptionsGetOneProps,
+	isSubscriptionsReadProps,
+	isSubscriptionsUnreadProps,
+} from '@rocket.chat/rest-typings';
 
 import { Subscriptions } from '../../../models/server/raw';
 import { API } from '../api';
 
 API.v1.addRoute(
 	'subscriptions.get',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isSubscriptionsGetProps,
+	},
 	{
 		async get() {
 			const { updatedSince } = this.queryParams;
@@ -35,7 +43,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'subscriptions.getOne',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isSubscriptionsGetOneProps,
+	},
 	{
 		async get() {
 			const { roomId } = this.queryParams;
@@ -61,13 +72,12 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'subscriptions.read',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isSubscriptionsReadProps,
+	},
 	{
 		post() {
-			check(this.bodyParams, {
-				rid: String,
-			});
-
 			Meteor.call('readMessages', this.bodyParams.rid);
 
 			return API.v1.success();
@@ -77,7 +87,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'subscriptions.unread',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isSubscriptionsUnreadProps,
+	},
 	{
 		post() {
 			const { roomId, firstUnreadMessage } = this.bodyParams;
