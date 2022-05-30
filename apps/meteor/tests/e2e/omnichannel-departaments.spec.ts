@@ -1,4 +1,4 @@
-import { test, Page } from '@playwright/test';
+import { test, Page, expect } from '@playwright/test';
 
 import LoginPage from './utils/pageobjects/LoginPage';
 import SideNav from './utils/pageobjects/SideNav';
@@ -33,5 +33,7 @@ test.describe.only('[Department]', () => {
 			await departments.getAddScreen();
 		});
 	});
-	test.describe('[Actions]', async () => {});
+	test.describe('[Actions]', async () => {
+		expect(1).toBe(1);
+	});
 });
