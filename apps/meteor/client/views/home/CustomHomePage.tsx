@@ -11,7 +11,7 @@ const CustomHomePage = (): ReactElement => {
 	const body = useSetting('Layout_Home_Body') as string;
 
 	return (
-		<Page>
+		<Page data-qa='page-home'>
 			<PageHeader title={title} />
 			<PageScrollableContentWithShadow>
 				<Box withRichContent dangerouslySetInnerHTML={{ __html: body }} />
