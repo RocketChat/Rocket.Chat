@@ -3,11 +3,11 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo, useState } from 'react';
 
-import Growth from '../../../../../../client/components/data/Growth';
+import Growth from '../../../../../../client/components/dataView/Growth';
 import Section from '../Section';
-import DownloadDataButton from '../data/DownloadDataButton';
-import PeriodSelector from '../data/PeriodSelector';
-import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
+import DownloadDataButton from '../dataView/DownloadDataButton';
+import PeriodSelector from '../dataView/PeriodSelector';
+import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useChannelsList } from './useChannelsList';
 
 const ChannelsTab = (): ReactElement => {
