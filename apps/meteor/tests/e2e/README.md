@@ -31,3 +31,12 @@ We also can pass `PWDEBUG=1` to controll the test execution
 
 ## Important links
 - [playwright docs](https://playwright.dev/docs/intro)
+
+
+## Assertions
+
+Checking if a element is visible
+
+```ts
+ await expect(anyElement).toBeVisible();
+ ```
