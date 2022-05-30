@@ -76732,6 +76732,49 @@
           ]
         }
       ]
+    },
+    "4.8.0-rc.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "25663",
+          "title": "Regression: Update settings groups description",
+          "userLogin": "dougfabris",
+          "milestone": "4.8.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "25569",
+          "title": "[FIX] Click to join button Jitsi Call",
+          "userLogin": "hugocostadev",
+          "description": "Added `ToolboxProvider` to `MessageListProvider` and fixed actionLink.js open function exec",
+          "milestone": "4.8.0",
+          "contributors": [
+            "hugocostadev",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "25644",
+          "title": "Regression: Endpoint types with Ajv Coercing data types",
+          "userLogin": "albuquerquefabio",
+          "description": "Ajv Coercing data types should be `true` to accept all kinds of data requested.",
+          "contributors": [
+            "albuquerquefabio"
+          ]
+        }
+      ]
     }
   }
 }
