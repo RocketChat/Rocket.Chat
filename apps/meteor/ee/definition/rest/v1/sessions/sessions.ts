@@ -1,13 +1,14 @@
 import type { ISession, DeviceManagementSession, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
-import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
+import type { SessionsPaginateProps } from './SessionsPaginateProps';
 import type { SessionsProps } from './SessionsProps';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface Endpoints {
 		'sessions/list': {
-			GET: (params: PaginatedRequest<{ filter?: string }>) => PaginatedResult<{ sessions: DeviceManagementSession[] }>;
+			GET: (params: SessionsPaginateProps) => PaginatedResult<{ sessions: DeviceManagementSession[] }>;
 		};
 		'sessions/info': {
 			GET: (params: SessionsProps) => DeviceManagementSession;
@@ -16,7 +17,7 @@ declare module '@rocket.chat/rest-typings' {
 			POST: (params: SessionsProps) => Pick<ISession, 'sessionId'>;
 		};
 		'sessions/list.all': {
-			GET: (params: PaginatedRequest<{ filter?: string }>) => PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>;
+			GET: (params: SessionsPaginateProps) => PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>;
 		};
 		'sessions/info.admin': {
 			GET: (params: SessionsProps) => DeviceManagementPopulatedSession;

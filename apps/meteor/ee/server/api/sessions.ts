@@ -1,14 +1,13 @@
-import { check, Match } from 'meteor/check';
 import { IUser } from '@rocket.chat/core-typings';
 
-import { isSessionsProps } from '../../definition/rest/v1/sessions/SessionsProps';
+import { isSessionsPaginateProps, isSessionsProps } from '../../definition/rest/v1/sessions';
 import { Users, Sessions } from '../../../app/models/server/raw/index';
 import { API } from '../../../app/api/server/api';
 import { hasLicense } from '../../app/license/server/license';
 
 API.v1.addRoute(
 	'sessions/list',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isSessionsPaginateProps },
 	{
 		async get() {
 			if (!this.userId) {
@@ -17,14 +16,6 @@ API.v1.addRoute(
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					offset: Match.Maybe(String),
-					count: Match.Maybe(String),
-					filter: Match.Maybe(String),
-				}),
-			);
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
@@ -92,20 +83,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/list.all',
-	{ authRequired: true, twoFactorRequired: true, permissionsRequired: ['view-device-management'] },
+	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsPaginateProps, permissionsRequired: ['view-device-management'] },
 	{
 		async get() {
 			if (!hasLicense('device-management')) {
 				return API.v1.unauthorized();
 			}
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					offset: Match.Maybe(String),
-					count: Match.Maybe(String),
-					filter: Match.Maybe(String),
-				}),
-			);
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort = { loginAt: -1 } } = this.parseJsonQuery();
