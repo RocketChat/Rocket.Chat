@@ -108,7 +108,6 @@ export const CallProvider: FC = ({ children }) => {
 			stopRingback();
 			if (callDetails.userState === UserState.UAC) {
 				// Agent has sent Invite. So it must create a room.
-				console.error('ERROR');
 				const { callInfo } = callDetails;
 				return createRoom(callInfo);
 			}
@@ -116,28 +115,6 @@ export const CallProvider: FC = ({ children }) => {
 		[createRoom, result.voipClient],
 	);
 
-	/*
-	const createRoom = async (caller: ICallerInfo): Promise<IVoipRoom['_id']> => {
-		if (user) {
-			const { visitor } = await visitorEndpoint({
-				visitor: {
-					token: Random.id(),
-					phone: caller.callerId,
-					name: caller.callerName || caller.callerId,
-				},
-			});
-			const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
-			openRoom(voipRoom.room._id);
-			voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
-			const queueAggregator = voipClient.getAggregator();
-			if (queueAggregator) {
-				queueAggregator.callStarted();
-			}
-			return voipRoom.room._id;
-		}
-		return '';
-	}
-	*/
 	useEffect(() => {
 		if (!result?.voipClient) {
 			return;

@@ -1127,7 +1127,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				};
 				this._callerInfo = callerInfo;
 				this._userState = UserState.UAC;
-				console.error(`sent INVITE ${JSON.stringify(inviter.body)}`);
 			});
 	}
 }
