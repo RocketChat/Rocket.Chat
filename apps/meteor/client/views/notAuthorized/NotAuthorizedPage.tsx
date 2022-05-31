@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import Page from '../../components/Page';
-import { useTranslation } from '../../contexts/TranslationContext';
 
 const NotAuthorizedPage = (): ReactElement => {
 	const t = useTranslation();

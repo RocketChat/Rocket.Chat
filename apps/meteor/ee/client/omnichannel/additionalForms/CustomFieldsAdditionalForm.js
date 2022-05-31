@@ -1,7 +1,6 @@
 import { Box, Field, TextInput, ToggleSwitch, Select } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
-
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 const CustomFieldsAdditionalForm = ({ values = {}, handlers = {}, state, className, errors }) => {
 	const t = useTranslation();

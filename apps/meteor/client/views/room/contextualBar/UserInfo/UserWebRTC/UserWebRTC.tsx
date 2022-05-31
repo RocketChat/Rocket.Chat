@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useWebRTCProps } from '../../../hooks/useWebRTC';
 import UserWebRTCRemote from './UserWebRTCRemote';
 import UserWebRTCVideo from './UserWebRTCVideo';

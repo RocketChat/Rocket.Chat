@@ -378,9 +378,9 @@ describe('[Administration]', () => {
 
 		describe('[General Settings]', () => {
 			before(() => {
+				admin.settingsLink.click();
 				admin.settingsSearch.type('general');
-				admin.generalLink.click();
-				admin.settingsSearch.clear();
+				admin.generalSettingsButton.click();
 			});
 
 			describe('general:', () => {
@@ -642,9 +642,9 @@ describe('[Administration]', () => {
 
 		describe('[Accounts]', () => {
 			before(() => {
+				admin.groupSettingsPageBack.click();
 				admin.settingsSearch.type('accounts');
-				admin.accountsLink.click();
-				admin.settingsSearch.clear();
+				admin.accountsSettingsButton.click();
 			});
 
 			describe('default user preferences', () => {

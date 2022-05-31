@@ -1,8 +1,8 @@
 import { Box, Field, Select, Button, InputBox } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 const EditInvite = ({ onClickBack, onClickClose, onClickNewLink, days, setDays, maxUses, setMaxUses }) => {
 	const t = useTranslation();
