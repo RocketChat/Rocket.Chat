@@ -24,7 +24,6 @@ type VoipFooterPropsType = {
 	};
 	callsInQueue: string;
 
-	openWrapUpCallModal: () => void;
 	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
@@ -46,7 +45,6 @@ export const VoipFooter = ({
 	createRoom,
 	openRoom,
 	callsInQueue,
-	openWrapUpCallModal,
 	dispatchEvent,
 	openedRoomInfo,
 	anonymousText,
@@ -137,9 +135,6 @@ export const VoipFooter = ({
 									e.stopPropagation();
 									toggleMic(false);
 									togglePause(false);
-									openWrapUpCallModal();
-									dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: openedRoomInfo.rid });
-
 									return callActions.end();
 								}}
 							>
