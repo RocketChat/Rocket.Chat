@@ -6,13 +6,13 @@ const webpack = require('webpack');
 
 module.exports = (env, argv) => [
 	{
-		stats: 'errors-warnings',
+		stats: argv.stats,
 		mode: argv.mode,
 		devtool: argv.mode === 'production' ? 'source-map' : 'eval',
 		resolve: {
 			extensions: ['.js', '.jsx', '.ts', '.tsx'],
 			alias: {
-				'react': 'preact/compat',
+				react: 'preact/compat',
 				'react-dom': 'preact/compat',
 			},
 		},
@@ -183,13 +183,13 @@ module.exports = (env, argv) => [
 		},
 	},
 	{
-		stats: 'errors-warnings',
+		stats: argv.stats,
 		mode: argv.mode,
 		devtool: argv.mode === 'production' ? 'source-map' : 'eval',
 		resolve: {
 			extensions: ['.js', '.jsx', '.ts', '.tsx'],
 			alias: {
-				'react': 'preact/compat',
+				react: 'preact/compat',
 				'react-dom': 'preact/compat',
 			},
 		},

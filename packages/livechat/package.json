@@ -12,7 +12,7 @@
 	},
 	"scripts": {
 		"clean": "rimraf dist",
-		"build": "webpack-cli --mode production",
+		"build": "webpack-cli --mode production --stats errors-warnings",
 		"start": "webpack-dev-server --mode development",
 		"lint": "run-s eslint stylelint",
 		"eslint": "eslint src",
@@ -23,7 +23,8 @@
 		"loki:update": "loki update --chromeDockerImage=chinello/alpine-chrome:latest --chromeFlags=\"--headless --no-sandbox --disable-gpu --disable-features=VizDisplayCompositor\" --verboseRenderer --requireReference --reactUri file:./storybook-static",
 		"build-storybook": "build-storybook",
 		"build-storybook:loki": "cross-env NODE_ENV=loki build-storybook",
-		"update-storybook": "cross-env NODE_ENV=loki run-s build-storybook loki:update"
+		"update-storybook": "cross-env NODE_ENV=loki run-s build-storybook loki:update",
+		"bundler-analyze": "webpack-cli --mode production --stats normal --json > stats.json && webpack-bundle-analyzer stats.json"
 	},
 	"devDependencies": {
 		"@babel/preset-env": "^7.11.5",
@@ -37,6 +38,7 @@
 		"@storybook/storybook-deployer": "^2.8.6",
 		"@storybook/theming": "^6.0.12",
 		"@types/react-dom": "^18",
+		"@types/webpack-bundle-analyzer": "^4",
 		"autoprefixer": "^9.8.6",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^8.1.0",
@@ -79,6 +81,7 @@
 		"typescript": "^4.6.3",
 		"url-loader": "^4.1.0",
 		"webpack": "^4.44.1",
+		"webpack-bundle-analyzer": "^4.5.0",
 		"webpack-cli": "^3.3.12",
 		"webpack-dev-server": "^3.11.0"
 	},
