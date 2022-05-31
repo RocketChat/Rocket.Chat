@@ -158,12 +158,14 @@ export class RocketChatSettingsAdapter {
 					type: 'string',
 					i18nLabel: 'Federation_Matrix_homeserver_url',
 					i18nDescription: 'Federation_Matrix_homeserver_url_desc',
+					alert: 'Federation_Matrix_homeserver_url_alert',
 				});
 
 				this.add('Federation_Matrix_homeserver_domain', 'local.rocket.chat', {
 					type: 'string',
 					i18nLabel: 'Federation_Matrix_homeserver_domain',
 					i18nDescription: 'Federation_Matrix_homeserver_domain_desc',
+					alert: 'Federation_Matrix_homeserver_domain_alert',
 				});
 
 				this.add('Federation_Matrix_bridge_url', 'http://host.docker.internal:3300', {

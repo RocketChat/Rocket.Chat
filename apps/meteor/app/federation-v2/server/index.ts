@@ -9,6 +9,7 @@ const federation = FederationFactory.buildBridge(rocketSettingsAdapter, queueIns
 const rocketRoomAdapter = FederationFactory.buildRocketRoomAdapter();
 const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
 const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
+const rocketNotificationAdapter = FederationFactory.buildRocketNotificationdapter();
 
 const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
 	rocketRoomAdapter,
@@ -23,6 +24,7 @@ export const federationRoomServiceSender = FederationFactory.buildRoomServiceSen
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketSettingsAdapter,
+	rocketNotificationAdapter,
 	federation,
 );
 

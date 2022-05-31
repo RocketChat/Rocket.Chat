@@ -4,6 +4,7 @@ import { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
 import { IFederationBridge } from '../domain/IFederationBridge';
+import { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
@@ -14,6 +15,7 @@ export class FederationRoomServiceSender {
 		private rocketRoomAdapter: RocketChatRoomAdapter,
 		private rocketUserAdapter: RocketChatUserAdapter,
 		private rocketSettingsAdapter: RocketChatSettingsAdapter,
+		private rocketNotificationAdapter: RocketChatNotificationAdapter,
 		private bridge: IFederationBridge,
 	) {} // eslint-disable-line no-empty-function
 
@@ -85,7 +87,14 @@ export class FederationRoomServiceSender {
 			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);
 			await this.bridge.joinRoom(federatedRoom.externalId, federatedInviteeUser.externalId);
 		} else if (!wasInvitedWhenTheRoomWasCreated) {
-			this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);
+			this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId).catch(() => {
+				this.rocketNotificationAdapter.notifyWithEphemeralMessage(
+					'Federation_Matrix_only_owners_can_invite_users',
+					federatedInviterUser?.internalReference?._id,
+					internalRoomId,
+					federatedInviterUser?.internalReference?.language,
+				);
+			});
 		}
 		await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 	}

@@ -16,6 +16,7 @@ import { RocketChatRoomAdapter } from './rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from './rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from './rocket-chat/adapters/User';
 import { IFederationBridge } from '../domain/IFederationBridge';
+import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
 
 export class FederationFactory {
 	public static buildRocketSettingsAdapter(): RocketChatSettingsAdapter {
@@ -32,6 +33,10 @@ export class FederationFactory {
 
 	public static buildRocketMessageAdapter(): RocketChatMessageAdapter {
 		return new RocketChatMessageAdapter();
+	}
+
+	public static buildRocketNotificationdapter(): RocketChatNotificationAdapter {
+		return new RocketChatNotificationAdapter();
 	}
 
 	public static buildQueue(): InMemoryQueue {
@@ -52,9 +57,10 @@ export class FederationFactory {
 		rocketRoomAdapter: RocketChatRoomAdapter,
 		rocketUserAdapter: RocketChatUserAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridge,
 	): FederationRoomServiceSender {
-		return new FederationRoomServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
+		return new FederationRoomServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, rocketNotificationAdapter, bridge);
 	}
 
 	public static buildBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridge {
