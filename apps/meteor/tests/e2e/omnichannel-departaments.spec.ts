@@ -5,7 +5,7 @@ import SideNav from './utils/pageobjects/SideNav';
 import Departments from './utils/pageobjects/Departments';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
-test.describe.only('[Department]', () => {
+test.describe('[Department]', () => {
 	let loginPage: LoginPage;
 	let sideNav: SideNav;
 	let departments: Departments;
