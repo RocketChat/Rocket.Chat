@@ -109,6 +109,11 @@ export const CallProvider: FC = ({ children }) => {
 			if (callDetails.userState === UserState.UAC) {
 				// Agent has sent Invite. So it must create a room.
 				const { callInfo } = callDetails;
+				// While making the call, there is no remote media element available.
+				// When the call is ringing we have that element created. But we still
+				// do not want it to be attached.
+				// When call gets established, then switch the media renderer.
+				remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 				return createRoom(callInfo);
 			}
 		},
