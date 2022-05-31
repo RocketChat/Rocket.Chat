@@ -1,7 +1,7 @@
 import type { ISession, DeviceManagementSession, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 
-import { SessionsProps } from './SessionsProps';
+import type { SessionsProps } from './SessionsProps';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
