@@ -8,7 +8,7 @@ import StartGroupVideoConfModal from './StartGroupVideoConfModal';
 type StartVideoConfModalProps = {
 	room: IRoom;
 	onClose: () => void;
-	onConfirm: () => void;
+	onConfirm: (title?: string) => void;
 };
 
 const StartVideoConfModal = ({ room, onClose, onConfirm }: StartVideoConfModalProps): ReactElement => {

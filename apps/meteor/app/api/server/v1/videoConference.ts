@@ -32,7 +32,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isVideoConfStartProps },
 	{
 		async post() {
-			const { roomId } = this.bodyParams;
+			const { roomId, title } = this.bodyParams;
 
 			// #ToDo: Validate if there is an active provider
 
@@ -43,7 +43,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				data: await VideoConf.start(userId, roomId),
+				data: await VideoConf.start(userId, roomId, title),
 			});
 		},
 	},

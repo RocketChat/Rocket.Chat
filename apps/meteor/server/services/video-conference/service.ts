@@ -3,7 +3,6 @@ import type {
 	IRoom,
 	IUser,
 	IVideoConference,
-	MessageTypesValues,
 	VideoConferenceInstructions,
 	DirectCallInstructions,
 	ConferenceInstructions,
@@ -12,7 +11,7 @@ import type {
 	IVideoConferenceMessage,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus, isDirectVideoConference, isGroupVideoConference } from '@rocket.chat/core-typings';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import type { MessageSurfaceLayout, ContextBlock } from '@rocket.chat/ui-kit';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
@@ -22,8 +21,9 @@ import { VideoConferenceRaw } from '../../../app/models/server/raw/VideoConferen
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { settings } from '../../../app/settings/server';
 import { Apps } from '../../../app/apps/server';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { getURL } from '../../../app/utils/server';
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -91,12 +91,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (call.messages.started) {
-			await this.changeMessageType(call.messages.started, 'video-direct-missed');
-			if (call.type === 'direct') {
-				await this.addMessageBlocks(call.messages.started, [
-					await this.buildActionsBlock(call._id, [{ action: 'join', text: TAPi18n.__('Join_call') }]),
-				]);
-			}
+			const text = TAPi18n.__('video_direct_missed', { username: call.createdBy.username as string });
+			await this.Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
 		}
 
 		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
@@ -106,69 +102,79 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.VideoConference.findOneById(callId);
 	}
 
-	private async createMessage(
-		type: MessageTypesValues,
-		rid: IRoom['_id'],
-		user: IUser,
-		extraData: Partial<IMessage> = {},
-	): Promise<IMessage['_id']> {
-		const readReceipt = settings.get('Message_Read_Receipt_Enabled');
-
+	private async createMessage(rid: IRoom['_id'], user: IUser, extraData: Partial<IMessage> = {}): Promise<IMessage['_id']> {
 		const record = {
-			t: type,
-			rid,
-			ts: new Date(),
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-			groupable: false,
-			...(readReceipt ? { unread: true } : {}),
+			msg: '',
 			...extraData,
 		};
 
-		const id = (await this.Messages.insertOne(record)).insertedId;
-		this.Rooms.incMsgCountById(rid, 1);
-		return id;
+		const room = await this.Rooms.findOneById(rid);
+
+		const message = sendMessage(user, record, room, false);
+		return message._id;
 	}
 
 	private async createDirectCallMessage(rid: IRoom['_id'], user: IUser): Promise<IMessage['_id']> {
-		return this.createMessage('video-direct-calling', rid, user);
+		const text = TAPi18n.__('video_direct_calling', {
+			username: user.username || '',
+		});
+
+		return this.createMessage(rid, user, {
+			blocks: [await this.buildMessageBlock(text)],
+		});
 	}
 
-	private async createGroupCallMessage(rid: IRoom['_id'], user: IUser, callId: string, title: string): Promise<IMessage['_id']> {
-		return this.createMessage('video-conference-started', rid, user, {
-			videoConf: {
-				title,
-			},
-			blocks: [await this.buildActionsBlock(callId, [{ action: 'join', text: TAPi18n.__('Join_call') }])],
+	private async createGroupCallMessage(
+		rid: IRoom['_id'],
+		user: IUser,
+		callId: string,
+		title: string,
+		url: string,
+	): Promise<IMessage['_id']> {
+		const text = TAPi18n.__('video_conference_started', {
+			conference: title,
+			username: user.username || '',
+		});
+
+		return this.createMessage(rid, user, {
+			blocks: [
+				this.buildMessageBlock(text),
+				{
+					type: 'actions',
+					appId: 'videoconf-core',
+					elements: [
+						{
+							appId: 'videoconf-core',
+							blockId: callId,
+							actionId: 'join',
+							value: title,
+							type: 'button',
+							text: {
+								type: 'plain_text',
+								text: TAPi18n.__('Join_call'),
+								emoji: true,
+							},
+							url,
+						},
+					],
+				},
+				{
+					type: 'context',
+					elements: [],
+				},
+			],
 		} as Partial<IVideoConferenceMessage>);
 	}
 
-	private async buildActionsBlock(callId: string, actions: { action: string; text: string }[]): Promise<MessageSurfaceLayout[number]> {
+	private buildMessageBlock(text: string): MessageSurfaceLayout[number] {
 		return {
-			type: 'actions',
-			appId: 'videoconf-core',
-			elements: actions.map(({ action, text }) => ({
-				appId: 'videoconf-core',
-				blockId: callId,
-				actionId: action,
-				type: 'button',
-				text: {
-					type: 'plain_text',
-					text,
-					emoji: true,
-				},
-			})),
+			type: 'section',
+			text: {
+				type: 'plain_text',
+				text,
+				emoji: true,
+			},
 		};
-	}
-
-	private async changeMessageType(messageId: string, newType: MessageTypesValues): Promise<void> {
-		await this.Messages.setTypeById(messageId, newType);
-	}
-
-	private async addMessageBlocks(messageId: string, blocks: MessageSurfaceLayout): Promise<void> {
-		await this.Messages.addBlocksById(messageId, blocks);
 	}
 
 	private async startDirect(caller: IUser['_id'], { _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>): Promise<DirectCallInstructions> {
@@ -217,7 +223,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const url = await this.generateNewUrl(callId);
 		this.VideoConference.setUrlById(callId, url);
 
-		const messageId = await this.createGroupCallMessage(rid, user, callId, title);
+		const call = await this.get(callId);
+
+		const joinUrl = call && (await this.getUrl(call));
+		const messageId = await this.createGroupCallMessage(rid, user, callId, title, joinUrl || url);
 		this.VideoConference.setMessageById(callId, 'started', messageId);
 
 		return {
@@ -259,8 +268,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async getUrl(
 		call: IVideoConference,
-		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
-		options: VideoConferenceJoinOptions,
+		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
+		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
 		if (!call.url) {
 			call.url = await this.generateNewUrl(call._id);
@@ -276,7 +285,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			...(isGroupVideoConference(call) ? { title: call.title } : {}),
 		};
 
-		const userData = {
+		const userData = user && {
 			_id: user._id,
 			username: user.username as string,
 			name: user.name as string,
@@ -288,8 +297,37 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async addUserToCall(call: IVideoConference, { _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
 		await this.VideoConference.addUserById(call._id, { _id, username, name });
 
-		if (call.type !== 'direct') {
-			// #ToDo: Add user avatar to the "started" message blocks
+		if (call.type === 'direct' || !call.messages.started) {
+			return;
 		}
+
+		const message = await this.Messages.findOneById<IMessage>(call.messages.started, {});
+		if (!message) {
+			return;
+		}
+
+		const blocks = message.blocks || [];
+
+		const avatarsBlock = (blocks.find((block) => block.type === 'context') || { type: 'context', elements: [] }) as ContextBlock;
+		if (!blocks.includes(avatarsBlock)) {
+			blocks.push(avatarsBlock);
+		}
+
+		const imageUrl = getURL(`/avatar/${username}`, { cdn: false, full: true });
+
+		if (avatarsBlock.elements.find((el) => el.type === 'image' && el.imageUrl === imageUrl)) {
+			return;
+		}
+
+		avatarsBlock.elements = [
+			...avatarsBlock.elements,
+			{
+				type: 'image',
+				imageUrl,
+				altText: name || username || '',
+			},
+		];
+
+		await this.Messages.setBlocksById(call.messages.started, blocks);
 	}
 }

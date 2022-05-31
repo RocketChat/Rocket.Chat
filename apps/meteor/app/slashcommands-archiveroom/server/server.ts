@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { Rooms, Messages } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
 import { settings } from '../../settings/server';
 
-function Archive(_command: 'archive', params: string, item: Record<string, string>): void | Function {
+function Archive(_command: 'archive', params: string, item: IMessage): void {
 	let channel = params.trim();
 
 	let room;
@@ -61,20 +62,10 @@ function Archive(_command: 'archive', params: string, item: Record<string, strin
 			lng: settings.get('Language') || 'en',
 		}),
 	});
-
-	return Archive;
 }
 
-slashCommands.add(
-	'archive',
-	Archive,
-	{
-		description: 'Archive',
-		params: '#channel',
-		permission: 'archive-room',
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('archive', Archive, {
+	description: 'Archive',
+	params: '#channel',
+	permission: 'archive-room',
+});

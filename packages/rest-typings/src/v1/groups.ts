@@ -1,14 +1,13 @@
-import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUpload } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type GroupsEndpoints = {
 	'groups.files': {
-		GET: (params: { roomId: IRoom['_id']; count: number; sort: string; query: string }) => {
-			files: IMessage[];
-			total: number;
-		};
+		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query: string }>) => PaginatedResult<{
+			files: IUpload[];
+		}>;
 	};
 	'groups.members': {
 		GET: (params: { roomId: IRoom['_id']; offset?: number; count?: number; filter?: string; status?: string[] }) => {

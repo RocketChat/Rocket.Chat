@@ -6,7 +6,7 @@ import { useUser, useSetting, useTranslation, useSetModal } from '@rocket.chat/u
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
-import { useVideoConfPopupDispatch, useStartCall, useGetIncomingCalls } from '../../../client/contexts/VideoConfPopupContext';
+import { useStartCall } from '../../../client/contexts/VideoConfPopupContext';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
@@ -123,24 +123,18 @@ addAction('video', ({ room }) => {
 // TODO: fix mocked config
 addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
-	const dispatchPopup = useVideoConfPopupDispatch();
 	const startCall = useStartCall();
-	const getIncomingCalls = useGetIncomingCalls();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 
-	const handleStartConference = useMutableCallback(() => {
-		startCall(room._id);
+	const handleStartConference = useMutableCallback((confTitle) => {
+		startCall(room._id, confTitle);
 		handleCloseVideoConf();
-		dispatchPopup({ room });
 	});
 
 	const handleOpenVideoConf = useMutableCallback((): void =>
 		setModal(<StartVideoConfModal onConfirm={handleStartConference} room={room} onClose={handleCloseVideoConf} />),
 	);
-
-	const calls = getIncomingCalls();
-	console.log(calls);
 
 	return useMemo(
 		() => ({

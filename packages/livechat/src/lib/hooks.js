@@ -6,6 +6,7 @@ import CustomFields from './customFields';
 import { loadConfig, updateBusinessUnit } from './main';
 import { parentCall } from './parentCall';
 import { createToken } from './random';
+import { loadMessages } from './room';
 import Triggers from './triggers';
 
 const createOrUpdateGuest = async (guest) => {
@@ -60,13 +61,17 @@ const api = {
 		});
 	},
 
-	setDepartment(value) {
-		const { config: { departments = [] } } = store.state;
+	async setDepartment(value) {
+		const { config: { departments = [] }, user: { department: existingDepartment } = {} } = store.state;
 
-		const dept = departments.find((dep) => dep._id === value || dep.name === value);
-		const department = (dept && dept._id) || '';
+		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		updateIframeGuestData({ department });
+
+		if (department !== existingDepartment) {
+			await loadConfig();
+			await loadMessages();
+		}
 	},
 
 	async setBusinessUnit(newBusinessUnit) {

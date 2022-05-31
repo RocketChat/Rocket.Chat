@@ -26,7 +26,7 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
-	const { controllersConfig, handleToggleMic, handleToggleVideo } = useVideoConfControllers();
+	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 
 	return (
 		<VideoConfPopup>
@@ -38,7 +38,7 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 					<Box display='flex' alignItems='center' mbs='x8'>
 						<ReactiveUserStatus uid={directUserId} />
 						<Box mis='x8' display='flex'>
-							<Box>{room.name}</Box>
+							<Box>{room.fname}</Box>
 							<Box mis='x4' color='neutral-600'>
 								(object Object)
 							</Box>
@@ -54,11 +54,11 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 						onClick={handleToggleMic}
 					/>
 					<VideoConfController
-						primary={controllersConfig.video}
-						text={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.video ? 'video' : 'video-off'}
-						onClick={handleToggleVideo}
+						primary={controllersConfig.cam}
+						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						icon={controllersConfig.cam ? 'video' : 'video-off'}
+						onClick={handleToggleCam}
 					/>
 				</VideoConfPopupControllers>
 				<VideoConfPopupFooter>

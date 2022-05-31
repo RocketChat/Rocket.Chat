@@ -20,13 +20,13 @@ import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 type StartGroupVideoConfModalProps = {
 	room: IRoom;
 	onClose: () => void;
-	onConfirm: () => void;
+	onConfirm: (title?: string) => void;
 };
 
 const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
-	const [confName, setConfName] = useState<string | undefined>(undefined);
-	const { controllersConfig, handleToggleMic, handleToggleVideo } = useVideoConfControllers();
+	const [confTitle, setConfTitle] = useState<string | undefined>(undefined);
+	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 
 	return (
 		<VideoConfModal>
@@ -45,24 +45,24 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 						onClick={handleToggleMic}
 					/>
 					<VideoConfController
-						primary={controllersConfig.video}
-						text={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.video ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.video ? 'video' : 'video-off'}
-						onClick={handleToggleVideo}
+						primary={controllersConfig.cam}
+						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+						icon={controllersConfig.cam ? 'video' : 'video-off'}
+						onClick={handleToggleCam}
 					/>
 				</VideoConfModalControllers>
 				<VideoConfModalField>
 					<TextInput
 						width='full'
 						placeholder={t('Conference_name')}
-						value={confName}
-						onChange={(e: ChangeEvent<HTMLInputElement>): void => setConfName(e.target.value)}
+						value={confTitle}
+						onChange={(e: ChangeEvent<HTMLInputElement>): void => setConfTitle(e.target.value)}
 					/>
 				</VideoConfModalField>
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
-				<VideoConfButton onClick={onConfirm} primary icon='phone'>
+				<VideoConfButton onClick={(): void => onConfirm(confTitle)} primary icon='phone'>
 					{t('Start_call')}
 				</VideoConfButton>
 				<VideoConfButton onClick={onClose}>{t('Cancel')}</VideoConfButton>
