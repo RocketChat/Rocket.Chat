@@ -4,7 +4,7 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Quote as ASTQuote } from '@rocket.chat/message-parser';
 import React, { FC } from 'react';
 
-import Paragraph from './Paragraph';
+import ParagraphBlock from './blocks/ParagraphBlock';
 
 const hover = css`
 	&:hover,
@@ -28,7 +28,7 @@ const Quote: FC<{ value: ASTQuote['value'] }> = ({ value }) => (
 		borderInlineStartColor='neutral-600'
 	>
 		{value.map((item, index) => (
-			<Paragraph key={index} value={item.value} />
+			<ParagraphBlock key={index} chunks={item.value} />
 		))}
 	</Box>
 );

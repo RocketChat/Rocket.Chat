@@ -36,7 +36,7 @@ const Inline: FC<{ value: ASTParagraph['value'] }> = ({ value = [] }) => {
 					case 'MENTION_CHANNEL':
 						return <MentionChannel key={index} value={block.value} />;
 					case 'EMOJI':
-						return <MessageEmoji isThreadPreview={isThreadPreview} key={index} emojiHandle={`:${block.value.value}:`} />;
+						return <MessageEmoji isThreadPreview={isThreadPreview} key={index} handle={block.value.value} />;
 					case 'INLINE_CODE':
 						return <InlineCode key={index} value={block.value} />;
 					default:
