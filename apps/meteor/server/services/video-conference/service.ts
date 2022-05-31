@@ -194,8 +194,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			name: user.name,
 			username: user.username,
 		});
+		const call = await this.get(callId);
+		if (!call) {
+			throw new Error('failed-to-create-direct-call');
+		}
 
-		const url = await this.generateNewUrl(callId);
+		const url = await this.generateNewUrl(call);
 		this.VideoConference.setUrlById(callId, url);
 
 		const messageId = await this.createDirectCallMessage(rid, user);
@@ -219,14 +223,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			name: user.name,
 			username: user.username,
 		});
+		const call = await this.get(callId);
+		if (!call) {
+			throw new Error('failed-to-create-group-call');
+		}
 
-		const url = await this.generateNewUrl(callId);
+		const url = await this.generateNewUrl(call);
 		this.VideoConference.setUrlById(callId, url);
 
-		const call = await this.get(callId);
+		call.url = url;
 
-		const joinUrl = call && (await this.getUrl(call));
-		const messageId = await this.createGroupCallMessage(rid, user, callId, title, joinUrl || url);
+		const joinUrl = await this.getUrl(call);
+		const messageId = await this.createGroupCallMessage(rid, user, callId, title, joinUrl);
 		this.VideoConference.setMessageById(callId, 'started', messageId);
 
 		return {
@@ -262,8 +270,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return manager;
 	}
 
-	private async generateNewUrl(callId: IVideoConference['_id']): Promise<string> {
-		return (await this.getProviderManager()).generateUrl(callId);
+	private async getRoomName(rid: string): Promise<string> {
+		const room = await this.Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'fname'>>(rid, { projection: { name: 1, fname: 1 } });
+
+		return room?.fname || room?.name || rid;
+	}
+
+	private async generateNewUrl(call: IVideoConference): Promise<string> {
+		const title = isGroupVideoConference(call) ? call.title || (await this.getRoomName(call.rid)) : '';
+
+		return (await this.getProviderManager()).generateUrl({
+			_id: call._id,
+			type: call.type,
+			rid: call.rid,
+			createdBy: call.createdBy as Required<IVideoConference['createdBy']>,
+			title,
+		});
 	}
 
 	private async getUrl(
@@ -272,7 +294,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
 		if (!call.url) {
-			call.url = await this.generateNewUrl(call._id);
+			call.url = await this.generateNewUrl(call);
 			this.VideoConference.setUrlById(call._id, call.url);
 		}
 
