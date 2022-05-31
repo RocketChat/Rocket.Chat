@@ -1,13 +1,13 @@
+import { useRoomAvatarPath } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { useRoomAvatarPath } from '../../contexts/AvatarUrlContext';
 import BaseAvatar from './BaseAvatar';
 
 // TODO: frontend chapter day - Remove inline Styling
 
 type RoomAvatarProps = {
 	/* @deprecated */
-	size?: 'x16' | 'x20' | 'x28' | 'x36' | 'x40' | 'x124';
+	size?: 'x16' | 'x20' | 'x28' | 'x36' | 'x40' | 'x124' | 'x332';
 	/* @deprecated */
 	url?: string;
 

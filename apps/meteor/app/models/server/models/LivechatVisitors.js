@@ -13,6 +13,7 @@ export class LivechatVisitors extends Base {
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 }, { sparse: true });
 		this.tryEnsureIndex({ name: 1 }, { sparse: true });
 		this.tryEnsureIndex({ username: 1 });
+		this.tryEnsureIndex({ 'contactManager.username': 1 }, { sparse: true });
 	}
 
 	/**
@@ -246,6 +247,20 @@ export class LivechatVisitors extends Base {
 	removeById(_id) {
 		const query = { _id };
 		return this.remove(query);
+	}
+
+	removeContactManagerByUsername(manager) {
+		const query = {
+			contactManager: {
+				username: manager,
+			},
+		};
+		const update = {
+			$unset: {
+				contactManager: 1,
+			},
+		};
+		return this.update(query, update);
 	}
 }
 

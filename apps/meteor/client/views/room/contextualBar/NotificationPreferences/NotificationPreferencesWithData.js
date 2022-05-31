@@ -1,9 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useCustomSound, useUserSubscription, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import { useCustomSound } from '../../../../contexts/CustomSoundContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useUserSubscription } from '../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../hooks/useForm';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
@@ -22,6 +20,7 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		turnOn: !subscription?.disableNotifications,
 		muteGroupMentions: subscription?.muteGroupMentions,
 		showCounter: !subscription?.hideUnreadStatus,
+		showMentions: !subscription?.hideMentionStatus,
 		desktopAlert: (subscription?.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) || 'default',
 		desktopSound: subscription?.audioNotificationValue || 'default',
 		mobileAlert: (subscription?.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) || 'default',
@@ -51,6 +50,7 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		notifications.disableNotifications = values.turnOn ? '0' : '1';
 		notifications.muteGroupMentions = values.muteGroupMentions ? '1' : '0';
 		notifications.hideUnreadStatus = values.showCounter ? '0' : '1';
+		notifications.hideMentionStatus = values.showMentions ? '0' : '1';
 		notifications.desktopNotifications = values.desktopAlert;
 		notifications.audioNotificationValue = values.desktopSound;
 		notifications.mobilePushNotifications = values.mobileAlert;

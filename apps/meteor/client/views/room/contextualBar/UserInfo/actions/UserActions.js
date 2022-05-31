@@ -22,6 +22,7 @@ const UserActions = ({ user, rid, backToList }) => {
 				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
 				flexShrink={0}
 				options={menuOptions}
+				data-qa='UserUserInfo-menu'
 			/>
 		);
 	}, [menuOptions]);

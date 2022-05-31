@@ -5,6 +5,7 @@ import { Users } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
+import { AppEvents, Apps } from '../../app/apps/server/orchestrator';
 
 Meteor.methods({
 	async deleteUser(userId, confirmRelinquish = false) {
@@ -49,6 +50,9 @@ Meteor.methods({
 		await deleteUser(userId, confirmRelinquish);
 
 		callbacks.run('afterDeleteUser', user);
+
+		// App IPostUserDeleted event hook
+		Promise.await(Apps.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: Meteor.user() }));
 
 		return true;
 	},

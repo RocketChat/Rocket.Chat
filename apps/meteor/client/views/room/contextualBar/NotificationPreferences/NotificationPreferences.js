@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, FieldGroup, Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import NotificationByDevice from './components/NotificationByDevice';
 import NotificationToogle from './components/NotificationToogle';
 import { Preferences } from './components/Preferences';
@@ -43,6 +43,14 @@ const NotificationPreferences = ({
 					onChange={formHandlers?.handleShowCounter}
 					defaultChecked={formValues?.showCounter}
 				/>
+				{!formValues?.showCounter && (
+					<NotificationToogle
+						label={t('Show_mentions')}
+						description={t('Display_mentions_counter')}
+						onChange={formHandlers?.handleShowMentions}
+						defaultChecked={formValues?.showMentions}
+					/>
+				)}
 				<FieldGroup>
 					<NotificationByDevice device={t('Desktop')} icon={'computer'}>
 						<Preferences
