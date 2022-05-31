@@ -54,7 +54,7 @@ const TriggersRow = memo(function TriggersRow(props) {
 			<Table.Cell withTruncatedText>{description}</Table.Cell>
 			<Table.Cell withTruncatedText>{enabled ? t('Yes') : t('No')}</Table.Cell>
 			<Table.Cell withTruncatedText>
-				<IconButton icon='trash' mini ghost title={t('Remove')} onClick={handleDelete} />
+				<IconButton icon='trash' mini title={t('Remove')} onClick={handleDelete} />
 			</Table.Cell>
 		</Table.Row>
 	);

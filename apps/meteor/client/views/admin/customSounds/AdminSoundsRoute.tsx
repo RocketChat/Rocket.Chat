@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Pagination } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, IconButton, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound, useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useCallback, ReactElement } from 'react';
@@ -117,8 +117,8 @@ function CustomSoundsRoute(): ReactElement {
 											<Box withTruncatedText>{sound.name}</Box>
 										</GenericTableCell>
 										<GenericTableCell>
-											<Button
-												ghost
+											<IconButton
+												icon='play'
 												small
 												square
 												aria-label={t('Play')}
@@ -127,9 +127,7 @@ function CustomSoundsRoute(): ReactElement {
 													e.stopPropagation();
 													handlePlay(sound._id);
 												}}
-											>
-												<Icon name='play' size='x20' />
-											</Button>
+											/>
 										</GenericTableCell>
 									</GenericTableRow>
 								))}
