@@ -1,6 +1,5 @@
+import { TranslationKey } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-
-import { TranslationKey } from '@rocket.chat/ui-contexts'
 
 const label = (
 	translationKey: TranslationKey,
