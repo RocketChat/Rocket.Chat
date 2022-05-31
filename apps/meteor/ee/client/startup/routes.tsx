@@ -1,14 +1,17 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import React from 'react';
+import React, { lazy } from 'react';
 
-import { appLayout, BlazeTemplate, MainLayout } from '../../../client/lib/appLayout';
+import { appLayout, MainLayout } from '../../../client/lib/appLayout';
+
+const AuditPage = lazy(() => import('../audit/AuditPage'));
+const AuditLogPage = lazy(() => import('../audit/AuditLogPage'));
 
 FlowRouter.route('/audit', {
 	name: 'audit-home',
 	action() {
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template='auditPage' />
+				<AuditPage />
 			</MainLayout>,
 		);
 	},
@@ -19,7 +22,7 @@ FlowRouter.route('/audit-log', {
 	action() {
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template='auditLogPage' />
+				<AuditLogPage />
 			</MainLayout>,
 		);
 	},
