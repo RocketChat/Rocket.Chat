@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ coerceTypes: true });
 
 export type DmMessagesProps = PaginatedRequest<
 	(
@@ -32,7 +32,7 @@ export const isDmMessagesProps = ajv.compile<DmMessagesProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',
@@ -57,7 +57,7 @@ export const isDmMessagesProps = ajv.compile<DmMessagesProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',

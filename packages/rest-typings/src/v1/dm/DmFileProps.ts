@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ coerceTypes: true });
 
 export type DmFileProps = PaginatedRequest<
 	(
@@ -27,7 +27,7 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',
@@ -49,7 +49,7 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',
