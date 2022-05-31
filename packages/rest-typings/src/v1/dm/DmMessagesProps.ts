@@ -32,7 +32,7 @@ export const isDmMessagesProps = ajv.compile<DmMessagesProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',
@@ -57,7 +57,7 @@ export const isDmMessagesProps = ajv.compile<DmMessagesProps>({
 					type: 'string',
 				},
 				sort: {
-					type: 'number',
+					type: 'string',
 				},
 				count: {
 					type: 'number',
