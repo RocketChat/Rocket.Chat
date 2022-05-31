@@ -42,20 +42,26 @@ export class AppWebsocketReceiver extends Emitter {
 	}
 
 	registerListener(event, listener) {
+		console.log('registerListener', event, listener);
 		this.on(event, listener);
 	}
 
 	unregisterListener(event, listener) {
+		console.log('unregisterListener', event, listener);
 		this.off(event, listener);
 	}
 
 	onCommandAddedOrUpdated = (command) => {
+		console.log('onCommandAddedOrUpdated', command);
+
 		APIClient.v1.get('commands.get', { command }).then((result) => {
 			slashCommands.commands[command] = result.command;
 		});
 	};
 
 	onCommandRemovedOrDisabled = (command) => {
+		console.log('onCommandRemovedOrDisabled', command);
+
 		delete slashCommands.commands[command];
 	};
 
