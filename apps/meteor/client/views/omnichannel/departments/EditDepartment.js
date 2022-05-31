@@ -280,8 +280,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 				<Page.ScrollableContentWithShadow>
 					<FieldGroup w='full' alignSelf='center' maxWidth='x600' id={formId} is='form' autoComplete='off' onSubmit={handleSubmit}>
 						<Field>
-							<Box display='flex' flexDirection='row'>
-								<Field.Label data-qa='DepartmentLabelEnabled'>{t('Enabled')}</Field.Label>
+							<Box display='flex' data-qa='DepartmentEditToggle-Enabled' flexDirection='row'>
+								<Field.Label>{t('Enabled')}</Field.Label>
 								<Field.Row>
 									<ToggleSwitch flexGrow={1} checked={enabled} onChange={handleEnabled} />
 								</Field.Row>
@@ -313,15 +313,10 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							</Field.Row>
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row'>
+							<Box data-qa='DepartmentEditToggle-ShowOnRegistrationPage' display='flex' flexDirection='row'>
 								<Field.Label>{t('Show_on_registration_page')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch
-										data-qa='DepartmentEditToggle-ShowOnRegistrationPage'
-										flexGrow={1}
-										checked={showOnRegistration}
-										onChange={handleShowOnRegistration}
-									/>
+									<ToggleSwitch flexGrow={1} checked={showOnRegistration} onChange={handleShowOnRegistration} />
 								</Field.Row>
 							</Box>
 						</Field>
@@ -340,15 +335,10 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							</Field.Row>
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row'>
+							<Box display='flex' data-qa='DepartmentEditToggle-ShowOnOfflinePage' flexDirection='row'>
 								<Field.Label>{t('Show_on_offline_page')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch
-										data-qa='DepartmentEditToggle-ShowOnOfflinePage'
-										flexGrow={1}
-										checked={showOnOfflineForm}
-										onChange={handleShowOnOfflineForm}
-									/>
+									<ToggleSwitch flexGrow={1} checked={showOnOfflineForm} onChange={handleShowOnOfflineForm} />
 								</Field.Row>
 							</Box>
 						</Field>
@@ -429,7 +419,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							</Field>
 						)}
 						<Field>
-							<Box display='flex' flexDirection='row'>
+							<Box display='flex' data-qa='DiscussionToggle-RequestTagBeforeCLosingChat' flexDirection='row'>
 								<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
 								<Field.Row>
 									<ToggleSwitch
