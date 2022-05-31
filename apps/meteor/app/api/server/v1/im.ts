@@ -210,22 +210,23 @@ API.v1.addRoute(
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
 
-			const files = await Uploads.find<IUpload & { userId: string }>(ourQuery, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			})
-				.map((file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
-					if (file.userId) {
-						return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
-							object: { ...file },
-							userId: file.userId,
-						});
-					}
-					return file;
-				})
-				.toArray();
+			const files = (
+				await Uploads.find<IUpload & { userId: string }>(ourQuery, {
+					sort: sort || { name: 1 },
+					skip: offset,
+					limit: count,
+					projection: fields,
+				}).toArray()
+			).map((file): IImFilesObject | (IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }) => {
+				if (file.userId) {
+					return this.insertUserObject<IImFilesObject & { user: Pick<IUser, '_id' | 'name' | 'username'> }>({
+						object: { ...file },
+						userId: file.userId,
+					});
+				}
+				return file;
+			});
+
 			const total = await Uploads.find(ourQuery).count();
 			return API.v1.success({
 				files,
@@ -252,14 +253,15 @@ API.v1.addRoute(
 
 			const objectParams = {
 				rid: room._id,
-				latest: latest ? new Date(latest).toISOString() : new Date().toISOString(),
-				oldest: oldest && new Date(oldest).toISOString(),
+				latest: latest ? new Date(latest) : new Date(),
+				oldest: oldest && new Date(oldest),
 				inclusive: inclusive === 'true',
 				offset,
 				count,
 				unreads: unreads === 'true',
 				showThreadMessages: showThreadMessages === 'true',
 			};
+
 			const result = Meteor.call('getChannelHistory', objectParams);
 
 			if (!result) {

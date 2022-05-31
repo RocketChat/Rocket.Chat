@@ -11,7 +11,8 @@ import type {
 	IVideoConferenceMessage,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus, isDirectVideoConference, isGroupVideoConference } from '@rocket.chat/core-typings';
-import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import type { MessageSurfaceLayout, ContextBlock } from '@rocket.chat/ui-kit';
+import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
@@ -20,41 +21,9 @@ import { VideoConferenceRaw } from '../../../app/models/server/raw/VideoConferen
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
+import { Apps } from '../../../app/apps/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-
-// This class is only here for testing, this code will be handled by apps
-class JitsiApp {
-	static async generateUrl(callId: IVideoConference['_id']): Promise<string> {
-		return `https://jitsi.rocket.chat/${callId}`;
-	}
-
-	static async customizeUrl(
-		call: IVideoConference,
-		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
-		options: VideoConferenceJoinOptions,
-	): Promise<string> {
-		const configs = [`userInfo.displayName="${user.name}"`, `config.prejoinPageEnabled=false`, `config.requireDisplayName=false`];
-
-		if (isGroupVideoConference(call)) {
-			configs.push(`config.callDisplayName="${call.title || 'Video Conference'}"`);
-		} else {
-			configs.push(`config.callDisplayName="Direct Message"`);
-		}
-
-		if (options.mic !== undefined) {
-			configs.push(`config.startWithAudioMuted=${options.mic ? 'false' : 'true'}`);
-		}
-		if (options.cam !== undefined) {
-			configs.push(`config.startWithVideoMuted=${options.cam ? 'false' : 'true'}`);
-		}
-		console.log(user.username, options, configs);
-
-		const configHash = configs.join('&');
-		const url = `${call.url}#${configHash}`;
-
-		return url;
-	}
-}
+import { getURL } from '../../../app/utils/server';
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -155,7 +124,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	private async createGroupCallMessage(rid: IRoom['_id'], user: IUser, callId: string, title: string): Promise<IMessage['_id']> {
+	private async createGroupCallMessage(
+		rid: IRoom['_id'],
+		user: IUser,
+		callId: string,
+		title: string,
+		url: string,
+	): Promise<IMessage['_id']> {
 		const text = TAPi18n.__('video_conference_started', {
 			conference: title,
 			username: user.username || '',
@@ -179,8 +154,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 								text: TAPi18n.__('Join_call'),
 								emoji: true,
 							},
+							url,
 						},
 					],
+				},
+				{
+					type: 'context',
+					elements: [],
 				},
 			],
 		} as Partial<IVideoConferenceMessage>);
@@ -214,8 +194,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			name: user.name,
 			username: user.username,
 		});
+		const call = await this.get(callId);
+		if (!call) {
+			throw new Error('failed-to-create-direct-call');
+		}
 
-		const url = await this.generateNewUrl(callId);
+		const url = await this.generateNewUrl(call);
 		this.VideoConference.setUrlById(callId, url);
 
 		const messageId = await this.createDirectCallMessage(rid, user);
@@ -239,11 +223,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			name: user.name,
 			username: user.username,
 		});
+		const call = await this.get(callId);
+		if (!call) {
+			throw new Error('failed-to-create-group-call');
+		}
 
-		const url = await this.generateNewUrl(callId);
+		const url = await this.generateNewUrl(call);
 		this.VideoConference.setUrlById(callId, url);
 
-		const messageId = await this.createGroupCallMessage(rid, user, callId, title);
+		call.url = url;
+
+		const joinUrl = await this.getUrl(call);
+		const messageId = await this.createGroupCallMessage(rid, user, callId, title, joinUrl);
 		this.VideoConference.setMessageById(callId, 'started', messageId);
 
 		return {
@@ -266,30 +257,99 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return url;
 	}
 
-	private async generateNewUrl(callId: IVideoConference['_id']): Promise<string> {
-		// #ToDo: Load this from the Apps-Engine
-		return JitsiApp.generateUrl(callId);
+	private async getProviderManager(): Promise<AppVideoConfProviderManager> {
+		if (!Apps?.isLoaded()) {
+			throw new Error('apps-engine-not-loaded');
+		}
+
+		const manager = Apps.getManager()?.getVideoConfProviderManager();
+		if (!manager) {
+			throw new Error('no-videoconf-provider-app');
+		}
+
+		return manager;
+	}
+
+	private async getRoomName(rid: string): Promise<string> {
+		const room = await this.Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'fname'>>(rid, { projection: { name: 1, fname: 1 } });
+
+		return room?.fname || room?.name || rid;
+	}
+
+	private async generateNewUrl(call: IVideoConference): Promise<string> {
+		const title = isGroupVideoConference(call) ? call.title || (await this.getRoomName(call.rid)) : '';
+
+		return (await this.getProviderManager()).generateUrl({
+			_id: call._id,
+			type: call.type,
+			rid: call.rid,
+			createdBy: call.createdBy as Required<IVideoConference['createdBy']>,
+			title,
+		});
 	}
 
 	private async getUrl(
 		call: IVideoConference,
-		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
-		options: VideoConferenceJoinOptions,
+		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
+		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
 		if (!call.url) {
-			call.url = await this.generateNewUrl(call._id);
+			call.url = await this.generateNewUrl(call);
 			this.VideoConference.setUrlById(call._id, call.url);
 		}
 
-		// #ToDo: Load this from the Apps-Engine
-		return JitsiApp.customizeUrl(call, user, options);
+		const callData = {
+			_id: call._id,
+			type: call.type,
+			rid: call.rid,
+			url: call.url,
+			createdBy: call.createdBy as Required<IVideoConference['createdBy']>,
+			...(isGroupVideoConference(call) ? { title: call.title } : {}),
+		};
+
+		const userData = user && {
+			_id: user._id,
+			username: user.username as string,
+			name: user.name as string,
+		};
+
+		return (await this.getProviderManager()).customizeUrl(callData, userData, options);
 	}
 
 	private async addUserToCall(call: IVideoConference, { _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
 		await this.VideoConference.addUserById(call._id, { _id, username, name });
 
-		if (call.type !== 'direct') {
-			// #ToDo: Add user avatar to the "started" message blocks
+		if (call.type === 'direct' || !call.messages.started) {
+			return;
 		}
+
+		const message = await this.Messages.findOneById<IMessage>(call.messages.started, {});
+		if (!message) {
+			return;
+		}
+
+		const blocks = message.blocks || [];
+
+		const avatarsBlock = (blocks.find((block) => block.type === 'context') || { type: 'context', elements: [] }) as ContextBlock;
+		if (!blocks.includes(avatarsBlock)) {
+			blocks.push(avatarsBlock);
+		}
+
+		const imageUrl = getURL(`/avatar/${username}`, { cdn: false, full: true });
+
+		if (avatarsBlock.elements.find((el) => el.type === 'image' && el.imageUrl === imageUrl)) {
+			return;
+		}
+
+		avatarsBlock.elements = [
+			...avatarsBlock.elements,
+			{
+				type: 'image',
+				imageUrl,
+				altText: name || username || '',
+			},
+		];
+
+		await this.Messages.setBlocksById(call.messages.started, blocks);
 	}
 }
