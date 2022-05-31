@@ -10,37 +10,37 @@ export type AppScreenshot = {
 	modifiedAt: string;
 };
 
-export type PricingPlan = {
-	id: string;
-	enabled: boolean;
-	price: number;
-	trialDays: number;
-	strategy: string;
-	isPerSeat: boolean;
-	tiers?: Tiers[];
-};
-
-export type Tiers = {
+export type AppTiers = {
 	perUnit: boolean;
 	minimum: number;
 	maximum: number;
 	price: number;
 };
 
-export type License = {
+export type AppPricingPlan = {
+	id: string;
+	enabled: boolean;
+	price: number;
+	trialDays: number;
+	strategy: string;
+	isPerSeat: boolean;
+	tiers?: AppTiers[];
+};
+
+export type AppLicense = {
 	license: string;
 	version: number;
 	expireDate: string;
 };
 
-export type SubscriptionInfo = {
+export type AppSubscriptionInfo = {
 	typeOf: string;
 	status: string;
 	statusFromBilling: boolean;
 	isSeatBased: boolean;
 	seats: number;
 	maxSeats: number;
-	license: License;
+	license: AppLicense;
 	startDate: string;
 	periodEnd: string;
 	endDate: string;
@@ -66,7 +66,7 @@ export type App = {
 	version: string;
 	price: number;
 	purchaseType: string;
-	pricingPlans: PricingPlan[];
+	pricingPlans: AppPricingPlan[];
 	iconFileContent: string;
 	installed?: boolean;
 	isEnterpriseOnly?: boolean;
@@ -81,7 +81,7 @@ export type App = {
 	marketplaceVersion: string;
 	latest: App;
 	status?: AppStatus;
-	subscriptionInfo: SubscriptionInfo;
+	subscriptionInfo: AppSubscriptionInfo;
 	licenseValidation?: {
 		errors: { [key: string]: string };
 		warnings: { [key: string]: string };

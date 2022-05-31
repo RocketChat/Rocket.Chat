@@ -1,6 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { App, PricingPlan } from '@rocket.chat/core-typings';
+import { App, AppPricingPlan } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
@@ -93,7 +93,7 @@ export const warnStatusChange = (appName: string, status: AppStatus): void => {
 type appButtonPropsResponse = {
 	action: 'update' | 'install' | 'purchase';
 	icon?: 'reload';
-	label: string;
+	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
 };
 
 export const appButtonProps = ({
@@ -112,7 +112,7 @@ export const appButtonProps = ({
 		return {
 			action: 'update',
 			icon: 'reload',
-			label: t('Update'),
+			label: 'Update',
 		};
 	}
 
@@ -124,7 +124,7 @@ export const appButtonProps = ({
 	if (canDownload) {
 		return {
 			action: 'install',
-			label: t('Install'),
+			label: 'Install',
 		};
 	}
 
@@ -212,7 +212,7 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 
 export const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;
 
-export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: PricingPlan): string => {
+export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
 	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
