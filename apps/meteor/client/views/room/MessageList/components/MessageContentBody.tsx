@@ -2,7 +2,7 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import React, { FC, memo } from 'react';
 
-import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
+import MessageBodyRender from '../../../../components/message/MessageBodyRender';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useParsedMessage } from '../hooks/useParsedMessage';
 
