@@ -1,7 +1,7 @@
 import { Select } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
-import { useTranslation } from '@rocket.chat/ui-contexts'
 import { getPeriod, Period } from './periods';
 
 type PeriodSelectorProps<TPeriod extends Period['key']> = {

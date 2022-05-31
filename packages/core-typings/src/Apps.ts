@@ -71,6 +71,7 @@ export type App = {
 	installed?: boolean;
 	isEnterpriseOnly?: boolean;
 	isPurchased?: string;
+	isSubscribed: boolean;
 	bundledIn: {
 		bundleId: string;
 		bundleName: string;
