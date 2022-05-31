@@ -346,6 +346,25 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				case SessionState.Establishing:
 					break;
 				case SessionState.Established:
+					if (this._userState === UserState.UAC) {
+						/**
+						 * We need to decide about user-state ANSWER-RECEIVED for outbound.
+						 * This state is there for the symmetry of ANSWER-SENT.
+						 * ANSWER-SENT occurs when there is incoming invite. So then the UA
+						 * accepts a call, it sends the answer and state becomes ANSWER-SENT.
+						 * The call gets established only when the remote party sends ACK.
+						 *
+						 * But in case of UAC where the invite is sent out, there is no intermediate
+						 * state where the UA can be in ANSWER-RECEIVED. As soon this UA receives the answer,
+						 * it sends ack and changes the SessionState to established.
+						 *
+						 * So we do not have an actual state transitions from ANSWER-RECEIVED to IN-CALL.
+						 *
+						 * Nevertheless, this state is just added to maintain the symmetry. This can be safely removed.
+						 *
+						 * */
+						this._callState = 'ANSWER_RECEIVED';
+					}
 					this._opInProgress = Operation.OP_NONE;
 					this.setupRemoteMedia();
 					this._callState = 'IN_CALL';
@@ -1107,26 +1126,15 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.session = inviter;
 		this.setupSessionEventHandlers(inviter);
 		this._opInProgress = Operation.OP_SEND_INVITE;
-		inviter
-			.invite({
-				requestDelegate: {
-					onAccept: (): void => {
-						this._callState = 'ANSWER_RECEIVED';
-					},
-					onReject: (error): void => {
-						console.error(`Unable to make call error = ${error} `);
-					},
-				},
-			})
-			.then(() => {
-				this._callState = 'OFFER_SENT';
-				const callerInfo: ICallerInfo = {
-					callerId: inviter.remoteIdentity.uri.user ? inviter.remoteIdentity.uri.user : '',
-					callerName: inviter.remoteIdentity.displayName,
-					host: inviter.remoteIdentity.uri.host,
-				};
-				this._callerInfo = callerInfo;
-				this._userState = UserState.UAC;
-			});
+		inviter.invite().then(() => {
+			this._callState = 'OFFER_SENT';
+			const callerInfo: ICallerInfo = {
+				callerId: inviter.remoteIdentity.uri.user ? inviter.remoteIdentity.uri.user : '',
+				callerName: inviter.remoteIdentity.displayName,
+				host: inviter.remoteIdentity.uri.host,
+			};
+			this._callerInfo = callerInfo;
+			this._userState = UserState.UAC;
+		});
 	}
 }
