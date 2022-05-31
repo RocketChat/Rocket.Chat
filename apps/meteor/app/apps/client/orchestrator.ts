@@ -20,6 +20,7 @@ import {
 	ISettingsReturn,
 	ISettingsPayload,
 	ISettingsSetReturn,
+	IAppLanguage,
 } from './@types/IOrchestrator';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
@@ -107,7 +108,7 @@ class AppClientOrchestrator {
 		return apps;
 	}
 
-	public async getAppsLanguages(): Promise<string> {
+	public async getAppsLanguages(): Promise<IAppLanguage> {
 		const { apps } = await APIClient.get('apps/languages');
 		return apps;
 	}
