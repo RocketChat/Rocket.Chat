@@ -1542,7 +1542,7 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Layout_Use_Custom_Homepage_Content', false, {
+		this.add('Layout_Custom_Body', false, {
 			type: 'boolean',
 			public: true,
 		});
