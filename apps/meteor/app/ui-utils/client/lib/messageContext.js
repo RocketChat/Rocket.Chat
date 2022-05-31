@@ -28,7 +28,7 @@ const fields = {
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
 	const user = Users.findOne({ _id: uid }, { fields }) || {};
-	// const instance = Template.instance();
+	const instance = Template.instance();
 	const openThread = (e) => {
 		const { rid, mid, tmid } = e.currentTarget.dataset;
 		const room = Rooms.findOne({ _id: rid });
@@ -55,7 +55,7 @@ export function messageContext({ rid } = Template.instance()) {
 					value: msg._id,
 					message: msg,
 				})
-		: (msg, actionlink) => actionLinks.run(actionlink, msg);
+		: (msg, actionlink) => actionLinks.run(actionlink, msg, instance);
 
 	const openDiscussion = (e) => {
 		e.preventDefault();
