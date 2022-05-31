@@ -1,4 +1,4 @@
-import { appLayout } from '../../lib/appLayout';
+import { appLayout, BlazeTemplate, MainLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
 export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
@@ -125,7 +125,11 @@ registerAdminRoute('/settings/:group?', {
 registerAdminRoute('/chatpal', {
 	name: 'chatpal-admin',
 	action() {
-		appLayout.renderMainLayout({ center: 'ChatpalAdmin' });
+		appLayout.render(
+			<MainLayout>
+				<BlazeTemplate template='ChatpalAdmin' />
+			</MainLayout>,
+		);
 	},
 });
 

@@ -2,7 +2,8 @@ import { Emitter } from '@rocket.chat/emitter';
 import { ComponentProps, createElement, lazy, ReactElement } from 'react';
 import { Subscription, Unsubscribe } from 'use-subscription';
 
-const MainLayout = lazy(() => import('../views/root/MainLayout'));
+export const MainLayout = lazy(() => import('../views/root/MainLayout'));
+export const BlazeTemplate = lazy(() => import('../views/root/BlazeTemplate'));
 
 type AppLayoutDescriptor = ReactElement | null;
 
@@ -18,6 +19,7 @@ class AppLayoutSubscription extends Emitter<{ update: void }> implements Subscri
 		this.emit('update');
 	}
 
+	/** @deprecated */
 	renderMainLayout(props: ComponentProps<typeof MainLayout> = {}): void {
 		this.setCurrentValue(createElement(MainLayout, props));
 	}

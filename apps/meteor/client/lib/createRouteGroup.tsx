@@ -1,9 +1,9 @@
 import { FlowRouter, Group, RouteOptions } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { ComponentType, createElement, lazy, ReactNode } from 'react';
+import React, { ComponentType, createElement, lazy, ReactNode } from 'react';
 
-import { appLayout } from './appLayout';
+import { appLayout, BlazeTemplate, MainLayout } from './appLayout';
 import { createTemplateForComponent } from './portals/createTemplateForComponent';
 
 type RouteRegister = {
@@ -76,7 +76,11 @@ const registerLazyComponentRoute = (
 					props: () => ({ renderRoute }),
 				},
 			);
-			appLayout.renderMainLayout({ center });
+			appLayout.render(
+				<MainLayout>
+					<BlazeTemplate template={center} />
+				</MainLayout>,
+			);
 		},
 	});
 
@@ -129,7 +133,11 @@ export const createRouteGroup = (
 			const center = createTemplateForComponent(`${name}-index`, importRouter, {
 				attachment: 'at-parent',
 			});
-			appLayout.renderMainLayout({ center });
+			appLayout.render(
+				<MainLayout>
+					<BlazeTemplate template={center} />
+				</MainLayout>,
+			);
 		},
 	});
 
