@@ -24,7 +24,6 @@ const Favorite = ({ room: { _id, f: favorited = false, t: type } }) => {
 				onClick={handleFavoriteClick}
 				color={favorited ? colors.y500 : null}
 				tiny
-				ghost
 			/>
 		)
 	);

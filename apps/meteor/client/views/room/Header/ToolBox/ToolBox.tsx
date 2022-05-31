@@ -79,7 +79,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					'title': t(title),
 					className,
 					index,
-					'info': id === tab?.id,
+					'secondary': id === tab?.id,
 					'data-toolbox': index,
 					action,
 					'key': id,
