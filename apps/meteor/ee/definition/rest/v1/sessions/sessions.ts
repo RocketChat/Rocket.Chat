@@ -1,7 +1,6 @@
 import type { ISession, DeviceManagementSession, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
+import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 
-import type { PaginatedRequest } from '../../../../../../../packages/rest-typings/src/helpers/PaginatedRequest';
-import type { PaginatedResult } from '../../../../../../../packages/rest-typings/src/helpers/PaginatedResult';
 import { SessionsProps } from './SessionsProps';
 
 declare module '@rocket.chat/rest-typings' {
