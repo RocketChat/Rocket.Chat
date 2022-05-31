@@ -13,7 +13,7 @@ import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import UserInfo from '../../room/contextualBar/UserInfo/UserInfo';
 import { UserInfoActions } from './UserInfoActions';
 
-export function UserInfoWithData({ uid, username, onReload, ...props }) {
+const AdminUserInfoWithData = ({ uid, onReload, ...props }) => {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const getRoles = useRolesDescription();
@@ -26,7 +26,7 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 		reload: reloadUserInfo,
 	} = useEndpointData(
 		'users.info',
-		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [uid, username]),
+		useMemo(() => ({ ...(uid && { userId: uid }) }), [uid]),
 	);
 
 	const onChange = useMutableCallback(() => {
@@ -96,4 +96,6 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 			{...props}
 		/>
 	);
-}
+};
+
+export default AdminUserInfoWithData;

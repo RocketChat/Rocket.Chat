@@ -110,6 +110,7 @@ export interface IUser extends IRocketChatRecord {
 	active: boolean;
 	username?: string;
 	nickname?: string;
+	bio?: string;
 	name?: string;
 	services?: IUserServices;
 	emails?: IUserEmail[];
@@ -168,3 +169,5 @@ export type IUserInRole = Pick<
 	IUser,
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
 >;
+
+export type IUserList = Pick<IUser, '_id' | 'username' | 'name' | 'lastLogin' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>;

@@ -1,10 +1,10 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import UsersPage from './UsersPage';
 
-function UsersRoute() {
+const UsersRoute = (): ReactElement => {
 	const canViewUserAdministration = usePermission('view-user-administration');
 
 	if (!canViewUserAdministration) {
@@ -12,6 +12,6 @@ function UsersRoute() {
 	}
 
 	return <UsersPage />;
-}
+};
 
 export default UsersRoute;
