@@ -4,7 +4,7 @@ import BasePage from './BasePage';
 
 export default class Departments extends BasePage {
 	get departmentsLink(): Locator {
-		return this.getPage().locator('a[href="omnichannel/agents"]');
+		return this.getPage().locator('a[href="omnichannel/departments"]');
 	}
 
 	get btnNewDepartment(): Locator {
@@ -20,7 +20,8 @@ export default class Departments extends BasePage {
 	}
 
 	get enabledToggle(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentLabelEnabled"]');
+		// temporary selector
+		return this.getPage().locator('[data-qa="DepartmentEditToggle-Enabled"] span label');
 	}
 
 	get nameInput(): Locator {
@@ -32,7 +33,7 @@ export default class Departments extends BasePage {
 	}
 
 	get showOnRegistrationPage(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentEditToggle-ShowOnRegistrationPage"]');
+		return this.getPage().locator('[data-qa="DepartmentEditToggle-ShowOnRegistrationPage"] span label');
 	}
 
 	get emailInput(): Locator {
@@ -40,15 +41,15 @@ export default class Departments extends BasePage {
 	}
 
 	get showOnOfflinePageToggle(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentEditToggle-ShowOnOfflinePage"]');
+		return this.getPage().locator('[data-qa="DepartmentEditToggle-ShowOnOfflinePage"] span label');
 	}
 
 	get selectLiveChatDepartmentOfflineMessageToChannel(): Locator {
 		return this.getPage().locator('[data-qa="DepartmentSelect-LivechatDepartmentOfflineMessageToChannel"]');
 	}
 
-	get requestTagBeforeCLosingChatToggle(): Locator {
-		return this.getPage().locator('[data-qa="DiscussionToggle-RequestTagBeforeCLosingChat"]');
+	get requestTagBeforeClosingChatToggle(): Locator {
+		return this.getPage().locator('[data-qa="DiscussionToggle-RequestTagBeforeCLosingChat"] span label');
 	}
 
 	get selectAgentsTable(): Locator {
@@ -59,12 +60,36 @@ export default class Departments extends BasePage {
 		return this.getPage().locator('button.rcx-button--primary.rcx-button >> text="Add"');
 	}
 
+	public virtuosoOptions(option: string): Locator {
+		return this.getPage().locator(`[data-test-id="virtuoso-scroller"] .rcx-option >> text="${option}"`);
+	}
+
+	get departmentAdded(): Locator {
+		return this.getPage().locator('table tr:first-child td:first-child ');
+	}
+
+	get btnTableDeleteDepartment(): Locator {
+		return this.getPage().locator('table tr:first-child td:nth-child(6) button');
+	}
+
+	get btnModalCancelDeleteDepartment(): Locator {
+		return this.getPage().locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--ghost');
+	}
+
+	get btnModalDeleteDepartment(): Locator {
+		return this.getPage().locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--primary-danger');
+	}
+
+	get modalDepartment(): Locator {
+		return this.getPage().locator('#modal-root');
+	}
+
 	public async getAddScreen(): Promise<void> {
 		const textInputs = [this.nameInput, this.descriptionInput, this.emailInput];
-		const toggleButtons = [this.enabledToggle, this.showOnOfflinePageToggle, this.requestTagBeforeCLosingChatToggle];
-		const select = [this.selectLiveChatDepartmentOfflineMessageToChannel, this.selectAgentsTable];
+		const toggleButtons = [this.enabledToggle, this.showOnOfflinePageToggle, this.requestTagBeforeClosingChatToggle];
+		const selects = [this.selectLiveChatDepartmentOfflineMessageToChannel, this.selectAgentsTable];
 		const actionsButtons = [this.btnSaveDepartment, this.btnBack, this.btnAddAgent];
-		const addScreenSelectors = [...textInputs, ...toggleButtons, ...actionsButtons, ...select];
+		const addScreenSelectors = [...textInputs, ...toggleButtons, ...actionsButtons, ...selects];
 
 		await Promise.all(addScreenSelectors.map((addScreenSelector) => expect(addScreenSelector).toBeVisible()));
 	}
@@ -72,5 +97,34 @@ export default class Departments extends BasePage {
 	public async doAddAgent(): Promise<void> {
 		await this.enabledToggle.click();
 		await this.nameInput.type('rocket.cat');
+	}
+
+	public async doAddDepartments(): Promise<void> {
+		await this.enabledToggle.click();
+		await this.nameInput.type('any_name');
+		await this.descriptionInput.type('any_description');
+		await this.showOnOfflinePageToggle.click();
+		await this.emailInput.type('any_email@mail.com');
+		await this.showOnRegistrationPage.click();
+		await this.selectLiveChatDepartmentOfflineMessageToChannel.click();
+		await this.virtuosoOptions('general').click();
+		await this.selectAgentsTable.click();
+		await this.btnSaveDepartment.click();
+	}
+
+	public async doEditDepartments(): Promise<void> {
+		await this.enabledToggle.click();
+		await this.nameInput.click({ clickCount: 3 });
+		await this.keyboardPress('Backspace');
+		await this.nameInput.fill('any_name_edit');
+		await this.descriptionInput.click({ clickCount: 3 });
+		await this.keyboardPress('Backspace');
+		await this.descriptionInput.fill('any_description_edited');
+		await this.btnSaveDepartment.click();
+	}
+
+	public async doBackToPrincipalScreen(): Promise<void> {
+		await this.departmentAdded.click();
+		await this.btnBack.click();
 	}
 }

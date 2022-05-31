@@ -20,13 +20,13 @@ test.describe.only('[Department]', () => {
 		departments = new Departments(page);
 
 		await loginPage.login(adminLogin);
+		await sideNav.sidebarUserMenu().click();
 		await sideNav.omnichannel().click();
-		await departments.departmentsLink.click();
-		await departments.btnNewDepartment.click();
 	});
 
 	test.describe('[Render]', async () => {
 		test.beforeEach(async () => {
+			await departments.departmentsLink.click();
 			await departments.btnNewDepartment.click();
 		});
 		test('expect show all inputs', async () => {
@@ -34,6 +34,40 @@ test.describe.only('[Department]', () => {
 		});
 	});
 	test.describe('[Actions]', async () => {
-		expect(1).toBe(1);
+		test.beforeEach(async () => {
+			await departments.departmentsLink.click();
+		});
+		test.describe('[Create and Edit]', async () => {
+			test.afterEach(async () => {
+				await departments.toastSuccess.click();
+			});
+
+			test('expect new department is created', async () => {
+				await departments.btnNewDepartment.click();
+				await departments.doAddDepartments();
+				await expect(departments.departmentAdded).toBeVisible();
+			});
+
+			test('expect department is edited', async () => {
+				await departments.departmentAdded.click();
+				await departments.doEditDepartments();
+				await expect(departments.departmentAdded).toHaveText('any_name_edit');
+			});
+		});
+		test.describe('[Delete department]', () => {
+			test.beforeEach(async () => {
+				await departments.btnTableDeleteDepartment.click();
+			});
+			test('expect dont show dialog on cancel delete department', async () => {
+				await departments.btnModalCancelDeleteDepartment.click();
+				await expect(departments.modalDepartment).not.toBeVisible();
+				await expect(departments.departmentAdded).toBeVisible();
+			});
+			test('expect delete departments', async () => {
+				await departments.btnModalDeleteDepartment.click();
+				await expect(departments.modalDepartment).not.toBeVisible();
+				await expect(departments.departmentAdded).not.toBeVisible();
+			});
+		});
 	});
 });
