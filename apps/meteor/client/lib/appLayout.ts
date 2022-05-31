@@ -1,9 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { lazy, ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Subscription, Unsubscribe } from 'use-subscription';
-
-export const MainLayout = lazy(() => import('../views/root/MainLayout'));
-export const BlazeTemplate = lazy(() => import('../views/root/BlazeTemplate'));
 
 type AppLayoutDescriptor = ReactElement | null;
 

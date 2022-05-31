@@ -5,7 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 
-import { appLayout, BlazeTemplate, MainLayout } from '../../../../client/lib/appLayout';
+import { appLayout } from '../../../../client/lib/appLayout';
 import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
 import { Messages, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
@@ -17,6 +17,8 @@ import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManage
 import { Rooms, Subscriptions } from '../../../models/client';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import MainLayout from '../../../../client/views/root/MainLayout';
+import BlazeTemplate from '../../../../client/views/root/BlazeTemplate';
 
 window.currentTracker = undefined;
 

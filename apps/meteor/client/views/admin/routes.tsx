@@ -1,7 +1,9 @@
 import React, { lazy } from 'react';
 
-import { appLayout, BlazeTemplate, MainLayout } from '../../lib/appLayout';
+import { appLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
+import BlazeTemplate from '../root/BlazeTemplate';
+import MainLayout from '../root/MainLayout';
 
 export const registerAdminRoute = createRouteGroup(
 	'admin',

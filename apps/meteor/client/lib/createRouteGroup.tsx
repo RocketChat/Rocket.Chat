@@ -3,7 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import React, { ElementType, ReactNode } from 'react';
 
-import { appLayout, MainLayout } from './appLayout';
+import MainLayout from '../views/root/MainLayout';
+import { appLayout } from './appLayout';
 
 const registerLazyComponentRoute = (
 	routeGroup: Group,

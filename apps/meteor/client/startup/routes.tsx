@@ -10,9 +10,11 @@ import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
-import { appLayout, BlazeTemplate, MainLayout } from '../lib/appLayout';
+import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
+import BlazeTemplate from '../views/root/BlazeTemplate';
+import MainLayout from '../views/root/MainLayout';
 
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
