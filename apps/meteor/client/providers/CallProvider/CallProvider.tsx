@@ -347,28 +347,6 @@ export const CallProvider: FC = ({ children }) => {
 			},
 			openRoom,
 			createRoom,
-			/*
-			createRoom: async (caller: ICallerInfo): Promise<IVoipRoom['_id']> => {
-				if (user) {
-					const { visitor } = await visitorEndpoint({
-						visitor: {
-							token: Random.id(),
-							phone: caller.callerId,
-							name: caller.callerName || caller.callerId,
-						},
-					});
-					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
-					openRoom(voipRoom.room._id);
-					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
-					const queueAggregator = voipClient.getAggregator();
-					if (queueAggregator) {
-						queueAggregator.callStarted();
-					}
-					return voipRoom.room._id;
-				}
-				return '';
-			},
-			*/
 			closeRoom: async (data?: { comment: string; tags: string[] }): Promise<void> => {
 				roomInfo &&
 					(await voipCloseRoomEndpoint({
@@ -385,19 +363,7 @@ export const CallProvider: FC = ({ children }) => {
 			},
 			openWrapUpModal,
 		};
-	}, [
-		voipEnabled,
-		user,
-		result,
-		roomInfo,
-		queueCounter,
-		queueName,
-		createRoom,
-		openWrapUpModal,
-		onCallEstablished,
-		voipCloseRoomEndpoint,
-		homeRoute,
-	]);
+	}, [voipEnabled, user, result, roomInfo, queueCounter, queueName, createRoom, openWrapUpModal, voipCloseRoomEndpoint, homeRoute]);
 
 	return (
 		<CallContext.Provider value={contextValue}>
