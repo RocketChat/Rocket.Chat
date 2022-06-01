@@ -1,7 +1,9 @@
 import Ajv from 'ajv';
 import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type BannersGetNew = {
 	platform: BannerPlatform;
@@ -22,7 +24,7 @@ const BannersGetNewSchema = {
 	additionalProperties: false,
 };
 
-export const isBannersGetNewProps = ajv.compile(BannersGetNewSchema);
+export const isBannersGetNewProps = ajv.compile<BannersGetNew>(BannersGetNewSchema);
 
 type BannersId = {
 	platform: BannerPlatform;
@@ -39,7 +41,7 @@ const BannersIdSchema = {
 	additionalProperties: false,
 };
 
-export const isBannersIdProps = ajv.compile(BannersIdSchema);
+export const isBannersIdProps = ajv.compile<BannersId>(BannersIdSchema);
 
 type Banners = {
 	platform: BannerPlatform;
@@ -56,7 +58,7 @@ const BannersSchema = {
 	additionalProperties: false,
 };
 
-export const isBannersProps = ajv.compile(BannersSchema);
+export const isBannersProps = ajv.compile<Banners>(BannersSchema);
 
 type BannersDismiss = {
 	bannerId: string;
@@ -73,7 +75,7 @@ const BannersDismissSchema = {
 	additionalProperties: false,
 };
 
-export const isBannersDismissProps = ajv.compile(BannersDismissSchema);
+export const isBannersDismissProps = ajv.compile<BannersDismiss>(BannersDismissSchema);
 
 export type BannersEndpoints = {
 	/* @deprecated */

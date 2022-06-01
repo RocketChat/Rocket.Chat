@@ -1,7 +1,9 @@
 import type { IMessage, IRoom, ReadReceipt } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type ChatFollowMessage = {
 	mid: IMessage['_id'];
@@ -18,7 +20,7 @@ const chatFollowMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isChatFollowMessageProps = ajv.compile(chatFollowMessageSchema);
+export const isChatFollowMessageProps = ajv.compile<ChatFollowMessage>(chatFollowMessageSchema);
 
 type ChatUnfollowMessage = {
 	mid: IMessage['_id'];
@@ -35,7 +37,7 @@ const chatUnfollowMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isChatUnfollowMessageProps = ajv.compile(chatUnfollowMessageSchema);
+export const isChatUnfollowMessageProps = ajv.compile<ChatUnfollowMessage>(chatUnfollowMessageSchema);
 
 type ChatGetMessage = {
 	msgId: IMessage['_id'];
@@ -52,7 +54,7 @@ const ChatGetMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetMessageProps = ajv.compile(ChatGetMessageSchema);
+export const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
 
 type ChatStarMessage = {
 	msgId: IMessage['_id'];
@@ -69,7 +71,7 @@ const ChatStarMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isChatStarMessageProps = ajv.compile(ChatStarMessageSchema);
+export const isChatStarMessageProps = ajv.compile<ChatStarMessage>(ChatStarMessageSchema);
 
 type ChatUnstarMessage = {
 	msgId: IMessage['_id'];
@@ -86,7 +88,7 @@ const ChatUnstarMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isChatUnstarMessageProps = ajv.compile(ChatUnstarMessageSchema);
+export const isChatUnstarMessageProps = ajv.compile<ChatUnstarMessage>(ChatUnstarMessageSchema);
 
 type ChatPinMessage = {
 	msgId: IMessage['_id'];
@@ -103,7 +105,7 @@ const ChatPinMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isChatPinMessageProps = ajv.compile(ChatPinMessageSchema);
+export const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 type ChatUnpinMessage = {
 	messageId: IMessage['_id'];
@@ -120,7 +122,7 @@ const ChatUnpinMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isChatUnpinMessageProps = ajv.compile(ChatUnpinMessageSchema);
+export const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
 type ChatGetDiscussions = {
 	roomId: IRoom['_id'];
@@ -150,7 +152,7 @@ const ChatGetDiscussionsSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetDiscussionsProps = ajv.compile(ChatGetDiscussionsSchema);
+export const isChatGetDiscussionsProps = ajv.compile<ChatGetDiscussions>(ChatGetDiscussionsSchema);
 
 type ChatReportMessage = {
 	messageId: IMessage['_id'];
@@ -171,7 +173,7 @@ const ChatReportMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isChatReportMessageProps = ajv.compile(ChatReportMessageSchema);
+export const isChatReportMessageProps = ajv.compile<ChatReportMessage>(ChatReportMessageSchema);
 
 type ChatGetThreadsList = {
 	rid: IRoom['_id'];
@@ -205,7 +207,7 @@ const ChatGetThreadsListSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetThreadsListProps = ajv.compile(ChatGetThreadsListSchema);
+export const isChatGetThreadsListProps = ajv.compile<ChatGetThreadsList>(ChatGetThreadsListSchema);
 
 type ChatSyncThreadsList = {
 	rid: IRoom['_id'];
@@ -226,7 +228,7 @@ const ChatSyncThreadsListSchema = {
 	additionalProperties: false,
 };
 
-export const isChatSyncThreadsListProps = ajv.compile(ChatSyncThreadsListSchema);
+export const isChatSyncThreadsListProps = ajv.compile<ChatSyncThreadsList>(ChatSyncThreadsListSchema);
 
 type ChatDelete = {
 	msgId: IMessage['_id'];
@@ -247,7 +249,7 @@ const ChatDeleteSchema = {
 	additionalProperties: false,
 };
 
-export const isChatDeleteProps = ajv.compile(ChatDeleteSchema);
+export const isChatDeleteProps = ajv.compile<ChatDelete>(ChatDeleteSchema);
 
 type ChatReact = { emoji: string; messageId: IMessage['_id'] } | { reaction: string; messageId: IMessage['_id'] };
 
@@ -282,7 +284,7 @@ const ChatReactSchema = {
 	],
 };
 
-export const isChatReactProps = ajv.compile(ChatReactSchema);
+export const isChatReactProps = ajv.compile<ChatReact>(ChatReactSchema);
 
 /**
  * The param `ignore` cannot be boolean, since this is a GET method. Use strings 'true' or 'false' instead.
@@ -311,7 +313,7 @@ const ChatIgnoreUserSchema = {
 	additionalProperties: false,
 };
 
-export const isChatIgnoreUserProps = ajv.compile(ChatIgnoreUserSchema);
+export const isChatIgnoreUserProps = ajv.compile<ChatIgnoreUser>(ChatIgnoreUserSchema);
 
 type ChatSearch = {
 	roomId: IRoom['_id'];
@@ -340,7 +342,7 @@ const ChatSearchSchema = {
 	additionalProperties: false,
 };
 
-export const isChatSearchProps = ajv.compile(ChatSearchSchema);
+export const isChatSearchProps = ajv.compile<ChatSearch>(ChatSearchSchema);
 
 type ChatUpdate = {
 	roomId: IRoom['_id'];
@@ -365,7 +367,7 @@ const ChatUpdateSchema = {
 	additionalProperties: false,
 };
 
-export const isChatUpdateProps = ajv.compile(ChatUpdateSchema);
+export const isChatUpdateProps = ajv.compile<ChatUpdate>(ChatUpdateSchema);
 
 type ChatGetMessageReadReceipts = {
 	messageId: IMessage['_id'];
@@ -382,7 +384,7 @@ const ChatGetMessageReadReceiptsSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetMessageReadReceiptsProps = ajv.compile(ChatGetMessageReadReceiptsSchema);
+export const isChatGetMessageReadReceiptsProps = ajv.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
 
 export type ChatEndpoints = {
 	'chat.getMessage': {

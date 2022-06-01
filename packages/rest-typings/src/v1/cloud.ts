@@ -1,7 +1,9 @@
 import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type CloudManualRegister = {
 	cloudBlob: string;
@@ -18,7 +20,7 @@ const CloudManualRegisterSchema = {
 	additionalProperties: false,
 };
 
-export const isCloudManualRegisterProps = ajv.compile(CloudManualRegisterSchema);
+export const isCloudManualRegisterProps = ajv.compile<CloudManualRegister>(CloudManualRegisterSchema);
 
 type CloudCreateRegistrationIntent = {
 	resend: boolean;
@@ -39,7 +41,7 @@ const CloudCreateRegistrationIntentSchema = {
 	additionalProperties: false,
 };
 
-export const isCloudCreateRegistrationIntentProps = ajv.compile(CloudCreateRegistrationIntentSchema);
+export const isCloudCreateRegistrationIntentProps = ajv.compile<CloudCreateRegistrationIntent>(CloudCreateRegistrationIntentSchema);
 
 type CloudConfirmationPoll = {
 	deviceCode: string;
@@ -61,7 +63,7 @@ const CloudConfirmationPollSchema = {
 	additionalProperties: false,
 };
 
-export const isCloudConfirmationPollProps = ajv.compile(CloudConfirmationPollSchema);
+export const isCloudConfirmationPollProps = ajv.compile<CloudConfirmationPoll>(CloudConfirmationPollSchema);
 
 export type CloudEndpoints = {
 	'cloud.manualRegister': {

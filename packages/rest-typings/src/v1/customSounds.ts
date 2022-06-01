@@ -3,7 +3,9 @@ import Ajv from 'ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type CustomSoundsList = PaginatedRequest<{ query: string }>;
 
@@ -30,7 +32,7 @@ const CustomSoundsListSchema = {
 	additionalProperties: false,
 };
 
-export const isCustomSoundsListProps = ajv.compile(CustomSoundsListSchema);
+export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
 
 export type CustomSoundEndpoint = {
 	'custom-sounds.list': {
