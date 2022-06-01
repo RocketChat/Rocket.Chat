@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../app/settings/client';
-import { MessageAction, messageArgs } from '../../app/ui-utils/client';
+import { MessageAction } from '../../app/ui-utils/client';
 import { imperativeModal } from '../lib/imperativeModal';
+import { messageArgs } from '../lib/utils/messageArgs';
 import ReadReceiptsModal from '../views/room/modals/ReadReceiptsModal';
 
 Meteor.startup(() => {
