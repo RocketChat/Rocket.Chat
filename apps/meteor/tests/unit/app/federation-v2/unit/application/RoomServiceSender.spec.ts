@@ -32,7 +32,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		isUserIdFromTheSameHomeserver: sinon.stub(),
 		sendMessage: sinon.stub(),
 		createUser: sinon.stub(),
-		inviteToRoom: sinon.stub(),
+		inviteToRoom: sinon.stub().returns(new Promise((resolve) => resolve({}))),
 		createRoom: sinon.stub(),
 		joinRoom: sinon.stub(),
 	};
@@ -76,6 +76,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			userAdapter.getFederatedUserByInternalUsername.resolves(user);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.inviteUserToAFederatedRoom({} as any);
 
 			expect(userAdapter.createFederatedUser.called).to.be.false;
@@ -88,6 +89,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
 			settingsAdapter.getHomeServerDomain.returns('domain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			bridge.createUser.resolves('externalInviterId');
 			await service.inviteUserToAFederatedRoom({ externalInviterId: 'externalInviterId' } as any);
 			const inviter = FederatedUser.createInstance('externalInviterId', {
@@ -105,6 +107,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
 			settingsAdapter.getHomeServerDomain.returns('domain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.inviteUserToAFederatedRoom({ normalizedInviteeId: 'normalizedInviteeId', rawInviteeId: 'rawInviteeId' } as any);
 
 			expect(userAdapter.createFederatedUser.called).to.be.false;
@@ -115,6 +118,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalUsername.onCall(0).resolves(undefined);
 			userAdapter.getFederatedUserByInternalUsername.onCall(1).resolves({} as any);
 			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			settingsAdapter.getHomeServerDomain.returns('domain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			await service.inviteUserToAFederatedRoom({ normalizedInviteeId: 'normalizedInviteeId', rawInviteeId: 'rawInviteeId' } as any);
@@ -133,6 +137,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
 			settingsAdapter.getHomeServerDomain.returns('domain');
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.inviteUserToAFederatedRoom({ normalizedInviteeId: 'normalizedInviteeId', rawInviteeId: 'rawInviteeId' } as any);
 
 			expect(roomAdapter.createFederatedRoom.called).to.be.false;
@@ -148,6 +153,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			bridge.createRoom.resolves('externalRoomId');
 			roomAdapter.getFederatedRoomByInternalId.onCall(0).resolves(undefined);
 			roomAdapter.getFederatedRoomByInternalId.onCall(1).resolves(room);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.inviteUserToAFederatedRoom({ normalizedInviteeId: 'normalizedInviteeId', rawInviteeId: 'rawInviteeId' } as any);
 			const roomResult = FederatedRoom.createInstance('externalRoomId', 'externalRoomId', user as any, RoomType.CHANNEL, 'roomName');
 
@@ -167,6 +173,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			settingsAdapter.getHomeServerDomain.returns('domain');
 			bridge.isUserIdFromTheSameHomeserver.resolves(true);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.inviteUserToAFederatedRoom({
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
@@ -194,6 +201,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			room.externalId = 'externalRoomId';
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.isUserIdFromTheSameHomeserver.resolves(false);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.inviteUserToAFederatedRoom({
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
@@ -213,6 +221,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			room.internalReference.t = RoomType.DIRECT_MESSAGE;
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.isUserIdFromTheSameHomeserver.resolves(false);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.inviteUserToAFederatedRoom({
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
@@ -234,6 +243,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			room.internalReference.t = RoomType.DIRECT_MESSAGE;
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.isUserIdFromTheSameHomeserver.resolves(false);
+			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.inviteUserToAFederatedRoom({
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
