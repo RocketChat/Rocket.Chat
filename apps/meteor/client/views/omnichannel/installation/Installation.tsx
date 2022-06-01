@@ -1,16 +1,16 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import RawText from '../../../components/RawText';
 import TextCopy from '../../../components/TextCopy';
 import Wrapper from './Wrapper';
 
-const Installation = () => {
+const Installation = (): ReactElement => {
 	const t = useTranslation();
-
-	const siteUrl = useSetting('Site_Url')?.replace(/\/$/, '');
+	const setting = useSetting('Site_Url') as string;
+	const siteUrl = setting?.replace(/\/$/, '');
 
 	const installString = `<!-- Start of Rocket.Chat Livechat Script -->
 	<script type="text/javascript">
