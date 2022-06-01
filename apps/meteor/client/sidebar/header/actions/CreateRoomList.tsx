@@ -1,7 +1,7 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useSetting, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { FC } from 'react';
 
 import { popover } from '../../../../app/ui-utils/client';
 import CreateDiscussion from '../../../components/CreateDiscussion';
@@ -19,7 +19,11 @@ const style = {
 	textTransform: 'uppercase',
 };
 
-const useReactModal = (Component) => {
+type CreateRoomListProps = {
+	closeList: () => void;
+};
+
+const useReactModal = (Component: FC<any>): ((e: React.MouseEvent<HTMLElement>) => void) => {
 	const setModal = useSetModal();
 
 	return useMutableCallback((e) => {
@@ -27,7 +31,7 @@ const useReactModal = (Component) => {
 
 		e.preventDefault();
 
-		const handleClose = () => {
+		const handleClose = (): void => {
 			setModal(null);
 		};
 
@@ -35,7 +39,7 @@ const useReactModal = (Component) => {
 	});
 };
 
-function CreateRoomList({ closeList }) {
+const CreateRoomList: FC<CreateRoomListProps> = ({ closeList }) => {
 	const t = useTranslation();
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
@@ -52,7 +56,7 @@ function CreateRoomList({ closeList }) {
 
 	return (
 		<>
-			<OptionTitle pb='x8' style={style}>
+			<OptionTitle pb='x8' {...({ style } as any)}>
 				{t('Create_new')}
 			</OptionTitle>
 			<ul className='rc-popover__list'>
@@ -60,7 +64,7 @@ function CreateRoomList({ closeList }) {
 					<ListItem
 						icon='hashtag'
 						text={t('Channel')}
-						action={(e) => {
+						action={(e: React.MouseEvent<HTMLElement>): void => {
 							createChannel(e);
 							closeList();
 						}}
@@ -70,7 +74,7 @@ function CreateRoomList({ closeList }) {
 					<ListItem
 						icon='team'
 						text={t('Team')}
-						action={(e) => {
+						action={(e: React.MouseEvent<HTMLElement>): void => {
 							createTeam(e);
 							closeList();
 						}}
@@ -80,7 +84,7 @@ function CreateRoomList({ closeList }) {
 					<ListItem
 						icon='balloon'
 						text={t('Direct_Messages')}
-						action={(e) => {
+						action={(e: React.MouseEvent<HTMLElement>): void => {
 							createDirectMessage(e);
 							closeList();
 						}}
@@ -90,7 +94,7 @@ function CreateRoomList({ closeList }) {
 					<ListItem
 						icon='discussion'
 						text={t('Discussion')}
-						action={(e) => {
+						action={(e: React.MouseEvent<HTMLElement>): void => {
 							createDiscussion(e);
 							closeList();
 						}}
@@ -99,6 +103,6 @@ function CreateRoomList({ closeList }) {
 			</ul>
 		</>
 	);
-}
+};
 
 export default CreateRoomList;
