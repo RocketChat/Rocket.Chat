@@ -1,3 +1,4 @@
+import type { DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -16,6 +17,12 @@ const sortMapping = {
 	os: 'device.os.name',
 	loginAt: 'loginAt',
 };
+
+// const convertSessionFromAPI = ({ loginAt, logoutAt, ...rest}: Serialized<DeviceManagementPopulatedSession>): DeviceManagementPopulatedSession => ({
+// 	loginAt: new Date(loginAt),
+// 	...(logoutAt && { logoutAt: new Date(logoutAt)}),
+// 	...rest,
+// });
 
 const DevicesTable = (): ReactElement => {
 	const t = useTranslation();
@@ -96,7 +103,16 @@ const DevicesTable = (): ReactElement => {
 					{headers}
 				</GenericTableHeader>
 				<GenericTableBody>
-					{data?.sessions && data.sessions.map((session) => <DevicesRow key={session._id} {...session} />)}
+					{data?.sessions && data.sessions.map((session) => <DevicesRow
+						key={session._id}
+						_id = {session._id}
+						username={session._user.username || ''}
+						ip={session.ip}
+						deviceName={session.device?.name || ''}
+						deviceType={session.device?.type || ''}
+						deviceOSName={session.device?.os.name || ''}
+						loginAt={session.loginAt}
+					/>)}
 				</GenericTableBody>
 			</GenericTable>
 			<Pagination

@@ -1,9 +1,18 @@
-import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { TableRow, TableCell, Icon, Box, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, ReactElement, FC } from 'react';
 import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
+
+type DeviceRowProps = {
+	_id: string;
+	username: string;
+	ip: string;
+	deviceName: string;
+	deviceType: string;
+	deviceOSName: string;
+	loginAt: string;
+};
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 	browser: 'desktop',
@@ -13,8 +22,7 @@ const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 const DeviceIcon: FC<{ deviceType: string }> = ({ deviceType }) =>
 	<Box is='span' p='x4' bg='neutral-500-50' borderRadius='x32' mie='x4'><Icon name={iconMap[deviceType]} size='x20' color='info' /></Box>;
 
-
-const DevicesRow = ({ _id, _user: { username }, ip, device: { name, type, os: { name:OSName } }, loginAt }: DeviceManagementPopulatedSession): ReactElement => {
+const DevicesRow = ({ _id, username, ip, deviceName, deviceType, deviceOSName, loginAt }: DeviceRowProps): ReactElement => {
 
 	const t = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
@@ -33,10 +41,10 @@ const DevicesRow = ({ _id, _user: { username }, ip, device: { name, type, os: { 
 	return (
 		<TableRow key={_id} onClick={handleClick} tabIndex={0}>
 			<TableCell>
-				<DeviceIcon deviceType={type}/>
-				{name}
+				<DeviceIcon deviceType={deviceType}/>
+				{deviceName}
 			</TableCell>
-			<TableCell>{OSName}</TableCell>
+			<TableCell>{deviceOSName}</TableCell>
 			<TableCell withTruncatedText>{username}</TableCell>
 			{mediaQuery && <TableCell>{formatDateAndTime(loginAt)}</TableCell>}
 			{mediaQuery && <TableCell withTruncatedText>{_id}</TableCell>}
