@@ -131,7 +131,6 @@ class FlexTab extends BasePage {
 	}
 
 	public userSearchBar(): Locator {
-		// TODO: use a better selector here
 		return this.getPage().locator('//*[@placeholder="Search by username"]');
 	}
 
@@ -173,7 +172,6 @@ class FlexTab extends BasePage {
 
 	public avatarImage(): Locator {
 		return this.getPage().locator('(//aside[contains(@class, "rcx-vertical-bar")]//*[contains(@class, "avatar")])[1]');
-		// return this.getPage().locator('aside.rcx-vertical-bar .rcx-avatar');
 	}
 
 	public memberUserName(): Locator {
@@ -181,7 +179,7 @@ class FlexTab extends BasePage {
 	}
 
 	public memberRealName(): Locator {
-		return this.getPage().locator('.info p');
+		return this.getPage().locator('[data-qa="UserInfoUserName"]');
 	}
 
 	// Search Tab
@@ -272,8 +270,8 @@ class FlexTab extends BasePage {
 		return this.getPage().locator(`//header//*[contains(text(), "${topic}")]`);
 	}
 
-	public thirdSetting(announcement: string): Locator {
-		return this.getPage().locator(`//main//div[contains(@class, "messages-container-main")]//div[contains(text(), "${announcement}")]`);
+	public thirdSetting(): Locator {
+		return this.getPage().locator('[data-qa="AnnouncementAnnoucementComponent"] div:nth-child(1)');
 	}
 
 	public fourthSetting(): Locator {
@@ -318,11 +316,17 @@ class FlexTab extends BasePage {
 	}
 
 	public usersAddUserEmail(): Locator {
-		return this.getPage().locator('//label[text()="Email"]/following-sibling::span//input/following-sibling::span//i');
+		return this.getPage().locator('//label[text()="Email"]/following-sibling::span//input').first();
 	}
 
 	public usersAddUserRoleList(): Locator {
 		return this.getPage().locator('//label[text()="Roles"]/following-sibling::span//input');
+	}
+
+	public fileDescription(): Locator {
+		return this.getPage().locator(
+			'//li[@data-username="rocketchat.internal.admin.test"][last()]//div[@class="js-block-wrapper"]/following-sibling::div//div//p',
+		);
 	}
 
 	public usersAddUserPassword(): Locator {
@@ -369,8 +373,14 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('.rcx-option__content:contains("Deactivate")');
 	}
 
-	public getUserEl(username: any): Locator {
-		return this.getPage().locator(`//li[@data-username="${username}"]`);
+	public closeThreadMessage(): Locator {
+		return this.getPage().locator(
+			'//html//body//div[1]//div//div[3]//div[1]//main//div//aside//div[2]//div//div//h3//div//div[2]//button[2]',
+		);
+	}
+
+	public getUserEl(username: string): Locator {
+		return this.getPage().locator(`[data-qa="MemberItem-${username}"]`);
 	}
 
 	public addUserTable(): Locator {
@@ -394,9 +404,7 @@ class FlexTab extends BasePage {
 	}
 
 	public userMoreActions(): Locator {
-		return this.getPage().locator(
-			'//main//aside//button[contains(text(), "Direct Message")]/..//i[contains(@class, "rcx-icon--name-kebab")]/..',
-		);
+		return this.getPage().locator('[data-qa="UserUserInfo-menu"]');
 	}
 
 	public async setUserOwner(user: string): Promise<void> {
@@ -435,7 +443,7 @@ class FlexTab extends BasePage {
 		await this.archiveSave().click();
 	}
 
-	public async addPeopleToChannel(user: any): Promise<void> {
+	public async addPeopleToChannel(user: string): Promise<void> {
 		await this.addUserButton().click();
 		await this.chooseUserSearch().type(user);
 		await this.getPage().waitForTimeout(3000);
@@ -533,6 +541,17 @@ class FlexTab extends BasePage {
 		};
 
 		await callFunctionTabs(desiredTab);
+	}
+
+	public flexTabViewThreadMessage(): Locator {
+		return this.getPage().locator(
+			'div.thread-list.js-scroll-thread ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',
+		);
+	}
+
+	public async doAddRole(role: string): Promise<void> {
+		await this.usersAddUserRoleList().click();
+		await this.getPage().locator(`li[value=${role}]`).click();
 	}
 }
 

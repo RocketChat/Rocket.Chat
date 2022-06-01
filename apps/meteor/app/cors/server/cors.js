@@ -5,7 +5,7 @@ import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
 import { settings } from '../../settings/server';
-import { Logger } from '../../logger';
+import { Logger } from '../../logger/server';
 
 const logger = new Logger('CORS');
 

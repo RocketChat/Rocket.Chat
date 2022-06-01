@@ -69,6 +69,7 @@ function killAllProcesses(mainExitCode) {
 }
 
 function startProcess(opts) {
+	console.log('Starting process', opts.name, opts.command, opts.params, opts.options.cwd);
 	const proc = spawn(opts.command, opts.params, opts.options);
 	processes.push(proc);
 
@@ -125,20 +126,25 @@ function startRocketChat() {
 }
 
 async function startMicroservices() {
+	const waitStart = (resolve) => (message) => {
+		if (message.toString().match('NetworkBroker started successfully')) {
+			return resolve();
+		}
+	};
 	const startService = (name) => {
 		return new Promise((resolve) => {
-			const waitStart = (message) => {
-				if (message.toString().match('NetworkBroker started successfully')) {
-					return resolve();
-				}
-			};
+			const cwd =
+				name === 'ddp-streamer'
+					? path.resolve(srcDir, '..', '..', 'ee', 'apps', name, 'dist', 'ee', 'apps', name)
+					: path.resolve(srcDir, 'ee', 'server', 'services', 'dist', 'ee', 'server', 'services', name);
+
 			startProcess({
 				name: `${name} service`,
 				command: 'node',
-				params: ['service.js'],
-				onData: waitStart,
+				params: [name === 'ddp-streamer' ? 'src/service.js' : 'service.js'],
+				onData: waitStart(resolve),
 				options: {
-					cwd: path.resolve(srcDir, 'ee', 'server', 'services', 'dist', 'ee', 'server', 'services', name),
+					cwd,
 					env: {
 						...appOptions.env,
 						...process.env,

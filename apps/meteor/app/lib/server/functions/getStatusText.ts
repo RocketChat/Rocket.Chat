@@ -1,8 +1,8 @@
 import { Users } from '../../../models/server';
 
-export const getStatusText = function (userId: string): unknown {
+export const getStatusText = function (userId: string): string | undefined {
 	if (!userId) {
-		return undefined;
+		return;
 	}
 
 	const fields = {

@@ -1,12 +1,10 @@
 import { IRoom, IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '@rocket.chat/core-typings';
+import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint, useUserRoom } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
-import { useLayout } from '../../../../contexts/LayoutContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useUser, useUserPreference, useUserSubscription } from '../../../../contexts/UserContext';
+import ToolboxProvider from '../../providers/ToolboxProvider';
 import { MessageListContext, MessageListContextValue } from '../contexts/MessageListContext';
 import { useAutotranslateLanguage } from '../hooks/useAutotranslateLanguage';
 
@@ -135,5 +133,15 @@ export const MessageListProvider: FC<{
 		],
 	);
 
-	return <MessageListContext.Provider value={context} {...props} />;
+	const room = useUserRoom(rid);
+
+	if (!room) {
+		throw new Error('Room not found');
+	}
+
+	return (
+		<ToolboxProvider room={room}>
+			<MessageListContext.Provider value={context} {...props} />
+		</ToolboxProvider>
+	);
 });

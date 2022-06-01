@@ -1,7 +1,7 @@
 import { Callout } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
 import BusinessHoursTable from './BusinessHoursTable';

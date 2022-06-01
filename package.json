@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "4.7.2",
+	"version": "4.8.0",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -15,12 +15,15 @@
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
 	},
 	"devDependencies": {
+		"@types/js-yaml": "^4.0.5",
 		"husky": "^7.0.4",
 		"turbo": "1.2.5"
 	},
 	"workspaces": [
 		"apps/*",
 		"packages/*",
+		"ee/apps/*",
+		"ee/packages/*",
 		"apps/meteor/ee/server/services"
 	],
 	"repository": {
@@ -49,5 +52,9 @@
 			"apps/meteor/.docker/Dockerfile.rhel",
 			"apps/meteor/app/utils/rocketchat.info"
 		]
+	},
+	"volta": {
+		"node": "14.18.3",
+		"yarn": "1.22.18"
 	}
 }
