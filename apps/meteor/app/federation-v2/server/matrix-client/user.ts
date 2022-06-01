@@ -1,5 +1,6 @@
 import type { MatrixProfileInfo } from '@rocket.chat/forked-matrix-bot-sdk';
 import { IUser } from '@rocket.chat/core-typings';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { matrixBridge } from '../bridge';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '../../../models/server';
@@ -7,6 +8,7 @@ import { addUserToRoom } from '../../../lib/server/functions';
 import { matrixClient } from '.';
 import { dataInterface } from '../data-interface';
 import { settings } from '../../../settings/server';
+import { api } from '../../../../server/sdk/api';
 
 interface ICreateUserResult {
 	uid: string;
@@ -86,7 +88,6 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 	}
 
 	console.log(`[${inviterId}-${invitedId}-${roomId}] Inviting the user to the room...`);
-
 	// Invite && Auto-join if the user is Rocket.Chat controlled
 	if (!invitedUserIsRemote) {
 		// Invite the user to the room
@@ -97,7 +98,18 @@ export const invite = async (inviterId: string, roomId: string, invitedId: strin
 		await matrixBridge.getInstance().getIntent(invitedUserMatrixId).join(matrixRoomId);
 	} else if (room.t !== 'd') {
 		// Invite the user to the room but don't wait as this is dependent on the user accepting the invite because we don't control this user
-		matrixBridge.getInstance().getIntent(bridgedInviterUser.mui).invite(matrixRoomId, invitedUserMatrixId);
+		matrixBridge
+			.getInstance()
+			.getIntent(bridgedInviterUser.mui)
+			.invite(matrixRoomId, invitedUserMatrixId)
+			.catch(() => {
+				api.broadcast('notify.ephemeralMessage', inviterId, roomId, {
+					msg: TAPi18n.__('Federation_Matrix_only_owners_can_invite_users', {
+						postProcess: 'sprintf',
+						lng: settings.get('Language') || 'en',
+					}),
+				});
+			});
 	}
 
 	// Add the matrix user to the invited room

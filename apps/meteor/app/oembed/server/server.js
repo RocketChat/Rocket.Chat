@@ -12,7 +12,7 @@ import { Messages } from '../../models/server';
 import { OEmbedCache } from '../../models/server/raw';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
-import { isURL } from '../../utils/lib/isURL';
+import { isURL } from '../../../lib/utils/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { Info } from '../../utils/server';
 import { fetch } from '../../../server/lib/http/fetch';
