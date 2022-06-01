@@ -1,14 +1,14 @@
 import * as MessageParser from '@rocket.chat/message-parser';
 import React, { memo, MouseEvent, ReactElement } from 'react';
 
-import Code from './Code';
-import OrderedList from './OrderedList';
-import Quote from './Quote';
-import TaskList from './TaskList';
-import UnorderedList from './UnorderedList';
 import BigEmojiBlock from './blocks/BigEmojiBlock';
+import CodeBlock from './blocks/CodeBlock';
 import HeadingBlock from './blocks/HeadingBlock';
+import OrderedListBlock from './blocks/OrderedListBlock';
 import ParagraphBlock from './blocks/ParagraphBlock';
+import QuoteBlock from './blocks/QuoteBlock';
+import TaskList from './blocks/TaskListBlock';
+import UnorderedListBlock from './blocks/UnorderedListBlock';
 import { MessageBodyContext } from './contexts/MessageBodyContext';
 import { ChannelMention } from './definitions/ChannelMention';
 import { UserMention } from './definitions/UserMention';
@@ -43,19 +43,19 @@ const MessageBodyRender = ({
 					return <HeadingBlock key={index} chunks={block.value} level={block.level} />;
 
 				case 'UNORDERED_LIST':
-					return <UnorderedList key={index} value={block.value} />;
+					return <UnorderedListBlock key={index} items={block.value} />;
 
 				case 'ORDERED_LIST':
-					return <OrderedList key={index} value={block.value} />;
+					return <OrderedListBlock key={index} items={block.value} />;
 
 				case 'TASKS':
-					return <TaskList key={index} value={block.value} />;
+					return <TaskList key={index} tasks={block.value} />;
 
 				case 'QUOTE':
-					return <Quote key={index} value={block.value} />;
+					return <QuoteBlock key={index} paragraphs={block.value} />;
 
 				case 'CODE':
-					return <Code key={index} {...block} />;
+					return <CodeBlock key={index} language={block.language} lines={block.value} />;
 
 				case 'LINE_BREAK':
 					return <br key={index} />;

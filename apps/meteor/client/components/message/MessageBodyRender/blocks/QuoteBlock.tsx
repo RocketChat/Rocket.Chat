@@ -1,10 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { Quote as ASTQuote } from '@rocket.chat/message-parser';
-import React, { FC } from 'react';
+import * as MessageParser from '@rocket.chat/message-parser';
+import React, { ReactElement } from 'react';
 
-import ParagraphBlock from './blocks/ParagraphBlock';
+import ParagraphBlock from './ParagraphBlock';
 
 const hover = css`
 	&:hover,
@@ -15,7 +15,11 @@ const hover = css`
 	}
 `;
 
-const Quote: FC<{ value: ASTQuote['value'] }> = ({ value }) => (
+type QuoteBlockProps = {
+	paragraphs: MessageParser.Paragraph[];
+};
+
+const QuoteBlock = ({ paragraphs }: QuoteBlockProps): ReactElement => (
 	<Box
 		is='blockquote'
 		className={hover}
@@ -27,10 +31,10 @@ const Quote: FC<{ value: ASTQuote['value'] }> = ({ value }) => (
 		borderColor='neutral-200'
 		borderInlineStartColor='neutral-600'
 	>
-		{value.map((item, index) => (
-			<ParagraphBlock key={index} chunks={item.value} />
+		{paragraphs.map((paragraph, index) => (
+			<ParagraphBlock key={index} chunks={paragraph.value} />
 		))}
 	</Box>
 );
 
-export default Quote;
+export default QuoteBlock;
