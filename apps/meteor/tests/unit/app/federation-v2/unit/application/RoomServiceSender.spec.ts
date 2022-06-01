@@ -36,11 +36,18 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		createRoom: sinon.stub(),
 		joinRoom: sinon.stub(),
 	};
+	const notificationAdapter = {};
 	const room = FederatedRoom.build();
 	const user = FederatedRoom.build();
 
 	beforeEach(() => {
-		service = new FederationRoomServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationRoomServiceSender(
+			roomAdapter as any,
+			userAdapter as any,
+			settingsAdapter as any,
+			notificationAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
