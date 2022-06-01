@@ -1,5 +1,4 @@
-import vm from 'vm';
-
+import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
@@ -14,12 +13,11 @@ import { Integrations, IntegrationHistory } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
-import { integrations } from '../../lib/rocketchat';
+import { outgoingEvents } from '../../lib/outgoingEvents';
 import { fetch } from '../../../../server/lib/http/fetch';
 
 export class RocketChatIntegrationHandler {
 	constructor() {
-		this.vm = vm;
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
@@ -30,7 +28,7 @@ export class RocketChatIntegrationHandler {
 	addIntegration(record) {
 		outgoingLogger.debug(`Adding the integration ${record.name} of the event ${record.event}!`);
 		let channels;
-		if (record.event && !integrations.outgoingEvents[record.event].use.channel) {
+		if (record.event && !outgoingEvents[record.event].use.channel) {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)
 			channels = ['__any'];
@@ -275,18 +273,20 @@ export class RocketChatIntegrationHandler {
 		const script = integration.scriptCompiled;
 		const { store, sandbox } = this.buildSandbox();
 
-		let vmScript;
 		try {
 			outgoingLogger.info({ msg: 'Will evaluate script of Trigger', name: integration.name });
 			outgoingLogger.debug(script);
 
-			vmScript = this.vm.createScript(script, 'script.js');
+			const vmScript = new VMScript(`${script}; Script;`, 'script.js');
+			const vm = new VM({
+				sandbox,
+			});
 
-			vmScript.runInNewContext(sandbox);
+			const ScriptClass = vm.run(vmScript);
 
-			if (sandbox.Script) {
+			if (ScriptClass) {
 				this.compiledScripts[integration._id] = {
-					script: new sandbox.Script(),
+					script: new ScriptClass(),
 					store,
 					_updatedAt: integration._updatedAt,
 				};
@@ -303,10 +303,8 @@ export class RocketChatIntegrationHandler {
 			throw new Meteor.Error('error-evaluating-script');
 		}
 
-		if (!sandbox.Script) {
-			outgoingLogger.error(`Class "Script" not in Trigger ${integration.name}:`);
-			throw new Meteor.Error('class-script-not-found');
-		}
+		outgoingLogger.error(`Class "Script" not in Trigger ${integration.name}:`);
+		throw new Meteor.Error('class-script-not-found');
 	}
 
 	hasScriptAndMethod(integration, method) {
@@ -352,9 +350,12 @@ export class RocketChatIntegrationHandler {
 
 			this.updateHistory({ historyId, step: `execute-script-before-running-${method}` });
 
-			const result = Future.fromPromise(
-				this.vm.runInNewContext(
-					`
+			const vm = new VM({
+				timeout: 3000,
+				sandbox,
+			});
+
+			const scriptResult = vm.run(`
 				new Promise((resolve, reject) => {
 					Fiber(() => {
 						scriptTimeout(reject);
@@ -365,13 +366,9 @@ export class RocketChatIntegrationHandler {
 						}
 					}).run();
 				}).catch((error) => { throw new Error(error); });
-			`,
-					sandbox,
-					{
-						timeout: 3000,
-					},
-				),
-			).wait();
+			`);
+
+			const result = Future.fromPromise(scriptResult).wait();
 
 			outgoingLogger.debug({
 				msg: `Script method "${method}" result of the Integration "${integration.name}" is:`,
@@ -564,7 +561,7 @@ export class RocketChatIntegrationHandler {
 						});
 
 					room.usernames
-						.filter((username) => username !== message.u.username && this.triggers[`@${username}`])
+						.filter((username) => username !== message?.u?.username && this.triggers[`@${username}`])
 						.forEach((username) => {
 							for (const trigger of Object.values(this.triggers[`@${username}`])) {
 								triggersToExecute.add(trigger);
@@ -667,7 +664,7 @@ export class RocketChatIntegrationHandler {
 
 		let word;
 		// Not all triggers/events support triggerWords
-		if (integrations.outgoingEvents[event].use.triggerWords) {
+		if (outgoingEvents[event].use.triggerWords) {
 			if (trigger.triggerWords && trigger.triggerWords.length > 0) {
 				for (const triggerWord of trigger.triggerWords) {
 					if (!trigger.triggerWordAnywhere && message.msg.indexOf(triggerWord) === 0) {
@@ -963,4 +960,4 @@ export class RocketChatIntegrationHandler {
 	}
 }
 const triggerHandler = new RocketChatIntegrationHandler();
-export { integrations, triggerHandler };
+export { triggerHandler };

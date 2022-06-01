@@ -1,16 +1,12 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import UserInfo from '../../room/contextualBar/UserInfo';
 import { formsSubscription } from '../additionalForms';
@@ -19,14 +15,13 @@ import { formsSubscription } from '../additionalForms';
 // Department
 
 type dataType = {
-	status: string;
-	user: IUser;
+	user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
 };
 
 type AgentEditProps = {
 	data: dataType;
-	userDepartments: { departments: Array<{ departmentId: string }> };
-	availableDepartments: { departments: Array<{ _id: string; name?: string }> };
+	userDepartments: { departments: Pick<ILivechatDepartmentAgents, 'departmentId'>[] };
+	availableDepartments: { departments: Pick<ILivechatDepartment, '_id' | 'name'>[] };
 	uid: string;
 	reset: () => void;
 };
@@ -48,7 +43,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 		[availableDepartments],
 	);
 	const initialDepartmentValue = useMemo(
-		() => (userDepartments?.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
+		() => (userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
 		[userDepartments],
 	);
 	const eeForms = useSubscription(formsSubscription);

@@ -85,7 +85,6 @@ function SlackBridgeImport(command, params, item) {
 		});
 		throw error;
 	}
-	return SlackBridgeImport;
 }
 
 slashCommands.add('slackbridge-import', SlackBridgeImport);

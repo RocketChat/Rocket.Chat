@@ -1,10 +1,9 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import UserRow from './UserRow';
 
 function UsersTable({ params, onChangeParams, sort, onChangeSort, ...props }) {

@@ -39,7 +39,7 @@ export class QueueAggregator {
 	}
 
 	private updateQueueInfo(queueName: string, queuedCalls: number): void {
-		if (!this.currentQueueMembershipStatus[queueName]) {
+		if (!this.currentQueueMembershipStatus?.[queueName]) {
 			// something is wrong. Queue is not found in the membership details.
 			return;
 		}
@@ -48,14 +48,14 @@ export class QueueAggregator {
 
 	setMembership(subscription: IQueueMembershipSubscription): void {
 		this.extension = subscription.extension;
-		for (let i = 0; i < subscription.queues.length; i++) {
-			const queue = subscription.queues[i];
+
+		subscription.queues.forEach((queue) => {
 			const queueInfo: IQueueInfo = {
 				queueName: queue.name,
 				callsInQueue: 0,
 			};
 			this.currentQueueMembershipStatus[queue.name] = queueInfo;
-		}
+		});
 	}
 
 	queueJoined(joiningDetails: { queuename: string; callerid: { id: string }; queuedcalls: string }): void {
@@ -77,7 +77,7 @@ export class QueueAggregator {
 
 	memberRemoved(queue: { queuename: string; queuedcalls: string }): void {
 		// current user is removed from the queue which has queue count |queuedcalls|
-		if (!this.currentQueueMembershipStatus[queue.queuename]) {
+		if (!this.currentQueueMembershipStatus?.[queue.queuename]) {
 			// something is wrong. Queue is not found in the membership details.
 			return;
 		}
@@ -89,15 +89,11 @@ export class QueueAggregator {
 	}
 
 	getCallWaitingCount(): number {
-		let totalCallWaitingCount = 0;
-		Object.entries(this.currentQueueMembershipStatus).forEach(([, value]) => {
-			totalCallWaitingCount += value.callsInQueue;
-		});
-		return totalCallWaitingCount;
+		return Object.entries(this.currentQueueMembershipStatus).reduce((acc, [_, value]) => acc + value.callsInQueue, 0);
 	}
 
 	getCurrentQueueName(): string {
-		if (this.currentlyServing.queueInfo) {
+		if (this.currentlyServing?.queueInfo) {
 			return this.currentlyServing.queueInfo.queueName;
 		}
 
@@ -105,7 +101,7 @@ export class QueueAggregator {
 	}
 
 	callRinging(queueInfo: { queuename: string; callerid: { id: string; name: string } }): void {
-		if (!this.currentQueueMembershipStatus[queueInfo.queuename]) {
+		if (!this.currentQueueMembershipStatus?.[queueInfo.queuename]) {
 			return;
 		}
 
