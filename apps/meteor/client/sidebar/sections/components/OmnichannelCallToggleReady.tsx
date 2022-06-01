@@ -31,10 +31,24 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		return t('Cannot_disable_while_on_call');
 	};
 
+	const getIcon = (): 'phone-issue' | 'phone' | 'phone-disabled' => {
+		if (networkStatus === 'offline') {
+			return 'phone-issue';
+		}
+		return registered ? 'phone' : 'phone-disabled';
+	};
+
+	const getColor = (): 'warning' | 'success' | undefined => {
+		if (networkStatus === 'offline') {
+			return 'warning';
+		}
+		return registered ? 'success' : undefined;
+	};
+
 	const voipCallIcon = {
 		title: getTooltip(),
-		color: registered ? 'success' : undefined,
-		icon: registered ? 'phone' : 'phone-disabled',
+		color: getColor(),
+		icon: getIcon(),
 	} as const;
 
 	useEffect(() => {

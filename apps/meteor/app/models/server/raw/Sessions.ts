@@ -14,9 +14,12 @@ import type {
 	OSSessionAggregation,
 	UserSessionAggregationResult,
 	DeviceSessionAggregationResult,
+	DeviceManagementSession,
+	DeviceManagementPopulatedSession,
 	OSSessionAggregationResult,
 	IUser,
 } from '@rocket.chat/core-typings';
+import { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
 
 import { BaseRaw, IndexSpecification, ModelOptionalId } from './BaseRaw';
 
@@ -29,6 +32,9 @@ type DestructuredDateWithType = {
 };
 type DestructuredRange = { start: DestructuredDate; end: DestructuredDate };
 type DateRange = { start: Date; end: Date };
+
+type CustomSortOp = 'loginAt' | 'device.name' | 'device.os.name';
+type CustomSortOpAdmin = CustomSortOp | '_user.username' | '_user.name';
 
 const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): FilterQuery<ISession> => {
 	if (start.year === end.year && start.month === end.month) {
@@ -745,17 +751,265 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		this.secondaryCollection = colSecondary;
 	}
 
+	async aggregateSessionsByUserId({
+		uid,
+		sort,
+		search,
+		offset = 0,
+		count = 10,
+	}: {
+		uid: string;
+		sort?: Record<CustomSortOp, 1 | -1>;
+		search?: string | null;
+		offset?: number;
+		count?: number;
+	}): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>> {
+		const searchQuery = search ? [{ $text: { $search: search } }] : [];
+
+		const matchOperator = {
+			$match: {
+				$and: [
+					...searchQuery,
+					{
+						userId: {
+							$eq: uid,
+						},
+					},
+					{
+						loginToken: {
+							$exists: true,
+							$ne: '',
+						},
+					},
+					{
+						logoutAt: {
+							$exists: false,
+						},
+					},
+				],
+			},
+		};
+
+		const sortOperator = {
+			$sort: {
+				loginAt: -1,
+			},
+		};
+		const customSortOp = !sort || sort.loginAt ? [] : [{ $sort: sort }];
+
+		const groupOperator = {
+			$group: {
+				_id: '$loginToken',
+				sessionId: {
+					$first: '$sessionId',
+				},
+				userId: {
+					$first: '$userId',
+				},
+				device: {
+					$first: '$device',
+				},
+				host: {
+					$first: '$host',
+				},
+				ip: {
+					$first: '$ip',
+				},
+				loginAt: {
+					$first: '$loginAt',
+				},
+			},
+		};
+
+		const skipOperator = offset >= 1 ? [{ $skip: offset }] : [];
+		const limitOperator = { $limit: count };
+
+		const projectOperator = {
+			$project: {
+				_id: '$sessionId',
+				sessionId: 1,
+				userId: 1,
+				device: 1,
+				host: 1,
+				ip: 1,
+				loginAt: 1,
+			},
+		};
+
+		const facetOperator = {
+			$facet: {
+				docs: [sortOperator, ...skipOperator, limitOperator, ...customSortOp],
+				count: [
+					{
+						$count: 'total',
+					},
+				],
+			},
+		};
+
+		const queryArray = [matchOperator, sortOperator, groupOperator, projectOperator, facetOperator];
+
+		const [
+			{
+				docs: sessions,
+				count: [{ total } = { total: 0 }],
+			},
+		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementSession[] }>>(queryArray).toArray();
+
+		return { sessions, total, count, offset };
+	}
+
+	async aggregateSessionsAndPopulate({
+		sort,
+		search,
+		offset = 0,
+		count = 10,
+	}: {
+		sort?: Record<CustomSortOpAdmin, 1 | -1>;
+		search?: string | null;
+		offset?: number;
+		count?: number;
+	}): Promise<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>> {
+		const searchQuery = search ? [{ $text: { $search: search } }] : [];
+
+		const matchOperator = {
+			$match: {
+				$and: [
+					...searchQuery,
+					{
+						loginToken: {
+							$exists: true,
+							$ne: '',
+						},
+					},
+					{
+						logoutAt: {
+							$exists: false,
+						},
+					},
+				],
+			},
+		};
+
+		const sortOperator = {
+			$sort: {
+				loginAt: -1,
+			},
+		};
+		const customSortOp = !sort || sort.loginAt ? [] : [{ $sort: sort }];
+
+		const groupOperator = {
+			$group: {
+				_id: '$loginToken',
+				sessionId: {
+					$first: '$sessionId',
+				},
+				userId: {
+					$first: '$userId',
+				},
+				device: {
+					$first: '$device',
+				},
+				host: {
+					$first: '$host',
+				},
+				ip: {
+					$first: '$ip',
+				},
+				loginAt: {
+					$first: '$loginAt',
+				},
+			},
+		};
+		const limitOperator = { $limit: count };
+
+		const skipOperator = offset >= 1 ? [{ $skip: offset }] : [];
+
+		const lookupOperator = {
+			$lookup: {
+				from: 'users',
+				localField: 'userId',
+				foreignField: '_id',
+				as: '_user',
+			},
+		};
+		const unwindOperator = {
+			$unwind: {
+				path: '$_user',
+				preserveNullAndEmptyArrays: true,
+			},
+		};
+
+		const projectOperator = {
+			$project: {
+				_id: '$sessionId',
+				sessionId: 1,
+				device: 1,
+				host: 1,
+				ip: 1,
+				loginAt: 1,
+				userId: 1,
+				_user: {
+					name: 1,
+					username: 1,
+					avatarETag: 1,
+					avatarOrigin: 1,
+				},
+			},
+		};
+
+		const facetOperator = {
+			$facet: {
+				docs: [sortOperator, ...skipOperator, limitOperator, lookupOperator, unwindOperator, projectOperator, ...customSortOp],
+				count: [
+					{
+						$count: 'total',
+					},
+				],
+			},
+		};
+
+		const queryArray = [matchOperator, sortOperator, groupOperator, facetOperator];
+
+		const [
+			{
+				docs: sessions,
+				count: [{ total } = { total: 0 }],
+			},
+		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementPopulatedSession[] }>>(queryArray).toArray();
+
+		return { sessions, total, count, offset };
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [
-			{ key: { instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 } },
-			{ key: { instanceId: 1, sessionId: 1, userId: 1 } },
-			{ key: { instanceId: 1, sessionId: 1 } },
-			{ key: { sessionId: 1 } },
-			{ key: { userId: 1 } },
-			{ key: { year: 1, month: 1, day: 1, type: 1 } },
-			{ key: { type: 1 } },
-			{ key: { ip: 1, loginAt: 1 } },
+			{ key: { createdAt: -1 } },
+			{ key: { loginAt: -1 } },
+			{ key: { ip: 1, loginAt: -1 } },
+			{ key: { userId: 1, sessionId: 1 } },
+			{ key: { type: 1, year: 1, month: 1, day: 1 } },
+			{ key: { sessionId: 1, instanceId: 1, year: 1, month: 1, day: 1 } },
 			{ key: { _computedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 45 },
+			{ key: { 'loginToken': 1, 'logoutAt': 1, 'userId': 1, 'device.name': 1, 'device.os.name': 1, 'logintAt': -1 } },
+			{
+				key: {
+					'device.name': 'text',
+					'device.type': 'text',
+					'device.os.name': 'text',
+					'sessionId': 'text',
+					'userId': 'text',
+					'logintAt': -1,
+				},
+				weights: {
+					'device.name': 10,
+					'device.os.name': 10,
+					'device.type': 5,
+					'sessionId': 1,
+					'userId': 1,
+				},
+				name: 'text_search_w_weights',
+				background: true,
+			},
 		];
 	}
 
@@ -793,17 +1047,19 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		return this.findOne({ sessionId });
 	}
 
+	findOneBySessionIdAndUserId(sessionId: string, userId: string): Promise<ISession | null> {
+		return this.findOne({ sessionId, userId, loginToken: { $exists: true, $ne: '' } });
+	}
+
 	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
-		const query = {
+		return this.find({
 			year,
 			month,
 			day,
 			type: 'session',
 			closedAt: { $exists: false },
 			lastActivityAt: { $exists: false },
-		};
-
-		return this.find(query);
+		});
 	}
 
 	async getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<
@@ -1196,6 +1452,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	}
 
 	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined> {
+		// TODO: check if we should create a session when there is no loginToken or not
 		const { year, month, day, sessionId, instanceId } = data;
 
 		if (!year || !month || !day || !sessionId || !instanceId) {
@@ -1257,38 +1514,63 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	}
 
 	async updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data = {}): Promise<UpdateWriteOpResult> {
-		const query = {
-			year,
-			month,
-			day,
-			type: 'session',
-			closedAt: { $exists: false },
-			lastActivityAt: { $exists: false },
-		};
-
 		const update = {
 			$set: data,
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(
+			{
+				year,
+				month,
+				day,
+				type: 'session',
+				closedAt: { $exists: false },
+				lastActivityAt: { $exists: false },
+			},
+			update,
+		);
 	}
 
-	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult> {
+	async logoutBySessionIdAndUserId({
+		sessionId,
+		userId,
+	}: {
+		sessionId: ISession['sessionId'];
+		userId: IUser['_id'];
+	}): Promise<UpdateWriteOpResult> {
 		const query = {
-			instanceId,
 			sessionId,
 			userId,
-			logoutAt: { $exists: 0 },
+			logoutAt: { $exists: false },
 		};
-
+		const session = await this.findOne(query);
 		const logoutAt = new Date();
-		const update = {
+		const updateObj = {
 			$set: {
 				logoutAt,
+				logoutBy: userId,
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany({ userId, loginToken: session?.loginToken }, updateObj);
+	}
+
+	async logoutByloginTokenAndUserId({
+		loginToken,
+		userId,
+	}: {
+		loginToken: ISession['loginToken'];
+		userId: IUser['_id'];
+	}): Promise<UpdateWriteOpResult> {
+		const logoutAt = new Date();
+		const updateObj = {
+			$set: {
+				logoutAt,
+				logoutBy: userId,
+			},
+		};
+
+		return this.updateMany({ userId, loginToken }, updateObj);
 	}
 
 	async createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteOpResultObject | undefined> {

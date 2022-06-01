@@ -180,6 +180,26 @@ settingsRegistry.addGroup('Accounts', function () {
 			type: 'string',
 			hidden: true,
 		});
+		this.add('Manual_Entry_User_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('CSV_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Hipchat_Enterprise_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Users_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
 			type: 'boolean',
 		});
@@ -3219,6 +3239,15 @@ settingsRegistry.addGroup('Call_Center', function () {
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Enable_Keep_Alive_For_Unstable_Networks', true, {
+				type: 'boolean',
+				public: true,
+				i18nDescription: 'VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description',
+				enableQuery: {
+					_id: 'Livechat_enabled',
 					value: true,
 				},
 			});

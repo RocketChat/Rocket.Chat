@@ -838,6 +838,16 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	unsetOneLoginToken(_id, token) {
+		const update = {
+			$pull: {
+				'services.resume.loginTokens': { hashedToken: token },
+			},
+		};
+
+		return this.col.updateOne({ _id }, update);
+	}
+
 	unsetLoginTokens(userId) {
 		return this.col.updateOne(
 			{
@@ -997,6 +1007,22 @@ export class UsersRaw extends BaseRaw {
 			],
 		};
 
+		return this.find(query, options);
+	}
+
+	findActiveUsersTOTPEnable(options) {
+		const query = {
+			'active': true,
+			'services.totp.enabled': true,
+		};
+		return this.find(query, options);
+	}
+
+	findActiveUsersEmail2faEnable(options) {
+		const query = {
+			'active': true,
+			'services.email2fa.enabled': true,
+		};
 		return this.find(query, options);
 	}
 }

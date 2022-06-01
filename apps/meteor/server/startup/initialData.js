@@ -135,6 +135,8 @@ Meteor.startup(async function () {
 				console.log('Inserting initial user:'.green);
 				console.log(JSON.stringify(initialUser, null, 2).green);
 				Users.create(initialUser);
+
+				await addUserToDefaultChannels(initialUser, true);
 			}
 		} catch (e) {
 			console.log('Error processing environment variable INITIAL_USER'.red, e);

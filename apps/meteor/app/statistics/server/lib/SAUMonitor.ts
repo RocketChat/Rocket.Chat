@@ -10,14 +10,17 @@ import { aggregates } from '../../../models/server/raw/Sessions';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
+import { getClientAddress } from '../../../../server/lib/getClientAddress';
 
 type DateObj = { day: number; month: number; year: number };
 
-const getDateObj = (dateTime = new Date()): DateObj => ({
-	day: dateTime.getDate(),
-	month: dateTime.getMonth() + 1,
-	year: dateTime.getFullYear(),
-});
+const getDateObj = (dateTime = new Date()): DateObj => {
+	return {
+		day: dateTime.getDate(),
+		month: dateTime.getMonth() + 1,
+		year: dateTime.getFullYear(),
+	};
+};
 
 const logger = new Logger('SAUMonitor');
 
@@ -103,7 +106,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		sauEvents.on('accounts.login', async ({ userId, connection }) => {
+		sauEvents.on('accounts.login', async ({ userId, connection }: { userId: string; connection: ISocketConnection }) => {
 			if (!this.isRunning()) {
 				return;
 			}
@@ -121,8 +124,9 @@ export class SAUMonitorClass {
 			if (!this.isRunning()) {
 				return;
 			}
+			const { id: sessionId } = connection;
 
-			await Sessions.logoutByInstanceIdAndSessionIdAndUserId(connection.instanceId, connection.id, userId);
+			await Sessions.logoutBySessionIdAndUserId({ sessionId, userId });
 		});
 	}
 
@@ -189,15 +193,16 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		const ip = connection.clientAddress || connection.httpHeaders?.['x-real-ip'] || connection.httpHeaders?.['x-forwarded-for'];
+		const ip = getClientAddress(connection);
 
-		const host = connection.httpHeaders?.host || '';
-
+		const host = connection.httpHeaders?.host ?? '';
+		const loginToken = connection?.loginToken ? { loginToken: connection?.loginToken } : {};
 		return {
 			type: 'session',
 			sessionId: connection.id,
 			instanceId: connection.instanceId,
-			ip: (Array.isArray(ip) ? ip[0] : ip) || '',
+			...loginToken,
+			ip,
 			host,
 			...this._getUserAgentInfo(connection),
 			...params,
@@ -315,13 +320,6 @@ export class SAUMonitorClass {
 		date.setDate(date.getDate() - 0); // yesterday
 		const yesterday = getDateObj(date);
 
-		const match = {
-			type: 'session',
-			year: { $lte: yesterday.year },
-			month: { $lte: yesterday.month },
-			day: { $lte: yesterday.day },
-		};
-
 		for await (const record of aggregates.dailySessionsOfYesterday(Sessions.col, yesterday)) {
 			await Sessions.updateOne(
 				{ _id: `${record.userId}-${record.year}-${record.month}-${record.day}` },
@@ -330,11 +328,19 @@ export class SAUMonitorClass {
 			);
 		}
 
-		await Sessions.updateMany(match, {
-			$set: {
-				type: 'computed-session',
-				_computedAt: new Date(),
+		await Sessions.updateMany(
+			{
+				type: 'session',
+				year: { $lte: yesterday.year },
+				month: { $lte: yesterday.month },
+				day: { $lte: yesterday.day },
 			},
-		});
+			{
+				$set: {
+					type: 'computed-session',
+					_computedAt: new Date(),
+				},
+			},
+		);
 	}
 }
