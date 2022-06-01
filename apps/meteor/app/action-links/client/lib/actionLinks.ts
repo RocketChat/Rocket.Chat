@@ -42,7 +42,7 @@ export const actionLinks = {
 
 	// 	return message;
 	// },
-	run(method: string, message: IMessage, instance: undefined): void {
+	run(method: string, message: IMessage, instance?: Blaze.TemplateInstance | Function): void {
 		const actionLink = message.actionLinks && message.actionLinks.find((action) => action.method_id === method);
 
 		if (!actionLink) {

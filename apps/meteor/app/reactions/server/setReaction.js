@@ -94,7 +94,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		isReacted = true;
 	}
 
-	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, Meteor.user(), reaction, isReacted));
+	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted));
 
 	msgStream.emit(message.rid, message);
 }
