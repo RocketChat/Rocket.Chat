@@ -22,7 +22,7 @@ export type CreateChannelProps = {
 		handleReadOnly?: () => void;
 	};
 	hasUnsavedChanges: boolean;
-	onChangeUsers: (value: string, action: string) => void;
+	onChangeUsers: (value: string, action: 'remove' | undefined) => void;
 	onChangeType: React.FormEventHandler<HTMLElement>;
 	onChangeBroadcast: React.FormEventHandler<HTMLElement>;
 	canOnlyCreateOneType?: false | 'p' | 'c';

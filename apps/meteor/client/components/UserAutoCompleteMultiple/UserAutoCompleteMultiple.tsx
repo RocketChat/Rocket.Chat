@@ -37,7 +37,7 @@ const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultip
 	return (
 		<AutoComplete
 			{...props}
-			onChange={onChange}
+			onChange={onChange as any}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ value: selected }): ReactElement =>
