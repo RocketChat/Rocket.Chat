@@ -12,7 +12,7 @@ const initialState = {
 	username: '',
 	name: '',
 	alias: '',
-	avatarUrl: '',
+	avatar: '',
 	emoji: '',
 	scriptEnabled: false,
 	script: '',

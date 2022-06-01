@@ -43,6 +43,7 @@ function SideBarItemTemplateWithData({
 	const {
 		lastMessage,
 		hideUnreadStatus,
+		hideMentionStatus,
 		unread = 0,
 		alert,
 		userMentions,
@@ -70,8 +71,9 @@ function SideBarItemTemplateWithData({
 	const variant =
 		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const isUnread = unread > 0 || threadUnread;
+	const showBadge = !hideUnreadStatus || (!hideMentionStatus && userMentions);
 	const badges =
-		!hideUnreadStatus && isUnread ? (
+		showBadge && isUnread ? (
 			<Badge style={{ flexShrink: 0 }} variant={variant}>
 				{unread + tunread?.length}
 			</Badge>
