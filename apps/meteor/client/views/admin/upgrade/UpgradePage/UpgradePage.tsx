@@ -7,8 +7,6 @@ import Page from '../../../../components/Page';
 import PageHeader from '../../../../components/Page/PageHeader';
 import UpgradePageError from '../UpgradePageError';
 
-const iframeStyle = { width: '100%', height: '100%' };
-
 const urlMap: Record<UpgradeTabVariant, string> = {
 	'go-fully-featured': 'https://go.rocket.chat/i/upgrade-ce-1-unregistered',
 	'go-fully-featured-registered': 'https://go.rocket.chat/i/upgrade-ce-1-registered',
@@ -92,11 +90,21 @@ const UpgradePage = (): ReactElement => {
 			{isMobile && <PageHeader title='' />}
 			{!hasConnection && <UpgradePageError />}
 			{hasConnection && isLoading && (
-				<Box pb='x24'>
+				<Box width='100%' height='100%' position='absolute' display='flex' justifyContent='center' alignItems='center'>
 					<Throbber />
 				</Box>
 			)}
-			{hasConnection && <iframe src={pageUrl} style={iframeStyle} ref={ref} onLoad={(): void => setIsLoading(false)} />}
+			{hasConnection && (
+				<Box
+					is='iframe'
+					src={pageUrl}
+					ref={ref}
+					onLoad={(): void => setIsLoading(false)}
+					invisible={isLoading}
+					width='100%'
+					height='100%'
+				/>
+			)}
 		</Page>
 	);
 };

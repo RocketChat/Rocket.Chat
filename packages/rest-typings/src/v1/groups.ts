@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUpload } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -317,10 +317,9 @@ export const isGroupsMessageProps = ajv.compile(GroupsMessagePropsSchema);
 
 export type GroupsEndpoints = {
 	'groups.files': {
-		GET: (params: GroupsFilesProps) => {
-			files: IMessage[];
-			total: number;
-		};
+		GET: (params: GroupsFilesProps) => PaginatedResult<{
+			files: IUpload[];
+		}>;
 	};
 	'groups.members': {
 		GET: (params: GroupsMembersProps) => {

@@ -240,7 +240,7 @@ describe('[Rooms]', function () {
 				.send({ email, name: username, username, password })
 				.end((err, res) => {
 					user = res.body.user;
-					done();
+					done(err);
 				});
 		});
 
@@ -280,13 +280,13 @@ describe('[Rooms]', function () {
 		it('create a private channel', (done) => {
 			createRoom({ type: 'p', name: `testPrivateChannel${+new Date()}` }).end((err, res) => {
 				privateChannel = res.body.group;
-				done();
+				done(err);
 			});
 		});
 		it('create a direct message', (done) => {
 			createRoom({ type: 'd', username: 'rocket.cat' }).end((err, res) => {
-				directMessageChannel = res.body.room;
-				done();
+				directMessageChannel = res.body.room.rid;
+				done(err);
 			});
 		});
 		it('should return success when send a valid public channel', (done) => {
@@ -326,13 +326,14 @@ describe('[Rooms]', function () {
 				.post(api('rooms.cleanHistory'))
 				.set(credentials)
 				.send({
-					roomId: directMessageChannel._id,
+					roomId: directMessageChannel,
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
+					console.log('rooms.cleanHistory', res.body);
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
@@ -342,7 +343,7 @@ describe('[Rooms]', function () {
 				.post(api('rooms.cleanHistory'))
 				.set(userCredentials)
 				.send({
-					roomId: directMessageChannel._id,
+					roomId: directMessageChannel,
 					latest: '2016-12-09T13:42:25.304Z',
 					oldest: '2016-08-30T13:42:25.304Z',
 				})

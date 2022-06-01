@@ -15,7 +15,7 @@ import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../../client/lib/utils/messageArgs';
 import { settings } from '../../../../settings/client';
 import { callbacks } from '../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization/client';
