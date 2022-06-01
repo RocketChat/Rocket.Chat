@@ -1,15 +1,13 @@
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import Page from '../../../../../client/components/Page';
-import VerticalBar from '/client/components/VerticalBar';
 import DeviceInfoWithData from './DeviceInfoWithData';
 import DevicesTable from './DevicesTable';
 
 const DeviceManagementPage = (): ReactElement => {
 
 	const t = useTranslation();
-	const deviceManagementRouter = useRoute('device-management');
 	const context = useRouteParameter('context');
 	const deviceId = useRouteParameter('id');
 
