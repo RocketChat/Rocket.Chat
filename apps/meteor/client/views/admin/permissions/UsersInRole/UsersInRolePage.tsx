@@ -12,8 +12,8 @@ import UsersInRoleTable from './UsersInRoleTable';
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
 	const reload = useRef<() => void>(() => undefined);
-	const [user, setUser] = useState<string | undefined>('');
-	const [rid, setRid] = useState<string>();
+	const [user, setUser] = useState<string>('');
+	const [rid, setRid] = useState<string>('');
 	const [userError, setUserError] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -36,7 +36,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		try {
 			await addUser({ roleId: _id, username: user, roomId: rid });
 			dispatchToastMessage({ type: 'success', message: t('User_added') });
-			setUser(undefined);
+			setUser('');
 			reload.current?.();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -50,6 +50,12 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 
 		return setUser(user);
 	});
+
+	const handleChange = (value: unknown): void => {
+		if (typeof value === 'string') {
+			setRid(value);
+		}
+	};
 
 	return (
 		<Page>
@@ -65,7 +71,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 							<Field mbe='x4'>
 								<Field.Label>{t('Choose_a_room')}</Field.Label>
 								<Field.Row>
-									<RoomAutoComplete value={rid} onChange={setRid} placeholder={t('User')} />
+									<RoomAutoComplete value={rid} onChange={handleChange} placeholder={t('User')} />
 								</Field.Row>
 							</Field>
 						)}

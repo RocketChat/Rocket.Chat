@@ -2615,7 +2615,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "عامل تصفية مجموعة المستخدمين",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "يستخدم عامل تصفية بحث LDAP للتحقق مما إذا كان المستخدم في مجموعة.",
   "LDAP_Sync_User_Data_RolesMap": "خريطة مجموعة بيانات المستخدم",
-  "LDAP_Sync_User_Data_RolesMap_Description": "تعيين مجموعات LDAP إلى أدوار مستخدم Rocket.Chat <br/>كمثال، \"{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}\" سيعين مجموعة LDAP لمسؤول rocket إلى دور \"مسؤول\" Rocket.",
+  "LDAP_Sync_User_Data_RolesMap_Description": "تعيين مجموعات LDAP إلى أدوار مستخدم Rocket.Chat <br/>كمثال، \"{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}\" سيعين مجموعة LDAP لمسؤول rocket إلى دور \"مسؤول\" Rocket.",
   "LDAP_Teams_BaseDN": "الاسم المميز الأساسي لفِرَق LDAP",
   "LDAP_Teams_BaseDN_Description": "يُستخدم الاسم المميز الأساسي لـ LDAP للبحث عن فِرَق المستخدمين.",
   "LDAP_Teams_Name_Field": "سمة اسم فريق LDAP",

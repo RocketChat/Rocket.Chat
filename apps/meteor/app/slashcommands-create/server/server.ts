@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
 
-function Create(_command: 'create', params: string, item: Record<string, string>): void {
+function Create(_command: 'create', params: string, item: IMessage): void {
 	function getParams(str: string): string[] {
 		const regex = /(--(\w+))+/g;
 		const result = [];
@@ -53,16 +54,8 @@ function Create(_command: 'create', params: string, item: Record<string, string>
 	Meteor.call('createChannel', channelStr, []);
 }
 
-slashCommands.add(
-	'create',
-	Create,
-	{
-		description: 'Create_A_New_Channel',
-		params: '#channel',
-		permission: ['create-c', 'create-p'],
-	},
-	undefined,
-	false,
-	undefined,
-	undefined,
-);
+slashCommands.add('create', Create, {
+	description: 'Create_A_New_Channel',
+	params: '#channel',
+	permission: ['create-c', 'create-p'],
+});

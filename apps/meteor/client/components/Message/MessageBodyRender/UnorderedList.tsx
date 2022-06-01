@@ -5,8 +5,8 @@ import Inline from './Inline';
 
 const UnorderedList: FC<{ value: ASTUnorderedList['value'] }> = ({ value }) => (
 	<ul>
-		{value.map((item) => (
-			<li>
+		{value.map((item, index) => (
+			<li key={index}>
 				<Inline value={item.value} />
 			</li>
 		))}

@@ -6,7 +6,7 @@ import { AutoTranslate } from './autotranslate';
 import { settings } from '../../../settings/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { MessageAction } from '../../../ui-utils/client/lib/MessageAction';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { Messages } from '../../../models/client';
 
 Meteor.startup(() => {
