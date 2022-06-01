@@ -6,6 +6,7 @@ import {
 	useAcceptCall,
 	useAbortCall,
 	useRejectIncomingCall,
+	useMuteCall,
 } from '../../../../../contexts/VideoConfPopupContext';
 import { useHandleRoom } from '../../../../../lib/RoomManager';
 import CallingPopup from './CallingPopup';
@@ -26,6 +27,7 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, position, current, 
 	const acceptCall = useAcceptCall();
 	const abortCall = useAbortCall();
 	const rejectCall = useRejectIncomingCall();
+	const muteCall = useMuteCall();
 	const { value: room } = useHandleRoom(rid);
 
 	useEffect(() => {
@@ -50,6 +52,11 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, position, current, 
 		dismissPopup(id);
 	};
 
+	const handleMute = (id: string): void => {
+		dismissPopup(id);
+		muteCall();
+	};
+
 	if (!room) {
 		return null;
 	}
@@ -63,6 +70,7 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, position, current, 
 				current={current}
 				total={total}
 				onClose={handleClose}
+				onMute={handleMute}
 				onConfirm={handleConfirm}
 			/>
 		);

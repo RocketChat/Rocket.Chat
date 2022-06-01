@@ -12,6 +12,7 @@ import {
 	VideoConfPopupFooter,
 	VideoConfPopupTitle,
 	VideoConfPopupIndicators,
+	VideoConfPopupClose,
 } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement } from 'react';
 
@@ -26,10 +27,11 @@ type ReceivingPopupProps = {
 	current: number;
 	total: number;
 	onClose: (id: string) => void;
+	onMute: (id: string) => void;
 	onConfirm: () => void;
 };
 
-const ReceivingPopup = ({ id, room, position, current, total, onClose, onConfirm }: ReceivingPopupProps): ReactElement => {
+const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, onConfirm }: ReceivingPopupProps): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
@@ -45,6 +47,7 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onConfirm
 		<VideoConfPopup position={position}>
 			<VideoConfPopupContent>
 				{/* Design Team has planned x48 */}
+				<VideoConfPopupClose title={t('Close')} onClick={(): void => onMute(id)} />
 				<RoomAvatar room={room} size='x40' />
 				{current && total ? <VideoConfPopupIndicators current={current} total={total} /> : null}
 				<VideoConfPopupTitle text='Incoming call from' icon='phone-in' />
