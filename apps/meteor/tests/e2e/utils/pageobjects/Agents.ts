@@ -7,11 +7,11 @@ export default class Agents extends BasePage {
 		return this.getPage().locator('a[href="omnichannel/agents"]');
 	}
 
-	public agentsTitle(): Locator {
+	public textAgentsTitle(): Locator {
 		return this.getPage().locator('h2 >> text="Agents"');
 	}
 
-	public agentsUserNameInput(): Locator {
+	public inputAgentsUserName(): Locator {
 		return this.getPage().locator('input').first();
 	}
 
@@ -83,10 +83,6 @@ export default class Agents extends BasePage {
 		return this.getPage().locator('table tr td:nth-child(5) button');
 	}
 
-	public modalAgent(): Locator {
-		return this.getPage().locator('#modal-root');
-	}
-
 	public agentStatus(): Locator {
 		return this.getPage().locator('[data-qa="AgentEditTextInput-Status"]');
 	}
@@ -100,8 +96,8 @@ export default class Agents extends BasePage {
 	}
 
 	public async doAddAgent(): Promise<void> {
-		await this.agentsTitle().waitFor();
-		await this.agentsUserNameInput().type('Rocket.Cat', { delay: 50 });
+		await this.textAgentsTitle().waitFor();
+		await this.inputAgentsUserName().type('Rocket.Cat', { delay: 50 });
 
 		await this.userOption().click();
 		await this.btnAddAgents().click();

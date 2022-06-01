@@ -20,7 +20,7 @@ test.describe('[Agents]', () => {
 		await loginPage.login(adminLogin);
 
 		await sideNav.sidebarUserMenu().click();
-		await sideNav.omnichannel().click();
+		await sideNav.textOmnichannel().click();
 		await agents.agentsLink().click();
 		await agents.doAddAgent();
 	});

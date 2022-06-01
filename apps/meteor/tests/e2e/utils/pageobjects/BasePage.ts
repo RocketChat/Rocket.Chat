@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 class BasePage {
 	private page: Page;
@@ -21,6 +21,10 @@ class BasePage {
 
 	public async keyboardPress(key: string): Promise<void> {
 		await this.getPage().keyboard.press(key);
+	}
+
+	public modalAgent(): Locator {
+		return this.getPage().locator('#modal-root');
 	}
 }
 export default BasePage;
