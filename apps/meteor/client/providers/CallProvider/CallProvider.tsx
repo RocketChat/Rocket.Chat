@@ -1,5 +1,8 @@
-import type { IVoipRoom, IUser, VoipEventDataSignature } from '@rocket.chat/core-typings';
 import {
+	IVoipRoom,
+	IUser,
+	VoipEventDataSignature,
+	VoipClientEvents,
 	ICallerInfo,
 	isVoipEventAgentCalled,
 	isVoipEventAgentConnected,
@@ -9,7 +12,7 @@ import {
 	isVoipEventCallAbandoned,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useRoute, useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
+import { useRoute, useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -19,6 +22,7 @@ import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
+import { imperativeModal } from '../../lib/imperativeModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { useVoipClient } from './hooks/useVoipClient';
@@ -40,6 +44,7 @@ type NetworkState = 'online' | 'offline';
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
+	const dispatchEvent = useEndpoint('POST', 'voip/events');
 
 	const result = useVoipClient();
 	const user = useUser();
@@ -50,11 +55,9 @@ export const CallProvider: FC = ({ children }) => {
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
 
-	const setModal = useSetModal();
-
 	const openWrapUpModal = useCallback((): void => {
-		setModal(<WrapUpCallModal />);
-	}, [setModal]);
+		imperativeModal.open({ component: WrapUpCallModal });
+	}, []);
 
 	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
 
@@ -129,10 +132,11 @@ export const CallProvider: FC = ({ children }) => {
 		const handleCallHangup = (_event: { roomId: string }): void => {
 			setQueueName(queueAggregator.getCurrentQueueName());
 			openWrapUpModal();
+			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: _event.roomId });
 		};
 
 		return subscribeToNotifyUser(`${user._id}/call.hangup`, handleCallHangup);
-	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled]);
+	}, [openWrapUpModal, queueAggregator, subscribeToNotifyUser, user, voipEnabled, dispatchEvent]);
 
 	useEffect(() => {
 		if (!result.voipClient) {

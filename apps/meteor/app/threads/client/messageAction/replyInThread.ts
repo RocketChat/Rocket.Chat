@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 Meteor.startup(function () {
