@@ -1,9 +1,9 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { HTMLAttributes, VFC } from 'react';
 
-const Home = (props) => {
+const SidebarHeaderActionHome: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 	const homeRoute = useRoute('home');
 	const { sidebar } = useLayout();
 	const showHome = useSetting('Layout_Show_Home_Button');
@@ -15,4 +15,4 @@ const Home = (props) => {
 	return showHome ? <Sidebar.TopBar.Action {...props} icon='home' onClick={handleHome} /> : null;
 };
 
-export default Home;
+export default SidebarHeaderActionHome;

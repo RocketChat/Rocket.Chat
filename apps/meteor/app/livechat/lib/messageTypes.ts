@@ -2,19 +2,19 @@ import formatDistance from 'date-fns/formatDistance';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 
-import { MessageTypes } from '../../ui-utils';
+import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 
 MessageTypes.registerType({
 	id: 'livechat_navigation_history',
 	system: true,
 	message: 'New_visitor_navigation',
-	data(message) {
-		if (!message.navigation || !message.navigation.page) {
-			return;
-		}
+	data(message: IOmnichannelSystemMessage) {
 		return {
-			history: `${(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') + message.navigation.page.location.href}`,
+			history: message.navigation
+				? `${(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') + message.navigation.page.location.href}`
+				: '',
 		};
 	},
 });
@@ -23,9 +23,11 @@ MessageTypes.registerType({
 	id: 'livechat_transfer_history',
 	system: true,
 	message: 'New_chat_transfer',
-	data(message) {
+	data(message: IOmnichannelSystemMessage) {
 		if (!message.transferData) {
-			return;
+			return {
+				transfer: '',
+			};
 		}
 
 		const { comment } = message.transferData;
@@ -33,20 +35,19 @@ MessageTypes.registerType({
 		const from =
 			message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.username);
 		const transferTypes = {
-			agent: () =>
+			agent: (): string =>
 				TAPi18n.__(`Livechat_transfer_to_agent${commentLabel}`, {
 					from,
-					to:
-						message.transferData.transferredTo && (message.transferData.transferredTo.name || message.transferData.transferredTo.username),
+					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
 					...(comment && { comment }),
 				}),
-			department: () =>
+			department: (): string =>
 				TAPi18n.__(`Livechat_transfer_to_department${commentLabel}`, {
 					from,
-					to: message.transferData.nextDepartment && message.transferData.nextDepartment.name,
+					to: message?.transferData?.nextDepartment?.name || '',
 					...(comment && { comment }),
 				}),
-			queue: () =>
+			queue: (): string =>
 				TAPi18n.__('Livechat_transfer_return_to_the_queue', {
 					from,
 				}),
@@ -61,21 +62,23 @@ MessageTypes.registerType({
 	id: 'livechat_transcript_history',
 	system: true,
 	message: 'Livechat_chat_transcript_sent',
-	data(message) {
+	data(message: IOmnichannelSystemMessage) {
 		if (!message.requestData) {
-			return;
+			return {
+				transcript: '',
+			};
 		}
 
-		const { requestData: { type, visitor = {}, user = {} } = {} } = message;
+		const { requestData: { type, visitor, user } = { type: 'user' } } = message;
 		const requestTypes = {
-			visitor: () =>
+			visitor: (): string =>
 				TAPi18n.__('Livechat_visitor_transcript_request', {
-					guest: visitor.name || visitor.username,
+					guest: visitor?.name || visitor?.username || '',
 				}),
-			user: () =>
+			user: (): string =>
 				TAPi18n.__('Livechat_user_sent_chat_transcript_to_visitor', {
-					agent: user.name || user.username,
-					guest: visitor.name || visitor.username,
+					agent: user?.name || user?.username || '',
+					guest: visitor?.name || visitor?.username || '',
 				}),
 		};
 
@@ -105,15 +108,16 @@ MessageTypes.registerType({
 		}
 		return escapeHTML(message.msg);
 	},
+	message: 'room_changed_privacy',
 });
 
 MessageTypes.registerType({
 	id: 'omnichannel_placed_chat_on_hold',
 	system: true,
 	message: 'Omnichannel_placed_chat_on_hold',
-	data(message) {
+	data(message: IOmnichannelSystemMessage) {
 		return {
-			comment: message.comment,
+			comment: message.comment ? message.comment : 'No comment provided',
 		};
 	},
 });
@@ -122,9 +126,9 @@ MessageTypes.registerType({
 	id: 'omnichannel_on_hold_chat_resumed',
 	system: true,
 	message: 'Omnichannel_on_hold_chat_resumed',
-	data(message) {
+	data(message: IOmnichannelSystemMessage) {
 		return {
-			comment: message.comment,
+			comment: message.comment ? message.comment : 'No comment provided',
 		};
 	},
 });
