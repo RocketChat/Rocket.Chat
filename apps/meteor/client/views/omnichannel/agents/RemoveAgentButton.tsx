@@ -1,12 +1,17 @@
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { FC } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
-function RemoveAgentButton({ _id, reload }) {
+type RemoveAgentButtonProps = {
+	_id: string;
+	reload: () => void;
+};
+
+const RemoveAgentButton: FC<RemoveAgentButtonProps> = ({ _id, reload }) => {
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${_id}`);
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -21,17 +26,17 @@ function RemoveAgentButton({ _id, reload }) {
 
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
-		const onDeleteAgent = async () => {
+		const onDeleteAgent = async (): Promise<void> => {
 			try {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 			}
 			setModal();
 		};
 
-		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={(): void => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (
@@ -41,6 +46,6 @@ function RemoveAgentButton({ _id, reload }) {
 			</Button>
 		</Table.Cell>
 	);
-}
+};
 
 export default RemoveAgentButton;

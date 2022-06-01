@@ -1,9 +1,11 @@
 import { Box, Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, FC, ReactElement } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
+import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import VerticalBar from '../../../components/VerticalBar';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -14,9 +16,20 @@ import AgentInfoActions from './AgentInfoActions';
 import AgentsPage from './AgentsPage';
 import RemoveAgentButton from './RemoveAgentButton';
 
-const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
+const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
+const useQuery = (
+	{
+		text,
+		itemsPerPage,
+		current,
+	}: {
+		text: string;
+		itemsPerPage: number;
+		current: number;
+	},
+	[column, direction]: [string, 'asc' | 'desc'],
+): PaginatedRequest<{ text: string }> =>
 	useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
@@ -31,34 +44,39 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 		[text, itemsPerPage, current, column, direction],
 	);
 
-function AgentsRoute() {
+const AgentsRoute: FC = () => {
 	const t = useTranslation();
 	const canViewAgents = usePermission('manage-livechat-agents');
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['name', 'asc']);
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'statusLivechat'>('name');
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const debouncedParams = useDebouncedValue(params, 500);
-	const debouncedSort = useDebouncedValue(sort, 500);
+	const debouncedSort = useDebouncedValue([sortBy, sortDirection], 500) as [
+		'name' | 'username' | 'emails.address' | 'statusLivechat',
+		'asc' | 'desc',
+	];
 	const query = useQuery(debouncedParams, debouncedSort);
 	const agentsRoute = useRoute('omnichannel-agents');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const onHeaderClick = useMutableCallback((id) => {
-		const [sortBy, sortDirection] = sort;
+	if (!id) {
+		throw new Error('Agent id is required');
+	}
 
+	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
-			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
+			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
 			return;
 		}
-		setSort([id, 'asc']);
+		setSort(id, 'asc');
 	});
 
 	const onRowClick = useMutableCallback(
-		(id) => () =>
+		(id) => (): void =>
 			agentsRoute.push({
 				context: 'info',
 				id,
@@ -70,14 +88,14 @@ function AgentsRoute() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
+				<GenericTable.HeaderCell key={'name'} direction={sortDirection} active={sortBy === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				mediaQuery && (
 					<GenericTable.HeaderCell
 						key={'username'}
-						direction={sort[1]}
-						active={sort[0] === 'username'}
+						direction={sortDirection}
+						active={sortBy === 'username'}
 						onClick={onHeaderClick}
 						sort='username'
 					>
@@ -86,8 +104,8 @@ function AgentsRoute() {
 				),
 				<GenericTable.HeaderCell
 					key={'email'}
-					direction={sort[1]}
-					active={sort[0] === 'emails.address'}
+					direction={sortDirection}
+					active={sortBy === 'emails.address'}
 					onClick={onHeaderClick}
 					sort='emails.address'
 				>
@@ -95,8 +113,8 @@ function AgentsRoute() {
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
 					key={'status'}
-					direction={sort[1]}
-					active={sort[0] === 'statusLivechat'}
+					direction={sortDirection}
+					active={sortBy === 'statusLivechat'}
 					onClick={onHeaderClick}
 					sort='statusLivechat'
 				>
@@ -106,8 +124,8 @@ function AgentsRoute() {
 					{t('Remove')}
 				</GenericTable.HeaderCell>,
 			].filter(Boolean),
-		[sort, onHeaderClick, t, mediaQuery],
-	);
+		[sortDirection, sortBy, onHeaderClick, t, mediaQuery],
+	) as ReactElement[];
 
 	const renderRow = useCallback(
 		({ emails, _id, username, name, avatarETag, statusLivechat }) => (
@@ -138,7 +156,7 @@ function AgentsRoute() {
 						<Box mi='x4' />
 					</Table.Cell>
 				)}
-				<Table.Cell withTruncatedText>{emails && emails.length && emails[0].address}</Table.Cell>
+				<Table.Cell withTruncatedText>{emails?.length && emails[0].address}</Table.Cell>
 				<Table.Cell withTruncatedText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</Table.Cell>
 				<RemoveAgentButton _id={_id} reload={reload} />
 			</Table.Row>
@@ -146,11 +164,11 @@ function AgentsRoute() {
 		[mediaQuery, reload, onRowClick, t],
 	);
 
-	const EditAgentsTab = useCallback(() => {
+	const EditAgentsTab = useCallback((): ReactElement => {
 		if (!context) {
-			return '';
+			return <></>;
 		}
-		const handleVerticalBarCloseButtonClick = () => {
+		const handleVerticalBarCloseButtonClick = (): void => {
 			agentsRoute.push({});
 		};
 
@@ -165,7 +183,7 @@ function AgentsRoute() {
 				{context === 'edit' && <AgentEditWithData uid={id} reload={reload} />}
 				{context === 'info' && (
 					<AgentInfo uid={id}>
-						<AgentInfoActions id={id} reload={reload} />
+						<AgentInfoActions reload={reload} />
 					</AgentInfo>
 				)}
 			</VerticalBar>
@@ -177,20 +195,10 @@ function AgentsRoute() {
 	}
 
 	return (
-		<AgentsPage
-			setParams={setParams}
-			params={params}
-			onHeaderClick={onHeaderClick}
-			data={data}
-			useQuery={useQuery}
-			reload={reload}
-			header={header}
-			renderRow={renderRow}
-			title={t('Agents')}
-		>
+		<AgentsPage setParams={setParams} params={params} data={data} reload={reload} header={header} renderRow={renderRow} title={t('Agents')}>
 			<EditAgentsTab />
 		</AgentsPage>
 	);
-}
+};
 
 export default AgentsRoute;
