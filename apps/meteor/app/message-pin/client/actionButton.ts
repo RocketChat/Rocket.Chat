@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { RoomHistoryManager, MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { settings } from '../../settings/client';
 import { hasAtLeastOnePermission } from '../../authorization/client';
 import { Rooms } from '../../models/client';

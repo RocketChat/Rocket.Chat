@@ -1,5 +1,5 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
-import React, { memo, useMemo, useState, VFC, ReactElement, ComponentProps } from 'react';
+import React, { memo, useMemo, useState, ReactElement, ComponentProps } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import RoomAvatar from '../avatar/RoomAvatar';
@@ -11,12 +11,13 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> & {
-	value: string;
+type RoomAutoCompleteProps<T> = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> & {
+	value: T;
+	onChange: (value: TemplateStringsArray) => void;
 };
 
 /* @deprecated */
-const RoomAutoComplete: VFC<RoomAutoCompleteProps> = (props) => {
+const RoomAutoComplete = <T,>(props: RoomAutoCompleteProps<T>): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'rooms.autocomplete.channelAndPrivate',
@@ -34,6 +35,7 @@ const RoomAutoComplete: VFC<RoomAutoCompleteProps> = (props) => {
 	return (
 		<AutoComplete
 			value={props.value as any}
+			onChange={props.onChange as any}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ value, label }): ReactElement => (
