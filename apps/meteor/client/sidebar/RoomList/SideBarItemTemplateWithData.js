@@ -1,8 +1,8 @@
 import { Badge, Sidebar } from '@rocket.chat/fuselage';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
-import { useLayout } from '../../contexts/LayoutContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
@@ -43,6 +43,7 @@ function SideBarItemTemplateWithData({
 	const {
 		lastMessage,
 		hideUnreadStatus,
+		hideMentionStatus,
 		unread = 0,
 		alert,
 		userMentions,
@@ -70,8 +71,9 @@ function SideBarItemTemplateWithData({
 	const variant =
 		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const isUnread = unread > 0 || threadUnread;
+	const showBadge = !hideUnreadStatus || (!hideMentionStatus && userMentions);
 	const badges =
-		!hideUnreadStatus && isUnread ? (
+		showBadge && isUnread ? (
 			<Badge style={{ flexShrink: 0 }} variant={variant}>
 				{unread + tunread?.length}
 			</Badge>

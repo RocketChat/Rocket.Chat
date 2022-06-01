@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Serialized } from '@rocket.chat/core-typings';
 import { Box, CheckBox } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, ReactElement } from 'react';
 
 import GenericTable from '../../components/GenericTable';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import ChannelRow from './contextualBar/ChannelRow';
 

@@ -1,9 +1,8 @@
 import { Modal, Box, Field, FieldGroup, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect } from 'react';
 
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import FilePreview from './FilePreview';
 
 type FileUploadModalProps = {

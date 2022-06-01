@@ -1,7 +1,6 @@
 import { Box, Icon, TextInput, Button } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, ChangeEvent, FormEvent, memo, useCallback, useEffect, useState } from 'react';
-
-import { useTranslation } from '../contexts/TranslationContext';
 
 type FilterByTextProps = {
 	placeholder?: string;

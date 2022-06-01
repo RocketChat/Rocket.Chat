@@ -1,12 +1,9 @@
 import { Button, TextInput, Field, Modal, Box, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useRouteParameter, useRoute, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useState, useCallback, useMemo } from 'react';
 
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUser } from '../../../contexts/UserContext';
 import { useMethodData } from '../../../hooks/useMethodData';
 import LoginLayout from '../LoginLayout';
 

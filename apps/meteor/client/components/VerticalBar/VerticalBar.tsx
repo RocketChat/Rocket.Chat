@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useLayoutSizes, useLayoutContextualBarPosition } from '@rocket.chat/ui-contexts';
 import React, { FC, ComponentProps, memo } from 'react';
-
-import { useLayoutContextualBarPosition, useLayoutSizes } from '../../providers/LayoutProvider';
 
 const VerticalBar: FC<ComponentProps<typeof Box>> = ({ children, ...props }) => {
 	const sizes = useLayoutSizes();

@@ -36,7 +36,7 @@ class PreferencesMainContent extends BasePage {
 	}
 
 	public submitBtn(): Locator {
-		return this.getPage().locator('//button[contains(text(), "Save changes")]');
+		return this.getPage().locator('[data-qa="AccountProfilePageSaveButton"]');
 	}
 
 	public async changeUsername(userName: string): Promise<void> {

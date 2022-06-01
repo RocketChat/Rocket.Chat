@@ -2,6 +2,7 @@ import type {
 	IOmnichannelCannedResponse,
 	ILivechatAgent,
 	ILivechatDepartment,
+	ILivechatDepartmentRecord,
 	ILivechatDepartmentAgents,
 	ILivechatMonitor,
 	ILivechatTag,
@@ -67,12 +68,12 @@ export type OmnichannelEndpoints = {
 	};
 	'livechat/department/:_id': {
 		GET: (params: { onlyMyDepartments?: booleanString; includeAgents?: booleanString }) => {
-			department: ILivechatDepartment | null;
-			agents?: any[];
+			department: ILivechatDepartmentRecord | null;
+			agents?: ILivechatDepartmentAgents[];
 		};
 		PUT: (params: { department: Partial<ILivechatDepartment>[]; agents: any[] }) => {
 			department: ILivechatDepartment;
-			agents: any[];
+			agents: ILivechatDepartmentAgents[];
 		};
 		DELETE: () => void;
 	};
@@ -157,6 +158,17 @@ export type OmnichannelEndpoints = {
 				};
 			}[];
 		}>;
+	};
+
+	'livechat/users/manager/:_id': {
+		DELETE: () => { success: boolean };
+	};
+
+	'livechat/users/manager': {
+		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
+			users: ILivechatAgent[];
+		}>;
+		POST: (params: { username: string }) => { success: boolean };
 	};
 
 	'livechat/visitor': {

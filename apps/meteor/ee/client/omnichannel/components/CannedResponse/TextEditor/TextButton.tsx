@@ -1,7 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
+import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { forwardRef, memo } from 'react';
-
-import { TranslationKey, useTranslation } from '../../../../../../client/contexts/TranslationContext';
 
 type TextButtonProps = {
 	text: TranslationKey;

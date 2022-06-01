@@ -6,9 +6,9 @@ import {
 	MessageUsername,
 	MessageStatusPrivateIndicator,
 } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { UserPresence } from '../../../../lib/presence';
@@ -42,7 +42,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 				onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 				style={{ cursor: 'pointer' }}
 			>
-				{getUserDisplayName(user.name, user.username, showRealName)}
+				{message.alias || getUserDisplayName(user.name, user.username, showRealName)}
 			</MessageName>
 			{showUsername && (
 				<MessageUsername

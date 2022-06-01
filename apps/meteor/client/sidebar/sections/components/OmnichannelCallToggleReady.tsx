@@ -1,9 +1,9 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useState } from 'react';
 
 import { useCallClient, useCallerInfo, useCallActions } from '../../../contexts/CallContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 type NetworkState = 'online' | 'offline';
 export const OmnichannelCallToggleReady = (): ReactElement => {
@@ -31,10 +31,24 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		return t('Cannot_disable_while_on_call');
 	};
 
+	const getIcon = (): 'phone-issue' | 'phone' | 'phone-disabled' => {
+		if (networkStatus === 'offline') {
+			return 'phone-issue';
+		}
+		return registered ? 'phone' : 'phone-disabled';
+	};
+
+	const getColor = (): 'warning' | 'success' | undefined => {
+		if (networkStatus === 'offline') {
+			return 'warning';
+		}
+		return registered ? 'success' : undefined;
+	};
+
 	const voipCallIcon = {
 		title: getTooltip(),
-		color: registered ? 'success' : undefined,
-		icon: registered ? 'phone' : 'phone-disabled',
+		color: getColor(),
+		icon: getIcon(),
 	} as const;
 
 	useEffect(() => {
