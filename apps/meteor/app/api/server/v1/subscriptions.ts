@@ -1,13 +1,69 @@
 import { Meteor } from 'meteor/meteor';
-import {
+import Ajv from 'ajv';
+
+import { Subscriptions } from '../../../models/server/raw';
+import { API } from '../api';
+
+/* import {
 	isSubscriptionsGetProps,
 	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
-} from '@rocket.chat/rest-typings';
+} from '@rocket.chat/rest-typings';*/
 
-import { Subscriptions } from '../../../models/server/raw';
-import { API } from '../api';
+const ajv = new Ajv();
+
+const SubscriptionsGetSchema = {
+	type: 'object',
+	properties: {
+		updatedSince: {
+			type: 'string',
+		},
+	},
+	required: ['updatedSince'],
+	additionalProperties: false,
+};
+
+export const isSubscriptionsGetProps = ajv.compile(SubscriptionsGetSchema);
+
+const SubscriptionsGetOneSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isSubscriptionsGetOneProps = ajv.compile(SubscriptionsGetOneSchema);
+
+const SubscriptionsReadSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+	},
+	required: ['rid'],
+	additionalProperties: false,
+};
+
+export const isSubscriptionsReadProps = ajv.compile(SubscriptionsReadSchema);
+
+const SubscriptionsUnreadSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isSubscriptionsUnreadProps = ajv.compile(SubscriptionsUnreadSchema);
 
 API.v1.addRoute(
 	'subscriptions.get',
@@ -21,10 +77,10 @@ API.v1.addRoute(
 
 			let updatedSinceDate: Date | undefined;
 			if (updatedSince) {
-				if (isNaN(Date.parse(updatedSince))) {
+				if (isNaN(Date.parse(updatedSince as string))) {
 					throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
 				}
-				updatedSinceDate = new Date(updatedSince);
+				updatedSinceDate = new Date(updatedSince as string);
 			}
 
 			const result = await Meteor.call('subscriptions/get', updatedSinceDate);
@@ -49,14 +105,14 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { roomId } = this.queryParams;
+			const { roomId }: { [roomId: string]: {} } | Record<string, string> = this.queryParams;
 
 			if (!roomId) {
 				return API.v1.failure("The 'roomId' param is required");
 			}
 
 			return API.v1.success({
-				subscription: await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId),
+				subscription: await Subscriptions.findOneByRoomIdAndUserId(roomId as string, this.userId),
 			});
 		},
 	},
@@ -93,7 +149,8 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { roomId, firstUnreadMessage } = this.bodyParams;
+			const { roomId } = this.bodyParams;
+			const { firstUnreadMessage } = this.bodyParams;
 
 			if (!roomId && firstUnreadMessage && !firstUnreadMessage._id) {
 				return API.v1.failure('At least one of "roomId" or "firstUnreadMessage._id" params is required');

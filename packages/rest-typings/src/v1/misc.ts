@@ -1,5 +1,5 @@
 import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -16,7 +16,7 @@ type ShieldSvg = {
 	size: number;
 };
 
-const ShieldSvgSchema: JSONSchemaType<ShieldSvg> = {
+const ShieldSvgSchema = {
 	type: 'object',
 	properties: {
 		type: {
@@ -49,7 +49,7 @@ export const isShieldSvgProps = ajv.compile(ShieldSvgSchema);
 
 type Spotlight = { query: string; limit: number; offset: number };
 
-const SpotlightSchema: JSONSchemaType<Spotlight> = {
+const SpotlightSchema = {
 	type: 'object',
 	properties: {
 		query: {
@@ -74,7 +74,7 @@ type Directory = PaginatedRequest<{
 	workspace: string;
 }>;
 
-const DirectorySchema: JSONSchemaType<Directory> = {
+const DirectorySchema = {
 	type: 'object',
 	properties: {
 		text: {
@@ -114,7 +114,7 @@ export const isDirectoryProps = ajv.compile(DirectorySchema);
 
 type MethodCall = { method: string; params: {}; id: string }; // params: unknown
 
-const MethodCallSchema: JSONSchemaType<MethodCall> = {
+const MethodCallSchema = {
 	type: 'object',
 	properties: {
 		method: {
@@ -135,7 +135,7 @@ export const isMethodCallProps = ajv.compile(MethodCallSchema);
 
 type MethodCallAnon = { method: string; params: {}; id: string }; // params: unknown
 
-const MethodCallAnonSchema: JSONSchemaType<MethodCallAnon> = {
+const MethodCallAnonSchema = {
 	type: 'object',
 	properties: {
 		method: {

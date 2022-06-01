@@ -1,4 +1,5 @@
 import { IInvite } from '@rocket.chat/core-typings';
+import Ajv from 'ajv';
 
 import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -7,9 +8,79 @@ import { listInvites } from '../../../invites/server/functions/listInvites';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
 
+/* import {
+	isListInvitesProps,
+	isFindOrCreateInviteProps,
+	isUseInviteTokenProps,
+	isValidateInviteTokenProps,
+} from '@rocket.chat/rest-typings'; */
+
+const ajv = new Ajv();
+
+const ListInvitesSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+	},
+	required: ['rid'],
+	additionalProperties: false,
+};
+
+export const isListInvitesProps = ajv.compile(ListInvitesSchema);
+
+const FindOrCreateInviteSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		days: {
+			type: 'number',
+		},
+		maxUses: {
+			type: 'number',
+		},
+	},
+	required: ['rid', 'days', 'maxUses'],
+	additionalProperties: false,
+};
+
+export const isFindOrCreateInviteProps = ajv.compile(FindOrCreateInviteSchema);
+
+const UseInviteTokenSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isUseInviteTokenProps = ajv.compile(UseInviteTokenSchema);
+
+const ValidateInviteTokenSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isValidateInviteTokenProps = ajv.compile(ValidateInviteTokenSchema);
+
 API.v1.addRoute(
 	'listInvites',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isListInvitesProps,
+	},
 	{
 		async get() {
 			const result = await listInvites(this.userId);
@@ -20,7 +91,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'findOrCreateInvite',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isFindOrCreateInviteProps,
+	},
 	{
 		async post() {
 			const { rid, days, maxUses } = this.bodyParams;
@@ -46,7 +120,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'useInviteToken',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isUseInviteTokenProps,
+	},
 	{
 		async post() {
 			const { token } = this.bodyParams;
@@ -60,7 +137,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'validateInviteToken',
-	{ authRequired: false },
+	{
+		authRequired: false,
+		validateParams: isValidateInviteTokenProps,
+	},
 	{
 		async post() {
 			const { token } = this.bodyParams;
