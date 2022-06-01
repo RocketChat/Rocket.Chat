@@ -18,4 +18,3 @@ export { MessageTypes, MessageType } from '../lib/MessageTypes';
 export { Message } from '../lib/Message';
 export { openRoom } from './lib/openRoom';
 export * from './lib/collapseArrow';
-export * from './lib/messageArgs';
