@@ -36,7 +36,7 @@ export const WithValue = Template.bind({});
 WithValue.args = {
 	_id: 'setting_id',
 	label: 'Label',
-	value: 12345,
+	value: '12345',
 	placeholder: 'Placeholder',
 };
 

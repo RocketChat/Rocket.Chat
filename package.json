@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "4.8.0-develop",
+	"version": "5.0.0",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -15,6 +15,7 @@
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
 	},
 	"devDependencies": {
+		"@types/js-yaml": "^4.0.5",
 		"husky": "^7.0.4",
 		"turbo": "1.2.5"
 	},
