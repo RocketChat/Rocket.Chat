@@ -47,7 +47,7 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 
 	return (
 		<>
-			{!message.blocks && (
+			{!message.blocks && (message.md || message.msg) && (
 				<MessageBody data-qa-type='message-body'>
 					{!isEncryptedMessage && <MessageContentBody message={message} />}
 					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}

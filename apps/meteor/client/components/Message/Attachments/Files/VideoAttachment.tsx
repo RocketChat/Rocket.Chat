@@ -4,7 +4,14 @@ import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import MarkdownText from '../../../MarkdownText';
-import Attachment from '../Attachment';
+import Attachment, {
+	AttachmentRow,
+	AttachmentTitle,
+	AttachmentSize,
+	AttachmentDownload,
+	AttachmentContent,
+	AttachmentDetails,
+} from '../Attachment';
 import { useCollapse } from '../hooks/useCollapse';
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({
@@ -22,23 +29,23 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 
 	return (
 		<Attachment>
-			<Attachment.Row>
-				<Attachment.Title>{title}</Attachment.Title>
-				{size && <Attachment.Size size={size} />}
+			<AttachmentRow>
+				<AttachmentTitle>{title}</AttachmentTitle>
+				{size && <AttachmentSize size={size} />}
 				{collapse}
-				{hasDownload && link && <Attachment.Download title={title} href={getURL(link)} />}
-			</Attachment.Row>
+				{hasDownload && link && <AttachmentDownload title={title} href={getURL(link)} />}
+			</AttachmentRow>
 			{!collapsed && (
-				<Attachment.Content width='full'>
+				<AttachmentContent width='full'>
 					<Box is='video' width='full' controls preload='metadata'>
 						<source src={getURL(url)} type={type} />
 					</Box>
 					{description && (
-						<Attachment.Details is='figcaption'>
+						<AttachmentDetails is='figcaption'>
 							<MarkdownText parseEmoji variant='inline' content={description} />
-						</Attachment.Details>
+						</AttachmentDetails>
 					)}
-				</Attachment.Content>
+				</AttachmentContent>
 			)}
 		</Attachment>
 	);

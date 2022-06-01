@@ -7,7 +7,14 @@ import React, { FC } from 'react';
 import Attachments from '.';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import MarkdownText from '../../MarkdownText';
-import Attachment from './Attachment';
+import {
+	AttachmentContent,
+	AttachmentDetails,
+	AttachmentAuthor,
+	AttachmentAuthorAvatar,
+	AttachmentAuthorName,
+	AttachmentInner,
+} from './Attachment';
 
 const hover = css`
 	&:hover,
@@ -32,8 +39,8 @@ export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 	const format = useTimeAgo();
 	return (
 		<>
-			<Attachment.Content className={hover} width='full'>
-				<Attachment.Details
+			<AttachmentContent className={hover} width='full'>
+				<AttachmentDetails
 					is='blockquote'
 					borderRadius='x2'
 					borderWidth='x2'
@@ -41,25 +48,25 @@ export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 					borderColor='neutral-200'
 					borderInlineStartColor='neutral-600'
 				>
-					<Attachment.Author>
-						<Attachment.AuthorAvatar url={url} />
-						<Attachment.AuthorName {...(authorLink && { is: 'a', href: authorLink, target: '_blank', color: undefined })}>
+					<AttachmentAuthor>
+						<AttachmentAuthorAvatar url={url} />
+						<AttachmentAuthorName {...(authorLink && { is: 'a', href: authorLink, target: '_blank', color: undefined })}>
 							{name}
-						</Attachment.AuthorName>
+						</AttachmentAuthorName>
 						{ts && (
 							<Box fontScale='c1' {...(messageLink ? { is: 'a', href: messageLink } : { color: 'hint' })}>
 								{format(ts)}
 							</Box>
 						)}
-					</Attachment.Author>
+					</AttachmentAuthor>
 					<MarkdownText parseEmoji variant='document' content={text} />
 					{attachments && (
-						<Attachment.Inner>
+						<AttachmentInner>
 							<Attachments attachments={attachments} />
-						</Attachment.Inner>
+						</AttachmentInner>
 					)}
-				</Attachment.Details>
-			</Attachment.Content>
+				</AttachmentDetails>
+			</AttachmentContent>
 		</>
 	);
 };

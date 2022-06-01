@@ -3,7 +3,14 @@ import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import MarkdownText from '../../../MarkdownText';
-import Attachment from '../Attachment';
+import Attachment, {
+	AttachmentRow,
+	AttachmentContent,
+	AttachmentSize,
+	AttachmentDownload,
+	AttachmentTitle,
+	AttachmentDescription,
+} from '../Attachment';
 import { useCollapse } from '../hooks/useCollapse';
 
 export const AudioAttachment: FC<AudioAttachmentProps> = ({
@@ -20,19 +27,21 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	const getURL = useMediaUrl();
 	return (
 		<Attachment>
-			<MarkdownText parseEmoji variant='inline' content={description} />
-			<Attachment.Row>
-				<Attachment.Title>{title}</Attachment.Title>
-				{size && <Attachment.Size size={size} />}
+			<AttachmentDescription>
+				<MarkdownText parseEmoji variant='inline' content={description} />
+			</AttachmentDescription>
+			<AttachmentRow>
+				<AttachmentTitle>{title}</AttachmentTitle>
+				{size && <AttachmentSize size={size} />}
 				{collapse}
-				{hasDownload && link && <Attachment.Download title={title} href={getURL(link)} />}
-			</Attachment.Row>
+				{hasDownload && link && <AttachmentDownload title={title} href={getURL(link)} />}
+			</AttachmentRow>
 			{!collapsed && (
-				<Attachment.Content border='none'>
+				<AttachmentContent border='none'>
 					<audio controls preload='metadata'>
 						<source src={getURL(url)} type={type} />
 					</audio>
-				</Attachment.Content>
+				</AttachmentContent>
 			)}
 		</Attachment>
 	);
