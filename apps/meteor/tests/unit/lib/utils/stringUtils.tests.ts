@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { truncate } from './stringUtils';
+import { truncate } from '../../../../lib/utils/stringUtils';
 
 describe('String utils', () => {
 	it('should return an empty string when the specified string is empty', () => {

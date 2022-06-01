@@ -3,8 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { memo, ReactElement, ReactNode } from 'react';
 
-type GenericItemProps = {
-	href: string;
+type SidebarGenericItemProps = {
+	href?: string;
 	active?: boolean;
 	children: ReactNode;
 	customColors?: {
@@ -15,7 +15,14 @@ type GenericItemProps = {
 	textColor?: string;
 };
 
-const GenericItem = ({ href, active, children, customColors, textColor = 'default', ...props }: GenericItemProps): ReactElement => (
+const SidebarGenericItem = ({
+	href,
+	active,
+	children,
+	customColors,
+	textColor = 'default',
+	...props
+}: SidebarGenericItemProps): ReactElement => (
 	<Box
 		is='a'
 		color={textColor}
@@ -28,7 +35,7 @@ const GenericItem = ({ href, active, children, customColors, textColor = 'defaul
 				${customColors ? `background-color: ${customColors.default} !important;` : ''}
 				&:hover,
 				&:focus,
-				
+
 				&.active:hover {
 					background-color: ${customColors?.hover || 'var(--sidebar-background-light-hover)'} !important;
 				}
@@ -46,4 +53,4 @@ const GenericItem = ({ href, active, children, customColors, textColor = 'defaul
 	</Box>
 );
 
-export default memo(GenericItem);
+export default memo(SidebarGenericItem);

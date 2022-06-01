@@ -3,7 +3,7 @@ import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
-import { secondsToHHMMSS } from '../../../../app/utils/lib/timeConverter';
+import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
 import Chart from '../realTimeMonitoring/charts/Chart';
 
 const getChartTooltips = (chartName) => {

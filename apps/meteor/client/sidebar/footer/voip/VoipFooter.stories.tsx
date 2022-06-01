@@ -49,7 +49,6 @@ export const IncomingCall = (): ReactElement => {
 				createRoom={() => ''}
 				openRoom={() => ''}
 				callsInQueue='2 Calls In Queue'
-				openWrapUpCallModal={() => null}
 				dispatchEvent={() => null}
 				openedRoomInfo={{ v: { token: '' }, rid: '' }}
 				anonymousText={'Anonymous'}
@@ -88,7 +87,6 @@ export const InCall = (): ReactElement => {
 				createRoom={() => ''}
 				openRoom={() => ''}
 				callsInQueue='2 Calls In Queue'
-				openWrapUpCallModal={() => null}
 				dispatchEvent={() => null}
 				openedRoomInfo={{ v: { token: '' }, rid: '' }}
 				anonymousText={'Anonymous'}

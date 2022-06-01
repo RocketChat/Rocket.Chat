@@ -3,7 +3,7 @@ import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat
 import { Random } from 'meteor/random';
 import React, { ChangeEventHandler, DragEvent, ReactElement } from 'react';
 
-import './AssetSettingInput.css';
+import './AssetSettingInput.styles.css';
 
 type AssetSettingInputProps = {
 	_id: string;
