@@ -6431,6 +6431,8 @@ __metadata:
   version: 6.4.22
   resolution: "@storybook/postinstall@npm:6.4.22"
   dependencies:
+    "@types/npmlog": ^4.1.2
+    chalk: ^4.1.0
     core-js: ^3.8.2
   checksum: d406b2fdfc4350d52bcfe2f2447e90f66ae82bddaa659456e8d8211c335a3bf18968b2701ec7aafc0a3640d816c61f0081f143438b75be9bd4da2c515f534fc5
   languageName: node
