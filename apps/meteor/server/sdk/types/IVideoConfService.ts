@@ -1,4 +1,5 @@
-import type { IUser, IVideoConference, VideoConferenceInstructions } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IVideoConference, VideoConference, VideoConferenceInstructions } from '@rocket.chat/core-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 export type VideoConferenceJoinOptions = {
 	mic?: boolean;
@@ -10,4 +11,5 @@ export interface IVideoConfService {
 	join(uid: IUser['_id'], callId: IVideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string>;
 	cancel(uid: IUser['_id'], callId: IVideoConference['_id']): Promise<void>;
 	get(callId: IVideoConference['_id']): Promise<IVideoConference | null>;
+	list(roomId: IRoom['_id'], pagination?: { offset?: number; count?: number }): Promise<PaginatedResult<{ data: VideoConference[] }>>;
 }
