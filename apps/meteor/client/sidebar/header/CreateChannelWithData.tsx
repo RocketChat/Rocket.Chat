@@ -1,13 +1,30 @@
+import { RoomType } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, ReactElement, useCallback, useMemo } from 'react';
 
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
-import CreateChannel from './CreateChannel';
+import CreateChannel, { CreateChannelProps } from './CreateChannel';
 
-const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
+type CreateChannelWithDataProps = {
+	onClose: () => void;
+	teamId?: string;
+	reload: () => void;
+};
+
+type UseFormValues = {
+	users: string[];
+	name: string;
+	type: RoomType;
+	description: string;
+	readOnly: boolean;
+	encrypted: boolean;
+	broadcast: boolean;
+};
+
+const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWithDataProps): ReactElement => {
 	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
 	const canCreateChannel = usePermission('create-c');
@@ -24,7 +41,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	}, [canCreateChannel, canCreatePrivateChannel]);
 
 	const initialValues = {
-		users: [],
+		users: [''],
 		name: '',
 		description: '',
 		type: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
@@ -34,7 +51,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
-	const { users, name, description, type, readOnly, broadcast, encrypted } = values;
+	const { users, name, description, type, readOnly, broadcast, encrypted } = values as UseFormValues;
 	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
@@ -59,7 +76,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	});
 
 	const onCreate = useCallback(async () => {
-		const goToRoom = (rid) => {
+		const goToRoom = (rid: string): void => {
 			goToRoomById(rid);
 		};
 
@@ -74,14 +91,15 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 				...(teamId && { teamId }),
 			},
 		};
-		let roomData;
 
 		if (type) {
-			roomData = await createPrivateChannel(params);
-			!teamId && goToRoom(roomData.group._id);
+			const roomData = await createPrivateChannel(params);
+			console.log(roomData);
+			!teamId && goToRoom(roomData.group._id as string);
 		} else {
-			roomData = await createChannel(params);
-			!teamId && goToRoom(roomData.channel._id);
+			const roomData = await createChannel(params);
+			console.log(roomData);
+			!teamId && goToRoom((roomData as any).channel._id);
 		}
 
 		onClose();
@@ -90,14 +108,14 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 
 	return (
 		<CreateChannel
-			values={values}
+			values={values as CreateChannelProps['values']}
 			handlers={handlers}
 			hasUnsavedChanges={hasUnsavedChanges}
 			onChangeUsers={onChangeUsers}
 			onChangeType={onChangeType}
 			onChangeBroadcast={onChangeBroadcast}
 			canOnlyCreateOneType={canOnlyCreateOneType}
-			e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}
+			e2eEnabledForPrivateByDefault={Boolean(e2eEnabledForPrivateByDefault)}
 			onClose={onClose}
 			onCreate={onCreate}
 		/>
