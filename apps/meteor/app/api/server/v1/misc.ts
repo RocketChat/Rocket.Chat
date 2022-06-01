@@ -6,6 +6,13 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EJSON } from 'meteor/ejson';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import {
+	isShieldSvgProps,
+	isSpotlightProps,
+	isDirectoryProps,
+	isMethodCallProps,
+	isMethodCallAnonProps,
+} from '@rocket.chat/rest-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
@@ -181,7 +188,14 @@ const cacheInvalid = 60000; // 1 minute
 
 API.v1.addRoute(
 	'shield.svg',
-	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 60, intervalTimeInMS: 60000 } },
+	{
+		authRequired: false,
+		rateLimiterOptions: {
+			numRequestsAllowed: 60,
+			intervalTimeInMS: 60000,
+		},
+		validateParams: isShieldSvgProps,
+	},
 	{
 		get() {
 			const { type, icon } = this.queryParams;
@@ -315,13 +329,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'spotlight',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isSpotlightProps,
+	},
 	{
 		get() {
-			check(this.queryParams, {
-				query: String,
-			});
-
 			const { query } = this.queryParams;
 
 			const result = Meteor.call('spotlight', query);
@@ -333,7 +346,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'directory',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isDirectoryProps,
+	},
 	{
 		get() {
 			const { offset, count } = this.getPaginationItems();
@@ -454,7 +470,11 @@ const mountResult = ({
 // because restivus does not provide 'this.userId' if 'authRequired: false'
 API.v1.addRoute(
 	'method.call/:method',
-	{ authRequired: true, rateLimiterOptions: false },
+	{
+		authRequired: true,
+		rateLimiterOptions: false,
+		validateParams: isMethodCallProps,
+	},
 	{
 		post() {
 			check(this.bodyParams, {
@@ -515,7 +535,11 @@ API.v1.addRoute(
 );
 API.v1.addRoute(
 	'method.callAnon/:method',
-	{ authRequired: false, rateLimiterOptions: false },
+	{
+		authRequired: false,
+		rateLimiterOptions: false,
+		validateParams: isMethodCallAnonProps,
+	},
 	{
 		post() {
 			check(this.bodyParams, {

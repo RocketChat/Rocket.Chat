@@ -1,12 +1,75 @@
 import type { IInvite, IRoom } from '@rocket.chat/core-typings';
+import Ajv from 'ajv';
 
-export type ListInvites = { rid: string };
+type ListInvites = { rid: string };
 
-export type FindOrCreateInvite = { rid: IInvite['rid']; days: IInvite['days']; maxUses: IInvite['maxUses'] };
+type FindOrCreateInvite = { rid: IInvite['rid']; days: IInvite['days']; maxUses: IInvite['maxUses'] };
 
-export type UseInviteToken = { token: string };
+type UseInviteToken = { token: string };
 
-export type ValidateInviteToken = { token: string };
+type ValidateInviteToken = { token: string };
+
+const ajv = new Ajv({
+	coerceTypes: true,
+});
+
+const ListInvitesSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+	},
+	required: ['rid'],
+	additionalProperties: false,
+};
+
+export const isListInvitesProps = ajv.compile<ListInvites>(ListInvitesSchema);
+
+const FindOrCreateInviteSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		days: {
+			type: 'number',
+		},
+		maxUses: {
+			type: 'number',
+		},
+	},
+	required: ['rid', 'days', 'maxUses'],
+	additionalProperties: false,
+};
+
+export const isFindOrCreateInviteProps = ajv.compile<FindOrCreateInvite>(FindOrCreateInviteSchema);
+
+const UseInviteTokenSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isUseInviteTokenProps = ajv.compile<UseInviteToken>(UseInviteTokenSchema);
+
+const ValidateInviteTokenSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isValidateInviteTokenProps = ajv.compile<ValidateInviteToken>(ValidateInviteTokenSchema);
 
 export type InvitesEndpoints = {
 	'listInvites': {

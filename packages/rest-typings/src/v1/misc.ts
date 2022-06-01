@@ -47,7 +47,7 @@ const ShieldSvgSchema = {
 	additionalProperties: false,
 };
 
-export const isShieldSvgProps = ajv.compile(ShieldSvgSchema);
+export const isShieldSvgProps = ajv.compile<ShieldSvg>(ShieldSvgSchema);
 
 type Spotlight = { query: string; limit: number; offset: number };
 
@@ -68,7 +68,7 @@ const SpotlightSchema = {
 	additionalProperties: false,
 };
 
-export const isSpotlightProps = ajv.compile(SpotlightSchema);
+export const isSpotlightProps = ajv.compile<Spotlight>(SpotlightSchema);
 
 type Directory = PaginatedRequest<{
 	text: string;
@@ -112,7 +112,7 @@ const DirectorySchema = {
 	additionalProperties: false,
 };
 
-export const isDirectoryProps = ajv.compile(DirectorySchema);
+export const isDirectoryProps = ajv.compile<Directory>(DirectorySchema);
 
 type MethodCall = { method: string; params: {}; id: string }; // params: unknown
 
@@ -133,7 +133,7 @@ const MethodCallSchema = {
 	additionalProperties: false,
 };
 
-export const isMethodCallProps = ajv.compile(MethodCallSchema);
+export const isMethodCallProps = ajv.compile<MethodCall>(MethodCallSchema);
 
 type MethodCallAnon = { method: string; params: {}; id: string }; // params: unknown
 
@@ -154,7 +154,7 @@ const MethodCallAnonSchema = {
 	additionalProperties: false,
 };
 
-export const isMethodCallAnonProps = ajv.compile(MethodCallAnonSchema);
+export const isMethodCallAnonProps = ajv.compile<MethodCallAnon>(MethodCallAnonSchema);
 
 export type MiscEndpoints = {
 	'stdout.queue': {

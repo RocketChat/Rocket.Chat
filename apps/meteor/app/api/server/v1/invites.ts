@@ -1,5 +1,11 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { IInvite } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+import {
+	isListInvitesProps,
+	isFindOrCreateInviteProps,
+	isUseInviteTokenProps,
+	isValidateInviteTokenProps,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -7,75 +13,6 @@ import { removeInvite } from '../../../invites/server/functions/removeInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
-
-/* import {
-	isListInvitesProps,
-	isFindOrCreateInviteProps,
-	isUseInviteTokenProps,
-	isValidateInviteTokenProps,
-} from '@rocket.chat/rest-typings'; */
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-const ListInvitesSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
-};
-
-export const isListInvitesProps = ajv.compile(ListInvitesSchema);
-
-const FindOrCreateInviteSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		days: {
-			type: 'number',
-		},
-		maxUses: {
-			type: 'number',
-		},
-	},
-	required: ['rid', 'days', 'maxUses'],
-	additionalProperties: false,
-};
-
-export const isFindOrCreateInviteProps = ajv.compile(FindOrCreateInviteSchema);
-
-const UseInviteTokenSchema = {
-	type: 'object',
-	properties: {
-		token: {
-			type: 'string',
-		},
-	},
-	required: ['token'],
-	additionalProperties: false,
-};
-
-export const isUseInviteTokenProps = ajv.compile(UseInviteTokenSchema);
-
-const ValidateInviteTokenSchema = {
-	type: 'object',
-	properties: {
-		token: {
-			type: 'string',
-		},
-	},
-	required: ['token'],
-	additionalProperties: false,
-};
-
-export const isValidateInviteTokenProps = ajv.compile(ValidateInviteTokenSchema);
 
 API.v1.addRoute(
 	'listInvites',

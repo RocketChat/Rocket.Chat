@@ -1,69 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import Ajv from 'ajv';
-
-import { Subscriptions } from '../../../models/server/raw';
-import { API } from '../api';
-
-/* import {
+import {
 	isSubscriptionsGetProps,
 	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
-} from '@rocket.chat/rest-typings';*/
+} from '@rocket.chat/rest-typings';
 
-const ajv = new Ajv();
-
-const SubscriptionsGetSchema = {
-	type: 'object',
-	properties: {
-		updatedSince: {
-			type: 'string',
-		},
-	},
-	required: ['updatedSince'],
-	additionalProperties: false,
-};
-
-export const isSubscriptionsGetProps = ajv.compile(SubscriptionsGetSchema);
-
-const SubscriptionsGetOneSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isSubscriptionsGetOneProps = ajv.compile(SubscriptionsGetOneSchema);
-
-const SubscriptionsReadSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
-};
-
-export const isSubscriptionsReadProps = ajv.compile(SubscriptionsReadSchema);
-
-const SubscriptionsUnreadSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isSubscriptionsUnreadProps = ajv.compile(SubscriptionsUnreadSchema);
+import { Subscriptions } from '../../../models/server/raw';
+import { API } from '../api';
 
 API.v1.addRoute(
 	'subscriptions.get',
