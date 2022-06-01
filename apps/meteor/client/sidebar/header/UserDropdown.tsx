@@ -8,7 +8,7 @@ import React, { ReactElement } from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
 import { AccountBox, SideNav } from '../../../app/ui-utils/client';
-import { IAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { userStatus } from '../../../app/user-status/client';
 import { callbacks } from '../../../lib/callbacks';
 import MarkdownText from '../../components/MarkdownText';
@@ -105,7 +105,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 	const accountBoxItems = useReactiveValue(getItems);
 
-	const appBoxItems = (): IAccountBoxItem[] => accountBoxItems.filter((item) => item.isAppButtonItem);
+	const appBoxItems = (): IAppAccountBoxItem[] => accountBoxItems.filter((item) => item.isAppButtonItem);
 
 	return (
 		<Box display='flex' flexDirection='column' w={!isMobile ? '244px' : undefined}>
