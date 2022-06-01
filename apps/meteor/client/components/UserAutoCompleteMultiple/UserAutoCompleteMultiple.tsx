@@ -13,7 +13,7 @@ const query = (
 
 type UserAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
 	Omit<ComponentProps<typeof Option>, 'value' | 'is' | 'className' | 'onChange'> & {
-		onChange: (value: unknown, action: 'remove' | undefined) => void;
+		onChange: (value: any, action: 'remove' | undefined) => void;
 		value: any;
 		filter?: string;
 	};
