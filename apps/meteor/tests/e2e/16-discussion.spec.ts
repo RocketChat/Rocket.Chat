@@ -1,6 +1,6 @@
 import { test, Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import { v4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 import Discussion from './utils/pageobjects/Discussion';
 import LoginPage from './utils/pageobjects/LoginPage';
@@ -41,7 +41,7 @@ test.describe('[Discussion]', () => {
 
 	test.describe.skip('[Create discussion from context menu]', () => {
 		test.beforeAll(async () => {
-			message = faker.animal.type() + v4();
+			message = faker.animal.type() + uuid();
 			await sideNav.findForChat('public channel');
 			await mainContent.sendMessage(message);
 		});
@@ -49,7 +49,6 @@ test.describe('[Discussion]', () => {
 		test('expect show a dialog for starting a discussion', async () => {
 			await mainContent.getPage().waitForLoadState('domcontentloaded', { timeout: 3000 });
 			await mainContent.openMessageActionMenu();
-			await mainContent.getPage().pause();
 			await discussion.createDiscussionInContext(message);
 		});
 	});
