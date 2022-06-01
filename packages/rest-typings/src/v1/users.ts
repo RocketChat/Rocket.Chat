@@ -11,7 +11,7 @@ export type UsersEndpoints = {
 	};
 	'users.autocomplete': {
 		GET: (params: { selector: string }) => {
-			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'status' | 'avatarETag'>>[];
+			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
 		};
 	};
 	'users.listTeams': {

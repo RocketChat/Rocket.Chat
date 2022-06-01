@@ -15,7 +15,9 @@ import { validateInviteToken } from '../../../invites/server/functions/validateI
 	isValidateInviteTokenProps,
 } from '@rocket.chat/rest-typings'; */
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 const ListInvitesSchema = {
 	type: 'object',
@@ -98,9 +100,8 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { rid, days, maxUses } = this.bodyParams;
-			const result = (await findOrCreateInvite(this.userId, { rid, days, maxUses })) as IInvite;
 
-			return API.v1.success(result);
+			return API.v1.success((await findOrCreateInvite(this.userId, { rid, days, maxUses })) as IInvite);
 		},
 	},
 );
@@ -111,9 +112,8 @@ API.v1.addRoute(
 	{
 		async delete() {
 			const { _id } = this.urlParams;
-			const result = await removeInvite(this.userId, { _id });
 
-			return API.v1.success(result);
+			return API.v1.success(await removeInvite(this.userId, { _id }));
 		},
 	},
 );
@@ -128,9 +128,8 @@ API.v1.addRoute(
 		async post() {
 			const { token } = this.bodyParams;
 			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const result = await useInviteToken(this.userId, token);
 
-			return API.v1.success(result);
+			return API.v1.success(await useInviteToken(this.userId, token));
 		},
 	},
 );
@@ -144,15 +143,11 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token } = this.bodyParams;
-
-			let valid = true;
 			try {
-				await validateInviteToken(token);
-			} catch (e) {
-				valid = false;
+				return API.v1.success({ valid: await validateInviteToken(token) });
+			} catch (_) {
+				return API.v1.success({ valid: false });
 			}
-
-			return API.v1.success({ valid });
 		},
 	},
 );

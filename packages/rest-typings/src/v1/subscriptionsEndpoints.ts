@@ -12,7 +12,7 @@ export type SubscriptionsEndpoints = {
 	'subscriptions.get': {
 		GET: (params: SubscriptionsGet) => {
 			update: ISubscription[];
-			remove: ISubscription[];
+			remove: Pick<ISubscription, '_id' | '_deletedAt'>[];
 		};
 	};
 
