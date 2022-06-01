@@ -1,7 +1,7 @@
 import React, { memo, ReactElement } from 'react';
 
-import { highlightWords as getHighlightHtml } from '../../app/highlight-words/client/helper';
-import Katex from './Katex';
+import { highlightWords as getHighlightHtml } from '../../../../app/highlight-words/client/helper';
+import Katex from '../../Katex';
 
 type CustomTextProps = {
 	text: string;

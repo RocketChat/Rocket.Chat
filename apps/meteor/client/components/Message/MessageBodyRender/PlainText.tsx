@@ -2,7 +2,7 @@ import { Plain as ASTPlain } from '@rocket.chat/message-parser';
 import React, { FC, memo } from 'react';
 
 import { useMessageListHighlights, useMessageListKatex } from '../../../views/room/MessageList/contexts/MessageListContext';
-import CustomText from '../../CustomText';
+import CustomText from './CustomText';
 
 type PlainTextType = {
 	value: ASTPlain['value'];
