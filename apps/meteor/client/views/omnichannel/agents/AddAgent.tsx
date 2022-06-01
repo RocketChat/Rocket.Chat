@@ -1,14 +1,19 @@
 import { Button, Box, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import React, { useState, FC } from 'react';
 
 import UserAutoComplete from '../../../components/UserAutoComplete';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
-function AddAgent({ reload, ...props }) {
+type AddAgentProps = {
+	reload: () => void;
+	pi?: 'x24';
+};
+
+const AddAgent: FC<AddAgentProps> = ({ reload, ...props }) => {
 	const t = useTranslation();
-	const [username, setUsername] = useState();
+	const [username, setUsername] = useState('');
 
 	const saveAction = useEndpointAction('POST', 'livechat/users/agent', { username });
 
@@ -21,14 +26,14 @@ function AddAgent({ reload, ...props }) {
 			return;
 		}
 		reload();
-		setUsername();
+		setUsername(username);
 	});
 	return (
 		<Box display='flex' alignItems='center' {...props}>
 			<Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
-					<UserAutoComplete value={username} onChange={setUsername} />
+					<UserAutoComplete value={username} onChange={(username: string): void => setUsername(username)} />
 					<Button disabled={!username} onClick={handleSave} mis='x8' primary>
 						{t('Add')}
 					</Button>
@@ -36,6 +41,6 @@ function AddAgent({ reload, ...props }) {
 			</Field>
 		</Box>
 	);
-}
+};
 
 export default AddAgent;
