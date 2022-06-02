@@ -4,6 +4,7 @@ import React, { ReactElement } from 'react';
 import BoldSpan from './BoldSpan';
 import ChannelMentionElement from './ChannelMentionElement';
 import CodeElement from './CodeElement';
+import ColorElement from './ColorElement';
 import EmojiElement from './EmojiElement';
 import ImageElement from './ImageElement';
 import ItalicSpan from './ItalicSpan';
@@ -49,6 +50,9 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 
 				case 'EMOJI':
 					return <EmojiElement key={index} handle={child.value.value} />;
+
+				case 'COLOR':
+					return <ColorElement key={index} {...child.value} />;
 
 				default:
 					return null;
