@@ -1,6 +1,9 @@
 import * as MessageParser from '@rocket.chat/message-parser';
 import React, { memo, MouseEvent, ReactElement } from 'react';
 
+import { ChannelMention } from './ChannelMention';
+import { MessageBodyContext } from './MessageBodyContext';
+import { UserMention } from './UserMention';
 import BigEmojiBlock from './blocks/BigEmojiBlock';
 import CodeBlock from './blocks/CodeBlock';
 import HeadingBlock from './blocks/HeadingBlock';
@@ -9,11 +12,8 @@ import ParagraphBlock from './blocks/ParagraphBlock';
 import QuoteBlock from './blocks/QuoteBlock';
 import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
-import { MessageBodyContext } from './contexts/MessageBodyContext';
-import { ChannelMention } from './definitions/ChannelMention';
-import { UserMention } from './definitions/UserMention';
 
-type MessageBodyRenderProps = {
+type MessageBodyTemplateProps = {
 	tokens: MessageParser.MarkdownAST;
 	mentions: UserMention[];
 	channels: ChannelMention[];
@@ -22,19 +22,19 @@ type MessageBodyRenderProps = {
 	isThreadPreview?: boolean;
 };
 
-const MessageBodyRender = ({
+const MessageBodyTemplate = ({
 	tokens,
 	mentions = [],
 	channels = [],
 	onUserMentionClick,
 	onChannelMentionClick,
 	isThreadPreview,
-}: MessageBodyRenderProps): ReactElement => (
+}: MessageBodyTemplateProps): ReactElement => (
 	<MessageBodyContext.Provider value={{ mentions, channels, onUserMentionClick, onChannelMentionClick, isThreadPreview }}>
 		{tokens.map((block, index) => {
 			switch (block.type) {
 				case 'BIG_EMOJI':
-					return <BigEmojiBlock key={index} emojis={block.value} isThreadPreview={isThreadPreview} />;
+					return <BigEmojiBlock key={index} emojis={block.value} />;
 
 				case 'PARAGRAPH':
 					return <ParagraphBlock key={index} children={block.value} />;
@@ -67,4 +67,4 @@ const MessageBodyRender = ({
 	</MessageBodyContext.Provider>
 );
 
-export default memo(MessageBodyRender);
+export default memo(MessageBodyTemplate);

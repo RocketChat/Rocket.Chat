@@ -5,11 +5,11 @@ import MessageBodyRender from '../../../../components/message/body/MessageBodyRe
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useParsedMessage } from '../hooks/useParsedMessage';
 
-type MessageContentBodyProps = {
+type ThreadMessagePreviewBodyProps = {
 	message: IMessage;
 };
 
-const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement => {
+const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): ReactElement => {
 	const {
 		actions: { openRoom, openUserCard },
 	} = useMessageActions();
@@ -23,8 +23,9 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 			mentions={message?.mentions || []}
 			channels={message?.channels || []}
 			tokens={tokens}
+			isThreadPreview
 		/>
 	);
 };
 
-export default MessageContentBody;
+export default ThreadMessagePreviewBody;

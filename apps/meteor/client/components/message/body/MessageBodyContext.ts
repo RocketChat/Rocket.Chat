@@ -1,7 +1,7 @@
 import { createContext, useContext, MouseEvent } from 'react';
 
-import { ChannelMention } from '../definitions/ChannelMention';
-import { UserMention } from '../definitions/UserMention';
+import { ChannelMention } from './ChannelMention';
+import { UserMention } from './UserMention';
 
 type MessageBodyContextType = {
 	mentions?: UserMention[];

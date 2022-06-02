@@ -2,7 +2,7 @@ import { MessageEmoji, ThreadMessageEmoji } from '@rocket.chat/fuselage';
 import React, { ReactElement, useMemo } from 'react';
 
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
-import { useMessageBodyIsThreadPreview } from '../contexts/MessageBodyContext';
+import { useMessageBodyIsThreadPreview } from '../MessageBodyContext';
 
 type EmojiElementProps = {
 	handle: string;
