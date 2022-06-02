@@ -11,12 +11,13 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter'> & {
-	value: any;
+type RoomAutoCompleteProps<T> = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> & {
+	value: T;
+	onChange: (value: TemplateStringsArray) => void;
 };
 
 /* @deprecated */
-const RoomAutoComplete = (props: RoomAutoCompleteProps): ReactElement => {
+const RoomAutoComplete = <T,>(props: RoomAutoCompleteProps<T>): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'rooms.autocomplete.channelAndPrivate',
@@ -33,7 +34,8 @@ const RoomAutoComplete = (props: RoomAutoCompleteProps): ReactElement => {
 
 	return (
 		<AutoComplete
-			{...props}
+			value={props.value as any}
+			onChange={props.onChange as any}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ value, label }): ReactElement => (

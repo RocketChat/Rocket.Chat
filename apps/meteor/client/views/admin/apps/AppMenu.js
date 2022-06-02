@@ -124,39 +124,43 @@ function AppMenu({ app, ...props }) {
 					action: handleSubscription,
 				},
 			}),
-			...(isAppEnabled && {
-				disable: {
+			...(app.installed &&
+				isAppEnabled && {
+					disable: {
+						label: (
+							<Box color='warning'>
+								<Icon name='ban' size='x16' marginInlineEnd='x4' />
+								{t('Disable')}
+							</Box>
+						),
+						action: handleDisable,
+					},
+				}),
+			...(app.installed &&
+				!isAppEnabled && {
+					enable: {
+						label: (
+							<Box>
+								<Icon name='check' size='x16' marginInlineEnd='x4' />
+								{t('Enable')}
+							</Box>
+						),
+						action: handleEnable,
+					},
+				}),
+			...(app.installed && {
+				uninstall: {
 					label: (
-						<Box color='warning'>
-							<Icon name='ban' size='x16' marginInlineEnd='x4' />
-							{t('Disable')}
+						<Box color='danger'>
+							<Icon name='trash' size='x16' marginInlineEnd='x4' />
+							{t('Uninstall')}
 						</Box>
 					),
-					action: handleDisable,
+					action: handleUninstall,
 				},
 			}),
-			...(!isAppEnabled && {
-				enable: {
-					label: (
-						<Box>
-							<Icon name='check' size='x16' marginInlineEnd='x4' />
-							{t('Enable')}
-						</Box>
-					),
-					action: handleEnable,
-				},
-			}),
-			uninstall: {
-				label: (
-					<Box color='danger'>
-						<Icon name='trash' size='x16' marginInlineEnd='x4' />
-						{t('Uninstall')}
-					</Box>
-				),
-				action: handleUninstall,
-			},
 		}),
-		[canAppBeSubscribed, t, handleSubscription, isAppEnabled, handleDisable, handleEnable, handleUninstall],
+		[canAppBeSubscribed, t, handleSubscription, app.installed, isAppEnabled, handleDisable, handleEnable, handleUninstall],
 	);
 
 	return <Menu options={menuOptions} placement='bottom-start' {...props} />;
