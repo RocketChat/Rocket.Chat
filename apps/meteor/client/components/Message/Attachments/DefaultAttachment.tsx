@@ -3,19 +3,17 @@ import React, { FC, ReactNode, ComponentProps } from 'react';
 
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment } from './ActionAttachtment';
-import {
-	AttachmentBlock,
-	AttachmentText,
-	AttachmentContent,
-	AttachmentAuthor,
-	AttachmentAuthorAvatar,
-	AttachmentAuthorName,
-	AttachmentRow,
-	AttachmentTitle,
-	AttachmentImage,
-	AttachmentThumb,
-} from './Attachment';
+import AttachmentAuthor from './Attachment/Author';
+import AttachmentAuthorAvatar from './Attachment/AuthorAvatar';
+import AttachmentAuthorName from './Attachment/AuthorName';
+import AttachmentBlock from './Attachment/Block';
+import AttachmentContent from './Attachment/Content';
+import AttachmentRow from './Attachment/Row';
+import AttachmentText from './Attachment/Text';
+import AttachmentThumb from './Attachment/Thumb';
+import AttachmentTitle from './Attachment/Title';
 import FieldsAttachment from './FieldsAttachment';
+import AttachmentImage from './components/Image';
 import { useCollapse } from './hooks/useCollapse';
 
 const applyMarkdownIfRequires = (

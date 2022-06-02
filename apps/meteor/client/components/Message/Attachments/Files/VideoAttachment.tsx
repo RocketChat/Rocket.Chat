@@ -4,14 +4,13 @@ import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import MarkdownText from '../../../MarkdownText';
-import Attachment, {
-	AttachmentRow,
-	AttachmentTitle,
-	AttachmentSize,
-	AttachmentDownload,
-	AttachmentContent,
-	AttachmentDetails,
-} from '../Attachment';
+import Attachment from '../Attachment';
+import AttachmentContent from '../Attachment/Content';
+import AttachmentDetails from '../Attachment/Details';
+import AttachmentDownload from '../Attachment/Download';
+import AttachmentRow from '../Attachment/Row';
+import AttachmentSize from '../Attachment/Size';
+import AttachmentTitle from '../Attachment/Title';
 import { useCollapse } from '../hooks/useCollapse';
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({

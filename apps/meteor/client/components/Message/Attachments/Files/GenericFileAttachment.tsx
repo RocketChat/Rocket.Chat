@@ -3,14 +3,13 @@ import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import MarkdownText from '../../../MarkdownText';
-import Attachment, {
-	AttachmentRow,
-	AttachmentTitleLink,
-	AttachmentTitle,
-	AttachmentSize,
-	AttachmentDownload,
-	AttachmentDescription,
-} from '../Attachment';
+import Attachment from '../Attachment';
+import AttachmentDescription from '../Attachment/Description';
+import AttachmentDownload from '../Attachment/Download';
+import AttachmentRow from '../Attachment/Row';
+import AttachmentSize from '../Attachment/Size';
+import AttachmentTitle from '../Attachment/Title';
+import AttachmentTitleLink from '../Attachment/TitleLink';
 
 export type GenericFileAttachmentProps = {
 	file?: FileProp;
