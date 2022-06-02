@@ -88,6 +88,10 @@ FlowRouter.route('/home', {
 	name: 'home',
 
 	action(_params, queryParams) {
+		const HomePage = createTemplateForComponent('HomePage', () => import('../views/home/HomePage'), {
+			attachment: 'at-parent',
+		});
+
 		KonchatNotification.getDesktopPermission();
 		if (queryParams?.saml_idp_credentialToken !== undefined) {
 			const token = queryParams.saml_idp_credentialToken;
@@ -104,13 +108,13 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				appLayout.renderMainLayout({ center: 'home' });
+				appLayout.renderMainLayout({ center: HomePage });
 			});
 
 			return;
 		}
 
-		appLayout.renderMainLayout({ center: 'home' });
+		appLayout.renderMainLayout({ center: HomePage });
 	},
 });
 
