@@ -30,8 +30,12 @@ export class IMAPInterceptor extends EventEmitter {
 		super();
 
 		this.imap = new IMAP({
-			connTimeout: 30000,
-			keepalive: true,
+			connTimeout: 300000,
+			keepalive: {
+				interval: 10000,
+				idleInterval: 300000,
+				forceNoop: true,
+			},
 			...imapConfig,
 		});
 
@@ -101,7 +105,6 @@ export class IMAPInterceptor extends EventEmitter {
 				this.log(err);
 				throw err;
 			}
-
 			// newEmails => array containing serials of unseen messages
 			if (newEmails.length > 0) {
 				const fetch = this.imap.fetch(newEmails, {
@@ -121,7 +124,6 @@ export class IMAPInterceptor extends EventEmitter {
 								this.log('Rejecting email', email.subject);
 								return;
 							}
-
 							this.emit('email', email);
 						});
 					});
