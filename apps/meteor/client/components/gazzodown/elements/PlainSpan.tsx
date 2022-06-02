@@ -1,7 +1,7 @@
 import React, { memo, ReactElement } from 'react';
 
-import { useMessageListHighlights, useMessageListKatex } from '../../../../views/room/MessageList/contexts/MessageListContext';
-import CustomText from '../../../CustomText';
+import { useMessageListHighlights, useMessageListKatex } from '../../../views/room/MessageList/contexts/MessageListContext';
+import CustomText from '../../CustomText';
 
 type PlainSpanProps = {
 	text: string;

@@ -1,9 +1,6 @@
 import * as MessageParser from '@rocket.chat/message-parser';
-import React, { memo, MouseEvent, ReactElement } from 'react';
+import React, { memo, ReactElement } from 'react';
 
-import { ChannelMention } from './ChannelMention';
-import { MessageBodyContext } from './MessageBodyContext';
-import { UserMention } from './UserMention';
 import BigEmojiBlock from './blocks/BigEmojiBlock';
 import CodeBlock from './blocks/CodeBlock';
 import HeadingBlock from './blocks/HeadingBlock';
@@ -13,24 +10,12 @@ import QuoteBlock from './blocks/QuoteBlock';
 import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
 
-type MessageBodyRenderProps = {
+type MarkupProps = {
 	tokens: MessageParser.MarkdownAST;
-	mentions: UserMention[];
-	channels: ChannelMention[];
-	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
-	onChannelMentionClick?: (id: string) => (e: MouseEvent<HTMLDivElement>) => void;
-	isThreadPreview?: boolean;
 };
 
-const MessageBodyRender = ({
-	tokens,
-	mentions = [],
-	channels = [],
-	onUserMentionClick,
-	onChannelMentionClick,
-	isThreadPreview = false,
-}: MessageBodyRenderProps): ReactElement => (
-	<MessageBodyContext.Provider value={{ mentions, channels, onUserMentionClick, onChannelMentionClick, isThreadPreview }}>
+const Markup = ({ tokens }: MarkupProps): ReactElement => (
+	<>
 		{tokens.map((block, index) => {
 			switch (block.type) {
 				case 'BIG_EMOJI':
@@ -64,7 +49,7 @@ const MessageBodyRender = ({
 					return null;
 			}
 		})}
-	</MessageBodyContext.Provider>
+	</>
 );
 
-export default memo(MessageBodyRender);
+export default memo(Markup);

@@ -1,6 +1,6 @@
 import React, { memo, ReactElement } from 'react';
 
-import { useMessageBodyChannelMentions, useMessageBodyChannelMentionClick } from '../MessageBodyContext';
+import { useMessageBodyChannelMentions, useMessageBodyChannelMentionClick } from '../MarkupInteractionContext';
 
 type ChannelMentionElementProps = {
 	mention: string;

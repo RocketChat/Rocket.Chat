@@ -1,7 +1,7 @@
 import * as MessageParser from '@rocket.chat/message-parser';
 import React, { ReactElement, useEffect, useState } from 'react';
 
-import hljs, { register } from '../../../../../app/markdown/lib/hljs';
+import hljs, { register } from '../../../../app/markdown/lib/hljs';
 
 type hljsResult = {
 	language: string;

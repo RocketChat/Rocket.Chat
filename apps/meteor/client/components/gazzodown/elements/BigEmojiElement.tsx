@@ -1,8 +1,7 @@
-import { MessageEmoji, ThreadMessageEmoji } from '@rocket.chat/fuselage';
+import { MessageEmoji } from '@rocket.chat/fuselage';
 import React, { ReactElement, useMemo } from 'react';
 
-import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
-import { useMessageBodyIsThreadPreview } from '../MessageBodyContext';
+import { getEmojiClassNameAndDataTitle } from '../../../lib/utils/renderEmoji';
 
 type BigEmojiElementProps = {
 	handle: string;
@@ -19,15 +18,8 @@ const BigEmojiElement = ({ handle }: BigEmojiElementProps): ReactElement => {
 		return props;
 	}, [handle]);
 
-	// @todo remove it when we will have a better solution for thread preview
-	const isThreadPreview = useMessageBodyIsThreadPreview();
-
 	if (!emojiProps) {
 		return <>:${handle}:</>;
-	}
-
-	if (isThreadPreview) {
-		return <ThreadMessageEmoji {...emojiProps}>:{handle}:</ThreadMessageEmoji>;
 	}
 
 	return (

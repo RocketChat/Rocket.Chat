@@ -1,17 +1,17 @@
 import * as MessageParser from '@rocket.chat/message-parser';
 import React, { memo, ReactElement } from 'react';
 
-import PreviewBigEmojiBlock from './preview/PreviewBigEmojiBlock';
-import PreviewInlineElements from './preview/PreviewInlineElements';
+import PreviewBigEmojiBlock from './blocks/PreviewBigEmojiBlock';
+import PreviewInlineElements from './elements/PreviewInlineElements';
 
 const isOnlyBigEmojiBlock = (tokens: MessageParser.MarkdownAST): tokens is [MessageParser.BigEmoji] =>
 	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
-type MessageBodyRenderProps = {
+type PreviewMarkupProps = {
 	tokens: MessageParser.MarkdownAST;
 };
 
-const MessageBodyPreview = ({ tokens }: MessageBodyRenderProps): ReactElement | null => {
+const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 	if (isOnlyBigEmojiBlock(tokens)) {
 		return <PreviewBigEmojiBlock emojis={tokens[0].value} />;
 	}
@@ -71,4 +71,4 @@ const MessageBodyPreview = ({ tokens }: MessageBodyRenderProps): ReactElement | 
 	}
 };
 
-export default memo(MessageBodyPreview);
+export default memo(PreviewMarkup);

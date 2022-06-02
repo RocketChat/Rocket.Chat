@@ -1,7 +1,8 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import React, { ReactElement } from 'react';
 
-import MessageBodyRender from '../../../../components/message/body/MessageBodyRender';
+import Markup from '../../../../components/gazzodown/Markup';
+import { MarkupInteractionContext } from '../../../../components/gazzodown/MarkupInteractionContext';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useParsedMessage } from '../hooks/useParsedMessage';
 
@@ -10,20 +11,23 @@ type MessageContentBodyProps = {
 };
 
 const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement => {
+	const tokens = useParsedMessage(message);
+
 	const {
 		actions: { openRoom, openUserCard },
 	} = useMessageActions();
 
-	const tokens = useParsedMessage(message);
-
 	return (
-		<MessageBodyRender
-			onUserMentionClick={openUserCard}
-			onChannelMentionClick={openRoom}
-			mentions={message?.mentions || []}
-			channels={message?.channels || []}
-			tokens={tokens}
-		/>
+		<MarkupInteractionContext.Provider
+			value={{
+				mentions: message?.mentions ?? [],
+				channels: message?.channels ?? [],
+				onUserMentionClick: openUserCard,
+				onChannelMentionClick: openRoom,
+			}}
+		>
+			<Markup tokens={tokens} />
+		</MarkupInteractionContext.Provider>
 	);
 };
 

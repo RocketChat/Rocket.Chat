@@ -1,7 +1,7 @@
 import * as MessageParser from '@rocket.chat/message-parser';
 import React, { ReactElement } from 'react';
 
-import { baseURI } from '../../../../lib/baseURI';
+import { baseURI } from '../../../lib/baseURI';
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
 import PlainSpan from './PlainSpan';

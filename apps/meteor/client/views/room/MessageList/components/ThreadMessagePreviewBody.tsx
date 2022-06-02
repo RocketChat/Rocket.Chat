@@ -1,7 +1,7 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import React, { ReactElement } from 'react';
 
-import MessageBodyPreview from '../../../../components/message/body/MessageBodyPreview';
+import PreviewMarkup from '../../../../components/gazzodown/PreviewMarkup';
 import { useParsedMessage } from '../hooks/useParsedMessage';
 
 type ThreadMessagePreviewBodyProps = {
@@ -11,7 +11,7 @@ type ThreadMessagePreviewBodyProps = {
 const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): ReactElement => {
 	const tokens = useParsedMessage(message);
 
-	return <MessageBodyPreview tokens={tokens} />;
+	return <PreviewMarkup tokens={tokens} />;
 };
 
 export default ThreadMessagePreviewBody;

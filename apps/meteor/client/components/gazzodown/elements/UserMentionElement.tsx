@@ -1,7 +1,7 @@
 import { useUserId } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement, useMemo } from 'react';
 
-import { useMessageBodyUserMentions, useMessageBodyMentionClick } from '../MessageBodyContext';
+import { useMessageBodyUserMentions, useMessageBodyMentionClick } from '../MarkupInteractionContext';
 
 type UserMentionElementProps = {
 	mention: string;
