@@ -111,11 +111,11 @@ class SideNav extends BasePage {
 	}
 
 	public newChannelBtn(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Channel' });
+		return this.getPage().locator('li.rcx-option >> text="Channel"');
 	}
 
 	public newDiscussionBtn(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Discussion' });
+		return this.getPage().locator('li.rcx-option >> text="Discussion"');
 	}
 
 	public newChannelIcon(): Locator {
