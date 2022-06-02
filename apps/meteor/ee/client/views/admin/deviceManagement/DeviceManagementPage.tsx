@@ -6,12 +6,11 @@ import DeviceInfoWithData from './DeviceInfoWithData';
 import DevicesTable from './DevicesTable';
 
 const DeviceManagementPage = (): ReactElement => {
-
 	const t = useTranslation();
 	const context = useRouteParameter('context');
 	const deviceId = useRouteParameter('id');
 
-	return(
+	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Device_Management')} />

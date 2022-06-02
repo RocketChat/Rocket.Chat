@@ -5,13 +5,13 @@ import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuth
 import DeviceManagementPage from './DeviceManagementPage';
 
 const DeviceManagement = (): ReactElement => {
-    const canViewDeviceManagement = usePermission('view-engagement-dashboard');
+	const canViewDeviceManagement = usePermission('view-engagement-dashboard');
 
-    if (!canViewDeviceManagement) {
-        return <NotAuthorizedPage />;
-    };
+	if (!canViewDeviceManagement) {
+		return <NotAuthorizedPage />;
+	}
 
-    return <DeviceManagementPage />;
+	return <DeviceManagementPage />;
 };
 
 export default DeviceManagement;

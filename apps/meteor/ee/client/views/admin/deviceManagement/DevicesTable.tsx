@@ -1,15 +1,21 @@
-import type { DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, useMemo, useEffect } from 'react';
 
-import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody } from '../../../../../client/components/GenericTable';
+import FilterByText from '../../../../../client/components/FilterByText';
+import {
+	GenericTable,
+	GenericTableHeaderCell,
+	GenericTableHeader,
+	GenericTableBody,
+	GenericTableLoadingTable,
+} from '../../../../../client/components/GenericTable';
 import { usePagination } from '../../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../client/components/GenericTable/hooks/useSort';
-import DevicesRow from './DevicesRow';
-import FilterByText from '/client/components/FilterByText';
 import { useEndpointData } from '../../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../../client/lib/asyncState';
+import DevicesRow from './DevicesRow';
 
 const sortMapping = {
 	clients: 'device.name',
@@ -38,14 +44,14 @@ const DevicesTable = (): ReactElement => {
 				count: itemsPerPage,
 				offset: current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection]
+			[text, itemsPerPage, current, sortBy, sortDirection],
 		),
 		500,
 	);
 
-	const { value: data, phase, reload } = useEndpointData('sessions/list.all', query);
+	const { value: data, phase, error, reload } = useEndpointData('sessions/list.all', query);
 
-	useEffect(() => console.log("Query = ", query), [query]);
+	useEffect(() => console.log('Query = ', query), [query]);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -65,64 +71,65 @@ const DevicesTable = (): ReactElement => {
 					{t('Last_login')}
 				</GenericTableHeaderCell>
 			),
-			mediaQuery && (
-				<GenericTableHeaderCell key={'_id'}>
-					{t('Device_Id')}
-				</GenericTableHeaderCell>
-			),
-			mediaQuery && (
-				<GenericTableHeaderCell key={'ip'}>
-					{t('IP_Address')}
-				</GenericTableHeaderCell>
-			),
-			<GenericTableHeaderCell width={'5%'} key='menu'>{' '}</GenericTableHeaderCell>
+			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_Id')}</GenericTableHeaderCell>,
+			mediaQuery && <GenericTableHeaderCell key={'ip'}>{t('IP_Address')}</GenericTableHeaderCell>,
+			<GenericTableHeaderCell width={'5%'} key='menu'>
+				{' '}
+			</GenericTableHeaderCell>,
 		],
-		[t, mediaQuery],
+		[t, mediaQuery, setSort, sortDirection, sortBy],
 	);
 
-	if(!data) {
+	if (!data && phase === AsyncStatePhase.REJECTED) {
 		return (
 			<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
 				<States>
-				<StatesIcon name='warning' variation='danger'/>
-				<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
-				<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
-				<StatesActions>
-					<StatesAction onClick={reload}>{t('Retry')}</StatesAction>
-				</StatesActions>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
+					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
+					<StatesSubtitle>{error?.message}</StatesSubtitle>
+					<StatesActions>
+						<StatesAction onClick={reload}>{t('Retry')}</StatesAction>
+					</StatesActions>
 				</States>
 			</Box>
 		);
-	};
+	}
 
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
 			<GenericTable>
-				<GenericTableHeader>
-					{headers}
-				</GenericTableHeader>
+				<GenericTableHeader>{headers}</GenericTableHeader>
 				<GenericTableBody>
-					{data?.sessions && data.sessions.map((session) => <DevicesRow
-						key={session._id}
-						_id = {session._id}
-						username={session._user.username || ''}
-						ip={session.ip}
-						deviceName={session.device?.name || ''}
-						deviceType={session.device?.type || ''}
-						deviceOSName={session.device?.os.name || ''}
-						loginAt={session.loginAt}
-					/>)}
+					{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={6} />}
+					{phase === AsyncStatePhase.RESOLVED &&
+						data?.sessions &&
+						data.sessions.map((session) => (
+							<DevicesRow
+								key={session._id}
+								_id={session._id}
+								username={session._user.username || ''}
+								ip={session.ip}
+								deviceName={session.device?.name || ''}
+								deviceType={session.device?.type || ''}
+								deviceOSName={session.device?.os.name || ''}
+								loginAt={session.loginAt}
+								onReload={reload}
+							/>
+						))}
 				</GenericTableBody>
 			</GenericTable>
-			<Pagination
-				current={current}
-				itemsPerPage={itemsPerPage}
-				count={data?.total || 0}
-				onSetCurrent={setCurrent}
-				onSetItemsPerPage={setItemsPerPage}
-				{...paginationProps}
-			/>
+			{phase === AsyncStatePhase.RESOLVED && (
+				<Pagination
+					current={current}
+					itemsPerPage={itemsPerPage}
+					count={data?.total || 0}
+					onSetCurrent={setCurrent}
+					onSetItemsPerPage={setItemsPerPage}
+					{...paginationProps}
+				/>
+			)}
 		</>
 	);
 };
