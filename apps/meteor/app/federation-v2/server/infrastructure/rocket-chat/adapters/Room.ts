@@ -41,12 +41,12 @@ export class RocketChatRoomAdapter {
 		) as ICreatedRoom;
 		const roomId = rid || _id;
 		MatrixBridgedRoom.insert({ rid: roomId, mri: federatedRoom.externalId });
-		await Rooms.setAsBridged(roomId);
+		await Rooms.setAsFederated(roomId);
 	}
 
 	public async updateFederatedRoomByInternalRoomId(internalRoomId: string, federatedRoom: FederatedRoom): Promise<void> {
 		MatrixBridgedRoom.upsert({ rid: internalRoomId }, { rid: internalRoomId, mri: federatedRoom.externalId });
-		await Rooms.setAsBridged(internalRoomId);
+		await Rooms.setAsFederated(internalRoomId);
 	}
 
 	public async addUserToRoom(federatedRoom: FederatedRoom, inviteeUser: FederatedUser, inviterUser?: FederatedUser): Promise<void> {

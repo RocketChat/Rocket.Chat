@@ -141,7 +141,7 @@ describe('Federation - Domain - FederatedRoom', () => {
 	});
 
 	describe('#isFederated()', () => {
-		it('should return true if the room is bridged', () => {
+		it('should return true if the room is federated', () => {
 			const federatedRoom = FederatedRoom.createInstance(
 				'!externalId@id',
 				'externalId',
@@ -150,11 +150,11 @@ describe('Federation - Domain - FederatedRoom', () => {
 				'',
 				members,
 			);
-			federatedRoom.internalReference.bridged = true;
+			federatedRoom.internalReference.federated = true;
 			expect(federatedRoom.isFederated()).to.be.true;
 		});
 
-		it('should return false if the room is NOT bridged', () => {
+		it('should return false if the room is NOT federated', () => {
 			const federatedRoom = FederatedRoom.createInstance(
 				'!externalId@id',
 				'externalId',

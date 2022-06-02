@@ -295,7 +295,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		it('should return true if the room is NOT federated', async () => {
 			const room = FederatedRoom.build();
 			room.internalReference = {} as any;
-			room.internalReference.bridged = false;
+			room.internalReference.federated = false;
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			expect(await service.isAFederatedRoom('internalRoomId')).to.be.false;
 		});
@@ -303,7 +303,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		it('should return true if the room is federated', async () => {
 			const room = FederatedRoom.build();
 			room.internalReference = {} as any;
-			room.internalReference.bridged = true;
+			room.internalReference.federated = true;
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			expect(await service.isAFederatedRoom('internalRoomId')).to.be.true;
 		});

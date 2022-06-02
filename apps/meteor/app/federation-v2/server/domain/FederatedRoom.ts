@@ -73,6 +73,6 @@ export class FederatedRoom {
 	}
 
 	public isFederated(): boolean {
-		return this.internalReference?.bridged === true;
+		return this.internalReference?.federated === true;
 	}
 }

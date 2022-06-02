@@ -107,7 +107,6 @@ Meteor.methods({
 		}
 
 		try {
-			// If the room is bridged, send the message to matrix only
 			if (Promise.await(federationRoomServiceSender.isAFederatedRoom(message.rid))) {
 				return federationRoomServiceSender.sendMessageFromRocketChat(
 					FederationRoomSenderConverter.toSendExternalMessageDto(uid, message.rid, message),
