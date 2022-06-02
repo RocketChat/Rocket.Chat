@@ -102,6 +102,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.VideoConference.findOneById(callId);
 	}
 
+	public async setProviderData(callId: IVideoConference['_id'], data: IVideoConference['providerData'] | undefined): Promise<void> {
+		this.VideoConference.setProviderDataById(callId, data);
+	}
+
 	private async createMessage(rid: IRoom['_id'], user: IUser, extraData: Partial<IMessage> = {}): Promise<IMessage['_id']> {
 		const record = {
 			msg: '',

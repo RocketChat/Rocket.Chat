@@ -19,4 +19,14 @@ export class AppVideoConferencesConverter {
 			...call,
 		} as VideoConference;
 	}
+
+	convertAppVideoConference(call: VideoConference | null): IVideoConference | undefined {
+		if (!call) {
+			return;
+		}
+
+		return {
+			...call,
+		} as IVideoConference;
+	}
 }

@@ -40,6 +40,8 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	endedBy?: Pick<IUser, '_id' | 'username' | 'name'>;
 	endedAt?: Date;
+
+	providerData?: Record<string, any>;
 }
 
 export interface IDirectVideoConference extends IVideoConference {
