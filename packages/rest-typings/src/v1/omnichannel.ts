@@ -141,30 +141,33 @@ export type OmnichannelEndpoints = {
 			messages: IMessage[];
 		}>;
 	};
-	'livechat/users/agent': {
-		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
-			users: {
-				_id: string;
-				emails: {
-					address: string;
-					verified: boolean;
-				}[];
-				status: string;
-				name: string;
-				username: string;
-				statusLivechat: string;
-				livechat: {
-					maxNumberSimultaneousChat: number;
-				};
-			}[];
-		}>;
-	};
 
 	'livechat/users/manager/:_id': {
-		DELETE: () => { success: boolean };
+		GET: (
+			params: PaginatedRequest<{
+				text: string;
+			}>,
+		) => { user: ILivechatAgent };
+		DELETE: () => void;
 	};
 
 	'livechat/users/manager': {
+		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
+			users: ILivechatAgent[];
+		}>;
+		POST: (params: { username: string }) => { success: boolean };
+	};
+
+	'livechat/users/agent/:_id': {
+		GET: (
+			params: PaginatedRequest<{
+				text: string;
+			}>,
+		) => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> };
+		DELETE: () => { success: boolean };
+	};
+
+	'livechat/users/agent': {
 		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
 			users: ILivechatAgent[];
 		}>;
@@ -221,8 +224,8 @@ export type OmnichannelEndpoints = {
 			total: number;
 		};
 	};
-	'livechat/agents/:uid/departments?enabledDepartmentsOnly=true': {
-		GET: () => { departments: ILivechatDepartment[] };
+	'livechat/agents/:uid/departments': {
+		GET: (params: { enableDepartmentsOnly: 'true' | 'false' | '0' | '1' }) => { departments: ILivechatDepartmentAgents[] };
 	};
 
 	'canned-responses': {
