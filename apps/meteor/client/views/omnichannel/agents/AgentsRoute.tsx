@@ -63,9 +63,9 @@ const AgentsRoute: FC = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	if (!id) {
-		throw new Error('Agent id is required');
-	}
+	// if (!id) {
+	// 	throw new Error('Agent id is required');
+	// }
 
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
@@ -180,8 +180,8 @@ const AgentsRoute: FC = () => {
 					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 				</VerticalBar.Header>
 
-				{context === 'edit' && <AgentEditWithData uid={id} reload={reload} />}
-				{context === 'info' && (
+				{context === 'edit' && id && <AgentEditWithData uid={id} reload={reload} />}
+				{context === 'info' && id && (
 					<AgentInfo uid={id}>
 						<AgentInfoActions reload={reload} />
 					</AgentInfo>

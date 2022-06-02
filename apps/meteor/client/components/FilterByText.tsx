@@ -4,7 +4,7 @@ import React, { FC, ChangeEvent, FormEvent, memo, useCallback, useEffect, useSta
 
 type FilterByTextProps = {
 	placeholder?: string;
-	onChange: (filter: { text: string }) => void;
+	setFilter: (filter: { text: string }) => void;
 	inputRef?: () => void;
 };
 
@@ -17,7 +17,7 @@ type FilterByTextPropsWithButton = FilterByTextProps & {
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children, ...props }) => {
+const FilterByText: FC<FilterByTextProps> = ({ placeholder, setFilter, inputRef, children, ...props }) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -27,7 +27,7 @@ const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter,
 	}, []);
 
 	useEffect(() => {
-		setFilter({ text });
+		setFilter?.({ text });
 	}, [setFilter, text]);
 
 	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
