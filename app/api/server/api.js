@@ -407,6 +407,11 @@ export class APIClass extends Restivus {
 						this.queryFields = options.queryFields;
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this)) || API.v1.success();
+
+						log.http({
+							status: result.statusCode,
+							responseTime: Date.now() - startTime,
+						});
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 
