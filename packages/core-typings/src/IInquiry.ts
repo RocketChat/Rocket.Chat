@@ -1,3 +1,4 @@
+import type { IUser } from './IUser';
 import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
@@ -36,4 +37,8 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	locked?: boolean;
 	lockedAt?: Date;
 	lastMessage?: IMessage & { token?: string };
+	defaultAgent?: {
+		agentId: IUser['_id'];
+		username?: IUser['username'];
+	};
 }
