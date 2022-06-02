@@ -13,7 +13,7 @@ const query = (
 
 type UserAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
 	Omit<ComponentProps<typeof Option>, 'value' | 'is' | 'className' | 'onChange'> & {
-		onChange: (value: unknown, action: 'remove' | undefined) => void;
+		onChange: (value: any, action: 'remove' | undefined) => void;
 		value: any;
 		filter?: string;
 	};
@@ -37,7 +37,7 @@ const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultip
 	return (
 		<AutoComplete
 			{...props}
-			onChange={onChange}
+			onChange={onChange as any}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ value: selected }): ReactElement =>
