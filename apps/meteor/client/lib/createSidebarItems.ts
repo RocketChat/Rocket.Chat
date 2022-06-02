@@ -1,11 +1,15 @@
+import { IconProps } from '@rocket.chat/fuselage';
 import type { Subscription } from 'use-subscription';
 
-type SidebarItem = {
+export type SidebarItem = {
 	i18nLabel: string;
 	href?: string;
-	icon?: string;
+	icon?: IconProps['name'];
 	tag?: 'Alpha';
 	permissionGranted?: boolean | (() => boolean);
+	pathSection?: string;
+	pathGroup?: string;
+	name?: string;
 };
 
 export const createSidebarItems = (
