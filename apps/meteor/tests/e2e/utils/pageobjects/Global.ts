@@ -50,10 +50,6 @@ class Global extends BasePage {
 		await this.modalConfirm().click();
 	}
 
-	// public async setWindowSize(width, height): Promise<void> {
-	// 	cy.viewport(width, height);
-	// }
-	//
 	public async dismissToast(): Promise<void> {
 		await this.toastAlert().click();
 	}
