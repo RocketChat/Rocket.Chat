@@ -2,7 +2,6 @@ import * as MessageParser from '@rocket.chat/message-parser';
 import React, { ReactElement, useEffect, useState } from 'react';
 
 import hljs, { register } from '../../../../../app/markdown/lib/hljs';
-import CodeLine from '../CodeLine';
 
 type hljsResult = {
 	language: string;
@@ -22,12 +21,14 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 		lines.map((block, index) => {
 			switch (block.type) {
 				case 'CODE_LINE':
-					return <CodeLine key={index} value={block.value} />;
+					return <div key={index}>{block.value.type === 'PLAIN_TEXT' ? block.value.value : null}</div>;
+
 				default:
 					return null;
 			}
 		}),
 	);
+
 	useEffect(() => {
 		!language || language === 'none'
 			? setCode(hljs.highlightAuto(lines.map((line) => line.value.value).join('\n')))
