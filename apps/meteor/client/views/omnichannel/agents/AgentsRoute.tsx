@@ -63,10 +63,6 @@ const AgentsRoute: FC = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	// if (!id) {
-	// 	throw new Error('Agent id is required');
-	// }
-
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
 			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
