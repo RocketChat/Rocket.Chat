@@ -1,20 +1,20 @@
 import * as MessageParser from '@rocket.chat/message-parser';
 import React, { ReactElement } from 'react';
 
-import PlainText from '../PlainText';
+import PlainSpan from '../elements/PlainSpan';
 
 type HeadingBlockProps = {
-	chunks?: MessageParser.Plain[];
+	children?: MessageParser.Plain[];
 	level?: 1 | 2 | 3 | 4;
 };
 
-const HeadingBlock = ({ chunks = [], level = 1 }: HeadingBlockProps): ReactElement => {
+const HeadingBlock = ({ children = [], level = 1 }: HeadingBlockProps): ReactElement => {
 	const HeadingTag = `h${level}` as const;
 
 	return (
 		<HeadingTag>
-			{chunks.map((block, index) => (
-				<PlainText key={index} value={block.value} />
+			{children.map((block, index) => (
+				<PlainSpan key={index} text={block.value} />
 			))}
 		</HeadingTag>
 	);

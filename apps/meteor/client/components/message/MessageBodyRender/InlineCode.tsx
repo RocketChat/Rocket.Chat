@@ -1,14 +1,14 @@
 import { InlineCode as ASTInlineCode } from '@rocket.chat/message-parser';
 import React, { ReactElement, FC } from 'react';
 
-import PlainText from './PlainText';
+import PlainSpan from './elements/PlainSpan';
 
 const InlineCode: FC<{ value: ASTInlineCode['value'] }> = ({ value }) => (
 	<code className='code-colors inline'>
 		{((block): ReactElement | null => {
 			switch (block.type) {
 				case 'PLAIN_TEXT':
-					return <PlainText value={block.value} />;
+					return <PlainSpan text={block.value} />;
 				default:
 					return null;
 			}

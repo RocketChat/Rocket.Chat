@@ -37,10 +37,10 @@ const MessageBodyRender = ({
 					return <BigEmojiBlock key={index} emojis={block.value} isThreadPreview={isThreadPreview} />;
 
 				case 'PARAGRAPH':
-					return <ParagraphBlock key={index} chunks={block.value} />;
+					return <ParagraphBlock key={index} children={block.value} />;
 
 				case 'HEADING':
-					return <HeadingBlock key={index} chunks={block.value} level={block.level} />;
+					return <HeadingBlock key={index} level={block.level} children={block.value} />;
 
 				case 'UNORDERED_LIST':
 					return <UnorderedListBlock key={index} items={block.value} />;
@@ -52,7 +52,7 @@ const MessageBodyRender = ({
 					return <TaskList key={index} tasks={block.value} />;
 
 				case 'QUOTE':
-					return <QuoteBlock key={index} paragraphs={block.value} />;
+					return <QuoteBlock key={index} children={block.value} />;
 
 				case 'CODE':
 					return <CodeBlock key={index} language={block.language} lines={block.value} />;

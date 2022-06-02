@@ -16,10 +16,10 @@ const hover = css`
 `;
 
 type QuoteBlockProps = {
-	paragraphs: MessageParser.Paragraph[];
+	children: MessageParser.Paragraph[];
 };
 
-const QuoteBlock = ({ paragraphs }: QuoteBlockProps): ReactElement => (
+const QuoteBlock = ({ children }: QuoteBlockProps): ReactElement => (
 	<Box
 		is='blockquote'
 		className={hover}
@@ -31,8 +31,8 @@ const QuoteBlock = ({ paragraphs }: QuoteBlockProps): ReactElement => (
 		borderColor='neutral-200'
 		borderInlineStartColor='neutral-600'
 	>
-		{paragraphs.map((paragraph, index) => (
-			<ParagraphBlock key={index} chunks={paragraph.value} />
+		{children.map((paragraph, index) => (
+			<ParagraphBlock key={index} children={paragraph.value} />
 		))}
 	</Box>
 );

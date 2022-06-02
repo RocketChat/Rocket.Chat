@@ -4,12 +4,12 @@ import React, { ReactElement } from 'react';
 import Inline from '../Inline';
 
 type ParagraphBlockProps = {
-	chunks: MessageParser.Inlines[];
+	children: MessageParser.Inlines[];
 };
 
-const ParagraphBlock = ({ chunks: value = [] }: ParagraphBlockProps): ReactElement => (
+const ParagraphBlock = ({ children }: ParagraphBlockProps): ReactElement => (
 	<p>
-		<Inline value={value} />
+		<Inline value={children} />
 	</p>
 );
 
