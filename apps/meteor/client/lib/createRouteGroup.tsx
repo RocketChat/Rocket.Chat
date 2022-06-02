@@ -1,38 +1,24 @@
 import { FlowRouter, Group, RouteOptions } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { ComponentType, createElement, lazy, ReactNode } from 'react';
+import React, { ElementType, ReactNode } from 'react';
 
+import MainLayout from '../views/root/MainLayout';
 import { appLayout } from './appLayout';
-import { createTemplateForComponent } from './portals/createTemplateForComponent';
-
-type RouteRegister = {
-	(
-		path: string,
-		options: RouteOptions & {
-			lazyRouteComponent: () => Promise<{ default: ComponentType }>;
-			props?: Record<string, unknown>;
-			ready?: boolean;
-		},
-	): [register: () => void, unregister: () => void];
-	(path: string, options: RouteOptions): void;
-};
 
 const registerLazyComponentRoute = (
 	routeGroup: Group,
-	importRouter: () => Promise<{
-		default: ComponentType<{
-			renderRoute?: () => ReactNode;
-		}>;
+	RouterComponent: ElementType<{
+		children?: ReactNode;
 	}>,
 	path: string,
 	{
-		lazyRouteComponent,
+		component: RouteComponent,
 		props,
 		ready = true,
 		...rest
 	}: RouteOptions & {
-		lazyRouteComponent: () => Promise<{ default: ComponentType }>;
+		component: ElementType;
 		props?: Record<string, unknown>;
 		ready?: boolean;
 	},
@@ -60,23 +46,18 @@ const registerLazyComponentRoute = (
 		computation?.stop();
 	};
 
-	const RouteComponent = lazy(lazyRouteComponent);
-	const renderRoute = (): ReactNode => createElement(RouteComponent, props);
-
 	routeGroup.route(path, {
 		...rest,
 		triggersEnter: [handleEnter, ...(rest.triggersEnter ?? [])],
 		triggersExit: [handleExit, ...(rest.triggersExit ?? [])],
 		action() {
-			const center = createTemplateForComponent(
-				Tracker.nonreactive(() => FlowRouter.getRouteName()),
-				importRouter,
-				{
-					attachment: 'at-parent',
-					props: () => ({ renderRoute }),
-				},
+			appLayout.render(
+				<MainLayout>
+					<RouterComponent>
+						<RouteComponent {...props} />
+					</RouterComponent>
+				</MainLayout>,
 			);
-			appLayout.renderMainLayout({ center });
 		},
 	});
 
@@ -86,12 +67,20 @@ const registerLazyComponentRoute = (
 export const createRouteGroup = (
 	name: string,
 	prefix: string,
-	importRouter: () => Promise<{
-		default: ComponentType<{
-			renderRoute?: () => ReactNode;
-		}>;
+	RouterComponent: ElementType<{
+		children?: ReactNode;
 	}>,
-): RouteRegister => {
+): {
+	(
+		path: string,
+		options: RouteOptions & {
+			component: ElementType;
+			props?: Record<string, unknown>;
+			ready?: boolean;
+		},
+	): [register: () => void, unregister: () => void];
+	(path: string, options: RouteOptions): void;
+} => {
 	const routeGroup = FlowRouter.group({
 		name,
 		prefix,
@@ -100,7 +89,7 @@ export const createRouteGroup = (
 	function registerRoute(
 		path: string,
 		options: RouteOptions & {
-			lazyRouteComponent: () => Promise<{ default: ComponentType }>;
+			component: ElementType;
 			props?: Record<string, unknown>;
 			ready?: boolean;
 		},
@@ -111,13 +100,13 @@ export const createRouteGroup = (
 		options:
 			| RouteOptions
 			| (RouteOptions & {
-					lazyRouteComponent: () => Promise<{ default: ComponentType }>;
+					component: ElementType;
 					props?: Record<string, unknown>;
 					ready?: boolean;
 			  }),
 	): [register: () => void, unregister: () => void] | void {
-		if ('lazyRouteComponent' in options) {
-			return registerLazyComponentRoute(routeGroup, importRouter, path, options);
+		if ('component' in options) {
+			return registerLazyComponentRoute(routeGroup, RouterComponent, path, options);
 		}
 
 		routeGroup.route(path, options);
@@ -126,10 +115,11 @@ export const createRouteGroup = (
 	registerRoute('/', {
 		name: `${name}-index`,
 		action() {
-			const center = createTemplateForComponent(`${name}-index`, importRouter, {
-				attachment: 'at-parent',
-			});
-			appLayout.renderMainLayout({ center });
+			appLayout.render(
+				<MainLayout>
+					<RouterComponent />
+				</MainLayout>,
+			);
 		},
 	});
 
