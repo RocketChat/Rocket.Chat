@@ -1,7 +1,7 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import React, { ReactElement } from 'react';
 
-import { useAcceptCall, useAbortCall, useRejectIncomingCall, useMuteCall } from '../../../../../contexts/VideoConfPopupContext';
+import { useAcceptCall, useAbortCall, useRejectIncomingCall, useDismissCall } from '../../../../../contexts/VideoConfPopupContext';
 import { useHandleRoom } from '../../../../../lib/RoomManager';
 import CallingPopup from './CallingPopup';
 import ReceivingPopup from './ReceivingPopup';
@@ -20,7 +20,7 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, position, current, 
 	const acceptCall = useAcceptCall();
 	const abortCall = useAbortCall();
 	const rejectCall = useRejectIncomingCall();
-	const muteCall = useMuteCall();
+	const dismissCall = useDismissCall();
 	const { value: room } = useHandleRoom(rid);
 
 	const handleConfirm = (): void => {
@@ -36,9 +36,8 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, position, current, 
 		abortCall();
 	};
 
-	// TODO: fix mute function
 	const handleMute = (): void => {
-		muteCall();
+		dismissCall(id);
 	};
 
 	if (!room) {

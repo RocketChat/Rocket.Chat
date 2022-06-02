@@ -19,7 +19,7 @@ type VideoConfPopupContextValue = {
 	startCall: (rid: IRoom['_id'], title?: string) => void;
 	acceptCall: (callId: string) => void;
 	joinCall: (callId: string) => void;
-	muteCall: () => void;
+	dismissCall: (callId: string) => void;
 	abortCall: () => void;
 	useIncomingCalls: () => VideoConfIncomingCall[];
 	rejectIncomingCall: (callId: string) => void;
@@ -34,7 +34,7 @@ export const VideoConfPopupContext = createContext<VideoConfPopupContextValue>({
 	startCall: () => undefined,
 	acceptCall: () => undefined,
 	joinCall: () => undefined,
-	muteCall: () => undefined,
+	dismissCall: () => undefined,
 	abortCall: () => undefined,
 	useIncomingCalls: () => [],
 	rejectIncomingCall: () => undefined,
@@ -48,7 +48,7 @@ export const useVideoConfPopupDismiss = (): VideoConfPopupContextValue['dismiss'
 export const useStartCall = (): VideoConfPopupContextValue['startCall'] => useContext(VideoConfPopupContext).startCall;
 export const useAcceptCall = (): VideoConfPopupContextValue['acceptCall'] => useContext(VideoConfPopupContext).acceptCall;
 export const useJoinCall = (): VideoConfPopupContextValue['joinCall'] => useContext(VideoConfPopupContext).joinCall;
-export const useMuteCall = (): VideoConfPopupContextValue['muteCall'] => useContext(VideoConfPopupContext).muteCall;
+export const useDismissCall = (): VideoConfPopupContextValue['dismissCall'] => useContext(VideoConfPopupContext).dismissCall;
 export const useAbortCall = (): VideoConfPopupContextValue['abortCall'] => useContext(VideoConfPopupContext).abortCall;
 export const useRejectIncomingCall = (): VideoConfPopupContextValue['rejectIncomingCall'] =>
 	useContext(VideoConfPopupContext).rejectIncomingCall;

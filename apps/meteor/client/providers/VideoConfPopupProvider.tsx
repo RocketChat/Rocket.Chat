@@ -21,7 +21,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			startCall: (rid: IRoom['_id']): Promise<void> => VideoConfManager.startCall(rid),
 			acceptCall: (callId: string): void => VideoConfManager.acceptIncomingCall(callId),
 			joinCall: (callId: string): Promise<void> => VideoConfManager.joinCall(callId),
-			muteCall: (): void => VideoConfManager.muteIncomingCalls(),
+			dismissCall: (callId: string): void => VideoConfManager.dismissIncomingCall(callId),
 			rejectIncomingCall: (callId: string): void => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: (): void => VideoConfManager.abortCall(),
 			useIncomingCalls: (): VideoConfIncomingCall[] => useVideoConfIncomingCalls(),
@@ -33,7 +33,10 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	);
 
 	const popups = useMemo(
-		() => incomingCalls.map((incomingCall) => ({ id: incomingCall.callId, rid: incomingCall.rid, isReceiving: true })),
+		() =>
+			incomingCalls
+				.filter((incomingCall) => !incomingCall.dismissed)
+				.map((incomingCall) => ({ id: incomingCall.callId, rid: incomingCall.rid, isReceiving: true })),
 		[incomingCalls],
 	);
 
