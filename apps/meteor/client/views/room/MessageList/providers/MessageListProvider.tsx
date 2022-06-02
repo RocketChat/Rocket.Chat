@@ -48,7 +48,7 @@ export const MessageListProvider: FC<{
 								return [];
 							}
 							if (!isMessageReactionsNormalized(message)) {
-								return (message.reactions && message.reactions[reaction]?.usernames.map((username) => `@${username}`)) || [];
+								return message.reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || [];
 							}
 							if (!username) {
 								return message.reactions[reaction].names;
@@ -64,7 +64,7 @@ export const MessageListProvider: FC<{
 			useUserHasReacted: username
 				? (message) =>
 						(reaction): boolean =>
-							Boolean(message.reactions && message.reactions[reaction].usernames.includes(username))
+							Boolean(message.reactions?.[reaction].usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
 				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1)
