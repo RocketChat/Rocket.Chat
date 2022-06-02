@@ -113,7 +113,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public getIncomingDirectCalls(): DirectCallParams[] {
-		return [...this.incomingDirectCalls.values()].map(({ uid, rid, callId }) => ({ uid, rid, callId }));
+		return [...this.incomingDirectCalls.values()];
 	}
 
 	public async startCall(roomId: IRoom['_id'], title?: string): Promise<void> {
@@ -196,6 +196,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			this.dismissedIncomingCallHelper(callId);
 		}
 		this.emit('ringing/changed');
+		this.emit('incoming/changed');
 	}
 
 	private dismissedIncomingCallHelper(callId: string): boolean {
@@ -221,6 +222,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	public dismissIncomingCall(callId: string): void {
 		if (this.dismissedIncomingCallHelper(callId)) {
 			this.emit('ringing/changed');
+			this.emit('incoming/changed');
 		}
 	}
 
@@ -323,7 +325,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		debug && console.log(`[VideoConf] Notifying user ${uid} that we are no longer calling.`);
 		Notifications.notifyUser(uid, 'video-conference.canceled', { uid: this.userId, rid, callId });
+
 		this.emit('direct/cancel', { uid, rid, callId });
+		this.emit('direct/stopped', { uid, rid, callId });
 
 		APIClient.v1.post('video-conference.cancel', { callId });
 	}

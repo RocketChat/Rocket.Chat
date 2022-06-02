@@ -15,7 +15,7 @@ export type VideoConfIncomingCall = {
 
 type VideoConfPopupContextValue = {
 	dispatch: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
-	dismiss: (rid: VideoConfPopupPayload['id']) => void;
+	dismiss: () => void;
 	startCall: (rid: IRoom['_id'], title?: string) => void;
 	acceptCall: (callId: string) => void;
 	joinCall: (callId: string) => void;
