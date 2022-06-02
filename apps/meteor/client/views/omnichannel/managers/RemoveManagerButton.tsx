@@ -13,10 +13,8 @@ const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleRemoveClick = useMutableCallback(async () => {
-		const result = await deleteAction();
-		if (result?.success === true) {
-			reload();
-		}
+		await deleteAction();
+		reload();
 	});
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();

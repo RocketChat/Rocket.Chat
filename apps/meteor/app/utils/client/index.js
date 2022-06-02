@@ -1,4 +1,4 @@
-export { t, isRtl } from '../lib/tapi18n';
+export { t } from '../lib/tapi18n';
 export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 export { Info } from '../rocketchat.info';
 export { getUserPreference } from '../lib/getUserPreference';
@@ -11,4 +11,4 @@ export { getURL } from '../lib/getURL';
 export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient } from './lib/RestApiClient';
-export { secondsToHHMMSS } from '../lib/timeConverter';
+export { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';

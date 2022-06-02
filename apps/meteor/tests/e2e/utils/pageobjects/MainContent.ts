@@ -412,10 +412,6 @@ export default class MainContent extends BasePage {
 		await this.modalDeleteMessageButton().click();
 	}
 
-	public toastSuccess(): Locator {
-		return this.getPage().locator('.toast-message');
-	}
-
 	public getQuotedMessage(): Locator {
 		return this.getPage().locator('//li[@data-username="rocketchat.internal.admin.test"][last()]//blockquote//div[2]');
 	}
