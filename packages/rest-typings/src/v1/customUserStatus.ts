@@ -4,7 +4,9 @@ import Ajv from 'ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type CustomUserStatusListProps = PaginatedRequest<{ query: string }>;
 
@@ -31,7 +33,7 @@ const CustomUserStatusListSchema = {
 	additionalProperties: false,
 };
 
-export const isCustomUserStatusListProps = ajv.compile(CustomUserStatusListSchema);
+export const isCustomUserStatusListProps = ajv.compile<CustomUserStatusListProps>(CustomUserStatusListSchema);
 
 export type CustomUserStatusEndpoints = {
 	'custom-user-status.list': {

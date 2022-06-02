@@ -20,7 +20,9 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 type booleanString = 'true' | 'false';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type LivechatVisitorsInfo = {
 	visitorId: string;
@@ -37,7 +39,7 @@ const LivechatVisitorsInfoSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatVisitorsInfoProps = ajv.compile(LivechatVisitorsInfoSchema);
+export const isLivechatVisitorsInfoProps = ajv.compile<LivechatVisitorsInfo>(LivechatVisitorsInfoSchema);
 
 type LivechatRoomOnHold = {
 	roomId: IRoom['_id'];
@@ -54,7 +56,7 @@ const LivechatRoomOnHoldSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatRoomOnHoldProps = ajv.compile(LivechatRoomOnHoldSchema);
+export const isLivechatRoomOnHoldProps = ajv.compile<LivechatRoomOnHold>(LivechatRoomOnHoldSchema);
 
 type LivechatDepartmentId = {
 	onlyMyDepartments?: booleanString;
@@ -76,7 +78,7 @@ const LivechatDepartmentIdSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentIdProps = ajv.compile(LivechatDepartmentIdSchema);
+export const isLivechatDepartmentIdProps = ajv.compile<LivechatDepartmentId>(LivechatDepartmentIdSchema);
 
 type LivechatDepartmentAutocomplete = {
 	selector: string;
@@ -97,7 +99,7 @@ const LivechatDepartmentAutocompleteSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentAutocompleteProps = ajv.compile(LivechatDepartmentAutocompleteSchema);
+export const isLivechatDepartmentAutocompleteProps = ajv.compile<LivechatDepartmentAutocomplete>(LivechatDepartmentAutocompleteSchema);
 
 type LivechatDepartmentDepartmentIdAgentsGET = {
 	sort: string;
@@ -114,7 +116,9 @@ const LivechatDepartmentDepartmentIdAgentsGETSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile(LivechatDepartmentDepartmentIdAgentsGETSchema);
+export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile<LivechatDepartmentDepartmentIdAgentsGET>(
+	LivechatDepartmentDepartmentIdAgentsGETSchema,
+);
 
 type LivechatDepartmentDepartmentIdAgentsPOST = {
 	upsert: string[];
@@ -141,7 +145,9 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentDepartmentIdAgentsPOSTProps = ajv.compile(LivechatDepartmentDepartmentIdAgentsPOSTSchema);
+export const isLivechatDepartmentDepartmentIdAgentsPOSTProps = ajv.compile<LivechatDepartmentDepartmentIdAgentsPOST>(
+	LivechatDepartmentDepartmentIdAgentsPOSTSchema,
+);
 
 type LivechatVisitorTokenGet = {
 	token: string;
@@ -158,7 +164,7 @@ const LivechatVisitorTokenGetSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatVisitorTokenGetProps = ajv.compile(LivechatVisitorTokenGetSchema);
+export const isLivechatVisitorTokenGetProps = ajv.compile<LivechatVisitorTokenGet>(LivechatVisitorTokenGetSchema);
 
 type LivechatVisitorTokenDelete = {
 	token: string;
@@ -175,7 +181,7 @@ const LivechatVisitorTokenDeleteSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatVisitorTokenDeleteProps = ajv.compile(LivechatVisitorTokenDeleteSchema);
+export const isLivechatVisitorTokenDeleteProps = ajv.compile<LivechatVisitorTokenDelete>(LivechatVisitorTokenDeleteSchema);
 
 type LivechatVisitorTokenRoom = {
 	token: string;
@@ -192,7 +198,7 @@ const LivechatVisitorTokenRoomSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatVisitorTokenRoomProps = ajv.compile(LivechatVisitorTokenRoomSchema);
+export const isLivechatVisitorTokenRoomProps = ajv.compile<LivechatVisitorTokenRoom>(LivechatVisitorTokenRoomSchema);
 
 type LivechatVisitorCallStatus = {
 	token: string;
@@ -221,7 +227,7 @@ const LivechatVisitorCallStatusSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatVisitorCallStatusProps = ajv.compile(LivechatVisitorCallStatusSchema);
+export const isLivechatVisitorCallStatusProps = ajv.compile<LivechatVisitorCallStatus>(LivechatVisitorCallStatusSchema);
 
 type LivechatVisitorStatus = {
 	token: string;
@@ -242,7 +248,7 @@ const LivechatVisitorStatusSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatVisitorStatusProps = ajv.compile(LivechatVisitorStatusSchema);
+export const isLivechatVisitorStatusProps = ajv.compile<LivechatVisitorStatus>(LivechatVisitorStatusSchema);
 
 type LiveChatRoomJoin = {
 	roomId: string;
@@ -259,7 +265,7 @@ const LiveChatRoomJoinSchema = {
 	additionalProperties: false,
 };
 
-export const isLiveChatRoomJoinProps = ajv.compile(LiveChatRoomJoinSchema);
+export const isLiveChatRoomJoinProps = ajv.compile<LiveChatRoomJoin>(LiveChatRoomJoinSchema);
 
 type LivechatMonitorsListProps = PaginatedRequest<{ text: string }>;
 
@@ -290,7 +296,7 @@ const LivechatMonitorsListSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatMonitorsListProps = ajv.compile(LivechatMonitorsListSchema);
+export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
 type LivechatTagsListProps = PaginatedRequest<{ text: string }, 'name'>;
 
@@ -321,7 +327,7 @@ const LivechatTagsListSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatTagsListProps = ajv.compile(LivechatTagsListSchema);
+export const isLivechatTagsListProps = ajv.compile<LivechatTagsListProps>(LivechatTagsListSchema);
 
 type LivechatDepartmentProps = PaginatedRequest<{
 	text: string;
@@ -369,7 +375,7 @@ const LivechatDepartmentSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentProps = ajv.compile(LivechatDepartmentSchema);
+export const isLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
 
 type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string }>;
 
@@ -400,7 +406,9 @@ const LivechatDepartmentsAvailableByUnitIdSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentsAvailableByUnitIdProps = ajv.compile(LivechatDepartmentsAvailableByUnitIdSchema);
+export const isLivechatDepartmentsAvailableByUnitIdProps = ajv.compile<LivechatDepartmentsAvailableByUnitIdProps>(
+	LivechatDepartmentsAvailableByUnitIdSchema,
+);
 
 type LivechatDepartmentsByUnitProps = PaginatedRequest<{ text: string }>;
 
@@ -431,7 +439,7 @@ const LivechatDepartmentsByUnitSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentsByUnitProps = ajv.compile(LivechatDepartmentsByUnitSchema);
+export const isLivechatDepartmentsByUnitProps = ajv.compile<LivechatDepartmentsByUnitProps>(LivechatDepartmentsByUnitSchema);
 
 type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{ text: string }>;
 
@@ -462,7 +470,7 @@ const LivechatDepartmentsByUnitIdSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentsByUnitIdProps = ajv.compile(LivechatDepartmentsByUnitIdSchema);
+export const isLivechatDepartmentsByUnitIdProps = ajv.compile<LivechatDepartmentsByUnitIdProps>(LivechatDepartmentsByUnitIdSchema);
 
 type LivechatUsersManagerGETProps = PaginatedRequest<{ text?: string }>;
 
@@ -494,7 +502,7 @@ const LivechatUsersManagerGETSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatUsersManagerGETProps = ajv.compile(LivechatUsersManagerGETSchema);
+export const isLivechatUsersManagerGETProps = ajv.compile<LivechatUsersManagerGETProps>(LivechatUsersManagerGETSchema);
 
 type LivechatUsersManagerPOSTProps = PaginatedRequest<{ username: string }>;
 
@@ -525,7 +533,7 @@ const LivechatUsersManagerPOSTSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatUsersManagerPOSTProps = ajv.compile(LivechatUsersManagerPOSTSchema);
+export const isLivechatUsersManagerPOSTProps = ajv.compile<LivechatUsersManagerPOSTProps>(LivechatUsersManagerPOSTSchema);
 
 type LivechatQueueProps = {
 	agentId?: string;
@@ -565,7 +573,7 @@ const LivechatQueuePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatQueueProps = ajv.compile(LivechatQueuePropsSchema);
+export const isLivechatQueueProps = ajv.compile<LivechatQueueProps>(LivechatQueuePropsSchema);
 
 type CannedResponsesProps = PaginatedRequest<{
 	scope?: string;
@@ -608,7 +616,7 @@ const CannedResponsesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isCannedResponsesProps = ajv.compile(CannedResponsesPropsSchema);
+export const isCannedResponsesProps = ajv.compile<CannedResponsesProps>(CannedResponsesPropsSchema);
 
 type LivechatCustomFieldsProps = PaginatedRequest<{ text: string }>;
 
@@ -639,7 +647,7 @@ const LivechatCustomFieldsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatCustomFieldsProps = ajv.compile(LivechatCustomFieldsSchema);
+export const isLivechatCustomFieldsProps = ajv.compile<LivechatCustomFieldsProps>(LivechatCustomFieldsSchema);
 
 type LivechatRoomsProps = {
 	guest: string;
@@ -703,7 +711,7 @@ const LivechatRoomsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatRoomsProps = ajv.compile(LivechatRoomsSchema);
+export const isLivechatRoomsProps = ajv.compile<LivechatRoomsProps>(LivechatRoomsSchema);
 
 type LivechatRidMessagesProps = PaginatedRequest<{ query: string }>;
 
@@ -730,7 +738,7 @@ const LivechatRidMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatRidMessagesProps = ajv.compile(LivechatRidMessagesSchema);
+export const isLivechatRidMessagesProps = ajv.compile<LivechatRidMessagesProps>(LivechatRidMessagesSchema);
 
 type LivechatUsersAgentProps = PaginatedRequest<{ text?: string }>;
 
@@ -762,7 +770,7 @@ const LivechatUsersAgentSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatUsersAgentProps = ajv.compile(LivechatUsersAgentSchema);
+export const isLivechatUsersAgentProps = ajv.compile<LivechatUsersAgentProps>(LivechatUsersAgentSchema);
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {

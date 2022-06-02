@@ -4,7 +4,9 @@ import Ajv from 'ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type DirectoryProps = PaginatedRequest<{}>;
 
@@ -31,7 +33,7 @@ const DirectorySchema = {
 	additionalProperties: false,
 };
 
-export const isDirectoryProps = ajv.compile(DirectorySchema);
+export const isDirectoryProps = ajv.compile<DirectoryProps>(DirectorySchema);
 
 export type DirectoryEndpoint = {
 	directory: {

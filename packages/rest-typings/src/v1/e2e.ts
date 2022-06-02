@@ -2,7 +2,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type E2eSetUserPublicAndPrivateKeysProps = {
 	public_key: string;
@@ -23,7 +25,7 @@ const E2eSetUserPublicAndPrivateKeysSchema = {
 	additionalProperties: false,
 };
 
-export const isE2eSetUserPublicAndPrivateKeysProps = ajv.compile(E2eSetUserPublicAndPrivateKeysSchema);
+export const isE2eSetUserPublicAndPrivateKeysProps = ajv.compile<E2eSetUserPublicAndPrivateKeysProps>(E2eSetUserPublicAndPrivateKeysSchema);
 
 type E2eGetUsersOfRoomWithoutKeyProps = { rid: string };
 
@@ -38,7 +40,7 @@ const E2eGetUsersOfRoomWithoutKeySchema = {
 	additionalProperties: false,
 };
 
-export const isE2eGetUsersOfRoomWithoutKeyProps = ajv.compile(E2eGetUsersOfRoomWithoutKeySchema);
+export const isE2eGetUsersOfRoomWithoutKeyProps = ajv.compile<E2eGetUsersOfRoomWithoutKeyProps>(E2eGetUsersOfRoomWithoutKeySchema);
 
 type E2eUpdateGroupKeyProps = {
 	uid: string;
@@ -63,7 +65,7 @@ const E2eUpdateGroupKeySchema = {
 	additionalProperties: false,
 };
 
-export const isE2eUpdateGroupKeyProps = ajv.compile(E2eUpdateGroupKeySchema);
+export const isE2eUpdateGroupKeyProps = ajv.compile<E2eUpdateGroupKeyProps>(E2eUpdateGroupKeySchema);
 
 type E2eSetRoomKeyIdProps = {
 	rid: string;
@@ -84,7 +86,7 @@ const E2eSetRoomKeyIdSchema = {
 	additionalProperties: false,
 };
 
-export const isE2eSetRoomKeyIdProps = ajv.compile(E2eSetRoomKeyIdSchema);
+export const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
 
 export type E2eEndpoints = {
 	'e2e.setUserPublicAndPrivateKeys': {

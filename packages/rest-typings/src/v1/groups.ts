@@ -4,7 +4,9 @@ import Ajv from 'ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type GroupsFilesProps = {
 	roomId: IRoom['_id'];
@@ -33,7 +35,7 @@ const GroupsFilesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsFilesProps = ajv.compile(GroupsFilesPropsSchema);
+export const isGroupsFilesProps = ajv.compile<GroupsFilesProps>(GroupsFilesPropsSchema);
 
 type GroupsMembersProps = {
 	roomId: IRoom['_id'];
@@ -71,7 +73,7 @@ const GroupsMembersPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsMembersProps = ajv.compile(GroupsMembersPropsSchema);
+export const isGroupsMembersProps = ajv.compile<GroupsMembersProps>(GroupsMembersPropsSchema);
 
 type GroupsArchiveProps = {
 	roomId: IRoom['_id'];
@@ -88,7 +90,7 @@ const GroupsArchivePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsArchiveProps = ajv.compile(GroupsArchivePropsSchema);
+export const isGroupsArchiveProps = ajv.compile<GroupsArchiveProps>(GroupsArchivePropsSchema);
 
 type GroupsUnarchiveProps = {
 	roomId: IRoom['_id'];
@@ -105,7 +107,7 @@ const GroupsUnarchivePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsUnarchiveProps = ajv.compile(GroupsUnarchivePropsSchema);
+export const isGroupsUnarchiveProps = ajv.compile<GroupsUnarchiveProps>(GroupsUnarchivePropsSchema);
 
 type GroupsCreateProps = {
 	name: string;
@@ -153,7 +155,7 @@ const GroupsCreatePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsCreateProps = ajv.compile(GroupsCreatePropsSchema);
+export const isGroupsCreateProps = ajv.compile<GroupsCreateProps>(GroupsCreatePropsSchema);
 
 type GroupsConvertToTeamProps = {
 	roomId: string;
@@ -174,7 +176,7 @@ const GroupsConvertToTeamPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsConvertToTeamProps = ajv.compile(GroupsConvertToTeamPropsSchema);
+export const isGroupsConvertToTeamProps = ajv.compile<GroupsConvertToTeamProps>(GroupsConvertToTeamPropsSchema);
 
 type GroupsCountersProps = {
 	roomId: string;
@@ -191,7 +193,7 @@ const GroupsCountersPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsCountersProps = ajv.compile(GroupsCountersPropsSchema);
+export const isGroupsCountersProps = ajv.compile<GroupsCountersProps>(GroupsCountersPropsSchema);
 
 type GroupsCloseProps = {
 	roomId: string;
@@ -208,7 +210,7 @@ const GroupsClosePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsCloseProps = ajv.compile(GroupsClosePropsSchema);
+export const isGroupsCloseProps = ajv.compile<GroupsCloseProps>(GroupsClosePropsSchema);
 
 type GroupsDeleteProps = {
 	roomId: string;
@@ -225,7 +227,7 @@ const GroupsDeletePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsDeleteProps = ajv.compile(GroupsDeletePropsSchema);
+export const isGroupsDeleteProps = ajv.compile<GroupsDeleteProps>(GroupsDeletePropsSchema);
 
 type GroupsLeaveProps = {
 	roomId: string;
@@ -242,7 +244,7 @@ const GroupsLeavePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsLeaveProps = ajv.compile(GroupsLeavePropsSchema);
+export const isGroupsLeaveProps = ajv.compile<GroupsLeaveProps>(GroupsLeavePropsSchema);
 
 type GroupsRolesProps = {
 	roomId: string;
@@ -259,7 +261,7 @@ const GroupsRolesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsRolesProps = ajv.compile(GroupsRolesPropsSchema);
+export const isGroupsRolesProps = ajv.compile<GroupsRolesProps>(GroupsRolesPropsSchema);
 
 type GroupsKickProps = {
 	roomId: string;
@@ -280,7 +282,7 @@ const GroupsKickPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsKickProps = ajv.compile(GroupsKickPropsSchema);
+export const isGroupsKickProps = ajv.compile<GroupsKickProps>(GroupsKickPropsSchema);
 
 type GroupsMessageProps = PaginatedRequest<{
 	roomId: IRoom['_id'];
@@ -313,7 +315,7 @@ const GroupsMessagePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGroupsMessageProps = ajv.compile(GroupsMessagePropsSchema);
+export const isGroupsMessageProps = ajv.compile<GroupsMessageProps>(GroupsMessagePropsSchema);
 
 export type GroupsEndpoints = {
 	'groups.files': {

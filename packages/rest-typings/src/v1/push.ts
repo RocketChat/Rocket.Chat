@@ -1,7 +1,9 @@
 import type { IMessage, IPushNotificationConfig, IPushTokenTypes, IPushToken } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type PushTokenProps = {
 	id?: string;
@@ -31,7 +33,7 @@ const PushTokenPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isPushTokenProps = ajv.compile(PushTokenPropsSchema);
+export const isPushTokenProps = ajv.compile<PushTokenProps>(PushTokenPropsSchema);
 
 type PushGetProps = {
 	id: string;
@@ -48,7 +50,7 @@ const PushGetPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isPushGetProps = ajv.compile(PushGetPropsSchema);
+export const isPushGetProps = ajv.compile<PushGetProps>(PushGetPropsSchema);
 
 export type PushEndpoints = {
 	'push.token': {

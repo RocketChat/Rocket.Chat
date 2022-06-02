@@ -21,7 +21,9 @@ export type TelemetryPayload = {
 	params: Param[];
 };
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type StatisticsProps = { refresh?: 'true' | 'false' };
 
@@ -37,7 +39,7 @@ const StatisticsSchema = {
 	additionalProperties: false,
 };
 
-export const isStatisticsProps = ajv.compile(StatisticsSchema);
+export const isStatisticsProps = ajv.compile<StatisticsProps>(StatisticsSchema);
 
 type StatisticsListProps = PaginatedRequest<{ fields?: string }>;
 
@@ -69,7 +71,7 @@ const StatisticsListSchema = {
 	additionalProperties: false,
 };
 
-export const isStatisticsListProps = ajv.compile(StatisticsListSchema);
+export const isStatisticsListProps = ajv.compile<StatisticsListProps>(StatisticsListSchema);
 
 export type StatisticsEndpoints = {
 	'statistics': {

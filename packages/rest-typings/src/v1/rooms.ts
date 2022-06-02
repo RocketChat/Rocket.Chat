@@ -5,7 +5,9 @@ import Ajv from 'ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type RoomsAutoCompleteChannelAndPrivateProps = { selector: string };
 
@@ -20,7 +22,9 @@ const RoomsAutoCompleteChannelAndPrivateSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutoCompleteChannelAndPrivateProps = ajv.compile(RoomsAutoCompleteChannelAndPrivateSchema);
+export const isRoomsAutoCompleteChannelAndPrivateProps = ajv.compile<RoomsAutoCompleteChannelAndPrivateProps>(
+	RoomsAutoCompleteChannelAndPrivateSchema,
+);
 
 type RoomsAutocompleteChannelAndPrivateWithPaginationProps = PaginatedRequest<{ selector: string }>;
 
@@ -51,7 +55,9 @@ const RoomsAutocompleteChannelAndPrivateWithPaginationSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps = ajv.compile(RoomsAutocompleteChannelAndPrivateWithPaginationSchema);
+export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps = ajv.compile<RoomsAutocompleteChannelAndPrivateWithPaginationProps>(
+	RoomsAutocompleteChannelAndPrivateWithPaginationSchema,
+);
 
 type RoomsAutocompleteAvailableForTeamsProps = { name: string };
 
@@ -66,7 +72,9 @@ const RoomsAutocompleteAvailableForTeamsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteAvailableForTeamsProps = ajv.compile(RoomsAutocompleteAvailableForTeamsSchema);
+export const isRoomsAutocompleteAvailableForTeamsProps = ajv.compile<RoomsAutocompleteAvailableForTeamsProps>(
+	RoomsAutocompleteAvailableForTeamsSchema,
+);
 
 type RoomsInfoProps = { roomId: string } | { roomName: string };
 
@@ -95,7 +103,7 @@ const RoomsInfoSchema = {
 	],
 };
 
-export const isRoomsInfoProps = ajv.compile(RoomsInfoSchema);
+export const isRoomsInfoProps = ajv.compile<RoomsInfoProps>(RoomsInfoSchema);
 
 type RoomsCreateDiscussionProps = {
 	prid: IRoom['_id'];
@@ -140,7 +148,7 @@ const RoomsCreateDiscussionSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsCreateDiscussionProps = ajv.compile(RoomsCreateDiscussionSchema);
+export const isRoomsCreateDiscussionProps = ajv.compile<RoomsCreateDiscussionProps>(RoomsCreateDiscussionSchema);
 
 type RoomsExportProps = {
 	rid: IRoom['_id'];
@@ -211,7 +219,7 @@ const RoomsExportSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsExportProps = ajv.compile(RoomsExportSchema);
+export const isRoomsExportProps = ajv.compile<RoomsExportProps>(RoomsExportSchema);
 
 type RoomsAdminRoomsProps = PaginatedRequest<{
 	filter?: string;
@@ -253,7 +261,7 @@ const RoomsAdminRoomsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAdminRoomsProps = ajv.compile(RoomsAdminRoomsSchema);
+export const isRoomsAdminRoomsProps = ajv.compile<RoomsAdminRoomsProps>(RoomsAdminRoomsSchema);
 
 type RoomsAdminRoomsGetRoomProps = { rid?: string };
 
@@ -269,7 +277,7 @@ const RoomsAdminRoomsGetRoomSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAdminRoomsGetRoomProps = ajv.compile(RoomsAdminRoomsGetRoomSchema);
+export const isRoomsAdminRoomsGetRoomProps = ajv.compile<RoomsAdminRoomsGetRoomProps>(RoomsAdminRoomsGetRoomSchema);
 
 type RoomsChangeArchivationStateProps = { rid: string; action?: string };
 
@@ -288,7 +296,7 @@ const RoomsChangeArchivationStateSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsChangeArchivationStateProps = ajv.compile(RoomsChangeArchivationStateSchema);
+export const isRoomsChangeArchivationStateProps = ajv.compile<RoomsChangeArchivationStateProps>(RoomsChangeArchivationStateSchema);
 
 type RoomsSaveRoomSettingsProps = {
 	rid: string;
@@ -383,7 +391,7 @@ const RoomsSaveRoomSettingsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsSaveRoomSettingsProps = ajv.compile(RoomsSaveRoomSettingsSchema);
+export const isRoomsSaveRoomSettingsProps = ajv.compile<RoomsSaveRoomSettingsProps>(RoomsSaveRoomSettingsSchema);
 
 export type RoomsEndpoints = {
 	'rooms.autocomplete.channelAndPrivate': {

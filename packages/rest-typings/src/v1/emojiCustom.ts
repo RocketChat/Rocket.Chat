@@ -4,7 +4,9 @@ import Ajv from 'ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type emojiCustomDeleteProps = {
 	emojiId: ICustomEmojiDescriptor['_id'];
@@ -21,7 +23,7 @@ const emojiCustomDeletePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isEmojiCustomDelete = ajv.compile(emojiCustomDeletePropsSchema);
+export const isEmojiCustomDelete = ajv.compile<emojiCustomDeleteProps>(emojiCustomDeletePropsSchema);
 
 type emojiCustomList = {
 	query: string;
@@ -38,7 +40,7 @@ const emojiCustomListSchema = {
 	additionalProperties: false,
 };
 
-export const isemojiCustomList = ajv.compile(emojiCustomListSchema);
+export const isemojiCustomList = ajv.compile<emojiCustomList>(emojiCustomListSchema);
 
 export type EmojiCustomEndpoints = {
 	'emoji-custom.all': {

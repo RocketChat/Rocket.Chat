@@ -1,7 +1,9 @@
 import type { IInvite, IRoom } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type v1UseInviteTokenProps = {
 	token: string;
@@ -18,7 +20,7 @@ const v1UseInviteTokenPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isV1UseInviteTokenProps = ajv.compile(v1UseInviteTokenPropsSchema);
+export const isV1UseInviteTokenProps = ajv.compile<v1UseInviteTokenProps>(v1UseInviteTokenPropsSchema);
 
 type v1ValidateInviteTokenProps = {
 	token: string;
@@ -35,7 +37,7 @@ const v1ValidateInviteTokenPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isV1ValidateInviteTokenProps = ajv.compile(v1ValidateInviteTokenPropsSchema);
+export const isV1ValidateInviteTokenProps = ajv.compile<v1ValidateInviteTokenProps>(v1ValidateInviteTokenPropsSchema);
 
 export type InvitesEndpoints = {
 	'listInvites': {

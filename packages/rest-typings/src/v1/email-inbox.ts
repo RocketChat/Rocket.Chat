@@ -4,7 +4,9 @@ import Ajv from 'ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type EmailInboxListProps = PaginatedRequest<{ query?: string }>;
 
@@ -32,7 +34,7 @@ const EmailInboxListPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isEmailInboxList = ajv.compile(EmailInboxListPropsSchema);
+export const isEmailInboxList = ajv.compile<EmailInboxListProps>(EmailInboxListPropsSchema);
 
 type EmailInboxProps = {
 	_id?: string;
@@ -135,7 +137,7 @@ const EmailInboxPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isEmailInbox = ajv.compile(EmailInboxPropsSchema);
+export const isEmailInbox = ajv.compile<EmailInboxProps>(EmailInboxPropsSchema);
 
 type EmailInboxSearchProps = {
 	email: string;
@@ -152,7 +154,7 @@ const EmailInboxSearchPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isEmailInboxSearch = ajv.compile(EmailInboxSearchPropsSchema);
+export const isEmailInboxSearch = ajv.compile<EmailInboxSearchProps>(EmailInboxSearchPropsSchema);
 
 export type EmailInboxEndpoints = {
 	'email-inbox.list': {

@@ -1,7 +1,9 @@
 import type { ILicense } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type licensesAddProps = {
 	license: string;
@@ -18,7 +20,7 @@ const licensesAddPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isLicensesAddProps = ajv.compile(licensesAddPropsSchema);
+export const isLicensesAddProps = ajv.compile<licensesAddProps>(licensesAddPropsSchema);
 
 export type LicensesEndpoints = {
 	'licenses.get': {

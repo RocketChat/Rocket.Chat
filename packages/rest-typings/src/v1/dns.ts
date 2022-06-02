@@ -1,6 +1,8 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type DnsResolveTxtProps = {
 	url: string;
@@ -17,7 +19,7 @@ const dnsResolveTxtPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isDnsResolveTxtProps = ajv.compile(dnsResolveTxtPropsSchema);
+export const isDnsResolveTxtProps = ajv.compile<DnsResolveTxtProps>(dnsResolveTxtPropsSchema);
 
 type DnsResolveSrvProps = {
 	url: string;
@@ -34,7 +36,7 @@ const DnsResolveSrvSchema = {
 	additionalProperties: false,
 };
 
-export const isDnsResolveSrvProps = ajv.compile(DnsResolveSrvSchema);
+export const isDnsResolveSrvProps = ajv.compile<DnsResolveSrvProps>(DnsResolveSrvSchema);
 
 export type DnsEndpoints = {
 	'dns.resolve.srv': {

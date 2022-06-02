@@ -3,7 +3,9 @@ import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/c
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
 
@@ -31,7 +33,7 @@ const roleCreatePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoleCreateProps = ajv.compile(roleCreatePropsSchema);
+export const isRoleCreateProps = ajv.compile<RoleCreateProps>(roleCreatePropsSchema);
 
 type RoleUpdateProps = {
 	roleId: IRole['_id'];
@@ -65,7 +67,7 @@ const roleUpdatePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoleUpdateProps = ajv.compile(roleUpdatePropsSchema);
+export const isRoleUpdateProps = ajv.compile<RoleUpdateProps>(roleUpdatePropsSchema);
 
 type RoleDeleteProps = { roleId: IRole['_id'] };
 
@@ -80,7 +82,7 @@ const roleDeletePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoleDeleteProps = ajv.compile(roleDeletePropsSchema);
+export const isRoleDeleteProps = ajv.compile<RoleDeleteProps>(roleDeletePropsSchema);
 
 type RoleAddUserToRoleProps = {
 	username: string;
@@ -113,7 +115,7 @@ const roleAddUserToRolePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoleAddUserToRoleProps = ajv.compile(roleAddUserToRolePropsSchema);
+export const isRoleAddUserToRoleProps = ajv.compile<RoleAddUserToRoleProps>(roleAddUserToRolePropsSchema);
 
 type RoleRemoveUserFromRoleProps = {
 	username: string;
@@ -151,7 +153,7 @@ const roleRemoveUserFromRolePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoleRemoveUserFromRoleProps = ajv.compile(roleRemoveUserFromRolePropsSchema);
+export const isRoleRemoveUserFromRoleProps = ajv.compile<RoleRemoveUserFromRoleProps>(roleRemoveUserFromRolePropsSchema);
 
 type RolesGetUsersInRoleProps = PaginatedRequest<{
 	roomId?: string;
@@ -189,7 +191,7 @@ const RolesGetUsersInRolePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRolesGetUsersInRoleProps = ajv.compile(RolesGetUsersInRolePropsSchema);
+export const isRolesGetUsersInRoleProps = ajv.compile<RolesGetUsersInRoleProps>(RolesGetUsersInRolePropsSchema);
 
 type RoleSyncProps = {
 	updatedSince?: string;
