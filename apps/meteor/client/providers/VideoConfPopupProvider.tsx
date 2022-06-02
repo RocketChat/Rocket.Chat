@@ -9,16 +9,15 @@ import VideoConfPopupPortal from '../portals/VideoConfPopupPortal';
 import VideoConfPopup from '../views/room/contextualBar/VideoConference/VideoConfPopup';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
-	const [popUps, setPopUps] = useState<VideoConfPopupPayload[]>([]);
+	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
 	const incomingCalls = useVideoConfIncomingCalls();
 	const customSound = useCustomSound();
 	const isRinging = useIsRinging();
 
 	const contextValue = useMemo(
 		() => ({
-			dispatch: (option: Omit<VideoConfPopupPayload, 'id'> & { id?: string }): void =>
-				setPopUps((popUps) => [...popUps, { ...(option.id ? { id: option.id } : { id: option.rid }), ...option }]),
-			dismiss: (id: VideoConfPopupPayload['id']): void => setPopUps((prevState) => prevState.filter((popUp) => popUp.id !== id)),
+			dispatch: (option: Omit<VideoConfPopupPayload, 'id'>): void => setOutgoing({ ...option, id: option.rid }),
+			dismiss: (): void => setOutgoing(undefined),
 			startCall: (rid: IRoom['_id']): Promise<void> => VideoConfManager.startCall(rid),
 			acceptCall: (callId: string): void => VideoConfManager.acceptIncomingCall(callId),
 			joinCall: (callId: string): Promise<void> => VideoConfManager.joinCall(callId),
@@ -33,33 +32,32 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 		[],
 	);
 
+	const popups = useMemo(
+		() => incomingCalls.map((incomingCall) => ({ id: incomingCall.callId, rid: incomingCall.rid, isReceiving: true })),
+		[incomingCalls],
+	);
+
 	useEffect(() => {
-		if (incomingCalls.length) {
-			incomingCalls.map((incomingCall) => contextValue.dispatch({ id: incomingCall.callId, rid: incomingCall.rid, isReceiving: true }));
-
-			if (isRinging) {
+		if (isRinging) {
+			customSound.play('calling');
+			const soundInterval = setInterval(() => {
 				customSound.play('calling');
-				const soundInterval = setInterval(() => {
-					customSound.play('calling');
-				}, 3000);
+			}, 3000);
 
-				return (): void => {
-					customSound.pause('calling');
-					clearInterval(soundInterval);
-				};
-			}
+			return (): void => {
+				customSound.pause('calling');
+				clearInterval(soundInterval);
+			};
 		}
-
-		return setPopUps([]);
-	}, [incomingCalls, contextValue, customSound, isRinging]);
+	}, [customSound, isRinging]);
 
 	return (
 		<VideoConfPopupContext.Provider value={contextValue}>
 			{children}
-			{popUps?.length > 0 && (
+			{(outgoing || popups?.length > 0) && (
 				<VideoConfPopupPortal>
 					<VideoConfPopupBackdrop>
-						{popUps.map(({ id, rid, isReceiving }, index) => (
+						{(outgoing ? [outgoing, ...popups] : popups).map(({ id, rid, isReceiving }, index) => (
 							<VideoConfPopup
 								key={id}
 								id={id}
@@ -67,7 +65,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 								isReceiving={isReceiving}
 								position={(index + 1) * 10}
 								current={index}
-								total={popUps.length}
+								total={popups.length}
 							/>
 						))}
 					</VideoConfPopupBackdrop>

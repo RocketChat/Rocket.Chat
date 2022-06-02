@@ -137,6 +137,7 @@ addAction('video-conf', ({ room }) => {
 
 		if (room.t === 'd') {
 			dispatchPopup({ rid: room._id });
+			// TODO: remove VideoConfManager
 			VideoConfManager.once('direct/stopped', () => dismissPopup(room._id));
 		}
 	});
