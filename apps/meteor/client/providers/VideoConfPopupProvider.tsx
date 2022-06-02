@@ -21,7 +21,9 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			startCall: (rid: IRoom['_id']): Promise<void> => VideoConfManager.startCall(rid),
 			acceptCall: (callId: string): void => VideoConfManager.acceptIncomingCall(callId),
 			joinCall: (callId: string): Promise<void> => VideoConfManager.joinCall(callId),
-			dismissCall: (callId: string): void => VideoConfManager.dismissIncomingCall(callId),
+			dismissCall: (callId: string): void => {
+				VideoConfManager.dismissIncomingCall(callId);
+			},
 			rejectIncomingCall: (callId: string): void => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: (): void => VideoConfManager.abortCall(),
 			useIncomingCalls: (): VideoConfIncomingCall[] => useVideoConfIncomingCalls(),

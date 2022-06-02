@@ -66,7 +66,7 @@ type VideoConfEvents = {
 export const VideoConfManager = new (class VideoConfManager extends Emitter<VideoConfEvents> {
 	private userId: string | undefined;
 
-	private currentCallHandler = 0;
+	private currentCallHandler: ReturnType<typeof setTimeout> | undefined;
 
 	private currentCallData: DirectCallParams | undefined;
 
@@ -113,7 +113,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public getIncomingDirectCalls(): DirectCallParams[] {
-		return [...this.incomingDirectCalls.values()];
+		return [...this.incomingDirectCalls.values()].map(({ timeout: _, ...call }) => ({ ...call }));
 	}
 
 	public async startCall(roomId: IRoom['_id'], title?: string): Promise<void> {
@@ -192,11 +192,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	public dismissedIncomingCalls(): void {
 		// Mute all calls that are currently ringing
-		for (const [callId] of this.incomingDirectCalls) {
-			this.dismissedIncomingCallHelper(callId);
+		if ([...this.incomingDirectCalls.keys()].some((callId) => this.dismissedIncomingCallHelper(callId))) {
+			this.emit('ringing/changed');
+			this.emit('incoming/changed');
 		}
-		this.emit('ringing/changed');
-		this.emit('incoming/changed');
 	}
 
 	private dismissedIncomingCallHelper(callId: string): boolean {
@@ -219,11 +218,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		return true;
 	}
 
-	public dismissIncomingCall(callId: string): void {
+	public dismissIncomingCall(callId: string): boolean {
 		if (this.dismissedIncomingCallHelper(callId)) {
 			this.emit('ringing/changed');
 			this.emit('incoming/changed');
+			return true;
 		}
+		return false;
 	}
 
 	public updateUser(): void {
@@ -309,7 +310,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 			debug && console.log(`[VideoConf] Ringing user ${uid}, attempt number ${attempt}.`);
 			Notifications.notifyUser(uid, 'video-conference.call', { uid: this.userId, rid, callId });
-		}, CALL_INTERVAL) as unknown as number;
+		}, CALL_INTERVAL);
 
 		debug && console.log(`[VideoConf] Ringing user ${uid} for the first time.`);
 		Notifications.notifyUser(uid, 'video-conference.call', { uid: this.userId, rid, callId });
@@ -319,7 +320,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		debug && console.log(`[VideoConf] Stop ringing user ${uid}.`);
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
-			this.currentCallHandler = 0;
+			this.currentCallHandler = undefined;
 			this.currentCallData = undefined;
 		}
 
@@ -341,7 +342,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
-			this.currentCallHandler = 0;
+			this.currentCallHandler = undefined;
 		}
 
 		if (this.acceptingCallTimeout) {
@@ -484,7 +485,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		// Stop ringing
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
-			this.currentCallHandler = 0;
+			this.currentCallHandler = undefined;
 		}
 
 		this.emit('direct/accepted', params);
@@ -506,7 +507,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		// Stop ringing
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
-			this.currentCallHandler = 0;
+			this.currentCallHandler = undefined;
 		}
 
 		this.emit('direct/cancel', params);
