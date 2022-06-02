@@ -27,7 +27,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
-	const changeOwnerMessage = isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_a_owner_of__room_name_';
+	const changeOwnerMessage = isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_an_owner_of__room_name_';
 
 	const changeOwner = useEndpointActionExperimental(
 		'POST',

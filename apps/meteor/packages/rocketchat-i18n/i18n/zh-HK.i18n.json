@@ -2611,7 +2611,7 @@
   "User": "用户",
   "User__username__is_now_a_leader_of__room_name_": "User __username__现在是__room_name__的领导者",
   "User__username__is_now_a_moderator_of__room_name_": "User __username__现在是__room_name__的管理员",
-  "User__username__is_now_a_owner_of__room_name_": "User __username__现在是__room_name__的所有者",
+  "User__username__is_now_an_owner_of__room_name_": "User __username__现在是__room_name__的所有者",
   "User_added": "已添加用户 <em>__user_added__</em> 。",
   "User_added_by": " <em>__user_by__</em> 添加了 <em>__user_added__</em> 。",
   "User_added_successfully": "用户添加成功",
