@@ -9,13 +9,7 @@ type TaskListBlockProps = {
 };
 
 const TaksListBlock = ({ tasks }: TaskListBlockProps): ReactElement => (
-	<ul
-		style={{
-			listStyle: 'none',
-			marginLeft: 0,
-			paddingLeft: 0,
-		}}
-	>
+	<ul className='task-list'>
 		{tasks.map((item, index) => (
 			<li key={index}>
 				<CheckBox checked={item.status} /> <InlineElements children={item.value} />
