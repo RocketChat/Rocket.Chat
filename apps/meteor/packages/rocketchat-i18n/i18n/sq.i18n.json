@@ -2580,7 +2580,7 @@
   "User": "Përdorues",
   "User__username__is_now_a_leader_of__room_name_": "User __username__ është tani një udhëheqës i __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "User __username__ tani është një moderator i __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "User __username__ është tani një pronar i __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "User __username__ është tani një pronar i __room_name__",
   "User__username__removed_from__room_name__leaders": "Përdoruesi __username__ u hoq nga udhëheqësit __room_name__",
   "User__username__removed_from__room_name__moderators": "User __username__ hequr nga moderatorëve __room_name__",
   "User__username__removed_from__room_name__owners": "User __username__ hequr nga pronarët __room_name__",

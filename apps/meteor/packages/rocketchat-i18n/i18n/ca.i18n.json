@@ -4446,7 +4446,7 @@
   "User Search (Group Validation)": "Cerca d'usuaris (validació de grup)",
   "User__username__is_now_a_leader_of__room_name_": "L'usuari __username__ ara és líder de __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "L'usuari __username__ ara és moderador de la sala __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "L'usuari __username__ ara és un propietari de __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "L'usuari __username__ ara és un propietari de __room_name__",
   "User__username__muted_in_room__roomName__": "Usuari __username__ silenciat a la sala __roomName__",
   "User__username__removed_from__room_name__leaders": "L'usuari __username__ va ser remogut dels líders de __room_name__",
   "User__username__removed_from__room_name__moderators": "L'usuari __username__ ja no és moderador de la sala __room_name__",

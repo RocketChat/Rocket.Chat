@@ -2570,7 +2570,7 @@
   "User": "Uporabnik",
   "User__username__is_now_a_leader_of__room_name_": "Uporabnik __username__ je zdaj vodja sobe  __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Uporabnik __username__ je zdaj moderator sobe  __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Uporabnik __username__ je zdaj lastnik sobe  __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Uporabnik __username__ je zdaj lastnik sobe  __room_name__",
   "User__username__removed_from__room_name__leaders": "Uporabnik __username__ ni več vodja sobe __room_name__ ",
   "User__username__removed_from__room_name__moderators": "Uporabnik __username__ ni več moderator sobe __room_name__ ",
   "User__username__removed_from__room_name__owners": "Uporabnik __username__ ni več lastnik sobe __room_name__",

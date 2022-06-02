@@ -4862,7 +4862,7 @@
   "User Search (Group Validation)": "Wyszukiwanie użytkowników (walidacja grup)",
   "User__username__is_now_a_leader_of__room_name_": "Użytkownik __username__ jest obecnie liderem __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Użytkownik __username__ jest teraz moderatorem pokoju __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Użytkownik __username__ jest teraz właścicielem pokoju __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Użytkownik __username__ jest teraz właścicielem pokoju __room_name__",
   "User__username__muted_in_room__roomName__": "Użytkownik __username__ włączył wyciszenie w pokoju __roomName__",
   "User__username__removed_from__room_name__leaders": "Użytkownik __username__ usunięty z liderów __room_name__",
   "User__username__removed_from__room_name__moderators": "Użytkownik __username__ usunięty z moderatorów pokoju __room_name__",

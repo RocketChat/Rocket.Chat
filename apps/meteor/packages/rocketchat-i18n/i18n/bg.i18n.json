@@ -2578,7 +2578,7 @@
   "User": "потребител",
   "User__username__is_now_a_leader_of__room_name_": "Потребителят __username__ сега е лидер на __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Потребителят __username__ сега е модератор на __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Потребител __username__ сега е собственик на __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Потребител __username__ сега е собственик на __room_name__",
   "User__username__removed_from__room_name__leaders": "Потребителят __username__ е премахнат от лидерите __room_name__",
   "User__username__removed_from__room_name__moderators": "Потребителят __username__ е премахнат от модераторите __room_name__",
   "User__username__removed_from__room_name__owners": "Потребителят __username__ е премахнат от собствениците на __room_name__",

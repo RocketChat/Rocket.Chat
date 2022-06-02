@@ -3893,7 +3893,7 @@
   "User Search (Group Validation)": "用户搜索(组校验)",
   "User__username__is_now_a_leader_of__room_name_": "用户 __username__ 现在是 __room_name__ 的领导者",
   "User__username__is_now_a_moderator_of__room_name_": "用户 __username__ 现在是 __room_name__ 的主持",
-  "User__username__is_now_a_owner_of__room_name_": "用户 __username__ 现在是 __room_name__ 的拥有者",
+  "User__username__is_now_an_owner_of__room_name_": "用户 __username__ 现在是 __room_name__ 的拥有者",
   "User__username__muted_in_room__roomName__": "用户 __username__ 在聊天室 __roomName__ 中被禁言",
   "User__username__removed_from__room_name__leaders": "用户 __username__ 不再是 __room_name__ 的领导者",
   "User__username__removed_from__room_name__moderators": "用户 __username__ 不再是 __room_name__ 的主持",

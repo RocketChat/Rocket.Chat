@@ -1127,7 +1127,7 @@
   "Use_uploaded_avatar": "باش سۈرئەتنى چىقىرىشنى ئىشلىتىش",
   "Use_url_for_avatar": "باش سۈرئەتكە ئۇلانما ئىشلىتىش",
   "User__username__is_now_a_moderator_of__room_name_": "دىكى يېغىن رەئىسى بولۇپ بولدى__room_name__ ئاللىبۇرۇن__username__ ئەزا",
-  "User__username__is_now_a_owner_of__room_name_": "نىڭ ئىگىدارى __room_name__ ھازىر بولسا __username__ ئەزا",
+  "User__username__is_now_an_owner_of__room_name_": "نىڭ ئىگىدارى __room_name__ ھازىر بولسا __username__ ئەزا",
   "User__username__removed_from__room_name__moderators": "ئۆي يېغىن رەئىسىدىن يۇيۇۋېتىلدى.__room_name__نى ئاللىبۇرۇن __username__ ئەزا",
   "User__username__removed_from__room_name__owners": "ئۆينىڭ ئىگىدارىدىن يۇيۇۋېتىلدى.__room_name__ نى __username__ئەزا",
   "User_added": "بۇ ئەزا ئاللىبۇرۇن قېتىلدى.__user_added__",

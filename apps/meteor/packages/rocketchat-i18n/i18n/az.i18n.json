@@ -2581,7 +2581,7 @@
   "User": "İstifadəçi",
   "User__username__is_now_a_leader_of__room_name_": "İstifadəçi __username__ artıq __room_name__ lideri",
   "User__username__is_now_a_moderator_of__room_name_": "İstifadəçi __username__ artıq __room_name__ moderatorudur",
-  "User__username__is_now_a_owner_of__room_name_": "İstifadəçi __username__ artıq __room_name__ sahibidir",
+  "User__username__is_now_an_owner_of__room_name_": "İstifadəçi __username__ artıq __room_name__ sahibidir",
   "User__username__removed_from__room_name__leaders": "İstifadəçi __username__ __room_name__ liderlərindən silindi",
   "User__username__removed_from__room_name__moderators": "İstifadəçi __username__ __room_name__ moderatorlarından silindi",
   "User__username__removed_from__room_name__owners": "İstifadəçi __username__ __room_name__ sahiblərindən silindi",

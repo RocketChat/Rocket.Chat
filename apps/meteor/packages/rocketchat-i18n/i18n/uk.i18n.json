@@ -3155,7 +3155,7 @@
   "User Search (Group Validation)": "Пошук користувачів (перевірка групи)",
   "User__username__is_now_a_leader_of__room_name_": "Користувач __username__ тепер лідер __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Користувач __username__  тепер модератор __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Користувач __username__  тепер власник __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Користувач __username__  тепер власник __room_name__",
   "User__username__removed_from__room_name__leaders": "Користувача  __username__ видалено з лідерів __room_name__ ",
   "User__username__removed_from__room_name__moderators": "__username__ Користувач вилучений з модераторів __room_name__ ",
   "User__username__removed_from__room_name__owners": "__username__ Користувач вилучений з власників __room_name__ ",
