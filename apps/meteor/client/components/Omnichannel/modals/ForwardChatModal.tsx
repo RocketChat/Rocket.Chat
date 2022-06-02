@@ -59,7 +59,7 @@ const ForwardChatModal = ({
 			let uid;
 
 			if (username) {
-				const { user } = await getUserData({ userName: username });
+				const { user } = await getUserData({ username: username });
 				uid = user?._id;
 			}
 
