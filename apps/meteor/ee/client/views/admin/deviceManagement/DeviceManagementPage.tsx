@@ -1,5 +1,5 @@
 import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useRef } from 'react';
 
 import Page from '../../../../../client/components/Page';
 import DeviceInfoWithData from './DeviceInfoWithData';
@@ -10,15 +10,17 @@ const DeviceManagementPage = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const deviceId = useRouteParameter('id');
 
+	const reloadRef = useRef(() => null);
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Device_Management')} />
 				<Page.Content>
-					<DevicesTable />
+					<DevicesTable reloadRef={reloadRef}/>
 				</Page.Content>
 			</Page>
-			{context === 'info' && <DeviceInfoWithData deviceId={deviceId} />}
+			{context === 'info' && <DeviceInfoWithData deviceId={deviceId} onReload={reloadRef.current}/>}
 		</Page>
 	);
 };

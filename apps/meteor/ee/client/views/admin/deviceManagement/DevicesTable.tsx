@@ -1,7 +1,7 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, useMemo, useEffect } from 'react';
+import React, { ReactElement, useState, useMemo, useEffect, MutableRefObject } from 'react';
 
 import FilterByText from '../../../../../client/components/FilterByText';
 import {
@@ -24,13 +24,7 @@ const sortMapping = {
 	loginAt: 'loginAt',
 };
 
-// const convertSessionFromAPI = ({ loginAt, logoutAt, ...rest}: Serialized<DeviceManagementPopulatedSession>): DeviceManagementPopulatedSession => ({
-// 	loginAt: new Date(loginAt),
-// 	...(logoutAt && { logoutAt: new Date(logoutAt)}),
-// 	...rest,
-// });
-
-const DevicesTable = (): ReactElement => {
+const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }): ReactElement => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
@@ -51,7 +45,9 @@ const DevicesTable = (): ReactElement => {
 
 	const { value: data, phase, error, reload } = useEndpointData('sessions/list.all', query);
 
-	useEffect(() => console.log('Query = ', query), [query]);
+	useEffect(() => {
+		reloadRef.current = reload;
+	}, [reloadRef, reload]);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
