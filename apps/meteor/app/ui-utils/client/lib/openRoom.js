@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -16,6 +17,8 @@ import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManage
 import { Rooms, Subscriptions } from '../../../models/client';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import MainLayout from '../../../../client/views/root/MainLayout';
+import BlazeTemplate from '../../../../client/views/root/BlazeTemplate';
 
 window.currentTracker = undefined;
 
@@ -32,7 +35,7 @@ export const openRoom = async function (type, name, render = true) {
 	window.currentTracker = Tracker.autorun(async function (c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
-			appLayout.renderMainLayout();
+			appLayout.render(<MainLayout />);
 			return;
 		}
 
@@ -53,7 +56,11 @@ export const openRoom = async function (type, name, render = true) {
 			RoomManager.open({ typeName: type + name, rid: room._id });
 
 			if (render) {
-				appLayout.renderMainLayout({ center: 'room' });
+				appLayout.render(
+					<MainLayout>
+						<BlazeTemplate template='room' />
+					</MainLayout>,
+				);
 			}
 
 			c.stop();
@@ -104,7 +111,11 @@ export const openRoom = async function (type, name, render = true) {
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			appLayout.renderMainLayout({ center: 'roomNotFound' });
+			appLayout.render(
+				<MainLayout>
+					<BlazeTemplate template='roomNotFound' />
+				</MainLayout>,
+			);
 		}
 	});
 };
