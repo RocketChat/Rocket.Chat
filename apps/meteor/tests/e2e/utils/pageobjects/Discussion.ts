@@ -12,7 +12,7 @@ export default class Discussion extends BasePage {
 	}
 
 	public channelName(): Locator {
-		return this.getPage().locator('[placeholder="Select a channel which is related to what you want to ask"]');
+		return this.getPage().locator('.rcx-input-box--undecorated.rcx-input-box').first();
 	}
 
 	public discussionName(): Locator {
