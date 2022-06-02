@@ -27,6 +27,10 @@ export type Tiers = {
 	price: number;
 };
 
+export type Permission = {
+	name: string;
+};
+
 export type App = {
 	id: string;
 	iconFileData: string;
@@ -37,6 +41,7 @@ export type App = {
 		support: string;
 	};
 	description: string;
+	privacyPolicySummary: string;
 	detailedDescription: {
 		raw: string;
 		rendered: string;
@@ -65,5 +70,5 @@ export type App = {
 	};
 	marketplace: unknown;
 	modifiedAt: string;
-	permissions: unknown[];
+	permissions: Permission[];
 };
