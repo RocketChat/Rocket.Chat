@@ -1,4 +1,4 @@
-import { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui/IUIActionButtonDescriptor';
+import { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engine/definition/ui/IUIActionButtonDescriptor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
@@ -16,6 +16,7 @@ export interface IAppAccountBoxItem extends IUIActionButton {
 	sideNav?: string;
 	isAppButtonItem?: boolean;
 	subItems?: [IAppAccountBoxItem];
+	when?: Omit<IUActionButtonWhen, 'roomTypes' | 'messageActionContext'>;
 }
 
 type AccountBoxItem = {
