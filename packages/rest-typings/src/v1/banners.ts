@@ -15,6 +15,7 @@ const BannersGetNewSchema = {
 	properties: {
 		platform: {
 			type: 'string',
+			enum: ['1', '2'],
 		},
 		bid: {
 			type: 'string',

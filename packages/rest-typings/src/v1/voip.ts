@@ -8,7 +8,6 @@ import type {
 	IVoipExtensionWithAgentInfo,
 	IManagementServerConnectionStatus,
 	IRegistrationInfo,
-	// VoipClientEvents,
 } from '@rocket.chat/core-typings';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
 import Ajv, { JSONSchemaType } from 'ajv';
@@ -48,7 +47,6 @@ const CustomSoundsListSchema: JSONSchemaType<CustomSoundsList> = {
 };
 
 export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
-/** *************************************************/
 
 type ConnectorExtensionGetRegistrationInfoByUserId = { id: string };
 

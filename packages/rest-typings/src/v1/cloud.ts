@@ -60,6 +60,7 @@ const CloudConfirmationPollSchema = {
 		},
 	},
 	required: ['deviceCode'],
+	optionalProperties: ['resend'],
 	additionalProperties: false,
 };
 

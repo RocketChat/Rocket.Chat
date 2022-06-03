@@ -341,6 +341,7 @@ const LivechatDepartmentSchema = {
 	properties: {
 		text: {
 			type: 'string',
+			nullable: true,
 		},
 		onlyMyDepartments: {
 			type: 'string',
@@ -376,7 +377,6 @@ const LivechatDepartmentSchema = {
 			nullable: true,
 		},
 	},
-	required: [],
 	additionalProperties: false,
 };
 
