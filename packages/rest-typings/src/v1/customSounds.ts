@@ -1,3 +1,4 @@
+import type { ICustomSound } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -37,11 +38,7 @@ export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSound
 export type CustomSoundEndpoint = {
 	'custom-sounds.list': {
 		GET: (params: CustomSoundsList) => PaginatedResult<{
-			sounds: {
-				_id: string;
-				name: string;
-				extension: string;
-			}[];
+			sounds: ICustomSound[];
 		}>;
 	};
 };
