@@ -1,6 +1,8 @@
 import { SidebarSection } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 
+import { useAcceptCall, useRejectIncomingCall } from '../../contexts/VideoConfPopupContext';
+import { useVideoConfIncomingCalls } from '../../lib/VideoConfManager';
 import OmnichannelSection from '../sections/OmnichannelSection';
 import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
 
@@ -10,6 +12,19 @@ const sections = {
 
 const Row = ({ data, item }) => {
 	const { extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
+
+	const acceptCall = useAcceptCall();
+	const rejectCall = useRejectIncomingCall();
+	const incomingCalls = useVideoConfIncomingCalls();
+	const currentCall = incomingCalls.find((call) => call.rid === item.rid);
+
+	const videoConfActions = useMemo(
+		() => ({
+			acceptCall: () => acceptCall(currentCall.callId),
+			rejectCall: () => rejectCall(currentCall.callId),
+		}),
+		[acceptCall, rejectCall, currentCall],
+	);
 
 	if (typeof item === 'string') {
 		const Section = sections[item];
@@ -21,6 +36,7 @@ const Row = ({ data, item }) => {
 			</SidebarSection>
 		);
 	}
+
 	return (
 		<SideBarItemTemplateWithData
 			sidebarViewMode={sidebarViewMode}
@@ -30,6 +46,7 @@ const Row = ({ data, item }) => {
 			extended={extended}
 			SideBarItemTemplate={SideBarItemTemplate}
 			AvatarTemplate={AvatarTemplate}
+			videoConfActions={currentCall && videoConfActions}
 		/>
 	);
 };

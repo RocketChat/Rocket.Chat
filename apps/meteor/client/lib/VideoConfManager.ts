@@ -24,6 +24,9 @@ type DirectCallParams = {
 	uid: IUser['_id'];
 	rid: IRoom['_id'];
 	callId: string;
+	dismissed?: boolean;
+	// TODO: improve this, nowadays there is not possible check if the video call has finished, but ist a nice improvement
+	// state: 'incoming' | 'outgoing' | 'connected' | 'disconnected' | 'dismissed';
 };
 
 type IncomingDirectCall = DirectCallParams & { timeout: number };
@@ -33,7 +36,7 @@ type CallPreferences = {
 	cam?: boolean;
 };
 
-export const VideoConfManager = new (class VideoConfManager extends Emitter<{
+type VideoConfEvents = {
 	// We gave up on calling a remote user or they rejected our call
 	'direct/cancel': DirectCallParams;
 
@@ -49,22 +52,27 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	// A remote user accepted our call
 	'direct/accepted': DirectCallParams;
 
+	// We stopped calling a remote user
+	'direct/stopped': DirectCallParams;
+
 	'preference/changed': { key: keyof CallPreferences; value: boolean };
 
 	// The list of incoming calls has changed in some way
 	'incoming/changed': void;
-}> {
+
+	// The list of ringing incoming calls may have changed
+	'ringing/changed': void;
+};
+export const VideoConfManager = new (class VideoConfManager extends Emitter<VideoConfEvents> {
 	private userId: string | undefined;
 
-	private currentCallHandler = 0;
+	private currentCallHandler: ReturnType<typeof setTimeout> | undefined;
 
 	private currentCallData: DirectCallParams | undefined;
 
 	private startingNewCall = false;
 
 	private hooks: (() => void)[] = [];
-
-	private mutedCalls: Set<string>;
 
 	private incomingDirectCalls: Map<string, IncomingDirectCall>;
 
@@ -78,22 +86,25 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		return this._preferences;
 	}
 
-	public set preferences(value: CallPreferences) {
-		this._preferences = value;
-	}
-
 	constructor() {
 		super();
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
-		this.mutedCalls = new Set<string>();
+		// this.mutedCalls = new Set<string>();
 		this._preferences = {};
 	}
 
 	public isBusy(): boolean {
+		return this.isCalling();
+	}
+
+	public isRinging(): boolean {
+		return ![...this.incomingDirectCalls.values()].every(({ dismissed }) => Boolean(dismissed));
+	}
+
+	public isCalling(): boolean {
 		if (this.startingNewCall) {
 			return true;
 		}
-
 		if (this.currentCallHandler || this.currentCallData) {
 			return true;
 		}
@@ -101,12 +112,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		return false;
 	}
 
-	public isRinging(): boolean {
-		return this.incomingDirectCalls.size > 0;
-	}
-
 	public getIncomingDirectCalls(): DirectCallParams[] {
-		return [...this.incomingDirectCalls.values()].map(({ uid, rid, callId }) => ({ uid, rid, callId }));
+		return [...this.incomingDirectCalls.values()].map(({ timeout: _, ...call }) => ({ ...call }));
 	}
 
 	public async startCall(roomId: IRoom['_id'], title?: string): Promise<void> {
@@ -146,7 +153,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		}
 
 		// Mute this call Id so any lingering notifications don't trigger it again
-		this.muteIncomingCall(callId);
+		this.dismissIncomingCall(callId);
 
 		this.acceptingCallId = callId;
 		this.acceptingCallTimeout = setTimeout(() => {
@@ -172,7 +179,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	}
 
 	public rejectIncomingCall(callId: string): void {
-		this.muteIncomingCall(callId);
+		this.dismissIncomingCall(callId);
 
 		const callData = this.incomingDirectCalls.get(callId);
 		if (!callData) {
@@ -183,12 +190,41 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.loseIncomingCall(callId);
 	}
 
-	public muteIncomingCall(callId: string): void {
-		// Muting will stop a callId from ringing, but it doesn't affect any part of the existing workflow
+	public dismissedIncomingCalls(): void {
+		// Mute all calls that are currently ringing
+		if ([...this.incomingDirectCalls.keys()].some((callId) => this.dismissedIncomingCallHelper(callId))) {
+			this.emit('ringing/changed');
+			this.emit('incoming/changed');
+		}
+	}
 
-		this.mutedCalls.add(callId);
-		// Remove it from the muted list once enough time has passed
-		setTimeout(() => this.mutedCalls.delete(callId), CALL_TIMEOUT * 20);
+	private dismissedIncomingCallHelper(callId: string): boolean {
+		// Muting will stop a callId from ringing, but it doesn't affect any part of the existing workflow
+		const callData = this.incomingDirectCalls.get(callId);
+		if (!callData) {
+			return false;
+		}
+		this.incomingDirectCalls.set(callId, { ...callData, dismissed: true });
+		setTimeout(() => {
+			const callData = this.incomingDirectCalls.get(callId);
+
+			if (!callData) {
+				return;
+			}
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { dismissed, ...rest } = callData;
+			this.incomingDirectCalls.set(callId, { ...rest });
+		}, CALL_TIMEOUT * 20);
+		return true;
+	}
+
+	public dismissIncomingCall(callId: string): boolean {
+		if (this.dismissedIncomingCallHelper(callId)) {
+			this.emit('ringing/changed');
+			this.emit('incoming/changed');
+			return true;
+		}
+		return false;
 	}
 
 	public updateUser(): void {
@@ -213,6 +249,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	public changePreference(key: keyof CallPreferences, value: boolean): void {
 		this._preferences[key] = value;
 		this.emit('preference/changed', { key, value });
+	}
+
+	public setPreferences(prefs: Partial<CallPreferences>): void {
+		for (const key in prefs) {
+			if (prefs.hasOwnProperty(key)) {
+				const prefKey = key as keyof CallPreferences;
+				this.changePreference(prefKey, prefs[prefKey] as boolean);
+			}
+		}
 	}
 
 	public async joinCall(callId: string): Promise<void> {
@@ -265,7 +310,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 			debug && console.log(`[VideoConf] Ringing user ${uid}, attempt number ${attempt}.`);
 			Notifications.notifyUser(uid, 'video-conference.call', { uid: this.userId, rid, callId });
-		}, CALL_INTERVAL) as unknown as number;
+		}, CALL_INTERVAL);
 
 		debug && console.log(`[VideoConf] Ringing user ${uid} for the first time.`);
 		Notifications.notifyUser(uid, 'video-conference.call', { uid: this.userId, rid, callId });
@@ -275,13 +320,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		debug && console.log(`[VideoConf] Stop ringing user ${uid}.`);
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
-			this.currentCallHandler = 0;
+			this.currentCallHandler = undefined;
 			this.currentCallData = undefined;
 		}
 
 		debug && console.log(`[VideoConf] Notifying user ${uid} that we are no longer calling.`);
 		Notifications.notifyUser(uid, 'video-conference.canceled', { uid: this.userId, rid, callId });
+
 		this.emit('direct/cancel', { uid, rid, callId });
+		this.emit('direct/stopped', { uid, rid, callId });
 
 		APIClient.v1.post('video-conference.cancel', { callId });
 	}
@@ -295,7 +342,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
-			this.currentCallHandler = 0;
+			this.currentCallHandler = undefined;
 		}
 
 		if (this.acceptingCallTimeout) {
@@ -313,6 +360,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		this.acceptingCallId = undefined;
 		this._preferences = {};
 		this.emit('incoming/changed');
+		this.emit('ringing/changed');
 	}
 
 	private async hookNotification(eventName: string, cb: (...params: any[]) => void): Promise<void> {
@@ -352,6 +400,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 
 		this.incomingDirectCalls.delete(callId);
 		this.emit('incoming/changed');
+		this.emit('ringing/changed');
 
 		debug && console.log(`[VideoConf] Call ${callId} from ${lostCall.uid} was lost.`);
 		this.emit('direct/lost', { callId, uid: lostCall.uid, rid: lostCall.rid });
@@ -362,8 +411,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 	}
 
 	private startNewIncomingCall({ callId, uid, rid }: DirectCallParams): void {
-		if (this.mutedCalls.has(callId)) {
-			debug && console.log(`[VideoConf] Ignoring muted call.`);
+		if (this.isCallDismissed(callId)) {
+			debug && console.log(`[VideoConf] Ignoring dismissed call.`);
 			return;
 		}
 
@@ -376,6 +425,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		});
 
 		this.emit('incoming/changed');
+		this.emit('ringing/changed');
 		this.emit('direct/ringing', { callId, uid, rid });
 	}
 
@@ -391,7 +441,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		}
 		existingData.timeout = this.createAbortTimeout(callId);
 
-		if (!this.mutedCalls.has(callId)) {
+		if (!this.isCallDismissed(callId)) {
 			this.emit('direct/ringing', { callId, uid, rid });
 		}
 	}
@@ -435,10 +485,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		// Stop ringing
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
-			this.currentCallHandler = 0;
+			this.currentCallHandler = undefined;
 		}
 
 		this.emit('direct/accepted', params);
+		this.emit('direct/stopped', params);
 		this.currentCallData = undefined;
 
 		// Immediately open the call in a new tab
@@ -456,13 +507,18 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<{
 		// Stop ringing
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
-			this.currentCallHandler = 0;
+			this.currentCallHandler = undefined;
 		}
 
 		this.emit('direct/cancel', params);
+		this.emit('direct/stopped', params);
 		this.currentCallData = undefined;
 
 		APIClient.v1.post('video-conference.cancel', { callId: params.callId });
+	}
+
+	private isCallDismissed(callId: string): boolean {
+		return Boolean(this.incomingDirectCalls.get(callId)?.dismissed);
 	}
 })();
 
@@ -476,6 +532,18 @@ export const useVideoConfIncomingCalls = (): DirectCallParams[] => {
 	);
 
 	return useSubscription(subscribeIncomingCalls);
+};
+
+export const useIsRinging = (): boolean => {
+	const subscribeIsRinging: Subscription<boolean> = useMemo(
+		() => ({
+			getCurrentValue: (): boolean => VideoConfManager.isRinging(),
+			subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('ringing/changed', cb),
+		}),
+		[],
+	);
+
+	return useSubscription(subscribeIsRinging);
 };
 
 Meteor.startup(() => Tracker.autorun(() => VideoConfManager.updateUser()));

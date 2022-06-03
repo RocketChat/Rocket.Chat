@@ -84,6 +84,22 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		});
 	}
 
+	public async setProviderDataById(callId: string, providerData: Record<string, any> | undefined): Promise<void> {
+		await this.updateOneById(callId, {
+			...(providerData
+				? {
+						$set: {
+							providerData,
+						},
+				  }
+				: {
+						$unset: {
+							providerData: 1,
+						},
+				  }),
+		});
+	}
+
 	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'>): Promise<void> {
 		await this.updateOneById(callId, {
 			$addToSet: {

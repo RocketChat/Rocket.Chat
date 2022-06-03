@@ -9,8 +9,13 @@ export const RoomIcon: FC<{
 	room: IRoom;
 	size: ComponentProps<typeof Icon>['size'];
 	highlighted?: boolean;
+	isIncomingCall?: boolean;
 	placement: 'sidebar' | 'default';
-}> = ({ room, size = 'x16', placement }) => {
+}> = ({ room, size = 'x16', isIncomingCall, placement }) => {
+	if (isIncomingCall) {
+		return <Icon name='phone' size={size} />;
+	}
+
 	if (room.prid) {
 		return <Icon name='baloons' size={size} />;
 	}

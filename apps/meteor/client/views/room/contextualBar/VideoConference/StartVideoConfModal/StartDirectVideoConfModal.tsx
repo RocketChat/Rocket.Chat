@@ -1,5 +1,6 @@
 import { IDirectMessageRoom, IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfModal,
@@ -16,6 +17,7 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
 
 type StartDirectVideoConfModalProps = {
 	room: IDirectMessageRoom;
@@ -27,6 +29,12 @@ type StartDirectVideoConfModalProps = {
 const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm }: StartDirectVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
+	const setPreferences = useSetPreferences();
+
+	const handleStartCall = useMutableCallback(() => {
+		setPreferences(controllersConfig);
+		onConfirm();
+	});
 
 	return (
 		<VideoConfModal>
@@ -55,7 +63,7 @@ const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm }: StartDirec
 				</VideoConfModalControllers>
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
-				<VideoConfButton onClick={onConfirm} primary icon='phone'>
+				<VideoConfButton onClick={handleStartCall} primary icon='phone'>
 					{t('Start_call')}
 				</VideoConfButton>
 				<VideoConfButton onClick={onClose}>{t('Cancel')}</VideoConfButton>

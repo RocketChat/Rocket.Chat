@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 
 import { Rooms, Subscriptions } from '../../models';
 import { MessageAction } from '../../ui-utils';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { EmojiPicker } from '../../emoji';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
