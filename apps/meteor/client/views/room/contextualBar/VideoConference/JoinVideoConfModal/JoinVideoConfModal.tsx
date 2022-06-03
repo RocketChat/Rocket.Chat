@@ -1,5 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton, Avatar, Box } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfModal,
@@ -16,6 +17,7 @@ import React, { ReactElement, useMemo } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 
@@ -32,6 +34,12 @@ const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoCo
 	const t = useTranslation();
 	const rid = room._id;
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
+	const setPreferences = useSetPreferences();
+
+	const handleJoinCall = useMutableCallback(() => {
+		setPreferences(controllersConfig);
+		onConfirm();
+	});
 
 	const params = useMemo(() => ({ roomId: rid }), [rid]);
 
@@ -79,7 +87,7 @@ const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoCo
 				</VideoConfModalControllers>
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
-				<VideoConfButton onClick={onConfirm} primary>
+				<VideoConfButton onClick={handleJoinCall} primary>
 					{t('join')}
 				</VideoConfButton>
 				<VideoConfButton onClick={onClose}>{t('Cancel')}</VideoConfButton>
