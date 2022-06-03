@@ -21,6 +21,7 @@ createTemplateForComponent('DiscussionMetric', () => import('./components/Messag
 });
 
 createTemplateForComponent('MessageList', () => import('./views/room/MessageList/MessageList'));
+/** @deprecated */
 createTemplateForComponent('MessageBody', () => import('./components/Message/MessageBodyRender'));
 
 createTemplateForComponent('BroadCastMetric', () => import('./components/Message/Metrics/Broadcast'));
@@ -53,14 +54,6 @@ createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/inde
 
 createTemplateForComponent('omnichannelFlex', () => import('./views/omnichannel/sidebar/OmnichannelSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
-});
-
-createTemplateForComponent('auditPage', () => import('../ee/client/audit/AuditPage'), {
-	attachment: 'at-parent',
-});
-
-createTemplateForComponent('auditLogPage', () => import('../ee/client/audit/AuditLogPage'), {
-	attachment: 'at-parent',
 });
 
 createTemplateForComponent('DiscussionMessageList', () => import('./views/room/contextualBar/Discussions'), {
