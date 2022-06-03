@@ -27,13 +27,13 @@ function SideBarItemTemplateWithData({
 	room,
 	id,
 	extended,
-	selected,
+	selected = false,
 	SideBarItemTemplate,
 	AvatarTemplate,
 	t,
-	style,
+	style = null,
 	// sidebarViewMode,
-	isAnonymous,
+	isAnonymous = false,
 }) {
 	const { sidebar } = useLayout();
 

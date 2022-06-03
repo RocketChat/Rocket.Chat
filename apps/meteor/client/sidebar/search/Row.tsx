@@ -39,7 +39,6 @@ const Row = ({ item, data }: RowProps): ReactElement => {
 	return (
 		<SideBarItemTemplateWithData
 			id={`search-${item._id}`}
-			tabIndex={-1}
 			extended={extended}
 			t={t}
 			room={item}
