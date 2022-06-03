@@ -40,7 +40,7 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 			const services: {
 				name: string;
 				nodes: string[];
-			}[] = await api.call('$node.services');
+			}[] = await api.call('$node.services', []);
 
 			// Filter only the duplicated services
 			const duplicated = services.filter((service) => {
