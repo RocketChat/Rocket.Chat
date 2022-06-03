@@ -17,7 +17,7 @@ const deleteUser = async (): Promise<void> => {
 const deleteSubscribeUserInChannels = async (): Promise<void> => {
 	const subscribeCollections = await MongoHelper.getCollection('rocketchat_subscription');
 	await subscribeCollections.deleteMany({
-		_id: { $in: ['zjHWmhH4go9NoGwTP', 'cKZP37FdE8soBpJmN', 'RD7gjmtqnQtnR6BTt', 'T3Skt3gxZoTrWwWZx'] },
+		_id: { $in: ['zjHWmhH4go9NoGwTP', 'cKZP37FdE8soBpJmN', 'RD7gjmtqnQtnR6BTt', 'T3Skt3gxZoTrWwWZx', 'TjtKQyfaGtrn6PjSk'] },
 	});
 };
 

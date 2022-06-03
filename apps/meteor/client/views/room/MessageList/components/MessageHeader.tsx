@@ -42,7 +42,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 				onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 				style={{ cursor: 'pointer' }}
 			>
-				{getUserDisplayName(user.name, user.username, showRealName)}
+				{message.alias || getUserDisplayName(user.name, user.username, showRealName)}
 			</MessageName>
 			{showUsername && (
 				<MessageUsername
