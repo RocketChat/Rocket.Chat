@@ -34,6 +34,7 @@ import type { VoipEndpoints } from './v1/voip';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
+import type { CommandsEndpoints } from './v1/commands';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
@@ -41,6 +42,7 @@ export interface Endpoints
 		BannersEndpoints,
 		ChatEndpoints,
 		CloudEndpoints,
+		CommandsEndpoints,
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DnsEndpoints,
@@ -155,7 +157,9 @@ export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
 export * from './v1/dm';
+export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
+export * from './v1/omnichannel';
 export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
