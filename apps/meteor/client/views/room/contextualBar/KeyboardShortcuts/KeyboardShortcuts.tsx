@@ -1,13 +1,10 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { ToolboxContextValue } from '../../lib/Toolbox/ToolboxContext';
 import KeyboardShortcutSection from './KeyboardShortcutSection';
 
-const KeyboardShortcuts = ({ tabBar }: { tabBar: ToolboxContextValue['tabBar'] }): ReactElement => {
-	const handleClose = useMutableCallback(() => tabBar?.close());
+const KeyboardShortcuts = ({ handleClose }: { handleClose: () => void }): ReactElement => {
 	const t = useTranslation();
 
 	return (
