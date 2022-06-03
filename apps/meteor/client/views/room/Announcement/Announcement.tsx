@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, MouseEvent } from 'react';
@@ -27,8 +28,10 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 		announcementDetails
 			? announcementDetails()
 			: setModal(
-					<GenericModal confirmText={t('Close')} onConfirm={closeModal} onClose={closeModal}>
-						<MarkdownText content={announcement} />
+					<GenericModal icon={null} title={t('Announcement')} confirmText={t('Close')} onConfirm={closeModal} onClose={closeModal}>
+						<Box>
+							<MarkdownText content={announcement} />
+						</Box>
 					</GenericModal>,
 			  );
 	};
