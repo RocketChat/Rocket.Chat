@@ -170,7 +170,6 @@ describe('[Direct Messages]', function () {
 			.set(credentials)
 			.query({
 				roomId: directMessage._id,
-				userId: 'rocket.cat',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
