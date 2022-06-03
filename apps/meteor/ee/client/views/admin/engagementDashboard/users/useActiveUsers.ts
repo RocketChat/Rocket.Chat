@@ -2,7 +2,7 @@ import moment from 'moment';
 import { useQuery } from 'react-query';
 
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
-import { getPeriodRange } from '../data/periods';
+import { getPeriodRange } from '../dataView/periods';
 
 type UseActiveUsersOptions = { utc: boolean };
 

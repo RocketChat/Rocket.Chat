@@ -8,10 +8,14 @@ import FlexTab from './utils/pageobjects/FlexTab';
 import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { clearMessages } from './utils/helpers/clearMessages';
+import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';
 
 test.describe('[User Preferences]', () => {
 	test.beforeAll(async () => {
-		await clearMessages(['GENERAL']);
+		const { isLocal } = verifyTestBaseUrl();
+		if (isLocal) {
+			await clearMessages(['GENERAL']);
+		}
 	});
 	test.describe('default', () => {
 		let flexTab: FlexTab;
