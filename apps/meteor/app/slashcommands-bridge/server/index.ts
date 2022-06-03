@@ -6,7 +6,6 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 import { federationRoomServiceSender } from '../../federation-v2/server';
 import { FederationRoomSenderConverter } from '../../federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 
-
 function Bridge(_command: 'bridge', stringParams: string, item: IMessage): void {
 	if (_command !== 'bridge' || !Match.test(stringParams, String)) {
 		return;
