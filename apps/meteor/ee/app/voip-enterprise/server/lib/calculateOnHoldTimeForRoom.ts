@@ -1,6 +1,6 @@
 import { IVoipRoom } from '@rocket.chat/core-typings';
 
-import { PbxEvent } from '../../../../../../app/models/server/raw';
+import { PbxEvent } from '../../../../../app/models/server/raw';
 
 export const calculateOnHoldTimeForRoom = async (room: IVoipRoom, closedAt: Date): Promise<number> => {
 	if (!room.callUniqueId) {

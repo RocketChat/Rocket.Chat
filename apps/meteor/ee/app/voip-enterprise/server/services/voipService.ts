@@ -3,7 +3,7 @@ import { IRoomClosingInfo, IVoipRoom } from '@rocket.chat/core-typings';
 import { IOmniRoomClosingMessage } from '../../../../../server/services/omnichannel-voip/internalTypes';
 import { OmnichannelVoipService } from '../../../../../server/services/omnichannel-voip/service';
 import { overwriteClassOnLicense } from '../../../license/server';
-import { calculateOnHoldTimeForRoom } from '../lib/voip/helper';
+import { calculateOnHoldTimeForRoom } from '../lib/calculateOnHoldTimeForRoom';
 
 overwriteClassOnLicense('livechat-enterprise', OmnichannelVoipService, {
 	getRoomClosingData(
