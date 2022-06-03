@@ -1,5 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
@@ -11,11 +12,13 @@ import {
 	VideoConfPopupFooter,
 	VideoConfPopupTitle,
 	VideoConfPopupIndicators,
+	VideoConfPopupClose,
 } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
 
 type ReceivingPopupProps = {
 	id: string;
@@ -24,19 +27,27 @@ type ReceivingPopupProps = {
 	current: number;
 	total: number;
 	onClose: (id: string) => void;
+	onMute: (id: string) => void;
 	onConfirm: () => void;
 };
 
-const ReceivingPopup = ({ id, room, position, current, total, onClose, onConfirm }: ReceivingPopupProps): ReactElement => {
+const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, onConfirm }: ReceivingPopupProps): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
+	const setPreferences = useSetPreferences();
+
+	const handleJoinCall = useMutableCallback(() => {
+		setPreferences(controllersConfig);
+		onConfirm();
+	});
 
 	return (
 		<VideoConfPopup position={position}>
 			<VideoConfPopupContent>
 				{/* Design Team has planned x48 */}
+				<VideoConfPopupClose title={t('Close')} onClick={(): void => onMute(id)} />
 				<RoomAvatar room={room} size='x40' />
 				{current && total ? <VideoConfPopupIndicators current={current} total={total} /> : null}
 				<VideoConfPopupTitle text='Incoming call from' icon='phone-in' />
@@ -68,7 +79,7 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onConfirm
 					/>
 				</VideoConfPopupControllers>
 				<VideoConfPopupFooter>
-					<VideoConfButton primary onClick={onConfirm}>
+					<VideoConfButton primary onClick={handleJoinCall}>
 						{t('Accept')}
 					</VideoConfButton>
 					{onClose && (
