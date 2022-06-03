@@ -25,7 +25,8 @@ const validateDateParams = (property: string, date: DateParam = {}): DateParam =
 const parseAndValidate = (property: string, date?: string): DateParam => {
 	return validateDateParams(property, parseDateParams(date));
 };
-const VoipRoomDirectionValidator = Match.Maybe(Match.Where((value: string) => ['inbound', 'outbound'].includes(value)));
+const VoipRoomDirectionValidator = Match.Where((value: string) => ['inbound', 'outbound'].includes(value));
+
 /**
  * @openapi
  *  /voip/server/api/v1/voip/room
@@ -104,6 +105,8 @@ API.v1.addRoute(
 			}
 
 			if (!rid) {
+				check(direction, VoipRoomDirectionValidator);
+
 				const room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
@@ -120,11 +123,11 @@ API.v1.addRoute(
 				const agent = { agentId: _id, username };
 				const rid = Random.id();
 
-				if (!direction) {
-					return API.v1.failure('no-direction-provided-for-new-room');
-				}
-
-				return API.v1.success(await LivechatVoip.getNewRoom(guest, agent, rid, direction, { projection: API.v1.defaultFieldsToExclude }));
+				return API.v1.success(
+					await LivechatVoip.getNewRoom(guest, agent, rid, direction as IVoipRoom['direction'], {
+						projection: API.v1.defaultFieldsToExclude,
+					}),
+				);
 			}
 
 			const room = await VoipRoom.findOneByIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
@@ -151,7 +154,7 @@ API.v1.addRoute(
 			check(tags, Match.Maybe([String]));
 			check(queue, Match.Maybe(String));
 			check(visitorId, Match.Maybe(String));
-			check(direction, VoipRoomDirectionValidator);
+			check(direction, Match.Maybe(VoipRoomDirectionValidator));
 
 			// Reusing same L room permissions for simplicity
 			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
