@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useState, ReactElement } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useForm } from '../../../../hooks/useForm';
+import { ToolboxContextValue } from '../../lib/Toolbox/ToolboxContext';
 import PruneMessages from './PruneMessages';
 
 const getTimeZoneOffset = (): string => {
@@ -29,7 +30,7 @@ export const initialValues = {
 
 const DEFAULT_PRUNE_LIMIT = 2000;
 
-const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: any }): ReactElement => {
+const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: ToolboxContextValue['tabBar'] }): ReactElement => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const setModal = useSetModal();
