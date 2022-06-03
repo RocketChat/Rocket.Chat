@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ILivechatVisitorDTO, IRoom } from '@rocket.chat/core-typings';
 
-import { LivechatRooms, LivechatVisitors, LivechatCustomField } from '../../../../models/server';
+import { LivechatRooms, LivechatCustomField } from '../../../../models/server';
 import { LivechatVisitors as VisitorsRaw } from '../../../../models/server/raw';
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
@@ -37,7 +37,7 @@ API.v1.addRoute('livechat/visitor', {
 		}
 
 		guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-		const visitorId = Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
+		const visitorId = await Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
 
 		let visitor = await VisitorsRaw.findOneById(visitorId, {});
 		// If it's updating an existing visitor, it must also update the roomInfo
@@ -55,7 +55,8 @@ API.v1.addRoute('livechat/visitor', {
 					return;
 				}
 				const { key, value, overwrite } = field;
-				if (customField.scope === 'visitor' && !LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)) {
+				// TODO: refactor this to use normal await
+				if (customField.scope === 'visitor' && !Promise.await(VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
 					return API.v1.failure();
 				}
 			});

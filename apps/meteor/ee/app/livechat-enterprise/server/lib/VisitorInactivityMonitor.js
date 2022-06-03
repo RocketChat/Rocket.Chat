@@ -3,7 +3,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, LivechatDepartment, Users, LivechatVisitors } from '../../../../../app/models/server';
+import { LivechatRooms, LivechatDepartment, Users } from '../../../../../app/models/server';
+import { LivechatVisitors } from '../../../../../app/models/server/raw';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { LivechatEnterprise } from './LivechatEnterprise';
 
@@ -78,11 +79,11 @@ export class VisitorInactivityMonitor {
 		});
 	}
 
-	placeRoomOnHold(room) {
+	async placeRoomOnHold(room) {
 		const timeout = settings.get('Livechat_visitor_inactivity_timeout');
 
 		const { v: { _id: visitorId } = {} } = room;
-		const visitor = LivechatVisitors.findOneById(visitorId);
+		const visitor = await LivechatVisitors.findOneById(visitorId);
 		if (!visitor) {
 			throw new Meteor.Error('error-invalid_visitor', 'Visitor Not found');
 		}
@@ -105,7 +106,7 @@ export class VisitorInactivityMonitor {
 					break;
 				}
 				case 'on-hold': {
-					this.placeRoomOnHold(room);
+					Promise.await(this.placeRoomOnHold(room));
 					break;
 				}
 			}

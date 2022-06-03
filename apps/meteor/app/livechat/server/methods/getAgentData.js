@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Users, LivechatRooms, LivechatVisitors } from '../../../models';
+import { Users, LivechatRooms } from '../../../models';
+import { LivechatVisitors } from '../../../models/server/raw';
 
 Meteor.methods({
-	'livechat:getAgentData'({ roomId, token }) {
+	async 'livechat:getAgentData'({ roomId, token }) {
 		check(roomId, String);
 		check(token, String);
 
 		const room = LivechatRooms.findOneById(roomId);
-		const visitor = LivechatVisitors.getVisitorByToken(token);
+		const visitor = await LivechatVisitors.getVisitorByToken(token);
 
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== visitor.token) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');

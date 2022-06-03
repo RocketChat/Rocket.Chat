@@ -1,10 +1,11 @@
 import { check } from 'meteor/check';
 import s from 'underscore.string';
 
-import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models';
+import { LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models';
+import { LivechatVisitors } from '../../../models/server/raw';
 
 export const Contacts = {
-	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
+	async registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
 		check(token, String);
 
 		const visitorEmail = s.trim(email).toLowerCase();
@@ -16,18 +17,18 @@ export const Contacts = {
 			},
 		};
 
-		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
 		if (user) {
 			contactId = user._id;
 		} else {
 			if (!username) {
-				username = LivechatVisitors.getNextVisitorUsername();
+				username = await LivechatVisitors.getNextVisitorUsername();
 			}
 
 			let existingUser = null;
 
-			if (visitorEmail !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(visitorEmail))) {
+			if (visitorEmail !== '' && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(visitorEmail))) {
 				contactId = existingUser._id;
 			} else {
 				const userData = {
@@ -35,7 +36,7 @@ export const Contacts = {
 					ts: new Date(),
 				};
 
-				contactId = LivechatVisitors.insert(userData);
+				contactId = await LivechatVisitors.insert(userData);
 			}
 		}
 
@@ -55,7 +56,7 @@ export const Contacts = {
 		updateUser.$set.livechatData = livechatData;
 		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
 
-		LivechatVisitors.updateById(contactId, updateUser);
+		await LivechatVisitors.updateById(contactId, updateUser);
 
 		const rooms = LivechatRooms.findByVisitorId(contactId).fetch();
 

@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { ILivechatVisitor } from '@rocket.chat/core-typings';
 
-import { LivechatRooms, LivechatInquiry, Messages, Users, LivechatVisitors } from '../../../../../app/models/server';
+import { LivechatRooms, LivechatInquiry, Messages, Users } from '../../../../../app/models/server';
+import { LivechatVisitors } from '../../../../../app/models/server/raw';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
 
@@ -15,7 +17,9 @@ const resolveOnHoldCommentInfo = (options: { clientAction: boolean }, room: any,
 		const {
 			v: { _id: visitorId },
 		} = room;
-		const visitor = LivechatVisitors.findOneById(visitorId, { name: 1, username: 1 });
+		const visitor = Promise.await(
+			LivechatVisitors.findOneById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, { projection: { name: 1, username: 1 } }),
+		);
 		if (!visitor) {
 			throw new Meteor.Error('error-invalid_visitor', 'Visitor Not found');
 		}

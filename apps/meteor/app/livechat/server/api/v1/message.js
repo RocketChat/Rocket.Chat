@@ -3,7 +3,8 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
-import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
+import { Messages, LivechatRooms } from '../../../../models';
+import { LivechatVisitors } from '../../../../models/server/raw';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib';
@@ -276,7 +277,7 @@ API.v1.addRoute(
 	'livechat/messages',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -299,7 +300,7 @@ API.v1.addRoute(
 
 			const visitorToken = this.bodyParams.visitor.token;
 
-			let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
+			let visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
 			let rid;
 			if (visitor) {
 				const rooms = LivechatRooms.findOpenByVisitorToken(visitorToken).fetch();
@@ -314,8 +315,8 @@ API.v1.addRoute(
 				const guest = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
-				const visitorId = Livechat.registerGuest(guest);
-				visitor = LivechatVisitors.findOneById(visitorId);
+				const visitorId = await Livechat.registerGuest(guest);
+				visitor = await LivechatVisitors.findOneById(visitorId);
 			}
 
 			const sentMessages = this.bodyParams.messages.map((message) => {

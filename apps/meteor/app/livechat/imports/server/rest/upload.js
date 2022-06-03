@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
 
 import { settings } from '../../../../settings/server';
-import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
+import { Settings, LivechatRooms } from '../../../../models';
+import { LivechatVisitors } from '../../../../models/server/raw';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
 import { FileUpload } from '../../../../file-upload';
 import { API } from '../../../../api/server';
@@ -19,13 +20,13 @@ settings.watch('FileUpload_MaxFileSize', function (value) {
 });
 
 API.v1.addRoute('livechat/upload/:rid', {
-	post() {
+	async post() {
 		if (!this.request.headers['x-visitor-token']) {
 			return API.v1.unauthorized();
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
-		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
+		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
 
 		if (!visitor) {
 			return API.v1.unauthorized();

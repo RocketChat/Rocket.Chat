@@ -1,7 +1,7 @@
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings';
 import { SMS } from '../../sms';
-import { LivechatVisitors } from '../../models';
+import { LivechatVisitors } from '../../models/server/raw';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add(
@@ -49,7 +49,7 @@ callbacks.add(
 			return message;
 		}
 
-		const visitor = LivechatVisitors.getVisitorByToken(room.v.token);
+		const visitor = Promise.await(LivechatVisitors.getVisitorByToken(room.v.token));
 
 		if (!visitor || !visitor.phone || visitor.phone.length === 0) {
 			return message;

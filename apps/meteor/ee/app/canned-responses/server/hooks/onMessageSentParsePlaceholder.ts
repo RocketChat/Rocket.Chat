@@ -4,7 +4,8 @@ import { IOmnichannelRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { Users, LivechatVisitors, Rooms } from '../../../../../app/models/server';
+import { Users, Rooms } from '../../../../../app/models/server';
+import { LivechatVisitors } from '../../../../../app/models/server/raw';
 
 const placeholderFields = {
 	'contact.name': {
@@ -45,7 +46,7 @@ const handleBeforeSaveMessage = (message: IMessage, room?: IOmnichannelRoom): IM
 	const agentId = room?.servedBy?._id;
 	const visitorId = room?.v?._id;
 	const agent = Users.findOneById(agentId, { fields: { name: 1, _id: 1, emails: 1 } }) || {};
-	const visitor = LivechatVisitors.findOneById(visitorId) || {};
+	const visitor = visitorId && (Promise.await(LivechatVisitors.findOneById(visitorId, {})) || {});
 
 	Object.keys(placeholderFields).map((field) => {
 		const templateKey = `{{${field}}}`;

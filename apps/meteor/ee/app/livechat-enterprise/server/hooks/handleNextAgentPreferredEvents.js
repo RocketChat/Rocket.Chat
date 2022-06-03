@@ -1,7 +1,8 @@
 import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, LivechatInquiry, LivechatVisitors, Users } from '../../../../../app/models/server';
+import { LivechatRooms, LivechatInquiry, Users } from '../../../../../app/models/server';
+import { LivechatVisitors } from '../../../../../app/models/server/raw';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
@@ -24,9 +25,11 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	}
 
 	const { _id: guestId } = defaultGuest;
-	const guest = LivechatVisitors.findOneById(guestId, {
-		fields: { lastAgent: 1, token: 1, contactManager: 1 },
-	});
+	const guest = Promise.await(
+		LivechatVisitors.findOneById(guestId, {
+			projection: { lastAgent: 1, token: 1, contactManager: 1 },
+		}),
+	);
 	if (!guest) {
 		return defaultAgent;
 	}
@@ -89,7 +92,7 @@ const afterTakeInquiry = (inquiry, agent) => {
 		return inquiry;
 	}
 
-	LivechatVisitors.updateLastAgentByToken(token, { ...agent, ts: new Date() });
+	Promise.await(LivechatVisitors.updateLastAgentByToken(token, { ...agent, ts: new Date() }));
 
 	return inquiry;
 };

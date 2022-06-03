@@ -3,7 +3,8 @@ import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
 import { FileUpload } from '../../../../file-upload/server';
-import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
+import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
+import { LivechatVisitors } from '../../../../models/server/raw';
 import { API } from '../../../../api/server';
 import { fetch } from '../../../../../server/lib/http/fetch';
 import { SMS } from '../../../../sms';
@@ -53,8 +54,8 @@ const defineVisitor = (smsNumber, targetDepartment) => {
 		data.department = targetDepartment;
 	}
 
-	const id = Livechat.registerGuest(data);
-	return LivechatVisitors.findOneById(id);
+	const id = Promise.await(Livechat.registerGuest(data));
+	return Promise.await(LivechatVisitors.findOneById(id));
 };
 
 const normalizeLocationSharing = (payload) => {

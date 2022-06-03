@@ -2,12 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 
-import { LivechatRooms, LivechatVisitors } from '../../../models';
+import { LivechatRooms } from '../../../models';
+import { LivechatVisitors } from '../../../models/server/raw';
 import { FileUpload } from '../../../file-upload/server';
 
 Meteor.methods({
 	async sendFileLivechatMessage(roomId, visitorToken, file, msgData = {}) {
-		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
+		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
 
 		if (!visitor) {
 			return false;

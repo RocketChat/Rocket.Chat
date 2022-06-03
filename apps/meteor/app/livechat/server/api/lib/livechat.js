@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
-import { EmojiCustom, LivechatTrigger } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors } from '../../../../models/server/raw';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
@@ -39,15 +39,17 @@ export function findDepartments(businessUnit) {
 }
 
 export function findGuest(token) {
-	return LivechatVisitors.getVisitorByToken(token, {
-		fields: {
-			name: 1,
-			username: 1,
-			token: 1,
-			visitorEmails: 1,
-			department: 1,
-		},
-	});
+	return Promise.await(
+		LivechatVisitors.getVisitorByToken(token, {
+			projection: {
+				name: 1,
+				username: 1,
+				token: 1,
+				visitorEmails: 1,
+				department: 1,
+			},
+		}),
+	);
 }
 
 export function findRoom(token, rid) {
