@@ -5,15 +5,15 @@
 
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { ISubscription, SlashCommand } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions, Users } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { api } from '../../../server/sdk/api';
 
-function inviteAll(type: string): typeof slashCommands.commands[string]['callback'] {
-	return function inviteAll(command: string, params: string, item: IMessage): void {
+function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
+	return function inviteAll(command: T, params: string, item): void {
 		if (!/invite\-all-(to|from)/.test(command)) {
 			return;
 		}
