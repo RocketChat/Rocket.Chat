@@ -1,10 +1,10 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, MouseEvent } from 'react';
 
+import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';
 import AnnouncementComponent from './AnnouncementComponent';
-import AnnouncementModal from './AnnouncementModal';
 
 type AnnouncementParams = {
 	announcement: string;
@@ -12,6 +12,7 @@ type AnnouncementParams = {
 };
 
 const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetails }) => {
+	const t = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
 	const handleClick = (e: MouseEvent<HTMLAnchorElement>): void => {
@@ -23,7 +24,13 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 			return;
 		}
 
-		announcementDetails ? announcementDetails() : setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
+		announcementDetails
+			? announcementDetails()
+			: setModal(
+					<GenericModal confirmText={t('Close')} onConfirm={closeModal} onClose={closeModal}>
+						<MarkdownText content={announcement} />
+					</GenericModal>,
+			  );
 	};
 
 	return announcement ? (
