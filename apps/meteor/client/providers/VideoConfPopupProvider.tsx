@@ -1,37 +1,77 @@
 import { IRoom } from '@rocket.chat/core-typings';
+import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
-import React, { ReactElement, useState, ReactNode, useMemo } from 'react';
+import React, { ReactElement, useState, ReactNode, useEffect, useMemo } from 'react';
 
 import { VideoConfPopupContext, VideoConfIncomingCall, VideoConfPopupPayload } from '../contexts/VideoConfPopupContext';
-import { VideoConfManager, useVideoConfIncomingCalls } from '../lib/VideoConfManager';
+import { VideoConfManager, useVideoConfIncomingCalls, useIsRinging } from '../lib/VideoConfManager';
 import VideoConfPopupPortal from '../portals/VideoConfPopupPortal';
 import VideoConfPopup from '../views/room/contextualBar/VideoConference/VideoConfPopup';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
-	const [popUps, setPopUps] = useState<VideoConfPopupPayload[]>([]);
+	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
+	const incomingCalls = useVideoConfIncomingCalls();
+	const customSound = useCustomSound();
+	const isRinging = useIsRinging();
 
 	const contextValue = useMemo(
 		() => ({
-			dispatch: (option: Omit<VideoConfPopupPayload, 'id'>): void => setPopUps((popUps) => [...popUps, { id: option.room._id, ...option }]),
-			dismiss: (rid: VideoConfPopupPayload['room']['_id']): void => setPopUps((prevState) => prevState.filter((popUp) => popUp.id !== rid)),
-			startCall: (rid: IRoom['_id'], title?: string): Promise<void> => VideoConfManager.startCall(rid, title),
+			dispatch: (option: Omit<VideoConfPopupPayload, 'id'>): void => setOutgoing({ ...option, id: option.rid }),
+			dismiss: (): void => setOutgoing(undefined),
+			startCall: (rid: IRoom['_id']): Promise<void> => VideoConfManager.startCall(rid),
 			acceptCall: (callId: string): void => VideoConfManager.acceptIncomingCall(callId),
 			joinCall: (callId: string): Promise<void> => VideoConfManager.joinCall(callId),
-			muteCall: (callId: string): void => VideoConfManager.muteIncomingCall(callId),
+			dismissCall: (callId: string): void => {
+				VideoConfManager.dismissIncomingCall(callId);
+			},
+			rejectIncomingCall: (callId: string): void => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: (): void => VideoConfManager.abortCall(),
 			useIncomingCalls: (): VideoConfIncomingCall[] => useVideoConfIncomingCalls(),
+			setPreferences: (prefs: Partial<typeof VideoConfManager['preferences']>): void => VideoConfManager.setPreferences(prefs),
+			changePreference: (key: 'cam' | 'mic', value: boolean): void => VideoConfManager.changePreference(key, value),
+			useIsRinging: (): boolean => useIsRinging(),
 		}),
 		[],
 	);
 
+	const popups = useMemo(
+		() =>
+			incomingCalls
+				.filter((incomingCall) => !incomingCall.dismissed)
+				.map((incomingCall) => ({ id: incomingCall.callId, rid: incomingCall.rid, isReceiving: true })),
+		[incomingCalls],
+	);
+
+	useEffect(() => {
+		if (isRinging) {
+			customSound.play('calling');
+			const soundInterval = setInterval(() => {
+				customSound.play('calling');
+			}, 3000);
+
+			return (): void => {
+				customSound.pause('calling');
+				clearInterval(soundInterval);
+			};
+		}
+	}, [customSound, isRinging]);
+
 	return (
 		<VideoConfPopupContext.Provider value={contextValue}>
 			{children}
-			{popUps?.length > 0 && (
+			{(outgoing || popups?.length > 0) && (
 				<VideoConfPopupPortal>
 					<VideoConfPopupBackdrop>
-						{popUps.map(({ id, room }, index) => (
-							<VideoConfPopup key={id} id={id} room={room} position={(index + 1) * 10} current={index} total={popUps.length} />
+						{(outgoing ? [outgoing, ...popups] : popups).map(({ id, rid, isReceiving }, index) => (
+							<VideoConfPopup
+								key={id}
+								id={id}
+								rid={rid}
+								isReceiving={isReceiving}
+								position={(index + 1) * 10}
+								current={index}
+								total={popups.length}
+							/>
 						))}
 					</VideoConfPopupBackdrop>
 				</VideoConfPopupPortal>
