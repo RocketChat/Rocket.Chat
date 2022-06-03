@@ -344,6 +344,7 @@ const LivechatDepartmentSchema = {
 		},
 		onlyMyDepartments: {
 			type: 'string',
+			enum: ['true', 'false'],
 			nullable: true,
 		},
 		enabled: {
@@ -370,8 +371,12 @@ const LivechatDepartmentSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		fields: {
+			type: 'string',
+			nullable: true,
+		},
 	},
-	required: ['text'],
+	required: [],
 	additionalProperties: false,
 };
 
