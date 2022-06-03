@@ -1,5 +1,6 @@
-import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
+import { UserStatusConnection, UserType, IUser as IUserFromAppsEngine } from '@rocket.chat/apps-engine/definition/users';
 import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 
 import { Users } from '../../../models/server';
 import { AppServerOrchestrator } from '../orchestrator';
@@ -11,19 +12,19 @@ export class AppUsersConverter {
 		this.orch = orch;
 	}
 
-	convertById(userId: string): IUser | undefined {
+	convertById(userId: string): IUserFromAppsEngine | undefined {
 		const user = Users.findOneById(userId);
 
 		return this.convertToApp(user);
 	}
 
-	convertByUsername(username: string): IUser | undefined {
+	convertByUsername(username: string): IUserFromAppsEngine | undefined {
 		const user = Users.findOneByUsername(username);
 
 		return this.convertToApp(user);
 	}
 
-	convertToApp(user: IUser): IUser | undefined {
+	convertToApp(user: Required<IUser>): IUserFromAppsEngine | undefined {
 		if (!user) {
 			return undefined;
 		}
@@ -34,7 +35,10 @@ export class AppUsersConverter {
 		return {
 			id: user._id,
 			username: user.username,
-			emails: user.emails,
+			emails: user.emails.map((email) => ({
+				...email,
+				verified: email.verified || false,
+			})),
 			type,
 			isEnabled: user.active,
 			name: user.name,
@@ -55,7 +59,7 @@ export class AppUsersConverter {
 		};
 	}
 
-	convertToRocketChat(user: IUser): IUser | undefined {
+	convertToRocketChat(user: IUserFromAppsEngine): IUser | undefined {
 		if (!user) {
 			return undefined;
 		}
@@ -68,9 +72,9 @@ export class AppUsersConverter {
 			active: user.isEnabled,
 			name: user.name,
 			roles: user.roles,
-			status: user.status,
+			status: this.getUserStatus(user.status),
 			statusConnection: user.statusConnection,
-			utcOffset: user.utfOffset,
+			utcOffset: user.utcOffset,
 			createdAt: user.createdAt,
 			_updatedAt: user.updatedAt,
 			lastLogin: user.lastLoginAt,
@@ -78,7 +82,22 @@ export class AppUsersConverter {
 		};
 	}
 
-	_convertUserTypeToEnum(type: string): string {
+	private getUserStatus(status: string): UserStatus {
+		switch (status) {
+			case 'offline':
+				return UserStatus.OFFLINE;
+			case 'online':
+				return UserStatus.ONLINE;
+			case 'away':
+				return UserStatus.AWAY;
+			case 'busy':
+				return UserStatus.BUSY;
+			default:
+				return UserStatus.OFFLINE;
+		}
+	}
+
+	private _convertUserTypeToEnum(type: string): UserType {
 		switch (type) {
 			case 'user':
 				return UserType.USER;
@@ -91,11 +110,11 @@ export class AppUsersConverter {
 				return UserType.UNKNOWN;
 			default:
 				console.warn(`A new user type has been added that the Apps don't know about? "${type}"`);
-				return type.toUpperCase();
+				return type.toUpperCase() as UserType;
 		}
 	}
 
-	_convertStatusConnectionToEnum(username: string, userId: string, status: string): string {
+	private _convertStatusConnectionToEnum(username: string, userId: string, status: string): UserStatusConnection {
 		switch (status) {
 			case 'offline':
 				return UserStatusConnection.OFFLINE;
@@ -112,7 +131,7 @@ export class AppUsersConverter {
 				console.warn(
 					`The user ${username} (${userId}) does not have a valid status (offline, online, away, or busy). It is currently: "${status}"`,
 				);
-				return !status ? UserStatusConnection.OFFLINE : status.toUpperCase();
+				return !status ? UserStatusConnection.OFFLINE : (status.toUpperCase() as UserStatusConnection);
 		}
 	}
 }

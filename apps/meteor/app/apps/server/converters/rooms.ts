@@ -1,9 +1,16 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IRoom } from '@rocket.chat/core-typings';
+import { IDepartment } from '@rocket.chat/apps-engine/definition/livechat';
+import { isLivechatRoom } from '@rocket.chat/apps-engine/definition/livechat/ILivechatRoom';
+import { RoomType, IRoom as IRoomFromAppsEngine } from '@rocket.chat/apps-engine/definition/rooms';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 
 import { Rooms, Users, LivechatVisitors, LivechatDepartment } from '../../../models/server';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 import { AppServerOrchestrator } from '../orchestrator';
+
+type ConverterType<T> = T & {
+	_unmappedProperties_: unknown;
+};
 
 export class AppRoomsConverter {
 	orch: AppServerOrchestrator;
@@ -32,7 +39,7 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
-	convertAppRoom(room: IRoom): unknown {
+	convertAppRoom(room: IRoomFromAppsEngine): IRoom | undefined {
 		if (!room) {
 			return undefined;
 		}
@@ -47,81 +54,85 @@ export class AppRoomsConverter {
 		}
 
 		let v;
-		if (room.visitor) {
-			const visitor = LivechatVisitors.findOneById(room.visitor.id);
-			v = {
-				_id: visitor._id,
-				username: visitor.username,
-				token: visitor.token,
-				status: visitor.status || 'online',
-			};
-		}
-
 		let departmentId;
-		if (room.department) {
-			const department = LivechatDepartment.findOneById(room.department.id);
-			departmentId = department._id;
-		}
 
 		let servedBy;
-		if (room.servedBy) {
-			const user = Users.findOneById(room.servedBy.id);
-			servedBy = {
-				_id: user._id,
-				username: user.username,
-			};
-		}
 
 		let closedBy;
-		if (room.closedBy) {
-			const user = Users.findOneById(room.closedBy.id);
-			closedBy = {
-				_id: user._id,
-				username: user.username,
-			};
+
+		// TODO: APPS ENGINE fix typing definitions
+
+		if (isLivechatRoom(room)) {
+			if (room.visitor) {
+				const visitor = LivechatVisitors.findOneById(room.visitor.id);
+				v = {
+					_id: visitor._id,
+					username: visitor.username,
+					token: visitor.token,
+					status: visitor.status || 'online',
+				};
+			}
+			if (room.department) {
+				const department = LivechatDepartment.findOneById(room.department.id);
+				departmentId = department._id;
+			}
+
+			if (room.servedBy) {
+				const user = Users.findOneById(room.servedBy.id);
+				servedBy = {
+					_id: user._id,
+					username: user.username,
+				};
+			}
+			if ('closedBy' in room) {
+				const user = Users.findOneById((room as any).closedBy.id);
+				closedBy = {
+					_id: user._id,
+					username: user.username,
+				};
+			}
 		}
 
-		const newRoom = {
+		return {
 			...(room.id && { _id: room.id }),
 			fname: room.displayName,
 			name: room.slugifiedName,
 			t: room.type,
 			u,
-			v,
-			departmentId,
-			servedBy,
-			closedBy,
-			members: room.members,
+			...('members' in room && { members: (room as any).members }),
 			uids: room.userIds,
 			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
 			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
 			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
-			waitingResponse: typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
-			open: typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
 			msgs: room.messageCount || 0,
 			ts: room.createdAt,
 			_updatedAt: room.updatedAt,
-			closedAt: room.closedAt,
 			lm: room.lastModifiedAt,
 			customFields: room.customFields,
 			livechatData: room.livechatData,
 			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
-			...(room._USERNAMES && { _USERNAMES: room._USERNAMES }),
-			...(room.source && {
+			...('_USERNAMES' in room && { _USERNAMES: (room as any)._USERNAMES }),
+			...('source' in room && {
 				source: {
-					...room.source,
+					...(room as any).source,
 				},
 			}),
-		};
 
-		return Object.assign(newRoom, room._unmappedProperties_);
+			...(isLivechatRoom(room) && {
+				waitingResponse: Boolean(room.isWaitingResponse),
+				v,
+				departmentId,
+				servedBy,
+				closedBy,
+				closedAt: room.closedAt,
+				open: typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
+			}),
+
+			...(room as any)._unmappedProperties_,
+		};
 	}
 
-	convertRoom(room: IRoom):
-		| {
-				_unmappedProperties_: unknown;
-		  }
-		| undefined {
+	convertRoom(room: IRoom): ConverterType<IRoomFromAppsEngine> | undefined {
 		if (!room) {
 			return undefined;
 		}
@@ -166,7 +177,7 @@ export class AppRoomsConverter {
 			},
 			type: (room: IRoom): string => {
 				const result = this._convertTypeToApp(room.t);
-				delete room.t;
+				delete (room as any).t;
 				return result;
 			},
 			creator: (room: IRoom): unknown => {
@@ -176,68 +187,68 @@ export class AppRoomsConverter {
 					return undefined;
 				}
 
-				delete room.u;
+				delete (room as any).u;
 
 				return this.orch.getConverters()?.get('users').convertById(u._id);
 			},
-			visitor: (room: IRoom): unknown => {
+			visitor: (room: IOmnichannelRoom): unknown => {
 				const { v } = room;
 
 				if (!v) {
 					return undefined;
 				}
 
-				delete room.v;
+				delete (room as any).v;
 
 				return this.orch.getConverters()?.get('visitors').convertById(v._id);
 			},
-			department: (room: IRoom): unknown => {
+			department: (room: IOmnichannelRoom): IDepartment | undefined => {
 				const { departmentId } = room;
 
 				if (!departmentId) {
 					return undefined;
 				}
 
-				delete room.departmentId;
+				delete (room as any).departmentId;
 
 				return this.orch.getConverters()?.get('departments').convertById(departmentId);
 			},
-			servedBy: (room: IRoom): unknown => {
+			servedBy: (room: IOmnichannelRoom): IUser | undefined => {
 				const { servedBy } = room;
 
 				if (!servedBy) {
 					return undefined;
 				}
 
-				delete room.servedBy;
+				delete (room as any).servedBy;
 
 				return this.orch.getConverters()?.get('users').convertById(servedBy._id);
 			},
-			responseBy: (room: IRoom): unknown => {
+			responseBy: (room: IOmnichannelRoom): IUser | undefined => {
 				const { responseBy } = room;
 
 				if (!responseBy) {
 					return undefined;
 				}
 
-				delete room.responseBy;
+				delete (room as any).responseBy;
 
 				return this.orch.getConverters()?.get('users').convertById(responseBy._id);
 			},
-			parentRoom: (room: IRoom): unknown => {
+			parentRoom: (room: IRoom): IRoomFromAppsEngine | undefined => {
 				const { prid } = room;
 
 				if (!prid) {
 					return undefined;
 				}
 
-				delete room.prid;
+				delete (room as any).prid;
 
 				return this.orch.getConverters()?.get('rooms').convertById(prid);
 			},
 		};
 
-		return transformMappedData(room, map);
+		return transformMappedData(room, map) as ConverterType<IRoomFromAppsEngine>;
 	}
 
 	_convertTypeToApp(typeChar: string): string {

@@ -1,3 +1,4 @@
+import { IDepartment } from '@rocket.chat/apps-engine/definition/livechat';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 
 import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
@@ -21,7 +22,7 @@ export class AppDepartmentsConverter {
 		return this.convertDepartment(department);
 	}
 
-	convertDepartment(department: ILivechatDepartment):
+	convertDepartment(department: IDepartment):
 		| {
 				_unmappedProperties_: unknown;
 		  }
@@ -51,12 +52,12 @@ export class AppDepartmentsConverter {
 		return transformMappedData(department, map);
 	}
 
-	convertAppDepartment(department: ILivechatDepartment): unknown | undefined {
+	convertAppDepartment(department: IDepartment): ILivechatDepartment | undefined {
 		if (!department) {
 			return undefined;
 		}
 
-		const newDepartment = {
+		return {
 			_id: department.id,
 			name: department.name,
 			email: department.email,
@@ -72,8 +73,7 @@ export class AppDepartmentsConverter {
 			abandonedRoomsCloseCustomMessage: department.abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage: department.waitingQueueMessage,
 			departmentsAllowedToForward: department.departmentsAllowedToForward,
+			...(department as any)._unmappedProperties_,
 		};
-
-		return Object.assign(newDepartment, department._unmappedProperties_);
 	}
 }

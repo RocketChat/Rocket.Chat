@@ -1,3 +1,4 @@
+import { IVisitor as IVisitorFromAppsEngine } from '@rocket.chat/apps-engine/definition/livechat';
 import type { IVisitor } from '@rocket.chat/core-typings';
 
 import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
@@ -12,9 +13,9 @@ export class AppVisitorsConverter {
 	}
 
 	convertById(id: string):
-		| {
+		| (IVisitorFromAppsEngine & {
 				_unmappedProperties_: unknown;
-		  }
+		  })
 		| undefined {
 		const visitor = LivechatVisitors.findOneById(id);
 
@@ -22,9 +23,9 @@ export class AppVisitorsConverter {
 	}
 
 	convertByToken(token: string):
-		| {
+		| (IVisitorFromAppsEngine & {
 				_unmappedProperties_: unknown;
-		  }
+		  })
 		| undefined {
 		const visitor = LivechatVisitors.getVisitorByToken(token, {});
 
@@ -32,9 +33,9 @@ export class AppVisitorsConverter {
 	}
 
 	convertVisitor(visitor: IVisitor):
-		| {
+		| (IVisitorFromAppsEngine & {
 				_unmappedProperties_: unknown;
-		  }
+		  })
 		| undefined {
 		if (!visitor) {
 			return undefined;
@@ -53,15 +54,18 @@ export class AppVisitorsConverter {
 			status: 'status',
 		};
 
-		return transformMappedData(visitor, map);
+		return transformMappedData(visitor, map) as
+			| IVisitorFromAppsEngine & {
+					_unmappedProperties_: unknown;
+			  };
 	}
 
-	convertAppVisitor(visitor: IVisitor): unknown {
+	convertAppVisitor(visitor: IVisitorFromAppsEngine): IVisitor | undefined {
 		if (!visitor) {
 			return undefined;
 		}
 
-		const newVisitor = {
+		return {
 			_id: visitor.id,
 			username: visitor.username,
 			name: visitor.name,
@@ -71,8 +75,7 @@ export class AppVisitorsConverter {
 			status: visitor.status || 'online',
 			...(visitor.visitorEmails && { visitorEmails: visitor.visitorEmails }),
 			...(visitor.department && { department: visitor.department }),
+			...(visitor as any)._unmappedProperties_,
 		};
-
-		return Object.assign(newVisitor, visitor._unmappedProperties_);
 	}
 }

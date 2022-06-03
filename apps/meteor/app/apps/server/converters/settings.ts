@@ -1,4 +1,4 @@
-import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
+import { SettingType, ISetting as ISettingFromAppsEngine } from '@rocket.chat/apps-engine/definition/settings';
 import type { ISetting } from '@rocket.chat/core-typings';
 
 import { Settings } from '../../../models/server/raw';
@@ -11,56 +11,31 @@ export class AppSettingsConverter {
 		this.orch = orch;
 	}
 
-	async convertById(settingId: string): Promise<ISetting> {
+	async convertById(settingId: string): Promise<ISettingFromAppsEngine> {
 		const setting = await Settings.findOneNotHiddenById(settingId);
 
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return this.convertToApp(setting!);
 	}
 
-	convertToApp(setting: ISetting): ISetting {
+	convertToApp(setting: ISetting): ISettingFromAppsEngine {
 		return {
-			_id: setting._id,
-			type: this._convertTypeToApp(setting.type) as SettingType,
+			id: setting._id,
+			type: this._convertTypeToApp(setting.type),
 			packageValue: setting.packageValue,
-			values: setting.values,
+			values: setting.values as ISettingFromAppsEngine['values'],
 			value: setting.value,
 			public: setting.public,
 			hidden: setting.hidden,
-			group: setting.group,
 			i18nLabel: setting.i18nLabel,
 			i18nDescription: setting.i18nDescription,
 			createdAt: setting.ts,
-			_updatedAt: setting._updatedAt,
-
-			blocked: setting.blocked,
-			sorter: setting.sorter,
-			env: setting.env,
-			section: setting.section,
-			tab: setting.tab,
-			enableQuery: setting.enableQuery,
-			displayQuery: setting.displayQuery,
-			properties: setting.properties,
-			enterprise: setting.enterprise,
-			modules: setting.modules,
-			invalidValue: setting.invalidValue,
-			valueSource: setting.valueSource,
-			secret: setting.secret,
-			autocomplete: setting.autocomplete,
-			processEnvValue: setting.processEnvValue,
-			meteorSettingsValue: setting.meteorSettingsValue,
-			ts: setting.ts,
-			multiline: setting.multiline,
-			placeholder: setting.placeholder,
-			wizard: setting.wizard,
-			persistent: setting.persistent,
-			readonly: setting.readonly,
-			alert: setting.alert,
-			private: setting.private,
+			updatedAt: setting._updatedAt,
+			...({ group: setting.group } as any),
 		};
 	}
 
-	_convertTypeToApp(type: string): string {
+	_convertTypeToApp(type: string): SettingType {
 		switch (type) {
 			case 'boolean':
 				return SettingType.BOOLEAN;
@@ -77,7 +52,7 @@ export class AppSettingsConverter {
 			case 'string':
 				return SettingType.STRING;
 			default:
-				return type;
+				return type as SettingType;
 		}
 	}
 }

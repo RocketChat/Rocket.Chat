@@ -1,16 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Random } from 'meteor/random';
-import type {
-	AudioAttachmentProps,
-	IEditedMessage,
-	ImageAttachmentProps,
-	IMessage,
-	MessageAttachment,
-	MessageAttachmentAction,
-	MessageAttachmentDefault,
-	MessageQuoteAttachment,
-	VideoAttachmentProps,
-} from '@rocket.chat/core-typings';
+import { IMessage as IMessageFromAppsEngine, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
+import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
+import { IEditedMessage, IMessage, MessageAttachment, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 
 import { Messages, Rooms, Users } from '../../../models/server';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
@@ -23,13 +16,13 @@ export class AppMessagesConverter {
 		this.orch = orch;
 	}
 
-	convertById(msgId: string): unknown {
+	convertById(msgId: string): IMessageFromAppsEngine | undefined {
 		const msg = Messages.findOneById(msgId);
 
 		return this.convertMessage(msg);
 	}
 
-	convertMessage(msgObj: IMessage): unknown {
+	convertMessage(msgObj: IMessage): IMessageFromAppsEngine | undefined {
 		if (!msgObj) {
 			return undefined;
 		}
@@ -51,12 +44,12 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
-			room: (message: IMessage): unknown => {
+			room: (message: IMessage): IRoom => {
 				const result = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 				delete (message as any).rid; // The operand of a 'delete' operator must be optional.ts(2790)
 				return result;
 			},
-			editor: (message: IEditedMessage): unknown => {
+			editor: (message: IEditedMessage): IUser | undefined => {
 				const { editedBy } = message;
 				delete (message as any).editedBy; // The operand of a 'delete' operator must be optional.ts(2790)
 
@@ -72,7 +65,7 @@ export class AppMessagesConverter {
 				delete message.attachments;
 				return result;
 			},
-			sender: (message: IMessage): unknown => {
+			sender: (message: IMessage): IUser | undefined => {
 				if (!message.u || !message.u._id) {
 					return undefined;
 				}
@@ -90,23 +83,25 @@ export class AppMessagesConverter {
 			},
 		};
 
-		return transformMappedData(msgObj, map);
+		return transformMappedData(msgObj, map) as IMessageFromAppsEngine & {
+			_unmappedProperties_: any;
+		};
 	}
 
-	convertAppMessage(message: IEditedMessage): unknown {
-		if (!message || !message.rid) {
+	convertAppMessage(message: IMessageFromAppsEngine): IMessage | undefined {
+		if (!message || !message.room) {
 			return undefined;
 		}
 
-		const room = Rooms.findOneById(message.rid);
+		const room = Rooms.findOneById(message.room.id);
 
 		if (!room) {
 			throw new Error('Invalid room provided on the message.');
 		}
 
 		let u;
-		if (message.u && message.u._id) {
-			const user = Users.findOneById(message.u._id);
+		if (message.sender && message.sender.id) {
+			const user = Users.findOneById(message.sender.id);
 
 			if (user) {
 				u = {
@@ -116,16 +111,17 @@ export class AppMessagesConverter {
 				};
 			} else {
 				u = {
-					_id: message.u._id,
-					username: message.u.username,
-					name: message.u.name,
+					_id: message.sender.id,
+					username: message.sender.username,
+					name: message.sender.name,
 				};
 			}
 		}
 
 		let editedBy;
-		if (message.editedBy) {
-			const editor = Users.findOneById(message.editedBy._id);
+
+		if (message.editedAt && message.editor) {
+			const editor = Users.findOneById(message.editor.id);
 			editedBy = {
 				_id: editor._id,
 				username: editor.username,
@@ -135,83 +131,74 @@ export class AppMessagesConverter {
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		const attachments = this._convertAppAttachments(message.attachments!);
 
-		const newMessage = {
-			_id: message._id || Random.id(),
-			...('threadId' in message && { tmid: message.tmid }),
+		return {
+			_id: message.id || Random.id(),
+			...('threadId' in message && { tmid: message.threadId }),
 			rid: room._id,
 			u,
-			msg: message.msg,
-			ts: message.ts || new Date(),
-			_updatedAt: message.editedAt || new Date(),
+			msg: message.text,
+			ts: message.createdAt || new Date(),
+			_updatedAt: message.updatedAt || new Date(),
 			...(editedBy && { editedBy }),
 			...('editedAt' in message && { editedAt: message.editedAt }),
 			...('emoji' in message && { emoji: message.emoji }),
-			...('avatarUrl' in message && { avatar: message.avatar }),
+			...('avatarUrl' in message && { avatar: message.avatarUrl }),
 			...('alias' in message && { alias: message.alias }),
-			...('customFields' in message && { customFields: (message as any).customFields }),
+			...('customFields' in message && { customFields: message.customFields }),
 			...('groupable' in message && { groupable: message.groupable }),
 			...(attachments && { attachments }),
 			...('reactions' in message && { reactions: message.reactions }),
-			...('parseUrls' in message && { parseUrls: message.urls }),
+			...('parseUrls' in message && { parseUrls: message.parseUrls }),
 			...('blocks' in message && { blocks: message.blocks }),
+			// TODO: Chapter day APPSengine check token
 			...('token' in message && { token: (message as any).token }),
+			...(message as any)._unmappedProperties_,
 		};
-
-		return Object.assign(newMessage, (message as any)._unmappedProperties_);
 	}
 
-	_convertAppAttachments(attachments: MessageAttachment[]): unknown[] | undefined {
-		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
+	private _convertAppAttachments(attachments: IMessageAttachment[]): MessageAttachment[] | undefined {
+		if (!Array.isArray(attachments)) {
 			return undefined;
 		}
 
-		return attachments.map((attachment) =>
-			Object.assign(
-				{
-					collapsed: attachment.collapsed,
-					color: (attachment as MessageAttachmentDefault).color,
-					text: (attachment as MessageAttachmentDefault).text,
-					ts: attachment.ts ? attachment.ts.toJSON() : attachment.ts,
-					message_link: (attachment as MessageQuoteAttachment).message_link,
-					thumb_url: (attachment as MessageAttachmentDefault).thumb_url,
-					author_name: (attachment as MessageAttachmentDefault).author_name
-						? (attachment as MessageAttachmentDefault).author_name
-						: undefined,
-					author_link: (attachment as MessageAttachmentDefault).author_link
-						? (attachment as MessageAttachmentDefault).author_link
-						: undefined,
-					author_icon: (attachment as MessageAttachmentDefault).author_icon
-						? (attachment as MessageAttachmentDefault).author_icon
-						: undefined,
-					title: attachment.title ? attachment.title : undefined,
-					title_link: attachment.title ? attachment.title_link : undefined,
-					title_link_download: attachment.title ? attachment.title_link_download : undefined,
-					image_dimensions: (attachment as MessageAttachmentDefault).image_dimensions,
-					image_preview: (attachment as ImageAttachmentProps).image_preview,
-					image_url: (attachment as MessageAttachmentDefault).image_url,
-					image_type: (attachment as ImageAttachmentProps).image_type,
-					image_size: (attachment as ImageAttachmentProps).image_size,
-					audio_url: (attachment as AudioAttachmentProps).audio_url,
-					audio_type: (attachment as AudioAttachmentProps).audio_type,
-					audio_size: (attachment as AudioAttachmentProps).audio_size,
-					video_url: (attachment as VideoAttachmentProps).video_url,
-					video_type: (attachment as VideoAttachmentProps).video_type,
-					video_size: (attachment as VideoAttachmentProps).video_size,
-					fields: (attachment as MessageAttachmentDefault).fields,
-					button_alignment: (attachment as MessageAttachmentAction).button_alignment,
-					actions: (attachment as MessageAttachmentAction).actions,
-					type: (attachment as any).type,
-					description: attachment.description,
-				},
-				(attachment as any)._unmappedProperties_,
-			),
-		);
+		return attachments.map((attachment) => ({
+			collapsed: attachment.collapsed,
+			color: attachment.color,
+			text: attachment.text,
+			ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
+			message_link: attachment.timestampLink,
+			thumb_url: attachment.thumbnailUrl,
+			author_name: attachment.author ? attachment.author.name : undefined,
+			author_link: attachment.author ? attachment.author.link : undefined,
+			author_icon: attachment.author ? attachment.author.icon : undefined,
+			title: attachment.title ? attachment.title.value : undefined,
+			title_link: attachment.title ? attachment.title.link : undefined,
+			title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
+			image_url: attachment.imageUrl,
+			audio_url: attachment.audioUrl,
+			video_url: attachment.videoUrl,
+			image_dimensions: (attachment as any).imageDimensions,
+			image_preview: (attachment as any).imagePreview,
+			image_type: (attachment as any).imageType,
+			image_size: (attachment as any).imageSize,
+			audio_type: (attachment as any).audioType,
+			audio_size: (attachment as any).audioSize,
+			video_type: (attachment as any).videoType,
+			video_size: (attachment as any).videoSize,
+			fields: attachment.fields,
+			button_alignment: attachment.actionButtonsAlignment,
+			actions: attachment.actions,
+			type: attachment.type,
+			description: attachment.description,
+			...(attachment as any)._unmappedProperties_,
+		}));
 	}
 
-	_convertAttachmentsToApp(attachments: MessageAttachmentDefault[]):
-		| {
-				_unmappedProperties_: unknown;
-		  }[]
+	private _convertAttachmentsToApp(attachments: MessageAttachmentDefault[]):
+		| (IMessageAttachment &
+				{
+					_unmappedProperties_: unknown;
+				}[])
 		| undefined {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
