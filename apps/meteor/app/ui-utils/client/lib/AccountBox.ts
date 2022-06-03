@@ -73,7 +73,7 @@ export class AccountBoxBase {
 		});
 	}
 
-	public getItems(): IAppAccountBoxItem[] {
+	public getItems(): (IAppAccountBoxItem | AccountBoxItem)[] {
 		return this.items.get().filter((item: IAppAccountBoxItem | AccountBoxItem) => {
 			if ('condition' in item) {
 				return item.condition();
