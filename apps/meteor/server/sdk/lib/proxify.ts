@@ -1,3 +1,4 @@
+import { Middleware } from '../../../app/settings/server/Middleware';
 import { api } from '../api';
 
 type FunctionPropertyNames<T> = {
@@ -8,6 +9,8 @@ type Prom<T> = {
 	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any>
 		? T[K]
 		: (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]>>;
+} & {
+	use<K extends FunctionPropertyNames<T>>(name: K, middleware: Middleware<T[K]>): void;
 };
 
 type PromOrError<T> = {
@@ -18,10 +21,14 @@ type PromOrError<T> = {
 
 function handler<T extends object>(namespace: string, waitService: boolean): ProxyHandler<T> {
 	return {
-		get:
-			(_target: T, prop: string): any =>
-			(...params: any): Promise<any> =>
-				api[waitService ? 'waitAndCall' : 'call'](`${namespace}.${prop}`, params),
+		get: (_target: T, prop: string): any => {
+			if (prop === 'use') {
+				return (name: string, middleware: (...args: any[]) => any): void =>
+					api[waitService ? 'waitAndUse' : 'use'](`${namespace}.${name}`, middleware);
+			}
+
+			return (...params: any[]): Promise<any> => api[waitService ? 'waitAndCall' : 'call'](`${namespace}.${prop}`, params);
+		},
 	};
 }
 

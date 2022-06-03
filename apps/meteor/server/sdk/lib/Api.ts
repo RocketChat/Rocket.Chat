@@ -1,3 +1,4 @@
+import { pipe } from '../../../app/settings/server/Middleware';
 // import { BaseBroker } from './BaseBroker';
 import { IBroker } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
@@ -8,6 +9,8 @@ export class Api {
 	private services = new Set<ServiceClass>();
 
 	private broker: IBroker = new LocalBroker();
+
+	private middlewares: Map<string, (...args: any[]) => any> = new Map();
 
 	// set a broker for the API and registers all services in the broker
 	setBroker(broker: IBroker): void {
@@ -36,11 +39,49 @@ export class Api {
 		}
 	}
 
-	async call(method: string, data?: unknown): Promise<any> {
+	use(method: string, middleware: (...args: any[]) => any): void {
+		const next =
+			(this.middlewares.has(method) ? this.middlewares.get(method) : null) || ((...args: any[]): any => this._call(method, args));
+
+		this.middlewares.set(method, function (this: unknown, ...args: any[]): any {
+			return middleware(args, pipe(next));
+		});
+	}
+
+	waitAndUse(method: string, middleware: (...args: any[]) => any): void {
+		const next =
+			(this.middlewares.has(method) ? this.middlewares.get(method) : null) || ((...args: any[]): any => this._waitAndCall(method, args));
+
+		this.middlewares.set(method, function (this: unknown, ...args: any[]): any {
+			return middleware(args, pipe(next));
+		});
+	}
+
+	private async _call(method: string, data: any[]): Promise<any> {
 		return this.broker.call(method, data);
 	}
 
-	async waitAndCall(method: string, data: any): Promise<any> {
+	async call(method: string, data: any[]): Promise<any> {
+		const middleware = this.middlewares.has(method) && this.middlewares.get(method);
+
+		if (middleware) {
+			return middleware(...data);
+		}
+
+		return this.broker.call(method, data);
+	}
+
+	private async _waitAndCall(method: string, data: any[]): Promise<any> {
+		return this.broker.waitAndCall(method, data);
+	}
+
+	async waitAndCall(method: string, data: any[]): Promise<any> {
+		const middleware = this.middlewares.has(method) && this.middlewares.get(method);
+
+		if (middleware) {
+			return middleware(...data);
+		}
+
 		return this.broker.waitAndCall(method, data);
 	}
 
