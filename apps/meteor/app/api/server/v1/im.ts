@@ -2,7 +2,14 @@
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
 import type { IMessage, IRoom, ISetting, ISubscription, IUpload, IUser } from '@rocket.chat/core-typings';
-import { isDmDeleteProps, isDmFileProps, isDmMemberProps, isDmMessagesProps, isDmCreateProps } from '@rocket.chat/rest-typings';
+import {
+	isDmDeleteProps,
+	isDmFileProps,
+	isDmMemberProps,
+	isDmMessagesProps,
+	isDmCreateProps,
+	isDmHistoryProps,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
@@ -240,7 +247,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	['dm.history', 'im.history'],
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isDmHistoryProps },
 	{
 		async get() {
 			const { offset = 0, count = 20 } = this.getPaginationItems();

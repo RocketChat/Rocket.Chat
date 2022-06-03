@@ -21,13 +21,13 @@ export type ImEndpoints = {
 		POST: (params: DmDeleteProps) => void;
 	};
 	'im.close': {
-		POST: (params: DmCloseProps) => {};
+		POST: (params: DmCloseProps) => void;
 	};
 	'im.kick': {
-		POST: (params: DmCloseProps) => {};
+		POST: (params: DmCloseProps) => void;
 	};
 	'im.leave': {
-		POST: (params: DmLeaveProps) => {};
+		POST: (params: DmLeaveProps) => void;
 	};
 	'im.counters': {
 		GET: (params: { roomId: string; userId?: string }) => {
