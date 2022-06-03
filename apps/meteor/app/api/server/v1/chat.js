@@ -524,6 +524,10 @@ API.v1.addRoute(
 	{
 		get() {
 			const { rid, type, text } = this.queryParams;
+			check(rid, String);
+			check(type, String);
+			check(text, Match.Maybe(String));
+
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
@@ -547,7 +551,7 @@ API.v1.addRoute(
 				msg: new RegExp(escapeRegExp(text), 'i'),
 			};
 
-			const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
+			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
 			const cursor = Messages.find(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
