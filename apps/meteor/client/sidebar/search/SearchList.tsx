@@ -15,8 +15,8 @@ import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from './Row';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
-const shortcut = (() => {
-	if (!Meteor.Device.isDesktop()) {
+const shortcut = ((): string => {
+	if (!(Meteor as any).Device.isDesktop()) {
 		return '';
 	}
 	if (window.navigator.platform.toLowerCase().includes('mac')) {
@@ -25,9 +25,9 @@ const shortcut = (() => {
 	return '(\u2303+K)';
 })();
 
-const useSpotlight = (filterText = '', usernames) => {
+const useSpotlight = (filterText: string, usernames: string[]): { data: { users: string[]; rooms: string[] }; status: string } => {
 	const expression = /(@|#)?(.*)/i;
-	const [, mention, name] = filterText.match(expression);
+	const [, mention, name] = filterText.match(expression) || [];
 
 	const searchForChannels = mention === '#';
 	const searchForDMs = mention === '@';
@@ -41,9 +41,10 @@ const useSpotlight = (filterText = '', usernames) => {
 		}
 		return { users: true, rooms: true };
 	}, [searchForChannels, searchForDMs]);
+
 	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
 
-	const { value: data = { users: [], rooms: [] }, phase: status } = useMethodData('spotlight', args);
+	const { value: data, phase: status } = useMethodData('spotlight', args);
 
 	return useMemo(() => {
 		if (!data) {
