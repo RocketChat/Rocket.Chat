@@ -11,9 +11,10 @@ import toastr from 'toastr';
 import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
-import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 import { dispatchToastMessage } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
+import BlazeTemplate from '../views/root/BlazeTemplate';
+import MainLayout from '../views/root/MainLayout';
 
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
@@ -23,13 +24,22 @@ const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRout
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 const MeetPage = lazy(() => import('../views/meet/MeetPage'));
+const DirectoryPage = lazy(() => import('../views/directory/DirectoryPage'));
+const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
+const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
+const AccountRoute = lazy(() => import('../views/account/AccountRoute'));
 
 FlowRouter.wait();
 
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		appLayout.renderMainLayout({ center: 'loading' });
+		appLayout.render(
+			<MainLayout>
+				<BlazeTemplate template='loading' />
+			</MainLayout>,
+		);
+
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
@@ -104,55 +114,65 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				appLayout.renderMainLayout({ center: 'home' });
+				appLayout.render(
+					<MainLayout>
+						<BlazeTemplate template='home' />
+					</MainLayout>,
+				);
 			});
 
 			return;
 		}
 
-		appLayout.renderMainLayout({ center: 'home' });
+		appLayout.render(
+			<MainLayout>
+				<BlazeTemplate template='home' />
+			</MainLayout>,
+		);
 	},
 });
 
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		const DirectoryPage = createTemplateForComponent('DirectoryPage', () => import('../views/directory/DirectoryPage'), {
-			attachment: 'at-parent',
-		});
-		appLayout.renderMainLayout({ center: DirectoryPage });
+		appLayout.render(
+			<MainLayout>
+				<DirectoryPage />
+			</MainLayout>,
+		);
 	},
 });
 
 FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 	name: 'omnichannel-directory',
 	action: () => {
-		const OmnichannelDirectoryPage = createTemplateForComponent(
-			'OmnichannelDirectoryPage',
-			() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'),
-			{ attachment: 'at-parent' },
+		appLayout.render(
+			<MainLayout>
+				<OmnichannelDirectoryPage />
+			</MainLayout>,
 		);
-		appLayout.renderMainLayout({ center: OmnichannelDirectoryPage });
 	},
 });
 
 FlowRouter.route('/livechat-queue', {
 	name: 'livechat-queue',
 	action: () => {
-		const OmnichannelQueueList = createTemplateForComponent('QueueList', () => import('../views/omnichannel/queueList'), {
-			attachment: 'at-parent',
-		});
-		appLayout.renderMainLayout({ center: OmnichannelQueueList });
+		appLayout.render(
+			<MainLayout>
+				<OmnichannelQueueList />
+			</MainLayout>,
+		);
 	},
 });
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		const AccountRoute = createTemplateForComponent('AccountRoute', () => import('../views/account/AccountRoute'), {
-			attachment: 'at-parent',
-		});
-		appLayout.renderMainLayout({ center: AccountRoute });
+		appLayout.render(
+			<MainLayout>
+				<AccountRoute />
+			</MainLayout>,
+		);
 	},
 });
 
@@ -181,7 +201,11 @@ FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
 	action: ({ type, name } = {}) => {
 		Session.set('roomNotFound', { type, name });
-		appLayout.renderMainLayout({ center: 'roomNotFound' });
+		appLayout.render(
+			<MainLayout>
+				<BlazeTemplate template='roomNotFound' />
+			</MainLayout>,
+		);
 	},
 });
 
@@ -240,35 +264,33 @@ FlowRouter.route('/reset-password/:token', {
 FlowRouter.route('/snippet/:snippetId/:snippetName', {
 	name: 'snippetView',
 	action() {
-		appLayout.renderMainLayout({ center: 'snippetPage' });
+		appLayout.render(
+			<MainLayout>
+				<BlazeTemplate template='snippetPage' />
+			</MainLayout>,
+		);
 	},
 });
 
 FlowRouter.route('/oauth/authorize', {
 	name: 'oauth/authorize',
-	action(_params, queryParams) {
-		appLayout.renderMainLayout({
-			center: 'authorize',
-			modal: true,
-			// eslint-disable-next-line @typescript-eslint/camelcase
-			client_id: queryParams?.client_id,
-			// eslint-disable-next-line @typescript-eslint/camelcase
-			redirect_uri: queryParams?.redirect_uri,
-			// eslint-disable-next-line @typescript-eslint/camelcase
-			response_type: queryParams?.response_type,
-			state: queryParams?.state,
-		});
+	action() {
+		appLayout.render(
+			<MainLayout>
+				<BlazeTemplate template='authorize' />
+			</MainLayout>,
+		);
 	},
 });
 
 FlowRouter.route('/oauth/error/:error', {
 	name: 'oauth/error',
-	action(params) {
-		appLayout.renderMainLayout({
-			center: 'oauth404',
-			modal: true,
-			error: params?.error,
-		});
+	action() {
+		appLayout.render(
+			<MainLayout>
+				<BlazeTemplate template='oauth404' />
+			</MainLayout>,
+		);
 	},
 });
 

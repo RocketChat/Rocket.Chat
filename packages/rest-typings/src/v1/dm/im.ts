@@ -2,9 +2,12 @@ import type { IMessage, IRoom, IUser, IUpload } from '@rocket.chat/core-typings'
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { DmCloseProps } from './DmCloseProps';
 import type { DmCreateProps } from './DmCreateProps';
 import type { DmDeleteProps } from './DmDeleteProps';
 import type { DmFileProps } from './DmFileProps';
+import type { DmHistoryProps } from './DmHistoryProps';
+import type { DmLeaveProps } from './DmLeaveProps';
 import type { DmMemberProps } from './DmMembersProps';
 import type { DmMessagesProps } from './DmMessagesProps';
 
@@ -18,7 +21,13 @@ export type ImEndpoints = {
 		POST: (params: DmDeleteProps) => void;
 	};
 	'im.close': {
-		POST: (params: { roomId: string }) => void;
+		POST: (params: DmCloseProps) => void;
+	};
+	'im.kick': {
+		POST: (params: DmCloseProps) => void;
+	};
+	'im.leave': {
+		POST: (params: DmLeaveProps) => void;
 	};
 	'im.counters': {
 		GET: (params: { roomId: string; userId?: string }) => {
@@ -37,16 +46,7 @@ export type ImEndpoints = {
 		}>;
 	};
 	'im.history': {
-		GET: (
-			params: PaginatedRequest<{
-				roomId: string;
-				latest?: string;
-				oldest?: string;
-				inclusive?: string;
-				unreads?: string;
-				showThreadMessages?: string;
-			}>,
-		) => {
+		GET: (params: DmHistoryProps) => {
 			messages: Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | '_updatedAt' | 'u'>[];
 		};
 	};
