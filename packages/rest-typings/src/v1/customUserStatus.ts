@@ -1,6 +1,6 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
-
+import type { ICustomUserStatus, IUserStatus } from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -40,5 +40,18 @@ export type CustomUserStatusEndpoints = {
 		GET: (params: CustomUserStatusListProps) => PaginatedResult<{
 			statuses: IUserStatus[];
 		}>;
+	};
+	'custom-user-status.create': {
+		POST: (params: { name: string; statusType?: string }) => {
+			customUserStatus: ICustomUserStatus;
+		};
+	};
+	'custom-user-status.delete': {
+		POST: (params: { customUserStatusId: string }) => void;
+	};
+	'custom-user-status.update': {
+		POST: (params: { id: string; name?: string; statusType?: string }) => {
+			customUserStatus: ICustomUserStatus;
+		};
 	};
 };
