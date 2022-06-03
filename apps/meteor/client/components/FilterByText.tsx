@@ -27,7 +27,7 @@ const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter,
 	}, []);
 
 	useEffect(() => {
-		setFilter?.({ text });
+		setFilter({ text });
 	}, [setFilter, text]);
 
 	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
