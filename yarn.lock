@@ -4815,6 +4815,7 @@ __metadata:
     "@types/node": ^14.18.15
     "@types/node-rsa": ^1.1.1
     "@types/nodemailer": ^6.4.4
+    "@types/object-path": ^0.11.1
     "@types/parseurl": ^1.3.1
     "@types/photoswipe": ^4.1.2
     "@types/proxy-from-env": ^1.0.1
@@ -7569,6 +7570,13 @@ __metadata:
   version: 4.1.4
   resolution: "@types/npmlog@npm:4.1.4"
   checksum: 740f7431ccfc0e127aa8d162fe05c6ce8aa71290be020d179b2824806d19bd2c706c7e0c9a3c9963cefcdf2ceacb1dec6988c394c3694451387759dafe0aa927
+  languageName: node
+  linkType: hard
+
+"@types/object-path@npm:^0.11.1":
+  version: 0.11.1
+  resolution: "@types/object-path@npm:0.11.1"
+  checksum: 007e819d1d9dc830491b60023b1502ef1e421416d9953d6fefcda7d06eb91548eef8ee30073a9cfb6a834ac977042f6e1a761cde2d6a7973b06ddca753be91e3
   languageName: node
   linkType: hard
 
