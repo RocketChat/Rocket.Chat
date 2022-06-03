@@ -675,10 +675,6 @@ export default class Administration extends BasePage {
 		return this.getPage().locator('.section:nth-of-type(2) .rc-button.rc-button--nude');
 	}
 
-	public toastSuccess(): Locator {
-		return this.getPage().locator('.toast-success');
-	}
-
 	public modalCancel(): Locator {
 		return this.getPage().locator('//button[text()="Cancel"]');
 	}
