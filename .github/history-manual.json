@@ -147,5 +147,12 @@
 		"contributors": [
 			"gronke"
 		]
+	}],
+	"4.5.7": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "ggazzo",
+		"contributors": [
+			"ggazzo"
+		]
 	}]
 }
