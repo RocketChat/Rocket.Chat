@@ -1,4 +1,3 @@
-import { IUserList } from '@rocket.chat/core-typings';
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
@@ -67,16 +66,9 @@ const UsersTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		}),
 	);
 
-	console.log(value?.users);
-
-	if (phase === AsyncStatePhase.LOADING || phase === AsyncStatePhase.REJECTED) {
+	if (phase === AsyncStatePhase.REJECTED) {
 		return null;
 	}
-
-	const users = value?.users.map((user) => ({
-		...user,
-		lastLogin: new Date(user.lastLogin),
-	}));
 
 	return (
 		<>
@@ -141,7 +133,7 @@ const UsersTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 						</GenericTableHeader>
 						<GenericTableBody>
 							{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}
-							{users?.map((user) => (
+							{value?.users.map((user) => (
 								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
 							))}
 						</GenericTableBody>

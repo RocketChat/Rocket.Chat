@@ -6,7 +6,7 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 export type CustomUserStatusEndpoints = {
 	'custom-user-status.list': {
 		GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
-			users: IUserStatus[];
+			statuses: IUserStatus[];
 		}>;
 	};
 	'custom-user-status.create': {

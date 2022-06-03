@@ -1,7 +1,7 @@
 import { IUserList } from '@rocket.chat/core-typings';
 import { Box, TableRow, TableCell } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { Roles } from '../../../../../app/models/client';
@@ -16,7 +16,7 @@ type UsersTableRowProps = {
 const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
 	const { _id, emails, username, name, roles, status, active, avatarETag } = user;
-	const statusText = active ? t(capitalize(status)) : t('Disabled');
+	const statusText = active ? t(capitalize(status as string) as TranslationKey) : t('Disabled');
 
 	const roleNames = (roles || [])
 		.map((roleId) => Roles.findOne(roleId, { fields: { name: 1 } })?.name)
