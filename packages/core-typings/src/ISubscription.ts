@@ -56,7 +56,7 @@ export interface ISubscription extends IRocketChatRecord {
 	autoTranslateLanguage?: unknown;
 	disableNotifications?: unknown;
 	muteGroupMentions?: unknown;
-	ignored?: unknown;
+	ignored?: IUser['_id'][];
 
 	department?: unknown;
 }
