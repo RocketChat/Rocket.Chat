@@ -29,10 +29,22 @@ API.v1.addRoute(
 	},
 );
 
-// TODO: replace with something like client/lib/minimongo
-const processQueryOptionsOnResult = (result, options = {}) => {
+/* @deprecated */
+const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string, any>, F extends keyof T>(
+	result: T[],
+	options: {
+		fields?: {
+			[key in F]?: 1 | 0;
+		};
+		sort?: {
+			[key: string]: 1 | -1;
+		};
+		limit?: number;
+		skip?: number;
+	} = {},
+): Pick<T, F>[] => {
 	if (result === undefined || result === null) {
-		return undefined;
+		return [];
 	}
 
 	if (Array.isArray(result)) {
@@ -74,66 +86,50 @@ const processQueryOptionsOnResult = (result, options = {}) => {
 		}
 	}
 
-	if (!options.fields) {
-		options.fields = {};
-	}
+	const fieldsToRemove: F[] = [];
+	const fieldsToGet: F[] = [];
 
-	const fieldsToRemove = [];
-	const fieldsToGet = [];
-
-	for (const field in options.fields) {
-		if (options.fields.hasOwnProperty(field)) {
-			if (options.fields[field] === 0) {
-				fieldsToRemove.push(field);
-			} else if (options.fields[field] === 1) {
-				fieldsToGet.push(field);
+	if (options.fields) {
+		for (const field in Object.keys(options.fields)) {
+			if (options.fields.hasOwnProperty(field as F)) {
+				if (options.fields[field as F] === 0) {
+					fieldsToRemove.push(field as F);
+				} else if (options.fields[field as F] === 1) {
+					fieldsToGet.push(field as F);
+				}
 			}
 		}
 	}
+
+	if (fieldsToGet.length > 0 && fieldsToGet.indexOf('_id' as F) === -1) {
+		fieldsToGet.push('_id' as F);
+	}
+
+	const pickFields = <F extends keyof T>(obj: T, fields: F[]): Pick<T, F> => {
+		const picked: Partial<T> = {};
+		fields.forEach((field: F) => {
+			if (String(field).indexOf('.') !== -1) {
+				objectPath.set(picked, String(field), objectPath.get(obj, String(field)));
+			} else {
+				picked[field] = obj[field];
+			}
+		});
+		return picked as Pick<T, F>;
+	};
 
 	if (fieldsToRemove.length > 0 && fieldsToGet.length > 0) {
 		console.warn("Can't mix remove and get fields");
 		fieldsToRemove.splice(0, fieldsToRemove.length);
 	}
 
-	if (fieldsToGet.length > 0 && fieldsToGet.indexOf('_id') === -1) {
-		fieldsToGet.push('_id');
-	}
-
-	const pickFields = (obj, fields) => {
-		const picked = {};
-		fields.forEach((field) => {
-			if (field.indexOf('.') !== -1) {
-				objectPath.set(picked, field, objectPath.get(obj, field));
-			} else {
-				picked[field] = obj[field];
-			}
-		});
-		return picked;
-	};
-
 	if (fieldsToRemove.length > 0 || fieldsToGet.length > 0) {
-		if (Array.isArray(result)) {
-			result = result.map((record) => {
-				if (fieldsToRemove.length > 0) {
-					return Object.fromEntries(Object.entries(record).filter(([key]) => !fieldsToRemove.includes(key)));
-				}
-
-				if (fieldsToGet.length > 0) {
-					return pickFields(record, fieldsToGet);
-				}
-
-				return null;
-			});
-		} else {
+		return result.map((record) => {
 			if (fieldsToRemove.length > 0) {
-				return Object.fromEntries(Object.entries(result).filter(([key]) => !fieldsToRemove.includes(key)));
+				return Object.fromEntries(Object.entries(record).filter(([key]) => !fieldsToRemove.includes(key as F))) as Pick<T, F>;
 			}
 
-			if (fieldsToGet.length > 0) {
-				return pickFields(result, fieldsToGet);
-			}
-		}
+			return pickFields(record, fieldsToGet);
+		});
 	}
 
 	return result;
@@ -149,20 +145,23 @@ API.v1.addRoute(
 
 			let commands = Object.values(slashCommands.commands);
 
-			if (query && query.command) {
+			if (query?.command) {
 				commands = commands.filter((command) => command.command === query.command);
 			}
 
 			const totalCount = commands.length;
-			commands = processQueryOptionsOnResult(commands, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				fields,
-			});
+
+			if (fields) {
+				console.warn('commands.list -> fields is deprecated and will be removed in 5.0.0');
+			}
 
 			return API.v1.success({
-				commands,
+				commands: processQueryOptionsOnResult(commands, {
+					sort: sort || { name: 1 },
+					skip: offset,
+					limit: count,
+					fields,
+				}),
 				offset,
 				count: commands.length,
 				total: totalCount,
@@ -178,7 +177,6 @@ API.v1.addRoute(
 	{
 		post() {
 			const body = this.bodyParams;
-			const user = this.getLoggedInUser();
 
 			if (typeof body.command !== 'string') {
 				return API.v1.failure('You must provide a command to run.');
@@ -201,28 +199,28 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!canAccessRoomId(body.roomId, user._id)) {
+			if (!canAccessRoomId(body.roomId, this.userId)) {
 				return API.v1.unauthorized();
 			}
 
 			const params = body.params ? body.params : '';
-			const message = {
-				_id: Random.id(),
-				rid: body.roomId,
-				msg: `/${cmd} ${params}`,
-			};
-
-			if (body.tmid) {
+			if (typeof body.tmid === 'string') {
 				const thread = Messages.findOneById(body.tmid);
 				if (!thread || thread.rid !== body.roomId) {
 					return API.v1.failure('Invalid thread.');
 				}
-				message.tmid = body.tmid;
 			}
+
+			const message = {
+				_id: Random.id(),
+				rid: body.roomId,
+				msg: `/${cmd} ${params}`,
+				...(body.tmid && { tmid: body.tmid }),
+			};
 
 			const { triggerId } = body;
 
-			const result = Meteor.runAsUser(user._id, () => slashCommands.run(cmd, params, message, triggerId));
+			const result = slashCommands.run(cmd, params, message, triggerId);
 
 			return API.v1.success({ result });
 		},
@@ -234,7 +232,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
-		get() {
+		async get() {
 			const query = this.queryParams;
 			const user = this.getLoggedInUser();
 
@@ -261,21 +259,18 @@ API.v1.addRoute(
 
 			const params = query.params ? query.params : '';
 
-			let preview;
-			Meteor.runAsUser(user._id, () => {
-				preview = Meteor.call('getSlashCommandPreviews', {
-					cmd,
-					params,
-					msg: { rid: query.roomId },
-				});
+			const preview = Meteor.call('getSlashCommandPreviews', {
+				cmd,
+				params,
+				msg: { rid: query.roomId },
 			});
 
 			return API.v1.success({ preview });
 		},
+
 		// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', tmid: 'value', triggerId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif' } }
 		post() {
 			const body = this.bodyParams;
-			const user = this.getLoggedInUser();
 
 			if (typeof body.command !== 'string') {
 				return API.v1.failure('You must provide a command to run the preview item on.');
@@ -310,35 +305,33 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!canAccessRoomId(body.roomId, user._id)) {
+			if (!canAccessRoomId(body.roomId, this.userId)) {
 				return API.v1.unauthorized();
 			}
 
-			const params = body.params ? body.params : '';
-			const message = {
-				rid: body.roomId,
-			};
-
+			const { params = '' } = body;
 			if (body.tmid) {
 				const thread = Messages.findOneById(body.tmid);
 				if (!thread || thread.rid !== body.roomId) {
 					return API.v1.failure('Invalid thread.');
 				}
-				message.tmid = body.tmid;
 			}
 
-			Meteor.runAsUser(user._id, () => {
-				Meteor.call(
-					'executeSlashCommandPreview',
-					{
-						cmd,
-						params,
-						msg: { rid: body.roomId, tmid: body.tmid },
-					},
-					body.previewItem,
-					body.triggerId,
-				);
-			});
+			const msg = {
+				rid: body.roomId,
+				...(body.tmid && { tmid: body.tmid }),
+			};
+
+			Meteor.call(
+				'executeSlashCommandPreview',
+				{
+					cmd,
+					params,
+					msg,
+				},
+				body.previewItem,
+				body.triggerId,
+			);
 
 			return API.v1.success();
 		},
