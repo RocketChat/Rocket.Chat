@@ -47,7 +47,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	}, [dispatchToastMessage, statusType, statusText, setUserStatus, onClose, t]);
 
 	const inputRef = useRef<HTMLInputElement>(null);
-	const handleEmojiPicker = (event: any): void => {
+	const handleEmojiPicker = (event: SyntheticEvent): void => {
 		event.stopPropagation();
 		event.preventDefault();
 		if (EmojiPicker.isOpened()) {
