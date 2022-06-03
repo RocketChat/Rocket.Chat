@@ -1,3 +1,4 @@
+import { isLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
@@ -14,9 +15,9 @@ import {
 
 API.v1.addRoute(
 	'livechat/department',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatDepartmentProps },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
@@ -26,7 +27,7 @@ API.v1.addRoute(
 				findDepartments({
 					userId: this.userId,
 					text,
-					enabled,
+					enabled: enabled === 'true',
 					onlyMyDepartments: onlyMyDepartments === 'true',
 					excludeDepartmentId,
 					pagination: {
