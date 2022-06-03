@@ -53,7 +53,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		if (EmojiPicker.isOpened()) {
 			EmojiPicker.close();
 		}
-		EmojiPicker.open(inputRef.current, (emoji: any) => {
+		EmojiPicker.open(inputRef.current, (emoji: string) => {
 			const emojiValue = `:${emoji}:`;
 			inputRef.current.focus();
 			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
