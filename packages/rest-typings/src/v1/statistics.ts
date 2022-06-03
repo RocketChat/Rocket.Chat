@@ -1,4 +1,7 @@
 import type { IStats } from '@rocket.chat/core-typings';
+import Ajv from 'ajv';
+
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type OTREnded = { rid: string };
 
@@ -18,12 +21,64 @@ export type TelemetryPayload = {
 	params: Param[];
 };
 
+const ajv = new Ajv({
+	coerceTypes: true,
+});
+
+type StatisticsProps = { refresh?: 'true' | 'false' };
+
+const StatisticsSchema = {
+	type: 'object',
+	properties: {
+		refresh: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isStatisticsProps = ajv.compile<StatisticsProps>(StatisticsSchema);
+
+type StatisticsListProps = PaginatedRequest<{ fields?: string }>;
+
+const StatisticsListSchema = {
+	type: 'object',
+	properties: {
+		fields: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isStatisticsListProps = ajv.compile<StatisticsListProps>(StatisticsListSchema);
+
 export type StatisticsEndpoints = {
 	'statistics': {
-		GET: (params: { refresh?: 'true' | 'false' }) => IStats;
+		GET: (params: StatisticsProps) => IStats;
 	};
 	'statistics.list': {
-		GET: (params: { offset?: number; count?: number; sort?: string; fields?: string; query?: string }) => {
+		GET: (params: StatisticsListProps) => {
 			statistics: IStats[];
 			count: number;
 			offset: number;
