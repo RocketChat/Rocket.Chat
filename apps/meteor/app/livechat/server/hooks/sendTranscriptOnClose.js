@@ -9,7 +9,8 @@ const sendTranscriptOnClose = (room) => {
 	}
 
 	const { email, subject, requestedBy: user } = transcriptRequest;
-	Livechat.sendTranscript({ token, rid, email, subject, user });
+	// TODO: refactor this to use normal await
+	Promise.await(Livechat.sendTranscript({ token, rid, email, subject, user }));
 
 	LivechatRooms.removeTranscriptRequestByRoomId(rid);
 

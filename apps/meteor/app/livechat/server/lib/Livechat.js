@@ -954,7 +954,7 @@ export const Livechat = {
 			});
 		}
 
-		this.cleanGuestHistory(_id);
+		await this.cleanGuestHistory(_id);
 		return LivechatVisitors.removeById(_id);
 	},
 

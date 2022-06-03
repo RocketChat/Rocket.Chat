@@ -59,7 +59,6 @@ import LivechatDepartmentAgentsModel from '../models/LivechatDepartmentAgents';
 import LivechatDepartmentModel from '../models/LivechatDepartment';
 import LivechatInquiryModel from '../models/LivechatInquiry';
 import LivechatRoomsModel from '../models/LivechatRooms';
-import LivechatVisitorsModel from '../models/LivechatVisitors';
 import MessagesModel from '../models/Messages';
 import OmnichannelQueueModel from '../models/OmnichannelQueue';
 import RoomsModel from '../models/Rooms';
@@ -83,7 +82,6 @@ export const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(
 );
 export const LivechatRooms = new LivechatRoomsRaw(LivechatRoomsModel.model.rawCollection(), trashCollection);
 export const Messages = new MessagesRaw(MessagesModel.model.rawCollection(), trashCollection);
-export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.model.rawCollection(), trashCollection);
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 // export const Roles = new RolesRaw(RolesModel.model.rawCollection(), { Users, Subscriptions }, trashCollection);
@@ -114,6 +112,8 @@ export const Integrations = new IntegrationsRaw(db.collection(`${prefix}integrat
 export const IntegrationHistory = new IntegrationHistoryRaw(db.collection(`${prefix}integration_history`), trashCollection);
 export const Invites = new InvitesRaw(db.collection(`${prefix}invites`), trashCollection);
 export const LivechatTrigger = new LivechatTriggerRaw(db.collection(`${prefix}livechat_trigger`), trashCollection);
+
+export const LivechatVisitors = new LivechatVisitorsRaw(db.collection(`${prefix}livechat_visitor`), trashCollection);
 export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(
 	db.collection('meteor_accounts_loginServiceConfiguration'),
 	trashCollection,
