@@ -1,19 +1,11 @@
-import { api } from '../api';
+import type { FunctionPropertyNames, PromOrError } from '@rocket.chat/core-typings';
 
-type FunctionPropertyNames<T> = {
-	[K in keyof T]: T[K] extends Function ? K : never;
-}[keyof T];
+import { api } from '../api';
 
 type Prom<T> = {
 	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any>
 		? T[K]
 		: (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]>>;
-};
-
-type PromOrError<T> = {
-	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any>
-		? (...params: Parameters<T[K]>) => ReturnType<T[K]> | Promise<Error>
-		: (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]> | Error>;
 };
 
 function handler<T extends object>(namespace: string, waitService: boolean): ProxyHandler<T> {

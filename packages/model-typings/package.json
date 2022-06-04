@@ -1,9 +1,5 @@
----
-to: packages/<%= name %>/package.json
----
-
 {
-	"name": "@rocket.chat/<%= name.toLowerCase() %>",
+	"name": "@rocket.chat/model-typings",
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
@@ -24,8 +20,6 @@ to: packages/<%= name %>/package.json
 	"files": [
 		"/dist"
 	],
-	"dependencies": {
-	},
 	"eslintConfig": {
 		"extends": [
 			"@rocket.chat/eslint-config"
@@ -33,5 +27,8 @@ to: packages/<%= name %>/package.json
 		"ignorePatterns": [
 			"**/dist"
 		]
+	},
+	"dependencies": {
+		"@rocket.chat/core-typings": "workspace:^"
 	}
 }

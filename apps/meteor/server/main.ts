@@ -1,3 +1,4 @@
+import './models/startup';
 import './services/startup';
 import '../app/settings/server';
 import '../lib/oauthRedirectUri';
