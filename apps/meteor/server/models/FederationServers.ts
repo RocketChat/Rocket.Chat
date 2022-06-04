@@ -1,10 +1,11 @@
-import { UpdateWriteOpResult } from 'mongodb';
+import { IndexSpecification } from 'mongodb';
+import type { UpdateWriteOpResult } from 'mongodb';
 import type { IFederationServer } from '@rocket.chat/core-typings';
 
-import { Users } from './index';
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+// import { Users } from './index';
+import { ModelClass } from './ModelClass';
 
-export class FederationServersRaw extends BaseRaw<IFederationServer> {
+export class FederationServersRaw extends ModelClass<IFederationServer> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { domain: 1 } }];
 	}

@@ -1,10 +1,10 @@
-import { Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, InsertOneWriteOpResult } from 'mongodb';
+import type { Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, InsertOneWriteOpResult } from 'mongodb';
+import { IndexSpecification } from 'mongodb';
 import { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { ModelClass } from './ModelClass';
 
-type T = IBanner;
-export class BannersRaw extends BaseRaw<T> {
+export class Banners extends ModelClass<IBanner> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { platform: 1, startAt: 1, expireAt: 1 } }, { key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }];
 	}
@@ -33,8 +33,8 @@ export class BannersRaw extends BaseRaw<T> {
 		roles: string[],
 		platform: BannerPlatform,
 		bannerId?: string,
-		options?: WithoutProjection<FindOneOptions<T>>,
-	): Cursor<T> {
+		options?: WithoutProjection<FindOneOptions<IBanner>>,
+	): Cursor<IBanner> {
 		const today = new Date();
 
 		const query = {

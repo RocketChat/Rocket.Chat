@@ -1,13 +1,14 @@
-import { ICredentialToken as T } from '@rocket.chat/core-typings';
+import { IndexSpecification } from 'mongodb';
+import { ICredentialToken } from '@rocket.chat/core-typings';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { ModelClass } from './ModelClass';
 
-export class CredentialTokensRaw extends BaseRaw<T> {
+export class CredentialTokens extends ModelClass<ICredentialToken> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { expireAt: 1 }, sparse: true, expireAfterSeconds: 0 }];
 	}
 
-	async create(_id: string, userInfo: T['userInfo']): Promise<T> {
+	async create(_id: string, userInfo: ICredentialToken['userInfo']): Promise<ICredentialToken> {
 		const validForMilliseconds = 60000; // Valid for 60 seconds
 		const token = {
 			_id,
@@ -19,7 +20,7 @@ export class CredentialTokensRaw extends BaseRaw<T> {
 		return token;
 	}
 
-	findOneNotExpiredById(_id: string): Promise<T | null> {
+	findOneNotExpiredById(_id: string): Promise<ICredentialToken | null> {
 		const query = {
 			_id,
 			expireAt: { $gt: new Date() },

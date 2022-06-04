@@ -1,12 +1,11 @@
 import { Random } from 'meteor/random';
-import { AggregationCursor, Cursor, SortOptionObject, UpdateWriteOpResult } from 'mongodb';
+import type { AggregationCursor, Cursor, SortOptionObject, UpdateWriteOpResult } from 'mongodb';
+import { IndexSpecification } from 'mongodb';
 import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { ModelClass } from './ModelClass';
 
-type T = IAnalytic;
-
-export class AnalyticsRaw extends BaseRaw<T> {
+export class Analytics extends ModelClass<IAnalytic> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
 	}
@@ -65,7 +64,7 @@ export class AnalyticsRaw extends BaseRaw<T> {
 	}: {
 		start: IAnalytic['date'];
 		end: IAnalytic['date'];
-		options?: { sort?: SortOptionObject<T>; count?: number };
+		options?: { sort?: SortOptionObject<IAnalytic>; count?: number };
 	}): AggregationCursor<{
 		_id: IAnalytic['date'];
 		messages: number;
@@ -126,7 +125,7 @@ export class AnalyticsRaw extends BaseRaw<T> {
 	}: {
 		start: IAnalytic['date'];
 		end: IAnalytic['date'];
-		options?: { sort?: SortOptionObject<T>; count?: number };
+		options?: { sort?: SortOptionObject<IAnalytic>; count?: number };
 	}): AggregationCursor<{
 		t: IRoom['t'];
 		name: string;
@@ -167,7 +166,7 @@ export class AnalyticsRaw extends BaseRaw<T> {
 	}: {
 		start: IAnalytic['date'];
 		end: IAnalytic['date'];
-		options?: { sort?: SortOptionObject<T>; count?: number };
+		options?: { sort?: SortOptionObject<IAnalytic>; count?: number };
 	}): AggregationCursor<{
 		_id: IAnalytic['date'];
 		users: number;
@@ -193,7 +192,7 @@ export class AnalyticsRaw extends BaseRaw<T> {
 		]);
 	}
 
-	findByTypeBeforeDate({ type, date }: { type: T['type']; date: T['date'] }): Cursor<T> {
+	findByTypeBeforeDate({ type, date }: { type: IAnalytic['type']; date: IAnalytic['date'] }): Cursor<IAnalytic> {
 		return this.find({ type, date: { $lte: date } });
 	}
 }

@@ -1,16 +1,15 @@
-import { Cursor, UpdateWriteOpResult } from 'mongodb';
+import { IndexSpecification } from 'mongodb';
+import type { Cursor, UpdateWriteOpResult } from 'mongodb';
 import type { IExportOperation } from '@rocket.chat/core-typings';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { ModelClass } from './ModelClass';
 
-type T = IExportOperation;
-
-export class ExportOperationsRaw extends BaseRaw<T> {
+export class ExportOperations extends ModelClass<IExportOperation> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1 } }, { key: { status: 1 } }];
 	}
 
-	findOnePending(): Promise<T | null> {
+	findOnePending(): Promise<IExportOperation | null> {
 		const query = {
 			status: { $nin: ['completed', 'skipped'] },
 		};
@@ -18,7 +17,7 @@ export class ExportOperationsRaw extends BaseRaw<T> {
 		return this.findOne(query);
 	}
 
-	async create(data: T): Promise<string> {
+	async create(data: IExportOperation): Promise<string> {
 		const result = await this.insertOne({
 			...data,
 			createdAt: new Date(),
@@ -27,7 +26,7 @@ export class ExportOperationsRaw extends BaseRaw<T> {
 		return result.insertedId;
 	}
 
-	findLastOperationByUser(userId: string, fullExport = false): Promise<T | null> {
+	findLastOperationByUser(userId: string, fullExport = false): Promise<IExportOperation | null> {
 		const query = {
 			userId,
 			fullExport,
@@ -36,7 +35,7 @@ export class ExportOperationsRaw extends BaseRaw<T> {
 		return this.findOne(query, { sort: { createdAt: -1 } });
 	}
 
-	findAllPendingBeforeMyRequest(requestDay: Date): Cursor<T> {
+	findAllPendingBeforeMyRequest(requestDay: Date): Cursor<IExportOperation> {
 		const query = {
 			status: { $nin: ['completed', 'skipped'] },
 			createdAt: { $lt: requestDay },
@@ -45,7 +44,7 @@ export class ExportOperationsRaw extends BaseRaw<T> {
 		return this.find(query);
 	}
 
-	updateOperation(data: T): Promise<UpdateWriteOpResult> {
+	updateOperation(data: IExportOperation): Promise<UpdateWriteOpResult> {
 		const update = {
 			$set: {
 				roomList: data.roomList,

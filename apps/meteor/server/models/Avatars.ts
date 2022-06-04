@@ -1,9 +1,10 @@
-import { DeleteWriteOpResultObject, UpdateWriteOpResult } from 'mongodb';
-import { IAvatar as T } from '@rocket.chat/core-typings';
+import type { DeleteWriteOpResultObject, UpdateWriteOpResult } from 'mongodb';
+import { IndexSpecification } from 'mongodb';
+import { IAvatar } from '@rocket.chat/core-typings';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { ModelClass } from './ModelClass';
 
-export class AvatarsRaw extends BaseRaw<T> {
+export class Avatars extends ModelClass<IAvatar> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{ key: { name: 1 }, sparse: true },
@@ -51,11 +52,11 @@ export class AvatarsRaw extends BaseRaw<T> {
 		return this.updateOne(filter, update);
 	}
 
-	async findOneByName(name: string): Promise<T | null> {
+	async findOneByName(name: string): Promise<IAvatar | null> {
 		return this.findOne({ name });
 	}
 
-	async findOneByRoomId(rid: string): Promise<T | null> {
+	async findOneByRoomId(rid: string): Promise<IAvatar | null> {
 		return this.findOne({ rid });
 	}
 

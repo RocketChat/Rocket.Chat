@@ -1,9 +1,10 @@
-import { Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
+import type { Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
+import { IndexSpecification } from 'mongodb';
 import type { IBannerDismiss } from '@rocket.chat/core-typings';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { ModelClass } from './ModelClass';
 
-export class BannersDismissRaw extends BaseRaw<IBannerDismiss> {
+export class BannersDismiss extends ModelClass<IBannerDismiss> {
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1, bannerId: 1 } }];
 	}

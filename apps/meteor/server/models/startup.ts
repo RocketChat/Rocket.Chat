@@ -2,7 +2,7 @@ import { registerModel } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 
 import { trash } from '../../app/models/server/models/_BaseDb';
-import { Integrations } from './integrations/model';
+import { Integrations } from './Integrations';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 const prefix = 'rocketchat_';

@@ -1,15 +1,16 @@
-import { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
-import { IEmojiCustom as T } from '@rocket.chat/core-typings';
+import { IndexSpecification } from 'mongodb';
+import type { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
+import { IEmojiCustom } from '@rocket.chat/core-typings';
 
-import { BaseRaw, IndexSpecification } from './BaseRaw';
+import { ModelClass } from './ModelClass';
 
-export class EmojiCustomRaw extends BaseRaw<T> {
+export class EmojiCustom extends ModelClass<IEmojiCustom> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 } }, { key: { aliases: 1 } }, { key: { extension: 1 } }];
 	}
 
 	// find
-	findByNameOrAlias(emojiName: string, options: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
+	findByNameOrAlias(emojiName: string, options: WithoutProjection<FindOneOptions<IEmojiCustom>>): Cursor<IEmojiCustom> {
 		let name = emojiName;
 
 		if (typeof emojiName === 'string') {
@@ -23,7 +24,7 @@ export class EmojiCustomRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
-	findByNameOrAliasExceptID(name: string, except: string, options: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
+	findByNameOrAliasExceptID(name: string, except: string, options: WithoutProjection<FindOneOptions<IEmojiCustom>>): Cursor<IEmojiCustom> {
 		const query = {
 			_id: { $nin: [except] },
 			$or: [{ name }, { aliases: name }],
@@ -64,7 +65,7 @@ export class EmojiCustomRaw extends BaseRaw<T> {
 	}
 
 	// INSERT
-	create(data: T): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	create(data: IEmojiCustom): Promise<InsertOneWriteOpResult<WithId<IEmojiCustom>>> {
 		return this.insertOne(data);
 	}
 }
