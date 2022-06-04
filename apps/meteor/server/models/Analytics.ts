@@ -2,10 +2,15 @@ import { Random } from 'meteor/random';
 import type { AggregationCursor, Cursor, SortOptionObject, UpdateWriteOpResult } from 'mongodb';
 import { IndexSpecification } from 'mongodb';
 import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
+import { registerModel } from '@rocket.chat/models';
+import type { IAnalyticsModel } from '@rocket.chat/model-typings';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
+import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
-export class Analytics extends ModelClass<IAnalytic> {
+export class Analytics extends ModelClass<IAnalytic> implements IAnalyticsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
 	}
@@ -196,3 +201,6 @@ export class Analytics extends ModelClass<IAnalytic> {
 		return this.find({ type, date: { $lte: date } });
 	}
 }
+
+const col = db.collection(`${prefix}analytics`, { readPreference: readSecondaryPreferred(db) });
+registerModel('IAnalyticsModel', new Analytics(col, trashCollection));

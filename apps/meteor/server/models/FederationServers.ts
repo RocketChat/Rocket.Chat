@@ -5,7 +5,7 @@ import type { IFederationServer } from '@rocket.chat/core-typings';
 // import { Users } from './index';
 import { ModelClass } from './ModelClass';
 
-export class FederationServersRaw extends ModelClass<IFederationServer> {
+export class FederationServers extends ModelClass<IFederationServer> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { domain: 1 } }];
 	}

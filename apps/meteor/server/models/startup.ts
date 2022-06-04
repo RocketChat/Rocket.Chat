@@ -1,12 +1,8 @@
-import { registerModel } from '@rocket.chat/models';
-import { MongoInternals } from 'meteor/mongo';
-
-import { trash } from '../../app/models/server/models/_BaseDb';
-import { Integrations } from './Integrations';
-
-const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-const prefix = 'rocketchat_';
-
-const trashCollection = trash.rawCollection();
-
-registerModel('integrations', new Integrations(db.collection(`${prefix}integrations`), trashCollection));
+import './Analytics';
+import './Avatars';
+// import './Banners';
+// import './BannersDismiss';
+import './CredentialTokens';
+import './CustomSounds';
+import './CustomUserStatus';
+import './EmailInbox';

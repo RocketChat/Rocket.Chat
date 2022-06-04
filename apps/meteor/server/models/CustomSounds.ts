@@ -1,10 +1,14 @@
 import { IndexSpecification } from 'mongodb';
 import type { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 import { ICustomSound } from '@rocket.chat/core-typings';
+import type { ICustomSoundsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class CustomSounds extends ModelClass<ICustomSound> {
+export class CustomSounds extends ModelClass<ICustomSound> implements ICustomSoundsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 } }];
 	}
@@ -43,3 +47,6 @@ export class CustomSounds extends ModelClass<ICustomSound> {
 		return this.insertOne(data);
 	}
 }
+
+const col = db.collection(`${prefix}custom_sounds`);
+registerModel('ICustomSoundsModel', new CustomSounds(col, trashCollection));

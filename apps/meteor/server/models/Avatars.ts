@@ -1,10 +1,14 @@
 import type { DeleteWriteOpResultObject, UpdateWriteOpResult } from 'mongodb';
 import { IndexSpecification } from 'mongodb';
 import { IAvatar } from '@rocket.chat/core-typings';
+import type { IAvatarsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class Avatars extends ModelClass<IAvatar> {
+export class Avatars extends ModelClass<IAvatar> implements IAvatarsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{ key: { name: 1 }, sparse: true },
@@ -74,3 +78,6 @@ export class Avatars extends ModelClass<IAvatar> {
 		return this.deleteOne({ _id: fileId });
 	}
 }
+
+const col = db.collection(`${prefix}avatars`);
+registerModel('IAvatarsModel', new Avatars(col, trashCollection));

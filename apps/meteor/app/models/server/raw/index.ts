@@ -1,13 +1,7 @@
 import { MongoInternals } from 'meteor/mongo';
 
-import { AvatarsRaw } from './Avatars';
-import { AnalyticsRaw } from './Analytics';
 import { api } from '../../../../server/sdk/api';
 import { BaseDbWatch, trash } from '../models/_BaseDb';
-import { CredentialTokensRaw } from './CredentialTokens';
-import { CustomSoundsRaw } from './CustomSounds';
-import { CustomUserStatusRaw } from './CustomUserStatus';
-import { EmailInboxRaw } from './EmailInbox';
 import { EmailMessageHistoryRaw } from './EmailMessageHistory';
 import { EmojiCustomRaw } from './EmojiCustom';
 import { ExportOperationsRaw } from './ExportOperations';
@@ -92,15 +86,6 @@ export const ImportData = new ImportDataRaw(ImportDataModel.model.rawCollection(
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 const prefix = 'rocketchat_';
 
-export const Avatars = new AvatarsRaw(db.collection(`${prefix}avatars`), trashCollection);
-export const Analytics = new AnalyticsRaw(
-	db.collection(`${prefix}analytics`, { readPreference: readSecondaryPreferred(db) }),
-	trashCollection,
-);
-export const CustomSounds = new CustomSoundsRaw(db.collection(`${prefix}custom_sounds`), trashCollection);
-export const CustomUserStatus = new CustomUserStatusRaw(db.collection(`${prefix}custom_user_status`), trashCollection);
-export const CredentialTokens = new CredentialTokensRaw(db.collection(`${prefix}credential_tokens`), trashCollection);
-export const EmailInbox = new EmailInboxRaw(db.collection(`${prefix}email_inbox`), trashCollection);
 export const EmailMessageHistory = new EmailMessageHistoryRaw(db.collection(`${prefix}email_message_history`), trashCollection);
 export const EmojiCustom = new EmojiCustomRaw(db.collection(`${prefix}custom_emoji`), trashCollection);
 export const ExportOperations = new ExportOperationsRaw(db.collection(`${prefix}export_operations`), trashCollection);

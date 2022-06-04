@@ -36,7 +36,6 @@ const warnFields =
 		: new Function();
 
 export abstract class ModelClass<T, C extends DefaultFields<T> = undefined> implements IBaseModel<T, C> {
-	// @ts-ignore
 	public readonly defaultFields: C;
 
 	protected name: string;

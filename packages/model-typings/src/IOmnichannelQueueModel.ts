@@ -5,6 +5,6 @@ import type { IBaseModel } from './IBaseModel';
 export interface IOmnichannelQueueModel extends IBaseModel<IOmnichannelQueueStatus> {
 	initQueue(): any;
 	stopQueue(): any;
-	lockQueue(): any;
-	unlockQueue(): any;
+	lockQueue(): Promise<any>;
+	unlockQueue(): Promise<any>;
 }

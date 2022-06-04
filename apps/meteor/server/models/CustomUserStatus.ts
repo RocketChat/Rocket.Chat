@@ -1,10 +1,14 @@
 import { IndexSpecification } from 'mongodb';
 import type { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 import { ICustomUserStatus } from '@rocket.chat/core-typings';
+import type { ICustomUserStatusModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class CustomUserStatus extends ModelClass<ICustomUserStatus> {
+export class CustomUserStatus extends ModelClass<ICustomUserStatus> implements ICustomUserStatusModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 } }];
 	}
@@ -65,3 +69,6 @@ export class CustomUserStatus extends ModelClass<ICustomUserStatus> {
 		return this.insertOne(data);
 	}
 }
+
+const col = db.collection(`${prefix}custom_user_status`);
+registerModel('ICustomUserStatusModel', new CustomUserStatus(col, trashCollection));
