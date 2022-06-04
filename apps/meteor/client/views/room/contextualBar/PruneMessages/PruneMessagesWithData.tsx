@@ -1,24 +1,26 @@
+import { IRoom, IUser, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, ReactElement } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useForm } from '../../../../hooks/useForm';
+import { ToolboxContextValue } from '../../lib/Toolbox/ToolboxContext';
 import PruneMessages from './PruneMessages';
 
-const getTimeZoneOffset = function () {
+const getTimeZoneOffset = (): string => {
 	const offset = new Date().getTimezoneOffset();
 	const absOffset = Math.abs(offset);
 	return `${offset < 0 ? '+' : '-'}${`00${Math.floor(absOffset / 60)}`.slice(-2)}:${`00${absOffset % 60}`.slice(-2)}`;
 };
 
-const initialValues = {
+export const initialValues = {
 	newerDate: '',
 	newerTime: '',
 	olderDate: '',
 	olderTime: '',
-	users: [],
+	users: [] as IUser['username'][],
 	inclusive: false,
 	pinned: false,
 	discussion: false,
@@ -26,94 +28,88 @@ const initialValues = {
 	attached: false,
 };
 
-const PruneMessagesWithData = ({ rid, tabBar }) => {
+const DEFAULT_PRUNE_LIMIT = 2000;
+
+const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: ToolboxContextValue['tabBar'] }): ReactElement => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
-	room.type = room.t;
-	room.rid = rid;
-	const { name, usernames } = room;
-
 	const setModal = useSetModal();
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const onClickClose = useMutableCallback(() => tabBar?.close());
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const pruneMessages = useEndpoint('POST', 'rooms.cleanHistory');
+	const pruneMessagesAction = useEndpoint('POST', 'rooms.cleanHistory');
 
 	const [fromDate, setFromDate] = useState(new Date('0001-01-01T00:00:00Z'));
 	const [toDate, setToDate] = useState(new Date('9999-12-31T23:59:59Z'));
-	const [callOutText, setCallOutText] = useState();
-	const [validateText, setValidateText] = useState();
+	const [callOutText, setCallOutText] = useState<string | undefined>();
+	const [validateText, setValidateText] = useState<string | undefined>();
 	const [counter, setCounter] = useState(0);
 
 	const { values, handlers, reset } = useForm(initialValues);
-	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } = values;
+	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } =
+		values as typeof initialValues;
+	const { handleUsers } = handlers;
 
-	const {
-		handleNewerDate,
-		handleNewerTime,
-		handleOlderDate,
-		handleOlderTime,
-		handleUsers,
-		handleInclusive,
-		handlePinned,
-		handleDiscussion,
-		handleThreads,
-		handleAttached,
-	} = handlers;
-
-	const onChangeUsers = useMutableCallback((value, action) => {
+	const onChangeUsers = useMutableCallback((value: IUser['username'], action?: string) => {
 		if (!action) {
 			if (users.includes(value)) {
 				return;
 			}
 			return handleUsers([...users, value]);
 		}
-		handleUsers(users.filter((current) => current !== value));
+
+		return handleUsers(users.filter((current) => current !== value));
 	});
 
-	const handlePrune = useMutableCallback(async () => {
-		const limit = 2000;
+	const handlePrune = useMutableCallback((): void => {
+		const handlePruneAction = async (): Promise<void> => {
+			const limit = DEFAULT_PRUNE_LIMIT;
 
-		try {
-			if (counter === limit) {
-				return;
+			try {
+				if (counter === limit) {
+					return;
+				}
+
+				const { count } = await pruneMessagesAction({
+					roomId: rid,
+					latest: toDate.toISOString(),
+					oldest: fromDate.toISOString(),
+					inclusive,
+					limit,
+					excludePinned: pinned,
+					filesOnly: attached,
+					ignoreDiscussion: discussion,
+					ignoreThreads: threads,
+					users,
+				});
+
+				setCounter(count);
+
+				if (count < 1) {
+					throw new Error(t('No_messages_found_to_prune'));
+				}
+
+				dispatchToastMessage({ type: 'success', message: `${count} ${t('messages_pruned')}` });
+				closeModal();
+				reset();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error.message });
+				closeModal();
 			}
+		};
 
-			const { count } = await pruneMessages({
-				roomId: rid,
-				latest: toDate,
-				oldest: fromDate,
-				inclusive,
-				limit,
-				excludePinned: pinned,
-				filesOnly: attached,
-				ignoreDiscussion: discussion,
-				ignoreThreads: threads,
-				users,
-			});
-
-			setCounter(count);
-
-			if (count < 1) {
-				throw new Error(t('No_messages_found_to_prune'));
-			}
-
-			dispatchToastMessage({ type: 'success', message: `${count} ${t('messages_pruned')}` });
-			closeModal();
-			reset();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error.message });
-			closeModal();
-		}
-	});
-
-	const handleModal = () => {
-		setModal(
-			<GenericModal variant='danger' onClose={closeModal} onCancel={closeModal} onConfirm={handlePrune} confirmText={t('Yes_prune_them')}>
+		return setModal(
+			<GenericModal
+				variant='danger'
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={handlePruneAction}
+				confirmText={t('Yes_prune_them')}
+			>
 				{t('Prune_Modal')}
 			</GenericModal>,
 		);
-	};
+	});
 
 	useEffect(() => {
 		if (newerDate) {
@@ -166,7 +162,7 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 			setCallOutText(
 				t('Prune_Warning_all', {
 					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name || usernames?.join(' x ')],
+					sprintf: [filesOrMessages, room && isDirectMessageRoom(room) && (room.name || room.usernames?.join(' x '))],
 				}) +
 					exceptPinned +
 					ifFrom,
@@ -190,31 +186,19 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 			);
 		}
 
-		setValidateText();
-	}, [newerDate, olderDate, fromDate, toDate, attached, name, t, pinned, users, usernames]);
+		setValidateText(undefined);
+	}, [newerDate, olderDate, fromDate, toDate, attached, t, pinned, users, room]);
 
 	return (
 		<PruneMessages
 			callOutText={callOutText}
 			validateText={validateText}
-			newerDateTime={{ date: newerDate, time: newerTime }}
-			handleNewerDateTime={{ date: handleNewerDate, time: handleNewerTime }}
-			olderDateTime={{ date: olderDate, time: olderTime }}
-			handleOlderDateTime={{ date: handleOlderDate, time: handleOlderTime }}
 			users={users}
-			inclusive={inclusive}
-			pinned={pinned}
-			discussion={discussion}
-			threads={threads}
-			attached={attached}
-			handleInclusive={handleInclusive}
-			handlePinned={handlePinned}
-			handleDiscussion={handleDiscussion}
-			handleThreads={handleThreads}
-			handleAttached={handleAttached}
-			onClickClose={onClickClose}
-			onClickPrune={handleModal}
 			onChangeUsers={onChangeUsers}
+			values={values}
+			handlers={handlers}
+			onClickClose={onClickClose}
+			onClickPrune={handlePrune}
 		/>
 	);
 };

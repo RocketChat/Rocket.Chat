@@ -417,6 +417,20 @@ export type RoomsEndpoints = {
 			room: IRoom;
 		};
 	};
+	'rooms.cleanHistory': {
+		POST: (params: {
+			roomId: IRoom['_id'];
+			latest: string;
+			oldest: string;
+			inclusive?: boolean;
+			excludePinned?: boolean;
+			filesOnly?: boolean;
+			users?: IUser['username'][];
+			limit?: number;
+			ignoreDiscussion?: boolean;
+			ignoreThreads?: boolean;
+		}) => { _id: IRoom['_id']; count: number; success: boolean };
+	};
 	'rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
 			discussion: IRoom;
