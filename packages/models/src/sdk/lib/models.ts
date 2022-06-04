@@ -1,12 +1,4 @@
-import type { FunctionPropertyNames } from '@rocket.chat/core-typings';
-
 import type { ModelClass } from './ModelClass';
-
-type Prom<T> = {
-	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any>
-		? T[K]
-		: (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]>>;
-};
 
 const models = new Map<string, ModelClass<any>>();
 
