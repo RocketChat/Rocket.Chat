@@ -1,4 +1,4 @@
-import type { FunctionPropertyNames, PromOrError } from '@rocket.chat/core-typings';
+import type { FunctionPropertyNames } from '@rocket.chat/core-typings';
 
 import type { ModelClass } from './ModelClass';
 
@@ -28,6 +28,6 @@ export function registerModel(name: string, instance: ModelClass<any>): void {
 	models.set(name, instance);
 }
 
-export function proxify<T>(namespace: string): PromOrError<T> {
+export function proxify<T>(namespace: string): Prom<T> {
 	return new Proxy({}, handler(namespace)) as unknown as Prom<T>;
 }
