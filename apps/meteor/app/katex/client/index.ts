@@ -1,52 +1,71 @@
 import { Random } from 'meteor/random';
-import katex from 'katex';
+import KatexPackage from 'katex';
 import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
-
 import 'katex/dist/katex.min.css';
 import './style.css';
+import { IMessage } from '@rocket.chat/core-typings';
 
 class Boundary {
-	length() {
+	start: number;
+
+	end: number;
+
+	length(): number {
 		return this.end - this.start;
 	}
 
-	extract(str) {
+	extract(str: string): string {
 		return str.substr(this.start, this.length());
 	}
 }
 
+type Delimiter = {
+	opener: string;
+	closer: string;
+	displayMode: boolean;
+	enabled: () => boolean;
+};
+
+type OpeningDelimiter = { options: Delimiter; pos: number };
+
+type LatexBoundary = { outer: Boundary; inner: Boundary };
+
 class Katex {
-	constructor(katex, { dollarSyntax, parenthesisSyntax }) {
+	katex: KatexPackage;
+
+	delimitersMap: Delimiter[];
+
+	constructor(katex: KatexPackage, { dollarSyntax, parenthesisSyntax }: { dollarSyntax: boolean; parenthesisSyntax: boolean }) {
 		this.katex = katex;
 		this.delimitersMap = [
 			{
 				opener: '\\[',
 				closer: '\\]',
 				displayMode: true,
-				enabled: () => parenthesisSyntax,
+				enabled: (): boolean => parenthesisSyntax,
 			},
 			{
 				opener: '\\(',
 				closer: '\\)',
 				displayMode: false,
-				enabled: () => parenthesisSyntax,
+				enabled: (): boolean => parenthesisSyntax,
 			},
 			{
 				opener: '$$',
 				closer: '$$',
 				displayMode: true,
-				enabled: () => dollarSyntax,
+				enabled: (): boolean => dollarSyntax,
 			},
 			{
 				opener: '$',
 				closer: '$',
 				displayMode: false,
-				enabled: () => dollarSyntax,
+				enabled: (): boolean => dollarSyntax,
 			},
 		];
 	}
 
-	findOpeningDelimiter(str, start) {
+	findOpeningDelimiter(str: string, start: number): OpeningDelimiter | null {
 		const matches = this.delimitersMap
 			.filter((options) => options.enabled())
 			.map((options) => ({
@@ -70,7 +89,7 @@ class Katex {
 		return match;
 	}
 
-	getLatexBoundaries(str, { options: { closer }, pos }) {
+	getLatexBoundaries(str: string, { options: { closer }, pos }: OpeningDelimiter): LatexBoundary | null {
 		const closerIndex = str.substr(pos + closer.length).indexOf(closer);
 		if (closerIndex < 0) {
 			return null;
@@ -92,15 +111,17 @@ class Katex {
 	}
 
 	// Searches for the first latex block in the given string
-	findLatex(str) {
+	findLatex(str: string): (LatexBoundary & { options: Delimiter }) | null {
 		let start = 0;
 		let openingDelimiterMatch;
 
 		while ((openingDelimiterMatch = this.findOpeningDelimiter(str, start++)) != null) {
 			const match = this.getLatexBoundaries(str, openingDelimiterMatch);
-			if (match && match.inner.extract(str).trim().length) {
-				match.options = openingDelimiterMatch.options;
-				return match;
+			if (match?.inner.extract(str).trim().length) {
+				return {
+					...match,
+					options: openingDelimiterMatch.options,
+				};
 			}
 		}
 
@@ -109,7 +130,7 @@ class Katex {
 
 	// Breaks a message to what comes before, after and to the content of a
 	// matched latex block
-	extractLatex(str, match) {
+	extractLatex(str: string, match: LatexBoundary): { before: string; latex: string; after: string } {
 		const before = str.substr(0, match.outer.start);
 		const after = str.substr(match.outer.end);
 		let latex = match.inner.extract(str);
@@ -123,9 +144,9 @@ class Katex {
 
 	// Takes a latex math string and the desired display mode and renders it
 	// to HTML using the KaTeX library
-	renderLatex = (latex, displayMode) => {
+	renderLatex = (latex: string, displayMode: Delimiter['displayMode']): string => {
 		try {
-			return this.katex.renderToString(latex, {
+			return KatexPackage.renderToString(latex, {
 				displayMode,
 				macros: {
 					'\\href': '\\@secondoftwo',
@@ -137,11 +158,15 @@ class Katex {
 	};
 
 	// Takes a string and renders all latex blocks inside it
-	render(str, renderFunction) {
+	render(str: string, renderFunction: (latex: string, displayMode: Delimiter['displayMode']) => string): string {
 		let result = '';
 		while (this.findLatex(str) != null) {
 			// Find the first latex block in the string
 			const match = this.findLatex(str);
+			if (!match) {
+				continue;
+			}
+
 			const parts = this.extractLatex(str, match);
 
 			// Add to the reuslt what comes before the latex block as well as
@@ -155,7 +180,11 @@ class Katex {
 		return result;
 	}
 
-	renderMessage = (message) => {
+	public renderMessage(message: string): string;
+
+	public renderMessage(message: IMessage): IMessage;
+
+	public renderMessage(message: string | IMessage): string | IMessage {
 		if (typeof message === 'string') {
 			return this.render(message, this.renderLatex);
 		}
@@ -170,7 +199,7 @@ class Katex {
 
 		message.html = this.render(message.html, (latex, displayMode) => {
 			const token = `=!=${Random.id()}=!=`;
-			message.tokens.push({
+			message.tokens?.push({
 				token,
 				text: this.renderLatex(latex, displayMode),
 			});
@@ -178,14 +207,40 @@ class Katex {
 		});
 
 		return message;
-	};
+	}
 }
 
-export const createKatexMessageRendering = (options) => {
-	const instance = new Katex(katex, options);
-	return (message) => instance.renderMessage(message);
-};
+export function createKatexMessageRendering(
+	options: {
+		dollarSyntax: boolean;
+		parenthesisSyntax: boolean;
+	},
+	_isMessage: true,
+): (message: IMessage) => IMessage;
+export function createKatexMessageRendering(
+	options: {
+		dollarSyntax: boolean;
+		parenthesisSyntax: boolean;
+	},
+	_isMessage: false,
+): (message: string) => string;
+export function createKatexMessageRendering(
+	options: {
+		dollarSyntax: boolean;
+		parenthesisSyntax: boolean;
+	},
+	_isMessage: true | false,
+): ((message: string) => string) | ((message: IMessage) => IMessage) {
+	const instance = new Katex(KatexPackage, options);
+	if (_isMessage) {
+		return (message: IMessage): IMessage => instance.renderMessage(message);
+	}
+	return (message: string): string => instance.renderMessage(message);
+}
 
-export const getKatexHtml = (text, katex) => {
-	return createKatexMessageRendering({ dollarSyntax: katex.dollarSyntaxEnabled, parenthesisSyntax: katex.parenthesisSyntaxEnabled })(text);
+export const getKatexHtml = (text: string, katex: { dollarSyntaxEnabled: boolean; parenthesisSyntaxEnabled: boolean }): string => {
+	return createKatexMessageRendering(
+		{ dollarSyntax: katex.dollarSyntaxEnabled, parenthesisSyntax: katex.parenthesisSyntaxEnabled },
+		false,
+	)(text);
 };
