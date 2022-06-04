@@ -87,8 +87,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private optionsKeepAliveDebounceTimeInSec = 5;
 
-	private optionsKeepAliveDebounceCount = 3;
-
 	private attemptRegistration = false;
 
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
@@ -97,6 +95,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 		this.connectionRetryCount = this.config.connectionRetryCount;
 		this.stop = false;
+
 		this.onlineNetworkHandler = this.onNetworkRestored.bind(this);
 		this.offlineNetworkHandler = this.onNetworkLost.bind(this);
 	}
@@ -912,24 +911,19 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				return;
 			}
 			if (this._connectionState !== 'SERVER_RECONNECTING') {
-				const keepAliveResponse = await this.sendKeepAliveAndWaitForResponse();
-				if (!keepAliveResponse) {
-					const connectivityArray = new Array(this.optionsKeepAliveDebounceCount).fill(this.sendKeepAliveAndWaitForResponse(true));
-					await Promise.race(connectivityArray).then((response): void => {
-						if (!response) {
-							this.networkEmitter.emit('disconnected');
-						}
-					});
-				}
-				/**
-				 * Either we got connected and managed to send keep-alive
-				 * or while attempting keepAlive with debounce, we got connected at moment,
-				 * |keepAliveResponse| will be turned on.
-				 */
-				if (keepAliveResponse) {
-					this.networkEmitter.emit('connected');
+				let isConnected = false;
+				try {
+					await this.sendKeepAliveAndWaitForResponse();
+					isConnected = true;
+				} catch (e) {
+					console.error(`[${e}] Failed to do options ping.`);
+				} finally {
+					// Send event only if it's a "change" on the status (avoid unnecessary event flooding)
+					!isConnected && this.networkEmitter.emit('disconnected');
+					isConnected && this.networkEmitter.emit('connected');
 				}
 			}
+			// Each seconds check if the network can reach asterisk. If not, try to reconnect
 			this.startOptionsPingForUnstableNetworks();
 		}, this.optionsKeepaliveInterval * 1000);
 	}

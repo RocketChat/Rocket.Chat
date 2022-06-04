@@ -2,6 +2,7 @@
 import type { KeyOfEach } from '@rocket.chat/core-typings';
 
 import type { AppsEndpoints } from './apps';
+import type { AutoTranslateEndpoints } from './v1/autoTranslate';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
 import type { BannersEndpoints } from './v1/banners';
 import type { ChannelsEndpoints } from './v1/channels';
@@ -35,6 +36,7 @@ import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
+import type { CommandsEndpoints } from './v1/commands';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
@@ -42,6 +44,7 @@ export interface Endpoints
 		BannersEndpoints,
 		ChatEndpoints,
 		CloudEndpoints,
+		CommandsEndpoints,
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DnsEndpoints,
@@ -73,6 +76,7 @@ export interface Endpoints
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
 		AppsEndpoints {}
+		AutoTranslateEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
@@ -162,7 +166,9 @@ export * from './v1/misc';
 export * from './v1/invites';
 
 export * from './v1/dm';
+export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
+export * from './v1/omnichannel';
 export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';

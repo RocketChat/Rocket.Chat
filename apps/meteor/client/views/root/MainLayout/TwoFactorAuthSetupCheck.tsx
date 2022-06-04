@@ -19,7 +19,7 @@ const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }): ReactEl
 				return false;
 			}
 
-			const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
+			const mandatoryRole = Roles.findOne({ _id: { $in: user.roles ?? [] }, mandatory2fa: true });
 			return mandatoryRole !== undefined && tfaEnabled;
 		}, [tfaEnabled, user]),
 	);

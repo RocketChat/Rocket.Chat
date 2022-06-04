@@ -99,7 +99,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	readonly request: Request;
 	/* @deprecated */
 	requestParams(): OperationParams<TMethod, TPathPattern>;
-	getLoggedInUser(): IUser | undefined;
+	getLoggedInUser(): TOptions extends { authRequired: true } ? IUser : IUser | undefined;
 	getPaginationItems(): {
 		readonly offset: number;
 		readonly count: number;
@@ -157,7 +157,7 @@ type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}>
 };
 
 declare class APIClass<TBasePath extends string = '/'> {
-	fieldSeparator(fieldSeparator: unknown): void;
+	fieldSeparator: string;
 
 	limitedUserFieldsToExclude(fields: { [x: string]: unknown }, limitedUserFieldsToExclude: unknown): { [x: string]: unknown };
 

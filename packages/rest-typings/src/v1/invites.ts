@@ -1,51 +1,15 @@
 import type { IInvite, IRoom } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-type ListInvites = { rid: string };
-
-type FindOrCreateInvite = { rid: IInvite['rid']; days: IInvite['days']; maxUses: IInvite['maxUses'] };
-
-type UseInviteToken = { token: string };
-
-type ValidateInviteToken = { token: string };
-
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-const ListInvitesSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
+type v1UseInviteTokenProps = {
+	token: string;
 };
 
-export const isListInvitesProps = ajv.compile<ListInvites>(ListInvitesSchema);
-
-const FindOrCreateInviteSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		days: {
-			type: 'number',
-		},
-		maxUses: {
-			type: 'number',
-		},
-	},
-	required: ['rid', 'days', 'maxUses'],
-	additionalProperties: false,
-};
-
-export const isFindOrCreateInviteProps = ajv.compile<FindOrCreateInvite>(FindOrCreateInviteSchema);
-
-const UseInviteTokenSchema = {
+const v1UseInviteTokenPropsSchema = {
 	type: 'object',
 	properties: {
 		token: {
@@ -56,9 +20,13 @@ const UseInviteTokenSchema = {
 	additionalProperties: false,
 };
 
-export const isUseInviteTokenProps = ajv.compile<UseInviteToken>(UseInviteTokenSchema);
+export const isV1UseInviteTokenProps = ajv.compile<v1UseInviteTokenProps>(v1UseInviteTokenPropsSchema);
 
-const ValidateInviteTokenSchema = {
+type v1ValidateInviteTokenProps = {
+	token: string;
+};
+
+const v1ValidateInviteTokenPropsSchema = {
 	type: 'object',
 	properties: {
 		token: {
@@ -69,23 +37,17 @@ const ValidateInviteTokenSchema = {
 	additionalProperties: false,
 };
 
-export const isValidateInviteTokenProps = ajv.compile<ValidateInviteToken>(ValidateInviteTokenSchema);
+export const isV1ValidateInviteTokenProps = ajv.compile<v1ValidateInviteTokenProps>(v1ValidateInviteTokenPropsSchema);
 
 export type InvitesEndpoints = {
 	'listInvites': {
-		GET: (params: ListInvites) => IInvite[];
+		GET: () => Array<IInvite>;
 	};
-
-	'findOrCreateInvite': {
-		POST: (params: FindOrCreateInvite) => IInvite | false;
-	};
-
 	'removeInvite/:_id': {
-		DELETE: () => boolean;
+		DELETE: () => void;
 	};
-
-	'useInviteToken': {
-		POST: (params: UseInviteToken) => {
+	'/v1/useInviteToken': {
+		POST: (params: v1UseInviteTokenProps) => {
 			room: {
 				rid: IRoom['_id'];
 				prid: IRoom['prid'];
@@ -95,10 +57,7 @@ export type InvitesEndpoints = {
 			};
 		};
 	};
-
-	'validateInviteToken': {
-		POST: (params: ValidateInviteToken) => {
-			valid: boolean;
-		};
+	'/v1/validateInviteToken': {
+		POST: (params: v1ValidateInviteTokenProps) => { valid: boolean };
 	};
 };
