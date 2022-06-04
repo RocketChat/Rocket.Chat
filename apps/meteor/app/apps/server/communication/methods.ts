@@ -11,7 +11,7 @@ const waitToLoad = function (orch: AppServerOrchestrator): unknown {
 		let id = setInterval(() => {
 			if (orch.isEnabled() && orch.isLoaded()) {
 				clearInterval(id);
-				id = -1;
+				id = -1 as unknown as NodeJS.Timeout;
 				resolve();
 			}
 		}, 100);
@@ -23,7 +23,7 @@ const waitToUnload = function (orch: AppServerOrchestrator): unknown {
 		let id = setInterval(() => {
 			if (!orch.isEnabled() && !orch.isLoaded()) {
 				clearInterval(id);
-				id = -1;
+				id = -1 as unknown as NodeJS.Timeout;
 				resolve();
 			}
 		}, 100);
