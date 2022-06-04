@@ -12,7 +12,6 @@ import {
 	InsertOneWriteOpResult,
 	InsertWriteOpResult,
 	ObjectID,
-	ObjectId,
 	OptionalId,
 	UpdateManyOptions,
 	UpdateOneOptions,
@@ -22,46 +21,18 @@ import {
 	WithoutProjection,
 	WriteOpResult,
 } from 'mongodb';
-import { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { DefaultFields, ResultFields, InsertionModel } from '@rocket.chat/model-typings';
 
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 
 export { IndexSpecification } from 'mongodb';
-
-// [extracted from @types/mongo] TypeScript Omit (Exclude to be specific) does not work for objects with an "any" indexed type, and breaks discriminated unions
-type EnhancedOmit<T, K> = string | number extends keyof T
-	? T // T has indexed type e.g. { _id: string; [k: string]: any; } or it is "any"
-	: T extends any
-	? Pick<T, Exclude<keyof T, K>> // discriminated unions
-	: never;
-
-// [extracted from @types/mongo]
-type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defined a type for _id
-	? {} extends U
-		? Exclude<U, {}>
-		: unknown extends U
-		? ObjectId
-		: U
-	: ObjectId;
-
-export type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
-// InsertionModel forces both _id and _updatedAt to be optional, regardless of how they are declared in T
-export type InsertionModel<T> = EnhancedOmit<ModelOptionalId<T>, '_updatedAt'> & {
-	_updatedAt?: Date;
-};
 
 export interface IBaseRaw<T> {
 	col: Collection<T>;
 }
 
 const baseName = 'rocketchat_';
-
-type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
-type ResultFields<Base, Defaults> = Defaults extends void
-	? Base
-	: Defaults[keyof Defaults] extends 1
-	? Pick<Defaults, keyof Defaults>
-	: Omit<Defaults, keyof Defaults>;
 
 const warnFields =
 	process.env.NODE_ENV !== 'production'

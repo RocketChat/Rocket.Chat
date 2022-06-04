@@ -24,14 +24,7 @@ import {
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, InsertionModel } from '@rocket.chat/model-typings';
 
-export function setUpdatedAt(record: Record<string, any>): void {
-	if (/(^|,)\$/.test(Object.keys(record).join(','))) {
-		record.$set = record.$set || {};
-		record.$set._updatedAt = new Date();
-	} else {
-		record._updatedAt = new Date();
-	}
-}
+import { setUpdatedAt } from '../../app/models/server/lib/setUpdatedAt';
 
 const baseName = 'rocketchat_';
 

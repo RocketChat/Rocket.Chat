@@ -1,7 +1,8 @@
 import type { IndexSpecification } from 'mongodb';
 import type { IIntegration, IUser } from '@rocket.chat/core-typings';
-import { ModelClass } from '@rocket.chat/models';
 import type { IBaseModel } from '@rocket.chat/model-typings';
+
+import { ModelClass } from '../ModelClass';
 
 export class Integrations extends ModelClass<IIntegration> {
 	protected modelIndexes(): IndexSpecification[] {

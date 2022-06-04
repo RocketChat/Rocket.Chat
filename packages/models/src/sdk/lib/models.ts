@@ -1,6 +1,6 @@
-import type { ModelClass } from './ModelClass';
+import type { IBaseModel } from '@rocket.chat/model-typings';
 
-const models = new Map<string, ModelClass<any>>();
+const models = new Map<string, IBaseModel<any>>();
 
 function callModel(model: string, method: string, data: any[]): any {
 	// @ts-ignore
@@ -16,7 +16,7 @@ function handler<T extends object>(namespace: string): ProxyHandler<T> {
 	};
 }
 
-export function registerModel(name: string, instance: ModelClass<any>): void {
+export function registerModel(name: string, instance: IBaseModel<any>): void {
 	models.set(name, instance);
 }
 
