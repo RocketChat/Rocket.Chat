@@ -207,6 +207,7 @@
 		"@slack/client": "^4.12.0",
 		"@slack/rtm-api": "^6.0.0",
 		"@types/cookie": "^0.5.1",
+		"@types/katex": "^0.14.0",
 		"@types/lodash": "^4.14.182",
 		"@types/lodash.debounce": "^4.0.6",
 		"@types/object-path": "^0.11.1",

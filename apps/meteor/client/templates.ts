@@ -120,8 +120,6 @@ createTemplateForComponent('channelFilesList', () => import('./views/room/contex
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
-createTemplateForComponent('RoomAnnouncement', () => import('./views/room/Announcement'));
-
 createTemplateForComponent('PruneMessages', () => import('./views/room/contextualBar/PruneMessages'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });

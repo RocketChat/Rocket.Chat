@@ -2,6 +2,7 @@
 import type { KeyOfEach } from '@rocket.chat/core-typings';
 
 import type { AppsEndpoints } from './apps';
+import type { AutoTranslateEndpoints } from './v1/autoTranslate';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
 import type { BannersEndpoints } from './v1/banners';
 import type { ChannelsEndpoints } from './v1/channels';
@@ -72,7 +73,7 @@ export interface Endpoints
 		EmailInboxEndpoints,
 		WebdavEndpoints,
 		OAuthAppsEndpoint,
-		AppsEndpoints {}
+		AutoTranslateEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
