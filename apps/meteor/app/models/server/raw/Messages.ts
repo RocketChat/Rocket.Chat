@@ -1,9 +1,17 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { BaseRaw } from './BaseRaw';
+import { IMessage, IRoom, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 
-export class MessagesRaw extends BaseRaw {
-	findVisibleByMentionAndRoomId(username, rid, options) {
+import { BaseRaw } from './BaseRaw';
+import { AggregationCursor, Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
+import { PaginatedRequest } from '@rocket.chat/rest-typings';
+
+export class MessagesRaw extends BaseRaw<IMessage> {
+	findVisibleByMentionAndRoomId(
+		username: IUser['username'],
+		rid: IRoom['_id'],
+		options: WithoutProjection<FindOneOptions<IMessage>>,
+	): Cursor<IMessage> {
 		const query = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
@@ -13,7 +21,11 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findStarredByUserAtRoom(userId, roomId, options) {
+	findStarredByUserAtRoom(
+		userId: IUser['_id'],
+		roomId: IRoom['_id'],
+		options: WithoutProjection<FindOneOptions<IMessage>>,
+	): Cursor<IMessage> {
 		const query = {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
@@ -23,20 +35,20 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByRoomIdAndType(roomId, type, options) {
+	findByRoomIdAndType(
+		roomId: IRoom['_id'],
+		type: IMessage['t'],
+		options: WithoutProjection<FindOneOptions<IMessage>> = {},
+	): Cursor<IMessage> {
 		const query = {
 			rid: roomId,
 			t: type,
 		};
 
-		if (options == null) {
-			options = {};
-		}
-
 		return this.find(query, options);
 	}
 
-	findSnippetedByRoom(roomId, options) {
+	findSnippetedByRoom(roomId: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
 		const query = {
 			_hidden: { $ne: true },
 			snippeted: true,
@@ -46,13 +58,17 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoom(rid, options) {
+	findDiscussionsByRoom(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
 		const query = { rid, drid: { $exists: true } };
 
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoomAndText(rid, text, options) {
+	findDiscussionsByRoomAndText(
+		rid: IRoom['_id'],
+		text: IMessage['msg'],
+		options: WithoutProjection<FindOneOptions<IMessage>>,
+	): Cursor<IMessage> {
 		const query = {
 			rid,
 			drid: { $exists: true },
@@ -62,7 +78,19 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findAllNumberOfTransferredRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: string;
+		end: string;
+		departmentId: IRoom['_id'];
+		onlyCount: boolean;
+		options: PaginatedRequest;
+	}): AggregationCursor<IMessage> {
 		const match = {
 			$match: {
 				t: 'livechat_transfer_history',
@@ -98,7 +126,7 @@ export class MessagesRaw extends BaseRaw {
 				numberOfTransferredRooms: 1,
 			},
 		};
-		const firstParams = [match, lookup, unwind];
+		const firstParams: any = [match, lookup, unwind];
 		if (departmentId) {
 			firstParams.push({
 				$match: {
@@ -121,8 +149,16 @@ export class MessagesRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
-	getTotalOfMessagesSentByDate({ start, end, options = {} }) {
-		const params = [
+	getTotalOfMessagesSentByDate({
+		start,
+		end,
+		options = {},
+	}: {
+		start: string;
+		end: string;
+		options: PaginatedRequest;
+	}): Promise<IMessage[]> {
+		const params: any = [
 			{ $match: { t: { $exists: false }, ts: { $gte: start, $lte: end } } },
 			{
 				$lookup: {
@@ -179,7 +215,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findLivechatClosedMessages(rid, options) {
+	findLivechatClosedMessages(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
 		return this.find(
 			{
 				rid,
@@ -189,32 +225,32 @@ export class MessagesRaw extends BaseRaw {
 		);
 	}
 
-	async countRoomsWithStarredMessages(options) {
-		const [queryResult] = await this.col
+	async countRoomsWithStarredMessages(options: any) {
+		const queryResult = (await this.col
 			.aggregate(
 				[{ $match: { 'starred._id': { $exists: true } } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }],
 				options,
 			)
-			.toArray();
+			.next()) as unknown as null | { total: number };
 
 		return queryResult?.total || 0;
 	}
 
-	async countRoomsWithPinnedMessages(options) {
-		const [queryResult] = await this.col
+	async countRoomsWithPinnedMessages(options: any) {
+		const queryResult = (await this.col
 			.aggregate([{ $match: { pinned: true } }, { $group: { _id: '$rid' } }, { $group: { _id: null, total: { $sum: 1 } } }], options)
-			.toArray();
+			.next()) as unknown as null | { total: number };
 
 		return queryResult?.total || 0;
 	}
 
-	async countE2EEMessages(options) {
+	async countE2EEMessages(options: any) {
 		return this.find({ t: 'e2e' }, options).count();
 	}
 
-	findPinned(options) {
+	findPinned(options: any) {
 		const query = {
-			t: { $ne: 'rm' },
+			t: { $ne: 'rm' as MessageTypesValues },
 			_hidden: { $ne: true },
 			pinned: true,
 		};
@@ -222,7 +258,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findStarred(options) {
+	findStarred(options: any) {
 		const query = {
 			'_hidden': { $ne: true },
 			'starred._id': { $exists: true },
