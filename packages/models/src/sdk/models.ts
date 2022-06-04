@@ -3,12 +3,11 @@ import type {
 	IAvatarsModel,
 	IBannersDismissModel,
 	IBannersModel,
-	IBaseModel,
 	ICredentialTokensModel,
 	ICustomSoundsModel,
 	ICustomUserStatusModel,
 	IEmailInboxModel,
-	IEmailMessageHistory,
+	IEmailMessageHistoryModel,
 	IEmojiCustomModel,
 	IExportOperationsModel,
 	IFederationServersModel,
@@ -62,7 +61,7 @@ export const CredentialTokens = proxify<ICredentialTokensModel>('ICredentialToke
 export const CustomSounds = proxify<ICustomSoundsModel>('ICustomSoundsModel');
 export const CustomUserStatus = proxify<ICustomUserStatusModel>('ICustomUserStatusModel');
 export const EmailInbox = proxify<IEmailInboxModel>('IEmailInboxModel');
-export const EmailMessageHistory = proxify<IEmailMessageHistory>('IEmailMessageHistoryModel');
+export const EmailMessageHistory = proxify<IEmailMessageHistoryModel>('IEmailMessageHistoryModel');
 export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
