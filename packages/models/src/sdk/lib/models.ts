@@ -28,6 +28,6 @@ export function registerModel(name: string, instance: ModelClass<any>): void {
 	models.set(name, instance);
 }
 
-export function proxify<T>(namespace: string): Prom<T> {
-	return new Proxy({}, handler(namespace)) as unknown as Prom<T>;
+export function proxify<T>(namespace: string): T {
+	return new Proxy({}, handler(namespace)) as unknown as T;
 }

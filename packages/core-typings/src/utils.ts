@@ -23,13 +23,3 @@ export type Jsonify<T> = T extends Date
 export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
 
 export type RequiredField<T, K extends keyof T> = T & Required<Pick<T, K>>;
-
-export type FunctionPropertyNames<T> = {
-	[K in keyof T]: T[K] extends Function ? K : never;
-}[keyof T];
-
-export type PromOrError<T> = {
-	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any>
-		? (...params: Parameters<T[K]>) => ReturnType<T[K]> | Promise<Error>
-		: (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]> | Error>;
-};
