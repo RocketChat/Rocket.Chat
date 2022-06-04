@@ -7,9 +7,10 @@ import s from 'underscore.string';
 import moment from 'moment';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
+import { Integrations } from '@rocket.chat/models';
 
 import * as Models from '../../../models/server';
-import { Integrations, IntegrationHistory } from '../../../models/server/raw';
+import { IntegrationHistory } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';

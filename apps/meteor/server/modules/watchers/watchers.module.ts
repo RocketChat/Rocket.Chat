@@ -34,7 +34,7 @@ import { LoginServiceConfigurationRaw } from '../../../app/models/server/raw/Log
 import { InstanceStatusRaw } from '../../../app/models/server/raw/InstanceStatus';
 import { IntegrationHistoryRaw } from '../../../app/models/server/raw/IntegrationHistory';
 import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/LivechatDepartmentAgents';
-import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
+import { Integrations as IntegrationsRaw } from '../../models/integrations/model';
 import { EventSignatures } from '../../sdk/lib/Events';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';

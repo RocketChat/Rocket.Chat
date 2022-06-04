@@ -17,7 +17,6 @@ import { ImportDataRaw } from './ImportData';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import { InstanceStatusRaw } from './InstanceStatus';
 import { IntegrationHistoryRaw } from './IntegrationHistory';
-import { IntegrationsRaw } from './Integrations';
 import { InvitesRaw } from './Invites';
 import { LivechatAgentActivityRaw } from './LivechatAgentActivity';
 import { LivechatBusinessHoursRaw } from './LivechatBusinessHours';
@@ -110,7 +109,6 @@ export const FederationServers = new FederationServersRaw(db.collection(`${prefi
 export const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), trashCollection, {
 	preventSetUpdatedAt: true,
 });
-export const Integrations = new IntegrationsRaw(db.collection(`${prefix}integrations`), trashCollection);
 export const IntegrationHistory = new IntegrationHistoryRaw(db.collection(`${prefix}integration_history`), trashCollection);
 export const Invites = new InvitesRaw(db.collection(`${prefix}invites`), trashCollection);
 export const LivechatTrigger = new LivechatTriggerRaw(db.collection(`${prefix}livechat_trigger`), trashCollection);
