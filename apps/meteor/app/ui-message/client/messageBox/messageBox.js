@@ -26,6 +26,7 @@ import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { getMarkdownLinkFromHtml } from '../../../../lib/getMarkdownLinkFromHtml';
 
 Template.messageBox.onCreated(function () {
 	this.state = new ReactiveDict();
@@ -372,6 +373,9 @@ Template.messageBox.events({
 	'paste .js-input-message'(event, instance) {
 		const { rid, tmid } = this;
 		const { input, autogrow } = instance;
+		if (!input) {
+			return;
+		}
 
 		setTimeout(() => autogrow && autogrow.update(), 50);
 
@@ -380,6 +384,46 @@ Template.messageBox.events({
 		}
 
 		const items = [...event.originalEvent.clipboardData.items];
+		const textItem = items.find(({ kind, type }) => kind === 'string' && type === 'text/plain');
+		const htmlItem = items.find(({ type }) => type === 'text/html');
+
+		if (textItem && htmlItem) {
+			const getHtmlAsync = (item) => {
+				return new Promise(function(resolve, reject) {
+					item.getAsString((html) => { resolve(html) });
+				});
+			};
+
+			const getTextAsync = (item) => {
+				return new Promise(function(resolve, reject) {
+					item.getAsString((text) => { resolve(text); });
+				});
+			};
+
+			const getHtmlPromise = getHtmlAsync(htmlItem);
+			const getTextPromise = getTextAsync(textItem);
+			Promise.all([getHtmlPromise, getTextPromise]).then((values) => {
+				const [ html, text ] = values;
+
+				const markdownLink = getMarkdownLinkFromHtml(html);
+				if (!markdownLink) {
+					return;
+				}
+
+				if (document.selection) {
+					input.focus();
+					const sel = document.selection.createRange();
+					sel.text = markdownLink;
+				} else if (input.selectionStart || input.selectionStart === 0) {
+					let before = input.value.substring(0, input.selectionStart);
+					before = before.substring(0, before.length - text.length);
+					const after = input.value.substring(input.selectionEnd, input.value.length);
+					input.value = `${before}${markdownLink}${after}`;
+				} else {
+					input.value += markdownLink;
+				}
+			});
+		}
 
 		if (items.some(({ kind, type }) => kind === 'string' && type === 'text/plain')) {
 			return;
