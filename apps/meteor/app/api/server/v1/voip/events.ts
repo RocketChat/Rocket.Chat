@@ -1,10 +1,10 @@
 import { Match, check } from 'meteor/check';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
+import { VoipRooms } from '@rocket.chat/models';
 
 import { API } from '../../api';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { canAccessRoom } from '../../../../authorization/server';
-import { VoipRoom } from '@rocket.chat/models';
 
 API.v1.addRoute(
 	'voip/events',
@@ -21,7 +21,7 @@ API.v1.addRoute(
 
 			const { rid, event, comment } = this.requestParams();
 
-			const room = await VoipRoom.findOneVoipRoomById(rid);
+			const room = await VoipRooms.findOneVoipRoomById(rid);
 			if (!room) {
 				return API.v1.notFound();
 			}

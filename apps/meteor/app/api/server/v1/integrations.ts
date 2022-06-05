@@ -8,10 +8,9 @@ import {
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import { Integrations } from '@rocket.chat/models';
+import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 
 import { hasAtLeastOnePermission } from '../../../authorization/server';
-import { IntegrationHistory } from '@rocket.chat/models';
 import { API } from '../api';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
