@@ -1,7 +1,15 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { IMessage, IRoom, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, MessageTypesValues, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
-import type { AggregationCursor, Cursor, FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
+import type {
+	AggregationCursor,
+	Cursor,
+	FilterQuery,
+	FindOneOptions,
+	WithoutProjection,
+	Collection,
+	CollectionAggregationOptions,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -64,11 +72,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoomAndText(
-		rid: IRoom['_id'],
-		text: IMessage['msg'],
-		options: WithoutProjection<FindOneOptions<IMessage>>,
-	): Cursor<IMessage> {
+	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
 		const query: FilterQuery<IMessage> = {
 			rid,
 			drid: { $exists: true },
@@ -87,7 +91,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 	}: {
 		start: string;
 		end: string;
-		departmentId: IRoom['_id'];
+		departmentId: ILivechatDepartment['_id'];
 		onlyCount: boolean;
 		options: PaginatedRequest;
 	}): AggregationCursor<IMessage> {
@@ -127,7 +131,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 				numberOfTransferredRooms: 1,
 			},
 		};
-		const firstParams: any = [match, lookup, unwind];
+		const firstParams: Exclude<Parameters<Collection<IMessage>['aggregate']>[0], undefined> = [match, lookup, unwind];
 		if (departmentId) {
 			firstParams.push({
 				$match: {
@@ -151,9 +155,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 	}
 
 	getTotalOfMessagesSentByDate({ start, end, options = {} }: { start: Date; end: Date; options: PaginatedRequest }): Promise<IMessage[]> {
-		// FIXME: aggregation type definitions
-		// E.g. type AggregationMatchParams<T = Document> = { $match: ObjectQuerySelector<T> };
-		const params: any = [
+		const params: Exclude<Parameters<Collection<IMessage>['aggregate']>[0], undefined> = [
 			{ $match: { t: { $exists: false }, ts: { $gte: start, $lte: end } } },
 			{
 				$lookup: {
@@ -220,7 +222,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 		);
 	}
 
-	async countRoomsWithStarredMessages(options: any) {
+	async countRoomsWithStarredMessages(options: CollectionAggregationOptions): Promise<number> {
 		const queryResult = await this.col
 			.aggregate<{ _id: null; total: number }>(
 				[
@@ -240,7 +242,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 		return queryResult?.total || 0;
 	}
 
-	async countRoomsWithPinnedMessages(options: any) {
+	async countRoomsWithPinnedMessages(options: CollectionAggregationOptions): Promise<number> {
 		const queryResult = await this.col
 			.aggregate<{ _id: null; total: number }>(
 				[
