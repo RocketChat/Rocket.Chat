@@ -2,9 +2,8 @@ import { IndexSpecification } from 'mongodb';
 import type { UpdateWriteOpResult } from 'mongodb';
 import type { IFederationServer } from '@rocket.chat/core-typings';
 import type { IFederationServersModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import { registerModel, Users } from '@rocket.chat/models';
 
-// import { Users } from './index';
 import { ModelClass } from './ModelClass';
 import { trashCollection } from '../database/trash';
 import { db, prefix } from '../database/utils';

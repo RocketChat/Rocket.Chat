@@ -10,6 +10,7 @@ import type {
 	IEmailMessageHistoryModel,
 	IEmojiCustomModel,
 	IExportOperationsModel,
+	IFederationKeysModel,
 	IFederationServersModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
@@ -22,9 +23,11 @@ import type {
 	ILivechatDepartmentAgentsModel,
 	ILivechatDepartmentModel,
 	ILivechatInquiryModel,
+	ILivechatRoomsModel,
 	ILivechatTriggerModel,
 	ILivechatVisitorsModel,
 	ILoginServiceConfigurationModel,
+	IMessagesModel,
 	INotificationQueueModel,
 	INpsModel,
 	INpsVoteModel,
@@ -36,6 +39,7 @@ import type {
 	IReadReceiptsModel,
 	IReportsModel,
 	IRolesModel,
+	IRoomsModel,
 	IServerEventsModel,
 	ISessionsModel,
 	ISettingsModel,
@@ -47,6 +51,7 @@ import type {
 	IUploadsModel,
 	IUserDataFilesModel,
 	IUserSessionsModel,
+	IUsersModel,
 	IVoipRoomsModel,
 	IWebdavAccountsModel,
 } from '@rocket.chat/model-typings';
@@ -65,6 +70,7 @@ export const EmailMessageHistory = proxify<IEmailMessageHistoryModel>('IEmailMes
 export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
+export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
 export const IntegrationHistory = proxify<IIntegrationHistoryModel>('IIntegrationHistoryModel');
@@ -76,9 +82,11 @@ export const LivechatCustomField = proxify<ILivechatCustomFieldModel>('ILivechat
 export const LivechatDepartmentAgents = proxify<ILivechatDepartmentAgentsModel>('ILivechatDepartmentAgentsModel');
 export const LivechatDepartment = proxify<ILivechatDepartmentModel>('ILivechatDepartmentModel');
 export const LivechatInquiry = proxify<ILivechatInquiryModel>('ILivechatInquiryModel');
+export const LivechatRooms = proxify<ILivechatRoomsModel>('ILivechatRoomsModel');
 export const LivechatTrigger = proxify<ILivechatTriggerModel>('ILivechatTriggerModel');
 export const LivechatVisitors = proxify<ILivechatVisitorsModel>('ILivechatVisitorsModel');
 export const LoginServiceConfiguration = proxify<ILoginServiceConfigurationModel>('ILoginServiceConfigurationModel');
+export const Messages = proxify<IMessagesModel>('IMessagesModel');
 export const NotificationQueue = proxify<INotificationQueueModel>('INotificationQueueModel');
 export const Nps = proxify<INpsModel>('INpsModel');
 export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
@@ -90,6 +98,7 @@ export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');
+export const Rooms = proxify<IRoomsModel>('IRoomsModel');
 export const ServerEvents = proxify<IServerEventsModel>('IServerEventsModel');
 export const Sessions = proxify<ISessionsModel>('ISessionsModel');
 export const Settings = proxify<ISettingsModel>('ISettingsModel');
@@ -98,6 +107,7 @@ export const Statistics = proxify<IStatisticsModel>('IStatisticsModel');
 export const Subscriptions = proxify<ISubscriptionsModel>('ISubscriptionsModel');
 export const TeamMember = proxify<ITeamMemberModel>('ITeamMemberModel');
 export const Team = proxify<ITeamModel>('ITeamModel');
+export const Users = proxify<IUsersModel>('IUsersModel');
 export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UserSessions = proxify<IUserSessionsModel>('IUserSessionsModel');

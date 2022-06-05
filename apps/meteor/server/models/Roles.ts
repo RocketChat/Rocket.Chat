@@ -9,18 +9,16 @@ import type {
 	WithoutProjection,
 } from 'mongodb';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import type { IRolesModel } from '@rocket.chat/model-typings';
-import { registerModel } from '@rocket.chat/models';
+import type { IRolesModel, IUsersModel, ISubscriptionsModel } from '@rocket.chat/model-typings';
+import { registerModel, Users, Subscriptions } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
 import { trashCollection } from '../database/trash';
 import { db, prefix } from '../database/utils';
-import { SubscriptionsRaw } from './Subscriptions';
-import { UsersRaw } from './Users';
 
 type ScopedModelRoles = {
-	Subscriptions: SubscriptionsRaw;
-	Users: UsersRaw;
+	Subscriptions: ISubscriptionsModel;
+	Users: IUsersModel;
 };
 
 export class Roles extends ModelClass<IRole> implements IRolesModel {
