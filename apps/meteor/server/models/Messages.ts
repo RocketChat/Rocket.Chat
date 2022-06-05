@@ -10,10 +10,14 @@ import type {
 	Collection,
 	CollectionAggregationOptions,
 } from 'mongodb';
+import type { IMessagesModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
-import { BaseRaw } from './BaseRaw';
+import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/Messages';
 
-export class MessagesRaw extends BaseRaw<IMessage> {
+export class Messages extends ModelClass<IMessage> implements IMessagesModel {
 	findVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
@@ -285,3 +289,6 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 		return this.find(query, options);
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('IMessagesModel', new Messages(col, trashCollection) as IMessagesModel);

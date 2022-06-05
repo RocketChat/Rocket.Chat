@@ -24,6 +24,7 @@ import './LivechatInquiry';
 import './LivechatTrigger';
 import './LivechatVisitors';
 import './LoginServiceConfiguration';
+import './Messages';
 import './NotificationQueue';
 // import './Nps';
 // import './NpsVote';

@@ -168,9 +168,7 @@ export class Subscriptions extends ModelClass<ISubscription> implements ISubscri
 
 		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
 
-		return !options
-			? this.models.Users.find({ _id: { $in: users } })
-			: this.models.Users.find({ _id: { $in: users } } as FilterQuery<IUser>, options);
+		return this.models.Users.find<P>({ _id: { $in: users } }, options || {});
 	}
 
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateWriteOpResult> {
