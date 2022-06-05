@@ -1,5 +1,4 @@
 import type { IMessage, IRoom, IUser, ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import type { AggregationCursor, Cursor, FindOneOptions, WithoutProjection, CollectionAggregationOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -29,10 +28,10 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		end: string;
 		departmentId: ILivechatDepartment['_id'];
 		onlyCount: boolean;
-		options: PaginatedRequest;
+		options: any;
 	}): AggregationCursor<any>;
 
-	getTotalOfMessagesSentByDate(params: { start: Date; end: Date; options: PaginatedRequest }): Promise<any[]>;
+	getTotalOfMessagesSentByDate(params: { start: Date; end: Date; options: any }): Promise<any[]>;
 
 	findLivechatClosedMessages(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage>;
 

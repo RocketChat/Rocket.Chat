@@ -30,7 +30,6 @@
 		]
 	},
 	"dependencies": {
-		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/rest-typings": "workspace:^"
+		"@rocket.chat/core-typings": "workspace:^"
 	}
 }
