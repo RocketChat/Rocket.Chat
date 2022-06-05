@@ -94,7 +94,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 		departmentId: ILivechatDepartment['_id'];
 		onlyCount: boolean;
 		options: PaginatedRequest;
-	}): AggregationCursor<IMessage> {
+	}): AggregationCursor<any> {
 		// FIXME: aggregation type definitions
 		const match = {
 			$match: {
@@ -154,7 +154,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
-	getTotalOfMessagesSentByDate({ start, end, options = {} }: { start: Date; end: Date; options: PaginatedRequest }): Promise<IMessage[]> {
+	getTotalOfMessagesSentByDate({ start, end, options = {} }: { start: Date; end: Date; options?: PaginatedRequest }): Promise<any[]> {
 		const params: Exclude<Parameters<Collection<IMessage>['aggregate']>[0], undefined> = [
 			{ $match: { t: { $exists: false }, ts: { $gte: start, $lte: end } } },
 			{
