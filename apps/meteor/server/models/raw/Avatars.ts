@@ -3,9 +3,9 @@ import { IndexSpecification } from 'mongodb';
 import { IAvatar } from '@rocket.chat/core-typings';
 import type { IAvatarsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class AvatarsRaw extends ModelClass<IAvatar> implements IAvatarsModel {
+export class AvatarsRaw extends BaseRaw<IAvatar> implements IAvatarsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{ key: { name: 1 }, sparse: true },

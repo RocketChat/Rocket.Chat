@@ -2,9 +2,9 @@ import type { UpdateWriteOpResult } from 'mongodb';
 import type { IInvite } from '@rocket.chat/core-typings';
 import type { IInvitesModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class InvitesRaw extends ModelClass<IInvite> implements IInvitesModel {
+export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 	findOneByUserRoomMaxUsesAndExpiration(userId: string, rid: string, maxUses: number, daysToExpire: number): Promise<IInvite | null> {
 		return this.findOne({
 			rid,

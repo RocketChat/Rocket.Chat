@@ -11,9 +11,9 @@ import type {
 import type { ITeamMember, IUser, IRole } from '@rocket.chat/core-typings';
 import type { ITeamMemberModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class TeamMemberRaw extends ModelClass<ITeamMember> implements ITeamMemberModel {
+export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{

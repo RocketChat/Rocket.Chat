@@ -2,9 +2,9 @@ import type { FindOneOptions, Cursor, DeleteWriteOpResultObject, IndexSpecificat
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
 import type { IWebdavAccountsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class WebdavAccountsRaw extends ModelClass<IWebdavAccount> implements IWebdavAccountsModel {
+export class WebdavAccountsRaw extends BaseRaw<IWebdavAccount> implements IWebdavAccountsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1 } }];
 	}

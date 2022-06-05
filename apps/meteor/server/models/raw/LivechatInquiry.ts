@@ -2,9 +2,9 @@ import { FindOneOptions, MongoDistinctPreferences, UpdateWriteOpResult } from 'm
 import { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class LivechatInquiryRaw extends ModelClass<ILivechatInquiryRecord> implements ILivechatInquiryModel {
+export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null> {
 		const query = {
 			rid,

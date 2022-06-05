@@ -2,9 +2,9 @@ import NodeRSA from 'node-rsa';
 import type { IFederationKeysModel } from '@rocket.chat/model-typings';
 import type { FederationKey } from '@rocket.chat/core-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class FederationKeysRaw extends ModelClass<FederationKey> implements IFederationKeysModel {
+export class FederationKeysRaw extends BaseRaw<FederationKey> implements IFederationKeysModel {
 	async getKey(type: FederationKey['type']): Promise<string | null> {
 		const keyResource = await this.findOne({ type });
 

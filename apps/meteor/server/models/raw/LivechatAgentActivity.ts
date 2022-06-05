@@ -3,9 +3,9 @@ import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/core-
 import type { AggregationCursor, Cursor, FindAndModifyWriteOpResultObject, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
 import type { ILivechatAgentActivityModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class LivechatAgentActivityRaw extends ModelClass<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
+export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { date: 1 } }, { key: { agentId: 1, date: 1 }, unique: true }];
 	}

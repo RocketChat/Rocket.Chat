@@ -4,9 +4,9 @@ import { IndexSpecification } from 'mongodb';
 import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
 import type { IAnalyticsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class AnalyticsRaw extends ModelClass<IAnalytic> implements IAnalyticsModel {
+export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
 	}

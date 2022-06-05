@@ -1,9 +1,9 @@
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class RoomsRaw extends ModelClass {
+export class RoomsRaw extends BaseRaw {
 	findOneByRoomIdAndUserId(rid, uid, options = {}) {
 		const query = {
 			'_id': rid,

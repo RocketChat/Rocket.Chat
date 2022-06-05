@@ -3,9 +3,9 @@ import type { Cursor, UpdateWriteOpResult } from 'mongodb';
 import type { IExportOperation } from '@rocket.chat/core-typings';
 import type { IExportOperationsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class ExportOperationsRaw extends ModelClass<IExportOperation> implements IExportOperationsModel {
+export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IExportOperationsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1 } }, { key: { status: 1 } }];
 	}

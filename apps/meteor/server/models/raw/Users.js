@@ -1,8 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class UsersRaw extends ModelClass {
+export class UsersRaw extends BaseRaw {
 	constructor(...args) {
 		super(...args);
 

@@ -2,9 +2,9 @@ import type { FindOneOptions, InsertOneWriteOpResult, WithId, WithoutProjection,
 import type { IUserDataFile } from '@rocket.chat/core-typings';
 import type { IUserDataFilesModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class UserDataFilesRaw extends ModelClass<IUserDataFile> implements IUserDataFilesModel {
+export class UserDataFilesRaw extends BaseRaw<IUserDataFile> implements IUserDataFilesModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1 } }];
 	}

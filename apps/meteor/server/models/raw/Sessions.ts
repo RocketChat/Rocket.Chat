@@ -20,7 +20,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { ISessionsModel, ModelOptionalId } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {
@@ -738,7 +738,7 @@ export const aggregates = {
 	},
 };
 
-export class SessionsRaw extends ModelClass<ISession> implements ISessionsModel {
+export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	private secondaryCollection: Collection<ISession>;
 
 	constructor(public readonly col: Collection<ISession>, public readonly colSecondary: Collection<ISession>, trash?: Collection<ISession>) {

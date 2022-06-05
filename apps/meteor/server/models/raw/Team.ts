@@ -10,9 +10,9 @@ import type {
 import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { ITeamModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class TeamRaw extends ModelClass<ITeam> implements ITeamModel {
+export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 }, unique: true }];
 	}

@@ -1,10 +1,10 @@
 import type { IOmnichannelQueueStatus } from '@rocket.chat/core-typings';
 import type { IOmnichannelQueueModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
 const UNIQUE_QUEUE_ID = 'queue';
-export class OmnichannelQueueRaw extends ModelClass<IOmnichannelQueueStatus> implements IOmnichannelQueueModel {
+export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> implements IOmnichannelQueueModel {
 	initQueue(): any {
 		return this.col.updateOne(
 			{

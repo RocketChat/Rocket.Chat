@@ -1,6 +1,6 @@
 import type { ILoginServiceConfiguration } from '@rocket.chat/core-typings';
 import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class LoginServiceConfigurationRaw extends ModelClass<ILoginServiceConfiguration> implements ILoginServiceConfigurationModel {}
+export class LoginServiceConfigurationRaw extends BaseRaw<ILoginServiceConfiguration> implements ILoginServiceConfigurationModel {}

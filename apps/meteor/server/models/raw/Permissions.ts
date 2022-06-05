@@ -1,9 +1,9 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import type { IPermissionsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class PermissionsRaw extends ModelClass<IPermission> implements IPermissionsModel {
+export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissionsModel {
 	async createOrUpdate(name: string, roles: IRole['_id'][]): Promise<IPermission['_id']> {
 		const exists = await this.findOne<Pick<IPermission, '_id'>>(
 			{

@@ -4,9 +4,9 @@ import type { ISubscription, IRole, IUser, IRoom } from '@rocket.chat/core-typin
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class SubscriptionsRaw extends ModelClass<ISubscription> implements ISubscriptionsModel {
+export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(public readonly col: Collection<ISubscription>, trash?: Collection<ISubscription>) {
 		super(col, trash);
 	}
@@ -99,7 +99,7 @@ export class SubscriptionsRaw extends ModelClass<ISubscription> implements ISubs
 		uid: string,
 		alert = false,
 		options: FindOneOptions<ISubscription> = {},
-	): ReturnType<ModelClass<ISubscription>['update']> {
+	): ReturnType<BaseRaw<ISubscription>['update']> {
 		const query: FilterQuery<ISubscription> = {
 			rid,
 			'u._id': uid,

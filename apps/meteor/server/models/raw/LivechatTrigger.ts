@@ -2,9 +2,9 @@ import type { IndexSpecification, Cursor, UpdateWriteOpResult } from 'mongodb';
 import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import type { ILivechatTriggerModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class LivechatTriggerRaw extends ModelClass<ILivechatTrigger> implements ILivechatTriggerModel {
+export class LivechatTriggerRaw extends BaseRaw<ILivechatTrigger> implements ILivechatTriggerModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { enabled: 1 } }];
 	}

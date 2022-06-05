@@ -12,9 +12,9 @@ import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 import type { IRolesModel } from '@rocket.chat/model-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class RolesRaw extends ModelClass<IRole> implements IRolesModel {
+export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	constructor(public readonly col: Collection<IRole>, trash?: Collection<IRole>) {
 		super(col, trash);
 	}

@@ -3,9 +3,9 @@ import { IndexSpecification } from 'mongodb';
 import { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
 import type { IBannersModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class BannersRaw extends ModelClass<IBanner> implements IBannersModel {
+export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { platform: 1, startAt: 1, expireAt: 1 } }, { key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }];
 	}

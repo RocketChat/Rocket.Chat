@@ -3,9 +3,9 @@ import type { INps } from '@rocket.chat/core-typings';
 import { NPSStatus } from '@rocket.chat/core-typings';
 import type { INpsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class NpsRaw extends ModelClass<INps> implements INpsModel {
+export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { status: 1, expireAt: 1 } }];
 	}

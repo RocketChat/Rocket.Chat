@@ -3,9 +3,9 @@ import type { IServerEvent } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
 import type { IServerEventsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class ServerEventsRaw extends ModelClass<IServerEvent> implements IServerEventsModel {
+export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEventsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { t: 1, ip: 1, ts: -1 } }, { key: { 't': 1, 'u.username': 1, 'ts': -1 } }];
 	}

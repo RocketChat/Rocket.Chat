@@ -16,7 +16,7 @@ import type {
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IUploadsModel, InsertionModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
 const fillTypeGroup = (fileData: Partial<IUpload>): void => {
 	if (!fileData.type) {
@@ -26,7 +26,7 @@ const fillTypeGroup = (fileData: Partial<IUpload>): void => {
 	fileData.typeGroup = fileData.type.split('/').shift();
 };
 
-export class UploadsRaw extends ModelClass<IUpload> implements IUploadsModel {
+export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { rid: 1 } }, { key: { uploadedAt: 1 } }, { key: { typeGroup: 1 } }];
 	}

@@ -2,10 +2,10 @@ import { registerModel } from '@rocket.chat/models';
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from '../../../server/models/ModelClass';
+import { BaseRaw } from '../../../server/models/BaseRaw';
 import MeteorModel from '../../app/models/server/models/LivechatPriority';
 
-export class LivechatPriority extends ModelClass<IRocketChatRecord> implements ILivechatPriorityModel {
+export class LivechatPriority extends BaseRaw<IRocketChatRecord> implements ILivechatPriorityModel {
 	findOneByIdOrName(_idOrName: string, options = {}): any {
 		const query = {
 			$or: [

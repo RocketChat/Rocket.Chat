@@ -2,9 +2,9 @@ import type { Cursor } from 'mongodb';
 import type { IImportRecord, IImportUserRecord, IImportMessageRecord, IImportChannelRecord } from '@rocket.chat/core-typings';
 import type { IImportDataModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class ImportDataRaw extends ModelClass<IImportRecord> implements IImportDataModel {
+export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportDataModel {
 	getAllUsers(): Cursor<IImportUserRecord> {
 		return this.find({ dataType: 'user' }) as Cursor<IImportUserRecord>;
 	}

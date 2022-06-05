@@ -1,6 +1,6 @@
 import type { ISmarshHistory } from '@rocket.chat/core-typings';
 import type { ISmarshHistoryModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class SmarshHistoryRaw extends ModelClass<ISmarshHistory> implements ISmarshHistoryModel {}
+export class SmarshHistoryRaw extends BaseRaw<ISmarshHistory> implements ISmarshHistoryModel {}

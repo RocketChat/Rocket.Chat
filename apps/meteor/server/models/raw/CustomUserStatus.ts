@@ -3,9 +3,9 @@ import type { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResul
 import { ICustomUserStatus } from '@rocket.chat/core-typings';
 import type { ICustomUserStatusModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class CustomUserStatusRaw extends ModelClass<ICustomUserStatus> implements ICustomUserStatusModel {
+export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements ICustomUserStatusModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 } }];
 	}

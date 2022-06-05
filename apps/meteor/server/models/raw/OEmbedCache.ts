@@ -2,9 +2,9 @@ import type { DeleteWriteOpResultObject, IndexSpecification } from 'mongodb';
 import type { IOEmbedCache } from '@rocket.chat/core-typings';
 import type { IOEmbedCacheModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class OEmbedCacheRaw extends ModelClass<IOEmbedCache> implements IOEmbedCacheModel {
+export class OEmbedCacheRaw extends BaseRaw<IOEmbedCache> implements IOEmbedCacheModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { updatedAt: 1 } }];
 	}

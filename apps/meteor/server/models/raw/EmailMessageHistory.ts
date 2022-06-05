@@ -3,9 +3,9 @@ import type { InsertOneWriteOpResult, WithId } from 'mongodb';
 import { IEmailMessageHistory } from '@rocket.chat/core-typings';
 import { IEmailMessageHistoryModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class EmailMessageHistoryRaw extends ModelClass<IEmailMessageHistory> implements IEmailMessageHistoryModel {
+export class EmailMessageHistoryRaw extends BaseRaw<IEmailMessageHistory> implements IEmailMessageHistoryModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { createdAt: 1 }, expireAfterSeconds: 60 * 60 * 24 }];
 	}

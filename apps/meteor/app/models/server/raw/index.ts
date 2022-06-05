@@ -2,7 +2,7 @@ import { api } from '../../../../server/sdk/api';
 import { BaseDbWatch } from '../models/_BaseDb';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
-import { ModelClass } from '../../../../server/models/raw/ModelClass';
+import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 import { Messages } from '../../../../server/models/Messages';
 import { Users } from '../../../../server/models/Users';
 import { Subscriptions } from '../../../../server/models/Subscriptions';
@@ -58,7 +58,7 @@ if (!isRunningMs()) {
 	};
 
 	initWatchers(models, api.broadcastLocal.bind(api), (model, fn) => {
-		const { collectionName } = (model as ModelClass<any>).col;
+		const { collectionName } = (model as BaseRaw<any>).col;
 
 		const meteorModel = map[collectionName] || new BaseDbWatch(collectionName);
 		if (!meteorModel) {

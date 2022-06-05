@@ -3,9 +3,9 @@ import type { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResul
 import { IEmojiCustom } from '@rocket.chat/core-typings';
 import type { IEmojiCustomModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class EmojiCustomRaw extends ModelClass<IEmojiCustom> implements IEmojiCustomModel {
+export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCustomModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 } }, { key: { aliases: 1 } }, { key: { extension: 1 } }];
 	}

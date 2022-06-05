@@ -3,9 +3,9 @@ import { ObjectId } from 'mongodb';
 import { INpsVote, INpsVoteStatus } from '@rocket.chat/core-typings';
 import type { INpsVoteModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class NpsVoteRaw extends ModelClass<INpsVote> implements INpsVoteModel {
+export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}

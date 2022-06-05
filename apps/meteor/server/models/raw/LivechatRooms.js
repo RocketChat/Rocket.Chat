@@ -1,7 +1,7 @@
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 
-export class LivechatRoomsRaw extends ModelClass {
+export class LivechatRoomsRaw extends BaseRaw {
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
 		const match = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
 		const matchUsers = { $match: {} };

@@ -2,9 +2,9 @@ import { IndexSpecification } from 'mongodb';
 import type { IIntegrationHistory } from '@rocket.chat/core-typings';
 import type { IIntegrationHistoryModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class IntegrationHistoryRaw extends ModelClass<IIntegrationHistory> implements IIntegrationHistoryModel {
+export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> implements IIntegrationHistoryModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{ key: { 'integration._id': 1, 'integration._createdBy._id': 1 } },
@@ -12,7 +12,7 @@ export class IntegrationHistoryRaw extends ModelClass<IIntegrationHistory> imple
 		];
 	}
 
-	removeByIntegrationId(integrationId: string): ReturnType<ModelClass<IIntegrationHistory>['deleteMany']> {
+	removeByIntegrationId(integrationId: string): ReturnType<BaseRaw<IIntegrationHistory>['deleteMany']> {
 		return this.deleteMany({ 'integration._id': integrationId });
 	}
 

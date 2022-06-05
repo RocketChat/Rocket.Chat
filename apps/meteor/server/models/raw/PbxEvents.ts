@@ -2,9 +2,9 @@ import type { Cursor, IndexSpecification } from 'mongodb';
 import type { IPbxEvent } from '@rocket.chat/core-typings';
 import type { IPbxEventsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class PbxEventsRaw extends ModelClass<IPbxEvent> implements IPbxEventsModel {
+export class PbxEventsRaw extends BaseRaw<IPbxEvent> implements IPbxEventsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { uniqueId: 1 }, unique: true }];
 	}

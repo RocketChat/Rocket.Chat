@@ -2,9 +2,9 @@ import { IndexSpecification } from 'mongodb';
 import { ICredentialToken } from '@rocket.chat/core-typings';
 import type { ICredentialTokensModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class CredentialTokensRaw extends ModelClass<ICredentialToken> implements ICredentialTokensModel {
+export class CredentialTokensRaw extends BaseRaw<ICredentialToken> implements ICredentialTokensModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { expireAt: 1 }, sparse: true, expireAfterSeconds: 0 }];
 	}

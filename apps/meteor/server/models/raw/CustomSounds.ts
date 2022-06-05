@@ -3,9 +3,9 @@ import type { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResul
 import { ICustomSound } from '@rocket.chat/core-typings';
 import type { ICustomSoundsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class CustomSoundsRaw extends ModelClass<ICustomSound> implements ICustomSoundsModel {
+export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSoundsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 } }];
 	}

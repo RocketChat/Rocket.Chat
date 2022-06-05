@@ -3,9 +3,9 @@ import { IndexSpecification } from 'mongodb';
 import type { IBannerDismiss } from '@rocket.chat/core-typings';
 import type { IBannersDismissModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class BannersDismissRaw extends ModelClass<IBannerDismiss> implements IBannersDismissModel {
+export class BannersDismissRaw extends BaseRaw<IBannerDismiss> implements IBannersDismissModel {
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1, bannerId: 1 } }];
 	}

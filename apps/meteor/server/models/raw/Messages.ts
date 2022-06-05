@@ -12,9 +12,9 @@ import type {
 } from 'mongodb';
 import type { IMessagesModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class MessagesRaw extends ModelClass<IMessage> implements IMessagesModel {
+export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],

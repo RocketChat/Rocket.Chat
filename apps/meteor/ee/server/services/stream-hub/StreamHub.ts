@@ -17,7 +17,7 @@ import { IntegrationsRaw } from '../../../../server/models/raw/Integrations';
 import { PermissionsRaw } from '../../../../server/models/raw/Permissions';
 import { EmailInboxRaw } from '../../../../server/models/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../../server/models/raw/PbxEvents';
-import { ModelClass } from '../../../../server/models/raw/ModelClass';
+import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 import { api } from '../../../../server/sdk/api';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
@@ -69,7 +69,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		};
 
 		initWatchers(models, api.broadcast.bind(api), (model, fn) => {
-			(model as ModelClass<any>).col.watch([]).on('change', (event) => {
+			(model as BaseRaw<any>).col.watch([]).on('change', (event) => {
 				switch (event.operationType) {
 					case 'insert':
 						fn({

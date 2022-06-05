@@ -2,9 +2,9 @@ import type { IndexSpecification } from 'mongodb';
 import type { IStats } from '@rocket.chat/core-typings';
 import type { IStatisticsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class StatisticsRaw extends ModelClass<IStats> implements IStatisticsModel {
+export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { createdAt: -1 } }];
 	}

@@ -2,9 +2,9 @@ import { Cursor, FilterQuery, UpdateQuery, WriteOpResult } from 'mongodb';
 import type { ISetting, ISettingColor, ISettingSelectOption } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class SettingsRaw extends ModelClass<ISetting> implements ISettingsModel {
+export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 	async getValueById(_id: string): Promise<ISetting['value'] | undefined> {
 		const setting = await this.findOne<Pick<ISetting, 'value'>>({ _id }, { projection: { value: 1 } });
 

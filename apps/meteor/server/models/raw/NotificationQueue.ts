@@ -2,9 +2,9 @@ import type { UpdateWriteOpResult, IndexSpecification } from 'mongodb';
 import type { INotification } from '@rocket.chat/core-typings';
 import type { INotificationQueueModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
+import { BaseRaw } from './BaseRaw';
 
-export class NotificationQueueRaw extends ModelClass<INotification> implements INotificationQueueModel {
+export class NotificationQueueRaw extends BaseRaw<INotification> implements INotificationQueueModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{ key: { uid: 1 } },
