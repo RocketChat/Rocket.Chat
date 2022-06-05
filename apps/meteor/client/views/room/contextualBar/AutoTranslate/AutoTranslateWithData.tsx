@@ -1,25 +1,24 @@
+import { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserSubscription, useLanguage } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useEffect, useState, memo } from 'react';
+import React, { useMemo, useEffect, useState, memo, ReactElement } from 'react';
 
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import AutoTranslate from './AutoTranslate';
 
-const AutoTranslateWithData = ({ rid }) => {
-	const close = useTabBarClose();
+const AutoTranslateWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
+	const handleClose = useTabBarClose();
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);
+	const [currentLanguage, setCurrentLanguage] = useState(subscription?.autoTranslateLanguage ?? '');
+	const saveSettings = useEndpointActionExperimental('POST', 'autotranslate.saveSettings');
 
-	const { value: data } = useEndpointData(
+	const { value: translateData } = useEndpointData(
 		'autotranslate.getSupportedLanguages',
 		useMemo(() => ({ targetLanguage: userLanguage }), [userLanguage]),
 	);
-
-	const [currentLanguage, setCurrentLanguage] = useState(subscription.autoTranslateLanguage);
-
-	const saveSettings = useEndpointActionExperimental('POST', 'autotranslate.saveSettings');
 
 	const handleChangeLanguage = useMutableCallback((value) => {
 		setCurrentLanguage(value);
@@ -40,23 +39,23 @@ const AutoTranslateWithData = ({ rid }) => {
 	});
 
 	useEffect(() => {
-		if (!subscription.autoTranslate) {
+		if (!subscription?.autoTranslate) {
 			return;
 		}
 
-		if (!subscription.autoTranslateLanguage) {
+		if (!subscription?.autoTranslateLanguage) {
 			handleChangeLanguage(userLanguage);
 		}
-	}, [subscription.autoTranslate, subscription.autoTranslateLanguage, handleChangeLanguage, userLanguage]);
+	}, [subscription?.autoTranslate, subscription?.autoTranslateLanguage, handleChangeLanguage, userLanguage]);
 
 	return (
 		<AutoTranslate
 			language={currentLanguage}
-			languages={data ? data.languages.map((value) => [value.language, value.name]) : []}
+			languages={translateData ? translateData.languages.map((language) => [language.language, language.name]) : []}
 			handleSwitch={handleSwitch}
 			handleChangeLanguage={handleChangeLanguage}
-			translateEnable={!!subscription.autoTranslate}
-			handleClose={close}
+			translateEnable={!!subscription?.autoTranslate}
+			handleClose={handleClose}
 		/>
 	);
 };
