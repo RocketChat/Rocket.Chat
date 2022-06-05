@@ -70,7 +70,7 @@ Meteor.startup(() => {
 	router.use(apiLimiter);
 });
 
-router.use((req: Request, res: Response, next) => {
+router.use((req, res, next) => {
 	const { 'x-user-id': userId, 'x-auth-token': authToken, 'x-visitor-token': visitorToken } = req.headers;
 
 	if (userId && authToken) {
@@ -89,7 +89,7 @@ router.use((req: Request, res: Response, next) => {
 	next();
 });
 
-apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router);
+apiServer.use('/api/apps/ui.interaction/', cors(corsOptions).rateLimiter, router); // didn't have the rateLimiter option
 
 const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {} => {
 	if (type === UIKitIncomingInteractionType.BLOCK) {
@@ -212,8 +212,7 @@ const appsRoutes =
 
 					res.send(result);
 				} catch (e) {
-					if (e instanceof Error) res.status(500).send(e.message);
-					else res.status(500).send(e);
+					res.status(500).send(e); // e.message
 				}
 				break;
 			}
@@ -243,8 +242,7 @@ const appsRoutes =
 
 					res.sendStatus(200);
 				} catch (e) {
-					if (e instanceof Error) res.status(500).send(e.message);
-					else res.status(500).send(e);
+					res.status(500).send(e); // e.message
 				}
 				break;
 			}
@@ -268,8 +266,7 @@ const appsRoutes =
 
 					res.send(result);
 				} catch (e) {
-					if (e instanceof Error) res.status(500).send(e.message);
-					else res.status(500).send(e);
+					res.status(500).send(e); // e.message
 				}
 				break;
 			}
@@ -306,8 +303,7 @@ const appsRoutes =
 
 					res.send(result);
 				} catch (e) {
-					if (e instanceof Error) res.status(500).send(e.message);
-					else res.status(500).send(e);
+					res.status(500).send(e); // e.message
 				}
 				break;
 			}
