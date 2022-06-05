@@ -1,10 +1,10 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-
-import { BaseRaw } from './BaseRaw';
 import type { IBanner, ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment, IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Collection, Cursor, FilterQuery, FindOneOptions, UpdateQuery, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
-import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
+
+import { BaseRaw } from './BaseRaw';
 
 type RoleIds = IRole['_id'][] | IRole['_id'];
 
