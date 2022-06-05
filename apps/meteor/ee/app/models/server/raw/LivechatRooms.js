@@ -1,4 +1,4 @@
-import { LivechatRoomsRaw } from '../../../../../app/models/server/raw/LivechatRooms';
+import { LivechatRooms } from '../../../../../server/models/LivechatRooms';
 import { queriesLogger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../livechat-enterprise/server/lib/query.helper';
 import { overwriteClassOnLicense } from '../../../license/server';
@@ -10,7 +10,7 @@ const applyRestrictions = (method) =>
 		return originalFn.call(this, query, ...args);
 	};
 
-overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
+overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 	find: applyRestrictions('find'),
 	update: applyRestrictions('update'),
 	remove: applyRestrictions('remove'),

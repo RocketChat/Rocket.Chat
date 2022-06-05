@@ -50,6 +50,6 @@ import './Subscriptions';
 import './Uploads';
 import './UserDataFiles';
 import './Users';
-import './UserSessions';
+import './UsersSessions';
 import './VoipRooms';
 import './WebdavAccounts';

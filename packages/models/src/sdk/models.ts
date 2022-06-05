@@ -3,6 +3,7 @@ import type {
 	IAvatarsModel,
 	IBannersDismissModel,
 	IBannersModel,
+	ICannedResponseModel,
 	ICredentialTokensModel,
 	ICustomSoundsModel,
 	ICustomUserStatusModel,
@@ -23,8 +24,12 @@ import type {
 	ILivechatDepartmentAgentsModel,
 	ILivechatDepartmentModel,
 	ILivechatInquiryModel,
+	ILivechatPriorityModel,
 	ILivechatRoomsModel,
+	ILivechatTagModel,
 	ILivechatTriggerModel,
+	ILivechatUnitModel,
+	ILivechatUnitMonitorsModel,
 	ILivechatVisitorsModel,
 	ILoginServiceConfigurationModel,
 	IMessagesModel,
@@ -50,7 +55,7 @@ import type {
 	ITeamModel,
 	IUploadsModel,
 	IUserDataFilesModel,
-	IUserSessionsModel,
+	IUsersSessionsModel,
 	IUsersModel,
 	IVoipRoomsModel,
 	IWebdavAccountsModel,
@@ -62,6 +67,7 @@ export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
 export const Avatars = proxify<IAvatarsModel>('IAvatarsModel');
 export const BannersDismiss = proxify<IBannersDismissModel>('IBannersDismissModel');
 export const Banners = proxify<IBannersModel>('IBannersModel');
+export const CannedResponse = proxify<ICannedResponseModel>('ICannedResponseModel');
 export const CredentialTokens = proxify<ICredentialTokensModel>('ICredentialTokensModel');
 export const CustomSounds = proxify<ICustomSoundsModel>('ICustomSoundsModel');
 export const CustomUserStatus = proxify<ICustomUserStatusModel>('ICustomUserStatusModel');
@@ -82,9 +88,13 @@ export const LivechatCustomField = proxify<ILivechatCustomFieldModel>('ILivechat
 export const LivechatDepartmentAgents = proxify<ILivechatDepartmentAgentsModel>('ILivechatDepartmentAgentsModel');
 export const LivechatDepartment = proxify<ILivechatDepartmentModel>('ILivechatDepartmentModel');
 export const LivechatInquiry = proxify<ILivechatInquiryModel>('ILivechatInquiryModel');
+export const LivechatPriority = proxify<ILivechatPriorityModel>('ILivechatPriorityModel');
 export const LivechatRooms = proxify<ILivechatRoomsModel>('ILivechatRoomsModel');
+export const LivechatTag = proxify<ILivechatTagModel>('ILivechatTagModel');
 export const LivechatTrigger = proxify<ILivechatTriggerModel>('ILivechatTriggerModel');
 export const LivechatVisitors = proxify<ILivechatVisitorsModel>('ILivechatVisitorsModel');
+export const LivechatUnit = proxify<ILivechatUnitModel>('ILivechatUnitModel');
+export const LivechatUnitMonitors = proxify<ILivechatUnitMonitorsModel>('ILivechatUnitMonitorsModel');
 export const LoginServiceConfiguration = proxify<ILoginServiceConfigurationModel>('ILoginServiceConfigurationModel');
 export const Messages = proxify<IMessagesModel>('IMessagesModel');
 export const NotificationQueue = proxify<INotificationQueueModel>('INotificationQueueModel');
@@ -110,6 +120,6 @@ export const Team = proxify<ITeamModel>('ITeamModel');
 export const Users = proxify<IUsersModel>('IUsersModel');
 export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
-export const UserSessions = proxify<IUserSessionsModel>('IUserSessionsModel');
+export const UserSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VoipRooms = proxify<IVoipRoomsModel>('IVoipRoomsModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
