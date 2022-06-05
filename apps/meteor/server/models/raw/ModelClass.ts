@@ -24,7 +24,7 @@ import {
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, InsertionModel } from '@rocket.chat/model-typings';
 
-import { setUpdatedAt } from '../../app/models/server/lib/setUpdatedAt';
+import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
 
 const baseName = 'rocketchat_';
 

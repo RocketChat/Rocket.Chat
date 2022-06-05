@@ -4311,6 +4311,8 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.9
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.9
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -29321,6 +29323,8 @@ __metadata:
     "@rocket.chat/emitter": ~0.31.9
     "@rocket.chat/icons": ^0.31.0
     "@rocket.chat/message-parser": next
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.9
     "@rocket.chat/ui-kit": ~0.31.9

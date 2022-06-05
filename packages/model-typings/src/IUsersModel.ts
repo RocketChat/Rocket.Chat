@@ -99,7 +99,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findOneByExtension(extension: any, options: any): any;
 
-	findByExtensions(extensions: any, options: any): any;
+	findByExtensions(extensions: any, options?: any): any;
 
 	getVoipExtensionByUserId(userId: any, options: any): any;
 

@@ -1,73 +1,9 @@
-import NodeRSA from 'node-rsa';
-import type { IFederationKeysModel } from '@rocket.chat/model-typings';
-import type { FederationKey } from '@rocket.chat/core-typings';
 import { registerModel } from '@rocket.chat/models';
+import type { IFederationKeysModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
 import { trashCollection } from '../database/trash';
 import { db, prefix } from '../database/utils';
-
-export class FederationKeys extends ModelClass<FederationKey> implements IFederationKeysModel {
-	async getKey(type: FederationKey['type']): Promise<string | null> {
-		const keyResource = await this.findOne({ type });
-
-		if (!keyResource) {
-			return null;
-		}
-
-		return keyResource.key;
-	}
-
-	loadKey(keyData: NodeRSA.Key, type: FederationKey['type']): NodeRSA {
-		return new NodeRSA(keyData, `pkcs8-${type}-pem`);
-	}
-
-	async generateKeys(): Promise<{
-		privateKey: '' | NodeRSA | null;
-		publicKey: '' | NodeRSA | null;
-	}> {
-		const key = new NodeRSA({ b: 512 });
-
-		key.generateKeyPair();
-
-		await this.deleteMany({});
-
-		await this.insertOne({
-			type: 'private',
-			key: key.exportKey('pkcs8-private-pem').replace(/\n|\r/g, ''),
-		});
-
-		await this.insertOne({
-			type: 'public',
-			key: key.exportKey('pkcs8-public-pem').replace(/\n|\r/g, ''),
-		});
-
-		return {
-			privateKey: await this.getPrivateKey(),
-			publicKey: await this.getPublicKey(),
-		};
-	}
-
-	async getPrivateKey(): Promise<'' | NodeRSA | null> {
-		const keyData = await this.getKey('private');
-
-		return keyData && this.loadKey(keyData, 'private');
-	}
-
-	getPrivateKeyString(): Promise<string | null> {
-		return this.getKey('private');
-	}
-
-	async getPublicKey(): Promise<'' | NodeRSA | null> {
-		const keyData = await this.getKey('public');
-
-		return keyData && this.loadKey(keyData, 'public');
-	}
-
-	getPublicKeyString(): Promise<string | null> {
-		return this.getKey('public');
-	}
-}
+import { FederationKeysRaw } from './raw/FederationKeys';
 
 const col = db.collection(`${prefix}federation_keys`);
-registerModel('IFederationKeysModel', new FederationKeys(col, trashCollection) as IFederationKeysModel);
+registerModel('IFederationKeysModel', new FederationKeysRaw(col, trashCollection) as IFederationKeysModel);

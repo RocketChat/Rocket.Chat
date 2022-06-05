@@ -1,15 +1,10 @@
-import type { ILoginServiceConfiguration } from '@rocket.chat/core-typings';
-import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
+import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings';
 
-import { ModelClass } from './ModelClass';
 import { trashCollection } from '../database/trash';
 import { db } from '../database/utils';
-
-export class LoginServiceConfiguration extends ModelClass<ILoginServiceConfiguration> implements ILoginServiceConfigurationModel {}
+import { LoginServiceConfigurationRaw } from './raw/LoginServiceConfiguration';
 
 const col = db.collection('meteor_accounts_loginServiceConfiguration');
-registerModel(
-	'ILoginServiceConfigurationModel',
-	new LoginServiceConfiguration(col, trashCollection, { preventSetUpdatedAt: true }) as ILoginServiceConfigurationModel,
-);
+export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(col, trashCollection, { preventSetUpdatedAt: true });
+registerModel('ILoginServiceConfigurationModel', LoginServiceConfiguration as ILoginServiceConfigurationModel);

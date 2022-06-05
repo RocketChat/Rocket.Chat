@@ -1,11 +1,7 @@
-import { registerModel } from '@rocket.chat/models';
-
 import { ModelClass } from './ModelClass';
-import { trashCollection } from '../database/trash';
-import MeteorModel from '../../app/models/server/models/LivechatRooms';
-import { getValue } from '../../app/settings/server/raw';
+import { getValue } from '../../../app/settings/server/raw';
 
-export class LivechatRooms extends ModelClass {
+export class LivechatRoomsRaw extends ModelClass {
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
 		const match = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
 		const matchUsers = { $match: {} };
@@ -1185,6 +1181,3 @@ export class LivechatRooms extends ModelClass {
 		return this.update({ _id: roomId }, { $set: { departmentId } });
 	}
 }
-
-const col = MeteorModel.model.rawCollection();
-registerModel('ILivechatRoomsModel', new LivechatRooms(col, trashCollection));

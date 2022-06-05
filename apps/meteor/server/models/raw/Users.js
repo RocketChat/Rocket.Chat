@@ -1,11 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
-import { trashCollection } from '../database/trash';
-import MeteorModel from '../../app/models/server/models/Users';
 
-export class Users extends ModelClass {
+export class UsersRaw extends ModelClass {
 	constructor(...args) {
 		super(...args);
 
@@ -1019,6 +1016,3 @@ export class Users extends ModelClass {
 		return this.find(query, options);
 	}
 }
-
-const col = MeteorModel.model.rawCollection();
-registerModel('IUsersModel', new Users(col, trashCollection));
