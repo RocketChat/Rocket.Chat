@@ -2,10 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
-import { Integrations } from '@rocket.chat/models';
+import { Integrations, Roles } from '@rocket.chat/models';
 
 import { Rooms, Users, Subscriptions } from '../../../../models/server';
-import { Roles } from '../../../../models/server/raw';
 import { hasAllPermission, hasPermission } from '../../../../authorization/server';
 
 const validChannelChars = ['@', '#'];

@@ -1,5 +1,6 @@
+import { Rooms } from '@rocket.chat/models';
+
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../models/server/raw';
 import { Subscriptions } from '../../../models/server';
 import { adminFields } from '../../../../lib/rooms/adminFields';
 

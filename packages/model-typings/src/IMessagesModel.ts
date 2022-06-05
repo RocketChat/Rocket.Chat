@@ -31,7 +31,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options: any;
 	}): AggregationCursor<any>;
 
-	getTotalOfMessagesSentByDate(params: { start: Date; end: Date; options: any }): Promise<any[]>;
+	getTotalOfMessagesSentByDate(params: { start: Date; end: Date; options?: any }): Promise<any[]>;
 
 	findLivechatClosedMessages(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage>;
 

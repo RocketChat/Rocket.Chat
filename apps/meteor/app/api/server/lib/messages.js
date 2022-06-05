@@ -1,5 +1,6 @@
+import { Rooms, Messages, Users } from '@rocket.chat/models';
+
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { Rooms, Messages, Users } from '../../../models/server/raw';
 import { getValue } from '../../../settings/server/raw';
 
 export async function findMentionedMessages({ uid, roomId, pagination: { offset, count, sort } }) {

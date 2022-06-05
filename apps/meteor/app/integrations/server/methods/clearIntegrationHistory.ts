@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Integrations } from '@rocket.chat/models';
+import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { IntegrationHistory } from '../../../models/server/raw';
 import notifications from '../../../notifications/server/lib/Notifications';
 
 Meteor.methods({
