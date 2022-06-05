@@ -70,4 +70,4 @@ export class ExportOperations extends ModelClass<IExportOperation> implements IE
 }
 
 const col = db.collection(`${prefix}export_operations`);
-registerModel('IExportOperationsModel', new ExportOperations(col, trashCollection));
+registerModel('IExportOperationsModel', new ExportOperations(col, trashCollection) as IExportOperationsModel);

@@ -18,9 +18,13 @@ import type {
 	OSSessionAggregationResult,
 	IUser,
 } from '@rocket.chat/core-typings';
-import type { ModelOptionalId } from '@rocket.chat/model-typings';
+import type { ISessionsModel, ModelOptionalId } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
+import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {
@@ -738,7 +742,7 @@ export const aggregates = {
 	},
 };
 
-export class Sessions extends ModelClass<ISession> {
+export class Sessions extends ModelClass<ISession> implements ISessionsModel {
 	private secondaryCollection: Collection<ISession>;
 
 	constructor(public readonly col: Collection<ISession>, public readonly colSecondary: Collection<ISession>, trash?: Collection<ISession>) {
@@ -1317,3 +1321,7 @@ export class Sessions extends ModelClass<ISession> {
 		return this.col.bulkWrite(ops, { ordered: false });
 	}
 }
+
+const col = db.collection(`${prefix}sessions`);
+const colSecondary = db.collection(`${prefix}sessions`, { readPreference: readSecondaryPreferred(db) });
+registerModel('ISessionsModel', new Sessions(col, colSecondary, trashCollection) as ISessionsModel);

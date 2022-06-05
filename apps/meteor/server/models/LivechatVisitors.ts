@@ -1,10 +1,14 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { AggregationCursor, Cursor, FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { ILivechatVisitorsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/LivechatVisitors';
 
-export class LivechatVisitors extends ModelClass<ILivechatVisitor> {
+export class LivechatVisitors extends ModelClass<ILivechatVisitor> implements ILivechatVisitorsModel {
 	findOneById(_id: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null> {
 		const query = {
 			_id,
@@ -106,3 +110,6 @@ export class LivechatVisitors extends ModelClass<ILivechatVisitor> {
 		return this.find(query, options);
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('ILivechatVisitorsModel', new LivechatVisitors(col, trashCollection) as ILivechatVisitorsModel);

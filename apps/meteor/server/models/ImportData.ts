@@ -21,4 +21,4 @@ export class ImportData extends ModelClass<IImportRecord> implements IImportData
 	}
 }
 
-registerModel('IImportDataModel', new ImportData(ImportDataModel.model.rawCollection(), trashCollection));
+registerModel('IImportDataModel', new ImportData(ImportDataModel.model.rawCollection(), trashCollection) as IImportDataModel);

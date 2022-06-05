@@ -1,9 +1,13 @@
 import type { Cursor, IndexSpecification } from 'mongodb';
 import type { IPbxEvent } from '@rocket.chat/core-typings';
+import type { IPbxEventsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db } from '../database/utils';
 
-export class PbxEvents extends ModelClass<IPbxEvent> {
+export class PbxEvents extends ModelClass<IPbxEvent> implements IPbxEventsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { uniqueId: 1 }, unique: true }];
 	}
@@ -58,3 +62,6 @@ export class PbxEvents extends ModelClass<IPbxEvent> {
 		});
 	}
 }
+
+const col = db.collection('pbx_events');
+registerModel('IPbxEventsModel', new PbxEvents(col, trashCollection) as IPbxEventsModel);

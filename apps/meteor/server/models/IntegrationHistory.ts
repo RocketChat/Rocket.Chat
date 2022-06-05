@@ -25,4 +25,4 @@ export class IntegrationHistory extends ModelClass<IIntegrationHistory> implemen
 }
 
 const col = db.collection(`${prefix}integration_history`);
-registerModel('IIntegrationHistoryModel', new IntegrationHistory(col, trashCollection));
+registerModel('IIntegrationHistoryModel', new IntegrationHistory(col, trashCollection) as IIntegrationHistoryModel);

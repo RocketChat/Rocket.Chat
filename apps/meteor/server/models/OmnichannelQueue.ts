@@ -1,9 +1,13 @@
 import type { IOmnichannelQueueStatus } from '@rocket.chat/core-typings';
+import type { IOmnichannelQueueModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/OmnichannelQueue';
 
 const UNIQUE_QUEUE_ID = 'queue';
-export class OmnichannelQueueRaw extends ModelClass<IOmnichannelQueueStatus> {
+export class OmnichannelQueue extends ModelClass<IOmnichannelQueueStatus> implements IOmnichannelQueueModel {
 	initQueue(): any {
 		return this.col.updateOne(
 			{
@@ -95,3 +99,6 @@ export class OmnichannelQueueRaw extends ModelClass<IOmnichannelQueueStatus> {
 		return result.value;
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('IOmnichannelQueueModel', new OmnichannelQueue(col, trashCollection) as IOmnichannelQueueModel);

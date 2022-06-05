@@ -1,9 +1,13 @@
 import type { UpdateWriteOpResult, IndexSpecification } from 'mongodb';
 import type { INotification } from '@rocket.chat/core-typings';
+import type { INotificationQueueModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class NotificationQueueRaw extends ModelClass<INotification> {
+export class NotificationQueue extends ModelClass<INotification> implements INotificationQueueModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{ key: { uid: 1 } },
@@ -95,3 +99,6 @@ export class NotificationQueueRaw extends ModelClass<INotification> {
 		return result.value;
 	}
 }
+
+const col = db.collection(`${prefix}notification_queue`);
+registerModel('INotificationQueueModel', new NotificationQueue(col, trashCollection) as INotificationQueueModel);

@@ -1,10 +1,14 @@
 import type { IndexSpecification } from 'mongodb';
 import type { IServerEvent } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
+import type { IServerEventsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class ServerEvents extends ModelClass<IServerEvent> {
+export class ServerEvents extends ModelClass<IServerEvent> implements IServerEventsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { t: 1, ip: 1, ts: -1 } }, { key: { 't': 1, 'u.username': 1, 'ts': -1 } }];
 	}
@@ -63,3 +67,6 @@ export class ServerEvents extends ModelClass<IServerEvent> {
 		}).count();
 	}
 }
+
+const col = db.collection(`${prefix}server_events`);
+registerModel('IServerEventsModel', new ServerEvents(col, trashCollection) as IServerEventsModel);

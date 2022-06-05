@@ -35,4 +35,4 @@ export class CredentialTokens extends ModelClass<ICredentialToken> implements IC
 }
 
 const col = db.collection(`${prefix}credential_tokens`);
-registerModel('ICredentialTokensModel', new CredentialTokens(col, trashCollection));
+registerModel('ICredentialTokensModel', new CredentialTokens(col, trashCollection) as ICredentialTokensModel);

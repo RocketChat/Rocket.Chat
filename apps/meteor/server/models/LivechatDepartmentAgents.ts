@@ -1,9 +1,13 @@
 import { Cursor, FilterQuery, WithoutProjection, FindOneOptions } from 'mongodb';
 import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/LivechatDepartmentAgents';
 
-export class LivechatDepartmentAgents extends ModelClass<ILivechatDepartmentAgents> {
+export class LivechatDepartmentAgents extends ModelClass<ILivechatDepartmentAgents> implements ILivechatDepartmentAgentsModel {
 	findUsersInQueue(usersList: string[]): Cursor<ILivechatDepartmentAgents>;
 
 	findUsersInQueue(
@@ -110,3 +114,6 @@ export class LivechatDepartmentAgents extends ModelClass<ILivechatDepartmentAgen
 		return [];
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('ILivechatDepartmentAgentsModel', new LivechatDepartmentAgents(col, trashCollection) as ILivechatDepartmentAgentsModel);

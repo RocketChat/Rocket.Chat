@@ -13,5 +13,5 @@ registerModel(
 	'IInstanceStatusModel',
 	new InstanceStatus(col, trashCollection, {
 		preventSetUpdatedAt: true,
-	}),
+	}) as IInstanceStatusModel,
 );

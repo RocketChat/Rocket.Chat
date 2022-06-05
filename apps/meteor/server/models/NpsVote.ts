@@ -1,10 +1,14 @@
 import type { Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, IndexSpecification } from 'mongodb';
 import { ObjectId } from 'mongodb';
 import { INpsVote, INpsVoteStatus } from '@rocket.chat/core-typings';
+import type { INpsVoteModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class NpsVote extends ModelClass<INpsVote> {
+export class NpsVote extends ModelClass<INpsVote> implements INpsVoteModel {
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}
@@ -84,3 +88,6 @@ export class NpsVote extends ModelClass<INpsVote> {
 		return this.col.updateMany(query, update);
 	}
 }
+
+const col = db.collection(`${prefix}nps_vote`);
+registerModel('INpsVoteModel', new NpsVote(col, trashCollection) as INpsVoteModel);

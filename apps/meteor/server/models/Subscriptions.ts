@@ -1,11 +1,15 @@
 import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, Collection, WithoutProjection } from 'mongodb';
 import { compact } from 'lodash';
 import type { ISubscription, IRole, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/Subscriptions';
 import { UsersRaw } from './Users';
 
-export class Subscriptions extends ModelClass<ISubscription> {
+export class Subscriptions extends ModelClass<ISubscription> implements ISubscriptionsModel {
 	constructor(
 		public readonly col: Collection<ISubscription>,
 		private readonly models: { Users: UsersRaw },
@@ -207,3 +211,6 @@ export class Subscriptions extends ModelClass<ISubscription> {
 		return !!found;
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('ISubscriptionsModel', new Subscriptions(col, { Users }, trashCollection) as ISubscriptionsModel);

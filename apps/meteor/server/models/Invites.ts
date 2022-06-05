@@ -40,4 +40,4 @@ export class Invites extends ModelClass<IInvite> implements IInvitesModel {
 }
 
 const col = db.collection(`${prefix}invites`);
-registerModel('IInvitesModel', new Invites(col, trashCollection));
+registerModel('IInvitesModel', new Invites(col, trashCollection) as IInvitesModel);

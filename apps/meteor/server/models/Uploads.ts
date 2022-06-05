@@ -14,9 +14,12 @@ import type {
 	IndexSpecification,
 } from 'mongodb';
 import type { IUpload } from '@rocket.chat/core-typings';
-import type { InsertionModel } from '@rocket.chat/model-typings';
+import type { IUploadsModel, InsertionModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
 const fillTypeGroup = (fileData: Partial<IUpload>): void => {
 	if (!fileData.type) {
@@ -26,7 +29,7 @@ const fillTypeGroup = (fileData: Partial<IUpload>): void => {
 	fileData.typeGroup = fileData.type.split('/').shift();
 };
 
-export class Uploads extends ModelClass<IUpload> {
+export class Uploads extends ModelClass<IUpload> implements IUploadsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { rid: 1 } }, { key: { uploadedAt: 1 } }, { key: { typeGroup: 1 } }];
 	}
@@ -134,3 +137,6 @@ export class Uploads extends ModelClass<IUpload> {
 		return this.deleteOne({ _id: fileId });
 	}
 }
+
+const col = db.collection(`${prefix}uploads`);
+registerModel('IUploadsModel', new Uploads(col, trashCollection) as IUploadsModel);

@@ -38,4 +38,4 @@ export class FederationServers extends ModelClass<IFederationServer> implements 
 }
 
 const col = db.collection(`${prefix}federation_servers`);
-registerModel('IFederationServersModel', new FederationServers(col, trashCollection));
+registerModel('IFederationServersModel', new FederationServers(col, trashCollection) as IFederationServersModel);

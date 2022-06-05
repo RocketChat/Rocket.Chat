@@ -1,9 +1,13 @@
 import type { DeleteWriteOpResultObject, IndexSpecification } from 'mongodb';
 import type { IOEmbedCache } from '@rocket.chat/core-typings';
+import type { IOEmbedCacheModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class OEmbedCache extends ModelClass<IOEmbedCache> {
+export class OEmbedCache extends ModelClass<IOEmbedCache> implements IOEmbedCacheModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { updatedAt: 1 } }];
 	}
@@ -27,3 +31,6 @@ export class OEmbedCache extends ModelClass<IOEmbedCache> {
 		return this.deleteMany(query);
 	}
 }
+
+const col = db.collection(`${prefix}oembed_cache`);
+registerModel('IOEmbedCacheModel', new OEmbedCache(col, trashCollection) as IOEmbedCacheModel);

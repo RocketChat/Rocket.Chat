@@ -1,7 +1,11 @@
 import { FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/LivechatBusinessHours';
 
 export interface IWorkHoursCronJobsItem {
 	day: string;
@@ -13,7 +17,7 @@ export interface IWorkHoursCronJobsWrapper {
 	finish: IWorkHoursCronJobsItem[];
 }
 
-export class LivechatBusinessHours extends ModelClass<ILivechatBusinessHour> {
+export class LivechatBusinessHours extends ModelClass<ILivechatBusinessHour> implements ILivechatBusinessHoursModel {
 	async findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
 
 	async findOneDefaultBusinessHour(
@@ -160,3 +164,6 @@ export class LivechatBusinessHours extends ModelClass<ILivechatBusinessHour> {
 		return this.col.find(query, options).toArray();
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('ILivechatBusinessHoursModel', new LivechatBusinessHours(col, trashCollection) as ILivechatBusinessHoursModel);

@@ -80,4 +80,4 @@ export class Avatars extends ModelClass<IAvatar> implements IAvatarsModel {
 }
 
 const col = db.collection(`${prefix}avatars`);
-registerModel('IAvatarsModel', new Avatars(col, trashCollection));
+registerModel('IAvatarsModel', new Avatars(col, trashCollection) as IAvatarsModel);

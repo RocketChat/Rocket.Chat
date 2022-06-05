@@ -1,10 +1,14 @@
 import moment from 'moment';
 import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/core-typings';
 import type { AggregationCursor, Cursor, FindAndModifyWriteOpResultObject, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
+import type { ILivechatAgentActivityModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class LivechatAgentActivity extends ModelClass<ILivechatAgentActivity> {
+export class LivechatAgentActivity extends ModelClass<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { date: 1 } }, { key: { agentId: 1, date: 1 }, unique: true }];
 	}
@@ -203,3 +207,6 @@ export class LivechatAgentActivity extends ModelClass<ILivechatAgentActivity> {
 		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 }
+
+const col = db.collection(`${prefix}livechat_agent_activity`);
+registerModel('ILivechatAgentActivityModel', new LivechatAgentActivity(col, trashCollection) as ILivechatAgentActivityModel);

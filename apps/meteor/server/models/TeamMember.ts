@@ -9,10 +9,14 @@ import type {
 	IndexSpecification,
 } from 'mongodb';
 import type { ITeamMember, IUser, IRole } from '@rocket.chat/core-typings';
+import type { ITeamMemberModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class TeamMember extends ModelClass<ITeamMember> {
+export class TeamMember extends ModelClass<ITeamMember> implements ITeamMemberModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{
@@ -178,3 +182,6 @@ export class TeamMember extends ModelClass<ITeamMember> {
 		});
 	}
 }
+
+const col = db.collection(`${prefix}team_member`);
+registerModel('ITeamMemberModel', new TeamMember(col, trashCollection) as ITeamMemberModel);

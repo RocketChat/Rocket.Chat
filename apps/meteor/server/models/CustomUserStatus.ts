@@ -71,4 +71,4 @@ export class CustomUserStatus extends ModelClass<ICustomUserStatus> implements I
 }
 
 const col = db.collection(`${prefix}custom_user_status`);
-registerModel('ICustomUserStatusModel', new CustomUserStatus(col, trashCollection));
+registerModel('ICustomUserStatusModel', new CustomUserStatus(col, trashCollection) as ICustomUserStatusModel);

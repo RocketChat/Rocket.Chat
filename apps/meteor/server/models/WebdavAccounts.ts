@@ -1,12 +1,13 @@
-/**
- * Webdav Accounts model
- */
 import type { FindOneOptions, Cursor, DeleteWriteOpResultObject, IndexSpecification } from 'mongodb';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import type { IWebdavAccountsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class WebdavAccounts extends ModelClass<IWebdavAccount> {
+export class WebdavAccounts extends ModelClass<IWebdavAccount> implements IWebdavAccountsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1 } }];
 	}
@@ -39,3 +40,6 @@ export class WebdavAccounts extends ModelClass<IWebdavAccount> {
 		return this.deleteOne({ _id, userId });
 	}
 }
+
+const col = db.collection(`${prefix}webdav_accounts`);
+registerModel('IWebdavAccountsModel', new WebdavAccounts(col, trashCollection) as IWebdavAccountsModel);

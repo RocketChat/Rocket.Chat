@@ -49,4 +49,4 @@ export class CustomSounds extends ModelClass<ICustomSound> implements ICustomSou
 }
 
 const col = db.collection(`${prefix}custom_sounds`);
-registerModel('ICustomSoundsModel', new CustomSounds(col, trashCollection));
+registerModel('ICustomSoundsModel', new CustomSounds(col, trashCollection) as ICustomSoundsModel);

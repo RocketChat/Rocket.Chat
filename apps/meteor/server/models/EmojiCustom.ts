@@ -75,4 +75,4 @@ export class EmojiCustom extends ModelClass<IEmojiCustom> implements IEmojiCusto
 }
 
 const col = db.collection(`${prefix}custom_emoji`);
-registerModel('IEmojiCustomModel', new EmojiCustom(col, trashCollection));
+registerModel('IEmojiCustomModel', new EmojiCustom(col, trashCollection) as IEmojiCustomModel);

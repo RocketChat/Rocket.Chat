@@ -23,4 +23,4 @@ export class EmailMessageHistory extends ModelClass<IEmailMessageHistory> implem
 }
 
 const col = db.collection(`${prefix}email_message_history`);
-registerModel('IEmailInboxModel', new EmailMessageHistory(col, trashCollection));
+registerModel('IEmailInboxModel', new EmailMessageHistory(col, trashCollection) as IEmailMessageHistoryModel);

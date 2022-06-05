@@ -1,10 +1,14 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { FindOneOptions, Cursor, FilterQuery, WriteOpResult } from 'mongodb';
 import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/LivechatDepartment';
 
-export class LivechatDepartment extends ModelClass<ILivechatDepartmentRecord> {
+export class LivechatDepartment extends ModelClass<ILivechatDepartmentRecord> implements ILivechatDepartmentModel {
 	findInIds(departmentsIds: string[], options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
 		const query = { _id: { $in: departmentsIds } };
 		return this.find(query, options);
@@ -106,3 +110,6 @@ export class LivechatDepartment extends ModelClass<ILivechatDepartmentRecord> {
 		return this.col.update(query, update, { multi: true });
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('ILivechatDepartmentModel', new LivechatDepartment(col, trashCollection) as ILivechatDepartmentModel);

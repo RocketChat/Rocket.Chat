@@ -51,4 +51,4 @@ export class Integrations extends ModelClass<IIntegration> implements IIntegrati
 }
 
 const col = db.collection(`${prefix}integrations`);
-registerModel('IIntegrationsModel', new Integrations(col, trashCollection));
+registerModel('IIntegrationsModel', new Integrations(col, trashCollection) as IIntegrationsModel);

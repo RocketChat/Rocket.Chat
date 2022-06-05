@@ -1,9 +1,13 @@
 import { FindOneOptions, MongoDistinctPreferences, UpdateWriteOpResult } from 'mongodb';
 import { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/LivechatInquiry';
 
-export class LivechatInquiry extends ModelClass<ILivechatInquiryRecord> {
+export class LivechatInquiry extends ModelClass<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null> {
 		const query = {
 			rid,
@@ -35,3 +39,6 @@ export class LivechatInquiry extends ModelClass<ILivechatInquiryRecord> {
 		return this.updateOne({ rid }, { $set: { lastMessage: message } });
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('ILivechatInquiryModel', new LivechatInquiry(col, trashCollection) as ILivechatInquiryModel);

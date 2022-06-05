@@ -1,10 +1,14 @@
 import type { UpdateWriteOpResult, IndexSpecification } from 'mongodb';
 import type { INps } from '@rocket.chat/core-typings';
 import { NPSStatus } from '@rocket.chat/core-typings';
+import type { INpsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class NpsRaw extends ModelClass<INps> {
+export class Nps extends ModelClass<INps> implements INpsModel {
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { status: 1, expireAt: 1 } }];
 	}
@@ -91,3 +95,6 @@ export class NpsRaw extends ModelClass<INps> {
 		return this.col.updateMany(query, update);
 	}
 }
+
+const col = db.collection(`${prefix}nps`);
+registerModel('INpsModel', new Nps(col, trashCollection) as INpsModel);

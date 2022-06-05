@@ -1,9 +1,13 @@
 import { Cursor, FilterQuery, UpdateQuery, WriteOpResult } from 'mongodb';
 import type { ISetting, ISettingColor, ISettingSelectOption } from '@rocket.chat/core-typings';
+import type { ISettingsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/Settings';
 
-export class Settings extends ModelClass<ISetting> {
+export class Settings extends ModelClass<ISetting> implements ISettingsModel {
 	async getValueById(_id: string): Promise<ISetting['value'] | undefined> {
 		const setting = await this.findOne<Pick<ISetting, 'value'>>({ _id }, { projection: { value: 1 } });
 
@@ -183,3 +187,6 @@ export class Settings extends ModelClass<ISetting> {
 		});
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('ISettingsModel', new Settings(col, trashCollection) as ISettingsModel);

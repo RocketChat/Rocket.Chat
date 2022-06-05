@@ -14,4 +14,4 @@ export class EmailInbox extends ModelClass<IEmailInbox> implements IEmailInboxMo
 }
 
 const col = db.collection(`${prefix}email_inbox`);
-registerModel('IEmailInboxModel', new EmailInbox(col, trashCollection));
+registerModel('IEmailInboxModel', new EmailInbox(col, trashCollection) as IEmailInboxModel);

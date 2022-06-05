@@ -1,10 +1,14 @@
 import type { Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, InsertOneWriteOpResult } from 'mongodb';
 import { IndexSpecification } from 'mongodb';
 import { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
+import type { IBannersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class Banners extends ModelClass<IBanner> {
+export class Banners extends ModelClass<IBanner> implements IBannersModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { platform: 1, startAt: 1, expireAt: 1 } }, { key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }];
 	}
@@ -53,3 +57,6 @@ export class Banners extends ModelClass<IBanner> {
 		return this.col.updateOne({ _id: bannerId, active: { $ne: false } }, { $set: { active: false, inactivedAt: new Date() } });
 	}
 }
+
+const col = db.collection(`${prefix}banner`);
+registerModel('IBannersModel', new Banners(col, trashCollection) as IBannersModel);

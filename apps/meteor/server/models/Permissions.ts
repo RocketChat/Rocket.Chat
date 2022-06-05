@@ -1,8 +1,12 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
+import type { IPermissionsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class Permissions extends ModelClass<IPermission> {
+export class Permissions extends ModelClass<IPermission> implements IPermissionsModel {
 	async createOrUpdate(name: string, roles: IRole['_id'][]): Promise<IPermission['_id']> {
 		const exists = await this.findOne<Pick<IPermission, '_id'>>(
 			{
@@ -41,3 +45,6 @@ export class Permissions extends ModelClass<IPermission> {
 		await this.update({ _id: permission, roles: role }, { $pull: { roles: role } });
 	}
 }
+
+const col = db.collection(`${prefix}permissions`);
+registerModel('IPermissionsModel', new Permissions(col, trashCollection) as IPermissionsModel);
