@@ -1,10 +1,11 @@
+import type { UpdateWriteOpResult, Cursor } from 'mongodb';
 import type { IUser, IRole, IRoom } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
 export interface IUsersModel extends IBaseModel<IUser> {
-	addRolesByUserId(uid: string, roles: IRole['_id'][]): any;
-	findUsersInRoles(roles: IRole['_id'][], scope: null, options: any): any;
+	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateWriteOpResult>;
+	findUsersInRoles(roles: IRole['_id'][], scope?: null, options?: any): Cursor<IUser>;
 	findOneByUsername(username: string, options?: any): any;
 	findOneAgentById(_id: string, options: any): any;
 	findUsersInRolesWithQuery(roles: IRole['_id'] | IRole['_id'][], query: any, options: any): any;
@@ -31,7 +32,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findConnectedLDAPUsers(options: any): any;
 
-	isUserInRole(userId: any, roleId: any): any;
+	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<boolean>;
 
 	getDistinctFederationDomains(): any;
 
@@ -89,9 +90,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	removeRoomsByRoomIdsAndUserId(rids: any, userId: any): any;
 
-	removeRolesByUserId(uid: string, roles: any): any;
+	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateWriteOpResult>;
 
-	isUserInRoleScope(uid: any): Promise<any>;
+	isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
 
 	addBannerById(_id: any, banner: any): any;
 
@@ -99,7 +100,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findOneByExtension(extension: any, options: any): any;
 
-	findByExtensions(extensions: any, options?: any): any;
+	findByExtensions(extensions: any, options?: any): Cursor<IUser>;
 
 	getVoipExtensionByUserId(userId: any, options: any): any;
 

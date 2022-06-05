@@ -1,16 +1,13 @@
 import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, Collection, WithoutProjection } from 'mongodb';
 import { compact } from 'lodash';
 import type { ISubscription, IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import type { ISubscriptionsModel, IUsersModel } from '@rocket.chat/model-typings';
+import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
+import { Users } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
 
 export class SubscriptionsRaw extends ModelClass<ISubscription> implements ISubscriptionsModel {
-	constructor(
-		public readonly col: Collection<ISubscription>,
-		private readonly models: { Users: IUsersModel },
-		trash?: Collection<ISubscription>,
-	) {
+	constructor(public readonly col: Collection<ISubscription>, trash?: Collection<ISubscription>) {
 		super(col, trash);
 	}
 
@@ -165,7 +162,7 @@ export class SubscriptionsRaw extends ModelClass<ISubscription> implements ISubs
 
 		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
 
-		return this.models.Users.find<P>({ _id: { $in: users } }, options || {});
+		return Users.find<P>({ _id: { $in: users } }, options || {});
 	}
 
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateWriteOpResult> {

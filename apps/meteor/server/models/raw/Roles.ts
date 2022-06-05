@@ -9,17 +9,13 @@ import type {
 	WithoutProjection,
 } from 'mongodb';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import type { IRolesModel, IUsersModel, ISubscriptionsModel } from '@rocket.chat/model-typings';
+import type { IRolesModel } from '@rocket.chat/model-typings';
+import { Users, Subscriptions } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
 
-type ScopedModelRoles = {
-	Subscriptions: ISubscriptionsModel;
-	Users: IUsersModel;
-};
-
 export class RolesRaw extends ModelClass<IRole> implements IRolesModel {
-	constructor(public readonly col: Collection<IRole>, private readonly models: ScopedModelRoles, trash?: Collection<IRole>) {
+	constructor(public readonly col: Collection<IRole>, trash?: Collection<IRole>) {
 		super(col, trash);
 	}
 
@@ -50,11 +46,11 @@ export class RolesRaw extends ModelClass<IRole> implements IRolesModel {
 			}
 			switch (role.scope) {
 				case 'Subscriptions':
-					await this.models.Subscriptions.addRolesByUserId(userId, [role._id], scope);
+					await Subscriptions.addRolesByUserId(userId, [role._id], scope);
 					break;
 				case 'Users':
 				default:
-					await this.models.Users.addRolesByUserId(userId, [role._id]);
+					await Users.addRolesByUserId(userId, [role._id]);
 			}
 		}
 		return true;
@@ -74,13 +70,13 @@ export class RolesRaw extends ModelClass<IRole> implements IRolesModel {
 
 			switch (role.scope) {
 				case 'Subscriptions':
-					if (await this.models.Subscriptions.isUserInRole(userId, roleId, scope)) {
+					if (await Subscriptions.isUserInRole(userId, roleId, scope)) {
 						return true;
 					}
 					break;
 				case 'Users':
 				default:
-					if (await this.models.Users.isUserInRole(userId, roleId)) {
+					if (await Users.isUserInRole(userId, roleId)) {
 						return true;
 					}
 			}
@@ -102,11 +98,11 @@ export class RolesRaw extends ModelClass<IRole> implements IRolesModel {
 
 			switch (role.scope) {
 				case 'Subscriptions':
-					scope && (await this.models.Subscriptions.removeRolesByUserId(userId, [roleId], scope));
+					scope && (await Subscriptions.removeRolesByUserId(userId, [roleId], scope));
 					break;
 				case 'Users':
 				default:
-					await this.models.Users.removeRolesByUserId(userId, [roleId]);
+					await Users.removeRolesByUserId(userId, [roleId]);
 			}
 		}
 		return true;
@@ -215,10 +211,10 @@ export class RolesRaw extends ModelClass<IRole> implements IRolesModel {
 
 		switch (role.scope) {
 			case 'Subscriptions':
-				return this.models.Subscriptions.findUsersInRoles([role._id], scope, options);
+				return Subscriptions.findUsersInRoles([role._id], scope, options);
 			case 'Users':
 			default:
-				return this.models.Users.findUsersInRoles([role._id], null, options);
+				return Users.findUsersInRoles([role._id], null, options);
 		}
 	}
 
@@ -252,10 +248,10 @@ export class RolesRaw extends ModelClass<IRole> implements IRolesModel {
 
 		switch (role.scope) {
 			case 'Subscriptions':
-				return this.models.Subscriptions.isUserInRoleScope(uid, scope);
+				return Subscriptions.isUserInRoleScope(uid, scope);
 			case 'Users':
 			default:
-				return this.models.Users.isUserInRoleScope(uid);
+				return Users.isUserInRoleScope(uid);
 		}
 	}
 }

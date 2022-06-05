@@ -53,6 +53,7 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 		options?: FindOneAndUpdateOption<T>,
 	): Promise<FindAndModifyWriteOpResultObject<T>>;
 	findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
+	findOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
 	findOneById<P>(_id: string, options?: any): Promise<T | P | null>;
 	findOne(query?: FilterQuery<T> | string, options?: undefined): Promise<T | null>;
 	findOne(query: FilterQuery<T> | string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null>;
