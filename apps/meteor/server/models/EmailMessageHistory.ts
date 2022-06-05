@@ -1,10 +1,14 @@
 import { IndexSpecification } from 'mongodb';
 import type { InsertOneWriteOpResult, WithId } from 'mongodb';
 import { IEmailMessageHistory } from '@rocket.chat/core-typings';
+import { IEmailMessageHistoryModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class EmailMessageHistory extends ModelClass<IEmailMessageHistory> {
+export class EmailMessageHistory extends ModelClass<IEmailMessageHistory> implements IEmailMessageHistoryModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { createdAt: 1 }, expireAfterSeconds: 60 * 60 * 24 }];
 	}
@@ -17,3 +21,6 @@ export class EmailMessageHistory extends ModelClass<IEmailMessageHistory> {
 		});
 	}
 }
+
+const col = db.collection(`${prefix}email_message_history`);
+registerModel('IEmailInboxModel', new EmailMessageHistory(col, trashCollection));

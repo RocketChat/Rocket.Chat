@@ -1,10 +1,13 @@
 import type { IndexSpecification } from 'mongodb';
 import type { IIntegration, IUser } from '@rocket.chat/core-typings';
-import type { IBaseModel } from '@rocket.chat/model-typings';
+import type { IBaseModel, IIntegrationsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class Integrations extends ModelClass<IIntegration> {
+export class Integrations extends ModelClass<IIntegration> implements IIntegrationsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { type: 1 } }];
 	}
@@ -46,3 +49,6 @@ export class Integrations extends ModelClass<IIntegration> {
 		return this.updateMany({ userId }, { $set: { enabled: false } });
 	}
 }
+
+const col = db.collection(`${prefix}integrations`);
+registerModel('IIntegrationsModel', new Integrations(col, trashCollection));

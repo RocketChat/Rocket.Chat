@@ -1,10 +1,14 @@
 import { IndexSpecification } from 'mongodb';
 import type { Cursor, UpdateWriteOpResult } from 'mongodb';
 import type { IExportOperation } from '@rocket.chat/core-typings';
+import type { IExportOperationsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class ExportOperations extends ModelClass<IExportOperation> {
+export class ExportOperations extends ModelClass<IExportOperation> implements IExportOperationsModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1 } }, { key: { status: 1 } }];
 	}
@@ -64,3 +68,6 @@ export class ExportOperations extends ModelClass<IExportOperation> {
 		return this.updateOne({ _id: data._id }, update);
 	}
 }
+
+const col = db.collection(`${prefix}export_operations`);
+registerModel('IExportOperationsModel', new ExportOperations(col, trashCollection));

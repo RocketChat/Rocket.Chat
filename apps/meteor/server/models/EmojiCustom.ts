@@ -1,10 +1,14 @@
 import { IndexSpecification } from 'mongodb';
 import type { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 import { IEmojiCustom } from '@rocket.chat/core-typings';
+import type { IEmojiCustomModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class EmojiCustom extends ModelClass<IEmojiCustom> {
+export class EmojiCustom extends ModelClass<IEmojiCustom> implements IEmojiCustomModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 } }, { key: { aliases: 1 } }, { key: { extension: 1 } }];
 	}
@@ -69,3 +73,6 @@ export class EmojiCustom extends ModelClass<IEmojiCustom> {
 		return this.insertOne(data);
 	}
 }
+
+const col = db.collection(`${prefix}custom_emoji`);
+registerModel('IEmojiCustomModel', new EmojiCustom(col, trashCollection));

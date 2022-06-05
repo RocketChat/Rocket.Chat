@@ -1,11 +1,15 @@
 import { IndexSpecification } from 'mongodb';
 import type { UpdateWriteOpResult } from 'mongodb';
 import type { IFederationServer } from '@rocket.chat/core-typings';
+import type { IFederationServersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 // import { Users } from './index';
 import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-export class FederationServers extends ModelClass<IFederationServer> {
+export class FederationServers extends ModelClass<IFederationServer> implements IFederationServersModel {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { domain: 1 } }];
 	}
@@ -32,3 +36,6 @@ export class FederationServers extends ModelClass<IFederationServer> {
 		await this.deleteMany({ domain: { $nin: domains } });
 	}
 }
+
+const col = db.collection(`${prefix}federation_servers`);
+registerModel('IFederationServersModel', new FederationServers(col, trashCollection));
