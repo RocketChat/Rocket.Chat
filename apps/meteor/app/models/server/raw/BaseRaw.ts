@@ -71,7 +71,7 @@ const warnFields =
 		: new Function();
 
 export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseRaw<T> {
-	public readonly defaultFields: C;
+	protected defaultFields: C;
 
 	protected name: string;
 

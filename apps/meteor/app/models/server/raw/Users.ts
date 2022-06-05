@@ -1,11 +1,20 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
+import type { IBanner, ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment, IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { Collection, Cursor, FilterQuery, FindOneOptions, UpdateQuery, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
+import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 
-export class UsersRaw extends BaseRaw {
-	constructor(...args) {
+type RoleIds = IRole['_id'][] | IRole['_id'];
+
+export class UsersRaw extends BaseRaw<IUser> {
+	constructor(...args: [col: Collection<IUser>, trash: Collection<IUser>, options: { preventSetUpdatedAt?: boolean }]) {
 		super(...args);
 
+		// FIXME: check ResultFields type
+		// FIXME: check BaseRaw 2nd generic param
+		// @ts-ignore
 		this.defaultFields = {
 			__rooms: 0,
 		};
@@ -13,49 +22,49 @@ export class UsersRaw extends BaseRaw {
 
 	/**
 	 * @param {string} uid
-	 * @param {IRole['_id'][]} roles list of role ids
+	 * @param {IRole['_id'][]} roleIds list of role ids
 	 */
-	addRolesByUserId(uid, roles) {
-		if (!Array.isArray(roles)) {
-			roles = [roles];
+	async addRolesByUserId(uid: IUser['_id'], roleIds: RoleIds): Promise<UpdateWriteOpResult> {
+		if (!Array.isArray(roleIds)) {
+			roleIds = [roleIds];
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
 		}
 
-		const query = {
+		const query: FilterQuery<IUser> = {
 			_id: uid,
 		};
 
-		const update = {
+		const update: UpdateQuery<IUser> = {
 			$addToSet: {
-				roles: { $each: roles },
+				roles: { $each: roleIds },
 			},
 		};
 		return this.updateOne(query, update);
 	}
 
 	/**
-	 * @param {IRole['_id'][]} roles list of role ids
-	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
+	 * @param {IRole['_id'][]} roleIds list of role ids
+	 * @param {null} _scope the value for the role scope (room id) - not used in the users collection
 	 * @param {any} options
 	 */
-	findUsersInRoles(roles, scope, options) {
-		roles = [].concat(roles);
+	findUsersInRoles(roleIds: RoleIds, _scope: null, options: WithoutProjection<FindOneOptions<IUser>>) {
+		roleIds = Array.isArray(roleIds) ? roleIds : [roleIds];
 
-		const query = {
-			roles: { $in: roles },
+		const query: FilterQuery<IUser> = {
+			roles: { $in: roleIds },
 		};
 
 		return this.find(query, options);
 	}
 
-	findOneByUsername(username, options = null) {
-		const query = { username };
+	findOneByUsername(username: IUser['username'], options: FindOneOptions<IUser>): Promise<IUser | null> {
+		const query: FilterQuery<IUser> = { username };
 
 		return this.findOne(query, options);
 	}
 
-	findOneAgentById(_id, options) {
-		const query = {
+	findOneAgentById(_id: ILivechatAgent['_id'], options: WithoutProjection<FindOneOptions<ILivechatAgent>>) {
+		const query: FilterQuery<ILivechatAgent> = {
 			_id,
 			roles: 'livechat-agent',
 		};
@@ -64,24 +73,28 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	/**
-	 * @param {IRole['_id'][] | IRole['_id']} roles the list of role ids
+	 * @param {IRole['_id'][] | IRole['_id']} roleIds the list of role ids
 	 * @param {any} query
 	 * @param {any} options
 	 */
-	findUsersInRolesWithQuery(roles, query, options) {
-		roles = [].concat(roles);
+	findUsersInRolesWithQuery(roleIds: RoleIds, query: FilterQuery<IUser>, options: WithoutProjection<FindOneOptions<IUser>>) {
+		roleIds = Array.isArray(roleIds) ? roleIds : [roleIds];
 
-		Object.assign(query, { roles: { $in: roles } });
+		Object.assign(query, { roles: { $in: roleIds } });
 
 		return this.find(query, options);
 	}
 
-	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
+	findOneByUsernameAndRoomIgnoringCase(
+		username: IUser['username'] | RegExp,
+		rid: IRoom['_id'],
+		options: WithoutProjection<FindOneOptions<IUser>>,
+	) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
 
-		const query = {
+		const query: FilterQuery<IUser> = {
 			__rooms: rid,
 			username,
 		};
@@ -89,8 +102,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndLoginHashedToken(_id, token, options = {}) {
-		const query = {
+	findOneByIdAndLoginHashedToken(_id: IUser['_id'], token: string, options: WithoutProjection<FindOneOptions<IUser>>) {
+		const query: FilterQuery<IUser> = {
 			_id,
 			'services.resume.loginTokens.hashedToken': token,
 		};
@@ -98,20 +111,22 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
-		if (exceptions == null) {
-			exceptions = [];
-		}
-		if (options == null) {
-			options = {};
-		}
+	findByActiveUsersExcept(
+		searchTerm: string,
+		exceptions: IUser['username'][] | IUser['username'] = [],
+		options: WithoutProjection<FindOneOptions<IUser>> = {},
+		// FIXME: v
+		searchFields: any,
+		extraQuery: any[] = [],
+		{ startsWith = false, endsWith = false } = {},
+	) {
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 
 		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
 		if (searchTerm === '') {
-			const query = {
+			const query: FilterQuery<IUser> = {
 				$and: [
 					{
 						active: true,
@@ -128,7 +143,7 @@ export class UsersRaw extends BaseRaw {
 
 		// const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
-		const orStmt = (searchFields || []).reduce(function (acc, el) {
+		const orStmt = (searchFields || []).reduce(function (acc: any, el: any) {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -147,7 +162,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findActiveByIds(userIds, options = {}) {
+	findActiveByIds(userIds: IUser['_id'][], options: WithoutProjection<FindOneOptions<IUser>> = {}) {
 		const query = {
 			_id: { $in: userIds },
 			active: true,
@@ -156,7 +171,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByIds(userIds, options = {}) {
+	findByIds(userIds: IUser['_id'][], options: WithoutProjection<FindOneOptions<IUser>> = {}) {
 		const query = {
 			_id: { $in: userIds },
 		};
@@ -164,7 +179,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findOneByUsernameIgnoringCase(username, options) {
+	findOneByUsernameIgnoringCase(username: IUser['username'] | RegExp, options: WithoutProjection<FindOneOptions<IUser>> = {}) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
@@ -174,8 +189,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	async findOneByLDAPId(id, attribute = undefined) {
-		const query = {
+	async findOneByLDAPId(id: string, attribute: any = undefined) {
+		const query: FilterQuery<IUser> = {
 			'services.ldap.id': id,
 		};
 
@@ -186,13 +201,13 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
-	findLDAPUsers(options) {
+	findLDAPUsers(options: WithoutProjection<FindOneOptions<IUser>>) {
 		const query = { ldap: true };
 
 		return this.find(query, options);
 	}
 
-	findConnectedLDAPUsers(options) {
+	findConnectedLDAPUsers(options: WithoutProjection<FindOneOptions<IUser>>) {
 		const query = {
 			'ldap': true,
 			'services.resume.loginTokens': {
@@ -204,7 +219,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	isUserInRole(userId, roleId) {
+	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']) {
 		const query = {
 			_id: userId,
 			roles: roleId,
@@ -217,8 +232,8 @@ export class UsersRaw extends BaseRaw {
 		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
-	async getNextLeastBusyAgent(department, ignoreAgentId) {
-		const aggregate = [
+	async getNextLeastBusyAgent(department: ILivechatDepartment['_id'], ignoreAgentId: ILivechatAgent['_id']) {
+		const aggregate: any = [
 			{
 				$match: {
 					status: { $exists: true, $ne: 'offline' },
@@ -275,7 +290,15 @@ export class UsersRaw extends BaseRaw {
 
 		aggregate.push({ $limit: 1 });
 
-		const [agent] = await this.col.aggregate(aggregate).toArray();
+		const agent = await this.col
+			.aggregate<{
+				agentId: ILivechatAgent['_id'];
+				username: ILivechatAgent['username'];
+				lastRoutingTime: ILivechatAgent['lastRoutingTime'];
+				departments: ILivechatDepartment['_id'][];
+				count: number;
+			}>(aggregate)
+			.next();
 		if (agent) {
 			await this.setLastRoutingTime(agent.agentId);
 		}
@@ -283,8 +306,8 @@ export class UsersRaw extends BaseRaw {
 		return agent;
 	}
 
-	async getLastAvailableAgentRouted(department, ignoreAgentId) {
-		const aggregate = [
+	async getLastAvailableAgentRouted(department: ILivechatDepartment['_id'], ignoreAgentId: ILivechatAgent['_id']) {
+		const aggregate: any = [
 			{
 				$match: {
 					status: { $exists: true, $ne: 'offline' },
@@ -312,7 +335,14 @@ export class UsersRaw extends BaseRaw {
 
 		aggregate.push({ $limit: 1 });
 
-		const [agent] = await this.col.aggregate(aggregate).toArray();
+		const agent = await this.col
+			.aggregate<{
+				agentId: ILivechatAgent['_id'];
+				username: ILivechatAgent['username'];
+				lastRoutingTime: ILivechatAgent['lastRoutingTime'];
+				departments: ILivechatDepartment['_id'][];
+			}>(aggregate)
+			.next();
 		if (agent) {
 			await this.setLastRoutingTime(agent.agentId);
 		}
@@ -320,14 +350,10 @@ export class UsersRaw extends BaseRaw {
 		return agent;
 	}
 
-	async setLastRoutingTime(userId) {
-		const result = await this.col.findAndModify(
-			{ _id: userId },
-			{
-				sort: {
-					_id: 1,
-				},
-			},
+	async setLastRoutingTime(agentId: ILivechatAgent['_id']) {
+		// FIXME
+		const result = await this.col.findOneAndUpdate(
+			{ _id: agentId },
 			{
 				$set: {
 					lastRoutingTime: new Date(),
@@ -337,10 +363,10 @@ export class UsersRaw extends BaseRaw {
 		return result.value;
 	}
 
-	setLivechatStatusIf(userId, status, conditions = {}, extraFields = {}) {
+	setLivechatStatusIf(agentId: ILivechatAgent['_id'], status: ILivechatAgentStatus, conditions: any = {}, extraFields: any = {}) {
 		// TODO: Create class Agent
 		const query = {
-			_id: userId,
+			_id: agentId,
 			...conditions,
 		};
 
@@ -354,11 +380,11 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update);
 	}
 
-	async getAgentAndAmountOngoingChats(userId) {
-		const aggregate = [
+	async getAgentAndAmountOngoingChats(agentId: ILivechatAgent['_id']) {
+		const aggregate: any = [
 			{
 				$match: {
-					_id: userId,
+					_id: agentId,
 					status: { $exists: true, $ne: 'offline' },
 					statusLivechat: 'available',
 					roles: 'livechat-agent',
@@ -394,11 +420,10 @@ export class UsersRaw extends BaseRaw {
 			{ $sort: { 'queueInfo.chats': 1, 'lastAssignTime': 1, 'lastRoutingTime': 1, 'username': 1 } },
 		];
 
-		const [agent] = await this.col.aggregate(aggregate).toArray();
-		return agent;
+		return this.col.aggregate(aggregate).next();
 	}
 
-	findAllResumeTokensByUserId(userId) {
+	findAllResumeTokensByUserId(userId: IUser['_id']) {
 		return this.col
 			.aggregate([
 				{
@@ -426,16 +451,12 @@ export class UsersRaw extends BaseRaw {
 			.toArray();
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(termRegex, exceptions, conditions, options) {
-		if (exceptions == null) {
-			exceptions = [];
-		}
-		if (conditions == null) {
-			conditions = {};
-		}
-		if (options == null) {
-			options = {};
-		}
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+		termRegex: RegExp,
+		exceptions: string[] | string = [],
+		conditions: string[] = [],
+		options: WithoutProjection<FindOneOptions<IUser>> = {},
+	) {
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
@@ -474,7 +495,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	countAllAgentsStatus({ departmentId = undefined }) {
+	countAllAgentsStatus({ departmentId = undefined }: { departmentId?: ILivechatDepartment['_id'] }) {
 		const match = {
 			$match: {
 				roles: { $in: ['livechat-agent'] },
@@ -553,7 +574,7 @@ export class UsersRaw extends BaseRaw {
 				'departments.departmentId': departmentId,
 			},
 		};
-		const params = [match];
+		const params: Exclude<Parameters<Collection<IUser>['aggregate']>[0], undefined> = [match];
 		if (departmentId && departmentId !== 'undefined') {
 			params.push(lookup);
 			params.push(unwind);
@@ -563,8 +584,8 @@ export class UsersRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	getTotalOfRegisteredUsersByDate({ start, end, options = {} }) {
-		const params = [
+	getTotalOfRegisteredUsersByDate({ start, end, options = {} }: { start: Date; end: Date; options: PaginatedRequest }) {
+		const params: Exclude<Parameters<Collection<IUser>['aggregate']>[0], undefined> = [
 			{
 				$match: {
 					createdAt: { $gte: start, $lte: end },
@@ -624,7 +645,7 @@ export class UsersRaw extends BaseRaw {
 		return this.col.aggregate(pipeline).toArray();
 	}
 
-	updateStatusText(_id, statusText) {
+	updateStatusText(_id: IUser['_id'], statusText: string) {
 		const update = {
 			$set: {
 				statusText,
@@ -634,13 +655,14 @@ export class UsersRaw extends BaseRaw {
 		return this.update({ _id }, update);
 	}
 
-	updateStatusByAppId(appId, status) {
-		const query = {
+	updateStatusByAppId(appId: string, status: UserStatus) {
+		// FIXME: add IApp to core-typing maybe?
+		const query: any = {
 			appId,
 			status: { $ne: status },
 		};
 
-		const update = {
+		const update: UpdateQuery<IUser> = {
 			$set: {
 				status,
 			},
@@ -649,7 +671,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	openAgentsBusinessHoursByBusinessHourId(businessHourIds) {
+	openAgentsBusinessHoursByBusinessHourId(businessHourIds: ILivechatBusinessHour['_id'][]) {
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -666,7 +688,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds, agentId) {
+	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: ILivechatBusinessHour['_id'][], agentId: ILivechatAgent['_id']) {
 		const query = {
 			_id: agentId,
 			roles: 'livechat-agent',
@@ -684,7 +706,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
+	addBusinessHourByAgentIds(agentIds: ILivechatAgent['_id'][] = [], businessHourId: ILivechatBusinessHour['_id']) {
 		const query = {
 			_id: { $in: agentIds },
 			roles: 'livechat-agent',
@@ -702,7 +724,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	removeBusinessHourByAgentIds(agentIds = [], businessHourId) {
+	removeBusinessHourByAgentIds(agentIds: ILivechatAgent['_id'][] = [], businessHourId: ILivechatBusinessHour['_id']) {
 		const query = {
 			_id: { $in: agentIds },
 			roles: 'livechat-agent',
@@ -717,7 +739,10 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+	openBusinessHourToAgentsWithoutDepartment(
+		agentIdsWithDepartment: ILivechatAgent['_id'][] = [],
+		businessHourId: ILivechatBusinessHour['_id'],
+	) {
 		const query = {
 			_id: { $nin: agentIdsWithDepartment },
 		};
@@ -734,7 +759,10 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+	closeBusinessHourToAgentsWithoutDepartment(
+		agentIdsWithDepartment: ILivechatAgent['_id'][] = [],
+		businessHourId: ILivechatBusinessHour['_id'],
+	) {
 		const query = {
 			_id: { $nin: agentIdsWithDepartment },
 		};
@@ -748,7 +776,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds) {
+	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds: ILivechatBusinessHour['_id'][]) {
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -762,11 +790,11 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
+	updateLivechatStatusBasedOnBusinessHours(agentIds: ILivechatAgent['_id'][] = []) {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
-			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
+			...(Array.isArray(agentIds) && agentIds.length > 0 && { _id: { $in: agentIds } }),
 		};
 
 		const update = {
@@ -778,9 +806,9 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	setLivechatStatusActiveBasedOnBusinessHours(userId) {
+	setLivechatStatusActiveBasedOnBusinessHours(agentId: ILivechatAgent['_id']) {
 		const query = {
-			_id: userId,
+			_id: agentId,
 			openBusinessHours: {
 				$exists: true,
 				$not: { $size: 0 },
@@ -796,7 +824,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update);
 	}
 
-	async isAgentWithinBusinessHours(agentId) {
+	async isAgentWithinBusinessHours(agentId: ILivechatAgent['_id']) {
 		return (
 			(await this.find({
 				_id: agentId,
@@ -816,7 +844,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const update = {
+		const update: UpdateQuery<ILivechatAgent> = {
 			$unset: {
 				openBusinessHours: 1,
 			},
@@ -825,7 +853,7 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	resetTOTPById(userId) {
+	resetTOTPById(userId: IUser['_id']) {
 		return this.col.updateOne(
 			{
 				_id: userId,
@@ -838,7 +866,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	unsetLoginTokens(userId) {
+	unsetLoginTokens(userId: IUser['_id']) {
 		return this.col.updateOne(
 			{
 				_id: userId,
@@ -851,7 +879,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeNonPATLoginTokensExcept(userId, authToken) {
+	removeNonPATLoginTokensExcept(userId: IUser['_id'], authToken: string) {
 		return this.col.updateOne(
 			{
 				_id: userId,
@@ -867,7 +895,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeRoomsByRoomIdsAndUserId(rids, userId) {
+	removeRoomsByRoomIdsAndUserId(rids: IRoom['_id'][], userId: IUser['_id']) {
 		return this.update(
 			{
 				_id: userId,
@@ -884,7 +912,7 @@ export class UsersRaw extends BaseRaw {
 	 * @param {string} uid
 	 * @param {IRole['_id']} roles the list of role ids to remove
 	 */
-	removeRolesByUserId(uid, roles) {
+	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]) {
 		const query = {
 			_id: uid,
 		};
@@ -898,7 +926,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	async isUserInRoleScope(uid) {
+	async isUserInRoleScope(uid: IUser['_id']) {
 		const query = {
 			_id: uid,
 		};
@@ -911,17 +939,17 @@ export class UsersRaw extends BaseRaw {
 		return !!found;
 	}
 
-	addBannerById(_id, banner) {
+	addBannerById(_id: string, banner: IBanner) {
 		const query = {
 			_id,
-			[`banners.${banner.id}.read`]: {
+			[`banners.${banner._id}.read`]: {
 				$ne: true,
 			},
 		};
 
 		const update = {
 			$set: {
-				[`banners.${banner.id}`]: banner,
+				[`banners.${banner._id}`]: banner,
 			},
 		};
 
@@ -929,13 +957,13 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// Voip functions
-	findOneByAgentUsername(username, options) {
+	findOneByAgentUsername(username: ILivechatAgent['username'], options: WithoutProjection<FindOneOptions<ILivechatAgent>>) {
 		const query = { username, roles: 'livechat-agent' };
 
 		return this.findOne(query, options);
 	}
 
-	findOneByExtension(extension, options) {
+	findOneByExtension(extension: string, options: WithoutProjection<FindOneOptions<ILivechatAgent>>) {
 		const query = {
 			extension,
 		};
@@ -943,7 +971,7 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findByExtensions(extensions, options) {
+	findByExtensions(extensions: string[], options: WithoutProjection<FindOneOptions<ILivechatAgent>>) {
 		const query = {
 			extension: {
 				$in: extensions,
@@ -953,20 +981,20 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	getVoipExtensionByUserId(userId, options) {
+	getVoipExtensionByUserId(agentId: ILivechatAgent['_id'], options: WithoutProjection<FindOneOptions<ILivechatAgent>>) {
 		const query = {
-			_id: userId,
+			_id: agentId,
 			extension: { $exists: true },
 		};
 		return this.findOne(query, options);
 	}
 
-	setExtension(userId, extension) {
+	setExtension(agentId: ILivechatAgent['_id'], extension: string) {
 		const query = {
-			_id: userId,
+			_id: agentId,
 		};
 
-		const update = {
+		const update: UpdateQuery<IUser> = {
 			$set: {
 				extension,
 			},
@@ -974,11 +1002,11 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update);
 	}
 
-	unsetExtension(userId) {
-		const query = {
-			_id: userId,
+	unsetExtension(agentId: ILivechatAgent['_id']) {
+		const query: FilterQuery<ILivechatAgent> = {
+			_id: agentId,
 		};
-		const update = {
+		const update: UpdateQuery<ILivechatAgent> = {
 			$unset: {
 				extension: true,
 			},
@@ -986,8 +1014,8 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update);
 	}
 
-	getAvailableAgentsIncludingExt(includeExt, text, options) {
-		const query = {
+	getAvailableAgentsIncludingExt(includeExt: string, text: string, options: WithoutProjection<FindOneOptions<IUser>>): Cursor<any> {
+		const query: FilterQuery<ILivechatAgent> = {
 			roles: { $in: ['livechat-agent'] },
 			$and: [
 				...(text && text.trim()
@@ -1000,16 +1028,16 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findActiveUsersTOTPEnable(options) {
-		const query = {
+	findActiveUsersTOTPEnable(options: WithoutProjection<FindOneOptions<IUser>>): Cursor<IUser> {
+		const query: FilterQuery<IUser> = {
 			'active': true,
 			'services.totp.enabled': true,
 		};
 		return this.find(query, options);
 	}
 
-	findActiveUsersEmail2faEnable(options) {
-		const query = {
+	findActiveUsersEmail2faEnable(options: WithoutProjection<FindOneOptions<IUser>>): Cursor<IUser> {
+		const query: FilterQuery<IUser> = {
 			'active': true,
 			'services.email2fa.enabled': true,
 		};
