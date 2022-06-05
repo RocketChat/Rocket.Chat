@@ -14,33 +14,16 @@ import '../../models/TeamMember';
 import '../../models/Team';
 import '../../models/Roles';
 import '../../models/Users';
-// import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
-// import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-// import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
-// import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
-// import { TeamRaw } from '../../../app/models/server/raw/Team';
-// import { RolesRaw } from '../../../app/models/server/raw/Roles';
-// import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { License } from '../../sdk';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
-
-// export let Subscriptions: SubscriptionsRaw;
-// export let Settings: SettingsRaw;
-// export let Rooms: RoomsRaw;
-// export let TeamMembers: TeamMemberRaw;
-// export let Team: TeamRaw;
 
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
 	protected name = 'authorization';
 
 	private Permissions: Collection;
-
-	// private Users: UsersRaw;
-
-	// private Roles: RolesRaw;
 
 	private getRolesCached = mem(this.getRoles.bind(this), {
 		maxAge: 1000,
@@ -56,22 +39,6 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		super();
 
 		this.Permissions = db.collection('rocketchat_permissions');
-
-		// this.Users = new UsersRaw(db.collection('users'));
-
-		// Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), {
-		// 	Users: this.Users,
-		// });
-
-		// this.Roles = new RolesRaw(db.collection('rocketchat_roles'), {
-		// 	Users: this.Users,
-		// 	Subscriptions,
-		// });
-
-		// Settings = new SettingsRaw(db.collection('rocketchat_settings'));
-		// Rooms = new RoomsRaw(db.collection('rocketchat_room'));
-		// TeamMembers = new TeamMemberRaw(db.collection('rocketchat_team_member'));
-		// Team = new TeamRaw(db.collection('rocketchat_team'));
 
 		const clearCache = (): void => {
 			mem.clear(this.getRolesCached);

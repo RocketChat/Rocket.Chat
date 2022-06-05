@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission, hasAllPermission } from '../../../authorization/server';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
-import { Settings } from '../../../models/server/raw';
+import { Settings } from '@rocket.chat/models';
 
 Meteor.methods({
 	saveSetting: twoFactorRequired(async function (_id, value, editor) {

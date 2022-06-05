@@ -4,7 +4,7 @@ import s from 'underscore.string';
 import limax from 'limax';
 
 import { hasPermission } from '../../../authorization';
-import { EmojiCustom } from '../../../models/server/raw';
+import { EmojiCustom } from '@rocket.chat/models';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 import { api } from '../../../../server/sdk/api';
 

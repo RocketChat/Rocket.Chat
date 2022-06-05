@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
 
 import { settings } from '../../../settings/server';
-import { Uploads } from '../../../models/server/raw';
+import { Uploads } from '@rocket.chat/models';
 
 let protectedFiles;
 

@@ -14,7 +14,7 @@ import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import { settings } from '../../../settings/server';
-import { Avatars, UserDataFiles, Uploads } from '../../../models/server/raw';
+import { Avatars, UserDataFiles, Uploads } from '@rocket.chat/models';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
 import Settings from '../../../models/server/models/Settings';

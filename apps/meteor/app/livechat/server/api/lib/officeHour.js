@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatBusinessHours } from '../../../../models/server/raw';
+import { LivechatBusinessHours } from '@rocket.chat/models';
 
 export async function findLivechatOfficeHours({ userId }) {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-business-hours'))) {

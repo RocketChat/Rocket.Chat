@@ -9,7 +9,7 @@ import he from 'he';
 import jschardet from 'jschardet';
 
 import { Messages } from '../../models/server';
-import { OEmbedCache } from '../../models/server/raw';
+import { OEmbedCache } from '@rocket.chat/models';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { isURL } from '../../../lib/utils/isURL';

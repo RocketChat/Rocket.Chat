@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { API } from '../../api';
-import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
+import { VoipRoom, LivechatVisitors, Users } from '@rocket.chat/models';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { hasPermission } from '../../../../authorization/server';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';

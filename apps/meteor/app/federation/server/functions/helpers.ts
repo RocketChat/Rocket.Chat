@@ -2,7 +2,7 @@ import { IRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import type { ISubscription, IRegisterUser, IUser } from '@rocket.chat/core-typings';
 
 import { Subscriptions, Users } from '../../../models/server';
-import { Settings } from '../../../models/server/raw';
+import { Settings } from '@rocket.chat/models';
 import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';
 
 export const getNameAndDomain = (fullyQualifiedName: string): string[] => fullyQualifiedName.split('@');

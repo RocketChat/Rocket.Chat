@@ -98,7 +98,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findOneByAgentUsername(username: any, options: any): any;
 
-	findOneByExtension(extension: any, options: any): any;
+	findOneByExtension(extension: any, options?: any): any;
 
 	findByExtensions(extensions: any, options?: any): Cursor<IUser>;
 

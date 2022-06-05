@@ -3,7 +3,7 @@ import { check, Match } from 'meteor/check';
 import { API } from '../api';
 import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
-import { EmailInbox } from '../../../models/server/raw';
+import { EmailInbox } from '@rocket.chat/models';
 import Users from '../../../models/server/models/Users';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 

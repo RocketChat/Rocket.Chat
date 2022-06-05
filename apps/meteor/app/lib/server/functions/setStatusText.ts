@@ -3,7 +3,7 @@ import s from 'underscore.string';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { Users } from '../../../models/server';
-import { Users as UsersRaw } from '../../../models/server/raw';
+import { Users as UsersRaw } from '@rocket.chat/models';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';

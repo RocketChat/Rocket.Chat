@@ -4,7 +4,7 @@ import { isBodyParamsValidPermissionUpdate } from '@rocket.chat/rest-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { API } from '../api';
-import { Permissions, Roles } from '../../../models/server/raw';
+import { Permissions, Roles } from '@rocket.chat/models';
 
 API.v1.addRoute(
 	'permissions.listAll',

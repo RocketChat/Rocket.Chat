@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import * as federationErrors from './errors';
 import { Users } from '../../../models/server';
-import { FederationServers } from '../../../models/server/raw';
+import { FederationServers } from '@rocket.chat/models';
 import { getUserByUsername } from '../handler';
 
 export async function addUser(query) {

@@ -11,7 +11,7 @@ import CAS from 'cas';
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings';
 import { Rooms } from '../../models/server';
-import { CredentialTokens } from '../../models/server/raw';
+import { CredentialTokens } from '@rocket.chat/models';
 import { _setRealName } from '../../lib';
 import { createRoom } from '../../lib/server/functions/createRoom';
 

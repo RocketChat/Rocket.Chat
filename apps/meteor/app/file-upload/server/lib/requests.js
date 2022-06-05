@@ -1,7 +1,7 @@
 import { WebApp } from 'meteor/webapp';
 
 import { FileUpload } from './FileUpload';
-import { Uploads } from '../../../models/server/raw';
+import { Uploads } from '@rocket.chat/models';
 
 WebApp.connectHandlers.use(FileUpload.getPath(), async function (req, res, next) {
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);

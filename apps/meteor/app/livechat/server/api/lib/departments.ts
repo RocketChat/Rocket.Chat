@@ -4,7 +4,7 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ILivechatDepartmentRecord, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
+import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { callbacks } from '../../../../../lib/callbacks';
 
 type Pagination<T> = { pagination: { offset: number; count: number; sort: SortOptionObject<T> } };

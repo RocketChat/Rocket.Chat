@@ -5,7 +5,7 @@ import { Integrations } from '@rocket.chat/models';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
-import { Uploads } from '../../../models/server/raw';
+import { Uploads } from '@rocket.chat/models';
 import {
 	hasPermission,
 	hasAtLeastOnePermission,

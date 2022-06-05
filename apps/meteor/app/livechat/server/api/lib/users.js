@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../../models/server/raw';
+import { Users } from '@rocket.chat/models';
 
 /**
  * @param {IRole['_id']} role the role id

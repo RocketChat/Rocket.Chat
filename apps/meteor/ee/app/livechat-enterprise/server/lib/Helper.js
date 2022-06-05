@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+import { Rooms as RoomRaw } from '@rocket.chat/models';
 
 import { memoizeDebounce } from './debounceByParams';
 import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms, Messages, LivechatCustomField } from '../../../../../app/models/server';
-import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';

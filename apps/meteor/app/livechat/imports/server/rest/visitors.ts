@@ -3,7 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
 import { LivechatRooms } from '../../../../models/server';
-import { Messages } from '../../../../models/server/raw';
+import { Messages } from '@rocket.chat/models';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import { canAccessRoom } from '../../../../authorization/server';
 

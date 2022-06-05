@@ -1,7 +1,7 @@
 import type { Bridge as MatrixBridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
 import { settings } from '../../settings/server';
-import { Settings } from '../../models/server/raw';
+import { Settings } from '@rocket.chat/models';
 import type { IMatrixEvent } from './definitions/IMatrixEvent';
 import type { MatrixEventType } from './definitions/MatrixEventType';
 import { addToQueue } from './queue';

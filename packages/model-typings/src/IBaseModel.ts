@@ -1,4 +1,5 @@
 import type {
+	Collection,
 	CollectionInsertOneOptions,
 	CommonOptions,
 	Cursor,
@@ -47,6 +48,8 @@ export type InsertionModel<T> = EnhancedOmit<ModelOptionalId<T>, '_updatedAt'> &
 };
 
 export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
+	col: Collection<T>;
+
 	findOneAndUpdate(
 		query: FilterQuery<T>,
 		update: UpdateQuery<T> | T,

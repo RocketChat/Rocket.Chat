@@ -8,7 +8,7 @@ import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
 import { Users } from '../../models/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
-import { Settings } from '../../models/server/raw';
+import { Settings } from '@rocket.chat/models';
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {

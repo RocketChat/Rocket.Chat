@@ -2,7 +2,7 @@ import { MatrixBridgedRoom, MatrixBridgedUser, Users } from '../../../models/ser
 import { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 import { sendMessage } from '../../../lib/server';
-import { Rooms } from '../../../models/server/raw';
+import { Rooms } from '@rocket.chat/models';
 
 export const sendMessageAsync = async (user: any, msg: any, room: any): Promise<void> =>
 	new Promise((resolve) => resolve(sendMessage(user, msg, room)));

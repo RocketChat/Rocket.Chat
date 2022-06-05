@@ -5,7 +5,7 @@ import { Integrations } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
 import { Users, Subscriptions, Messages, Rooms, LivechatDepartmentAgents, LivechatVisitors } from '../../../models/server';
-import { FederationServers } from '../../../models/server/raw';
+import { FederationServers } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';

@@ -4,7 +4,7 @@ import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
 import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../../../models/server';
-import { FederationServers } from '../../../models/server/raw';
+import { FederationServers } from '@rocket.chat/models';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { api } from '../../../../server/sdk/api';

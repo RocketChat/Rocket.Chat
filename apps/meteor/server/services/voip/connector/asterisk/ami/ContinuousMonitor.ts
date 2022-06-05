@@ -46,8 +46,6 @@ import { CallbackContext } from './CallbackContext';
 // import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
 import '../../../../../models/Users';
 import '../../../../../models/PbxEvents';
-// import { UsersRaw } from '../../../../../../app/models/server/raw/Users';
-// import { PbxEventsRaw } from '../../../../../../app/models/server/raw/PbxEvents';
 import { api } from '../../../../../sdk/api';
 import { ACDQueue } from './ACDQueue';
 import { Commands } from '../Commands';
@@ -55,16 +53,10 @@ import { Commands } from '../Commands';
 export class ContinuousMonitor extends Command {
 	private logger: Logger;
 
-	// private users: UsersRaw;
-
-	// private pbxEvents: PbxEventsRaw;
-
 	constructor(command: string, parametersNeeded: boolean, db: Db) {
 		super(command, parametersNeeded, db);
 		this._type = CommandType.AMI;
 		this.logger = new Logger('ContinuousMonitor');
-		// Users = new UsersRaw(db.collection('users'));
-		// PbxEvents = new PbxEventsRaw(db.collection('pbx_events'));
 	}
 
 	private async getMembersFromQueueDetails(queueDetails: IQueueDetails): Promise<string[]> {

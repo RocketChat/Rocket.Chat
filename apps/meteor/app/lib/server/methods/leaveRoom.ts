@@ -5,7 +5,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { hasPermission, hasRole } from '../../../authorization/server';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
-import { Roles } from '../../../models/server/raw';
+import { Roles } from '@rocket.chat/models';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 

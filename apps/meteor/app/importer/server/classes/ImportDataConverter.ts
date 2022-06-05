@@ -14,7 +14,7 @@ import type {
 	IUserEmail,
 } from '@rocket.chat/core-typings';
 
-import { ImportData as ImportDataRaw } from '../../../models/server/raw';
+import { ImportData as ImportDataRaw } from '@rocket.chat/models';
 import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';

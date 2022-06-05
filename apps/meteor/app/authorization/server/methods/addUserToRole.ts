@@ -6,7 +6,7 @@ import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
-import { Roles } from '../../../models/server/raw';
+import { Roles } from '@rocket.chat/models';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({

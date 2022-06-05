@@ -4,7 +4,7 @@ import type { ISubscription } from '@rocket.chat/core-typings';
 
 import { AppServerOrchestrator } from '../orchestrator';
 import { Subscriptions } from '../../../models/server';
-import { Settings } from '../../../models/server/raw';
+import { Settings } from '@rocket.chat/models';
 
 export class AppInternalBridge extends InternalBridge {
 	// eslint-disable-next-line no-empty-function

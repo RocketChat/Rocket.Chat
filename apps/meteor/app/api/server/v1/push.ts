@@ -7,7 +7,7 @@ import { API } from '../api';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { Users, Rooms } from '../../../models/server';
-import { Messages } from '../../../models/server/raw';
+import { Messages } from '@rocket.chat/models';
 
 API.v1.addRoute(
 	'push.token',

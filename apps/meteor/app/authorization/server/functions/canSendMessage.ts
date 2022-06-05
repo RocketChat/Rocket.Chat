@@ -2,7 +2,7 @@ import { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
-import { Subscriptions, Rooms } from '../../../models/server/raw';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 

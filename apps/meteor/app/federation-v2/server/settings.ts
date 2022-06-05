@@ -2,7 +2,7 @@ import yaml from 'js-yaml';
 import { SHA256 } from 'meteor/sha';
 
 import { getRegistrationInfo } from './config';
-import { Settings } from '../../models/server/raw';
+import { Settings } from '@rocket.chat/models';
 import { settings, settingsRegistry } from '../../settings/server';
 
 settingsRegistry.addGroup('Federation', function () {

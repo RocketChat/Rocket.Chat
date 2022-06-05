@@ -5,7 +5,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
-import { Invites } from '../../../models/server/raw';
+import { Invites } from '@rocket.chat/models';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';

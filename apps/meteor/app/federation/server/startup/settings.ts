@@ -5,7 +5,7 @@ import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMetho
 import { registerWithHub } from '../lib/dns';
 import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
 import { setupLogger } from '../lib/logger';
-import { FederationKeys } from '../../../models/server/raw';
+import { FederationKeys } from '@rocket.chat/models';
 import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
 settingsRegistry.addGroup('Federation', function () {

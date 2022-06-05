@@ -3,7 +3,7 @@ import { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { MatrixBridgedRoom, MatrixBridgedUser } from '../../../models/server';
 import { matrixBridge } from '../bridge';
-import { Rooms } from '../../../models/server/raw';
+import { Rooms } from '@rocket.chat/models';
 
 interface ICreateRoomResult {
 	rid: string;

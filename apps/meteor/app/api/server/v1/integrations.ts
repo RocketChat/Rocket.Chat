@@ -11,7 +11,7 @@ import {
 import { Integrations } from '@rocket.chat/models';
 
 import { hasAtLeastOnePermission } from '../../../authorization/server';
-import { IntegrationHistory } from '../../../models/server/raw';
+import { IntegrationHistory } from '@rocket.chat/models';
 import { API } from '../api';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,

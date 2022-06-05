@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatCustomField } from '../../../../models/server/raw';
+import { LivechatCustomField } from '@rocket.chat/models';
 
 export async function findLivechatCustomFields({ userId, text, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {

@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { hasPermission } from '../../../../authorization';
 import { Users } from '../../../../models/server';
-import { OAuthApps } from '../../../../models/server/raw';
+import { OAuthApps } from '@rocket.chat/models';
 import { parseUriList } from '../functions/parseUriList';
 
 Meteor.methods({

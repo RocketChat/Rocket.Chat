@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../functions/hasPermission';
 import { CONSTANTS, AuthorizationUtils } from '../../lib';
-import { Permissions } from '../../../models/server/raw';
+import { Permissions } from '@rocket.chat/models';
 
 Meteor.methods({
 	async 'authorization:addPermissionToRole'(permissionId, role) {

@@ -1,7 +1,7 @@
 import { isOauthAppsGetParams } from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { OAuthApps } from '../../../models/server/raw';
+import { OAuthApps } from '@rocket.chat/models';
 import { API } from '../api';
 
 API.v1.addRoute(

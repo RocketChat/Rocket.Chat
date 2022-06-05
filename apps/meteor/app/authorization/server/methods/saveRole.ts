@@ -3,7 +3,7 @@ import { isRoleCreateProps } from '@rocket.chat/rest-typings';
 
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
-import { Roles } from '../../../models/server/raw';
+import { Roles } from '@rocket.chat/models';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { updateRoleAsync } from '../../../../server/lib/roles/updateRole';
 import { insertRoleAsync } from '../../../../server/lib/roles/insertRole';

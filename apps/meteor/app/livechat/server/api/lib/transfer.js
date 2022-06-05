@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Messages } from '../../../../models/server/raw';
+import { Messages } from '@rocket.chat/models';
 
 const normalizeTransferHistory = ({ transferData }) => transferData;
 export async function findLivechatTransferHistory({ userId, rid, pagination: { offset, count, sort } }) {

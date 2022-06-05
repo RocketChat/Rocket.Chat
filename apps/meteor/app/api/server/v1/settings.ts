@@ -9,7 +9,7 @@ import {
 	isSettingsUpdatePropsColor,
 } from '@rocket.chat/rest-typings';
 
-import { Settings } from '../../../models/server/raw';
+import { Settings } from '@rocket.chat/models';
 import { hasPermission } from '../../../authorization/server';
 import { API, ResultFor } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';

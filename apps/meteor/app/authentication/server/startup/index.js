@@ -9,7 +9,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Settings, Users } from '../../../models/server';
-import { Roles, Users as UsersRaw } from '../../../models/server/raw';
+import { Roles, Users as UsersRaw } from '@rocket.chat/models';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';

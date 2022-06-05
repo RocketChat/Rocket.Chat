@@ -5,7 +5,7 @@ import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
-import { Subscriptions, Users as UsersRaw } from '../../../models/server/raw';
+import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppUserBridge extends UserBridge {
