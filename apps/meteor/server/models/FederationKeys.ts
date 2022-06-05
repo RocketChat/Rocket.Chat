@@ -1,14 +1,14 @@
 import NodeRSA from 'node-rsa';
+import type { IFederationKeysModel } from '@rocket.chat/model-typings';
+import type { FederationKey } from '@rocket.chat/core-typings';
+import { registerModel } from '@rocket.chat/models';
 
-import { BaseRaw } from './BaseRaw';
+import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import { db, prefix } from '../database/utils';
 
-type T = {
-	type: 'private' | 'public';
-	key: string;
-};
-
-export class FederationKeysRaw extends BaseRaw<T> {
-	async getKey(type: T['type']): Promise<string | null> {
+export class FederationKeys extends ModelClass<FederationKey> implements IFederationKeysModel {
+	async getKey(type: FederationKey['type']): Promise<string | null> {
 		const keyResource = await this.findOne({ type });
 
 		if (!keyResource) {
@@ -18,7 +18,7 @@ export class FederationKeysRaw extends BaseRaw<T> {
 		return keyResource.key;
 	}
 
-	loadKey(keyData: NodeRSA.Key, type: T['type']): NodeRSA {
+	loadKey(keyData: NodeRSA.Key, type: FederationKey['type']): NodeRSA {
 		return new NodeRSA(keyData, `pkcs8-${type}-pem`);
 	}
 
@@ -68,3 +68,6 @@ export class FederationKeysRaw extends BaseRaw<T> {
 		return this.getKey('public');
 	}
 }
+
+const col = db.collection(`${prefix}federation_keys`);
+registerModel('IFederationKeysModel', new FederationKeys(col, trashCollection) as IFederationKeysModel);

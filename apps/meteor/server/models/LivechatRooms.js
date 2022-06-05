@@ -1,7 +1,11 @@
-import { BaseRaw } from './BaseRaw';
-import { getValue } from '../../../settings/server/raw';
+import { registerModel } from '@rocket.chat/models';
 
-export class LivechatRoomsRaw extends BaseRaw {
+import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/LivechatRooms';
+import { getValue } from '../../app/settings/server/raw';
+
+export class LivechatRooms extends ModelClass {
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
 		const match = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
 		const matchUsers = { $match: {} };
@@ -1181,3 +1185,6 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.update({ _id: roomId }, { $set: { departmentId } });
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('ILivechatRoomsModel', new LivechatRooms(col, trashCollection));

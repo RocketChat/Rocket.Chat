@@ -1,9 +1,12 @@
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { registerModel } from '@rocket.chat/models';
 
-import { BaseRaw } from './BaseRaw';
+import { ModelClass } from './ModelClass';
+import { trashCollection } from '../database/trash';
+import MeteorModel from '../../app/models/server/models/Rooms';
 
-export class RoomsRaw extends BaseRaw {
+export class Rooms extends ModelClass {
 	findOneByRoomIdAndUserId(rid, uid, options = {}) {
 		const query = {
 			'_id': rid,
@@ -482,3 +485,6 @@ export class RoomsRaw extends BaseRaw {
 		});
 	}
 }
+
+const col = MeteorModel.model.rawCollection();
+registerModel('IRoomsModel', new Rooms(col, trashCollection));
