@@ -5027,7 +5027,9 @@ __metadata:
   resolution: "@rocket.chat/model-typings@workspace:packages/model-typings"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
     "@types/jest": ^27.4.1
+    "@types/node-rsa": ^1.1.1
     eslint: ^8.12.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
