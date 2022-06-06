@@ -460,7 +460,7 @@ const VoipRoomsSchema: JSONSchemaType<VoipRooms> = {
 
 export const isVoipRoomsProps = ajv.compile<VoipRooms>(VoipRoomsSchema);
 
-type VoipRoomClose = { rid: string; token: string; comment: string; tags?: string[] };
+type VoipRoomClose = { rid: string; token: string; options: { comment?: string; tags?: string[] } };
 
 const VoipRoomCloseSchema: JSONSchemaType<VoipRoomClose> = {
 	type: 'object',
@@ -471,18 +471,24 @@ const VoipRoomCloseSchema: JSONSchemaType<VoipRoomClose> = {
 		token: {
 			type: 'string',
 		},
-		comment: {
-			type: 'string',
-		},
-		tags: {
-			type: 'array',
-			items: {
-				type: 'string',
+		options: {
+			type: 'object',
+			properties: {
+				comment: {
+					type: 'string',
+					nullable: true,
+				},
+				tags: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
 			},
-			nullable: true,
 		},
 	},
-	required: ['rid', 'token', 'comment'],
+	required: ['rid', 'token'],
 	additionalProperties: false,
 };
 
