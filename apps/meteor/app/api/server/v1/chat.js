@@ -525,7 +525,7 @@ API.v1.addRoute(
 		get() {
 			const { rid, type, text } = this.queryParams;
 			check(rid, String);
-			check(type, String);
+			check(type, Match.Maybe(String));
 			check(text, Match.Maybe(String));
 
 			const { offset, count } = this.getPaginationItems();
