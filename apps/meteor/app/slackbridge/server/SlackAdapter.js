@@ -2,7 +2,7 @@ import url from 'url';
 import http from 'http';
 import https from 'https';
 
-import { RTMClient } from '@slack/client';
+import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
 
 import { slackLogger } from './logger';

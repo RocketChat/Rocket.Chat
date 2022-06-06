@@ -461,6 +461,10 @@ export class RoomsRaw extends BaseRaw {
 		]);
 	}
 
+	setAsFederated(roomId) {
+		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
+	}
+
 	findByE2E(options) {
 		return this.find(
 			{
