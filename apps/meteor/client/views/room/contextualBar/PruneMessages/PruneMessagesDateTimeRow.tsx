@@ -1,7 +1,19 @@
 import { Field, InputBox, Box, Margins } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
-const DateTimeRow = ({ label, dateTime, handleDateTime }) => (
+type PruneMessagesDateTimeRowProps = {
+	label: string;
+	dateTime: {
+		date: string;
+		time: string;
+	};
+	handleDateTime: {
+		date: (eventOrValue: unknown) => void;
+		time: (eventOrValue: unknown) => void;
+	};
+};
+
+const PruneMessagesDateTimeRow = ({ label, dateTime, handleDateTime }: PruneMessagesDateTimeRowProps): ReactElement => (
 	<Field>
 		<Field.Label flexGrow={0}>{label}</Field.Label>
 		<Box display='flex' mi='neg-x4'>
@@ -13,4 +25,4 @@ const DateTimeRow = ({ label, dateTime, handleDateTime }) => (
 	</Field>
 );
 
-export default DateTimeRow;
+export default PruneMessagesDateTimeRow;
