@@ -1,11 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { IInvite } from '@rocket.chat/core-typings';
-import {
-	isListInvitesProps,
-	isFindOrCreateInviteProps,
-	isUseInviteTokenProps,
-	isValidateInviteTokenProps,
-} from '@rocket.chat/rest-typings';
+import { isFindOrCreateInviteParams, isUseInviteTokenProps, isValidateInviteTokenProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -18,7 +13,6 @@ API.v1.addRoute(
 	'listInvites',
 	{
 		authRequired: true,
-		validateParams: isListInvitesProps,
 	},
 	{
 		async get() {
@@ -32,7 +26,7 @@ API.v1.addRoute(
 	'findOrCreateInvite',
 	{
 		authRequired: true,
-		validateParams: isFindOrCreateInviteProps,
+		validateParams: isFindOrCreateInviteParams,
 	},
 	{
 		async post() {
@@ -81,7 +75,7 @@ API.v1.addRoute(
 		async post() {
 			const { token } = this.bodyParams;
 			try {
-				return API.v1.success({ valid: await validateInviteToken(token) });
+				return API.v1.success({ valid: Boolean(await validateInviteToken(token)) });
 			} catch (_) {
 				return API.v1.success({ valid: false });
 			}

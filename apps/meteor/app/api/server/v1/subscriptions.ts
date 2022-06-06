@@ -93,14 +93,7 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { roomId } = this.bodyParams;
-			const { firstUnreadMessage } = this.bodyParams;
-
-			if (!roomId && firstUnreadMessage && !firstUnreadMessage._id) {
-				return API.v1.failure('At least one of "roomId" or "firstUnreadMessage._id" params is required');
-			}
-
-			Meteor.call('unreadMessages', firstUnreadMessage, roomId);
+			Meteor.call('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
 
 			return API.v1.success();
 		},

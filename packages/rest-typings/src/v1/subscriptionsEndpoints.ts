@@ -7,7 +7,7 @@ type SubscriptionsGetOne = { roomId: IRoom['_id'] };
 
 type SubscriptionsRead = { rid: IRoom['_id'] };
 
-type SubscriptionsUnread = { roomId: IRoom['_id'] };
+type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick<IMessage, '_id'> };
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -24,7 +24,7 @@ const SubscriptionsGetSchema = {
 	additionalProperties: false,
 };
 
-export const isSubscriptionsGetProps = ajv.compile(SubscriptionsGetSchema);
+export const isSubscriptionsGetProps = ajv.compile<SubscriptionsGet>(SubscriptionsGetSchema);
 
 const SubscriptionsGetOneSchema = {
 	type: 'object',
@@ -37,7 +37,7 @@ const SubscriptionsGetOneSchema = {
 	additionalProperties: false,
 };
 
-export const isSubscriptionsGetOneProps = ajv.compile(SubscriptionsGetOneSchema);
+export const isSubscriptionsGetOneProps = ajv.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
 
 const SubscriptionsReadSchema = {
 	type: 'object',
@@ -50,20 +50,41 @@ const SubscriptionsReadSchema = {
 	additionalProperties: false,
 };
 
-export const isSubscriptionsReadProps = ajv.compile(SubscriptionsReadSchema);
+export const isSubscriptionsReadProps = ajv.compile<SubscriptionsRead>(SubscriptionsReadSchema);
 
 const SubscriptionsUnreadSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
 		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				firstUnreadMessage: {
+					type: 'object',
+					properties: {
+						_id: {
+							type: 'string',
+						},
+					},
+					required: ['_id'],
+					additionalProperties: false,
+				},
+			},
+			required: ['firstUnreadMessage'],
+			additionalProperties: false,
+		},
+	],
 };
 
-export const isSubscriptionsUnreadProps = ajv.compile(SubscriptionsUnreadSchema);
+export const isSubscriptionsUnreadProps = ajv.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
 export type SubscriptionsEndpoints = {
 	'subscriptions.get': {
@@ -84,6 +105,6 @@ export type SubscriptionsEndpoints = {
 	};
 
 	'subscriptions.unread': {
-		POST: (params: SubscriptionsUnread | { firstUnreadMessage: Pick<IMessage, '_id'> }) => void;
+		POST: (params: SubscriptionsUnread) => void;
 	};
 };
