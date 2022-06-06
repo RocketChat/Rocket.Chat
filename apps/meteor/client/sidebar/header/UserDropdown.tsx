@@ -46,7 +46,7 @@ const setStatus = (status: typeof userStatus.list['']): void => {
 	callbacks.run('userStatusManuallySet', status);
 };
 
-const getItems = (): ReturnType<typeof AccountBox.getItems> => AccountBox.getItems();
+const getItems = (): IAppAccountBoxItem[] => AccountBox.getItems() as IAppAccountBoxItem[];
 
 const translateStatusName = (t: ReturnType<typeof useTranslation>, status: typeof userStatus.list['']): string => {
 	if (isDefaultStatusName(status.name, status.id)) {
