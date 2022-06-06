@@ -90,14 +90,14 @@ const AgentsPage = (): ReactElement => {
 						<GenericTableBody>
 							{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
 							{phase === AsyncStatePhase.RESOLVED &&
-								data.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
+								data?.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
 						</GenericTableBody>
 					</GenericTable>
 					{phase === AsyncStatePhase.RESOLVED && (
 						<Pagination
 							current={current}
 							itemsPerPage={itemsPerPage}
-							count={data.count}
+							count={data?.count}
 							onSetItemsPerPage={setItemsPerPage}
 							onSetCurrent={setCurrent}
 							{...paginationProps}
