@@ -1,1 +1,1 @@
-export { default } from './KeyboardShortcutsWithClose';
+export { default } from './KeyboardShortcutsWithData';
