@@ -103,6 +103,9 @@ API.v1.addRoute(
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
 				}
+				if (!agentId) {
+					return API.v1.failure('agent-not-found');
+				}
 
 				const agentObj: ILivechatAgent = await Users.findOneAgentById(agentId, {
 					projection: { username: 1 },

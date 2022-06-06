@@ -98,7 +98,7 @@ export class AppUserBridge extends UserBridge {
 		const { status } = fields;
 		delete fields.status;
 
-		await UsersRaw.update({ _id: user.id }, { $set: fields });
+		await UsersRaw.update({ _id: user.id }, { $set: fields as any });
 
 		if (status) {
 			UserPresence.setDefaultStatus(user.id, status);
