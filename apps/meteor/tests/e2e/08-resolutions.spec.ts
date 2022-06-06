@@ -44,7 +44,7 @@ test.describe('[Resolution]', function () {
 			await expect(await sideNav.isSideBarOpen()).toBeFalsy;
 		});
 
-		test.describe('moving elements:', async () => {
+		test.describe.skip('moving elements:', async () => {
 			test.beforeEach(async () => {
 				if (!(await sideNav.isSideBarOpen())) {
 					await sideNav.burgerBtn().click({ force: true });

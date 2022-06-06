@@ -11,7 +11,6 @@ import './views/app/notAuthorized.html';
 import './views/app/roomSearch.html';
 import './views/app/userSearch.html';
 import './views/app/burger';
-import './views/app/home';
 import './views/app/roomSearch';
 import './views/app/photoswipeContent.ts'; // without the *.ts extension, *.html gets loaded first
 import './components/icon';
