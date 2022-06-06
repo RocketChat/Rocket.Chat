@@ -1,6 +1,6 @@
 import { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { Callout, Field, Margins } from '@rocket.chat/fuselage';
-import React, { FC, memo, ReactElement } from 'react';
+import React, { memo, ReactElement } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
 import AssetSettingInput from './inputs/AssetSettingInput';
@@ -51,7 +51,7 @@ const MemoizedSetting = ({
 		return <></>;
 	}
 
-	const InputComponent: FC<any> =
+	const InputComponent: (props: any) => ReactElement =
 		{
 			boolean: BooleanSettingInput,
 			string: StringSettingInput,
