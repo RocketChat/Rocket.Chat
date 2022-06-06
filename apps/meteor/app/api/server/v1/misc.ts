@@ -6,13 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EJSON } from 'meteor/ejson';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import {
-	isShieldSvgProps,
-	isSpotlightProps,
-	isDirectoryProps,
-	isMethodCallProps,
-	isMethodCallAnonProps,
-} from '@rocket.chat/rest-typings';
+import { isShieldSvgProps, isSpotlightProps, isDirectoryProps, isMethodCallProps, isMethodCallAnonProps } from '@rocket.chat/rest-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
@@ -568,7 +562,7 @@ API.v1.addRoute(
 					.digest('hex');
 
 			const rateLimiterInput = {
-				userId: this.userId,
+				userId: this.userId || undefined,
 				clientAddress: this.requestIp,
 				type: 'method',
 				name: method,

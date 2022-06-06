@@ -128,12 +128,12 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	? {
 			readonly user: IUser;
 			readonly userId: string;
-			readonly token?: string;
+			readonly token: string;
 	  }
 	: {
 			readonly user: null;
 			readonly userId: undefined;
-			readonly token: undefined;
+			readonly token?: string;
 	  });
 
 export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
