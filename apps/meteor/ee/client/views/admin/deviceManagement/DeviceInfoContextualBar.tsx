@@ -45,7 +45,7 @@ const DeviceInfoContextualBar = ({
 	const handleLogoutDeviceModal = useCallback(() => {
 		const closeModal = (): void => setModal(null);
 
-		const handleLogoutDevice = async (): void => {
+		const handleLogoutDevice = async (): Promise<void> => {
 			try {
 				await logoutDevice();
 				onReload();
@@ -95,7 +95,7 @@ const DeviceInfoContextualBar = ({
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('User')}</InfoPanel.Label>
 						<Box>
-							<UserAvatar username={username || ''} />
+							<UserAvatar username={username || ''} etag={userPresence?.avatarETag}/>
 							<Box is='span' pi='x8'>
 								<StatusBullet status={userPresence?.status} />
 							</Box>

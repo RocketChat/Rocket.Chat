@@ -20,7 +20,7 @@ const DeviceManagementPage = (): ReactElement => {
 					<DevicesTable reloadRef={reloadRef}/>
 				</Page.Content>
 			</Page>
-			{context === 'info' && <DeviceInfoWithData deviceId={deviceId} onReload={reloadRef.current}/>}
+			{context === 'info' && deviceId && <DeviceInfoWithData deviceId={deviceId} onReload={reloadRef.current}/>}
 		</Page>
 	);
 };

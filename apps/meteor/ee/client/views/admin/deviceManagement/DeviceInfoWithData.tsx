@@ -1,7 +1,9 @@
 import { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, Skeleton, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import React, { ReactElement, useMemo } from 'react';
 
+import VerticalBar from '../../../../../client/components/VerticalBar';
 import DeviceInfoContextualBar from './DeviceInfoContextualBar';
 import { useEndpointData } from '/client/hooks/useEndpointData';
 import { AsyncStatePhase } from '/client/lib/asyncState';
@@ -12,9 +14,11 @@ const convertSessionFromAPI = ({ loginAt, logoutAt, ...rest}: Serialized<DeviceM
 	...rest,
 });
 
-const DeviceInfoWithData = ({ deviceId, ...props }: { deviceId?: string }): ReactElement => {
+const DeviceInfoWithData = ({ deviceId, ...props }: { deviceId: string; onReload: () => void; }): ReactElement => {
 
-	const { value: data, phase, error } = useEndpointData(
+	const t = useTranslation();
+
+	const { value: data, phase, error, reload } = useEndpointData(
 		'sessions/info.admin',
 		useMemo(() => ({ sessionId: deviceId }), [deviceId]),
 	);
@@ -32,18 +36,31 @@ const DeviceInfoWithData = ({ deviceId, ...props }: { deviceId?: string }): Reac
 		);
 	}
 
-	console.log("data = ", data, error);
-
-	//TODO: Better Error handling, this breaks UI
 	if(error || !data) {
 		return (
-			<Box fontScale='h2' pb='x20'>
-				{JSON.stringify(error)}
+			<VerticalBar>
+			<VerticalBar.Header>
+				{t('Device_Info')}
+				<VerticalBar.Close />
+			</VerticalBar.Header>
+			<VerticalBar.Content>
+			<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
+					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
+					<StatesSubtitle>{error?.message}</StatesSubtitle>
+					<StatesActions>
+						<StatesAction onClick={reload}>{t('Retry')}</StatesAction>
+					</StatesActions>
+				</States>
 			</Box>
+			</VerticalBar.Content>
+			</VerticalBar>
 		);
 	}
 
-	return <DeviceInfoContextualBar {...convertSessionFromAPI(data)} {...props}/>;
+	return <DeviceInfoContextualBar {...convertSessionFromAPI(data)}  {...props}/>;
 };
 
 export default DeviceInfoWithData;
