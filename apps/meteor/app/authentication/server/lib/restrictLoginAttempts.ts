@@ -95,7 +95,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	}
 
 	const loginUsername = login.methodArguments[0].user?.username;
-	const user = login.user || (loginUsername && (await Users.findOneByUsername(loginUsername)));
+	const user = login.user || (loginUsername && (await Users.findOneByUsername(loginUsername))) || undefined;
 
 	if (!user?.username) {
 		return true;

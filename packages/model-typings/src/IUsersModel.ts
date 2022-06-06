@@ -52,7 +52,13 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	countAllAgentsStatus({ departmentId }: { departmentId?: any }): any;
 
-	getTotalOfRegisteredUsersByDate({ start, end, options }: { start: any; end: any; options?: any }): any;
+	getTotalOfRegisteredUsersByDate({ start, end, options }: { start: any; end: any; options?: any }): Promise<
+		{
+			date: string;
+			users: number;
+			type: 'users';
+		}[]
+	>;
 
 	getUserLanguages(): any;
 

@@ -1,4 +1,4 @@
-import type { Cursor } from 'mongodb';
+import type { Cursor, AggregationCursor } from 'mongodb';
 import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
@@ -59,7 +59,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findOneByNameOrFname(name: any, options?: any): any;
 
-	allRoomSourcesCount(): Cursor<{ _id: IOmnichannelGenericRoom['source']; count: number }>;
+	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
 	setAsFederated(roomId: any): any;
 

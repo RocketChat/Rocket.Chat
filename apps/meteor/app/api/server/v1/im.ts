@@ -13,6 +13,7 @@ import {
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Subscriptions, Uploads, Messages, Rooms, Settings } from '@rocket.chat/models';
+import type { FilterQuery } from 'mongodb';
 
 import { Users } from '../../../models/server';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -477,7 +478,7 @@ API.v1.addRoute(
 			const { offset, count }: { offset: number; count: number } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = { ...query, t: 'd' };
+			const ourQuery = { ...query, t: 'd' } as FilterQuery<IRoom>;
 
 			const rooms = await Rooms.find(ourQuery, {
 				sort: sort || { name: 1 },

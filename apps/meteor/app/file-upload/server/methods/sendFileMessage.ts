@@ -21,6 +21,9 @@ Meteor.methods({
 		}
 
 		const room = await Rooms.findOneById(roomId);
+		if (!room) {
+			return false;
+		}
 
 		if (user?.type !== 'app' && !canAccessRoom(room, user)) {
 			return false;

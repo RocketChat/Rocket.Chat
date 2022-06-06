@@ -110,7 +110,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					...room,
 					type: roomType,
 					name: team.name,
-					members: memberUsernames,
+					members: memberUsernames as string[],
 					extraData: {
 						...room.extraData,
 						teamId,
@@ -748,15 +748,17 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			TeamMember.removeById(existingMember._id);
 			const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
-			await removeUserFromRoom(
-				team.roomId,
-				removedUser,
-				uid !== member.userId
-					? {
-							byUser,
-					  }
-					: undefined,
-			);
+			if (removedUser) {
+				await removeUserFromRoom(
+					team.roomId,
+					removedUser,
+					uid !== member.userId
+						? {
+								byUser,
+						  }
+						: undefined,
+				);
+			}
 		}
 
 		return true;
