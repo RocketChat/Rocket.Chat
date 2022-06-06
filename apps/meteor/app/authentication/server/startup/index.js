@@ -18,6 +18,7 @@ import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -213,7 +214,7 @@ Accounts.onCreateUser(function (options, user = {}) {
 	callbacks.run('onCreateUser', options, user);
 
 	// App IPostUserCreated event hook
-	Promise.await(Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: Meteor.user() }));
+	Promise.await(Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: safeGetMeteorUser() }));
 
 	return user;
 });
