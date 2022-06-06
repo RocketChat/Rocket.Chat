@@ -123,6 +123,8 @@ export interface ServerMethods {
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
 	'checkRegistrationSecretURL': (hash: string) => boolean;
+	'livechat:changeLivechatStatus': (params?: void | { status?: string; agentId?: string }) => unknown;
+	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
 	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
 	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 }
