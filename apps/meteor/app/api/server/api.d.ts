@@ -96,6 +96,9 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		? T
 		: Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+
+	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
+
 	/* @deprecated */
 	requestParams(): OperationParams<TMethod, TPathPattern>;
 	getLoggedInUser(): TOptions extends { authRequired: true } ? IUser : IUser | undefined;

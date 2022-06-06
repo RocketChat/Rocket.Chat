@@ -1,29 +1,17 @@
-import type { IExportOperation, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IExportOperation, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
+import type { UserDeactivateIdleParamsPOST } from './users/UserDeactivateIdleParamsPOST';
+import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
+import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
+import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
+import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
+import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
+import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 
-const ajv = new Ajv({
+export const ajv = new Ajv({
 	coerceTypes: true,
 });
-
-type UsersInfo = { userId?: IUser['_id']; userName?: IUser['username'] };
-
-const UsersInfoSchema = {
-	type: 'object',
-	properties: {
-		userId: {
-			type: 'string',
-			nullable: true,
-		},
-		userName: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: [],
-	additionalProperties: false,
-};
-
-export const isUsersInfoProps = ajv.compile<UsersInfo>(UsersInfoSchema);
 
 type Users2faSendEmailCode = { emailOrUsername: string };
 
@@ -39,36 +27,6 @@ const Users2faSendEmailCodeSchema = {
 };
 
 export const isUsers2faSendEmailCodeProps = ajv.compile<Users2faSendEmailCode>(Users2faSendEmailCodeSchema);
-
-type UsersAutocomplete = { selector: string };
-
-const UsersAutocompleteSchema = {
-	type: 'object',
-	properties: {
-		selector: {
-			type: 'string',
-		},
-	},
-	required: ['selector'],
-	additionalProperties: false,
-};
-
-export const isUsersAutocompleteProps = ajv.compile<UsersAutocomplete>(UsersAutocompleteSchema);
-
-type UsersListTeams = { userId: IUser['_id'] };
-
-const UsersListTeamsSchema = {
-	type: 'object',
-	properties: {
-		userId: {
-			type: 'string',
-		},
-	},
-	required: ['userId'],
-	additionalProperties: false,
-};
-
-export const isUsersListTeamsProps = ajv.compile<UsersListTeams>(UsersListTeamsSchema);
 
 type UsersSetAvatar = { userId?: IUser['_id']; username?: IUser['username']; avatarUrl?: string };
 
@@ -115,11 +73,6 @@ const UsersResetAvatarSchema = {
 export const isUsersResetAvatarProps = ajv.compile<UsersResetAvatar>(UsersResetAvatarSchema);
 
 export type UsersEndpoints = {
-	'users.info': {
-		GET: (params: UsersInfo) => {
-			user: IUser;
-		};
-	};
 	'users.2fa.enableEmail': {
 		POST: () => void;
 	};
@@ -130,13 +83,13 @@ export type UsersEndpoints = {
 		POST: (params: Users2faSendEmailCode) => void;
 	};
 	'users.autocomplete': {
-		GET: (params: UsersAutocomplete) => {
+		GET: (params: UsersAutocompleteParamsGET) => {
 			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
 		};
 	};
 
 	'users.listTeams': {
-		GET: (params: UsersListTeams) => { teams: ITeam[] };
+		GET: (params: UsersListTeamsParamsGET) => { teams: ITeam[] };
 	};
 
 	'users.setAvatar': {
@@ -190,12 +143,6 @@ export type UsersEndpoints = {
 		) => void;
 	};
 
-	'users.logout': {
-		POST: (params: { userId?: string }) => {
-			message: string;
-		};
-	};
-
 	'users.presence': {
 		GET: (params: { from: string; ids: string | string[] }) => {
 			full: boolean;
@@ -210,7 +157,7 @@ export type UsersEndpoints = {
 	'users.getPersonalAccessTokens': {
 		GET: () => {
 			tokens: {
-				name: string;
+				name?: string;
 				createdAt: string;
 				lastTokenPart: string;
 				bypassTwoFactor: boolean;
@@ -248,4 +195,86 @@ export type UsersEndpoints = {
 			};
 		};
 	};
+
+	// check(this.bodyParams, {
+	// 	email: String,
+	// 	name: String,
+	// 	password: String,
+	// 	username: String,
+	// 	active: Match.Maybe(Boolean),
+	// 	bio: Match.Maybe(String),
+	// 	nickname: Match.Maybe(String),
+	// 	statusText: Match.Maybe(String),
+	// 	roles: Match.Maybe(Array),
+	// 	joinDefaultChannels: Match.Maybe(Boolean),
+	// 	requirePasswordChange: Match.Maybe(Boolean),
+	// 	setRandomPassword: Match.Maybe(Boolean),
+	// 	sendWelcomeEmail: Match.Maybe(Boolean),
+	// 	verified: Match.Maybe(Boolean),
+	// 	customFields: Match.Maybe(Object),
+	// });
+
+	'users.create': {
+		POST: (params: UserCreateParamsPOST) => {
+			user: IUser;
+		};
+	};
+
+	'users.setActiveStatus': {
+		POST: (params: UserSetActiveStatusParamsPOST) => {
+			user: IUser;
+		};
+	};
+
+	'users.deactivateIdle': {
+		POST: (params: UserDeactivateIdleParamsPOST) => {
+			count: number;
+		};
+	};
+
+	'users.getPresence': {
+		GET: (
+			params:
+				| {
+						userId: string;
+				  }
+				| {
+						username: string;
+				  }
+				| {
+						user: string;
+				  },
+		) => {
+			presence: 'online' | 'offline' | 'away' | 'busy';
+			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+			lastLogin?: string;
+		};
+	};
+
+	'users.info': {
+		GET: (params: UsersInfoParamsGet) => {
+			user: IUser & { rooms?: Pick<ISubscription, 'rid' | 'name' | 't' | 'roles' | 'unread'>[] };
+		};
+	};
+
+	'users.register': {
+		POST: (params: UserRegisterParamsPOST) => {
+			user: Partial<IUser>;
+		};
+	};
+
+	'users.logout': {
+		POST: (params: UserLogoutParamsPOST) => {
+			message: string;
+		};
+	};
 };
+
+export * from './users/UserCreateParamsPOST';
+export * from './users/UserSetActiveStatusParamsPOST';
+export * from './users/UserDeactivateIdleParamsPOST';
+export * from './users/UsersInfoParamsGet';
+export * from './users/UserRegisterParamsPOST';
+export * from './users/UserLogoutParamsPOST';
+export * from './users/UsersListTeamsParamsGET';
+export * from './users/UsersAutocompleteParamsGET';
