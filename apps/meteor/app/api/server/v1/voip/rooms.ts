@@ -1,6 +1,7 @@
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import { isVoipRoomCloseProps } from '@rocket.chat/rest-typings/dist/v1/voip';
 
 import { API } from '../../api';
 import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
@@ -212,17 +213,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'voip/room.close',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isVoipRoomCloseProps },
 	{
 		async post() {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-				options: Match.Maybe({
-					comment: Match.Maybe(String),
-					tags: Match.Maybe([String]),
-				}),
-			});
 			const { rid, token, options } = this.bodyParams;
 
 			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
