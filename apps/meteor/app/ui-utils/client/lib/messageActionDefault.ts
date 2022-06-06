@@ -17,6 +17,7 @@ import CreateDiscussion from '../../../../client/components/CreateDiscussion/Cre
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { ChatMessages } from '../../../ui/client';
+import { Federation } from '../../../federation-v2/client/Federation';
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
@@ -40,7 +41,7 @@ Meteor.startup(async function () {
 		id: 'reply-directly',
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', Federation.getMessageActionContextName()],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			roomCoordinator.openRouteLink(
@@ -110,7 +111,7 @@ Meteor.startup(async function () {
 		icon: 'permalink',
 		label: 'Get_link',
 		// classes: 'clipboard',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', Federation.getMessageActionContextName()],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const permalink = await MessageAction.getPermaLink(message._id);
@@ -129,7 +130,7 @@ Meteor.startup(async function () {
 		icon: 'copy',
 		label: 'Copy',
 		// classes: 'clipboard',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', Federation.getMessageActionContextName()],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			navigator.clipboard.writeText(message.msg);
@@ -212,7 +213,7 @@ Meteor.startup(async function () {
 		id: 'report-message',
 		icon: 'report',
 		label: 'Report',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', Federation.getMessageActionContextName()],
 		color: 'alert',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;

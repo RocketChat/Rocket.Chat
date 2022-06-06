@@ -10,7 +10,7 @@ import { timeAgo } from '../../../client/lib/utils/timeAgo';
 import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
 import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
 import { MessageTypes, MessageAction } from '../../ui-utils/client';
-import { RoomRoles, UserRoles, Roles } from '../../models/client';
+import { RoomRoles, UserRoles, Roles, Rooms } from '../../models/client';
 import { Markdown } from '../../markdown/client';
 import { t } from '../../utils';
 import { AutoTranslate } from '../../autotranslate/client';
@@ -22,6 +22,7 @@ import { formatDate } from '../../../client/lib/utils/formatDate';
 import './messageThread';
 import './message.html';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { Federation } from '../../federation-v2/client/Federation';
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -448,7 +449,8 @@ Template.message.helpers({
 		}
 
 		if (!context) {
-			context = 'message';
+			const room = Rooms.findOne({ _id: this.msg.rid });
+			context = Federation.isAFederatedRoom(room) ? Federation.getMessageActionContextName() : 'message';
 		}
 
 		return MessageAction.getButtons({ ...this, message: this.msg, user: this.u }, context, messageGroup);

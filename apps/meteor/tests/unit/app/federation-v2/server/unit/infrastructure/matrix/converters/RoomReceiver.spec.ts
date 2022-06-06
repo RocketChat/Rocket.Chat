@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { MatrixRoomReceiverConverter } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/converters/RoomReceiver';
+import { MatrixRoomReceiverConverter } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/converters/RoomReceiver';
 import {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
@@ -10,11 +10,11 @@ import {
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeNameDto,
 	FederationRoomChangeTopicDto,
-} from '../../../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
-import { MatrixEventType } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
-import { RoomJoinRules } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
-import { AddMemberToRoomMembership } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEventContent/IMatrixEventContentAddMemberToRoom';
-import { EVENT_ORIGIN } from '../../../../../../../../app/federation-v2/server/domain/IFederationBridge';
+} from '../../../../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
+import { MatrixEventType } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
+import { RoomJoinRules } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
+import { AddMemberToRoomMembership } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEventContent/IMatrixEventContentAddMemberToRoom';
+import { EVENT_ORIGIN } from '../../../../../../../../../app/federation-v2/server/domain/IFederationBridge';
 
 describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', () => {
 	describe('#toRoomCreateDto()', () => {

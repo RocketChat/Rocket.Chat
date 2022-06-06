@@ -7,6 +7,7 @@ import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoo
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 import { Subscriptions } from '../../../../app/models/server';
+import { Federation } from '../../../../app/federation-v2/server/infrastructure/rocket-chat/Federation';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
@@ -38,6 +39,9 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	allowMemberAction(room: IRoom, action) {
+		if (Federation.isAFederatedRoom(room)) {
+			return Federation.federationActionAllowed(action);
+		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return !this.isGroupChat(room);

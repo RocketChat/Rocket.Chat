@@ -1,7 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { expect } from 'chai';
 
-import { FederatedRoom } from '../../../../../../app/federation-v2/server/domain/FederatedRoom';
+import { FederatedRoom } from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 
 describe('Federation - Domain - FederatedRoom', () => {
 	const members = [{ internalReference: { id: 'userId' } }, { internalReference: { id: 'userId2' } }] as any;

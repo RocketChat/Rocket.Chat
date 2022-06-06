@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { FederatedUser } from '../../../../../../app/federation-v2/server/domain/FederatedUser';
+import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
 
 describe('Federation - Domain - FederatedUser', () => {
 	describe('#createInstance()', () => {

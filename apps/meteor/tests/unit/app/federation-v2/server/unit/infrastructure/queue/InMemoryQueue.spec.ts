@@ -1,7 +1,7 @@
 import { expect, spy } from 'chai';
 import mock from 'mock-require';
 
-import { InMemoryQueue } from '../../../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
+import { InMemoryQueue } from '../../../../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
 
 mock('fastq', {
 	promise: (handler: Function) => ({

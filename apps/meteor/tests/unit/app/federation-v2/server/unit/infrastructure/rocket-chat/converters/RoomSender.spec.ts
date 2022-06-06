@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import { IMessage } from '@rocket.chat/core-typings';
 
-import { FederationRoomSenderConverter } from '../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
+import { FederationRoomSenderConverter } from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 import {
 	FederationRoomInviteUserDto,
 	FederationRoomSendExternalMessageDto,
-} from '../../../../../../../../app/federation-v2/server/application/input/RoomSenderDto';
+} from '../../../../../../../../../app/federation-v2/server/application/input/RoomSenderDto';
 
 describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConverter', () => {
 	describe('#toRoomInviteUserDto()', () => {

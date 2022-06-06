@@ -3,6 +3,7 @@ import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserRoom, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useMemo } from 'react';
 
+import { Federation } from '../../../../../../app/federation-v2/client/Federation';
 import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { getTabBarContext } from '../../../lib/Toolbox/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
@@ -20,12 +21,14 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const subscription = useUserSubscription(message.rid);
 	const settings = useSettings();
 	const user = useUser() as IUser;
+	const federationContext = Federation.isAFederatedRoom(room) ? Federation.getMessageActionContextName() : '';
+	const context = federationContext || 'message';
 
 	const mapSettings = useMemo(() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])), [settings]);
 
-	const messageActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, 'message', 'message');
+	const messageActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, context, 'message');
 
-	const menuActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, 'message', 'menu');
+	const menuActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, context, 'menu');
 
 	const tabbar = getTabBarContext(message.rid);
 

@@ -18,6 +18,7 @@ import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEv
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
 import { onClientBeforeSendMessage } from '../../../../../../client/lib/onClientBeforeSendMessage';
 import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
+import { Federation } from '../../../../../federation-v2/client/Federation';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -27,13 +28,19 @@ const mountPopover = (e, i, outerContext) => {
 
 	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg }, context, 'menu').map((item) => ({
-		icon: item.icon,
-		name: t(item.label),
-		type: 'message-action',
-		id: item.id,
-		modifier: item.color,
-	}));
+	const room = Rooms.findOne({ _id: messageContext.msg.rid });
+	const federationContext = Federation.isAFederatedRoom(room) ? Federation.getMessageActionContextName() : '';
+	context = federationContext || context;
+
+	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg, user: messageContext.u }, context, 'menu').map(
+		(item) => ({
+			icon: item.icon,
+			name: t(item.label),
+			type: 'message-action',
+			id: item.id,
+			modifier: item.color,
+		}),
+	);
 
 	if (window.matchMedia('(max-width: 500px)').matches) {
 		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map((item) => ({
@@ -320,9 +327,9 @@ export const getCommonRoomEvents = () => ({
 	'click .message-actions__menu'(e, template) {
 		const messageContext = messageArgs(this);
 		const { msg: message, u: user, context: ctx } = messageContext;
-		const context = ctx || message.context || message.actionContext || 'message';
 		const room = Rooms.findOne({ _id: template.data.rid });
-
+		const federationContext = Federation.isAFederatedRoom(room) ? Federation.getMessageActionContextName() : '';
+		const context = ctx || message.context || message.actionContext || federationContext || 'message';
 		const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),

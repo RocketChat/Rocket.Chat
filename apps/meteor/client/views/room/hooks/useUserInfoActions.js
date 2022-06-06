@@ -16,6 +16,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
+import { Federation } from '../../../../app/federation-v2/client/Federation';
 import { RoomRoles } from '../../../../app/models/client';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
@@ -132,6 +133,8 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 		user.username,
 	);
 
+	const isAFederatedRoom = Federation.isAFederatedRoom(room);
+
 	const openDirectDm = useMutableCallback(() =>
 		directRoute.push({
 			rid: user.username,
@@ -158,13 +161,14 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 		const action = callInProgress ? handleJoinCall : handleStartCall;
 
 		return (
+			!isAFederatedRoom &&
 			shouldAllowCalls && {
 				label: t(callInProgress ? 'Join_video_call' : 'Start_video_call'),
 				icon: 'video',
 				action,
 			}
 		);
-	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall]);
+	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall, isAFederatedRoom]);
 
 	const audioCallOption = useMemo(() => {
 		const handleJoinCall = () => {
@@ -176,13 +180,14 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 		const action = callInProgress ? handleJoinCall : handleStartCall;
 
 		return (
+			!isAFederatedRoom &&
 			shouldAllowCalls && {
 				label: t(callInProgress ? 'Join_audio_call' : 'Start_audio_call'),
 				icon: 'mic',
 				action,
 			}
 		);
-	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall]);
+	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall, isAFederatedRoom]);
 
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
 	const changeOwnerMessage = isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_a_owner_of__room_name_';

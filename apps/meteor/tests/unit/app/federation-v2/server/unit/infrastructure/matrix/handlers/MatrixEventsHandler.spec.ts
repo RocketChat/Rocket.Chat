@@ -1,6 +1,6 @@
 import { expect, spy } from 'chai';
 
-import { MatrixEventsHandler } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/handlers';
+import { MatrixEventsHandler } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/handlers';
 
 describe('Federation - Infrastructure - Matrix - MatrixEventsHandler', () => {
 	describe('#handleEvent()', () => {

@@ -10,13 +10,14 @@ import { Rooms } from '../../models/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { Federation } from '../../federation-v2/client/Federation';
 
 Meteor.startup(function () {
 	MessageAction.addButton({
 		id: 'star-message',
 		icon: 'star',
 		label: 'Star',
-		context: ['starred', 'message', 'message-mobile', 'threads'],
+		context: ['starred', 'message', 'message-mobile', 'threads', Federation.getMessageActionContextName()],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			Meteor.call('starMessage', { ...message, starred: true }, function (error: any) {
@@ -44,7 +45,7 @@ Meteor.startup(function () {
 		id: 'unstar-message',
 		icon: 'star',
 		label: 'Unstar_Message',
-		context: ['starred', 'message', 'message-mobile', 'threads'],
+		context: ['starred', 'message', 'message-mobile', 'threads', Federation.getMessageActionContextName()],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 
