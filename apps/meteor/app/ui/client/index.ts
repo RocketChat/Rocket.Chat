@@ -6,8 +6,6 @@ import './lib/parentTemplate';
 import './lib/codeMirror';
 import './lib/textarea-cursor';
 import './views/app/burger.html';
-import './views/app/home.html';
-import './views/app/notAuthorized.html';
 import './views/app/roomSearch.html';
 import './views/app/userSearch.html';
 import './views/app/burger';

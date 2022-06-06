@@ -11,6 +11,7 @@ import toastr from 'toastr';
 import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
+import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 import { dispatchToastMessage } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
 import BlazeTemplate from '../views/root/BlazeTemplate';
@@ -120,7 +121,7 @@ FlowRouter.route('/home', {
 
 				appLayout.render(
 					<MainLayout>
-						<BlazeTemplate template='home' />
+						<BlazeTemplate template={HomePage} />
 					</MainLayout>,
 				);
 			});
@@ -130,7 +131,7 @@ FlowRouter.route('/home', {
 
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template='home' />
+				<BlazeTemplate template={HomePage} />
 			</MainLayout>,
 		);
 	},
