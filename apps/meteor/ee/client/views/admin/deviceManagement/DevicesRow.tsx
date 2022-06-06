@@ -1,4 +1,4 @@
-import { TableRow, TableCell, Box, Menu, Option } from '@rocket.chat/fuselage';
+import { TableRow, TableCell, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo, useCallback } from 'react';
@@ -20,9 +20,17 @@ type DeviceRowProps = {
 	onReload: () => void;
 };
 
-
-
-const DevicesRow = ({ _id, username, ip, deviceName, deviceType, deviceOSName, deviceOSVersion, loginAt, onReload }: DeviceRowProps): ReactElement => {
+const DevicesRow = ({
+		_id,
+		username,
+		ip,
+		deviceName,
+		deviceType,
+		deviceOSName,
+		deviceOSVersion,
+		loginAt,
+		onReload
+	}: DeviceRowProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -71,7 +79,7 @@ const DevicesRow = ({ _id, username, ip, deviceName, deviceType, deviceOSName, d
 				{t('Device_Logout_Text')}
 			</GenericModal>,
 		);
-	}, [t, onReload,logoutDevice, setModal, dispatchToastMessage]);
+	}, [t, onReload, logoutDevice, setModal, dispatchToastMessage]);
 
 	return (
 		<TableRow key={_id} onClick={handleClick} tabIndex={0}>

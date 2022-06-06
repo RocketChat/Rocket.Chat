@@ -1,6 +1,6 @@
 import { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { Box, Skeleton, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
 import VerticalBar from '../../../../../client/components/VerticalBar';

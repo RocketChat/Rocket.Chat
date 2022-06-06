@@ -34,7 +34,7 @@ const DeviceInfoContextualBar = ({
 	const { username, name } = _user;
 	const userPresence = usePresence(userId);
 
-	const closeContextualBar = (): void => deviceManagementRouter.push({});
+	const closeContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
 	const logoutDevice = useEndpointAction(
 		'POST',
