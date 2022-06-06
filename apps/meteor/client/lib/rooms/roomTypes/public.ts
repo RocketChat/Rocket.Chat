@@ -75,8 +75,8 @@ roomCoordinator.add(PublicRoomType, {
 		);
 	},
 
-	getAvatarPath(room) {
-		return getAvatarURL({ roomId: room._id, cache: room.avatarETag }) as string;
+	async getAvatarPath(room) {
+		return Promise.resolve(getAvatarURL({ roomId: room._id, cache: room.avatarETag }) as string);
 	},
 
 	getIcon(room) {
