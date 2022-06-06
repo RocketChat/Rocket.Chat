@@ -59,12 +59,14 @@ const SpotlightSchema = {
 		},
 		limit: {
 			type: 'number',
+			nullable: true,
 		},
 		offset: {
 			type: 'number',
+			nullable: true,
 		},
 	},
-	required: ['query', 'limit', 'offset'],
+	required: ['query'],
 	additionalProperties: false,
 };
 
