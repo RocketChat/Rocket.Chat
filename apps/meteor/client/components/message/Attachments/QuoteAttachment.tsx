@@ -7,12 +7,12 @@ import React, { FC } from 'react';
 import Attachments from '.';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import MarkdownText from '../../MarkdownText';
-import AttachmentAuthor from './Attachment/Author';
-import AttachmentAuthorAvatar from './Attachment/AuthorAvatar';
-import AttachmentAuthorName from './Attachment/AuthorName';
-import AttachmentContent from './Attachment/Content';
-import AttachmentDetails from './Attachment/Details';
-import AttachmentInner from './Attachment/Inner';
+import AttachmentAuthor from './Attachment/AttachmentAuthor';
+import AttachmentAuthorAvatar from './Attachment/AttachmentAuthorAvatar';
+import AttachmentAuthorName from './Attachment/AttachmentAuthorName';
+import AttachmentContent from './Attachment/AttachmentContent';
+import AttachmentDetails from './Attachment/AttachmentDetails';
+import AttachmentInner from './Attachment/AttachmentInner';
 
 const hover = css`
 	&:hover,

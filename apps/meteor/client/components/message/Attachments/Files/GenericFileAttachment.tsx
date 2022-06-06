@@ -4,12 +4,12 @@ import React, { FC } from 'react';
 
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import AttachmentDescription from '../Attachment/Description';
-import AttachmentDownload from '../Attachment/Download';
-import AttachmentRow from '../Attachment/Row';
-import AttachmentSize from '../Attachment/Size';
-import AttachmentTitle from '../Attachment/Title';
-import AttachmentTitleLink from '../Attachment/TitleLink';
+import AttachmentDescription from '../Attachment/AttachmentDescription';
+import AttachmentDownload from '../Attachment/AttachmentDownload';
+import AttachmentRow from '../Attachment/AttachmentRow';
+import AttachmentSize from '../Attachment/AttachmentSize';
+import AttachmentTitle from '../Attachment/AttachmentTitle';
+import AttachmentTitleLink from '../Attachment/AttachmentTitleLink';
 
 export type GenericFileAttachmentProps = {
 	file?: FileProp;

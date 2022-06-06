@@ -5,12 +5,12 @@ import React, { FC } from 'react';
 
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import AttachmentContent from '../Attachment/Content';
-import AttachmentDetails from '../Attachment/Details';
-import AttachmentDownload from '../Attachment/Download';
-import AttachmentRow from '../Attachment/Row';
-import AttachmentSize from '../Attachment/Size';
-import AttachmentTitle from '../Attachment/Title';
+import AttachmentContent from '../Attachment/AttachmentContent';
+import AttachmentDetails from '../Attachment/AttachmentDetails';
+import AttachmentDownload from '../Attachment/AttachmentDownload';
+import AttachmentRow from '../Attachment/AttachmentRow';
+import AttachmentSize from '../Attachment/AttachmentSize';
+import AttachmentTitle from '../Attachment/AttachmentTitle';
 import { useCollapse } from '../hooks/useCollapse';
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({

@@ -1,9 +1,9 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, FC } from 'react';
 
-import Action from './Action';
+import Action from './AttachmentAction';
 
-const Download: FC<Omit<ComponentProps<typeof Action>, 'icon'> & { title?: string | undefined; href: string }> = ({
+const AttachmentDownload: FC<Omit<ComponentProps<typeof Action>, 'icon'> & { title?: string | undefined; href: string }> = ({
 	title,
 	href,
 	...props
@@ -23,4 +23,4 @@ const Download: FC<Omit<ComponentProps<typeof Action>, 'icon'> & { title?: strin
 	);
 };
 
-export default Download;
+export default AttachmentDownload;
