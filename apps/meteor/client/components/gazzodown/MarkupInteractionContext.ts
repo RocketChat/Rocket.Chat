@@ -1,38 +1,35 @@
+import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { createContext, useContext, MouseEvent } from 'react';
 
-import { ChannelMention } from '../definitions/ChannelMention';
-import { UserMention } from '../definitions/UserMention';
+type UserMention = Pick<IUser, '_id' | 'name' | 'username'>;
+type ChannelMention = Pick<IRoom, '_id' | 'name'>;
 
-type MessageBodyContextType = {
+type MarkupInteractionContextValue = {
 	mentions?: UserMention[];
 	channels?: ChannelMention[];
-	isThreadPreview?: boolean;
 	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
 	onChannelMentionClick?: (id: string) => (e: MouseEvent<HTMLDivElement>) => void;
 };
 
-export const MessageBodyContext = createContext<MessageBodyContextType>({
+export const MarkupInteractionContext = createContext<MarkupInteractionContextValue>({
 	mentions: [],
 	channels: [],
 });
 
-export const useMessageBodyContext = (): MessageBodyContextType => useContext(MessageBodyContext);
-
-export const useMessageBodyIsThreadPreview = (): MessageBodyContextType['isThreadPreview'] =>
-	useContext(MessageBodyContext).isThreadPreview;
+export const useMarkupInteractionContext = (): MarkupInteractionContextValue => useContext(MarkupInteractionContext);
 
 export const useMessageBodyUserMentions = (): UserMention[] => {
-	const { mentions = [] } = useMessageBodyContext();
+	const { mentions = [] } = useMarkupInteractionContext();
 	return mentions;
 };
 
 export const useMessageBodyChannelMentions = (): ChannelMention[] => {
-	const { channels = [] } = useMessageBodyContext();
+	const { channels = [] } = useMarkupInteractionContext();
 	return channels;
 };
 
 export const useMessageBodyMentionClick = (): ((username: string) => (e: MouseEvent<HTMLDivElement>) => void) => {
-	const { onUserMentionClick } = useMessageBodyContext();
+	const { onUserMentionClick } = useMarkupInteractionContext();
 	if (!onUserMentionClick) {
 		console.warn('onUserMentionClick is not defined');
 		return (username: string) => (): void => {
@@ -43,7 +40,7 @@ export const useMessageBodyMentionClick = (): ((username: string) => (e: MouseEv
 };
 
 export const useMessageBodyChannelMentionClick = (): ((id: string) => (e: MouseEvent<HTMLDivElement>) => void) => {
-	const { onChannelMentionClick } = useMessageBodyContext();
+	const { onChannelMentionClick } = useMarkupInteractionContext();
 	if (!onChannelMentionClick) {
 		console.warn('onChannelMentionClick is not defined');
 		return (username: string) => (): void => {
