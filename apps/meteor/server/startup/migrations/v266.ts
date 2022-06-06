@@ -1,27 +1,19 @@
-import { MongoInternals } from 'meteor/mongo';
-import { ServiceConfiguration } from 'meteor/service-configuration';
-
 import { addMigration } from '../../lib/migrations';
+import { Rooms } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 266,
 	async up() {
-		ServiceConfiguration.configurations.remove({
-			service: 'blockstack',
-		});
-
-		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-		const settings = mongo.db.collection('rocketchat_settings');
-		await settings.deleteMany({
-			_id: {
-				$in: [
-					'Blockstack',
-					'Blockstack_Enable',
-					'Blockstack_Auth_Description',
-					'Blockstack_ButtonLabelText',
-					'Blockstack_Generate_Username',
-				],
+		await Rooms.updateMany(
+			{ bridged: true },
+			{
+				$set: {
+					federated: true,
+				},
+				$unset: {
+					bridged: 1,
+				},
 			},
-		});
+		);
 	},
 });
