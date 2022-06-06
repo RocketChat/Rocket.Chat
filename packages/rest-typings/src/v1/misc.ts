@@ -23,6 +23,7 @@ const ShieldSvgSchema = {
 	properties: {
 		type: {
 			type: 'string',
+			nullable: true,
 		},
 		icon: {
 			type: 'string',
@@ -33,17 +34,8 @@ const ShieldSvgSchema = {
 		name: {
 			type: 'string',
 		},
-		text: {
-			type: 'string',
-		},
-		color: {
-			type: 'string',
-		},
-		size: {
-			type: 'number',
-		},
 	},
-	required: ['type', 'icon', 'channel', 'name', 'text', 'color', 'size'],
+	required: ['icon', 'channel', 'name'],
 	additionalProperties: false,
 };
 
