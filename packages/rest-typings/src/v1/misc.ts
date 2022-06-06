@@ -31,12 +31,13 @@ const ShieldSvgSchema = {
 		},
 		channel: {
 			type: 'string',
+			nullable: true,
 		},
 		name: {
 			type: 'string',
 		},
 	},
-	required: ['channel', 'name'],
+	required: ['name'],
 	additionalProperties: false,
 };
 
