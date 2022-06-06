@@ -1,14 +1,13 @@
-import { Plain as ASTPlain } from '@rocket.chat/message-parser';
-import React, { FC, memo } from 'react';
+import React, { memo, ReactElement } from 'react';
 
 import { useMessageListHighlights, useMessageListKatex } from '../../../views/room/MessageList/contexts/MessageListContext';
 import CustomText from '../../CustomText';
 
-type PlainTextType = {
-	value: ASTPlain['value'];
+type PlainSpanProps = {
+	text: string;
 };
 
-const PlainText: FC<PlainTextType> = ({ value: text }) => {
+const PlainSpan = ({ text }: PlainSpanProps): ReactElement => {
 	const highlights = useMessageListHighlights();
 	const katex = useMessageListKatex();
 
@@ -19,4 +18,4 @@ const PlainText: FC<PlainTextType> = ({ value: text }) => {
 	return <>{text}</>;
 };
 
-export default memo(PlainText);
+export default memo(PlainSpan);
