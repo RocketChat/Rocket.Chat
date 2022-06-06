@@ -108,7 +108,7 @@ const DirectorySchema = {
 			nullable: true,
 		},
 	},
-	required: ['text', 'type', 'workspace'],
+	required: [],
 	additionalProperties: false,
 };
 
