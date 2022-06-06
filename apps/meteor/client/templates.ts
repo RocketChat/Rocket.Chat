@@ -2,18 +2,18 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
-createTemplateForComponent('MessageActions', () => import('./components/Message/MessageActions'));
+createTemplateForComponent('MessageActions', () => import('./components/message/MessageActions'));
 
-createTemplateForComponent('reactAttachments', () => import('./components/Message/Attachments'));
+createTemplateForComponent('reactAttachments', () => import('./components/message/Attachments'));
 
-createTemplateForComponent('ThreadMetric', () => import('./components/Message/Metrics/Thread'), {
+createTemplateForComponent('ThreadMetric', () => import('./components/message/Metrics/Thread'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'min-height: 36px;',
 		}),
 });
 
-createTemplateForComponent('DiscussionMetric', () => import('./components/Message/Metrics/Discussion'), {
+createTemplateForComponent('DiscussionMetric', () => import('./components/message/Metrics/Discussion'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'min-height: 36px;',
@@ -21,10 +21,8 @@ createTemplateForComponent('DiscussionMetric', () => import('./components/Messag
 });
 
 createTemplateForComponent('MessageList', () => import('./views/room/MessageList/MessageList'));
-/** @deprecated */
-createTemplateForComponent('MessageBody', () => import('./components/Message/MessageBodyRender'));
 
-createTemplateForComponent('BroadCastMetric', () => import('./components/Message/Metrics/Broadcast'));
+createTemplateForComponent('BroadCastMetric', () => import('./components/message/Metrics/Broadcast'));
 
 createTemplateForComponent(
 	'Checkbox',
