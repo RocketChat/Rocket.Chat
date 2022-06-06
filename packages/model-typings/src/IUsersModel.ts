@@ -6,8 +6,8 @@ import type { IBaseModel } from './IBaseModel';
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateWriteOpResult>;
 	findUsersInRoles(roles: IRole['_id'][], scope?: null, options?: any): Cursor<IUser>;
-	findOneByUsername(username: string, options?: any): IUser;
-	findOneAgentById(_id: string, options: any): ILivechatAgent;
+	findOneByUsername(username: string, options?: any): Promise<IUser>;
+	findOneAgentById(_id: string, options: any): Promise<ILivechatAgent>;
 	findUsersInRolesWithQuery(roles: IRole['_id'] | IRole['_id'][], query: any, options: any): any;
 	findOneByUsernameAndRoomIgnoringCase(username: string, rid: IRoom['_id'], options: any): any;
 	findOneByIdAndLoginHashedToken(_id: string, token: any, options?: any): any;

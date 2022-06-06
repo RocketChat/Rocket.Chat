@@ -7,4 +7,4 @@ import { UsersRaw } from './raw/Users';
 
 const col = MeteorModel.model.rawCollection();
 export const Users = new UsersRaw(col, trashCollection);
-registerModel('IUsersModel', Users as unknown as IUsersModel);
+registerModel('IUsersModel', Users as IUsersModel);
