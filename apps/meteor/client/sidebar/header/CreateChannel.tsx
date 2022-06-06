@@ -5,14 +5,15 @@ import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 
-type CreateChannelProps = {
+export type CreateChannelProps = {
 	values: {
 		name: string;
-		type?: boolean;
+		type: boolean;
 		readOnly?: boolean;
 		encrypted?: boolean;
 		broadcast?: boolean;
 		users?: string[];
+		description?: string;
 	};
 	handlers: {
 		handleName?: () => void;
@@ -21,10 +22,10 @@ type CreateChannelProps = {
 		handleReadOnly?: () => void;
 	};
 	hasUnsavedChanges: boolean;
-	onChangeUsers: () => void;
-	onChangeType: () => void;
-	onChangeBroadcast: () => void;
-	canOnlyCreateOneType?: boolean;
+	onChangeUsers: (value: string, action: 'remove' | undefined) => void;
+	onChangeType: React.FormEventHandler<HTMLElement>;
+	onChangeBroadcast: React.FormEventHandler<HTMLElement>;
+	canOnlyCreateOneType?: false | 'p' | 'c';
 	e2eEnabledForPrivateByDefault?: boolean;
 	onCreate: () => void;
 	onClose: () => void;
@@ -76,8 +77,8 @@ const CreateChannel = ({
 		checkName(values.name);
 	}, [checkName, values.name]);
 
-	const e2edisabled = useMemo(
-		() => !values.type || values.broadcast || !e2eEnabled || e2eEnabledForPrivateByDefault,
+	const e2edisabled = useMemo<boolean>(
+		() => !values.type || values.broadcast || Boolean(!e2eEnabled) || Boolean(e2eEnabledForPrivateByDefault),
 		[e2eEnabled, e2eEnabledForPrivateByDefault, values.broadcast, values.type],
 	);
 

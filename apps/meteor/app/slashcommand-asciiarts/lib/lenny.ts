@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, RequiredField } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -7,7 +7,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
  * @param {Object} message - The message object
  */
 
-function LennyFace(_command: 'lennyface', params: string, item: IMessage): void {
+function LennyFace(_command: 'lennyface', params: string, item: RequiredField<Partial<IMessage>, 'rid'>): void {
 	const msg = item;
 	msg.msg = `${params} ( ͡° ͜ʖ ͡°)`;
 	Meteor.call('sendMessage', msg);
