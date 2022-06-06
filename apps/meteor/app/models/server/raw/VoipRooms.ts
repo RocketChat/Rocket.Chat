@@ -1,5 +1,6 @@
 import { FilterQuery, WithoutProjection, FindOneOptions, WriteOpResult, Cursor } from 'mongodb';
 import type { IVoipRoom, IRoomClosingInfo } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 import { Logger } from '../../../../server/lib/logger/Logger';
@@ -109,6 +110,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		queue,
 		visitorId,
 		direction,
+		roomName,
 		options = {},
 	}: {
 		agents?: string[];
@@ -119,6 +121,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		queue?: string;
 		visitorId?: string;
 		direction?: IVoipRoom['direction'];
+		roomName?: string;
 		options?: {
 			sort?: Record<string, unknown>;
 			count?: number;
@@ -165,6 +168,9 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		}
 		if (direction) {
 			query.direction = direction;
+		}
+		if (roomName) {
+			query.name = new RegExp(escapeRegExp(roomName), 'i');
 		}
 
 		return this.find(query, {

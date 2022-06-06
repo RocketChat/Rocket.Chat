@@ -15,4 +15,5 @@ export type FindVoipRoomsParams = {
 		offset?: number;
 	};
 	direction?: IVoipRoom['direction'];
+	roomName?: string;
 };

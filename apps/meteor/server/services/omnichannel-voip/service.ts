@@ -398,6 +398,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		tags,
 		queue,
 		direction,
+		roomName,
 		options: { offset = 0, count, fields, sort } = {},
 	}: FindVoipRoomsParams): Promise<PaginatedResult<{ rooms: IVoipRoom[] }>> {
 		const cursor = this.voipRoom.findRoomsWithCriteria({
@@ -409,6 +410,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			queue,
 			visitorId,
 			direction,
+			roomName,
 			options: {
 				sort: sort || { ts: -1 },
 				offset,

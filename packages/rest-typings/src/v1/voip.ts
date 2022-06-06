@@ -409,7 +409,7 @@ const VoipCallServerCheckConnectionSchema: JSONSchemaType<VoipCallServerCheckCon
 
 export const isVoipCallServerCheckConnectionProps = ajv.compile<VoipCallServerCheckConnection>(VoipCallServerCheckConnectionSchema);
 
-type VoipRooms = {
+type VoipRooms = PaginatedRequest<{
 	agents?: string[];
 	open?: 'true' | 'false';
 	createdAt?: string;
@@ -417,8 +417,9 @@ type VoipRooms = {
 	tags?: string[];
 	queue?: string;
 	visitorId?: string;
+	roomName?: string;
 	direction?: IVoipRoom['direction'];
-};
+}>;
 
 const VoipRoomsSchema: JSONSchemaType<VoipRooms> = {
 	type: 'object',
@@ -463,6 +464,26 @@ const VoipRoomsSchema: JSONSchemaType<VoipRooms> = {
 			enum: ['inbound', 'outbound'],
 			nullable: true,
 		},
+		roomName: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: [],
 	additionalProperties: false,
@@ -492,7 +513,7 @@ const VoipRoomCloseSchema: JSONSchemaType<VoipRoomClose> = {
 			nullable: true,
 		},
 	},
-	required: ['rid', 'token', 'comment'],
+	required: ['rid', 'token'],
 	additionalProperties: false,
 };
 

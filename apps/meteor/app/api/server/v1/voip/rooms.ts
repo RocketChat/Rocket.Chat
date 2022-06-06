@@ -1,7 +1,7 @@
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import type { ILivechatAgent, IVoipRoom } from '@rocket.chat/core-typings';
-import { isVoipRoomProps } from '@rocket.chat/rest-typings/dist/v1/voip';
+import { isVoipRoomProps, isVoipRoomsProps } from '@rocket.chat/rest-typings/dist/v1/voip';
 
 import { API } from '../../api';
 import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
@@ -25,7 +25,6 @@ const validateDateParams = (property: string, date: DateParam = {}): DateParam =
 const parseAndValidate = (property: string, date?: string): DateParam => {
 	return validateDateParams(property, parseDateParams(date));
 };
-const VoipRoomDirectionValidator = Match.Where((value: string) => ['inbound', 'outbound'].includes(value));
 
 /**
  * @openapi
@@ -105,8 +104,6 @@ API.v1.addRoute(
 			}
 
 			if (!rid) {
-				check(direction, VoipRoomDirectionValidator);
-
 				const room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
@@ -141,20 +138,14 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip/rooms',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isVoipRoomsProps },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			const { sort, fields } = this.parseJsonQuery();
-			const { agents, open, tags, queue, visitorId, direction } = this.requestParams();
-			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.requestParams();
 
-			check(agents, Match.Maybe([String]));
-			check(open, Match.Maybe(String));
-			check(tags, Match.Maybe([String]));
-			check(queue, Match.Maybe(String));
-			check(visitorId, Match.Maybe(String));
-			check(direction, Match.Maybe(VoipRoomDirectionValidator));
+			const { sort, fields } = this.parseJsonQuery();
+			const { agents, open, tags, queue, visitorId, direction, roomName } = this.requestParams();
+			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.requestParams();
 
 			// Reusing same L room permissions for simplicity
 			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
@@ -176,6 +167,7 @@ API.v1.addRoute(
 					createdAt,
 					closedAt,
 					direction,
+					roomName,
 					options: { sort, offset, count, fields },
 				}),
 			);
