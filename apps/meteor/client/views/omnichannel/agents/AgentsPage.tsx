@@ -36,7 +36,7 @@ const AgentsPage = (): ReactElement => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const query = useQuery({ text: debouncedFilter, current, itemsPerPage }, debouncedSort);
-	const { value: data, reload, phase } = useEndpointData('livechat/users/agent', query);
+	const { reload, ...result } = useEndpointData('livechat/users/agent', query);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
@@ -88,16 +88,16 @@ const AgentsPage = (): ReactElement => {
 							<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
 						</GenericTableHeader>
 						<GenericTableBody>
-							{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
-							{phase === AsyncStatePhase.RESOLVED &&
-								data?.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
+							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
+							{result.phase === AsyncStatePhase.RESOLVED &&
+								result.value.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
 						</GenericTableBody>
 					</GenericTable>
-					{phase === AsyncStatePhase.RESOLVED && (
+					{result.phase === AsyncStatePhase.RESOLVED && (
 						<Pagination
 							current={current}
 							itemsPerPage={itemsPerPage}
-							count={data?.count}
+							count={result.value.count}
 							onSetItemsPerPage={setItemsPerPage}
 							onSetCurrent={setCurrent}
 							{...paginationProps}
