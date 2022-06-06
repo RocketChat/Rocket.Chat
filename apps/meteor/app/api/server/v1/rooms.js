@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { FileUpload } from '../../../file-upload';
-import { Rooms, Messages } from '../../../models';
+import { Rooms, Messages } from '../../../models/server';
 import { API } from '../api';
 import {
 	findAdminRooms,

@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import speakeasy from 'speakeasy';
 
 // @ts-expect-error
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 
 export const TOTP = {

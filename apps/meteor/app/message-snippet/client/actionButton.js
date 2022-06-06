@@ -3,7 +3,7 @@
 // import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 // import { t, handleError } from '../../utils';
 // import { settings } from '../../settings';
-// import { Subscriptions } from '../../models';
+// import { Subscriptions } from '../../models/client';
 // import { hasAtLeastOnePermission } from '../../authorization';
 //
 // Meteor.startup(function() {

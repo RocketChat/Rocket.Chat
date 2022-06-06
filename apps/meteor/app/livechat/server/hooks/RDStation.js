@@ -1,6 +1,6 @@
 import { HTTP } from 'meteor/http';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 import { SystemLogger } from '../../../../server/lib/logger/system';

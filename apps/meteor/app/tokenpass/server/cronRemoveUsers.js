@@ -3,7 +3,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
 import { Tokenpass } from './Tokenpass';
-import { Rooms, Subscriptions, Users } from '../../models';
+import { Rooms, Subscriptions, Users } from '../../models/server';
 import { removeUserFromRoom } from '../../lib/server/functions/removeUserFromRoom';
 
 function removeUsersFromTokenChannels() {

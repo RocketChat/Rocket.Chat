@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 import s from 'underscore.string';
 
-import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models';
+import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
 
 export const Contacts = {
 	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {

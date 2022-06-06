@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms, Users, Messages } from '../../../models';
+import { Rooms, Users, Messages } from '../../../models/server';
 
 Meteor.methods({
 	getUserMentionsByChannel({ roomId, options }) {

@@ -7,7 +7,7 @@ import _ from 'underscore';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
-import { Messages, ChatSubscription } from '../../../models';
+import { Messages, ChatSubscription } from '../../../models/client';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';

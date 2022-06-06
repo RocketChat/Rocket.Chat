@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 
 Meteor.methods({
 	getChannelTokenpass(rid) {

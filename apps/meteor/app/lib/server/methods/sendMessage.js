@@ -5,9 +5,9 @@ import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { messageProperties } from '../../../ui-utils';
-import { Users, Messages, Rooms } from '../../../models';
+import { Users, Messages, Rooms } from '../../../models/server';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';

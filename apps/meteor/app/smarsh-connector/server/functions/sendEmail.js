@@ -8,7 +8,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Uploads } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { smarsh } from '../lib/rocketchat';
 
 smarsh.sendEmail = async (data) => {

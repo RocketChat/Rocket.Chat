@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { t } from '../../utils';
-import { ChatRoom } from '../../models';
+import { ChatRoom } from '../../models/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 

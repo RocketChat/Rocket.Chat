@@ -4,7 +4,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import { SmarshHistory } from '@rocket.chat/models';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users } from '../../../models/server';
 import { MessageTypes } from '../../../ui-utils';
 import { smarsh } from '../lib/rocketchat';

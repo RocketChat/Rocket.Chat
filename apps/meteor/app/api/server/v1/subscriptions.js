@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Subscriptions } from '../../../models';
+import { Subscriptions } from '../../../models/server';
 import { API } from '../api';
 
 API.v1.addRoute(

@@ -2,10 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatInquiry, OmnichannelQueue } from '@rocket.chat/models';
 
-import { Users } from '../../../../../app/models';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
+import { Users, LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';

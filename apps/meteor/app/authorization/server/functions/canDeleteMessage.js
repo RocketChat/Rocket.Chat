@@ -1,6 +1,6 @@
 import { hasPermissionAsync } from './hasPermission';
 import { getValue } from '../../../settings/server/raw';
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 
 const elapsedTime = (ts) => {
 	const dif = Date.now() - ts;

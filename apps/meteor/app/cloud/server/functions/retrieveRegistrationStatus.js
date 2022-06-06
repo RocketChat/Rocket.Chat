@@ -1,5 +1,5 @@
-import { settings } from '../../../settings';
-import { Users } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Users } from '../../../models/server';
 
 export function retrieveRegistrationStatus() {
 	const info = {

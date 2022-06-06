@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../settings';
-import { Rooms } from '../../models';
+import { settings } from '../../settings/server';
+import { Rooms } from '../../models/server';
 import { validateName } from '../../lib/server/functions/validateName';
 
 export const getValidRoomName = (displayName, rid = '', options = {}) => {

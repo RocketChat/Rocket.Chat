@@ -4,7 +4,7 @@ import { Rooms as RoomRaw } from '@rocket.chat/models';
 
 import { memoizeDebounce } from './debounceByParams';
 import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms, Messages, LivechatCustomField } from '../../../../../app/models/server';
-import { settings } from '../../../../../app/settings';
+import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';

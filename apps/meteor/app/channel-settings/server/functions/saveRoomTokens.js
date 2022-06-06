@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 
 export const saveRoomTokenpass = function (rid, tokenpass) {
 	if (!Match.test(rid, String)) {

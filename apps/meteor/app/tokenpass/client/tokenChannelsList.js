@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
-import { Subscriptions } from '../../models';
+import { Subscriptions } from '../../models/client';
 
 Template.tokenChannelsList.helpers({
 	rooms() {

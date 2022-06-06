@@ -1,8 +1,8 @@
 import { HTTP } from 'meteor/http';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
-import { settings } from '../../../settings';
-import { Settings } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Settings } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { LICENSE_VERSION } from '../license';
 import { SystemLogger } from '../../../../server/lib/logger/system';

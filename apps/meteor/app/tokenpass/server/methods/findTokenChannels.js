@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../models/server';
 import { Tokenpass } from '../Tokenpass';
 
 Meteor.methods({

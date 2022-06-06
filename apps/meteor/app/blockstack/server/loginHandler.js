@@ -5,7 +5,7 @@ import { updateOrCreateUser } from './userHandler';
 import { handleAccessToken } from './tokenHandler';
 import { logger } from './logger';
 import { settings } from '../../settings/server';
-import { Users } from '../../models';
+import { Users } from '../../models/server';
 import { setUserAvatar } from '../../lib';
 
 // Blockstack login handler, triggered by a blockstack authResponse in route

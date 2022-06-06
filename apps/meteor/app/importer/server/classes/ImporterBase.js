@@ -11,7 +11,7 @@ import { ImporterWebsocket } from './ImporterWebsocket';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
-import { Settings, Imports } from '../../../models';
+import { Settings, Imports } from '../../../models/server';
 import { Logger } from '../../../logger';
 import { ImportDataConverter } from './ImportDataConverter';
 import { ImportData } from '../../../models/server';
