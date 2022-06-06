@@ -970,11 +970,8 @@ describe('[Rooms]', function () {
 		});
 		it('should return the rooms to fill auto complete', (done) => {
 			request
-				.get(api('rooms.autocomplete.channelAndPrivate.withPagination'))
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination?selector={}'))
 				.set(credentials)
-				.query({
-					selector: {},
-				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -988,10 +985,9 @@ describe('[Rooms]', function () {
 		});
 		it('should return the rooms to fill auto complete even requested with count and offset params', (done) => {
 			request
-				.get(api('rooms.autocomplete.channelAndPrivate.withPagination'))
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination?selector={}'))
 				.set(credentials)
 				.query({
-					selector: {},
 					count: 5,
 					offset: 0,
 				})
