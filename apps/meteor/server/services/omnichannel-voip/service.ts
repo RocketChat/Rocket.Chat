@@ -119,7 +119,9 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		const callStartPbxEvent = await this.pbxEvents.findOne(
 			{
 				phone: guest?.phone?.[0]?.phoneNumber,
-				event: 'QueueCallerJoin',
+				event: {
+					$in: ['QueueCallerJoin', 'DialEnd'],
+				},
 			},
 			{ sort: { ts: -1 } },
 		);

@@ -114,10 +114,12 @@ export const CallProvider: FC = ({ children }) => {
 				// do not want it to be attached.
 				// When call gets established, then switch the media renderer.
 				remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
-				return createRoom(callInfo);
+				const roomId = await createRoom(callInfo);
+				dispatchEvent({ event: VoipClientEvents['VOIP-CALL-STARTED'], rid: roomId });
+				return roomId;
 			}
 		},
-		[createRoom, result.voipClient],
+		[createRoom, dispatchEvent, result.voipClient],
 	);
 
 	useEffect(() => {
@@ -187,7 +189,8 @@ export const CallProvider: FC = ({ children }) => {
 		}
 
 		const handleCallHangup = (_event: { roomId: string }): void => {
-			setQueueName(queueAggregator.getCurrentQueueName());
+			// setQueueName(queueAggregator.getCurrentQueueName());
+			setQueueName('Test');
 			openWrapUpModal();
 			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: _event.roomId });
 		};

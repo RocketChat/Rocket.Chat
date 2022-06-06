@@ -7,7 +7,7 @@ import { useCallClient } from '../../../contexts/CallContext';
 export const OmnichannelMakeCall = (): ReactElement => {
 	const voipClient = useCallClient();
 
-	const getTooltip = (): string => 'Click to dial 80013';
+	const getTooltip = (): string => 'Click to dial 70010';
 
 	const getIcon = (): 'phone' => 'phone';
 
@@ -21,7 +21,7 @@ export const OmnichannelMakeCall = (): ReactElement => {
 
 	// TODO: move registration flow to context provider
 	const makeCall = useMutableCallback((): void => {
-		voipClient.makeCall('sip:80013@omni-asterisk.dev.rocket.chat');
+		voipClient.makeCall('sip:70010@omni-asterisk.dev.rocket.chat');
 	});
 
 	return <Sidebar.TopBar.Action {...voipCallIcon} onClick={makeCall} />;

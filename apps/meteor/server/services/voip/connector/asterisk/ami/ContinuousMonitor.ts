@@ -13,8 +13,10 @@
  *
  */
 import { Db } from 'mongodb';
-import type { IQueueDetails } from '@rocket.chat/core-typings';
 import {
+	IPbxEvent,
+	IQueueDetails,
+	isIDialingEvent,
 	IAgentCalledEvent,
 	IAgentConnectEvent,
 	IEventBase,
@@ -235,9 +237,43 @@ export class ContinuousMonitor extends Command {
 		}
 	}
 
+	async isTransactionPresent(pbxEvent: IPbxEvent | null, uniqueId: string): Promise<boolean> {
+		if (pbxEvent && pbxEvent.callUniqueId === uniqueId) {
+			switch (pbxEvent.event.toLowerCase()) {
+				case 'queuecallerjoin':
+				case 'agentconnect':
+					return true;
+				default:
+					return false;
+			}
+		}
+		return false;
+	}
+
+	async manageDialEvents(event: any): Promise<void> {
+		const pbxEvent = await this.pbxEvents.findOneByUniqueId(event.uniqueid);
+		if (await this.isTransactionPresent(pbxEvent, event.uniqueid)) {
+			return;
+		}
+		await this.pbxEvents.insertOne({
+			uniqueId: `${event.event}-${event.calleridnum}-${event.queue}-${event.uniqueid}`,
+			event: event.event,
+			ts: new Date(),
+			phone: event.calleridnum,
+			queue: event.queue,
+			holdTime: isIAgentConnectEvent(event) ? event.holdtime : '',
+			callUniqueId: event.uniqueid,
+			callUniqueIdFallback: event.linkedid,
+			agentExtension: event?.connectedlinenum,
+		});
+	}
+
 	async onEvent(event: IEventBase): Promise<void> {
 		this.logger.debug(`Received event ${event.event}`);
 		// Event received when a queue member is notified of a call in queue
+		if (isIDialingEvent(event)) {
+			this.manageDialEvents(event);
+		}
 		if (isIAgentCalledEvent(event)) {
 			return this.processAgentCalled(event);
 		}
@@ -289,6 +325,8 @@ export class ContinuousMonitor extends Command {
 		this.connection.on('unhold', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('contactstatus', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('hangup', new CallbackContext(this.onEvent.bind(this), this));
+		// this.connection.on('newexten', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('dialend', new CallbackContext(this.onEvent.bind(this), this));
 	}
 
 	resetEventHandlers(): void {
@@ -302,6 +340,8 @@ export class ContinuousMonitor extends Command {
 		this.connection.off('unhold', this);
 		this.connection.off('contactstatus', this);
 		this.connection.off('hangup', this);
+		// this.connection.off('newexten', this);
+		this.connection.off('dialend', this);
 	}
 
 	initMonitor(_data: any): boolean {
