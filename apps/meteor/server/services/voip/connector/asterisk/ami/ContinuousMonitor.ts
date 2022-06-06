@@ -39,6 +39,7 @@ import {
 	IContactStatus,
 	isICallHangupEvent,
 	ICallHangup,
+	IDialingEvent,
 } from '@rocket.chat/core-typings';
 
 import { Command, CommandType } from '../Command';
@@ -153,12 +154,18 @@ export class ContinuousMonitor extends Command {
 
 				return;
 			}
+			let uniqueId = `${eventName}-${event.calleridnum}-`;
+			if (event.queue) {
+				uniqueId += `${event.queue}-${event.uniqueid}`;
+			} else {
+				uniqueId += `${event.channel}-${event.destchannel}-${event.uniqueid}`;
+			}
 
 			// NOTE: using the uniqueId prop of event is not the recommented approach, since it's an opaque ID
 			// However, since we're not using it for anything special, it's a "fair use"
 			// uniqueId => {server}/{epoch}.{id of channel associated with this call}
 			await this.pbxEvents.insertOne({
-				uniqueId: `${eventName}-${event.calleridnum}-${event.queue}-${event.uniqueid}`,
+				uniqueId,
 				event: eventName,
 				ts: now,
 				phone: event.calleridnum,
@@ -250,21 +257,30 @@ export class ContinuousMonitor extends Command {
 		return false;
 	}
 
-	async manageDialEvents(event: any): Promise<void> {
+	async manageDialEvents(event: IDialingEvent): Promise<void> {
 		const pbxEvent = await this.pbxEvents.findOneByUniqueId(event.uniqueid);
 		if (await this.isTransactionPresent(pbxEvent, event.uniqueid)) {
 			return;
 		}
+
+		if (event.dialstatus.toLowerCase() !== 'answer' && event.dialstatus.toLowerCase() !== 'ringing') {
+			this.logger.warn(`Received unexpected event ${event.event} dialstatus =  ${event.dialstatus}`);
+			return;
+		}
+		/** This function adds necessary data to
+		 * pbx_events database for outbound calls.
+		 *
+		 * event?.connectedlinenum is the extension/phone number that is being called
+		 * and event.calleridnum is the extension that is initiating a call.
+		 */
 		await this.pbxEvents.insertOne({
-			uniqueId: `${event.event}-${event.calleridnum}-${event.queue}-${event.uniqueid}`,
+			uniqueId: `${event.event}-${event.calleridnum}-${event.channel}-${event.destchannel}-${event.uniqueid}`,
 			event: event.event,
 			ts: new Date(),
-			phone: event.calleridnum,
-			queue: event.queue,
-			holdTime: isIAgentConnectEvent(event) ? event.holdtime : '',
+			phone: event?.connectedlinenum,
 			callUniqueId: event.uniqueid,
 			callUniqueIdFallback: event.linkedid,
-			agentExtension: event?.connectedlinenum,
+			agentExtension: event.calleridnum,
 		});
 	}
 
@@ -272,7 +288,7 @@ export class ContinuousMonitor extends Command {
 		this.logger.debug(`Received event ${event.event}`);
 		// Event received when a queue member is notified of a call in queue
 		if (isIDialingEvent(event)) {
-			this.manageDialEvents(event);
+			return this.manageDialEvents(event);
 		}
 		if (isIAgentCalledEvent(event)) {
 			return this.processAgentCalled(event);
@@ -327,6 +343,7 @@ export class ContinuousMonitor extends Command {
 		this.connection.on('hangup', new CallbackContext(this.onEvent.bind(this), this));
 		// this.connection.on('newexten', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('dialend', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('dialstate', new CallbackContext(this.onEvent.bind(this), this));
 	}
 
 	resetEventHandlers(): void {
@@ -342,6 +359,7 @@ export class ContinuousMonitor extends Command {
 		this.connection.off('hangup', this);
 		// this.connection.off('newexten', this);
 		this.connection.off('dialend', this);
+		this.connection.off('dialstate', this);
 	}
 
 	initMonitor(_data: any): boolean {
