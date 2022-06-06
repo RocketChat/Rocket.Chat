@@ -21,16 +21,16 @@ type DeviceRowProps = {
 };
 
 const DevicesRow = ({
-		_id,
-		username,
-		ip,
-		deviceName,
-		deviceType,
-		deviceOSName,
-		deviceOSVersion,
-		loginAt,
-		onReload
-	}: DeviceRowProps): ReactElement => {
+	_id,
+	username,
+	ip,
+	deviceName,
+	deviceType,
+	deviceOSName,
+	deviceOSVersion,
+	loginAt,
+	onReload,
+}: DeviceRowProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
