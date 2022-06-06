@@ -34,8 +34,8 @@ test.describe('[Resolution]', () => {
 
 		test('expect close the sidenav', async () => {
 			const position = await mainContent.mainContent.boundingBox();
-			await expect(position?.x).toEqual(0);
-			await expect(await sideNav.isSideBarOpen()).toBeFalsy;
+			expect(position?.x).toEqual(0);
+			expect(await sideNav.isSideBarOpen()).toBeFalsy;
 		});
 
 		test.describe('moving elements:', async () => {
@@ -64,7 +64,7 @@ test.describe('[Resolution]', () => {
 
 			test('expect close the sidenav when open general channel', async () => {
 				await sideNav.doOpenChannel('general');
-				await expect(await sideNav.isSideBarOpen()).toBeFalsy;
+				expect(await sideNav.isSideBarOpen()).toBeFalsy;
 			});
 
 			test.describe('Preferences', async () => {
@@ -84,19 +84,19 @@ test.describe('[Resolution]', () => {
 				test('expect close the sidenav when press the preferences link', async () => {
 					await sideNav.preferences.click();
 					await page.mouse.click(640, 30);
-					await expect(await sideNav.isSideBarOpen()).toBeTruthy;
+					expect(await sideNav.isSideBarOpen()).toBeTruthy;
 				});
 
 				test('expect close the sidenav when press the profile link', async () => {
 					await sideNav.profile.click();
 					await page.mouse.click(640, 30);
-					await expect(await sideNav.isSideBarOpen()).toBeTruthy;
+					expect(await sideNav.isSideBarOpen()).toBeTruthy;
 				});
 
 				test('expect close the preferences nav', async () => {
 					await sideNav.preferencesClose.click();
 					await page.mouse.click(640, 30);
-					await expect(await sideNav.isSideBarOpen()).toBeFalsy;
+					expect(await sideNav.isSideBarOpen()).toBeFalsy;
 				});
 			});
 		});

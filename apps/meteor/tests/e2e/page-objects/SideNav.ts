@@ -90,6 +90,10 @@ export class SideNav extends BasePage {
 		return this.page.locator('.sidebar');
 	}
 
+	get spotlightSearch(): Locator {
+		return this.page.locator('[data-qa="sidebar-search-input"]');
+	}
+
 	get spotlightSearchIcon(): Locator {
 		return this.page.locator('[data-qa="sidebar-search"]');
 	}
