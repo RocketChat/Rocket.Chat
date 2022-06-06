@@ -16,6 +16,7 @@ const urlMap: Record<UpgradeTabVariant, string> = {
 };
 
 const getUrl = (type: UpgradeTabVariant, date: string | undefined, language: string): string => {
+	return 'https://rocket.chat/product-projects/testing-page-gdpr';
 	const urlParams = new URLSearchParams({ lang: language.toLowerCase() });
 	if (date) {
 		urlParams.set('date', date);
