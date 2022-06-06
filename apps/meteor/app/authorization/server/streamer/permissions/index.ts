@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
-
 import { Permissions } from '@rocket.chat/models';
 
 Meteor.methods({

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-
 import { Settings } from '@rocket.chat/models';
+
 import { hasPermission } from '../../../authorization/server';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 

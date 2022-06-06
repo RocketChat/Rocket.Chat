@@ -1,4 +1,5 @@
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+
 import { MatrixBridgedRoom } from '../../../models/server';
 import { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';

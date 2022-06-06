@@ -4,8 +4,8 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { MessageAttachment, FileAttachmentProps } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
-
 import { Rooms, Uploads } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';

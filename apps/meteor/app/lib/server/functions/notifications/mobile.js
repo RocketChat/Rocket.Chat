@@ -1,7 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../../../settings';
-import { Subscriptions } from '@rocket.chat/models';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 
 const CATEGORY_MESSAGE = 'MESSAGE';

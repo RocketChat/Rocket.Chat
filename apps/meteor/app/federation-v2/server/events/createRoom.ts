@@ -1,9 +1,9 @@
 import { IRoom, RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { ICreatedRoom } from '@rocket.chat/core-typings';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
+import { Rooms } from '@rocket.chat/models';
 
 import { MatrixBridgedRoom, MatrixBridgedUser, Users } from '../../../models/server';
-import { Rooms } from '@rocket.chat/models';
 import { createRoom } from '../../../lib/server';
 import { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';

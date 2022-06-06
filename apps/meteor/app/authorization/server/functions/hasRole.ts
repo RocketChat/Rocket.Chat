@@ -1,5 +1,4 @@
 import type { IRole, IUser, IRoom, ISubscription } from '@rocket.chat/core-typings';
-
 import { Roles } from '@rocket.chat/models';
 
 export const hasAnyRoleAsync = async (

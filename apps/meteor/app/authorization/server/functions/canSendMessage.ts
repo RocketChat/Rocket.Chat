@@ -1,8 +1,8 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -50,7 +50,7 @@ export async function canSendMessageAsync(
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
 	extraData: Record<string, any>,
 ): Promise<IRoom> {
-	const room = await Rooms.findOneById(rid);
+	const room = (await Rooms.findOneById(rid)) as IRoom;
 	await validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData);
 	return room;
 }

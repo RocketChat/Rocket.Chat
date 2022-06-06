@@ -1,5 +1,4 @@
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
-
 import { Settings } from '@rocket.chat/models';
 
 export class AppSettingsConverter {

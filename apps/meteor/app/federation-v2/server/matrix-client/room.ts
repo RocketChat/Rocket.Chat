@@ -1,9 +1,9 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
 import { MatrixBridgedRoom, MatrixBridgedUser } from '../../../models/server';
 import { matrixBridge } from '../bridge';
-import { Rooms } from '@rocket.chat/models';
 
 interface ICreateRoomResult {
 	rid: string;
