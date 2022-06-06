@@ -1,11 +1,12 @@
-import { TableRow, TableCell, Icon, Box, Menu, Option } from '@rocket.chat/fuselage';
+import { TableRow, TableCell, Box, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, ReactElement, FC, useMemo, useCallback } from 'react';
+import React, { ReactElement, useMemo, useCallback } from 'react';
 
 import GenericModal from '../../../../../client/components/GenericModal';
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
+import DeviceIcon from './DeviceIcon';
 
 type DeviceRowProps = {
 	_id: string;
@@ -14,22 +15,14 @@ type DeviceRowProps = {
 	deviceName: string;
 	deviceType: string;
 	deviceOSName: string;
+	deviceOSVersion: string;
 	loginAt: string;
 	onReload: () => void;
 };
 
-const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
-	browser: 'desktop',
-	mobile: 'mobile',
-};
 
-const DeviceIcon: FC<{ deviceType: string }> = ({ deviceType }) => (
-	<Box is='span' p='x4' bg='neutral-500-50' borderRadius='x32' mie='x4'>
-		<Icon name={iconMap[deviceType]} size='x20' color='info' />
-	</Box>
-);
 
-const DevicesRow = ({ _id, username, ip, deviceName, deviceType, deviceOSName, loginAt, onReload }: DeviceRowProps): ReactElement => {
+const DevicesRow = ({ _id, username, ip, deviceName, deviceType, deviceOSName, deviceOSVersion, loginAt, onReload }: DeviceRowProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -53,7 +46,7 @@ const DevicesRow = ({ _id, username, ip, deviceName, deviceType, deviceOSName, l
 	const handleLogoutDeviceModal = useCallback(() => {
 		const closeModal = (): void => setModal(null);
 
-		const handleLogoutDevice = async (): void => {
+		const handleLogoutDevice = async (): Promise<void> => {
 			try {
 				await logoutDevice();
 				onReload();
@@ -86,7 +79,7 @@ const DevicesRow = ({ _id, username, ip, deviceName, deviceType, deviceOSName, l
 				<DeviceIcon deviceType={deviceType} />
 				{deviceName}
 			</TableCell>
-			<TableCell>{deviceOSName}</TableCell>
+			<TableCell>{`${deviceOSName} ${deviceOSVersion}`}</TableCell>
 			<TableCell withTruncatedText>{username}</TableCell>
 			{mediaQuery && <TableCell>{formatDateAndTime(loginAt)}</TableCell>}
 			{mediaQuery && <TableCell withTruncatedText>{_id}</TableCell>}
@@ -100,7 +93,6 @@ const DevicesRow = ({ _id, username, ip, deviceName, deviceType, deviceOSName, l
 							action: (): void => handleLogoutDeviceModal(),
 						},
 					}}
-					tabIndex={-1}
 					renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} icon={icon} {...props} />}
 				/>
 			</TableCell>

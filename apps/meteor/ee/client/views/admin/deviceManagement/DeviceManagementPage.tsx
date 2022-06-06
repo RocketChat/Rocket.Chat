@@ -17,10 +17,10 @@ const DeviceManagementPage = (): ReactElement => {
 			<Page>
 				<Page.Header title={t('Device_Management')} />
 				<Page.Content>
-					<DevicesTable reloadRef={reloadRef}/>
+					<DevicesTable reloadRef={reloadRef} />
 				</Page.Content>
 			</Page>
-			{context === 'info' && deviceId && <DeviceInfoWithData deviceId={deviceId} onReload={reloadRef.current}/>}
+			{context === 'info' && deviceId && <DeviceInfoWithData deviceId={deviceId} onReload={reloadRef.current} />}
 		</Page>
 	);
 };

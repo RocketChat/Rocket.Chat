@@ -3,13 +3,13 @@ import { Box, Button, StatusBullet } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation, useToastMessageDispatch, useSetModal } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo } from 'react';
 
+import GenericModal from '../../../../../client/components/GenericModal';
 import VerticalBar from '../../../../../client/components/VerticalBar';
 import UserAvatar from '../../../../../client/components/avatar/UserAvatar';
+import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../../client/hooks/usePresence';
 import InfoPanel from '../../../../../client/views/InfoPanel';
-import GenericModal from '../../../../../client/components/GenericModal';
-import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 
 type DeviceInfoContextualBarProps = DeviceManagementPopulatedSession & {
 	onReload: () => void;
@@ -39,7 +39,7 @@ const DeviceInfoContextualBar = ({
 	const logoutDevice = useEndpointAction(
 		'POST',
 		'sessions/logout',
-		useMemo(() => ({ sessionId: sessionId }), [sessionId]),
+		useMemo(() => ({ sessionId }), [sessionId]),
 	);
 
 	const handleLogoutDeviceModal = useCallback(() => {
@@ -71,9 +71,8 @@ const DeviceInfoContextualBar = ({
 				{t('Device_Logout_Text')}
 			</GenericModal>,
 		);
-	}, [t, onReload,logoutDevice, setModal, dispatchToastMessage]);
+	}, [t, onReload, logoutDevice, setModal, dispatchToastMessage, closeContextualBar]);
 
-// TODO: Put all undefined Checks in place.
 	return (
 		<VerticalBar>
 			<VerticalBar.Header>
@@ -95,11 +94,11 @@ const DeviceInfoContextualBar = ({
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('User')}</InfoPanel.Label>
 						<Box>
-							<UserAvatar username={username || ''} etag={userPresence?.avatarETag}/>
+							<UserAvatar username={username || ''} etag={userPresence?.avatarETag} />
 							<Box is='span' pi='x8'>
 								<StatusBullet status={userPresence?.status} />
 							</Box>
-							<Box is='span'>{name || ''}</Box>
+							{name && <Box is='span'>{name}</Box>}
 							<Box is='span' color='gray'>
 								{' '}
 								{username && `(${username})`}
