@@ -42,3 +42,4 @@ yarn-error.log*
 !.yarn/versions
 
 .nvmrc
+.idea/
