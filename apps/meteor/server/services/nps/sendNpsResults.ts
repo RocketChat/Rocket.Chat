@@ -12,7 +12,7 @@ type NPSResultPayload = {
 };
 
 export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(npsId: string, data: NPSResultPayload) {
-	const token: string = getWorkspaceAccessToken();
+	const token: string = getWorkspaceAccessToken() as string;
 	if (!token) {
 		return false;
 	}

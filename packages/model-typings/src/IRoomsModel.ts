@@ -1,4 +1,5 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { Cursor } from 'mongodb';
+import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -52,13 +53,13 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findOneByName(name: any, options?: any): any;
 
-	findDefaultRoomsForTeam(teamId: any): any;
+	findDefaultRoomsForTeam(teamId: any): Cursor<IRoom>;
 
 	incUsersCountByIds(ids: any, inc: number): any;
 
 	findOneByNameOrFname(name: any, options?: any): any;
 
-	allRoomSourcesCount(): any;
+	allRoomSourcesCount(): Cursor<{ _id: IOmnichannelGenericRoom['source']; count: number }>;
 
 	setAsBridged(roomId: any): any;
 

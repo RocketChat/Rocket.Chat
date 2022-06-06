@@ -1,7 +1,7 @@
-import { LivechatDepartmentAgents } from '../../../../../server/models/LivechatDepartmentAgents';
+import { LivechatDepartmentAgentsRaw } from '../../../../../server/models/raw/LivechatDepartmentAgents';
 import { overwriteClassOnLicense } from '../../../license/server';
 
-overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgents, {
+overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
 	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<Record<string, any>> {
 		const match = {
 			$match: { agentId },
@@ -22,7 +22,7 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgents, {
 		};
 		const withBusinessHourId = { $match: { 'departments.businessHourId': businessHourId } };
 		const project = { $project: { departments: 0 } };
-		const model = this as unknown as LivechatDepartmentAgents;
+		const model = this as unknown as LivechatDepartmentAgentsRaw;
 		return model.col.aggregate([match, lookup, unwind, withBusinessHourId, project]).toArray();
 	},
 });

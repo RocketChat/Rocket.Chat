@@ -20,17 +20,17 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): any;
 
-	findActiveByIds(userIds: any, options?: any): any;
+	findActiveByIds(userIds: any, options?: any): Cursor<IUser>;
 
-	findByIds(userIds: any, options?: any): any;
+	findByIds(userIds: any, options?: any): Cursor<IUser>;
 
 	findOneByUsernameIgnoringCase(username: any, options: any): any;
 
 	findOneByLDAPId(id: any, attribute?: any): Promise<any>;
 
-	findLDAPUsers(options: any): any;
+	findLDAPUsers(options?: any): any;
 
-	findConnectedLDAPUsers(options: any): any;
+	findConnectedLDAPUsers(options?: any): any;
 
 	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<boolean>;
 
