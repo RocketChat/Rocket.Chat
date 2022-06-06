@@ -75,7 +75,7 @@ export interface Endpoints
 		WebdavEndpoints,
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
-		AppsEndpoints {}
+		AppsEndpoints,
 		AutoTranslateEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
