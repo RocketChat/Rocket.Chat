@@ -11,6 +11,39 @@ type AppSecurityPageProps = {
 const AppSecurityPage: FC<AppSecurityPageProps> = ({ privacyPolicySummary, appPermissions }) => {
 	const t = useTranslation();
 
+	const defaultPermissions = [
+		'user.read',
+		'user.write',
+		'upload.read',
+		'upload.write',
+		'ui.interact',
+		'server-setting.read',
+		'server-setting.write',
+		'room.read',
+		'room.write',
+		'message.read',
+		'message.write',
+		'livechat-department.read',
+		'livechat-department.write',
+		'livechat-room.read',
+		'livechat-room.write',
+		'livechat-message.read',
+		'livechat-message.write',
+		'livechat-visitor.read',
+		'livechat-visitor.write',
+		'livechat-status.read',
+		'livechat-custom-fields.write',
+		'scheduler',
+		'networking',
+		'persistence',
+		'env.read',
+		'slashcommand',
+		'api',
+	];
+
+	const handleHumanizePermissionName = (permission: string): string =>
+		t(`Apps_Permissions_${permission.replace('.', '_')}` as TranslationKey);
+
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto'>
 			<Box display='flex' flexDirection='column'>
@@ -29,10 +62,9 @@ const AppSecurityPage: FC<AppSecurityPageProps> = ({ privacyPolicySummary, appPe
 							{t('Permissions')}
 						</Box>
 						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis='x24'>
-							{appPermissions?.length &&
-								appPermissions.map((permission) => (
-									<li key={permission.name}>{t(`Apps_Permissions_${permission.name.replace('.', '_')}` as TranslationKey)}</li>
-								))}
+							{appPermissions?.length
+								? appPermissions.map((permission) => <li key={permission.name}>{handleHumanizePermissionName(permission.name)}</li>)
+								: defaultPermissions.map((permission) => <li key={permission}>{handleHumanizePermissionName(permission)}</li>)}
 						</Box>
 					</Box>
 
