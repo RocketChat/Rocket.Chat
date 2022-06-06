@@ -4,25 +4,26 @@ import React, { ReactElement } from 'react';
 import { getEmojiClassNameAndDataTitle } from '../../lib/utils/renderEmoji';
 
 type MessageEmojiProps = {
-	emojiHandle: string; // :emoji:
+	handle: string;
 	big?: boolean;
 	isThreadPreview?: boolean;
 };
 
-function MessageEmoji({ emojiHandle, big, isThreadPreview }: MessageEmojiProps): ReactElement {
-	const emojiProps = getEmojiClassNameAndDataTitle(emojiHandle);
+function MessageEmoji({ handle, big, isThreadPreview }: MessageEmojiProps): ReactElement {
+	handle = `:${handle}:`;
+	const emojiProps = getEmojiClassNameAndDataTitle(handle);
 
 	if (!emojiProps.className && !emojiProps.name) {
-		return <>{emojiHandle}</>;
+		return <>{handle}</>;
 	}
 
 	if (isThreadPreview) {
-		return <ThreadMessageEmoji {...emojiProps}>{emojiHandle}</ThreadMessageEmoji>;
+		return <ThreadMessageEmoji {...emojiProps}>{handle}</ThreadMessageEmoji>;
 	}
 
 	return (
 		<MessageEmojiBase big={big} {...emojiProps}>
-			{emojiHandle}
+			{handle}
 		</MessageEmojiBase>
 	);
 }
