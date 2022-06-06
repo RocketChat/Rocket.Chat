@@ -89,4 +89,5 @@ import './v262';
 import './v263';
 import './v264';
 import './v265';
+import './v266';
 import './xrun';
