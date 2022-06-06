@@ -48,7 +48,13 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 						<ThreadMessageIconThread />
 					</ThreadMessageLeftContainer>
 					<ThreadMessageContainer>
-						<ThreadMessageOrigin>{parentMessage.phase === AsyncStatePhase.RESOLVED ? body : <Skeleton />}</ThreadMessageOrigin>
+						<ThreadMessageOrigin>
+							{parentMessage.phase === AsyncStatePhase.RESOLVED ? (
+								<ThreadMessagePreviewBody message={{ ...parentMessage.value, msg: body }} />
+							) : (
+								<Skeleton />
+							)}
+						</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
