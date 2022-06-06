@@ -2,17 +2,10 @@ import type { IBaseModel } from '@rocket.chat/model-typings';
 
 const models = new Map<string, IBaseModel<any>>();
 
-function callModel(model: string, method: string, data: any[]): any {
-	// @ts-ignore
-	return models.get(model)[method](...data);
-}
-
 function handler<T extends object>(namespace: string): ProxyHandler<T> {
 	return {
-		get:
-			(_target: T, prop: string): any =>
-			(...params: any[]): any =>
-				callModel(namespace, prop, params),
+		// @ts-expect-error
+		get: (_target: T, prop: string): any => models.get(namespace)[prop],
 	};
 }
 
