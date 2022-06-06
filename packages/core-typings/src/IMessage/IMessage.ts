@@ -7,6 +7,7 @@ import type { IUser } from '../IUser';
 import type { IRoom, RoomID } from '../IRoom';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
+import type { ILivechatVisitor } from '../ILivechatVisitor';
 
 type MentionType = 'user' | 'team';
 
@@ -38,7 +39,18 @@ type TeamMessageTypes =
 	| 'user-added-room-to-team'
 	| 'ujt';
 
-type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close';
+type LivechatMessageTypes =
+	| 'livechat_navigation_history'
+	| 'livechat_transfer_history'
+	| 'livechat_transcript_history'
+	| 'livechat_video_call'
+	| 'livechat_webrtc_video_call';
+
+type OmnichannelTypesValues =
+	| 'livechat_transfer_history_fallback'
+	| 'livechat-close'
+	| 'omnichannel_placed_chat_on_hold'
+	| 'omnichannel_on_hold_chat_resumed';
 
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
@@ -70,6 +82,7 @@ export type MessageTypesValues =
 	| 'room-set-read-only'
 	| 'room-allowed-reacting'
 	| 'room-disallowed-reacting'
+	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
 	| OmnichannelTypesValues
@@ -217,6 +230,41 @@ export interface IMessageReactionsNormalized extends IMessage {
 
 export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized =>
 	Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
+
+export interface IOmnichannelSystemMessage extends IMessage {
+	navigation?: {
+		page: {
+			title: string;
+			location: {
+				href: string;
+			};
+			token?: string;
+		};
+	};
+	transferData?: {
+		comment: string;
+		transferredBy: {
+			name?: string;
+			username: string;
+		};
+		transferredTo: {
+			name?: string;
+			username: string;
+		};
+		nextDepartment?: {
+			_id: string;
+			name?: string;
+		};
+		scope: 'department' | 'agent' | 'queue';
+	};
+	requestData?: {
+		type: 'visitor' | 'user';
+		visitor?: ILivechatVisitor;
+		user?: IUser;
+	};
+	webRtcCallEndTs?: Date;
+	comment?: string;
+}
 
 export type IVoipMessage = IMessage & {
 	voipData: {

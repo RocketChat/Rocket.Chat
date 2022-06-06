@@ -4,10 +4,14 @@ import faker from '@faker-js/faker';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { clearMessages } from './utils/helpers/clearMessages';
 import { Login, MainContent, SideNav, FlexTab, PreferencesMainContent } from './page-objects';
+import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';
 
 test.describe('[User Preferences]', () => {
 	test.beforeAll(async () => {
-		await clearMessages(['GENERAL']);
+		const { isLocal } = verifyTestBaseUrl();
+		if (isLocal) {
+			await clearMessages(['GENERAL']);
+		}
 	});
 
 	test.describe('default', () => {

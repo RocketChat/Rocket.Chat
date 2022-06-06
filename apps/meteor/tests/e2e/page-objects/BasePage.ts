@@ -12,7 +12,7 @@ export abstract class BasePage {
 	}
 
 	get toastSuccess(): Locator {
-		return this.page.locator('.toast-message');
+		return this.page.locator('#toast-container');
 	}
 
 	get modalConfirm(): Locator {

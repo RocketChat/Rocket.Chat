@@ -6,3 +6,5 @@ export * from './MainContent';
 export * from './PreferencesMainContent';
 export * from './SetupWizard';
 export * from './SideNav';
+export * from './Discussion';
+export * from './Departments';

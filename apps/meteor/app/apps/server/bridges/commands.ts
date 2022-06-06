@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { SlashCommandContext, ISlashCommand, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, RequiredField, SlashCommand } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../lib/misc/Utilities';
@@ -114,7 +114,7 @@ export class AppCommandsBridge extends CommandBridge {
 			previewCallback: (!command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this)) as
 				| typeof slashCommands.commands[string]['previewCallback']
 				| undefined,
-		};
+		} as SlashCommand;
 
 		slashCommands.commands[command.command.toLowerCase()] = item;
 		this.orch.getNotifier().commandAdded(command.command.toLowerCase());
@@ -160,7 +160,12 @@ export class AppCommandsBridge extends CommandBridge {
 		}
 	}
 
-	private _appCommandExecutor(command: string, parameters: any, message: IMessage, triggerId: string): void {
+	private _appCommandExecutor(
+		command: string,
+		parameters: any,
+		message: RequiredField<Partial<IMessage>, 'rid'>,
+		triggerId?: string,
+	): void {
 		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
@@ -195,6 +200,6 @@ export class AppCommandsBridge extends CommandBridge {
 
 		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params), threadId, triggerId);
 
-		Promise.await(this.orch.getManager()?.getCommandManager().executePreview(command, preview, context));
+		await this.orch.getManager()?.getCommandManager().executePreview(command, preview, context);
 	}
 }

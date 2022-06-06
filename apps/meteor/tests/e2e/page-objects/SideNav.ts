@@ -94,10 +94,6 @@ export class SideNav extends BasePage {
 		return this.page.locator('[data-qa="sidebar-search"]');
 	}
 
-	get spotlightSearch(): Locator {
-		return this.page.locator('[data-qa="sidebar-search-input"]');
-	}
-
 	get spotlightSearchPopUp(): Locator {
 		return this.page.locator('[data-qa="sidebar-search-result"]');
 	}
@@ -107,7 +103,11 @@ export class SideNav extends BasePage {
 	}
 
 	get btnNewChannel(): Locator {
-		return this.page.locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Channel' });
+		return this.page.locator('li.rcx-option >> text="Channel"');
+	}
+
+	get btnNewDiscussion(): Locator {
+		return this.page.locator('li.rcx-option >> text="Discussion"');
 	}
 
 	get general(): Locator {
@@ -166,6 +166,14 @@ export class SideNav extends BasePage {
 		return !!(await this.sideNavBar.getAttribute('style'));
 	}
 
+	get omnichannel(): Locator {
+		return this.page.locator('li.rcx-option >> text="Omnichannel"');
+	}
+
+	get inputSearch(): Locator {
+		return this.page.locator('[data-qa="sidebar-search-input"]');
+	}
+
 	async doOpenChannel(channelName: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).click();
@@ -173,12 +181,12 @@ export class SideNav extends BasePage {
 	}
 
 	async searchChannel(channelName: string): Promise<void> {
-		await expect(this.spotlightSearch).toBeVisible();
+		await expect(this.inputSearch).toBeVisible();
 
-		await this.spotlightSearch.click();
+		await this.inputSearch.click();
 
-		await expect(this.spotlightSearch).toBeFocused();
-		await this.spotlightSearch.type(channelName);
+		await expect(this.inputSearch).toBeFocused();
+		await this.inputSearch.type(channelName);
 
 		await expect(this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).first()).toContainText(channelName);
 
@@ -216,7 +224,7 @@ export class SideNav extends BasePage {
 
 	async doFindForChat(target: string): Promise<void> {
 		await this.searchUser.click();
-		await this.spotlightSearch.type(target, { delay: 300 });
+		await this.inputSearch.type(target, { delay: 100 });
 		await this.page.keyboard.press(ENTER);
 	}
 
