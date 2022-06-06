@@ -61,7 +61,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	allRoomSourcesCount(): Cursor<{ _id: IOmnichannelGenericRoom['source']; count: number }>;
 
-	setAsBridged(roomId: any): any;
+	setAsFederated(roomId: any): any;
 
 	findByE2E(options: any): any;
 

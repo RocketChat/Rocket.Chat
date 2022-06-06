@@ -3,7 +3,7 @@ import { UiKitMessage, UiKitComponent, kitContext, messageParser } from '@rocket
 import React from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-import { useBlockRendered } from '../../components/Message/hooks/useBlockRendered';
+import { useBlockRendered } from '../../components/message/hooks/useBlockRendered';
 import { renderMessageBody } from '../../lib/utils/renderMessageBody';
 import './textParsers';
 
