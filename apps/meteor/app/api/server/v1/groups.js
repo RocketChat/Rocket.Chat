@@ -1,11 +1,10 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Integrations } from '@rocket.chat/models';
+import { Integrations, Uploads } from '@rocket.chat/models';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
-import { Uploads } from '@rocket.chat/models';
 import {
 	hasPermission,
 	hasAtLeastOnePermission,

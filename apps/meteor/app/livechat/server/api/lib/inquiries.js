@@ -1,5 +1,6 @@
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@rocket.chat/models';
+
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 const agentDepartments = async (userId) => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);

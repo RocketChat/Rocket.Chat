@@ -12,9 +12,9 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Subscriptions, Uploads, Messages, Rooms, Settings } from '@rocket.chat/models';
 
 import { Users } from '../../../models/server';
-import { Subscriptions, Uploads, Messages, Rooms, Settings } from '@rocket.chat/models';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';

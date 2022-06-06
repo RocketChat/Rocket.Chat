@@ -1,5 +1,6 @@
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartmentAgents } from '@rocket.chat/models';
+
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 export async function findAgentDepartments({ userId, enabledDepartmentsOnly, agentId }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {

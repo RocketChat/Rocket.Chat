@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-
 import { CustomUserStatus } from '@rocket.chat/models';
 
 Meteor.methods({

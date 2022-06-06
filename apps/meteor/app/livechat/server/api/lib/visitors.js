@@ -1,5 +1,6 @@
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatVisitors, Messages, LivechatRooms } from '@rocket.chat/models';
+
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
 export async function findVisitorInfo({ userId, visitorId }) {

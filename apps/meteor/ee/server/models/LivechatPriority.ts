@@ -2,7 +2,7 @@ import { registerModel } from '@rocket.chat/models';
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
 
-import { BaseRaw } from '../../../server/models/BaseRaw';
+import { BaseRaw } from '../../../server/models/raw/BaseRaw';
 import MeteorModel from '../../app/models/server/models/LivechatPriority';
 
 export class LivechatPriority extends BaseRaw<IRocketChatRecord> implements ILivechatPriorityModel {

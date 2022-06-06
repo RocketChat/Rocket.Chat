@@ -1,5 +1,6 @@
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Settings } from '@rocket.chat/models';
+
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 export async function findAppearance({ userId }) {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
