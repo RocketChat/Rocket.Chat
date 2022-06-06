@@ -11,11 +11,11 @@ import Setting from './Setting';
 type SectionProps = {
 	groupId: string;
 	hasReset?: boolean;
-	sectionName: TranslationKey;
+	sectionName: string;
 	tabName?: string;
 	solo: boolean;
-	help?: string;
-	children: ReactNode;
+	help?: ReactElement | string;
+	children?: ReactNode;
 };
 
 function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, help, children }: SectionProps): ReactElement {
@@ -70,7 +70,11 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, he
 	};
 
 	return (
-		<Accordion.Item data-qa-section={sectionName} noncollapsible={solo || !sectionName} title={sectionName && t(sectionName)}>
+		<Accordion.Item
+			data-qa-section={sectionName}
+			noncollapsible={solo || !sectionName}
+			title={sectionName && t(sectionName as TranslationKey)}
+		>
 			{help && (
 				<Box is='p' color='hint' fontScale='p2'>
 					{help}

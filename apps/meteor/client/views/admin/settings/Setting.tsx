@@ -1,6 +1,6 @@
 import { ISettingColor, isSettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettingStructure, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSettingStructure, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState, useCallback, ReactElement } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -75,6 +75,8 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 		[update],
 	);
 
+	const isTranslationKey = (key: string): key is TranslationKey => key !== undefined;
+
 	const onResetButtonClick = useCallback(() => {
 		setValue(setting.value);
 		setEditor(isSettingColor(setting) ? setting.editor : undefined);
@@ -87,12 +89,16 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const { _id, disabled, readonly, type, packageValue, i18nLabel, i18nDescription, alert, invisible } = setting;
 
-	const label = (t.has(i18nLabel) && t(i18nLabel)) || (t.has(_id) && t(_id));
+	const label = (isTranslationKey(i18nLabel) && t(i18nLabel)) || (isTranslationKey(_id) && t(_id));
 	const hint = useMemo(
-		() => (t.has(i18nDescription) ? <MarkdownText preserveHtml={true} content={t(i18nDescription)} /> : undefined),
+		() =>
+			i18nDescription && isTranslationKey(i18nDescription) ? <MarkdownText preserveHtml={true} content={t(i18nDescription)} /> : undefined,
 		[i18nDescription, t],
 	);
-	const callout = useMemo(() => (t.has(alert) ? <span dangerouslySetInnerHTML={{ __html: t(alert) }} /> : undefined), [alert, t]);
+	const callout = useMemo(
+		() => (alert && isTranslationKey(alert) ? <span dangerouslySetInnerHTML={{ __html: t(alert) }} /> : undefined),
+		[alert, t],
+	);
 	const hasResetButton =
 		!readonly &&
 		type !== 'asset' &&
@@ -108,7 +114,6 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			hint={hint}
 			callout={callout}
 			sectionChanged={sectionChanged}
-			// {...setting}
 			value={value}
 			editor={editor}
 			hasResetButton={hasResetButton}

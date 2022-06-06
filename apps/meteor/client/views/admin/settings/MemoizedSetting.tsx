@@ -20,9 +20,10 @@ import SelectTimezoneSettingInput from './inputs/SelectTimezoneSettingInput';
 import StringSettingInput from './inputs/StringSettingInput';
 
 type MemoizedSettingProps = {
+	_id?: string;
 	type: ISettingBase['type'];
-	hint?: ReactElement;
-	callout?: ReactElement;
+	hint?: ReactElement | string;
+	callout?: ReactElement | string;
 	value?: SettingValue;
 	editor?: SettingEditor;
 	onChangeValue?: (value: unknown) => void;
@@ -33,18 +34,19 @@ type MemoizedSettingProps = {
 	label?: string;
 	sectionChanged?: boolean;
 	hasResetButton?: boolean;
+	actionText?: string;
 };
 
 const MemoizedSetting = ({
 	type,
-	hint = undefined,
-	callout = undefined,
-	value = undefined,
-	editor = undefined,
+	hint,
+	callout,
+	value,
+	editor,
 	onChangeValue,
 	onChangeEditor,
-	className = undefined,
-	invisible = undefined,
+	className,
+	invisible,
 	...inputProps
 }: MemoizedSettingProps): ReactElement => {
 	if (invisible) {
