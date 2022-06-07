@@ -1,4 +1,4 @@
-import type { UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
+import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
 import type { IVideoConference, IGroupVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 
@@ -8,6 +8,28 @@ import type { IndexSpecification, InsertionModel } from './BaseRaw';
 export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { rid: 1, status: 1, createdAt: 1 }, unique: false }];
+	}
+
+	public async findRecentByRoomId(
+		rid: IRoom['_id'],
+		{ offset, count }: { offset?: number; count?: number } = {},
+	): Promise<Cursor<IVideoConference>> {
+		return this.find(
+			{
+				rid,
+				createdAt: {
+					$gte: new Date(new Date().valueOf() - 24 * 60 * 60 * 1000),
+				},
+			},
+			{
+				sort: { status: 1, createdAt: -1 },
+				skip: offset,
+				limit: count,
+				projection: {
+					providerData: 0,
+				},
+			},
+		);
 	}
 
 	public async createDirect(rid: IRoom['_id'], createdBy: Pick<IUser, '_id' | 'name' | 'username'>): Promise<string> {

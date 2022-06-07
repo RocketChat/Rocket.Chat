@@ -54,6 +54,8 @@ export interface IGroupVideoConference extends IVideoConference {
 	title: string;
 }
 
+export type VideoConference = IDirectVideoConference | IGroupVideoConference;
+
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions;
 
 export const isDirectVideoConference = (call: IVideoConference): call is IDirectVideoConference => {

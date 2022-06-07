@@ -9,11 +9,13 @@ import type {
 	AtLeast,
 	IMessage,
 	IVideoConferenceMessage,
+	VideoConference,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus, isDirectVideoConference, isGroupVideoConference } from '@rocket.chat/core-typings';
 import type { MessageSurfaceLayout, ContextBlock } from '@rocket.chat/ui-kit';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
@@ -98,8 +100,29 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
 	}
 
-	public async get(callId: IVideoConference['_id']): Promise<IVideoConference | null> {
+	public async get(callId: IVideoConference['_id']): Promise<Omit<IVideoConference, 'providerData'> | null> {
+		return this.VideoConference.findOneById(callId, { projection: { providerData: 0 } });
+	}
+
+	public async getUnfiltered(callId: IVideoConference['_id']): Promise<IVideoConference | null> {
 		return this.VideoConference.findOneById(callId);
+	}
+
+	public async list(
+		roomId: IRoom['_id'],
+		pagination: { offset?: number; count?: number } = {},
+	): Promise<PaginatedResult<{ data: VideoConference[] }>> {
+		const cursor = await this.VideoConference.findRecentByRoomId(roomId, pagination);
+
+		const data = (await cursor.toArray()) as VideoConference[];
+		const total = await cursor.count();
+
+		return {
+			data,
+			offset: pagination.offset || 0,
+			count: data.length,
+			total,
+		};
 	}
 
 	public async setProviderData(callId: IVideoConference['_id'], data: IVideoConference['providerData'] | undefined): Promise<void> {
