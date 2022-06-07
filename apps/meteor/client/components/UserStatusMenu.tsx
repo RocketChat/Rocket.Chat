@@ -42,7 +42,7 @@ const UserStatusMenu = ({
 		];
 
 		if (allowInvisibleStatus) {
-			statuses.push([UserStatusType.OFFLINE, renderOption(UserStatusType.OFFLINE, t('Invisible'))]);
+			statuses.push([UserStatusType.OFFLINE, renderOption(UserStatusType.OFFLINE, t('Offline'))]);
 		}
 
 		return statuses;

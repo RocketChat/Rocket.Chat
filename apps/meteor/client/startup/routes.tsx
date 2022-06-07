@@ -6,7 +6,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
-import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
@@ -81,7 +80,7 @@ FlowRouter.route('/meet/:rid', {
 				return;
 			}
 
-			toastr.error(TAPi18n.__('Visitor_does_not_exist'));
+			dispatchToastMessage({ type: 'error', message: TAPi18n.__('Visitor_does_not_exist') });
 			return;
 		}
 
