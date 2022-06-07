@@ -977,9 +977,7 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
-					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
 				})
 				.end(done);
 		});
@@ -996,9 +994,7 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
-					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
 				})
 				.end(done);
 		});
