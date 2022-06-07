@@ -9,13 +9,10 @@ const ajv = new Ajv({
 });
 
 type ShieldSvg = {
-	type: string;
-	icon: string;
+	type?: string;
+	icon?: 'true' | 'false';
 	channel: string;
 	name: string;
-	text: string;
-	color: string;
-	size: number;
 };
 
 const ShieldSvgSchema = {
@@ -27,17 +24,17 @@ const ShieldSvgSchema = {
 		},
 		icon: {
 			type: 'string',
+			enum: ['true', 'false'],
 			nullable: true,
 		},
 		channel: {
 			type: 'string',
-			nullable: true,
 		},
 		name: {
 			type: 'string',
 		},
 	},
-	required: ['name'],
+	required: ['name', 'channel'],
 	additionalProperties: false,
 };
 
