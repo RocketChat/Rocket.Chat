@@ -107,7 +107,7 @@ const DirectorySchema = {
 
 export const isDirectoryProps = ajv.compile<Directory>(DirectorySchema);
 
-type MethodCall = { method: string; params: unknown[]; id: string; msg: string };
+type MethodCall = { method: string; params: unknown[]; id: string; msg: 'string' };
 
 const MethodCallSchema = {
 	type: 'object',
@@ -123,6 +123,7 @@ const MethodCallSchema = {
 		},
 		msg: {
 			type: 'string',
+			enum: ['method'],
 		},
 	},
 	required: ['method', 'params', 'id', 'msg'],
@@ -144,7 +145,7 @@ export const isMeteorCall = ajv.compile<{
 	additionalProperties: false,
 });
 
-type MethodCallAnon = { method: string; params: unknown[]; id: string; msg: string };
+type MethodCallAnon = { method: string; params: unknown[]; id: string; msg: 'method' };
 
 const MethodCallAnonSchema = {
 	type: 'object',
@@ -160,6 +161,7 @@ const MethodCallAnonSchema = {
 		},
 		msg: {
 			type: 'string',
+			enum: ['method'],
 		},
 	},
 	required: ['method', 'params', 'id', 'msg'],
