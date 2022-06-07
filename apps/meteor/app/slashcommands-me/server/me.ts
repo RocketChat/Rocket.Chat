@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
-import { IMessage } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 
@@ -10,7 +9,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
  */
 slashCommands.add(
 	'me',
-	function Me(_command: 'me', params: string, item: IMessage): void {
+	function Me(_command: 'me', params, item): void {
 		if (s.trim(params)) {
 			const msg = item;
 			msg.msg = `_${params}_`;

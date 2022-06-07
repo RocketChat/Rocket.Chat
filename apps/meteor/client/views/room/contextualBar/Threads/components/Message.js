@@ -1,10 +1,10 @@
 import { Button, Icon, Message, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import * as NotificationStatus from '../../../../../components/Message/NotificationStatus';
-import { followStyle, anchor } from '../../../../../components/Message/helpers/followSyle';
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import * as NotificationStatus from '../../../../../components/message/NotificationStatus';
+import { followStyle, anchor } from '../../../../../components/message/helpers/followSyle';
 
 function isIterable(obj) {
 	// checks for null and undefined
