@@ -1,8 +1,8 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import React, { ReactElement } from 'react';
 
-import { useAcceptCall, useAbortCall, useRejectIncomingCall, useDismissCall } from '../../../../../contexts/VideoConfPopupContext';
-import { useHandleRoom } from '../../../../../lib/RoomManager';
+import { useAcceptCall, useAbortCall, useRejectIncomingCall, useDismissCall } from '../../../../../../contexts/VideoConfContext';
+import { useHandleRoom } from '../../../../../../lib/RoomManager';
 import CallingPopup from './CallingPopup';
 import ReceivingPopup from './ReceivingPopup';
 

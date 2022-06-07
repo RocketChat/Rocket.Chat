@@ -7,7 +7,7 @@ import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
-import { useVideoConfPopupDispatch, useStartCall, useVideoConfPopupDismiss } from '../../../client/contexts/VideoConfPopupContext';
+import { useDispatchOutgoing, useDismissOutgoing, useStartCall } from '../../../client/contexts/VideoConfContext';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/VideoConference/BBB'));
 
@@ -126,8 +126,8 @@ addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
 	const startCall = useStartCall();
 
-	const dispatchPopup = useVideoConfPopupDispatch();
-	const dismissPopup = useVideoConfPopupDismiss();
+	const dispatchPopup = useDispatchOutgoing();
+	const dismissPopup = useDismissOutgoing();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 
