@@ -194,6 +194,7 @@
 		"@rocket.chat/fuselage": "0.31.13",
 		"@rocket.chat/fuselage-hooks": "~0.31.12",
 		"@rocket.chat/fuselage-polyfills": "~0.31.12",
+		"@rocket.chat/fuselage-toastbar": "next",
 		"@rocket.chat/fuselage-tokens": "~0.31.12",
 		"@rocket.chat/fuselage-ui-kit": "~0.31.12",
 		"@rocket.chat/icons": "~0.31.12",
