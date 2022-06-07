@@ -24,6 +24,8 @@ type AccountBoxItem = {
 	condition: () => boolean;
 };
 
+export const isAppAccountBoxItem = (item: IAppAccountBoxItem | AccountBoxItem): item is IAppAccountBoxItem => 'isAppButtonItem' in item;
+
 export class AccountBoxBase {
 	private items = new ReactiveVar<IAppAccountBoxItem[]>([]);
 
