@@ -5,7 +5,7 @@ import https from 'https';
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
 
-import { classLogger, slackLogger } from './logger';
+import { slackLogger } from './logger';
 import { SlackAPI } from './SlackAPI';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Messages, Rooms, Users } from '../../models';
