@@ -199,14 +199,6 @@ API.v1.addRoute(
 		get() {
 			const { type, icon } = this.queryParams;
 			let { channel, name } = this.queryParams;
-
-			// if (typeof channel !== 'string') {
-			// 	throw new Meteor.Error('error-invalid-channel', 'Channel is required', { method: 'shield.svg' });
-			// }
-			// if (typeof name !== 'string') {
-			// 	throw new Meteor.Error('error-invalid-name', 'Name is required', { method: 'shield.svg' });
-			// }
-
 			if (!settings.get('API_Enable_Shields')) {
 				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 					route: '/api/v1/shield.svg',

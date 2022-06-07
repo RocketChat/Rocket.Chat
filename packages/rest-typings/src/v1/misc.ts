@@ -180,11 +180,6 @@ export type MiscEndpoints = {
 			}[];
 		};
 	};
-
-	// type DefaultUserFields = {
-	// 	[k: string]: number;
-	// };
-
 	'me': {
 		GET: (params: { fields: { [k: string]: number }; user: IUser }) => IUser & {
 			email?: string;
