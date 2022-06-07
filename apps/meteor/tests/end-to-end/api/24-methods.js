@@ -1330,6 +1330,8 @@ describe('Meteor.methods', function () {
 							message: JSON.stringify({
 								method: 'private-settings/get',
 								params: [date],
+								id: 'id',
+								msg: 'method',
 							}),
 						})
 						.expect('Content-Type', 'application/json')
