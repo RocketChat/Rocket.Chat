@@ -1,7 +1,7 @@
 import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-type SubscriptionsGet = { updatedSince: string };
+type SubscriptionsGet = { updatedSince?: string };
 
 type SubscriptionsGetOne = { roomId: IRoom['_id'] };
 
@@ -18,9 +18,10 @@ const SubscriptionsGetSchema = {
 	properties: {
 		updatedSince: {
 			type: 'string',
+			nullable: true,
 		},
 	},
-	required: ['updatedSince'],
+	required: [],
 	additionalProperties: false,
 };
 
