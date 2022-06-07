@@ -5,7 +5,7 @@ import https from 'https';
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
 
-import { slackLogger } from './logger';
+import { classLogger, slackLogger } from './logger';
 import { SlackAPI } from './SlackAPI';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Messages, Rooms, Users } from '../../models';
@@ -41,7 +41,19 @@ export default class SlackAdapter {
 		}
 		this.slackAPI = new SlackAPI(this.apiToken);
 		this.rtm = new RTMClient(this.apiToken);
-		this.rtm.start();
+		
+		Promise.await(
+			this.rtm
+				.start()
+				.then((res) => slackLogger.debug('Connecting to slack', res))
+				.catch((err) => {
+					slackLogger.error('Error attempting to connect to Slack', err);
+					if (err.data.error === 'invalid_auth') {
+						throw new Error('The token you used is invalid');
+					}
+					throw new Error(err);
+				}),
+		);
 		this.registerForEvents();
 
 		Meteor.startup(() => {
