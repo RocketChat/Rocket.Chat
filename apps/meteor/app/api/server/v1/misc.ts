@@ -6,7 +6,14 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EJSON } from 'meteor/ejson';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { isShieldSvgProps, isSpotlightProps, isDirectoryProps, isMethodCallProps, isMethodCallAnonProps } from '@rocket.chat/rest-typings';
+import {
+	isShieldSvgProps,
+	isSpotlightProps,
+	isDirectoryProps,
+	isMethodCallProps,
+	isMethodCallAnonProps,
+	isMeteorCall,
+} from '@rocket.chat/rest-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
@@ -467,7 +474,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		rateLimiterOptions: false,
-		validateParams: isMethodCallProps,
+		validateParams: isMeteorCall,
 	},
 	{
 		post() {
@@ -475,19 +482,13 @@ API.v1.addRoute(
 				message: String,
 			});
 
-			const { method, params, id } = EJSON.parse(this.bodyParams.message);
+			const data = EJSON.parse(this.bodyParams.message);
 
-			if (typeof method !== 'string') {
-				return API.v1.failure('Method must be a string');
+			if (!isMethodCallProps(data)) {
+				return API.v1.failure('Invalid method call');
 			}
 
-			if (!Array.isArray(params)) {
-				return API.v1.failure('Params must be an array');
-			}
-
-			if (typeof id !== 'string') {
-				return API.v1.failure('Id must be a string');
-			}
+			const { method, params, id } = data;
 
 			const connectionId =
 				this.token ||
@@ -532,7 +533,7 @@ API.v1.addRoute(
 	{
 		authRequired: false,
 		rateLimiterOptions: false,
-		validateParams: isMethodCallAnonProps,
+		validateParams: isMeteorCall,
 	},
 	{
 		post() {
@@ -540,19 +541,13 @@ API.v1.addRoute(
 				message: String,
 			});
 
-			const { method, params, id } = EJSON.parse(this.bodyParams.message);
+			const data = EJSON.parse(this.bodyParams.message);
 
-			if (typeof method !== 'string') {
-				return API.v1.failure('Method must be a string');
+			if (!isMethodCallAnonProps(data)) {
+				return API.v1.failure('Invalid method call');
 			}
 
-			if (!Array.isArray(params)) {
-				return API.v1.failure('Params must be an array');
-			}
-
-			if (typeof id !== 'string') {
-				return API.v1.failure('Id must be a string');
-			}
+			const { method, params, id } = data;
 
 			const connectionId =
 				this.token ||
