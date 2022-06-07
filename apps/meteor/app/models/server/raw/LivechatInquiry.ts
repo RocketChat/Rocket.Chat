@@ -35,12 +35,12 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> {
 		return this.updateOne({ rid }, { $set: { lastMessage: message } });
 	}
 
-	async findNextAndLock(queue?: string): Promise<ILivechatInquiryRecord | undefined> {
+	async findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | undefined> {
 		const date = new Date();
 		const result = await this.col.findOneAndUpdate(
 			{
 				status: LivechatInquiryStatus.QUEUED,
-				...(queue && { queue }),
+				...(department && { department }),
 				$or: [
 					{
 						locked: true,
