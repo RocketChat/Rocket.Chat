@@ -120,6 +120,6 @@ export const Team = proxify<ITeamModel>('ITeamModel');
 export const Users = proxify<IUsersModel>('IUsersModel');
 export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
-export const UserSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
+export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VoipRooms = proxify<IVoipRoomsModel>('IVoipRoomsModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');

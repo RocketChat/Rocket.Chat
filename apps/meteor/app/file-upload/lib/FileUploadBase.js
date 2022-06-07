@@ -6,7 +6,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 
 import { canAccessRoom, hasPermission } from '../../authorization';
-import { settings } from '../../settings/server';
+import { settings } from '../../settings';
 
 // set ufs temp dir to $TMPDIR/ufs instead of /tmp/ufs if the variable is set
 if ('TMPDIR' in process.env) {
