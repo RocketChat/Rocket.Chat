@@ -1,14 +1,12 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { VFC } from 'react';
+import React, { ReactElement } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import AgentInfo from './AgentInfo';
 
-const AgentInfoActions: VFC<{
-	reload: () => void;
-}> = ({ reload }) => {
+const AgentInfoActions = ({ reload }: { reload: () => void }): ReactElement => {
 	const t = useTranslation();
 	const _id = useRouteParameter('id');
 	const agentsRoute = useRoute('omnichannel-agents');
@@ -48,8 +46,8 @@ const AgentInfoActions: VFC<{
 
 	return (
 		<>
-			<AgentInfo.Action key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon={'trash'} />,
-			<AgentInfo.Action key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon={'edit'} />,
+			<AgentInfo.Action key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon={'trash'} />
+			<AgentInfo.Action key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon={'edit'} />
 		</>
 	);
 };
