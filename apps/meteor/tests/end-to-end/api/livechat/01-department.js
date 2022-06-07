@@ -56,6 +56,29 @@ describe('LIVECHAT - departments', function () {
 						.end(done);
 				});
 		});
+		it('should return an array of departments even requested with count and offset params', (done) => {
+			updatePermission('view-l-room', ['admin'])
+				.then(() => updatePermission('view-livechat-departments', ['admin']))
+				.then(() => {
+					request
+						.get(api('livechat/department'))
+						.set(credentials)
+						.query({
+							count: 5,
+							offset: 0,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.departments).to.be.an('array');
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('total');
+							expect(res.body).to.have.property('count');
+						})
+						.end(done);
+				});
+		});
 	});
 
 	describe('livechat/department/id', () => {
