@@ -1,10 +1,14 @@
 import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
-import React, { Suspense, ReactElement, useEffect } from 'react';
+import React, { Suspense, ReactElement, useEffect, ReactNode } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
 import PageSkeleton from '../../components/PageSkeleton';
 
-const AccountRouter = ({ renderRoute }: { renderRoute?: () => ReactElement }): ReactElement => {
+type AccountRouterProps = {
+	children?: ReactNode;
+};
+
+const AccountRouter = ({ children }: AccountRouterProps): ReactElement => {
 	const [routeName] = useCurrentRoute();
 	const defaultRoute = useRoute('profile');
 
@@ -21,7 +25,7 @@ const AccountRouter = ({ renderRoute }: { renderRoute?: () => ReactElement }): R
 		SideNav.openFlex(() => undefined);
 	}, []);
 
-	return renderRoute ? <Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense> : <PageSkeleton />;
+	return children ? <Suspense fallback={<PageSkeleton />}>{children}</Suspense> : <PageSkeleton />;
 };
 
 export default AccountRouter;
