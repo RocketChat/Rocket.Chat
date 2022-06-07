@@ -37,8 +37,7 @@ const AgentsPageRow = ({
 							</Box>
 							{!mediaQuery && name && (
 								<Box fontScale='p2' color='hint' withTruncatedText>
-									{' '}
-									{`@${username}`}{' '}
+									{`@${username}`}
 								</Box>
 							)}
 						</Box>
@@ -49,7 +48,7 @@ const AgentsPageRow = ({
 				<GenericTableCell>
 					<Box fontScale='p2m' withTruncatedText color='hint'>
 						{username}
-					</Box>{' '}
+					</Box>
 					<Box mi='x4' />
 				</GenericTableCell>
 			)}
