@@ -32,9 +32,9 @@ Meteor.methods({
 			message.unread = true;
 		}
 
-		// If the room is bridged, send the message to matrix only
-		const { bridged } = Rooms.findOne({ _id: message.rid }, { fields: { bridged: 1 } });
-		if (bridged) {
+		// If the room is federated, send the message to matrix only
+		const { federated } = Rooms.findOne({ _id: message.rid }, { fields: { federated: 1 } });
+		if (federated) {
 			return;
 		}
 
