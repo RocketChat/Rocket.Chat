@@ -189,8 +189,11 @@ export const CallProvider: FC = ({ children }) => {
 		}
 
 		const handleCallHangup = (_event: { roomId: string }): void => {
-			// setQueueName(queueAggregator.getCurrentQueueName());
-			setQueueName('Test');
+			let queueName = 'Outbound Call';
+			if (queueAggregator.getCurrentQueueName().length !== 0) {
+				queueName = queueAggregator.getCurrentQueueName();
+			}
+			setQueueName(queueName);
 			openWrapUpModal();
 			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: _event.roomId });
 		};
