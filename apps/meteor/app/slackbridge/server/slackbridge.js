@@ -36,10 +36,10 @@ class SlackBridgeClass {
 					slack.setRocket(this.rocket);
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
-	
+
 					slack.connect(apiToken);
-				} catch(err) {
-					connLogger.error('error connecting to slack', err)
+				} catch (err) {
+					connLogger.error('error connecting to slack', err);
 
 					throw err;
 				}

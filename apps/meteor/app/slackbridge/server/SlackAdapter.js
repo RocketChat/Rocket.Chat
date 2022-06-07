@@ -41,7 +41,7 @@ export default class SlackAdapter {
 		}
 		this.slackAPI = new SlackAPI(this.apiToken);
 		this.rtm = new RTMClient(this.apiToken);
-		
+
 		Promise.await(
 			this.rtm
 				.start()
