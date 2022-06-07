@@ -39,18 +39,18 @@ type MemoizedSettingProps = {
 
 const MemoizedSetting = ({
 	type,
-	hint,
-	callout,
-	value,
-	editor,
+	hint = undefined,
+	callout = undefined,
+	value = undefined,
+	editor = undefined,
 	onChangeValue,
 	onChangeEditor,
-	className,
-	invisible,
+	className = undefined,
+	invisible = undefined,
 	...inputProps
-}: MemoizedSettingProps): ReactElement => {
+}: MemoizedSettingProps): ReactElement | null => {
 	if (invisible) {
-		return <></>;
+		return null;
 	}
 
 	const InputComponent: (props: any) => ReactElement =
