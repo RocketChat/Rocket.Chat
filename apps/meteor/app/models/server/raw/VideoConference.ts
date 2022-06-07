@@ -25,6 +25,9 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 				sort: { status: 1, createdAt: -1 },
 				skip: offset,
 				limit: count,
+				projection: {
+					providerData: 0,
+				},
 			},
 		);
 	}

@@ -100,7 +100,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
 	}
 
-	public async get(callId: IVideoConference['_id']): Promise<IVideoConference | null> {
+	public async get(callId: IVideoConference['_id']): Promise<Omit<IVideoConference, 'providerData'> | null> {
+		return this.VideoConference.findOneById(callId, { projection: { providerData: 0 } });
+	}
+
+	public async getUnfiltered(callId: IVideoConference['_id']): Promise<IVideoConference | null> {
 		return this.VideoConference.findOneById(callId);
 	}
 

@@ -13,7 +13,7 @@ export class AppVideoConferencesConverter {
 	}
 
 	async convertById(callId: string): Promise<VideoConference | undefined> {
-		const call = await VideoConf.get(callId);
+		const call = await VideoConf.getUnfiltered(callId);
 
 		return this.convertVideoConference(call);
 	}
