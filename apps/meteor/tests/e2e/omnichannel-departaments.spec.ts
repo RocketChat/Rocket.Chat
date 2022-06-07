@@ -1,6 +1,7 @@
 import { test, Page, expect } from '@playwright/test';
 
 import LoginPage from './utils/pageobjects/LoginPage';
+import Global from './utils/pageobjects/Global';
 import SideNav from './utils/pageobjects/SideNav';
 import Departments from './utils/pageobjects/Departments';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
@@ -10,6 +11,8 @@ test.describe('[Department]', () => {
 	let sideNav: SideNav;
 	let departments: Departments;
 	let page: Page;
+	let global: Global;
+
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
 		const basePath = '/';
@@ -18,6 +21,7 @@ test.describe('[Department]', () => {
 		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 		departments = new Departments(page);
+		global = new Global(page);
 
 		await loginPage.login(adminLogin);
 		await sideNav.sidebarUserMenu().click();
@@ -39,7 +43,7 @@ test.describe('[Department]', () => {
 		});
 		test.describe('[Create and Edit]', async () => {
 			test.afterEach(async () => {
-				await departments.toastSuccess.click();
+				await global.dismissToastBar();
 			});
 
 			test('expect new department is created', async () => {
