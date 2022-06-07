@@ -32,8 +32,8 @@ export class IMAPInterceptor extends EventEmitter {
 		this.imap = new IMAP({
 			connTimeout: 300000,
 			keepalive: {
-				interval: 10000,
-				idleInterval: 300000,
+				interval: 5000,
+				idleInterval: 30000,
 				forceNoop: true,
 			},
 			...imapConfig,
@@ -50,12 +50,13 @@ export class IMAPInterceptor extends EventEmitter {
 					this.getEmails();
 
 					// If new message arrived, fetch them
-					this.imap.on('mail', () => {
+					this.imap.on('mail', (num: number) => {
+						console.log('new mail event!', num);
 						this.getEmails();
 					});
 				});
 			} else {
-				this.log('IMAP did not connected.');
+				this.log('IMAP did not connect.');
 				this.imap.end();
 			}
 		});
@@ -64,6 +65,8 @@ export class IMAPInterceptor extends EventEmitter {
 			this.log('Error occurred: ', err);
 			throw err;
 		});
+
+		// this.imap.on('mail', () => this.getEmails());
 	}
 
 	log(...msg: any[]): void {
@@ -105,6 +108,7 @@ export class IMAPInterceptor extends EventEmitter {
 				this.log(err);
 				throw err;
 			}
+			console.log('newEmails: ', newEmails);
 			// newEmails => array containing serials of unseen messages
 			if (newEmails.length > 0) {
 				const fetch = this.imap.fetch(newEmails, {
@@ -114,6 +118,8 @@ export class IMAPInterceptor extends EventEmitter {
 				});
 
 				fetch.on('message', (msg, seqno) => {
+					this.log('Message received', seqno);
+
 					msg.on('body', (stream, type) => {
 						if (type.which !== '') {
 							return;
