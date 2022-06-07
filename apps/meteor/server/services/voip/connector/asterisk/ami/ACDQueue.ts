@@ -159,7 +159,7 @@ export class ACDQueue extends Command {
 	 * Callback for indicatiing command execution status.
 	 * Received actionid for the first time.
 	 */
-	onActionResult(err: Error, result: any): void {
+	onActionResult(err: Error, result: { actionid: string }): void {
 		if (err) {
 			this.logger.error({ msg: 'onActionResult()', err });
 			this.returnReject(`error${err} while executing command`);

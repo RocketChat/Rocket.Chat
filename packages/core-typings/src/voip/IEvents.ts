@@ -131,7 +131,6 @@ export type ACDQueueSummaryEvent = AsteriskManagerEvent & {
 	callers: string;
 	holdtime: string;
 	talktime: string;
-	// TODO: check if this is a typo
 	logestholdtime: string;
 };
 
