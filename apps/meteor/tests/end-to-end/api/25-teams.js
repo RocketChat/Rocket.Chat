@@ -1230,6 +1230,8 @@ describe('[Teams]', () => {
 					message: JSON.stringify({
 						method: 'addUsersToRoom',
 						params: [{ rid: privateRoom3._id, users: [testUser.username] }],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1584,6 +1586,8 @@ describe('[Teams]', () => {
 						message: JSON.stringify({
 							method: 'saveUserPreferences',
 							params: [{ emailNotificationMode: 'nothing' }],
+							id: 'id',
+							msg: 'method',
 						}),
 					})
 					.expect(200);
