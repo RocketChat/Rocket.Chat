@@ -3,14 +3,6 @@ import { Locator, expect } from '@playwright/test';
 import BasePage from './BasePage';
 
 export default class Administration extends BasePage {
-	public flexNav(): Locator {
-		return this.getPage().locator('.flex-nav');
-	}
-
-	public flexNavContent(): Locator {
-		return this.getPage().locator('.flex-nav');
-	}
-
 	public settingsSearch(): Locator {
 		return this.getPage().locator('input[type=search]');
 	}
