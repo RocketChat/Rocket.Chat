@@ -7,7 +7,13 @@ import { calculateOnHoldTimeForRoom } from '../lib/calculateOnHoldTimeForRoom';
 
 overwriteClassOnLicense('livechat-enterprise', OmnichannelVoipService, {
 	getRoomClosingData(
-		_originalFn: any,
+		_originalFn: (
+			closer: ILivechatVisitor | ILivechatAgent,
+			room: IVoipRoom,
+			user: IUser,
+			sysMessageId?: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
+			options?: { comment?: string | null; tags?: string[] | null },
+		) => Promise<boolean>,
 		closeInfo: IRoomClosingInfo,
 		closeSystemMsgData: IOmniRoomClosingMessage,
 		room: IVoipRoom,
