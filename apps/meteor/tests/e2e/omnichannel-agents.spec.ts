@@ -5,7 +5,7 @@ import LoginPage from './utils/pageobjects/LoginPage';
 import SideNav from './utils/pageobjects/SideNav';
 import Agents from './utils/pageobjects/Agents';
 
-test.describe('[Agents]', () => {
+test.describe.only('[Agents]', () => {
 	let loginPage: LoginPage;
 	let page: Page;
 	let sideNav: SideNav;
@@ -20,7 +20,7 @@ test.describe('[Agents]', () => {
 		await loginPage.login(adminLogin);
 
 		await sideNav.sidebarUserMenu().click();
-		await sideNav.textOmnichannel().click();
+		await sideNav.omnichannel().click();
 		await agents.agentsLink().click();
 		await agents.doAddAgent();
 	});
@@ -70,21 +70,17 @@ test.describe('[Agents]', () => {
 				await agents.doChangeUserStatus('not-available');
 				await expect(agents.agentListStatus()).toHaveText('Not Available');
 			});
-			test('expect return to user status is available', async () => {
-				await agents.doChangeUserStatus('available');
-				await expect(agents.agentListStatus()).toHaveText('Available');
-			});
 			test.describe('[Modal Actions]', async () => {
 				test.beforeEach(async () => {
 					await agents.doRemoveAgent();
 				});
 				test('expect modal is not visible after cancel delete agent', async () => {
 					await agents.btnModalCancel().click();
-					await expect(agents.modalAgent()).not.toBeVisible();
+					await expect(agents.modal()).not.toBeVisible();
 				});
 				test('expect agent is removed from user info tab', async () => {
 					await agents.btnModalRemove().click();
-					await expect(agents.modalAgent()).not.toBeVisible();
+					await expect(agents.modal()).not.toBeVisible();
 					await expect(agents.agentAdded()).not.toBeVisible();
 				});
 			});
@@ -98,11 +94,11 @@ test.describe('[Agents]', () => {
 				});
 				test('expect modal is not visible after cancel delete agent', async () => {
 					await agents.btnModalCancel().click();
-					await expect(agents.modalAgent()).not.toBeVisible();
+					await expect(agents.modal()).not.toBeVisible();
 				});
 				test('expect agent is removed from agents table', async () => {
 					await agents.btnModalRemove().click();
-					await expect(agents.modalAgent()).not.toBeVisible();
+					await expect(agents.modal()).not.toBeVisible();
 					await expect(agents.agentAdded()).not.toBeVisible();
 				});
 			});

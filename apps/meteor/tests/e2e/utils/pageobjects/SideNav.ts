@@ -85,10 +85,6 @@ class SideNav extends BasePage {
 		return this.getPage().locator('//li[@class="rcx-option"]//div[contains(text(), "Administration")]');
 	}
 
-	public textOmnichannel(): Locator {
-		return this.getPage().locator('.rcx-option >> text="Omnichannel"');
-	}
-
 	public omnichannel(): Locator {
 		return this.getPage().locator('li.rcx-option >> text="Omnichannel"');
 	}
