@@ -35,6 +35,7 @@ import type { VoipEndpoints } from './v1/voip';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
+import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { CommandsEndpoints } from './v1/commands';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
@@ -73,6 +74,7 @@ export interface Endpoints
 		EmailInboxEndpoints,
 		WebdavEndpoints,
 		OAuthAppsEndpoint,
+		SubscriptionsEndpoints,
 		AutoTranslateEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
@@ -157,6 +159,11 @@ export * from './v1/channels/ChannelsModeratorsProps';
 export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
+
+export * from './v1/subscriptionsEndpoints';
+export * from './v1/misc';
+export * from './v1/invites';
+
 export * from './v1/dm';
 export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';

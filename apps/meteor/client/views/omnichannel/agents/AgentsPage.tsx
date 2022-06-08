@@ -1,39 +1,113 @@
-import React, { FC, Key, ReactNode, ReactElement } from 'react';
+import { Box, Pagination } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { usePermission, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
-import GenericTable from '../../../components/GenericTable';
+import { GenericTableBody, GenericTableHeader, GenericTableHeaderCell, GenericTableLoadingTable } from '../../../components/GenericTable';
+import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
+import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../lib/asyncState';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddAgent from './AddAgent';
+import AgentsPageRow from './AgentsPageRow';
+import AgentsTab from './AgentsTab';
+import { useQuery } from './hooks/useQuery';
 
-type AgentPageProps = {
-	reload: () => void;
-	data: any;
-	header: ReactNode;
-	setParams: (params: any) => void;
-	params: any;
-	title: string;
-	renderRow: (props: { _id?: Key }) => ReactElement;
-};
+const AgentsPage = (): ReactElement => {
+	const t = useTranslation();
+	const canViewAgents = usePermission('manage-livechat-agents');
+	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-const AgentsPage: FC<AgentPageProps> = ({ data, reload, header, setParams, params, title, renderRow, children }) => (
-	<Page flexDirection='row'>
-		<Page>
-			<Page.Header title={title} />
-			<AddAgent reload={reload} pi='x24' />
-			<Page.Content>
-				<GenericTable
-					header={header}
-					renderRow={renderRow}
-					results={data?.users}
-					total={data?.total}
-					setParams={setParams}
-					params={params}
-					renderFilter={({ onChange, ...props }: any): any => <FilterByText setFilter={onChange} {...props} />}
-				/>
-			</Page.Content>
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
+
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'statusLivechat'>('name');
+	const [filter, setFilter] = useState('');
+	const debouncedFilter = useDebouncedValue(filter, 500);
+	const debouncedSort = useDebouncedValue(
+		useMemo(() => [sortBy, sortDirection], [sortBy, sortDirection]),
+		500,
+	) as ['name' | 'username' | 'emails.address' | 'statusLivechat', 'asc' | 'desc'];
+
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+
+	const query = useQuery({ text: debouncedFilter, current, itemsPerPage }, debouncedSort);
+	const { reload, ...result } = useEndpointData('livechat/users/agent', query);
+
+	const onHeaderClick = useMutableCallback((id) => {
+		if (sortBy === id) {
+			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
+			return;
+		}
+		setSort(id, 'asc');
+	});
+
+	if (!canViewAgents) {
+		return <NotAuthorizedPage />;
+	}
+
+	return (
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={t('Agents')} />
+				<AddAgent reload={reload} />
+				<Box pi='24px'>
+					<FilterByText onChange={({ text }: { text: string }): void => setFilter(text)} />
+				</Box>
+				<Page.Content>
+					<GenericTable>
+						<GenericTableHeader>
+							<GenericTableHeaderCell direction={sortDirection} sort='name' active={sortBy === 'name'} onClick={onHeaderClick}>
+								{t('Name')}
+							</GenericTableHeaderCell>
+							{mediaQuery && (
+								<GenericTableHeaderCell direction={sortDirection} sort='username' active={sortBy === 'username'} onClick={onHeaderClick}>
+									{t('Username')}
+								</GenericTableHeaderCell>
+							)}
+							<GenericTableHeaderCell
+								direction={sortDirection}
+								sort='emails.address'
+								active={sortBy === 'emails.address'}
+								onClick={onHeaderClick}
+							>
+								{t('Email')}
+							</GenericTableHeaderCell>
+							<GenericTableHeaderCell
+								direction={sortDirection}
+								sort='statusLivechat'
+								active={sortBy === 'statusLivechat'}
+								onClick={onHeaderClick}
+							>
+								{t('Livechat_status')}
+							</GenericTableHeaderCell>
+							<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
+						</GenericTableHeader>
+						<GenericTableBody>
+							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
+							{result.phase === AsyncStatePhase.RESOLVED &&
+								result.value.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
+						</GenericTableBody>
+					</GenericTable>
+					{result.phase === AsyncStatePhase.RESOLVED && (
+						<Pagination
+							current={current}
+							itemsPerPage={itemsPerPage}
+							count={result.value.count}
+							onSetItemsPerPage={setItemsPerPage}
+							onSetCurrent={setCurrent}
+							{...paginationProps}
+						/>
+					)}
+				</Page.Content>
+			</Page>
+			{context && id && <AgentsTab reload={reload} context={context} id={id} />}
 		</Page>
-		{children}
-	</Page>
-);
+	);
+};
 
 export default AgentsPage;

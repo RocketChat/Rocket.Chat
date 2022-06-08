@@ -1,22 +1,27 @@
-import { Settings } from '../../../app/models/server/raw';
+import { MongoInternals } from 'meteor/mongo';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 267,
 	async up() {
-		const oldValue = `<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>`;
-		const newValue = `<p>~~~~ Default html example ~~~~</p>\n<strong>Welcome to (ENTER ORGANIZATION NAME HERE)</strong>\n\n<p>All general communications should be done through #general</p>\n<p>find more information <a href="INSERT LINK" target="_blank" rel="noopener">here</a></p>`;
+		ServiceConfiguration.configurations.remove({
+			service: 'blockstack',
+		});
 
-		await Settings.updateOne(
-			{
-				_id: 'Layout_Home_Body',
-				value: oldValue,
+		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+		const settings = mongo.db.collection('rocketchat_settings');
+		await settings.deleteMany({
+			_id: {
+				$in: [
+					'Blockstack',
+					'Blockstack_Enable',
+					'Blockstack_Auth_Description',
+					'Blockstack_ButtonLabelText',
+					'Blockstack_Generate_Username',
+				],
 			},
-			{
-				$set: {
-					value: newValue,
-				},
-			},
-		);
+		});
 	},
 });
