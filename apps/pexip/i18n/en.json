@@ -1,0 +1,4 @@
+{
+	"pexip_base_url": "Base URL",
+	"pexip_base_url_description": "The URL where Pexip is running."
+}

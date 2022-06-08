@@ -1,0 +1,16 @@
+{
+    "id": "7fc612f5-b585-4e46-8c4e-6d2c13e2f451",
+    "version": "0.0.2",
+    "requiredApiVersion": "1.33.0",
+    "iconFile": "icon.png",
+    "author": {
+        "name": "Rocket.Chat Technologies Corp.",
+        "homepage": "https://github.com/RocketChat/Rocket.Chat",
+        "support": "https://github.com/RocketChat/Rocket.Chat"
+    },
+    "name": "Pexip",
+    "nameSlug": "pexip",
+    "classFile": "src/PexipApp.ts",
+    "description": "Pexip Video Conference Provider",
+    "implements": []
+}

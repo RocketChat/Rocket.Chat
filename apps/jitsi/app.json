@@ -1,0 +1,16 @@
+{
+	"id": "3b387ba9-f57c-44c6-9810-8c0256abd64c",
+	"version": "2.0.0",
+	"requiredApiVersion": "1.33.0",
+	"iconFile": "icon.png",
+	"author": {
+		"name": "Rocket.Chat Technologies Corp.",
+		"homepage": "https://github.com/RocketChat/Rocket.Chat",
+		"support": "https://github.com/RocketChat/Rocket.Chat"
+	},
+	"name": "Jitsi Video Conference Provider",
+	"nameSlug": "jitsi-video-provider",
+	"classFile": "src/JitsiApp.ts",
+	"description": "Video Conference Provider and Slash command to generate Jitsi links",
+	"implements": []
+}

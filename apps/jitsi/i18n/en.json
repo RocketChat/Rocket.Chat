@@ -1,0 +1,19 @@
+{
+	"params_example": "[room name (optional)]",
+	"command_description": "Generate an Jitsi video meeting URL.",
+	"jitsi_domain": "Domain",
+	"jitsi_domain_description": "",
+	"jitsi_title_prefix": "Title prefix",
+	"jitsi_title_prefix_description": "Text added before the title when identifying a video conference.",
+	"jitsi_title_suffix": "Title suffix",
+	"jitsi_title_suffix_description": "Text added after the title when identifying a video conference.",
+	"jitsi_room_id_type": "Video Conference Identification",
+	"jitsi_room_id_type_description": "Select which information should be used to identify the Jitsi call.",
+	"jitsi_room_id_type_id": "Room Identification",
+	"jitsi_room_id_type_call": "Unique ID",
+	"jitsi_room_id_type_title": "VideoConference Title",
+	"jitsi_ssl": "Use SSL",
+	"jitsi_ssl_description": "",
+	"jitsi_chrome_extension": "Chrome Extension Id",
+	"jitsi_chrome_extension_description": ""
+}
