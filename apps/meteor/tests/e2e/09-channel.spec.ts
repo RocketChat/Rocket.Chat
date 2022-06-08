@@ -98,16 +98,16 @@ test.describe('[Channel]', () => {
 
 		test.describe('Adding a user to the room:', async () => {
 			test.beforeAll(async () => {
-				if (await flexTab.toastSuccess.isVisible()) {
-					await flexTab.toastSuccess.click();
+				if (await mainContent.toastBar.isVisible()) {
+					await mainContent.doDismissToastBar();
 				}
 
 				await flexTab.operateFlexTab('members', true);
 			});
 
 			test.afterAll(async () => {
-				if (await flexTab.toastSuccess.isVisible()) {
-					await flexTab.toastSuccess.click();
+				if (await mainContent.toastBar.isVisible()) {
+					await mainContent.doDismissToastBar();
 				}
 				await flexTab.operateFlexTab('members', false);
 			});
@@ -115,7 +115,7 @@ test.describe('[Channel]', () => {
 			test('expect add people to the room', async () => {
 				await flexTab.addPeopleToChannel(targetUser);
 				hasUserAddedInChannel = true;
-				await expect(flexTab.toastSuccess).toBeVisible();
+				await expect(mainContent.toastBarSuccess).toBeVisible();
 			});
 		});
 
@@ -127,8 +127,8 @@ test.describe('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await flexTab.toastSuccess.isVisible()) {
-						await flexTab.toastSuccess.click();
+					if (await mainContent.toastBar.isVisible()) {
+						await mainContent.doDismissToastBar();
 					}
 
 					if (await flexTab.mainSideBar.isVisible()) {
@@ -156,8 +156,8 @@ test.describe('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await flexTab.toastSuccess.isVisible()) {
-						await flexTab.toastSuccess.click();
+					if (await mainContent.toastBar.isVisible()) {
+						await mainContent.doDismissToastBar();
 					}
 
 					if (await flexTab.mainSideBar.isVisible()) {
@@ -185,8 +185,8 @@ test.describe('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await flexTab.toastSuccess.isVisible()) {
-						await flexTab.toastSuccess.click();
+					if (await mainContent.toastBar.isVisible()) {
+						await mainContent.doDismissToastBar();
 					}
 
 					if (await flexTab.mainSideBar.isVisible()) {
@@ -221,8 +221,8 @@ test.describe('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await flexTab.toastSuccess.isVisible()) {
-						await flexTab.toastSuccess.click();
+					if (await mainContent.toastBar.isVisible()) {
+						await mainContent.doDismissToastBar();
 					}
 
 					await flexTab.operateFlexTab('members', false);
@@ -244,8 +244,8 @@ test.describe('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await flexTab.toastSuccess.isVisible()) {
-						await flexTab.toastSuccess.click();
+					if (await mainContent.toastBar.isVisible()) {
+						await mainContent.doDismissToastBar();
 					}
 
 					await flexTab.operateFlexTab('members', false);
@@ -256,8 +256,8 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect dismiss the toast', async () => {
-					if (await flexTab.toastSuccess.isVisible()) {
-						await flexTab.toastSuccess.click();
+					if (await mainContent.toastBar.isVisible()) {
+						await mainContent.doDismissToastBar();
 					}
 				});
 
@@ -281,8 +281,8 @@ test.describe('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await flexTab.toastSuccess.isVisible()) {
-						await flexTab.toastSuccess.click();
+					if (await mainContent.toastBar.isVisible()) {
+						await mainContent.doDismissToastBar();
 					}
 
 					await flexTab.operateFlexTab('members', false);
@@ -299,16 +299,16 @@ test.describe('[Channel]', () => {
 
 			test.describe('Channel name edit', async () => {
 				test.beforeAll(async () => {
-					if (await flexTab.toastSuccess.isVisible()) {
-						await flexTab.toastSuccess.click();
+					if (await mainContent.toastBar.isVisible()) {
+						await mainContent.doDismissToastBar();
 					}
 
 					await flexTab.operateFlexTab('info', true);
 				});
 
 				test.afterAll(async () => {
-					if (await flexTab.toastSuccess.isVisible()) {
-						await flexTab.toastSuccess.click();
+					if (await mainContent.toastBar.isVisible()) {
+						await mainContent.doDismissToastBar();
 					}
 
 					if (await flexTab.mainSideBar.isVisible()) {

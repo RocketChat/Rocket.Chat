@@ -8,6 +8,7 @@ test.describe('[Department]', () => {
 	let sideNav: SideNav;
 	let departments: Departments;
 	let page: Page;
+
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
 		const basePath = '/';
@@ -37,7 +38,7 @@ test.describe('[Department]', () => {
 		});
 		test.describe('[Create and Edit]', async () => {
 			test.afterEach(async () => {
-				await departments.toastSuccess.click();
+				await departments.doDismissToastBar();
 			});
 
 			test('expect new department is created', async () => {
