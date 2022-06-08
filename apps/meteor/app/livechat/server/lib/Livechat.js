@@ -26,6 +26,7 @@ import {
 	LivechatDepartmentAgents,
 	LivechatDepartment,
 	LivechatCustomField,
+	LivechatVisitors,
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
@@ -39,7 +40,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
-import { Users as UsersRaw, LivechatVisitors } from '../../../models/server/raw';
+import { Users as UsersRaw, LivechatVisitors as LivechatVisitorsRaw } from '../../../models/server/raw';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
 
@@ -924,7 +925,7 @@ export const Livechat = {
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
 			LivechatDepartmentAgents.removeByAgentId(_id);
-			Promise.await(LivechatVisitors.removeContactManagerByUsername(username));
+			Promise.await(LivechatVisitorsRaw.removeContactManagerByUsername(username));
 			return true;
 		}
 
