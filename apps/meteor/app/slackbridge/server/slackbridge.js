@@ -30,20 +30,21 @@ class SlackBridgeClass {
 			this.rocket.clearSlackAdapters();
 
 			const tokenList = this.apiTokens.split('\n');
-			tokenList.forEach((apiToken) => {
-				try {
+
+			try {
+				tokenList.forEach((apiToken) => {
 					const slack = new SlackAdapter(this);
 					slack.setRocket(this.rocket);
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
 					slack.connect(apiToken);
-				} catch (err) {
-					connLogger.error('error connecting to slack', err);
+				});
+			} catch (err) {
+				connLogger.error('error connecting to slack', err);
 
-					throw err;
-				}
-			});
+				throw err;
+			}
 
 			if (settings.get('SlackBridge_Out_Enabled')) {
 				this.rocket.connect();
