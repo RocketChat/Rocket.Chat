@@ -30,4 +30,8 @@ export const videoConfProviders = {
 	getProviderList(): { key: string; label: string }[] {
 		return [...providers].map((key) => ({ key, label: key }));
 	},
+
+	isProviderAvailable(name: string): boolean {
+		return providers.has(name);
+	},
 };

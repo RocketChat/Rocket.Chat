@@ -328,16 +328,24 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async generateNewUrl(call: IVideoConference): Promise<string> {
+		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
+			throw new Error('video-conf-provider-unavailable');
+		}
+
 		const title = isGroupVideoConference(call) ? call.title || (await this.getRoomName(call.rid)) : '';
 
-		return (await this.getProviderManager()).generateUrl(call.providerName, {
-			_id: call._id,
-			type: call.type,
-			rid: call.rid,
-			createdBy: call.createdBy as Required<IVideoConference['createdBy']>,
-			title,
-			providerData: call.providerData,
-		});
+		return (await this.getProviderManager())
+			.generateUrl(call.providerName, {
+				_id: call._id,
+				type: call.type,
+				rid: call.rid,
+				createdBy: call.createdBy as Required<IVideoConference['createdBy']>,
+				title,
+				providerData: call.providerData,
+			})
+			.catch((e) => {
+				throw new Error(e);
+			});
 	}
 
 	private async getUrl(
@@ -345,6 +353,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
+		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
+			throw new Error('video-conf-provider-unavailable');
+		}
+
 		if (!call.url) {
 			call.url = await this.generateNewUrl(call);
 			this.VideoConference.setUrlById(call._id, call.url);
@@ -366,7 +378,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			name: user.name as string,
 		};
 
-		return (await this.getProviderManager()).customizeUrl(call.providerName, callData, userData, options);
+		return (await this.getProviderManager()).customizeUrl(call.providerName, callData, userData, options).catch((e) => {
+			throw new Error(e);
+		});
 	}
 
 	private async addUserToCall(call: IVideoConference, { _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {

@@ -62,6 +62,9 @@ type VideoConfEvents = {
 
 	// The list of ringing incoming calls may have changed
 	'ringing/changed': void;
+
+	'join/error': { error: string };
+	'start/error': { error: string };
 };
 export const VideoConfManager = new (class VideoConfManager extends Emitter<VideoConfEvents> {
 	private userId: string | undefined;
@@ -124,9 +127,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		debug && console.log(`[VideoConf] Starting new call on room ${roomId}`);
 		this.startingNewCall = true;
 
-		const { data } = await APIClient.v1.post('video-conference.start', {}, { roomId, title }).catch((e: unknown) => {
+		const { data } = await APIClient.v1.post('video-conference.start', {}, { roomId, title }).catch((e: any) => {
 			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
 			this.startingNewCall = false;
+			this.emit('start/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
+
 			return Promise.reject(e);
 		});
 
@@ -273,6 +278,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		const { url } = await APIClient.v1.post('video-conference.join', {}, params).catch((e) => {
 			debug && console.error(`[VideoConf] Failed to join call ${callId}`);
+			this.emit('join/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
+
 			return Promise.reject(e);
 		});
 

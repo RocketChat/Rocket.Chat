@@ -10,6 +10,7 @@ import {
 import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { VideoConf } from '../../../../server/sdk';
+import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 
 API.v1.addRoute(
 	'video-conference.start',
@@ -18,7 +19,10 @@ API.v1.addRoute(
 		async post() {
 			const { roomId, title } = this.bodyParams;
 
-			// #ToDo: Validate if there is an active provider
+			const providerName = videoConfProviders.getActiveProvider();
+			if (!providerName) {
+				return API.v1.failure('no-active-video-conf-provider');
+			}
 
 			const { userId } = this;
 
