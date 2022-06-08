@@ -10,6 +10,7 @@ import React, { lazy } from 'react';
 import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
+import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 import { dispatchToastMessage } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
 import BlazeTemplate from '../views/root/BlazeTemplate';
@@ -97,6 +98,10 @@ FlowRouter.route('/home', {
 	name: 'home',
 
 	action(_params, queryParams) {
+		const HomePage = createTemplateForComponent('HomePage', () => import('../views/home/HomePage'), {
+			attachment: 'at-parent',
+		});
+
 		KonchatNotification.getDesktopPermission();
 		if (queryParams?.saml_idp_credentialToken !== undefined) {
 			const token = queryParams.saml_idp_credentialToken;
@@ -115,7 +120,7 @@ FlowRouter.route('/home', {
 
 				appLayout.render(
 					<MainLayout>
-						<BlazeTemplate template='home' />
+						<BlazeTemplate template={HomePage} />
 					</MainLayout>,
 				);
 			});
@@ -125,7 +130,7 @@ FlowRouter.route('/home', {
 
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template='home' />
+				<BlazeTemplate template={HomePage} />
 			</MainLayout>,
 		);
 	},
