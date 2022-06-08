@@ -1,13 +1,13 @@
-import { UAParser } from 'ua-parser-js';
 import { Meteor } from 'meteor/meteor';
+import { UAParser } from 'ua-parser-js';
+import { ISocketConnection, IUser } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/server';
+import * as Mailer from '../../../../app/mailer';
 import { Users } from '../../../../app/models/server/raw/index';
+import { settings } from '../../../../app/settings/server';
+import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
 import { hasLicense } from '../../../app/license/server/license';
-import { ISocketConnection, IUser } from '@rocket.chat/core-typings';
-import * as Mailer from '../../../../app/mailer';
-import { UAParserDesktop, UAParserMobile } from '/app/statistics/server/lib/UAParserCustom';
 
 const uaParser = async (
 	uaString: ISocketConnection['httpHeaders']['user-agent'],
@@ -30,7 +30,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 		if (!hasLicense('device-management')) return;
 
 		const user = await Users.findOneById<IUser>(userId, { projection: { name: 1, username: 1, emails: 1 } });
-		if (user && user.emails?.length && !connection.loginToken) {
+		if (user?.emails?.length && !connection.loginToken) {
 			const {
 				name,
 				username,
