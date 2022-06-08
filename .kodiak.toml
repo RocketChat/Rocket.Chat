@@ -2,8 +2,6 @@
 version = 1
 
 
-merge.automerge_label = ["stat: ready to merge", "QA tested"]
-
 [merge.message]
 title = "pull_request_title" # default: "github_default"
 body = "pull_request_body" # default: "github_default"
@@ -15,3 +13,4 @@ usernames = ["dependabot"]
 method = "squash"
 	[message]
     include_coauthors=true
+automerge_label = ["stat: ready to merge", "QA tested", "automerge"]
