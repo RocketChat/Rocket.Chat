@@ -49,14 +49,6 @@ class LoginPage extends BasePage {
 		return this.getPage().locator('[name=confirm-pass]');
 	}
 
-	public getToastError(): Locator {
-		return this.getPage().locator('.toast');
-	}
-
-	public getToastMessageSuccess(): Locator {
-		return this.getPage().locator('.toast-message');
-	}
-
 	public emailOrUsernameInvalidText(): Locator {
 		return this.getPage().locator('[name=emailOrUsername]~.input-error');
 	}
