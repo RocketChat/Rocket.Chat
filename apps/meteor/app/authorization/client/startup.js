@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { CachedCollectionManager } from '../../ui-cached-collection';
-import { APIClient } from '../../utils/client';
+import { APIClient } from '../../utils/client/lib/RestApiClient';
 import { Roles } from '../../models/client';
 import { rolesStreamer } from './lib/streamer';
 
