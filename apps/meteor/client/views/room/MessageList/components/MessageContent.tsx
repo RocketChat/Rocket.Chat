@@ -5,11 +5,11 @@ import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-conte
 import React, { FC, memo } from 'react';
 
 import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
-import Attachments from '../../../../components/Message/Attachments';
-import MessageActions from '../../../../components/Message/MessageActions';
-import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
-import DiscussionMetric from '../../../../components/Message/Metrics/Discussion';
-import ThreadMetric from '../../../../components/Message/Metrics/Thread';
+import Attachments from '../../../../components/message/Attachments';
+import MessageActions from '../../../../components/message/MessageActions';
+import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
+import DiscussionMetric from '../../../../components/message/Metrics/Discussion';
+import ThreadMetric from '../../../../components/message/Metrics/Thread';
 import { useUserData } from '../../../../hooks/useUserData';
 import { UserPresence } from '../../../../lib/presence';
 import MessageBlockUiKit from '../../../blocks/MessageBlock';
