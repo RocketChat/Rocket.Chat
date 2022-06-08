@@ -1542,11 +1542,19 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
+		this.add('Layout_Custom_Body', false, {
+			type: 'boolean',
+			public: true,
+		});
 		this.add(
 			'Layout_Home_Body',
 			'<p>~~~~ Default html example ~~~~</p>\n<strong>Welcome to (ENTER ORGANIZATION NAME HERE)</strong>\n\n<p>All general communications should be done through #general</p>\n<p>find more information <a href="INSERT LINK" target="_blank" rel="noopener">here</a></p>',
 			{
 				type: 'code',
+				enableQuery: {
+					_id: 'Layout_Custom_Body',
+					value: true,
+				},
 				code: 'text/html',
 				multiline: true,
 				// @TODO -> once Layout_Custom_Body is available, set blocked according to it's value.
