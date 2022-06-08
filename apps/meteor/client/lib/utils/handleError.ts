@@ -1,6 +1,7 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import toastr from 'toastr';
+
+import { dispatchToastMessage } from '../toast';
 
 const hasXHR = (error: {}): error is { xhr: JQuery.jqXHR } => 'xhr' in error;
 
@@ -31,10 +32,14 @@ export const handleError = (error: {}, useToastr = true): JQuery<HTMLElement> | 
 			return;
 		}
 
-		return toastr.error(
-			TAPi18n.__(message, Object.fromEntries(Object.entries(details).map(([key, value]) => [key, escapeHTML(TAPi18n.__(value))]))),
-			hasErrorTitle(details) ? TAPi18n.__(details.errorTitle) : undefined,
-		);
+		const i18message =
+			(hasErrorTitle(details) ? TAPi18n.__(details.errorTitle) : '') +
+			TAPi18n.__(message, Object.fromEntries(Object.entries(details).map(([key, value]) => [key, escapeHTML(TAPi18n.__(value))])));
+
+		dispatchToastMessage({
+			type: 'error',
+			message: i18message,
+		});
 	}
 
 	return escapeHTML(TAPi18n.__(message, Object.fromEntries(Object.entries(details).map(([key, value]) => [key, TAPi18n.__(value)]))));

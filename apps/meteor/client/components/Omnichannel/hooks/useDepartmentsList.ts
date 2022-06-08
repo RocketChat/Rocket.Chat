@@ -43,7 +43,7 @@ export const useDepartmentsList = (
 				count: end + start,
 				sort: `{ "name": 1 }`,
 				excludeDepartmentId: options.excludeDepartmentId,
-				enabled: options.enabled,
+				enabled: options.enabled ? 'true' : 'false',
 			});
 
 			const items = departments

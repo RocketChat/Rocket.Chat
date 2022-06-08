@@ -12,8 +12,8 @@ import UsersInRoleTable from './UsersInRoleTable';
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
 	const reload = useRef<() => void>(() => undefined);
-	const [user, setUser] = useState<string | undefined>('');
-	const [rid, setRid] = useState<string>();
+	const [user, setUser] = useState<string>('');
+	const [rid, setRid] = useState<string>('');
 	const [userError, setUserError] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -36,10 +36,10 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		try {
 			await addUser({ roleId: _id, username: user, roomId: rid });
 			dispatchToastMessage({ type: 'success', message: t('User_added') });
-			setUser(undefined);
+			setUser('');
 			reload.current?.();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 

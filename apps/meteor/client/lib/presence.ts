@@ -53,7 +53,7 @@ const notify = (presence: UserPresence): void => {
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
-	export interface Endpoint {
+	export interface Endpoints {
 		'/v1/users.presence': {
 			GET: (params: { ids: string[] }) => UsersPresencePayload;
 		};

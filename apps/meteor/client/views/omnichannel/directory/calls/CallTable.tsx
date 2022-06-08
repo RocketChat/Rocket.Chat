@@ -22,7 +22,7 @@ const useQuery = (
 	userIdLoggedIn: string | null,
 ): {
 	sort: string;
-	open: boolean;
+	open: 'false';
 	roomName: string;
 	agents: string[];
 	count?: number;
@@ -31,7 +31,7 @@ const useQuery = (
 	useMemo(
 		() => ({
 			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
-			open: false,
+			open: 'false',
 			roomName: text || '',
 			agents: userIdLoggedIn ? [userIdLoggedIn] : [],
 			...(itemsPerPage && { count: itemsPerPage }),

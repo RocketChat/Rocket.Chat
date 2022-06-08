@@ -1,7 +1,9 @@
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 export type OauthAppsGetParams = { clientId: string } | { appId: string };
 

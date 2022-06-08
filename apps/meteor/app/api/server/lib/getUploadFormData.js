@@ -2,7 +2,7 @@ import busboy from 'busboy';
 
 export const getUploadFormData = async ({ request }) =>
 	new Promise((resolve, reject) => {
-		const bb = busboy({ headers: request.headers });
+		const bb = busboy({ headers: request.headers, defParamCharset: 'utf8' });
 
 		const fields = {};
 
