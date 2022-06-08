@@ -22,6 +22,6 @@ actionLinks.register('endLivechatWebRTCCall', async (message: IMessage) => {
 		dispatchToastMessage({ type: 'info', message: TAPi18n.__('Call_Already_Ended') });
 		return;
 	}
-	await APIClient.v1.put(`livechat/webrtc.call/${message._id}`, {}, { rid: _id, status: 'ended' });
+	await APIClient.put(`/v1/livechat/webrtc.call/${message._id}`, { rid: _id, status: 'ended' });
 	Notifications.notifyRoom(_id, 'webrtc', 'callStatus', { callStatus: 'ended' });
 });

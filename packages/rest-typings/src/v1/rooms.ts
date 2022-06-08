@@ -394,30 +394,27 @@ const RoomsSaveRoomSettingsSchema = {
 export const isRoomsSaveRoomSettingsProps = ajv.compile<RoomsSaveRoomSettingsProps>(RoomsSaveRoomSettingsSchema);
 
 export type RoomsEndpoints = {
-	'rooms.autocomplete.channelAndPrivate': {
+	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
 			items: IRoom[];
 		};
 	};
-	'rooms.autocomplete.channelAndPrivate.withPagination': {
-		GET: (params: RoomsAutocompleteChannelAndPrivateWithPaginationProps) => {
+	'/v1/rooms.autocomplete.channelAndPrivate.withPagination': {
+		GET: (params: RoomsAutocompleteChannelAndPrivateWithPaginationProps) => PaginatedResult<{
 			items: IRoom[];
-			count: number;
-			offset: number;
-			total: number;
-		};
+		}>;
 	};
-	'rooms.autocomplete.availableForTeams': {
+	'/v1/rooms.autocomplete.availableForTeams': {
 		GET: (params: RoomsAutocompleteAvailableForTeamsProps) => {
 			items: IRoom[];
 		};
 	};
-	'rooms.info': {
+	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
 			room: IRoom;
 		};
 	};
-	'rooms.cleanHistory': {
+	'/v1/rooms.cleanHistory': {
 		POST: (params: {
 			roomId: IRoom['_id'];
 			latest: string;
@@ -431,32 +428,45 @@ export type RoomsEndpoints = {
 			ignoreThreads?: boolean;
 		}) => { _id: IRoom['_id']; count: number; success: boolean };
 	};
-	'rooms.createDiscussion': {
+	'/v1/rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
 			discussion: IRoom;
 		};
 	};
-	'rooms.export': {
+	'/v1/rooms.export': {
 		POST: (params: RoomsExportProps) => {
 			missing?: [];
 			success: boolean;
 		};
 	};
-	'rooms.adminRooms': {
+	'/v1/rooms.adminRooms': {
 		GET: (params: RoomsAdminRoomsProps) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
 	};
-	'rooms.adminRooms.getRoom': {
+	'/v1/rooms.adminRooms.getRoom': {
 		GET: (params: RoomsAdminRoomsGetRoomProps) => Pick<IRoom, RoomAdminFieldsType>;
 	};
-	'rooms.saveRoomSettings': {
+	'/v1/rooms.saveRoomSettings': {
 		POST: (params: RoomsSaveRoomSettingsProps) => {
 			success: boolean;
 			rid: string;
 		};
 	};
-	'rooms.changeArchivationState': {
+	'/v1/rooms.changeArchivationState': {
 		POST: (params: RoomsChangeArchivationStateProps) => {
 			success: boolean;
 		};
+	};
+
+	'/v1/rooms.upload/:rid': {
+		POST: (params: {
+			file: File;
+			description?: string;
+			avatar?: string;
+			emoji?: string;
+			alias?: string;
+			groupable?: boolean;
+			msg?: string;
+			tmid?: string;
+		}) => { message: IMessage };
 	};
 };

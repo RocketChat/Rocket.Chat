@@ -8,7 +8,7 @@ if (Meteor.isClient) {
 	settings = require('../../settings/server').settings;
 }
 
-const fileUploadMediaWhiteList = function (customWhiteList) {
+export const fileUploadMediaWhiteList = function (customWhiteList) {
 	const mediaTypeWhiteList = customWhiteList || settings.get('FileUpload_MediaTypeWhiteList');
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {

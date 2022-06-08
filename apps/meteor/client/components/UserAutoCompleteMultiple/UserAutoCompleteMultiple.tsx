@@ -22,7 +22,7 @@ const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultip
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: data } = useEndpointData(
-		'users.autocomplete',
+		'/v1/users.autocomplete',
 		useMemo(() => query(debouncedFilter), [debouncedFilter]),
 	);
 

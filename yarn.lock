@@ -4222,6 +4222,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/api-client@workspace:^, @rocket.chat/api-client@workspace:packages/api-client":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/api-client@workspace:packages/api-client"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@types/jest": ^27.4.1
+    "@types/strict-uri-encode": ^2
+    eslint: ^8.12.0
+    filter-obj: ^3.0.0
+    jest: ^27.5.1
+    query-string: ^7.1.1
+    split-on-first: ^3.0.0
+    strict-uri-encode: ^2.0.0
+    ts-jest: ^27.1.4
+    typescript: ~4.3.5
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/apps-engine@npm:1.32.0":
   version: 1.32.0
   resolution: "@rocket.chat/apps-engine@npm:1.32.0"
@@ -4772,6 +4791,7 @@ __metadata:
     "@nivo/line": 0.62.0
     "@nivo/pie": 0.73.0
     "@playwright/test": ^1.21.1
+    "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps-engine": 1.32.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.12
@@ -4858,6 +4878,7 @@ __metadata:
     "@types/sharp": ^0.30.2
     "@types/sinon": ^10.0.11
     "@types/speakeasy": ^2.0.7
+    "@types/strict-uri-encode": ^2
     "@types/string-strip-html": ^5.0.0
     "@types/supertest": ^2.0.11
     "@types/ua-parser-js": ^0.7.36
@@ -5020,6 +5041,7 @@ __metadata:
     source-map: ^0.7.3
     speakeasy: ^2.0.0
     stream-buffers: ^3.0.2
+    strict-uri-encode: ^2.0.0
     string-strip-html: ^7.0.3
     stylelint: ^13.13.1
     stylelint-order: ^4.1.0
@@ -7886,6 +7908,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 5b432b2bf963d612747b79ac317562888236d6a9ea14414fb055c24e7be9643b5e3c7b7470841fa82802aa1c1c0d752a4ba935bbc0cfb12de6b89f7e1dadee92
+  languageName: node
+  linkType: hard
+
+"@types/strict-uri-encode@npm:^2":
+  version: 2.0.0
+  resolution: "@types/strict-uri-encode@npm:2.0.0"
+  checksum: e37b6e39fc1440d30bb5f114b3c56a4ecc5db1b7bb1f705bcf607d0eb9e8798953ccaa3792b35c97e74fe61fcc0ff80982d963c22bba056a0745098d4a5c6699
   languageName: node
   linkType: hard
 
@@ -16191,6 +16220,13 @@ __metadata:
   version: 1.1.0
   resolution: "filter-obj@npm:1.1.0"
   checksum: cf2104a7c45ff48e7f505b78a3991c8f7f30f28bd8106ef582721f321f1c6277f7751aacd5d83026cb079d9d5091082f588d14a72e7c5d720ece79118fa61e10
+  languageName: node
+  linkType: hard
+
+"filter-obj@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "filter-obj@npm:3.0.0"
+  checksum: 93bee3cecc2bbd87cb9d786c4ba2ea36fbad5d237aec991deed419dcc892020dd46d0a77c982224ef45d922b1573c77be1588274b9d524c7389ccf8d1a91c330
   languageName: node
   linkType: hard
 
@@ -27274,6 +27310,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"query-string@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "query-string@npm:7.1.1"
+  dependencies:
+    decode-uri-component: ^0.2.0
+    filter-obj: ^1.1.0
+    split-on-first: ^1.0.0
+    strict-uri-encode: ^2.0.0
+  checksum: b227d1f588ae93f9f0ad078c6b811295fa151dc5a160a03bb2bac5fa0e6919cb1daa570aad1d288e77c8e89fde5362ba505b1014e6e793da9b1e885b59a690a6
+  languageName: node
+  linkType: hard
+
 "querystring-es3@npm:*, querystring-es3@npm:^0.2.0":
   version: 0.2.1
   resolution: "querystring-es3@npm:0.2.1"
@@ -30278,6 +30326,13 @@ __metadata:
   version: 1.1.0
   resolution: "split-on-first@npm:1.1.0"
   checksum: 16ff85b54ddcf17f9147210a4022529b343edbcbea4ce977c8f30e38408b8d6e0f25f92cd35b86a524d4797f455e29ab89eb8db787f3c10708e0b47ebf528d30
+  languageName: node
+  linkType: hard
+
+"split-on-first@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "split-on-first@npm:3.0.0"
+  checksum: 75dc27ecbac65cfbeab9a3b90cf046307220192d3d7a30e46aa0f19571cc9b4802aac813f3de2cc9b16f2e46aae72f275659b5d2614bb5369c77724d739e5f73
   languageName: node
   linkType: hard
 

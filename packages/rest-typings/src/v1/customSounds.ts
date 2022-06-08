@@ -36,7 +36,7 @@ const CustomSoundsListSchema = {
 export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
 
 export type CustomSoundEndpoint = {
-	'custom-sounds.list': {
+	'/v1/custom-sounds.list': {
 		GET: (params: CustomSoundsList) => PaginatedResult<{
 			sounds: ICustomSound[];
 		}>;

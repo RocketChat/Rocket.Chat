@@ -21,7 +21,7 @@ export const useAgentsList = (
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatAgent>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatAgent>()), []);
 
-	const getAgents = useEndpoint('GET', 'livechat/users/agent');
+	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
 
 	useComponentDidUpdate(() => {
 		options && reload();
