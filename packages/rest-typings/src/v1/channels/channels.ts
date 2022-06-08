@@ -13,14 +13,14 @@ import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 
 export type ChannelsEndpoints = {
 	'channels.files': {
-		GET: (params: PaginatedRequest<{ roomId: IRoom['_id'] } | { roomName: IRoom['name'] }>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
 			files: IUpload[];
 		}>;
 	};
 	'channels.members': {
 		GET: (
 			params: PaginatedRequest<
-				{ roomId: IRoom['_id']; filter?: string; status?: string[] } | { roomName: IRoom['name']; filter?: string; status?: string[] }
+				{ roomId: string; filter?: string; status?: string[] } | { roomName: string; filter?: string; status?: string[] }
 			>,
 		) => PaginatedResult<{
 			members: IUser[];
