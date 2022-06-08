@@ -965,4 +965,11 @@ export type OmnichannelEndpoints = {
 			cannedResponses: IOmnichannelCannedResponse[];
 		}>;
 	};
+	'livechat/visitors.search': {
+		GET: (
+			params: PaginatedRequest<{
+				term: string;
+			}>,
+		) => PaginatedResult<{ visitors: any[] }>;
+	};
 };

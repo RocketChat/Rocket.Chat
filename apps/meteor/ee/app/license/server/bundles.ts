@@ -4,6 +4,7 @@ export type BundleFeature =
 	| 'ldap-enterprise'
 	| 'livechat-enterprise'
 	| 'omnichannel-mobile-enterprise'
+	| 'omnichannel-voip-enterprise'
 	| 'engagement-dashboard'
 	| 'push-privacy'
 	| 'scalability'
@@ -28,6 +29,7 @@ const bundles: IBundle = {
 		'teams-mention',
 		'saml-enterprise',
 		'oauth-enterprise',
+		'omnichannel-voip-enterprise',
 	],
 	pro: [],
 };

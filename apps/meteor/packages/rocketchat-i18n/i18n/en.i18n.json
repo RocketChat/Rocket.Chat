@@ -726,6 +726,8 @@
   "Call": "Call",
   "Calling": "Calling",
   "Call_Center": "Call Center",
+  "Call_number": "Call number",
+  "Call_number_EE_only": "Call number (Enterprise Edition only)",
   "Call_Center_Description": "Configure Rocket.Chat call center.",
   "Calls_in_queue": "__calls__ call in queue",
   "Calls_in_queue_plural": "__calls__ calls in queue",
