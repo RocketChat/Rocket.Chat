@@ -45,7 +45,7 @@ Meteor.startup(function () {
 		id: 'unstar-message',
 		icon: 'star',
 		label: 'Unstar_Message',
-		context: ['starred', 'message', 'message-mobile', 'threads', Federation.getMessageActionContextName()],
+		context: ['starred', 'message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 

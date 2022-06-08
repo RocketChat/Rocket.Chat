@@ -11,7 +11,6 @@ import { TranslationKey } from '@rocket.chat/ui-contexts';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
-import { FEDERATION_MESSAGE_ACTION_CONTEXT } from '../../../federation-v2/client/Federation';
 
 const call = (method: string, ...args: any[]): Promise<any> =>
 	new Promise((resolve, reject) => {
@@ -33,15 +32,7 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 type MessageActionGroup = 'message' | 'menu';
-type MessageActionContext =
-	| 'message'
-	| 'threads'
-	| 'message-mobile'
-	| 'pinned'
-	| 'direct'
-	| 'starred'
-	| 'mentions'
-	| FEDERATION_MESSAGE_ACTION_CONTEXT;
+type MessageActionContext = 'message' | 'threads' | 'message-mobile' | 'pinned' | 'direct' | 'starred' | 'mentions' | 'federated';
 
 type MessageActionConditionProps = {
 	message: IMessage;
