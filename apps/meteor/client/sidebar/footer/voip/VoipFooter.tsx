@@ -1,9 +1,10 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, Icon, SidebarFooter } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu } from '@rocket.chat/fuselage';
+import React, { ReactElement, useMemo } from 'react';
 
+import { useDevicesMenuOption } from '../../../../ee/client/hooks/useDevicesMenuOption';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {
@@ -55,6 +56,18 @@ export const VoipFooter = ({
 					cursor: pointer;
 			  `
 			: '';
+
+	const deviceMenuOption = useDevicesMenuOption();
+
+	const options = useMemo(
+		() =>
+			deviceMenuOption && {
+				deviceSettings: deviceMenuOption,
+			},
+		[deviceMenuOption],
+	);
+
+	console.log('VoipFooter', options, deviceMenuOption);
 
 	return (
 		<SidebarFooter elevated>
@@ -109,6 +122,7 @@ export const VoipFooter = ({
 									<Icon name='pause-unfilled' color='info' size='x24' />
 								)}
 							</Button>
+							{options && <Menu options={options} />}
 						</ButtonGroup>
 					)}
 				</Box>

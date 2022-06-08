@@ -998,4 +998,48 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			},
 		});
 	}
+
+	async changeAudioInputDevice(constraints: MediaStreamConstraints): Promise<boolean> {
+		if (!this.session) {
+			console.warn('changeAudioInputDevice() : No session. Returning');
+			return false;
+		}
+		const newStream = await LocalStream.requestNewStream(constraints, this.session);
+		if (!newStream) {
+			console.warn('changeAudioInputDevice() : Unable to get local stream. Returning');
+			return false;
+		}
+		const { peerConnection } = this.session?.sessionDescriptionHandler as SessionDescriptionHandler;
+		if (!peerConnection) {
+			console.warn('changeAudioInputDevice() : No peer connection. Returning');
+			return false;
+		}
+		LocalStream.replaceTrack(peerConnection, newStream, 'audio');
+		return true;
+	}
+
+	// Commenting this as Video Configuration is not part of the scope for now
+	// async changeVideoInputDevice(selectedVideoDevices: IDevice): Promise<boolean> {
+	// 	if (!this.session) {
+	// 		console.warn('changeVideoInputDevice() : No session. Returning');
+	// 		return false;
+	// 	}
+	// 	if (!this.config.enableVideo || this.deviceManager.hasVideoInputDevice()) {
+	// 		console.warn('changeVideoInputDevice() : Unable change video device. Returning');
+	// 		return false;
+	// 	}
+	// 	this.deviceManager.changeVideoInputDevice(selectedVideoDevices);
+	// 	const newStream = await LocalStream.requestNewStream(this.deviceManager.getConstraints('video'), this.session);
+	// 	if (!newStream) {
+	// 		console.warn('changeVideoInputDevice() : Unable to get local stream. Returning');
+	// 		return false;
+	// 	}
+	// 	const { peerConnection } = this.session?.sessionDescriptionHandler as SessionDescriptionHandler;
+	// 	if (!peerConnection) {
+	// 		console.warn('changeVideoInputDevice() : No peer connection. Returning');
+	// 		return false;
+	// 	}
+	// 	LocalStream.replaceTrack(peerConnection, newStream, 'video');
+	// 	return true;
+	// }
 }
