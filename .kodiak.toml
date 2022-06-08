@@ -2,7 +2,7 @@
 version = 1
 
 
-merge.automerge_label = ["ready to merge", "QA tested"]
+merge.automerge_label = ["stat: ready to merge", "QA tested"]
 
 [merge.message]
 title = "pull_request_title" # default: "github_default"
