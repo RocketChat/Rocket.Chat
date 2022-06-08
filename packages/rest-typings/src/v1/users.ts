@@ -5,7 +5,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-type UsersInfo = { userId?: IUser['_id']; userName?: IUser['username'] };
+type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
 
 const UsersInfoSchema = {
 	type: 'object',
@@ -14,7 +14,7 @@ const UsersInfoSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		userName: {
+		username: {
 			type: 'string',
 			nullable: true,
 		},
