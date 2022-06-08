@@ -358,7 +358,7 @@ API.v1.addRoute(
 				sort: sortObj,
 				skip: offset,
 				limit: count,
-				...(fields && { fields }),
+				...(fields && { projection: fields }),
 			}).toArray();
 
 			return API.v1.success({
@@ -410,7 +410,7 @@ API.v1.addRoute(
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			}).toArray();
 
 			if (!msgs) {

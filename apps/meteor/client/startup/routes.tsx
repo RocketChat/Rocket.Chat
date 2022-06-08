@@ -6,7 +6,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
-import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
@@ -75,13 +74,13 @@ FlowRouter.route('/meet/:rid', {
 	async action(_params, queryParams) {
 		if (queryParams?.token !== undefined) {
 			// visitor login
-			const visitor = await APIClient.v1.get(`livechat/visitor/${queryParams?.token}`);
-			if (visitor?.visitor) {
+			const result = await APIClient.get(`/v1/livechat/visitor/${queryParams.token}`);
+			if ('visitor' in result) {
 				appLayout.render(<MeetPage />);
 				return;
 			}
 
-			toastr.error(TAPi18n.__('Visitor_does_not_exist'));
+			dispatchToastMessage({ type: 'error', message: TAPi18n.__('Visitor_does_not_exist') });
 			return;
 		}
 

@@ -428,7 +428,7 @@ export class ChatMessages {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
-							APIClient.v1.post('statistics.telemetry', { params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command }] });
+							APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command }] });
 							const triggerId = generateTriggerId(slashCommands.commands[command].appId);
 							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err, result) => {
 								typeof commandOptions.result === 'function' &&

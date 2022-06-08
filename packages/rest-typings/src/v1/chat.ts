@@ -387,45 +387,45 @@ const ChatGetMessageReadReceiptsSchema = {
 export const isChatGetMessageReadReceiptsProps = ajv.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
 
 export type ChatEndpoints = {
-	'chat.getMessage': {
+	'/v1/chat.getMessage': {
 		GET: (params: ChatGetMessage) => {
 			message: IMessage;
 		};
 	};
-	'chat.followMessage': {
+	'/v1/chat.followMessage': {
 		POST: (params: ChatFollowMessage) => void;
 	};
-	'chat.unfollowMessage': {
+	'/v1/chat.unfollowMessage': {
 		POST: (params: ChatUnfollowMessage) => void;
 	};
-	'chat.starMessage': {
+	'/v1/chat.starMessage': {
 		POST: (params: ChatStarMessage) => void;
 	};
-	'chat.unStarMessage': {
+	'/v1/chat.unStarMessage': {
 		POST: (params: ChatUnstarMessage) => void;
 	};
-	'chat.pinMessage': {
+	'/v1/chat.pinMessage': {
 		POST: (params: ChatPinMessage) => void;
 	};
-	'chat.unPinMessage': {
+	'/v1/chat.unPinMessage': {
 		POST: (params: ChatUnpinMessage) => void;
 	};
-	'chat.reportMessage': {
+	'/v1/chat.reportMessage': {
 		POST: (params: ChatReportMessage) => void;
 	};
-	'chat.getDiscussions': {
+	'/v1/chat.getDiscussions': {
 		GET: (params: ChatGetDiscussions) => {
 			messages: IMessage[];
 			total: number;
 		};
 	};
-	'chat.getThreadsList': {
+	'/v1/chat.getThreadsList': {
 		GET: (params: ChatGetThreadsList) => {
 			threads: IMessage[];
 			total: number;
 		};
 	};
-	'chat.syncThreadsList': {
+	'/v1/chat.syncThreadsList': {
 		GET: (params: ChatSyncThreadsList) => {
 			threads: {
 				update: IMessage[];
@@ -433,30 +433,30 @@ export type ChatEndpoints = {
 			};
 		};
 	};
-	'chat.delete': {
+	'/v1/chat.delete': {
 		POST: (params: ChatDelete) => {
 			_id: string;
 			ts: string;
 			message: Pick<IMessage, '_id' | 'rid' | 'u'>;
 		};
 	};
-	'chat.react': {
+	'/v1/chat.react': {
 		POST: (params: ChatReact) => void;
 	};
-	'chat.ignoreUser': {
+	'/v1/chat.ignoreUser': {
 		GET: (params: ChatIgnoreUser) => {};
 	};
-	'chat.search': {
+	'/v1/chat.search': {
 		GET: (params: ChatSearch) => {
 			messages: IMessage[];
 		};
 	};
-	'chat.update': {
+	'/v1/chat.update': {
 		POST: (params: ChatUpdate) => {
 			messages: IMessage;
 		};
 	};
-	'chat.getMessageReadReceipts': {
+	'/v1/chat.getMessageReadReceipts': {
 		GET: (params: ChatGetMessageReadReceipts) => { receipts: ReadReceipt[] };
 	};
 };

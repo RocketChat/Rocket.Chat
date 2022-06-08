@@ -44,7 +44,7 @@ type NetworkState = 'online' | 'offline';
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
-	const dispatchEvent = useEndpoint('POST', 'voip/events');
+	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');
 
 	const result = useVoipClient();
 	const user = useUser();
@@ -234,9 +234,9 @@ export const CallProvider: FC = ({ children }) => {
 		};
 	}, [onNetworkConnected, onNetworkDisconnected, result.voipClient]);
 
-	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
-	const voipEndpoint = useEndpoint('GET', 'voip/room');
-	const voipCloseRoomEndpoint = useEndpoint('POST', 'voip/room.close');
+	const visitorEndpoint = useEndpoint('POST', '/v1/livechat/visitor');
+	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
+	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
 
 	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
 
