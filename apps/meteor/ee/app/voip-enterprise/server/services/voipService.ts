@@ -1,4 +1,4 @@
-import { IRoomClosingInfo, IVoipRoom } from '@rocket.chat/core-typings';
+import { ILivechatAgent, ILivechatVisitor, IRoomClosingInfo, IUser, IVoipRoom } from '@rocket.chat/core-typings';
 
 import { IOmniRoomClosingMessage } from '../../../../../server/services/omnichannel-voip/internalTypes';
 import { OmnichannelVoipService } from '../../../../../server/services/omnichannel-voip/service';
