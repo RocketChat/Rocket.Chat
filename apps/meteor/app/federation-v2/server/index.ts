@@ -1,4 +1,5 @@
 import { FederationFactory } from './infrastructure/Factory';
+import './infrastructure/rocket-chat/slash-commands';
 
 const PROCESSING_CONCURRENCY = 1;
 

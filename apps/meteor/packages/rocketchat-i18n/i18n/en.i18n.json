@@ -1957,6 +1957,7 @@
   "Federation_Public_key": "Public Key",
   "Federation_Public_key_details": "This is the key you need to share with your peers. What is it for?",
   "Federation_Search_users_you_want_to_connect": "Search for the user you want to connect using a combination of a username and a domain or an e-mail address, like:",
+  "Federation_slash_commands": "Federation commands",
   "Federation_SRV_no_support": "If your DNS provider does not support SRV records with _http or _https",
   "Federation_SRV_no_support_details": "Some DNS providers will not allow setting _https or _http on SRV records, so we have support for those cases, using our old DNS record resolution method.",
   "Federation_SRV_records_200": "SRV Record (2.0.0 or newer)",

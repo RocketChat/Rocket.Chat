@@ -78,6 +78,7 @@ export class FederationRoomServiceReceiver {
 			leave,
 		} = roomChangeMembershipInput;
 		const affectedFederatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+
 		if (!affectedFederatedRoom && eventOrigin === EVENT_ORIGIN.LOCAL) {
 			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
@@ -129,7 +130,7 @@ export class FederationRoomServiceReceiver {
 				externalRoomName,
 				members,
 			);
-
+			
 			await this.rocketRoomAdapter.createFederatedRoom(newFederatedRoom);
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
 		}
@@ -165,53 +166,53 @@ export class FederationRoomServiceReceiver {
 		await this.rocketMessageAdapter.sendMessage(senderUser, text, federatedRoom);
 	}
 
-	public async changeJoinRules(roomJoinRulesChangeInput: FederationRoomChangeJoinRulesDto): Promise<void> {
-		const { externalRoomId, roomType } = roomJoinRulesChangeInput;
+	// public async changeJoinRules(roomJoinRulesChangeInput: FederationRoomChangeJoinRulesDto): Promise<void> {
+	// 	const { externalRoomId, roomType } = roomJoinRulesChangeInput;
 
-		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
-		if (!federatedRoom) {
-			return;
-		}
+	// 	const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+	// 	if (!federatedRoom) {
+	// 		return;
+	// 	}
 
-		if (federatedRoom.isDirectMessage()) {
-			return;
-		}
+	// 	if (federatedRoom.isDirectMessage()) {
+	// 		return;
+	// 	}
 
-		federatedRoom.setRoomType(roomType);
-		await this.rocketRoomAdapter.updateRoomType(federatedRoom);
-	}
+	// 	federatedRoom.setRoomType(roomType);
+	// 	await this.rocketRoomAdapter.updateRoomType(federatedRoom);
+	// }
 
-	public async changeRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
-		const { externalRoomId, normalizedRoomName } = roomChangeNameInput;
+	// public async changeRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
+	// 	const { externalRoomId, normalizedRoomName } = roomChangeNameInput;
 
-		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
-		if (!federatedRoom) {
-			return;
-		}
+	// 	const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+	// 	if (!federatedRoom) {
+	// 		return;
+	// 	}
 
-		if (federatedRoom.isDirectMessage()) {
-			return;
-		}
+	// 	if (federatedRoom.isDirectMessage()) {
+	// 		return;
+	// 	}
 
-		federatedRoom.changeRoomName(normalizedRoomName);
+	// 	federatedRoom.changeRoomName(normalizedRoomName);
 
-		await this.rocketRoomAdapter.updateRoomName(federatedRoom);
-	}
+	// 	await this.rocketRoomAdapter.updateRoomName(federatedRoom);
+	// }
 
-	public async changeRoomTopic(roomChangeTopicInput: FederationRoomChangeTopicDto): Promise<void> {
-		const { externalRoomId, roomTopic } = roomChangeTopicInput;
+	// public async changeRoomTopic(roomChangeTopicInput: FederationRoomChangeTopicDto): Promise<void> {
+	// 	const { externalRoomId, roomTopic } = roomChangeTopicInput;
 
-		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
-		if (!federatedRoom) {
-			return;
-		}
+	// 	const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+	// 	if (!federatedRoom) {
+	// 		return;
+	// 	}
 
-		if (federatedRoom.isDirectMessage()) {
-			return;
-		}
+	// 	if (federatedRoom.isDirectMessage()) {
+	// 		return;
+	// 	}
 
-		federatedRoom.changeRoomTopic(roomTopic);
+	// 	federatedRoom.changeRoomTopic(roomTopic);
 
-		await this.rocketRoomAdapter.updateRoomTopic(federatedRoom);
-	}
+	// 	await this.rocketRoomAdapter.updateRoomTopic(federatedRoom);
+	// }
 }

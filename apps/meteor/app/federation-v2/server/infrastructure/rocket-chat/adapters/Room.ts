@@ -44,6 +44,22 @@ export class RocketChatRoomAdapter {
 		await Rooms.setAsFederated(roomId);
 	}
 
+	public async createFederatedRoomForDirectMessage(federatedRoom: FederatedRoom): Promise<void> {
+		const members = federatedRoom.getMembers();
+		const { rid, _id } = createRoom(
+			federatedRoom.internalReference.t,
+			federatedRoom.internalReference.name,
+			federatedRoom.internalReference.u.username as string,
+			members,
+			false,
+			undefined,
+			{ creator: members[0]?._id as string }
+		) as ICreatedRoom;
+		const roomId = rid || _id;
+		MatrixBridgedRoom.insert({ rid: roomId, mri: federatedRoom.externalId });
+		await Rooms.setAsFederated(roomId);
+	}
+
 	public async updateFederatedRoomByInternalRoomId(internalRoomId: string, federatedRoom: FederatedRoom): Promise<void> {
 		MatrixBridgedRoom.upsert({ rid: internalRoomId }, { rid: internalRoomId, mri: federatedRoom.externalId });
 		await Rooms.setAsFederated(internalRoomId);

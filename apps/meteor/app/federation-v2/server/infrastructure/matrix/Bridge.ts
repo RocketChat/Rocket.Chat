@@ -5,6 +5,8 @@ import { IFederationBridge } from '../../domain/IFederationBridge';
 import { bridgeLogger } from '../rocket-chat/adapters/logger';
 import { IMatrixEvent } from './definitions/IMatrixEvent';
 import { MatrixEventType } from './definitions/MatrixEventType';
+import { RoomJoinRules } from './definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
+import { MatrixRoomType } from './definitions/MatrixRoomType';
 
 export class MatrixBridge implements IFederationBridge {
 	private bridgeInstance: Bridge;
@@ -115,6 +117,50 @@ export class MatrixBridge implements IFederationBridge {
 		return matrixRoom.room_id;
 	}
 
+	public async createDirectMessageRoom(
+		externalCreatorId: string,
+		externalInviteeId: string,
+	): Promise<string> {
+		const intent = this.bridgeInstance.getIntent(externalCreatorId);
+
+		const visibility = RoomJoinRules.INVITE;
+		const preset = MatrixRoomType.PRIVATE;
+
+		const matrixRoom = await intent.createRoom({
+			createAsClient: true,
+			options: {
+				visibility,
+				preset,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				is_direct: true,
+				invite: [externalInviteeId],
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				creation_content: {
+					// eslint-disable-next-line @typescript-eslint/camelcase
+					was_internally_programatically_created: true,
+				},
+			},
+		});
+		console.log({matrixRoom})
+		console.log({
+			createAsClient: true,
+			options: {
+				visibility,
+				preset,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				is_direct: true,
+				invite: [externalInviteeId],
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				creation_content: {
+					// eslint-disable-next-line @typescript-eslint/camelcase
+					was_internally_programatically_created: true,
+				},
+			},
+		})
+
+		return matrixRoom.room_id;
+	}
+
 	public async sendMessage(externalRoomId: string, externaSenderId: string, text: string): Promise<void> {
 		await this.bridgeInstance.getIntent(externaSenderId).sendText(externalRoomId, text);
 	}
@@ -166,6 +212,7 @@ export class MatrixBridge implements IFederationBridge {
 				onEvent: async (request /* , context*/): Promise<void> => {
 					// Get the event
 					const event = request.getData() as unknown as IMatrixEvent<MatrixEventType>;
+					console.log({event})
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {

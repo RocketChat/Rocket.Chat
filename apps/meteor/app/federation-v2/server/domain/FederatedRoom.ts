@@ -28,7 +28,7 @@ export class FederatedRoom {
 		const roomName = name || FederatedRoom.generateTemporaryName(normalizedExternalId);
 		return Object.assign(new FederatedRoom(), {
 			externalId,
-			...(type === RoomType.DIRECT_MESSAGE ? { members } : {}),
+			members,
 			internalReference: {
 				t: type,
 				name: roomName,

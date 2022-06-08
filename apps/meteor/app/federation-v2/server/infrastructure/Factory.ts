@@ -4,11 +4,11 @@ import { MatrixBridge } from './matrix/Bridge';
 import { MatrixEventsHandler } from './matrix/handlers';
 import {
 	MatrixRoomCreatedHandler,
-	MatrixRoomJoinRulesChangedHandler,
+	// MatrixRoomJoinRulesChangedHandler,
 	MatrixRoomMembershipChangedHandler,
 	MatrixRoomMessageSentHandler,
-	MatrixRoomNameChangedHandler,
-	MatrixRoomTopicChangedHandler,
+	// MatrixRoomNameChangedHandler,
+	// MatrixRoomTopicChangedHandler,
 } from './matrix/handlers/Room';
 import { InMemoryQueue } from './queue/InMemoryQueue';
 import { RocketChatMessageAdapter } from './rocket-chat/adapters/Message';
@@ -79,9 +79,9 @@ export class FederationFactory {
 		const EVENT_HANDLERS = [
 			new MatrixRoomCreatedHandler(roomServiceReceive),
 			new MatrixRoomMembershipChangedHandler(roomServiceReceive),
-			new MatrixRoomJoinRulesChangedHandler(roomServiceReceive),
-			new MatrixRoomNameChangedHandler(roomServiceReceive),
-			new MatrixRoomTopicChangedHandler(roomServiceReceive),
+			// new MatrixRoomJoinRulesChangedHandler(roomServiceReceive),
+			// new MatrixRoomNameChangedHandler(roomServiceReceive),
+			// new MatrixRoomTopicChangedHandler(roomServiceReceive),
 			new MatrixRoomMessageSentHandler(roomServiceReceive),
 		];
 

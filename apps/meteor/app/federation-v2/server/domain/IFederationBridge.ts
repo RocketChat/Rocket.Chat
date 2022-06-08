@@ -13,6 +13,10 @@ export interface IFederationBridge {
 		roomName: string,
 		roomTopic?: string,
 	): Promise<string>;
+	createDirectMessageRoom(
+		externalCreatorId: string,
+		externalInviteeId: string,
+	): Promise<string>;
 	inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void>;
 	sendMessage(externalRoomId: string, externaSenderId: string, text: string): Promise<void>;
 	createUser(username: string, name: string, domain: string): Promise<string>;
