@@ -36,6 +36,11 @@ type CallPreferences = {
 	cam?: boolean;
 };
 
+export type CurrentCallParams = {
+	callId: string;
+	url: string;
+};
+
 type VideoConfEvents = {
 	// We gave up on calling a remote user or they rejected our call
 	'direct/cancel': DirectCallParams;
@@ -62,6 +67,9 @@ type VideoConfEvents = {
 
 	// The list of ringing incoming calls may have changed
 	'ringing/changed': void;
+
+	// When join call
+	'call/join': CurrentCallParams;
 };
 export const VideoConfManager = new (class VideoConfManager extends Emitter<VideoConfEvents> {
 	private userId: string | undefined;
@@ -277,7 +285,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		});
 
 		debug && console.log(`[VideoConf] Opening ${url}.`);
-		window.open(url);
+		this.emit('call/join', { url, callId });
 	}
 
 	public abortCall(): void {

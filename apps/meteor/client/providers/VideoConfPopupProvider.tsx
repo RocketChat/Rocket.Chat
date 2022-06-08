@@ -1,9 +1,12 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { useCustomSound } from '@rocket.chat/ui-contexts';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useCustomSound, useSetModal } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement, useState, ReactNode, useEffect, useMemo } from 'react';
 
+import GenericModal from '../components/GenericModal';
 import { VideoConfPopupContext, VideoConfIncomingCall, VideoConfPopupPayload } from '../contexts/VideoConfPopupContext';
+import { useBlockedAction } from '../hooks/useBlockedAction';
 import { VideoConfManager, useVideoConfIncomingCalls, useIsRinging } from '../lib/VideoConfManager';
 import VideoConfPopupPortal from '../portals/VideoConfPopupPortal';
 import VideoConfPopup from '../views/room/contextualBar/VideoConference/VideoConfPopup';
@@ -13,6 +16,34 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 	const incomingCalls = useVideoConfIncomingCalls();
 	const customSound = useCustomSound();
 	const isRinging = useIsRinging();
+
+	const [simpleState, setSimpleState] = useState<{ url: string; callId: string }>();
+	const setModal = useSetModal();
+
+	// TODO: This is an experiemntal hook and behavior
+	VideoConfManager.once('call/join', (props) => setSimpleState(props));
+	const { isBlocked, handleRetry, setIsBlocked } = useBlockedAction({ url: simpleState?.url });
+
+	const handleClose = useMutableCallback((): void => {
+		setSimpleState(undefined);
+		setIsBlocked(false);
+		return setModal();
+	});
+
+	useEffect(() => {
+		if (isBlocked) {
+			return setModal(
+				<GenericModal
+					variant='warning'
+					title='Action blocked'
+					confirmText={'Open_again'}
+					onConfirm={handleRetry}
+					onCancel={handleClose}
+					onClose={handleClose}
+				>{`Your browser has blocked the page {PAGE}. <br/> Consider enable popups for this domain url`}</GenericModal>,
+			);
+		}
+	}, [handleClose, isBlocked, handleRetry, setModal]);
 
 	const contextValue = useMemo(
 		() => ({
