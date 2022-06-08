@@ -617,6 +617,8 @@ describe('[Direct Messages]', function () {
 					.set(userCredentials)
 					.send({
 						message: JSON.stringify({
+							id: 'id',
+							msg: 'method',
 							method: 'saveUserPreferences',
 							params: [{ emailNotificationMode: 'nothing' }],
 						}),
