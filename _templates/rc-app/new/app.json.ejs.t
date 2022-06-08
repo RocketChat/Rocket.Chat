@@ -5,7 +5,7 @@ to: apps/<%= name %>/app.json
 {
 	"id": "",
 	"version": "0.0.1",
-	"requiredApiVersion": "^1.4.0",
+	"requiredApiVersion": "^1.19.0",
 	"iconFile": "icon.png",
 	"author": {
 		"name": "Rocket.Chat Technologies Corp.",

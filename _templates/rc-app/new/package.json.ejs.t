@@ -9,7 +9,6 @@ to: apps/<%= name %>/package.json
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "^1.19.0",
 		"@types/node": "14.14.6",
-		"tslint": "^5.10.0",
 		"@types/jest": "^27.4.1",
 		"eslint": "^8.12.0",
 		"jest": "^27.5.1",

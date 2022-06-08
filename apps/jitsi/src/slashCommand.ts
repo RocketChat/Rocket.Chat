@@ -15,7 +15,6 @@ export class JitsiSlashCommand implements ISlashCommand {
 		this.providesPreview = false;
 	}
 
-	// tslint:disable-next-line:max-line-length
 	public async executor(context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persistence: IPersistence): Promise<void> {
 		let serverUrl = await read.getEnvironmentReader().getServerSettings().getValueById('Jitsi_Domain') as string;
 		serverUrl = this.ensureUrlIsValid(serverUrl);

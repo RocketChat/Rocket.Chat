@@ -4680,7 +4680,6 @@ __metadata:
     eslint: ^8.12.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    tslint: ^5.10.0
     typescript: ~4.3.4
   languageName: unknown
   linkType: soft
@@ -5168,7 +5167,6 @@ __metadata:
     eslint: ^8.12.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    tslint: ^5.10.0
     typescript: ~4.3.4
   languageName: unknown
   linkType: soft
@@ -10919,13 +10917,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builtin-modules@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "builtin-modules@npm:1.1.1"
-  checksum: 0fbf69ffe77fecf11c441b9a7d1e664bb8119a7d3004831d9bd6ce0eacfd5d121ed4b667172870b5f66ecfce4bd54f7c20060d21c339c29049a7a5dd2bb7bf8c
-  languageName: node
-  linkType: hard
-
 "builtin-status-codes@npm:^3.0.0":
   version: 3.0.0
   resolution: "builtin-status-codes@npm:3.0.0"
@@ -11391,7 +11382,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:2.4.2, chalk@npm:^2.0.0, chalk@npm:^2.0.1, chalk@npm:^2.1.0, chalk@npm:^2.3.0, chalk@npm:^2.4.1, chalk@npm:^2.4.2":
+"chalk@npm:2.4.2, chalk@npm:^2.0.0, chalk@npm:^2.0.1, chalk@npm:^2.1.0, chalk@npm:^2.4.1, chalk@npm:^2.4.2":
   version: 2.4.2
   resolution: "chalk@npm:2.4.2"
   dependencies:
@@ -12135,7 +12126,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^2.12.1, commander@npm:^2.17.1, commander@npm:^2.19.0, commander@npm:^2.20.0, commander@npm:^2.8.1":
+"commander@npm:^2.17.1, commander@npm:^2.19.0, commander@npm:^2.20.0, commander@npm:^2.8.1":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
   checksum: ab8c07884e42c3a8dbc5dd9592c606176c7eb5c1ca5ff274bcf907039b2c41de3626f684ea75ccf4d361ba004bbaff1f577d5384c155f3871e456bdf27becf9e
@@ -32210,7 +32201,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.8.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0":
+"tslib@npm:^1.8.1, tslib@npm:^1.9.0":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
@@ -32221,42 +32212,6 @@ __metadata:
   version: 2.3.1
   resolution: "tslib@npm:2.3.1"
   checksum: de17a98d4614481f7fcb5cd53ffc1aaf8654313be0291e1bfaee4b4bb31a20494b7d218ff2e15017883e8ea9626599b3b0e0229c18383ba9dce89da2adf15cb9
-  languageName: node
-  linkType: hard
-
-"tslint@npm:^5.10.0":
-  version: 5.20.1
-  resolution: "tslint@npm:5.20.1"
-  dependencies:
-    "@babel/code-frame": ^7.0.0
-    builtin-modules: ^1.1.1
-    chalk: ^2.3.0
-    commander: ^2.12.1
-    diff: ^4.0.1
-    glob: ^7.1.1
-    js-yaml: ^3.13.1
-    minimatch: ^3.0.4
-    mkdirp: ^0.5.1
-    resolve: ^1.3.2
-    semver: ^5.3.0
-    tslib: ^1.8.0
-    tsutils: ^2.29.0
-  peerDependencies:
-    typescript: ">=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >=3.0.0-dev || >= 3.1.0-dev || >= 3.2.0-dev"
-  bin:
-    tslint: ./bin/tslint
-  checksum: b11ee16c012a65bce260de9d004de4716d8a35baa9658a42d501d8f9e1276e055e68a2bf40a4d5a225e79edceef5f0af9ac8a6259217536c54484bfefd1c2237
-  languageName: node
-  linkType: hard
-
-"tsutils@npm:^2.29.0":
-  version: 2.29.0
-  resolution: "tsutils@npm:2.29.0"
-  dependencies:
-    tslib: ^1.8.1
-  peerDependencies:
-    typescript: ">=2.1.0 || >=2.1.0-dev || >=2.2.0-dev || >=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >= 3.0.0-dev || >= 3.1.0-dev"
-  checksum: 5d681bab79979e3b4d61dd0d1e6c1dd6a79b5608cf8dec5a5ee599ac8b5921107870bcf037140b8dce85a479df78aee0ffa61c1b3d8e5660748af36551946616
   languageName: node
   linkType: hard
 
