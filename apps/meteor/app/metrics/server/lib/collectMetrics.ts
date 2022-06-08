@@ -15,21 +15,23 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { metrics } from './metrics';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
 
-Facts.incrementServerFact = function (pkg, fact, increment) {
+Facts.incrementServerFact = function (pkg: 'pkg' | 'fact', fact: string | number, increment: number): void {
 	metrics.meteorFacts.inc({ pkg, fact }, increment);
 };
 
-const setPrometheusData = async () => {
+const setPrometheusData = async (): Promise<void> => {
 	metrics.info.set(
 		{
 			version: Info.version,
-			unique_id: settings.get('uniqueID'),
-			site_url: settings.get('Site_Url'),
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			unique_id: settings.get<string>('uniqueID'),
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			site_url: settings.get<string>('Site_Url'),
 		},
 		1,
 	);
 
-	const sessions = Array.from(Meteor.server.sessions.values());
+	const sessions = Array.from<{ userId: string }>(Meteor.server.sessions.values());
 	const authenticatedSessions = sessions.filter((s) => s.userId);
 	metrics.ddpSessions.set(Meteor.server.sessions.size);
 	metrics.ddpAuthenticatedSessions.set(authenticatedSessions.length);
@@ -53,7 +55,7 @@ const setPrometheusData = async () => {
 	metrics.version.set({ version: statistics.version }, 1);
 	metrics.migration.set(getControl().version);
 	metrics.instanceCount.set(statistics.instanceCount);
-	metrics.oplogEnabled.set({ enabled: statistics.oplogEnabled }, 1);
+	metrics.oplogEnabled.set({ enabled: `${statistics.oplogEnabled}` }, 1);
 
 	// User statistics
 	metrics.totalUsers.set(statistics.totalUsers);
@@ -85,17 +87,17 @@ const app = connect();
 // const compression = require('compression');
 // app.use(compression());
 
-app.use('/metrics', (req, res) => {
+app.use('/metrics', (_req, res) => {
 	res.setHeader('Content-Type', 'text/plain');
-	const data = client.register.metrics();
+	client.register.metrics().then((data) => {
+		metrics.metricsRequests.inc();
+		metrics.metricsSize.set(data.length);
 
-	metrics.metricsRequests.inc();
-	metrics.metricsSize.set(data.length);
-
-	res.end(data);
+		res.end(data);
+	});
 });
 
-app.use('/', (req, res) => {
+app.use('/', (_req, res) => {
 	const html = `<html>
 		<head>
 			<title>Rocket.Chat Prometheus Exporter</title>
@@ -112,8 +114,8 @@ app.use('/', (req, res) => {
 
 const server = http.createServer(app);
 
-let timer;
-let resetTimer;
+let timer: number;
+let resetTimer: number;
 let defaultMetricsInitiated = false;
 let gcStatsInitiated = false;
 const was = {
@@ -122,19 +124,19 @@ const was = {
 	resetInterval: 0,
 	collectGC: false,
 };
-const updatePrometheusConfig = async () => {
+const updatePrometheusConfig = async (): Promise<void> => {
 	const is = {
 		port: process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port'),
-		enabled: settings.get('Prometheus_Enabled'),
-		resetInterval: settings.get('Prometheus_Reset_Interval'),
-		collectGC: settings.get('Prometheus_Garbage_Collector'),
+		enabled: settings.get<boolean>('Prometheus_Enabled'),
+		resetInterval: settings.get<number>('Prometheus_Reset_Interval'),
+		collectGC: settings.get<boolean>('Prometheus_Garbage_Collector'),
 	};
 
 	if (Object.values(is).some((s) => s == null)) {
 		return;
 	}
 
-	if (Object.entries(is).every(([k, v]) => v === was[k])) {
+	if (Object.entries(is).every(([k, v]) => v === was[k as keyof typeof was])) {
 		return;
 	}
 
@@ -162,8 +164,11 @@ const updatePrometheusConfig = async () => {
 	Meteor.clearInterval(resetTimer);
 	if (is.resetInterval) {
 		resetTimer = Meteor.setInterval(() => {
-			client.register.getMetricsAsArray().forEach((metric) => {
-				metric.hashMap = {};
+			client.register.getMetricsAsArray().then((metrics) => {
+				metrics.forEach((metric) => {
+					// @ts-expect-error
+					metric.hashMap = {};
+				});
 			});
 		}, is.resetInterval);
 	}
@@ -177,7 +182,7 @@ const updatePrometheusConfig = async () => {
 		}
 		if (is.collectGC && gcStatsInitiated === false) {
 			gcStatsInitiated = true;
-			gcStats()();
+			gcStats(client.register)();
 		}
 	} catch (error) {
 		SystemLogger.error(error);

@@ -4848,6 +4848,7 @@ __metadata:
     "@types/object-path": ^0.11.1
     "@types/parseurl": ^1.3.1
     "@types/photoswipe": ^4.1.2
+    "@types/prometheus-gc-stats": ^0.6.2
     "@types/proxy-from-env": ^1.0.1
     "@types/psl": ^1.1.0
     "@types/react": ~17.0.42
@@ -7658,6 +7659,13 @@ __metadata:
   version: 1.0.1
   resolution: "@types/pretty-hrtime@npm:1.0.1"
   checksum: a6cdee417eea6f7af914e4fcd13e05822864ce10b5d7646525632e86d69b79123eec55a5d3fff0155ba46b61902775e1644bcb80e1e4dffdac28e7febb089083
+  languageName: node
+  linkType: hard
+
+"@types/prometheus-gc-stats@npm:^0.6.2":
+  version: 0.6.2
+  resolution: "@types/prometheus-gc-stats@npm:0.6.2"
+  checksum: 403b3dbd792b83e592376e2002260cf57fb18f98c8b8528a24dc65e545cb8d0e9bf9941dc28edfa397b670b9a7336913da991005ef0278611209dde9b51406db
   languageName: node
   linkType: hard
 
