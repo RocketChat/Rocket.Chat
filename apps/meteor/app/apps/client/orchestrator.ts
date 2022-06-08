@@ -84,9 +84,10 @@ class AppClientOrchestrator {
 	}
 
 	public async getApps(): Promise<App[]> {
-		const { apps } = await APIClient.get('apps');
+		const { apps } = await APIClient.get('/v1/apps');
 		return apps;
 	}
+
 
 	public async getAppsFromMarketplace(): Promise<App[]> {
 		const appsOverviews: App[] = await APIClient.get('apps', { marketplace: 'true' });
@@ -104,22 +105,22 @@ class AppClientOrchestrator {
 	}
 
 	public async getAppsOnBundle(bundleId: string): Promise<App[]> {
-		const { apps } = await APIClient.get(`apps/bundles/${bundleId}/apps`);
+		const { apps } = await APIClient.get(`/v1/apps/bundles/${bundleId}/apps`);
 		return apps;
 	}
 
 	public async getAppsLanguages(): Promise<IAppLanguage> {
-		const { apps } = await APIClient.get('apps/languages');
+		const { apps } = await APIClient.get('/v1/apps/languages');
 		return apps;
 	}
 
 	public async getApp(appId: string): Promise<App> {
-		const { app } = await APIClient.get(`apps/${appId}`);
+		const { app } = await APIClient.get(`/v1/apps/${appId}`);
 		return app;
 	}
 
 	public async getAppFromMarketplace(appId: string, version: string): Promise<App> {
-		const { app } = await APIClient.get(`apps/${appId}`, {
+		const { app } = await APIClient.get(`/v1/apps/${appId}`, {
 			marketplace: 'true',
 			version,
 		});
@@ -127,7 +128,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getLatestAppFromMarketplace(appId: string, version: string): Promise<App> {
-		const { app } = await APIClient.get(`apps/${appId}`, {
+		const { app } = await APIClient.get(`/v1/apps/${appId}`, {
 			marketplace: 'true',
 			update: 'true',
 			appVersion: version,
@@ -136,27 +137,27 @@ class AppClientOrchestrator {
 	}
 
 	public async getAppSettings(appId: string): Promise<ISettingsReturn> {
-		const { settings } = await APIClient.get(`apps/${appId}/settings`);
+		const { settings } = await APIClient.get(`/v1/apps/${appId}/settings`);
 		return settings;
 	}
 
 	public async setAppSettings(appId: string, settings: ISettingsPayload): Promise<ISettingsSetReturn> {
-		const { updated } = await APIClient.post(`apps/${appId}/settings`, undefined, { settings });
+		const { updated } = await APIClient.post(`/v1/apps/${appId}/settings`, undefined, { settings });
 		return updated;
 	}
 
 	public async getAppApis(appId: string): Promise<IApiEndpointMetadata[]> {
-		const { apis } = await APIClient.get(`apps/${appId}/apis`);
+		const { apis } = await APIClient.get(`/v1/apps/${appId}/apis`);
 		return apis;
 	}
 
 	public async getAppLanguages(appId: string): Promise<IAppStorageItem['languageContent']> {
-		const { languages } = await APIClient.get(`apps/${appId}/languages`);
+		const { languages } = await APIClient.get(`/v1/apps/${appId}/languages`);
 		return languages;
 	}
 
 	public async installApp(appId: string, version: string, permissionsGranted: IPermission[]): Promise<IDeletedInstalledApp> {
-		const { app } = await APIClient.post('apps/', {
+		const { app } = await APIClient.post('/v1/apps/', {
 			appId,
 			marketplace: true,
 			version,
@@ -166,7 +167,7 @@ class AppClientOrchestrator {
 	}
 
 	public async updateApp(appId: string, version: string, permissionsGranted: IPermission[]): Promise<App> {
-		const { app } = await APIClient.post(`apps/${appId}`, {
+		const { app } = await APIClient.post(`/v1/apps/${appId}`, {
 			appId,
 			marketplace: true,
 			version,
@@ -180,11 +181,11 @@ class AppClientOrchestrator {
 	}
 
 	public syncApp(appId: string): IAppSynced {
-		return APIClient.post(`apps/${appId}/sync`);
+		return APIClient.post(`/v1/apps/${appId}/sync`);
 	}
 
 	public async setAppStatus(appId: string, status: AppStatus): Promise<string> {
-		const { status: effectiveStatus } = await APIClient.post(`apps/${appId}/status`, { status });
+		const { status: effectiveStatus } = await APIClient.post(`/v1/apps/${appId}/status`, { status });
 		return effectiveStatus;
 	}
 
@@ -197,7 +198,7 @@ class AppClientOrchestrator {
 	}
 
 	public buildExternalUrl(appId: string, purchaseType = 'buy', details = false): IAppExternalURL {
-		return APIClient.get('apps', {
+		return APIClient.get('/v1/apps', {
 			buildExternalUrl: 'true',
 			appId,
 			purchaseType,
@@ -206,7 +207,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getCategories(): Promise<ICategory[]> {
-		const categories = await APIClient.get('apps', { categories: 'true' });
+		const categories = await APIClient.get('/v1/apps', { categories: 'true' });
 		return categories;
 	}
 

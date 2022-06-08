@@ -28,31 +28,22 @@ const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	path: TPath,
 	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
 ): Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>> => {
-	const api = path[0] === '/' ? APIClient : APIClient.v1;
-	const endpointPath = path[0] === '/' ? path.slice(1) : path;
-
 	switch (method) {
 		case 'GET':
-			return api.get(endpointPath, params);
+			return APIClient.get(path as Parameters<typeof APIClient.get>[0], params) as any;
 
 		case 'POST':
-			return api.post(endpointPath, {}, params);
+			return APIClient.post(path as Parameters<typeof APIClient.post>[0], params) as ReturnType<typeof APIClient.post>;
 
 		case 'DELETE':
-			return api.delete(endpointPath, params);
+			return APIClient.delete(path as Parameters<typeof APIClient.delete>[0], params) as ReturnType<typeof APIClient.delete>;
 
 		default:
 			throw new Error('Invalid HTTP method');
 	}
 };
 
-const uploadToEndpoint = (endpoint: string, params: any, formData: any): Promise<UploadResult> => {
-	if (endpoint[0] === '/') {
-		return APIClient.upload(endpoint.slice(1), params, formData).promise;
-	}
-
-	return APIClient.v1.upload(endpoint, params, formData).promise;
-};
+const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> => APIClient.post(endpoint, formData);
 
 const getStream = (streamName: string, options: {} = {}): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
 	const streamer = Meteor.StreamerCentral.instances[streamName]

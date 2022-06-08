@@ -8,15 +8,13 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void }): ReactElement => {
 	const t = useTranslation();
-	const deleteAction = useEndpointAction('DELETE', `livechat/users/manager/${_id}`);
+	const deleteAction = useEndpointAction('DELETE', `/v1/livechat/users/manager/${_id}`);
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleRemoveClick = useMutableCallback(async () => {
-		const result = await deleteAction();
-		if (result?.success === true) {
-			reload();
-		}
+		await deleteAction();
+		reload();
 	});
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
