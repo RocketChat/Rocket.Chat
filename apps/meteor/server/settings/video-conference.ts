@@ -35,6 +35,15 @@ settingsRegistry.addGroup('Video_Conference', function () {
 		public: true,
 	});
 
+	this.add('VideoConf_Enable_Groups', false, {
+		type: 'boolean',
+		enableQuery: {
+			_id: 'VideoConf_Enabled',
+			value: true,
+		},
+		public: true,
+	});
+
 	this.add('VideoConf_Enable_Teams', false, {
 		type: 'boolean',
 		enableQuery: {
@@ -42,5 +51,15 @@ settingsRegistry.addGroup('Video_Conference', function () {
 			value: true,
 		},
 		public: true,
+	});
+
+	// Keeping those untouched until we decide how to handle stats
+	this.add('Jitsi_Click_To_Join_Count', 0, {
+		type: 'int',
+		hidden: true,
+	});
+	this.add('Jitsi_Start_SlashCommands_Count', 0, {
+		type: 'int',
+		hidden: true,
 	});
 });

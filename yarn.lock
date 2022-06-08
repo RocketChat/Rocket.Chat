@@ -4224,7 +4224,7 @@ __metadata:
 
 "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
   version: 1.33.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=b4e0c9&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
+  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=58626d&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
   dependencies:
     adm-zip: ^0.4.9
     cryptiles: ^4.1.3
@@ -4232,7 +4232,7 @@ __metadata:
     semver: ^5.5.0
     stack-trace: 0.0.10
     uuid: ^3.2.1
-  checksum: c2e92560b20542dce11c3d7905a679050193577bf9d8734f0dd563826ed63c522eafee8df094890ac73ddba8ac9bc049fa7edc466602d3372014aa9e9d5642bf
+  checksum: fb77bcc3294aadd46c089f5eea2f6e29e7102038e5b1bef25827eb5940bb1743780258a3012baf445ea3eb6449043e142aa8d1c91ba604f99dd8e06c0cf517c3
   languageName: node
   linkType: hard
 
