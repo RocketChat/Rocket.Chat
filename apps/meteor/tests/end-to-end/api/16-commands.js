@@ -70,6 +70,24 @@ describe('[Commands]', function () {
 				})
 				.end(done);
 		});
+		it('should return a list of commands even requested with count and offset params', (done) => {
+			request
+				.get(api('commands.list'))
+				.set(credentials)
+				.query({
+					count: 5,
+					offset: 0,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('commands').and.to.be.an('array');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/commands.run]', () => {
