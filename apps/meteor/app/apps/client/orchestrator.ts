@@ -88,7 +88,6 @@ class AppClientOrchestrator {
 		return apps;
 	}
 
-
 	public async getAppsFromMarketplace(): Promise<App[]> {
 		const appsOverviews: App[] = await APIClient.get('apps', { marketplace: 'true' });
 		return appsOverviews.map((app: App) => {
