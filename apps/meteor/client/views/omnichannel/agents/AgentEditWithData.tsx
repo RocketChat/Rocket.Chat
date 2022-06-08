@@ -14,17 +14,17 @@ type AgentEditWithDataProps = {
 
 const AgentEditWithData = ({ uid, reload }: AgentEditWithDataProps): ReactElement => {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/users/agent/${uid}`);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/users/agent/${uid}`);
 	const {
 		value: userDepartments,
 		phase: userDepartmentsState,
 		error: userDepartmentsError,
-	} = useEndpointData(`livechat/agents/${uid}/departments`);
+	} = useEndpointData(`/v1/livechat/agents/${uid}/departments`);
 	const {
 		value: availableDepartments,
 		phase: availableDepartmentsState,
 		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
+	} = useEndpointData('/v1/livechat/department');
 
 	if (
 		[state, availableDepartmentsState, userDepartmentsState].includes(AsyncStatePhase.LOADING) ||

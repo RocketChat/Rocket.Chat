@@ -13,7 +13,7 @@ const fields = {};
 export const MessageListProvider: FC<{
 	rid: IRoom['_id'];
 }> = memo(function MessageListProvider({ rid, ...props }) {
-	const reactToMessage = useEndpoint('POST', 'chat.react');
+	const reactToMessage = useEndpoint('POST', '/v1/chat.react');
 	const user = useUser();
 	const uid = user?._id;
 	const username = user?.username;
