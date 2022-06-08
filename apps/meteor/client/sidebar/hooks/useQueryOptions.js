@@ -10,8 +10,7 @@ export const useQueryOptions = () => {
 			sort: {
 				...(sortBy === 'activity' && { lm: -1 }),
 				...(sortBy !== 'activity' && {
-					...(showRealName && { lowerCaseFName: /descending/.test(sortBy) ? -1 : 1 }),
-					...(!showRealName && { lowerCaseName: /descending/.test(sortBy) ? -1 : 1 }),
+					...(showRealName ? { lowerCaseFName: 1 } : { lowerCaseName: 1 }),
 				}),
 			},
 		}),
