@@ -2,7 +2,7 @@ import type { ITeam, IUser } from '@rocket.chat/core-typings';
 
 export type UsersEndpoints = {
 	'users.info': {
-		GET: (params: { userId?: IUser['_id']; userName?: IUser['username'] }) => {
+		GET: (params: { userId?: IUser['_id']; username?: IUser['username'] }) => {
 			user: IUser;
 		};
 	};
