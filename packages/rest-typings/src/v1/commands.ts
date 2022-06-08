@@ -5,7 +5,7 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 export type CommandsEndpoints = {
 	'commands.get': {
 		GET: (params: { command: string }) => {
-			command: SlashCommand;
+			command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
 		};
 	};
 	'commands.list': {
@@ -14,7 +14,7 @@ export type CommandsEndpoints = {
 				fields?: string;
 			}>,
 		) => PaginatedResult<{
-			commands: SlashCommand[];
+			commands: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>[];
 		}>;
 	};
 	'commands.run': {
