@@ -1,4 +1,4 @@
-import { IUActionButtonWhen, IUIActionButton } from '@rocket.chat/apps-engine/definition/ui/IUIActionButtonDescriptor';
+import { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engine/definition/ui/IUIActionButtonDescriptor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
@@ -6,18 +6,28 @@ import { Meteor } from 'meteor/meteor';
 import { SideNav } from './SideNav';
 import { applyDropdownActionButtonFilters } from '../../../ui-message/client/actionButtons/lib/applyButtonFilters';
 
-export interface IAccountBoxItem extends Omit<IUIActionButton, 'when'> {
+export interface IAppAccountBoxItem extends IUIActionButton {
 	name: string;
 	icon?: string;
 	href?: string;
 	sideNav?: string;
 	isAppButtonItem?: boolean;
-	subItems?: [IAccountBoxItem];
+	subItems?: [IAppAccountBoxItem];
 	when?: Omit<IUActionButtonWhen, 'roomTypes' | 'messageActionContext'>;
 }
 
+type AccountBoxItem = {
+	name: string;
+	icon: string;
+	href: string;
+	sideNav?: string;
+	condition: () => boolean;
+};
+
+export const isAppAccountBoxItem = (item: IAppAccountBoxItem | AccountBoxItem): item is IAppAccountBoxItem => 'isAppButtonItem' in item;
+
 export class AccountBoxBase {
-	private items = new ReactiveVar([]);
+	private items = new ReactiveVar<IAppAccountBoxItem[]>([]);
 
 	private status = 0;
 
@@ -48,25 +58,31 @@ export class AccountBoxBase {
 		this.status = 0;
 	}
 
-	public async addItem(newItem: IAccountBoxItem): Promise<void> {
+	public async addItem(newItem: IAppAccountBoxItem): Promise<void> {
 		Tracker.nonreactive(() => {
 			const actual = this.items.get();
-			actual.push(newItem as never);
+			actual.push(newItem);
 			this.items.set(actual);
 		});
 	}
 
-	public async deleteItem(item: IAccountBoxItem): Promise<void> {
+	public async deleteItem(item: IAppAccountBoxItem): Promise<void> {
 		Tracker.nonreactive(() => {
 			const actual = this.items.get();
-			const itemIndex = actual.findIndex((actualItem: IAccountBoxItem) => actualItem.appId === item.appId);
+			const itemIndex = actual.findIndex((actualItem: IAppAccountBoxItem) => actualItem.appId === item.appId);
 			actual.splice(itemIndex, 1);
 			this.items.set(actual);
 		});
 	}
 
-	public getItems(): IAccountBoxItem[] {
-		return this.items.get().filter((item: IAccountBoxItem) => applyDropdownActionButtonFilters(item));
+	public getItems(): (IAppAccountBoxItem | AccountBoxItem)[] {
+		return this.items.get().filter((item: IAppAccountBoxItem | AccountBoxItem) => {
+			if ('condition' in item) {
+				return item.condition();
+			}
+
+			return applyDropdownActionButtonFilters(item);
+		});
 	}
 }
 
