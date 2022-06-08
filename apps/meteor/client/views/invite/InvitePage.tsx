@@ -36,9 +36,9 @@ const InvitePage = (): ReactElement => {
 
 			try {
 				const { valid } = await APIClient.v1.post<
-					OperationParams<'POST', '/v1/validateInviteToken'>,
+					OperationParams<'POST', 'validateInviteToken'>,
 					never,
-					OperationResult<'POST', '/v1/validateInviteToken'>
+					OperationResult<'POST', 'validateInviteToken'>
 				>('validateInviteToken', { token });
 
 				return valid;
@@ -65,9 +65,9 @@ const InvitePage = (): ReactElement => {
 
 				try {
 					const result = await APIClient.v1.post<
-						OperationParams<'POST', '/v1/useInviteToken'>,
+						OperationParams<'POST', 'useInviteToken'>,
 						never,
-						OperationResult<'POST', '/v1/useInviteToken'>
+						OperationResult<'POST', 'useInviteToken'>
 					>('useInviteToken', { token });
 					if (!result?.room.name) {
 						dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
