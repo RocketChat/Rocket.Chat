@@ -1,0 +1,6 @@
+{
+	"bbb_url": "Url",
+	"bbb_url_description": "The Url where BBB is running;",
+	"bbb_shared_secret": "Shared Secret",
+	"bbb_shared_secret_description": ""
+}

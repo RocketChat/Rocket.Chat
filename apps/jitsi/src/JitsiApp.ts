@@ -7,56 +7,62 @@ import { JitsiSlashCommand } from './slashCommand';
 import { JitsiProvider } from './videoConfProvider';
 
 export class JitsiApp extends App {
-	private provider: JitsiProvider;
+	private provider: JitsiProvider | undefined;
 
 	protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
 		await configuration.slashCommands.provideSlashCommand(new JitsiSlashCommand());
 
 		await Promise.all(settings.map((setting) => configuration.settings.provideSetting(setting)));
 
-		if (!this.provider) {
-		    this.provider = new JitsiProvider();
-		}
-		await configuration.videoConfProviders.provideVideoConfProvider(this.provider);
+		const provider = this.getProvider();
+		await configuration.videoConfProviders.provideVideoConfProvider(provider);
 	}
 
 	public async onEnable(environmentRead: IEnvironmentRead, configModify: IConfigurationModify): Promise<boolean> {
 		const settings = environmentRead.getSettings();
 
-		if (!this.provider) {
-		    this.provider = new JitsiProvider();
-		}
+		const provider = this.getProvider();
 
-		this.provider.domain = await settings.getValueById(AppSetting.JitsiDomain);
-		this.provider.titlePrefix = await settings.getValueById(AppSetting.JitsiTitlePrefix);
-		this.provider.titleSuffix = await settings.getValueById(AppSetting.JitsiTitleSuffix);
-		this.provider.ssl = await settings.getValueById(AppSetting.JitsiSSL);
-		this.provider.idType = await settings.getValueById(AppSetting.JitsiRoomIdType);
-		this.provider.chromeExtensionId = await settings.getValueById(AppSetting.JitsiChromeExtension);
+		provider.domain = await settings.getValueById(AppSetting.JitsiDomain);
+		provider.titlePrefix = await settings.getValueById(AppSetting.JitsiTitlePrefix);
+		provider.titleSuffix = await settings.getValueById(AppSetting.JitsiTitleSuffix);
+		provider.ssl = await settings.getValueById(AppSetting.JitsiSSL);
+		provider.idType = await settings.getValueById(AppSetting.JitsiRoomIdType);
+		provider.chromeExtensionId = await settings.getValueById(AppSetting.JitsiChromeExtension);
 
 		return true;
 	}
 
 	public async onSettingUpdated(setting: ISetting, configModify: IConfigurationModify, read: IRead, http: IHttp): Promise<void> {
+		const provider = this.getProvider();
+
 		switch (setting.id) {
 			case AppSetting.JitsiDomain:
-				this.provider.domain = setting.value;
+				provider.domain = setting.value;
 				break;
 			case AppSetting.JitsiTitlePrefix:
-				this.provider.titlePrefix = setting.value;
+				provider.titlePrefix = setting.value;
 				break;
 			case AppSetting.JitsiTitleSuffix:
-				this.provider.titleSuffix = setting.value;
+				provider.titleSuffix = setting.value;
 				break;
 			case AppSetting.JitsiSSL:
-				this.provider.ssl = setting.value;
+				provider.ssl = setting.value;
 				break;
 			case AppSetting.JitsiRoomIdType:
-				this.provider.idType = setting.value;
+				provider.idType = setting.value;
 				break;
 			case AppSetting.JitsiChromeExtension:
-				this.provider.chromeExtensionId = setting.value;
+				provider.chromeExtensionId = setting.value;
 				break;
 		}
+	}
+
+	private getProvider(): JitsiProvider {
+		if (!this.provider) {
+			this.provider = new JitsiProvider();
+		}
+
+		return this.provider;
 	}
 }

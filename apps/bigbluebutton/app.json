@@ -1,0 +1,15 @@
+{
+	"id": "",
+	"version": "0.0.1",
+	"requiredApiVersion": "^1.19.0",
+	"iconFile": "icon.png",
+	"author": {
+		"name": "Rocket.Chat Technologies Corp.",
+		"homepage": "https://github.com/RocketChat/Rocket.Chat",
+		"support": "https://github.com/RocketChat/Rocket.Chat"
+	},
+	"name": "BigBlueButton",
+	"nameSlug": "BigBlueButton",
+	"classFile": "src/BigBlueButtonApp.ts",
+	"description": ""
+}

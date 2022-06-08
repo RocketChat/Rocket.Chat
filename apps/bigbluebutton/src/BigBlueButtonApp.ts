@@ -5,43 +5,36 @@ import type {
 	IEnvironmentRead,
 	IHttp,
 	ILogger,
-	IRead,
+    IRead,
 } from '@rocket.chat/apps-engine/definition/accessors';
-import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import { ServerConfigurationEndpoint } from './endpoints/ServiceConfiguration';
-import { AppSetting, settings } from './settings';
-import { PexipProvider } from './videoConfProvider';
 
-export class PexipApp extends App {
-	private provider: PexipProvider | undefined;
+import { AppSetting, settings } from './settings';
+import { BBBProvider } from './videoConfProvider';
+
+export class BigBlueButtonApp extends App {
+	private provider: BBBProvider | undefined;
 
 	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
 		super(info, logger, accessors);
 	}
 
-	public async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+	protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
 		await Promise.all(settings.map((setting) => configuration.settings.provideSetting(setting)));
 
 		const provider = this.getProvider();
 		await configuration.videoConfProviders.provideVideoConfProvider(provider);
-
-		await configuration.api.provideApi({
-			visibility: ApiVisibility.PUBLIC,
-			security: ApiSecurity.UNSECURE,
-			endpoints: [
-				new ServerConfigurationEndpoint(this),
-			],
-		});
 	}
 
 	public async onEnable(environmentRead: IEnvironmentRead, configModify: IConfigurationModify): Promise<boolean> {
 		const settings = environmentRead.getSettings();
 
 		const provider = this.getProvider();
-		provider.baseUrl = await settings.getValueById(AppSetting.PexipBaseUrl);
+
+		provider.url = await settings.getValueById(AppSetting.Url);
+		provider.secret = await settings.getValueById(AppSetting.Secret);
 
 		return true;
 	}
@@ -50,15 +43,18 @@ export class PexipApp extends App {
 		const provider = this.getProvider();
 
 		switch (setting.id) {
-			case AppSetting.PexipBaseUrl:
-				provider.baseUrl = setting.value;
+			case AppSetting.Url:
+				provider.url = setting.value;
+				break;
+			case AppSetting.Secret:
+				provider.secret = setting.value;
 				break;
 		}
 	}
 
-	private getProvider(): PexipProvider {
+	private getProvider(): BBBProvider {
 		if (!this.provider) {
-			this.provider = new PexipProvider();
+			this.provider = new BBBProvider(this);
 		}
 
 		return this.provider;
