@@ -148,3 +148,15 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'video-conference.providers',
+	{ authRequired: true },
+	{
+		async get() {
+			const data = await VideoConf.listProviders();
+
+			return API.v1.success({ data });
+		},
+	},
+);

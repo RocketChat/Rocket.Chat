@@ -39,4 +39,8 @@ export type VideoConferenceEndpoints = {
 	'video-conference.list': {
 		GET: (params: VideoConfListProps) => PaginatedResult<{ data: VideoConference[] }>;
 	};
+
+	'video-conference.providers': {
+		GET: () => { data: { key: string; label: string }[] };
+	};
 };
