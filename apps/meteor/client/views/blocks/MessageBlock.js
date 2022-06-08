@@ -5,7 +5,7 @@ import { useSetModal, useUserRoom } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-import { useBlockRendered } from '../../components/Message/hooks/useBlockRendered';
+import { useBlockRendered } from '../../components/message/hooks/useBlockRendered';
 import { useJoinCall } from '../../contexts/VideoConfPopupContext';
 import { renderMessageBody } from '../../lib/utils/renderMessageBody';
 import JoinVideoConfModal from '../room/contextualBar/VideoConference/JoinVideoConfModal';
