@@ -1557,8 +1557,6 @@ settingsRegistry.addGroup('Layout', function () {
 				},
 				code: 'text/html',
 				multiline: true,
-				// @TODO -> once Layout_Custom_Body is available, set blocked according to it's value.
-				blocked: false,
 				public: true,
 			},
 		);
