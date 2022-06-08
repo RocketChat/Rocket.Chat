@@ -1,20 +1,38 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
-export type DmCloseProps = {
-	roomId: string;
-};
+export type DmCloseProps =
+	| {
+			roomId: string;
+	  }
+	| { roomName: string };
 
-const DmClosePropsSchema: JSONSchemaType<DmCloseProps> = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
+const DmClosePropsSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
 		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
 };
 
-export const isDmCloseProps = ajv.compile(DmClosePropsSchema);
+export const isDmCloseProps = ajv.compile<DmCloseProps>(DmClosePropsSchema);
