@@ -61,7 +61,7 @@ Template.livechatReadOnly.events({
 		event.stopPropagation();
 
 		try {
-			const { success } = (await APIClient.v1.get(`livechat/room.join?roomId=${this.rid}`)) || {};
+			const { success } = (await APIClient.get(`/v1/livechat/room.join?roomId=${this.rid}`)) || {};
 			if (!success) {
 				throw new Meteor.Error('error-join-room', 'Error joining room');
 			}
@@ -99,13 +99,13 @@ Template.livechatReadOnly.onCreated(async function () {
 
 	this.loadRoomAndInquiry = async (roomId) => {
 		this.preparing.set(true);
-		const { inquiry } = await APIClient.v1.get(`livechat/inquiries.getOne?roomId=${roomId}`);
+		const { inquiry } = await APIClient.get(`/v1/livechat/inquiries.getOne?roomId=${roomId}`);
 		this.inquiry.set(inquiry);
 		if (inquiry && inquiry._id) {
 			inquiryDataStream.on(inquiry._id, this.updateInquiry);
 		}
 
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${roomId}`);
+		const { room } = await APIClient.get(`/v1/rooms.info?roomId=${roomId}`);
 		this.room.set(room);
 		if (room && room._id) {
 			RoomManager.roomStream.on(roomId, (room) => this.room.set(room));

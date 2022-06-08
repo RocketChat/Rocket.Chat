@@ -26,7 +26,7 @@ export type ChannelsEndpoints = {
 			members: IUser[];
 		}>;
 	};
-	'channels.history': {
+	'/v1/channels.history': {
 		GET: (
 			params: PaginatedRequest<
 				| {
@@ -48,13 +48,13 @@ export type ChannelsEndpoints = {
 			messages: IMessage[];
 		}>;
 	};
-	'channels.archive': {
+	'/v1/channels.archive': {
 		POST: (params: ChannelsArchiveProps) => void;
 	};
-	'channels.unarchive': {
+	'/v1/channels.unarchive': {
 		POST: (params: ChannelsUnarchiveProps) => void;
 	};
-	'channels.create': {
+	'/v1/channels.create': {
 		POST: (params: {
 			name: string;
 			members: string[];
@@ -68,7 +68,7 @@ export type ChannelsEndpoints = {
 			group: Partial<IRoom>;
 		};
 	};
-	'channels.convertToTeam': {
+	'/v1/channels.convertToTeam': {
 		POST: (params: { channelId: string; channelName: string }) => {
 			team: ITeam;
 		};
@@ -98,7 +98,7 @@ export type ChannelsEndpoints = {
 	'channels.kick': {
 		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
 	};
-	'channels.delete': {
+	'/v1/channels.delete': {
 		POST: (params: ChannelsDeleteProps) => void;
 	};
 	'channels.leave': {
@@ -125,12 +125,12 @@ export type ChannelsEndpoints = {
 	'channels.roles': {
 		GET: (params: { roomId: string } | { roomName: string }) => { roles: IGetRoomRoles[] };
 	};
-	'channels.messages': {
+	'/v1/channels.messages': {
 		GET: (params: ChannelsMessagesProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
-	'channels.open': {
+	'/v1/channels.open': {
 		POST: (params: ChannelsOpenProps) => void;
 	};
 	'channels.setReadOnly': {
@@ -138,20 +138,20 @@ export type ChannelsEndpoints = {
 			channel: IRoom;
 		};
 	};
-	'channels.addAll': {
+	'/v1/channels.addAll': {
 		POST: (params: ChannelsAddAllProps) => {
 			channel: IRoom;
 		};
 	};
-	'channels.anonymousread': {
+	'/v1/channels.anonymousread': {
 		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
-	'channels.setAnnouncement': {
+	'/v1/channels.setAnnouncement': {
 		POST: (params: ChannelsSetAnnouncementProps) => {};
 	};
-	'channels.getAllUserMentionsByChannel': {
+	'/v1/channels.getAllUserMentionsByChannel': {
 		GET: (params: ChannelsGetAllUserMentionsByChannelProps) => PaginatedResult<{
 			mentions: IUser[];
 		}>;
