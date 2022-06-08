@@ -12,7 +12,7 @@ import {
 	WithId,
 	WriteOpResult,
 } from 'mongodb';
-import { IUpload as T } from '@rocket.chat/core-typings';
+import { IUpload, IUpload as T } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification, InsertionModel } from './BaseRaw';
 
@@ -83,7 +83,7 @@ export class UploadsRaw extends BaseRaw<T> {
 	}
 
 	async insertFileInit(userId: string, store: string, file: { name: string }, extra: object): Promise<InsertOneWriteOpResult<WithId<T>>> {
-		const fileData = {
+		const fileData: IUpload = {
 			userId,
 			store,
 			complete: false,
