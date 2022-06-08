@@ -59,7 +59,7 @@ const EmailInboxTable = (): ReactElement => {
 		[router],
 	);
 
-	const { phase, value: { emailInboxes = [], count = 0 } = {} } = useEndpointData('email-inbox.list', query);
+	const { phase, value: { emailInboxes = [], count = 0 } = {} } = useEndpointData('/v1/email-inbox.list', query);
 
 	return (
 		<>

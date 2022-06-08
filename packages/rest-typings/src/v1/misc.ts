@@ -171,7 +171,7 @@ const MethodCallAnonSchema = {
 export const isMethodCallAnonProps = ajv.compile<MethodCallAnon>(MethodCallAnonSchema);
 
 export type MiscEndpoints = {
-	'stdout.queue': {
+	'/v1/stdout.queue': {
 		GET: () => {
 			queue: {
 				id: string;

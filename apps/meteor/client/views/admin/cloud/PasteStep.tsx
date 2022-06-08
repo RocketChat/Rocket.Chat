@@ -18,7 +18,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 		setCloudKey(e.currentTarget.value);
 	};
 
-	const registerManually = useEndpoint('POST', 'cloud.manualRegister');
+	const registerManually = useEndpoint('POST', '/v1/cloud.manualRegister');
 
 	const handleFinishButtonClick = async (): Promise<void> => {
 		setLoading(true);

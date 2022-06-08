@@ -8,13 +8,13 @@ const ajv = new Ajv({
 export type OauthAppsGetParams = { clientId: string } | { appId: string };
 
 export type OAuthAppsEndpoint = {
-	'oauth-apps.list': {
+	'/v1/oauth-apps.list': {
 		GET: (params: { uid: IUser['_id'] }) => {
 			oauthApps: IOAuthApps[];
 		};
 	};
 
-	'oauth-apps.get': {
+	'/v1/oauth-apps.get': {
 		GET: (params: OauthAppsGetParams) => {
 			oauthApp: IOAuthApps;
 		};
