@@ -13,8 +13,6 @@ Accounts.onLogin((info: ILoginAttempt) => {
 		connection: { httpHeaders },
 	} = info;
 
-	// Sometimes there is no resume token
-	// TODO: check what case triggers onLogin that can cause a nonexistent resume token in methodArguments
 	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
 	const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
 
