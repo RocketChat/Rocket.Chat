@@ -531,9 +531,6 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			if (!rid) {
-				throw new Meteor.Error('The required "rid" query param is missing.');
-			}
 			if (!settings.get('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 			}
