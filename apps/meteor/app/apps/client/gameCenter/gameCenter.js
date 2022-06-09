@@ -8,7 +8,7 @@ import { handleError } from '../../../../client/lib/utils/handleError';
 
 const getExternalComponents = async (instance) => {
 	try {
-		const { externalComponents } = await APIClient.get('apps/externalComponents');
+		const { externalComponents } = await APIClient.get('/apps/externalComponents');
 		instance.games.set(externalComponents);
 	} catch (e) {
 		handleError(e);

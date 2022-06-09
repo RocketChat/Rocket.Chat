@@ -22,9 +22,8 @@ export const useAgentsList = (
 	const t = useTranslation();
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatAgent>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatAgent>()), []);
-	const endpoint = 'livechat/users/agent';
 
-	const getAgents = useEndpoint('GET', endpoint);
+	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
 
 	useComponentDidUpdate(() => {
 		options && reload();
