@@ -72,7 +72,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 
 	return (
 		<>
-			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled }, index) => {
+			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault }, index) => {
 				const props = {
 					id,
 					icon,
@@ -83,7 +83,6 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					'data-toolbox': index,
 					action,
 					'key': id,
-					disabled,
 				};
 				if (renderAction) {
 					return renderAction(props);

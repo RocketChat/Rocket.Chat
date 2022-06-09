@@ -1,3 +1,4 @@
+import { isIRoomFederated } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
@@ -16,7 +17,6 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
-import { Federation } from '../../../../app/federation-v2/client/Federation';
 import { RoomRoles } from '../../../../app/models/client';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
@@ -133,7 +133,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 		user.username,
 	);
 
-	const isAFederatedRoom = Federation.isAFederatedRoom(room);
+	const isAFederatedRoom = isIRoomFederated(room);
 
 	const openDirectDm = useMutableCallback(() =>
 		directRoute.push({

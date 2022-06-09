@@ -8,7 +8,6 @@ import { MessageAction } from '../../../ui-utils/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { Federation } from '../../../federation-v2/client/Federation';
 
 Meteor.startup(function () {
 	Tracker.autorun(() => {
@@ -19,7 +18,7 @@ Meteor.startup(function () {
 			id: 'follow-message',
 			icon: 'bell',
 			label: 'Follow_message',
-			context: ['message', 'message-mobile', 'threads', Federation.getMessageActionContextName()],
+			context: ['message', 'message-mobile', 'threads', 'federated'],
 			async action(_, { message }) {
 				callWithErrorHandling('followMessage', { mid: message._id }).then(() =>
 					dispatchToastMessage({

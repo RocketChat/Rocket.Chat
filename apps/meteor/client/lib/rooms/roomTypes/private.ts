@@ -1,4 +1,4 @@
-import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
+import { AtLeast, IRoom, isIRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../../app/authorization/client';
@@ -34,7 +34,7 @@ roomCoordinator.add(PrivateRoomType, {
 	},
 
 	allowMemberAction(_room, action) {
-		if (Federation.isAFederatedRoom(_room as IRoom)) {
+		if (isIRoomFederated(_room as IRoom)) {
 			return Federation.federationActionAllowed(action);
 		}
 		switch (action) {

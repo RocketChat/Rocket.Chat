@@ -2,6 +2,7 @@ import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { isIRoomFederated } from '@rocket.chat/core-typings';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
 import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageAction';
@@ -18,7 +19,6 @@ import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEv
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
 import { onClientBeforeSendMessage } from '../../../../../../client/lib/onClientBeforeSendMessage';
 import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
-import { Federation } from '../../../../../federation-v2/client/Federation';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -29,7 +29,7 @@ const mountPopover = (e, i, outerContext) => {
 	const messageContext = messageArgs(outerContext);
 
 	const room = Rooms.findOne({ _id: messageContext.msg.rid });
-	const federationContext = Federation.isAFederatedRoom(room) ? Federation.getMessageActionContextName() : '';
+	const federationContext = isIRoomFederated(room) ? 'federated' : '';
 	context = federationContext || context;
 
 	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg, user: messageContext.u }, context, 'menu').map(
@@ -328,7 +328,7 @@ export const getCommonRoomEvents = () => ({
 		const messageContext = messageArgs(this);
 		const { msg: message, u: user, context: ctx } = messageContext;
 		const room = Rooms.findOne({ _id: template.data.rid });
-		const federationContext = Federation.isAFederatedRoom(room) ? Federation.getMessageActionContextName() : '';
+		const federationContext = isIRoomFederated(room) ? 'federated' : '';
 		const context = ctx || message.context || message.actionContext || federationContext || 'message';
 		const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
 			icon: item.icon,

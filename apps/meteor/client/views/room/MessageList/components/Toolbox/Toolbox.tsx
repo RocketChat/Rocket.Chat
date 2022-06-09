@@ -1,9 +1,8 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import { IMessage, isIRoomFederated, IUser } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserRoom, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useMemo } from 'react';
 
-import { Federation } from '../../../../../../app/federation-v2/client/Federation';
 import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { getTabBarContext } from '../../../lib/Toolbox/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
@@ -21,7 +20,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const subscription = useUserSubscription(message.rid);
 	const settings = useSettings();
 	const user = useUser() as IUser;
-	const federationContext = Federation.isAFederatedRoom(room) ? Federation.getMessageActionContextName() : '';
+	const federationContext = isIRoomFederated(room) ? 'federated' : '';
 	const context = federationContext || 'message';
 
 	const mapSettings = useMemo(() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])), [settings]);
