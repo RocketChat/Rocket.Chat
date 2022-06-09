@@ -61,13 +61,13 @@ const FindOrCreateInviteParamsSchema = {
 export const isFindOrCreateInviteParams = ajv.compile<FindOrCreateInviteParams>(FindOrCreateInviteParamsSchema);
 
 export type InvitesEndpoints = {
-	'listInvites': {
+	'/v1/listInvites': {
 		GET: () => Array<IInvite>;
 	};
-	'removeInvite/:_id': {
+	'/v1/removeInvite/:_id': {
 		DELETE: () => boolean;
 	};
-	'useInviteToken': {
+	'/v1/useInviteToken': {
 		POST: (params: UseInviteTokenProps) => {
 			room: {
 				rid: IRoom['_id'];
@@ -78,10 +78,10 @@ export type InvitesEndpoints = {
 			};
 		};
 	};
-	'validateInviteToken': {
+	'/v1/validateInviteToken': {
 		POST: (params: ValidateInviteTokenProps) => { valid: boolean };
 	};
-	'findOrCreateInvite': {
+	'/v1/findOrCreateInvite': {
 		POST: (params: FindOrCreateInviteParams) => IInvite;
 	};
 };

@@ -12,17 +12,17 @@ import type { ChannelsSetAnnouncementProps } from './ChannelsSetAnnouncementProp
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 
 export type ChannelsEndpoints = {
-	'channels.files': {
+	'/v1/channels.files': {
 		GET: (params: PaginatedRequest<{ roomId: IRoom['_id'] }>) => PaginatedResult<{
 			files: IUpload[];
 		}>;
 	};
-	'channels.members': {
+	'/v1/channels.members': {
 		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; filter?: string; status?: string[] }>) => PaginatedResult<{
 			members: IUser[];
 		}>;
 	};
-	'channels.history': {
+	'/v1/channels.history': {
 		GET: (
 			params: PaginatedRequest<{
 				roomId: string;
@@ -35,13 +35,13 @@ export type ChannelsEndpoints = {
 			messages: IMessage[];
 		}>;
 	};
-	'channels.archive': {
+	'/v1/channels.archive': {
 		POST: (params: ChannelsArchiveProps) => void;
 	};
-	'channels.unarchive': {
+	'/v1/channels.unarchive': {
 		POST: (params: ChannelsUnarchiveProps) => void;
 	};
-	'channels.create': {
+	'/v1/channels.create': {
 		POST: (params: {
 			name: string;
 			members: string[];
@@ -55,15 +55,15 @@ export type ChannelsEndpoints = {
 			group: Partial<IRoom>;
 		};
 	};
-	'channels.convertToTeam': {
+	'/v1/channels.convertToTeam': {
 		POST: (params: { channelId: string; channelName: string }) => {
 			team: ITeam;
 		};
 	};
-	'channels.info': {
+	'/v1/channels.info': {
 		GET: (params: { roomId: string }) => { channel: IRoom };
 	};
-	'channels.counters': {
+	'/v1/channels.counters': {
 		GET: (params: { roomId: string }) => {
 			joined: boolean;
 			members: number;
@@ -74,76 +74,76 @@ export type ChannelsEndpoints = {
 			userMentions: number;
 		};
 	};
-	'channels.join': {
+	'/v1/channels.join': {
 		POST: (params: { roomId: string; joinCode?: string }) => {
 			channel: IRoom;
 		};
 	};
-	'channels.close': {
+	'/v1/channels.close': {
 		POST: (params: { roomId: string }) => {};
 	};
-	'channels.kick': {
+	'/v1/channels.kick': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'channels.delete': {
+	'/v1/channels.delete': {
 		POST: (params: ChannelsDeleteProps) => void;
 	};
-	'channels.leave': {
+	'/v1/channels.leave': {
 		POST: (params: { roomId: string }) => {};
 	};
-	'channels.addModerator': {
+	'/v1/channels.addModerator': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'channels.removeModerator': {
+	'/v1/channels.removeModerator': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'channels.addOwner': {
+	'/v1/channels.addOwner': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'channels.removeOwner': {
+	'/v1/channels.removeOwner': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'channels.addLeader': {
+	'/v1/channels.addLeader': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'channels.removeLeader': {
+	'/v1/channels.removeLeader': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'channels.roles': {
+	'/v1/channels.roles': {
 		GET: (params: { roomId: string }) => { roles: IGetRoomRoles[] };
 	};
-	'channels.messages': {
+	'/v1/channels.messages': {
 		GET: (params: ChannelsMessagesProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
-	'channels.open': {
+	'/v1/channels.open': {
 		POST: (params: ChannelsOpenProps) => void;
 	};
-	'channels.setReadOnly': {
+	'/v1/channels.setReadOnly': {
 		POST: (params: { roomId: string; readOnly: boolean }) => {
 			channel: IRoom;
 		};
 	};
-	'channels.addAll': {
+	'/v1/channels.addAll': {
 		POST: (params: ChannelsAddAllProps) => {
 			channel: IRoom;
 		};
 	};
-	'channels.anonymousread': {
+	'/v1/channels.anonymousread': {
 		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
-	'channels.setAnnouncement': {
+	'/v1/channels.setAnnouncement': {
 		POST: (params: ChannelsSetAnnouncementProps) => {};
 	};
-	'channels.getAllUserMentionsByChannel': {
+	'/v1/channels.getAllUserMentionsByChannel': {
 		GET: (params: ChannelsGetAllUserMentionsByChannelProps) => PaginatedResult<{
 			mentions: IUser[];
 		}>;
 	};
-	'channels.moderators': {
+	'/v1/channels.moderators': {
 		GET: (params: { roomId: string }) => { moderators: Pick<IUser, '_id' | 'name' | 'username'>[] };
 	};
 };
