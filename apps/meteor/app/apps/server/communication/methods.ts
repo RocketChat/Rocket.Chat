@@ -31,23 +31,23 @@ const waitToUnload = function (orch: AppServerOrchestrator): unknown {
 };
 
 export class AppMethods {
-	_orch: AppServerOrchestrator;
+	private orch: AppServerOrchestrator;
 
 	constructor(orch: AppServerOrchestrator) {
-		this._orch = orch;
+		this.orch = orch;
 
-		this._addMethods();
+		this.addMethods();
 	}
 
 	isEnabled(): SettingValue {
-		return typeof this._orch !== 'undefined' && this._orch.isEnabled();
+		return typeof this.orch !== 'undefined' && this.orch.isEnabled();
 	}
 
 	isLoaded(): boolean | '' | 0 | undefined {
-		return typeof this._orch !== 'undefined' && this._orch.isEnabled() && this._orch.isLoaded();
+		return typeof this.orch !== 'undefined' && this.orch.isEnabled() && this.orch.isLoaded();
 	}
 
-	_addMethods(): void {
+	private addMethods(): void {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const instance = this;
 
@@ -76,7 +76,7 @@ export class AppMethods {
 
 				Settings.updateValueById('Apps_Framework_enabled', true);
 
-				Promise.await(waitToLoad(instance._orch));
+				Promise.await(waitToLoad(instance.orch));
 			}),
 
 			'apps/go-disable': twoFactorRequired(function _appsGoDisable() {
@@ -95,7 +95,7 @@ export class AppMethods {
 
 				Settings.updateValueById('Apps_Framework_enabled', false);
 
-				Promise.await(waitToUnload(instance._orch));
+				Promise.await(waitToUnload(instance.orch));
 			}),
 		});
 	}

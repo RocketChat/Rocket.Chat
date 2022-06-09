@@ -21,7 +21,7 @@ export const AppEvents = Object.freeze({
 });
 
 export class AppServerListener {
-	orch: AppServerOrchestrator;
+	private orch: AppServerOrchestrator;
 
 	engineStreamer: IStreamer;
 
