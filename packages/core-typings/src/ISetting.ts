@@ -40,7 +40,8 @@ export interface ISettingBase {
 		| 'asset'
 		| 'roomPick'
 		| 'group'
-		| 'date';
+		| 'date'
+		| 'lookup';
 	public: boolean;
 	env: boolean;
 	group?: GroupId;
@@ -71,6 +72,7 @@ export interface ISettingBase {
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 	placeholder?: string;
+	lookupEndpoint?: string;
 	wizard?: {
 		step: number;
 		order: number;

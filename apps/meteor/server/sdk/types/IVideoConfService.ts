@@ -14,4 +14,5 @@ export interface IVideoConfService {
 	getUnfiltered(callId: IVideoConference['_id']): Promise<IVideoConference | null>;
 	list(roomId: IRoom['_id'], pagination?: { offset?: number; count?: number }): Promise<PaginatedResult<{ data: VideoConference[] }>>;
 	setProviderData(callId: IVideoConference['_id'], data: IVideoConference['providerData'] | undefined): Promise<void>;
+	listProviders(): Promise<{ key: string; label: string }[]>;
 }

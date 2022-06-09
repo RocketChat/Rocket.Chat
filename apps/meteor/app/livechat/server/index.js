@@ -60,7 +60,6 @@ import './methods/sendFileLivechatMessage';
 import './methods/sendOfflineMessage';
 import './methods/setCustomField';
 import './methods/setDepartmentForVisitor';
-import './methods/startVideoCall';
 import './methods/startFileUploadRoom';
 import './methods/transfer';
 import './methods/webhookTest';

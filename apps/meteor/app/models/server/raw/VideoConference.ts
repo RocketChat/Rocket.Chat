@@ -32,31 +32,30 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		);
 	}
 
-	public async createDirect(rid: IRoom['_id'], createdBy: Pick<IUser, '_id' | 'name' | 'username'>): Promise<string> {
+	public async createDirect(callDetails: Pick<IVideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string> {
 		const call: InsertionModel<IVideoConference> = {
 			type: 'direct',
-			rid,
 			users: [],
 			messages: {},
 			status: VideoConferenceStatus.CALLING,
-			createdBy,
 			createdAt: new Date(),
+			...callDetails,
 		};
 
 		return (await this.insertOne(call)).insertedId;
 	}
 
-	public async createGroup(rid: IRoom['_id'], title: string, createdBy: Pick<IUser, '_id' | 'name' | 'username'>): Promise<string> {
+	public async createGroup(
+		callDetails: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>,
+	): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
-			rid,
 			users: [],
 			messages: {},
 			status: VideoConferenceStatus.STARTED,
 			anonymousUsers: 0,
-			title,
-			createdBy,
 			createdAt: new Date(),
+			...callDetails,
 		};
 
 		return (await this.insertOne(call)).insertedId;

@@ -6,33 +6,11 @@ import {
 	isVideoConfInfoProps,
 	isVideoConfListProps,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../models/server';
 import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { VideoConf } from '../../../../server/sdk';
-
-API.v1.addRoute(
-	'video-conference/jitsi.update-timeout',
-	{ authRequired: true },
-	{
-		post() {
-			const { roomId, joiningNow = true } = this.bodyParams;
-			if (!roomId) {
-				return API.v1.failure('The "roomId" parameter is required!');
-			}
-
-			const room = Rooms.findOneById(roomId, { fields: { _id: 1 } });
-			if (!room) {
-				return API.v1.failure('Room does not exist!');
-			}
-
-			const jitsiTimeout = Meteor.runAsUser(this.userId, () => Meteor.call('jitsi:updateTimeout', roomId, Boolean(joiningNow)));
-			return API.v1.success({ jitsiTimeout });
-		},
-	},
-);
+import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 
 API.v1.addRoute(
 	'video-conference.start',
@@ -41,7 +19,10 @@ API.v1.addRoute(
 		async post() {
 			const { roomId, title } = this.bodyParams;
 
-			// #ToDo: Validate if there is an active provider
+			const providerName = videoConfProviders.getActiveProvider();
+			if (!providerName) {
+				return API.v1.failure('no-active-video-conf-provider');
+			}
 
 			const { userId } = this;
 
@@ -145,6 +126,18 @@ API.v1.addRoute(
 			const data = await VideoConf.list(roomId, { offset, count });
 
 			return API.v1.success(data);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'video-conference.providers',
+	{ authRequired: true },
+	{
+		async get() {
+			const data = await VideoConf.listProviders();
+
+			return API.v1.success({ data });
 		},
 	},
 );

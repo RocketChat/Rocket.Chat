@@ -1,4 +1,4 @@
-import type { IRoom, VideoConferenceInstructions, VideoConference } from '@rocket.chat/core-typings';
+import type { VideoConferenceInstructions, VideoConference } from '@rocket.chat/core-typings';
 
 import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfListProps } from './VideoConfListProps';
@@ -14,12 +14,6 @@ export * from './VideoConfJoinProps';
 export * from './VideoConfCancelProps';
 
 export type VideoConferenceEndpoints = {
-	'video-conference/jitsi.update-timeout': {
-		POST: (params: { roomId: IRoom['_id']; joiningNow?: boolean }) => {
-			jitsiTimeout: number;
-		};
-	};
-
 	'video-conference.start': {
 		POST: (params: VideoConfStartProps) => { data: VideoConferenceInstructions };
 	};
@@ -38,5 +32,9 @@ export type VideoConferenceEndpoints = {
 
 	'video-conference.list': {
 		GET: (params: VideoConfListProps) => PaginatedResult<{ data: VideoConference[] }>;
+	};
+
+	'video-conference.providers': {
+		GET: () => { data: { key: string; label: string }[] };
 	};
 };

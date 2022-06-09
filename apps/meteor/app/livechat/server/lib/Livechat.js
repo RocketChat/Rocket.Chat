@@ -554,7 +554,6 @@ export const Livechat = {
 			'Livechat_offline_form_unavailable',
 			'Livechat_display_offline_form',
 			'Omnichannel_call_provider',
-			'Jitsi_Enabled',
 			'Language',
 			'Livechat_enable_transcript',
 			'Livechat_transcript_message',
