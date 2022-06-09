@@ -7,14 +7,12 @@ import TemplateHeader from '../../components/Header';
 import Page from '../../components/Page/Page';
 import CustomHomePage from './CustomHomePage';
 
-// TODO: use a setting to determine if the user has a custom home page
-const custom = false;
-
 const editLayoutPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 
 const HomePage = (): ReactElement => {
 	const t = useTranslation();
 	const title = useSetting('Layout_Home_Title') as string;
+	const custom = useSetting('Layout_Custom_Body');
 	const { isMobile } = useLayout();
 	const canEditLayout = useAllPermissions(editLayoutPermissions);
 
