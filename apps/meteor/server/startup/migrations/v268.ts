@@ -3,7 +3,7 @@ import { Settings } from '../../../app/models/server/raw';
 
 // Removes deprecated RDStation functionality from Omnichannel
 addMigration({
-	version: 267,
+	version: 268,
 	async up() {
 		await Settings.removeById('Livechat_RDStation_Token');
 	},
