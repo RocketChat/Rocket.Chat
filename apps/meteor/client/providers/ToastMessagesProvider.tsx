@@ -1,7 +1,6 @@
 import { ToastBarProvider, useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
 import React, { FC, useEffect } from 'react';
-// import toastr from 'toastr';
 
 import { dispatchToastMessage, subscribeToToastMessages } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
@@ -29,7 +28,6 @@ const ToastMessageInnerProvider: FC = ({ children }) => {
 					return;
 				}
 
-				// toastr[type](message, title, options);
 				dispatchToastBar({ type, message: title + message });
 			}),
 		[dispatchToastBar],

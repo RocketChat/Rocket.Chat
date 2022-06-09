@@ -14,7 +14,7 @@ function TagNew({ reload }) {
 		value: availableDepartments,
 		phase: availableDepartmentsState,
 		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
+	} = useEndpointData('/v1/livechat/department');
 
 	if (availableDepartmentsState === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;

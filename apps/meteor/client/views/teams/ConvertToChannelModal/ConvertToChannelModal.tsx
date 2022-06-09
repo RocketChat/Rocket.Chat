@@ -21,7 +21,7 @@ const ConvertToChannelModal: FC<ConvertToChannelModalProps> = ({ onClose, onCanc
 	const t = useTranslation();
 
 	const { value, phase } = useEndpointData(
-		'teams.listRoomsOfUser',
+		'/v1/teams.listRoomsOfUser',
 		useMemo(() => ({ teamId, userId, canUserDelete: 'true' }), [teamId, userId]),
 	);
 
