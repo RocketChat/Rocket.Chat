@@ -67,20 +67,20 @@ const CloudConfirmationPollSchema = {
 export const isCloudConfirmationPollProps = ajv.compile<CloudConfirmationPoll>(CloudConfirmationPollSchema);
 
 export type CloudEndpoints = {
-	'cloud.manualRegister': {
+	'/v1/cloud.manualRegister': {
 		POST: (params: CloudManualRegister) => void;
 	};
-	'cloud.createRegistrationIntent': {
+	'/v1/cloud.createRegistrationIntent': {
 		POST: (params: CloudCreateRegistrationIntent) => {
 			intentData: CloudRegistrationIntentData;
 		};
 	};
-	'cloud.confirmationPoll': {
+	'/v1/cloud.confirmationPoll': {
 		GET: (params: CloudConfirmationPoll) => {
 			pollData: CloudConfirmationPollData;
 		};
 	};
-	'cloud.registrationStatus': {
+	'/v1/cloud.registrationStatus': {
 		GET: (params: void) => { registrationStatus: CloudRegistrationStatus };
 	};
 };

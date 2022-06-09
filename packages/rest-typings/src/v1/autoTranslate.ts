@@ -1,13 +1,13 @@
 import type { ISupportedLanguage } from '@rocket.chat/core-typings';
 
 export type AutoTranslateEndpoints = {
-	'autotranslate.getSupportedLanguages': {
+	'/v1/autotranslate.getSupportedLanguages': {
 		GET: (params: { targetLanguage: string }) => { languages: ISupportedLanguage[] };
 	};
-	'autotranslate.saveSettings': {
+	'/v1/autotranslate.saveSettings': {
 		POST: (params: { roomId: string; field: string; value: boolean; defaultLanguage?: string }) => void;
 	};
-	'autotranslate.translateMessage': {
+	'/v1/autotranslate.translateMessage': {
 		POST: (params: { messageId: string; targetLanguage?: string }) => void;
 	};
 };

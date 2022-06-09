@@ -69,7 +69,6 @@ import '../app/wordpress/client';
 import '../app/nrr/client';
 import '../app/meteor-accounts-saml/client';
 import '../app/e2e/client';
-import '../app/blockstack/client';
 import '../app/version-check/client';
 import '../app/search/client';
 import '../app/chatpal-search/client';
