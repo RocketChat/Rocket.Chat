@@ -1,4 +1,37 @@
 
+# 4.8.1
+`2022-06-08  ·  4 🐛  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- AccountBox checks for condition ([#25708](https://github.com/RocketChat/Rocket.Chat/pull/25708))
+
+- Bump meteor-node-stubs to version 1.2.3 ([#25669](https://github.com/RocketChat/Rocket.Chat/pull/25669) by [@Sh0uld](https://github.com/Sh0uld))
+
+  With meteor-node-stubs version 1.2.3 a bug was fixed, which occured in issue #25460 and probably #25513 (last one not tested).
+  For the issue in meteor see: https://github.com/meteor/meteor/issues/11974
+
+- Fix prom-client new promise usage ([#25781](https://github.com/RocketChat/Rocket.Chat/pull/25781))
+
+- Wrong argument name preventing Omnichannel Chat Forward to User  ([#25723](https://github.com/RocketChat/Rocket.Chat/pull/25723))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Sh0uld](https://github.com/Sh0uld)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@dudanogueira](https://github.com/dudanogueira)
+- [@ggazzo](https://github.com/ggazzo)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 4.8.0
 `2022-05-31  ·  16 🎉  ·  13 🚀  ·  55 🐛  ·  151 🔍  ·  52 👩‍💻👨‍💻`
 
