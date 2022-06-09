@@ -27,7 +27,7 @@ const config: PlaywrightTestConfig = {
 	testDir: 'tests/e2e',
 	retries: 3,
 	workers: 1,
-	timeout: 42000,
+	timeout: 42 * 1000,
 	globalTimeout: 146000,
 };
 
