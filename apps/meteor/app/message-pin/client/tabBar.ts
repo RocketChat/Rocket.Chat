@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { useSetting } from '@rocket.chat/ui-contexts';
+import { isIRoomFederated } from '@rocket.chat/core-typings';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
-addAction('pinned-messages', () => {
+addAction('pinned-messages', ({ room }) => {
 	const pinningAllowed = useSetting('Message_AllowPinning');
+	const federated = isIRoomFederated(room);
 	return useMemo(
 		() =>
 			pinningAllowed
@@ -14,9 +16,10 @@ addAction('pinned-messages', () => {
 						title: 'Pinned_Messages',
 						icon: 'pin',
 						template: 'pinnedMessages',
+						disabled: federated,
 						order: 11,
 				  }
 				: null,
-		[pinningAllowed],
+		[pinningAllowed, federated],
 	);
 });
