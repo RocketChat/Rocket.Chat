@@ -4222,9 +4222,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fbigbluebutton%40workspace%3Aapps%2Fbigbluebutton":
-  version: 1.33.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=a37d48&locator=%40rocket.chat%2Fbigbluebutton%40workspace%3Aapps%2Fbigbluebutton"
+"@rocket.chat/apps-engine@npm:1.33.0-alpha.6301":
+  version: 1.33.0-alpha.6301
+  resolution: "@rocket.chat/apps-engine@npm:1.33.0-alpha.6301"
   dependencies:
     adm-zip: ^0.4.9
     cryptiles: ^4.1.3
@@ -4232,49 +4232,7 @@ __metadata:
     semver: ^5.5.0
     stack-trace: 0.0.10
     uuid: ^3.2.1
-  checksum: 4cc2dce5330a1fa8920b7a24b74d00efa88a35d940efad29a5bac46c83bb6ee432674edc89596e164a427871a1cd71d4d829eb4a2d1a478cc3a956414fb1e1c9
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fjitsi%40workspace%3Aapps%2Fjitsi":
-  version: 1.33.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=a37d48&locator=%40rocket.chat%2Fjitsi%40workspace%3Aapps%2Fjitsi"
-  dependencies:
-    adm-zip: ^0.4.9
-    cryptiles: ^4.1.3
-    lodash.clonedeep: ^4.5.0
-    semver: ^5.5.0
-    stack-trace: 0.0.10
-    uuid: ^3.2.1
-  checksum: 4cc2dce5330a1fa8920b7a24b74d00efa88a35d940efad29a5bac46c83bb6ee432674edc89596e164a427871a1cd71d4d829eb4a2d1a478cc3a956414fb1e1c9
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
-  version: 1.33.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=a37d48&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
-  dependencies:
-    adm-zip: ^0.4.9
-    cryptiles: ^4.1.3
-    lodash.clonedeep: ^4.5.0
-    semver: ^5.5.0
-    stack-trace: 0.0.10
-    uuid: ^3.2.1
-  checksum: 4cc2dce5330a1fa8920b7a24b74d00efa88a35d940efad29a5bac46c83bb6ee432674edc89596e164a427871a1cd71d4d829eb4a2d1a478cc3a956414fb1e1c9
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fpexip%40workspace%3Aapps%2Fpexip":
-  version: 1.33.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=a37d48&locator=%40rocket.chat%2Fpexip%40workspace%3Aapps%2Fpexip"
-  dependencies:
-    adm-zip: ^0.4.9
-    cryptiles: ^4.1.3
-    lodash.clonedeep: ^4.5.0
-    semver: ^5.5.0
-    stack-trace: 0.0.10
-    uuid: ^3.2.1
-  checksum: 4cc2dce5330a1fa8920b7a24b74d00efa88a35d940efad29a5bac46c83bb6ee432674edc89596e164a427871a1cd71d4d829eb4a2d1a478cc3a956414fb1e1c9
+  checksum: bb50d770d311a16d2806da665bd30a912a9896599c7b5dd3b82a18d6aab49c25ea11c452ddbe43dd2242aad4843e78286b00a92a331646ab84f380127d7d3bdd
   languageName: node
   linkType: hard
 
@@ -4296,7 +4254,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/bigbluebutton@workspace:apps/bigbluebutton"
   dependencies:
-    "@rocket.chat/apps-engine": ../../../Rocket.Chat.Apps-engine
+    "@rocket.chat/apps-engine": 1.33.0-alpha.6301
     "@types/jest": ^27.4.1
     "@types/node": 14.14.6
     "@types/xml2js": ^0
@@ -4704,7 +4662,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/jitsi@workspace:apps/jitsi"
   dependencies:
-    "@rocket.chat/apps-engine": ../../../Rocket.Chat.Apps-engine
+    "@rocket.chat/apps-engine": 1.33.0-alpha.6301
     "@types/jest": ^27.4.1
     "@types/node": 14.14.6
     eslint: ^8.12.0
@@ -4879,7 +4837,7 @@ __metadata:
     "@nivo/line": 0.62.0
     "@nivo/pie": 0.73.0
     "@playwright/test": ^1.21.1
-    "@rocket.chat/apps-engine": ../../../Rocket.Chat.Apps-engine
+    "@rocket.chat/apps-engine": 1.33.0-alpha.6301
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.12
     "@rocket.chat/emitter": ~0.31.12
@@ -5191,7 +5149,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/pexip@workspace:apps/pexip"
   dependencies:
-    "@rocket.chat/apps-engine": ../../../Rocket.Chat.Apps-engine
+    "@rocket.chat/apps-engine": 1.33.0-alpha.6301
     "@types/jest": ^27.4.1
     "@types/node": 14.14.6
     eslint: ^8.12.0

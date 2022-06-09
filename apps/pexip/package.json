@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@rocket.chat/apps-engine": "../../../Rocket.Chat.Apps-engine",
+		"@rocket.chat/apps-engine": "1.33.0-alpha.6301",
 		"@types/jest": "^27.4.1",
 		"@types/node": "14.14.6",
 		"eslint": "^8.12.0",
