@@ -12,6 +12,7 @@ import { Action } from '../../../../hooks/useActionSpread';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 
+// TODO: Remove endpoint concatenation
 export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id'], reload: () => void): Action | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
@@ -21,7 +22,7 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
 
-	const endpointPrefix = room?.t === 'p' ? 'groups' : 'channels';
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	if (!room) {

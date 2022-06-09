@@ -10,6 +10,7 @@ import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
+// TODO: Remove endpoint concatenation
 export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
@@ -17,7 +18,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 
 	const userCanSetModerator = usePermission('set-moderator', rid);
 	const isModerator = useUserHasRoomRole(uid, rid, 'moderator');
-	const endpointPrefix = room?.t === 'p' ? 'groups' : 'channels';
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 
 	if (!room) {
 		throw Error('Room not provided');
