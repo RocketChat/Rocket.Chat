@@ -1,11 +1,24 @@
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { ISetting, AppScreenshot, App } from '@rocket.chat/core-typings';
+import type { AppScreenshot, App } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
 	'/apps/externalComponents': {
 		GET: () => { externalComponents: IExternalComponent[] };
+	};
+
+	'/apps/:id': {
+		GET: (params: { marketplace?: 'true' | 'false'; version?: string; appVersion?: string; update?: 'true' | 'false' }) => {
+			app: App;
+		};
+		DELETE: () => void;
+		POST: (params: { marketplace: boolean; version: string; permissionsGranted: IPermission[]; appId: string }) => {
+			app: App;
+		};
 	};
 
 	'/apps/actionButtons': {
@@ -18,8 +31,9 @@ export type AppsEndpoints = {
 
 	'/apps/:id/settings': {
 		GET: () => {
-			[key: string]: ISetting;
+			settings: { [key: string]: ISetting };
 		};
+		POST: (params: { settings: ISetting[] }) => { updated: { [key: string]: ISetting } };
 	};
 
 	'/apps/:id/screenshots': {
@@ -34,8 +48,49 @@ export type AppsEndpoints = {
 		};
 	};
 
-	'/apps/:id': {
-		GET: (params: { marketplace?: 'true' | 'false'; update?: 'true' | 'false'; appVersion: string }) => {
+	'/apps/bundles/:id/apps': {
+		GET: () => {
+			apps: App[];
+		};
+	};
+
+	'/apps/:id/sync': {
+		POST: () => {
+			app: App;
+		};
+	};
+
+	'/apps/:id/status': {
+		POST: (params: { status: AppStatus }) => {
+			status: string;
+		};
+	};
+
+	'/apps': {
+		GET:
+			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
+					url: string;
+			  })
+			| ((params: {
+					purchaseType?: 'buy' | 'subscription';
+					marketplace?: 'true' | 'false';
+					version?: string;
+					appId?: string;
+					details?: 'true' | 'false';
+			  }) => {
+					apps: App[];
+			  })
+			| ((params: { categories: 'true' | 'false' }) => {
+					categories: {
+						createdDate: string;
+						description: string;
+						id: string;
+						modifiedDate: Date;
+						title: string;
+					}[];
+			  });
+
+		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted: IPermission[] }) => {
 			app: App;
 		};
 	};
