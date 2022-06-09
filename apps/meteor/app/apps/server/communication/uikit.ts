@@ -170,7 +170,6 @@ router.post('/:appId', async (req, res, next) => {
 
 		res.send(result);
 	} catch (e) {
-		console.error('ops', e);
 		if (e instanceof Error) res.status(500).send({ error: e.message });
 		else res.status(500).send({ error: e });
 	}
