@@ -80,25 +80,25 @@ export const isBannersDismissProps = ajv.compile<BannersDismiss>(BannersDismissS
 
 export type BannersEndpoints = {
 	/* @deprecated */
-	'banners.getNew': {
+	'/v1/banners.getNew': {
 		GET: (params: BannersGetNew) => {
 			banners: IBanner[];
 		};
 	};
 
-	'banners/:id': {
+	'/v1/banners/:id': {
 		GET: (params: BannersId) => {
 			banners: IBanner[];
 		};
 	};
 
-	'banners': {
+	'/v1/banners': {
 		GET: (params: Banners) => {
 			banners: IBanner[];
 		};
 	};
 
-	'banners.dismiss': {
+	'/v1/banners.dismiss': {
 		POST: (params: BannersDismiss) => void;
 	};
 };

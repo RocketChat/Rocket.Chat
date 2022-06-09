@@ -318,12 +318,12 @@ const GroupsMessagePropsSchema = {
 export const isGroupsMessageProps = ajv.compile<GroupsMessageProps>(GroupsMessagePropsSchema);
 
 export type GroupsEndpoints = {
-	'groups.files': {
+	'/v1/groups.files': {
 		GET: (params: GroupsFilesProps) => PaginatedResult<{
 			files: IUpload[];
 		}>;
 	};
-	'groups.members': {
+	'/v1/groups.members': {
 		GET: (params: GroupsMembersProps) => {
 			count: number;
 			offset: number;
@@ -331,26 +331,26 @@ export type GroupsEndpoints = {
 			total: number;
 		};
 	};
-	'groups.history': {
+	'/v1/groups.history': {
 		GET: (params: PaginatedRequest<{ roomId: string; latest?: string }>) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
-	'groups.archive': {
+	'/v1/groups.archive': {
 		POST: (params: GroupsArchiveProps) => void;
 	};
-	'groups.unarchive': {
+	'/v1/groups.unarchive': {
 		POST: (params: GroupsUnarchiveProps) => void;
 	};
-	'groups.create': {
+	'/v1/groups.create': {
 		POST: (params: GroupsCreateProps) => {
 			group: Partial<IRoom>;
 		};
 	};
-	'groups.convertToTeam': {
+	'/v1/groups.convertToTeam': {
 		POST: (params: GroupsConvertToTeamProps) => { team: ITeam };
 	};
-	'groups.counters': {
+	'/v1/groups.counters': {
 		GET: (params: GroupsCountersProps) => {
 			joined: boolean;
 			members: number;
@@ -361,22 +361,22 @@ export type GroupsEndpoints = {
 			userMentions: number;
 		};
 	};
-	'groups.close': {
+	'/v1/groups.close': {
 		POST: (params: GroupsCloseProps) => {};
 	};
-	'groups.kick': {
+	'/v1/groups.kick': {
 		POST: (params: GroupsKickProps) => {};
 	};
-	'groups.delete': {
+	'/v1/groups.delete': {
 		POST: (params: GroupsDeleteProps) => {};
 	};
-	'groups.leave': {
+	'/v1/groups.leave': {
 		POST: (params: GroupsLeaveProps) => {};
 	};
-	'groups.roles': {
+	'/v1/groups.roles': {
 		GET: (params: GroupsRolesProps) => { roles: IGetRoomRoles[] };
 	};
-	'groups.messages': {
+	'/v1/groups.messages': {
 		GET: (params: GroupsMessageProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;

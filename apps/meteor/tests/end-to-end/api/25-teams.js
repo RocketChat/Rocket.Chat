@@ -1230,6 +1230,8 @@ describe('[Teams]', () => {
 					message: JSON.stringify({
 						method: 'addUsersToRoom',
 						params: [{ rid: privateRoom3._id, users: [testUser.username] }],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1348,6 +1350,27 @@ describe('[Teams]', () => {
 					.end(done);
 			});
 		});
+		it('should return all rooms for public team even requested with count and offset params', (done) => {
+			updatePermission('view-all-team-channels', ['user']).then(() => {
+				request
+					.get(api('teams.listRooms'))
+					.set(testUserCredentials)
+					.query({
+						teamId: publicTeam._id,
+						count: 5,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms');
+						expect(res.body.rooms).to.be.an('array');
+						expect(res.body.rooms.length).to.equal(2);
+					})
+					.end(done);
+			});
+		});
 
 		it('should return public rooms for private team', (done) => {
 			updatePermission('view-all-team-channels', []).then(() => {
@@ -1357,6 +1380,29 @@ describe('[Teams]', () => {
 						.set(credentials)
 						.query({
 							teamId: privateTeam._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('rooms');
+							expect(res.body.rooms).to.be.an('array');
+							expect(res.body.rooms.length).to.equal(2);
+						})
+						.end(done);
+				});
+			});
+		});
+		it('should return public rooms for private team even requested with count and offset params', (done) => {
+			updatePermission('view-all-team-channels', []).then(() => {
+				updatePermission('view-all-teams', ['admin']).then(() => {
+					request
+						.get(api('teams.listRooms'))
+						.set(credentials)
+						.query({
+							teamId: privateTeam._id,
+							count: 5,
+							offset: 0,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -1584,6 +1630,8 @@ describe('[Teams]', () => {
 						message: JSON.stringify({
 							method: 'saveUserPreferences',
 							params: [{ emailNotificationMode: 'nothing' }],
+							id: 'id',
+							msg: 'method',
 						}),
 					})
 					.expect(200);

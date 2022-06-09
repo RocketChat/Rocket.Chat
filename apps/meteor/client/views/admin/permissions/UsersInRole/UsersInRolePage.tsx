@@ -19,7 +19,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 
 	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
-	const addUser = useEndpoint('POST', 'roles.addUserToRole');
+	const addUser = useEndpoint('POST', '/v1/roles.addUserToRole');
 
 	const handleReturn = useMutableCallback(() => {
 		router.push({

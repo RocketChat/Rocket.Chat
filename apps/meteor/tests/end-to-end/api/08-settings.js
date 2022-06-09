@@ -20,6 +20,22 @@ describe('[Settings]', function () {
 				})
 				.end(done);
 		});
+		it('should return public settings even requested with count and offset params', (done) => {
+			request
+				.get(api('settings.public'))
+				.query({
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('settings');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/settings]', () => {

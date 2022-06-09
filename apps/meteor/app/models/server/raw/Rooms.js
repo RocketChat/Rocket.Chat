@@ -461,8 +461,8 @@ export class RoomsRaw extends BaseRaw {
 		]);
 	}
 
-	setAsBridged(roomId) {
-		return this.updateOne({ _id: roomId }, { $set: { bridged: true } });
+	setAsFederated(roomId) {
+		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
 	}
 
 	findByE2E(options) {

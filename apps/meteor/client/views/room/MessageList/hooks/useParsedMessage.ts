@@ -2,7 +2,7 @@ import { IMessage } from '@rocket.chat/core-typings';
 import { MarkdownAST, parser } from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
-export function useParsedMessage(message: IMessage): MarkdownAST {
+export function useParsedMessage(message: Pick<IMessage, 'md' | 'msg'>): MarkdownAST {
 	return useMemo(() => {
 		if (message.md) {
 			return message.md;
