@@ -5,7 +5,7 @@ import LoginPage from './utils/pageobjects/LoginPage';
 import SideNav from './utils/pageobjects/SideNav';
 import Agents from './utils/pageobjects/Agents';
 
-test.describe.only('[Agents]', () => {
+test.describe('[Agents]', () => {
 	let loginPage: LoginPage;
 	let page: Page;
 	let sideNav: SideNav;
@@ -17,8 +17,8 @@ test.describe.only('[Agents]', () => {
 		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 		agents = new Agents(page);
-		await loginPage.login(adminLogin);
 
+		await loginPage.login(adminLogin);
 		await sideNav.sidebarUserMenu().click();
 		await sideNav.omnichannel().click();
 		await agents.agentsLink().click();
