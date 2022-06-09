@@ -9,7 +9,7 @@ settingsRegistry.addGroup('Video_Conference', function () {
 
 	this.add('VideoConf_Default_Provider', '', {
 		type: 'lookup',
-		lookupEndpoint: 'video-conference.providers',
+		lookupEndpoint: 'v1/video-conference.providers',
 		enableQuery: {
 			_id: 'VideoConf_Enabled',
 			value: true,
