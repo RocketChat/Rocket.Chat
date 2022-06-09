@@ -31,20 +31,14 @@ class SlackBridgeClass {
 
 			const tokenList = this.apiTokens.split('\n');
 
-			try {
-				tokenList.forEach((apiToken) => {
-					const slack = new SlackAdapter(this);
-					slack.setRocket(this.rocket);
-					this.rocket.addSlack(slack);
-					this.slackAdapters.push(slack);
+			tokenList.forEach((apiToken) => {
+				const slack = new SlackAdapter(this);
+				slack.setRocket(this.rocket);
+				this.rocket.addSlack(slack);
+				this.slackAdapters.push(slack);
 
-					slack.connect(apiToken);
-				});
-			} catch (err) {
-				connLogger.error('error connecting to slack', err);
-
-				throw err;
-			}
+				slack.connect(apiToken).catch((err) => connLogger.error('error connecting to slack', err));
+			});
 
 			if (settings.get('SlackBridge_Out_Enabled')) {
 				this.rocket.connect();
