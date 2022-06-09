@@ -222,7 +222,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 		);
 	}
 
-	setTypeById(_id, t) {
+	setTypeById(_id: string, t: IMessage['t']): void {
 		this.updateOne(
 			{ _id },
 			{
@@ -233,7 +233,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 		);
 	}
 
-	setBlocksById(_id: string, blocks: Required<IMessage['blocks']>): void {
+	setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): void {
 		this.updateOne(
 			{ _id },
 			{
@@ -244,7 +244,7 @@ export class MessagesRaw extends BaseRaw<IMessage> {
 		);
 	}
 
-	async addBlocksById(_id: string, blocks: Required<IMessage['blocks']>): Promise<void> {
+	async addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
 		await this.updateOne({ _id }, { $addToSet: { blocks: { $each: blocks } } });
 	}
 

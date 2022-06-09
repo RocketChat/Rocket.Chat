@@ -41,6 +41,7 @@ export interface IVideoConference extends IRocketChatRecord {
 	endedBy?: Pick<IUser, '_id' | 'username' | 'name'>;
 	endedAt?: Date;
 
+	providerName: string;
 	providerData?: Record<string, any>;
 }
 

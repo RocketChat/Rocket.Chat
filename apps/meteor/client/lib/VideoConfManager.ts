@@ -70,6 +70,10 @@ type VideoConfEvents = {
 
 	// When join call
 	'call/join': CurrentCallParams;
+
+	'join/error': { error: string };
+
+	'start/error': { error: string };
 };
 export const VideoConfManager = new (class VideoConfManager extends Emitter<VideoConfEvents> {
 	private userId: string | undefined;
@@ -132,9 +136,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		debug && console.log(`[VideoConf] Starting new call on room ${roomId}`);
 		this.startingNewCall = true;
 
-		const { data } = await APIClient.v1.post('video-conference.start', {}, { roomId, title }).catch((e: unknown) => {
+		const { data } = await APIClient.post('/v1/video-conference.start', { roomId, title }).catch((e: unknown) => {
 			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
 			this.startingNewCall = false;
+			this.emit('start/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
+
 			return Promise.reject(e);
 		});
 
@@ -279,8 +285,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			},
 		};
 
-		const { url } = await APIClient.v1.post('video-conference.join', {}, params).catch((e) => {
+		const { url } = await APIClient.post('/v1/video-conference.join', params).catch((e) => {
 			debug && console.error(`[VideoConf] Failed to join call ${callId}`);
+			this.emit('join/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
+
 			return Promise.reject(e);
 		});
 
@@ -338,7 +346,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.emit('direct/cancel', { uid, rid, callId });
 		this.emit('direct/stopped', { uid, rid, callId });
 
-		APIClient.v1.post('video-conference.cancel', { callId });
+		APIClient.post('/v1/video-conference.cancel', { callId });
 	}
 
 	private disconnect(): void {
@@ -522,7 +530,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.emit('direct/stopped', params);
 		this.currentCallData = undefined;
 
-		APIClient.v1.post('video-conference.cancel', { callId: params.callId });
+		APIClient.post('/v1/video-conference.cancel', { callId: params.callId });
 	}
 
 	private isCallDismissed(callId: string): boolean {

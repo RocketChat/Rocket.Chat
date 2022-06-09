@@ -129,7 +129,7 @@ const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
 	return {
-		lowerCaseName: String(name).toLowerCase(),
+		lowerCaseName: String(!room.prid ? name : fname).toLowerCase(),
 		lowerCaseFName: String(fname).toLowerCase(),
 	};
 };
@@ -145,7 +145,6 @@ const mergeSubRoom = (subscription) => {
 			usersCount: 1,
 			topic: 1,
 			encrypted: 1,
-			jitsiTimeout: 1,
 			// autoTranslate: 1,
 			// autoTranslateLanguage: 1,
 			description: 1,
@@ -198,7 +197,6 @@ const mergeSubRoom = (subscription) => {
 		uids,
 		usernames,
 		usersCount,
-		jitsiTimeout,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -237,7 +235,6 @@ const mergeSubRoom = (subscription) => {
 		uids,
 		usernames,
 		usersCount,
-		jitsiTimeout,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -281,7 +278,6 @@ const mergeRoomSub = (room) => {
 		uids,
 		usernames,
 		usersCount,
-		jitsiTimeout,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -336,7 +332,6 @@ const mergeRoomSub = (room) => {
 				priorityId,
 				livechatData,
 				departmentId,
-				jitsiTimeout,
 				ts,
 				source,
 				queuedAt,

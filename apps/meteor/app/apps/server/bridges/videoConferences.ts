@@ -1,8 +1,10 @@
 import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
 import { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 
 import { VideoConf } from '../../../../server/sdk';
 import { AppServerOrchestrator } from '../orchestrator';
+import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 
 export class AppVideoConferenceBridge extends VideoConferenceBridge {
 	// eslint-disable-next-line no-empty-function
@@ -25,5 +27,13 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 
 		const data = this.orch.getConverters()?.get('videoConferences').convertAppVideoConference(call) as VideoConference;
 		VideoConf.setProviderData(call._id, data.providerData);
+	}
+
+	protected async registerProvider(info: IVideoConfProvider): Promise<void> {
+		videoConfProviders.registerProvider(info.name);
+	}
+
+	protected async unRegisterProvider(info: IVideoConfProvider): Promise<void> {
+		videoConfProviders.unRegisterProvider(info.name);
 	}
 }

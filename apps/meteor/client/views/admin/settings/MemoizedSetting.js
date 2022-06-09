@@ -10,6 +10,7 @@ import FontSettingInput from './inputs/FontSettingInput';
 import GenericSettingInput from './inputs/GenericSettingInput';
 import IntSettingInput from './inputs/IntSettingInput';
 import LanguageSettingInput from './inputs/LanguageSettingInput';
+import LookupSettingInput from './inputs/LookupSettingInput';
 import MultiSelectSettingInput from './inputs/MultiSelectSettingInput';
 import PasswordSettingInput from './inputs/PasswordSettingInput';
 import RelativeUrlSettingInput from './inputs/RelativeUrlSettingInput';
@@ -51,6 +52,7 @@ const MemoizedSetting = ({
 			asset: AssetSettingInput,
 			roomPick: RoomPickSettingInput,
 			timezone: SelectTimezoneSettingInput,
+			lookup: LookupSettingInput,
 		}[type] || GenericSettingInput;
 
 	return (

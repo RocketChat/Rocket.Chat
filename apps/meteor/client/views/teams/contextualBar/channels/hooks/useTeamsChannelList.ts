@@ -22,7 +22,7 @@ export const useTeamsChannelList = (
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const apiEndPoint = useEndpoint('GET', 'teams.listRooms');
+	const apiEndPoint = useEndpoint('GET', '/v1/teams.listRooms');
 	const [teamsChannelList, setTeamsChannelList] = useState(() => new RecordList<IRoom>());
 	const reload = useCallback(() => setTeamsChannelList(new RecordList<IRoom>()), []);
 
@@ -41,8 +41,7 @@ export const useTeamsChannelList = (
 			});
 
 			return {
-				items: rooms.map(({ _updatedAt, lastMessage, lm, ts, jitsiTimeout, webRtcCallStartTime, ...room }) => ({
-					...(jitsiTimeout && { jitsiTimeout: new Date(jitsiTimeout) }),
+				items: rooms.map(({ _updatedAt, lastMessage, lm, ts, webRtcCallStartTime, ...room }) => ({
 					...(lm && { lm: new Date(lm) }),
 					...(ts && { ts: new Date(ts) }),
 					_updatedAt: new Date(_updatedAt),

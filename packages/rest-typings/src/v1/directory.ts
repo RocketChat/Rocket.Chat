@@ -36,7 +36,7 @@ const DirectorySchema = {
 export const isDirectoryProps = ajv.compile<DirectoryProps>(DirectorySchema);
 
 export type DirectoryEndpoint = {
-	directory: {
+	'/v1/directory': {
 		GET: (params: DirectoryProps) => PaginatedResult<{ result: IRoom[] }>;
 	};
 };
