@@ -23,7 +23,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const { value: allCustomFields } = useEndpointData('livechat/custom-fields');
+	const { value: allCustomFields } = useEndpointData('/v1/livechat/custom-fields');
 	const statusOptions: [string, string][] = [
 		['all', t('All')],
 		['closed', t('Closed')],

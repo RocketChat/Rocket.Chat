@@ -14,7 +14,7 @@ const CloudAccountConfirmation = (): ReactElement => {
 		saveWorkspaceData,
 	} = useSetupWizardContext();
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
-	const cloudConfirmationPoll = useEndpoint('GET', 'cloud.confirmationPoll');
+	const cloudConfirmationPoll = useEndpoint('GET', '/v1/cloud.confirmationPoll');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 

@@ -35,7 +35,7 @@ function OutgoingWebhookHistoryPage(props) {
 		[id, itemsPerPage, current],
 	);
 
-	const { value: data, phase: state, reload } = useEndpointData('integrations.history', query);
+	const { value: data, phase: state, reload } = useEndpointData('/v1/integrations.history', query);
 
 	const handleClearHistory = async () => {
 		try {

@@ -20,7 +20,7 @@ registerOmnichannelRoute('/managers', {
 
 registerOmnichannelRoute('/agents/:context?/:id?', {
 	name: 'omnichannel-agents',
-	component: lazy(() => import('./agents/AgentsRoute')),
+	component: lazy(() => import('./agents/AgentsPage')),
 });
 
 registerOmnichannelRoute('/webhooks', {
