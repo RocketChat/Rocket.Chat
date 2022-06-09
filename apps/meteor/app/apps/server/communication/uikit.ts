@@ -31,22 +31,6 @@ settings.watch('API_CORS_Origin', (value: string) => {
 		: [];
 });
 
-const corsOptions = {
-	origin: (origin: string, callback: Function): void => {
-		if (
-			!origin ||
-			!corsEnabled ||
-			allowListOrigins.includes('*') ||
-			allowListOrigins.includes(origin) ||
-			origin === settings.get('Site_Url')
-		) {
-			callback(null, true);
-		} else {
-			callback('Not allowed by CORS', false);
-		}
-	},
-};
-
 WebApp.connectHandlers.use(apiServer);
 
 // eslint-disable-next-line new-cap
@@ -89,7 +73,23 @@ router.use((req, res, next) => {
 	next();
 });
 
-apiServer.use('/api/apps/ui.interaction/', cors(corsOptions).rateLimiter, router); // didn't have the rateLimiter option
+const corsOptions = {
+	origin: (origin: string | undefined, callback: Function): void => {
+		if (
+			!origin ||
+			!corsEnabled ||
+			allowListOrigins.includes('*') ||
+			allowListOrigins.includes(origin) ||
+			origin === settings.get('Site_Url')
+		) {
+			callback(null, true);
+		} else {
+			callback('Not allowed by CORS', false);
+		}
+	},
+};
+
+apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router); // didn't have the rateLimiter option
 
 const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request): {} => {
 	if (type === UIKitIncomingInteractionType.BLOCK) {

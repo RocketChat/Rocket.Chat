@@ -50,7 +50,6 @@ export class AppMethods {
 	_addMethods(): void {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const instance = this;
-		const uid = Meteor.userId();
 
 		Meteor.methods({
 			'apps/is-enabled'() {
@@ -62,6 +61,7 @@ export class AppMethods {
 			},
 
 			'apps/go-enable': twoFactorRequired(function _appsGoEnable() {
+				const uid = Meteor.userId();
 				if (!uid) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 						method: 'apps/go-enable',
@@ -80,6 +80,7 @@ export class AppMethods {
 			}),
 
 			'apps/go-disable': twoFactorRequired(function _appsGoDisable() {
+				const uid = Meteor.userId();
 				if (!uid) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 						method: 'apps/go-enable',
