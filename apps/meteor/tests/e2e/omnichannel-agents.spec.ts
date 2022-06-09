@@ -5,7 +5,7 @@ import LoginPage from './utils/pageobjects/LoginPage';
 import SideNav from './utils/pageobjects/SideNav';
 import Agents from './utils/pageobjects/Agents';
 
-test.describe('[Agents]', () => {
+test.describe.only('[Agents]', () => {
 	let loginPage: LoginPage;
 	let page: Page;
 	let sideNav: SideNav;

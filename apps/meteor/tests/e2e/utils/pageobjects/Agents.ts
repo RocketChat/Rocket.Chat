@@ -27,12 +27,8 @@ export default class Agents extends BasePage {
 		return this.getPage().locator('table tr td:first-child div div div div');
 	}
 
-	public agentAddedStatus(): Locator {
-		return this.getPage().locator('table tr td:nth-child(4)');
-	}
-
 	public agentListStatus(): Locator {
-		return this.getPage().locator('table tr td:nth-child(4)');
+		return this.getPage().locator('table tr:first-child td:nth-child(4)');
 	}
 
 	public userInfoTab(): Locator {
