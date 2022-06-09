@@ -1,11 +1,12 @@
 import { Box, Icon, TextInput, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, ChangeEvent, FormEvent, memo, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, FormEvent, memo, useCallback, useEffect, useState, ReactNode, ReactElement } from 'react';
 
 type FilterByTextProps = {
 	placeholder?: string;
 	onChange: (filter: { text: string }) => void;
 	inputRef?: () => void;
+	children?: ReactNode;
 };
 
 type FilterByTextPropsWithButton = FilterByTextProps & {
@@ -17,7 +18,13 @@ type FilterByTextPropsWithButton = FilterByTextProps & {
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children, ...props }) => {
+const FilterByText = ({
+	placeholder,
+	onChange: setFilter,
+	inputRef,
+	children,
+	...props
+}: FilterByTextProps | FilterByTextPropsWithButton): ReactElement => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -58,4 +65,4 @@ const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter,
 	);
 };
 
-export default memo<FC<FilterByTextProps>>(FilterByText);
+export default memo<FilterByTextProps | FilterByTextPropsWithButton>(FilterByText);
