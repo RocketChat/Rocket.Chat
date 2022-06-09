@@ -132,30 +132,24 @@ class AppClientOrchestrator {
 
 	public async getApps(): Promise<App[]> {
 		const result = await APIClient.get('/apps');
-		if ('apps' in result) {
-			return result.apps;
-		}
-		throw new Error('Apps not found');
+
+		return result;
 	}
 
 	public async getAppsFromMarketplace(): Promise<App[]> {
 		const result = await APIClient.get('/apps', { marketplace: 'true' });
 
-		if ('apps' in result) {
-			const { apps: appsOverviews } = result;
-			return appsOverviews.map((app) => {
-				const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt } = app;
-				return {
-					...latest,
-					price,
-					pricingPlans,
-					purchaseType,
-					isEnterpriseOnly,
-					modifiedAt,
-				};
-			});
-		}
-		throw new Error('Apps not found');
+		return result.map((app: App) => {
+			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt } = app;
+			return {
+				...latest,
+				price,
+				pricingPlans,
+				purchaseType,
+				isEnterpriseOnly,
+				modifiedAt,
+			};
+		});
 	}
 
 	public async getAppsOnBundle(bundleId: string): Promise<App[]> {
@@ -257,12 +251,10 @@ class AppClientOrchestrator {
 		throw new Error('Failed to build external url');
 	}
 
-	public async getCategories(): Promise<Serialized<ICategory>[]> {
+	public async getCategories(): Promise<Serialized<ICategory[]>> {
 		const result = await APIClient.get('/apps', { categories: 'true' });
-		if ('categories' in result) {
-			return result.categories;
-		}
-		throw new Error('Categories not found');
+
+		return result;
 	}
 
 	public getUIHost(): RealAppsEngineUIHost {

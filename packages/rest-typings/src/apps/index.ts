@@ -77,18 +77,14 @@ export type AppsEndpoints = {
 					version?: string;
 					appId?: string;
 					details?: 'true' | 'false';
-			  }) => {
-					apps: App[];
-			  })
+			  }) => App[])
 			| ((params: { categories: 'true' | 'false' }) => {
-					categories: {
-						createdDate: string;
-						description: string;
-						id: string;
-						modifiedDate: Date;
-						title: string;
-					}[];
-			  });
+					createdDate: string;
+					description: string;
+					id: string;
+					modifiedDate: Date;
+					title: string;
+			  }[]);
 
 		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted: IPermission[] }) => {
 			app: App;
