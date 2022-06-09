@@ -43,8 +43,8 @@ export class AppMethods {
 		return typeof this._orch !== 'undefined' && this._orch.isEnabled();
 	}
 
-	isLoaded(): boolean | '' | 0 | undefined {
-		return typeof this._orch !== 'undefined' && this._orch.isEnabled() && this._orch.isLoaded();
+	isLoaded(): boolean{
+		return Boolean(typeof this._orch !== 'undefined' && this._orch.isEnabled() && this._orch.isLoaded());
 	}
 
 	_addMethods(): void {
