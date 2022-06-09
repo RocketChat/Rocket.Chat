@@ -12,13 +12,7 @@ type RowProps = {
 			username: string;
 		};
 	};
-	data: {
-		SideBarItemTemplate: ReactElement;
-		avatarTemplate: any;
-		extended: boolean;
-		t: (key: string) => string;
-		useRealName: boolean;
-	};
+	data: Record<string, any>;
 };
 
 const Row = ({ item, data }: RowProps): ReactElement => {

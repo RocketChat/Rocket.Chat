@@ -127,6 +127,7 @@ export interface ServerMethods {
 	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
 	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
 	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
+	'spotlight': (...args: any[]) => any;
 }
 
 export type ServerMethodName = keyof ServerMethods;

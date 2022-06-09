@@ -1,11 +1,24 @@
+import { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue, useStableArray, useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useUserPreference, useUserSubscriptions, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import React, {
+	forwardRef,
+	useState,
+	useMemo,
+	useEffect,
+	useRef,
+	ReactElement,
+	MutableRefObject,
+	SetStateAction,
+	Dispatch,
+	FormEventHandler,
+	Ref,
+} from 'react';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
@@ -25,7 +38,7 @@ const shortcut = ((): string => {
 	return '(\u2303+K)';
 })();
 
-const useSpotlight = (filterText: string, usernames: string[]): { data: { users: string[]; rooms: string[] }; status: string } => {
+const useSpotlight = (filterText: string, usernames: string[]): { data: { users: IUser[]; rooms: IRoom[] }; status: string } => {
 	const expression = /(@|#)?(.*)/i;
 	const [, mention, name] = filterText.match(expression) || [];
 
@@ -61,11 +74,10 @@ const options = {
 	},
 };
 
-const useSearchItems = (filterText) => {
+const useSearchItems = (filterText: string): any => {
 	const expression = /(@|#)?(.*)/i;
-	const teste = filterText.match(expression);
+	const [, type, name] = filterText.match(expression) || [];
 
-	const [, type, name] = teste;
 	const query = useMemo(() => {
 		const filterRegex = new RegExp(escapeRegExp(name), 'i');
 
@@ -77,23 +89,33 @@ const useSearchItems = (filterText) => {
 		};
 	}, [name, type]);
 
-	const localRooms = useUserSubscriptions(query, options);
+	const localRooms: { rid: string; t: RoomType; _id: string; name: string; uids?: string }[] = useUserSubscriptions(query, options);
 
-	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean));
+	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean)) as string[];
 
 	const { data: spotlight, status } = useSpotlight(filterText, usernamesFromClient);
 
 	return useMemo(() => {
-		const resultsFromServer = [];
+		const resultsFromServer: any[] = [];
 
-		const filterUsersUnique = ({ _id }, index, arr) => index === arr.findIndex((user) => _id === user._id);
-		const roomFilter = (room) =>
+		const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
+			index === arr.findIndex((user) => _id === user._id);
+
+		const roomFilter = (room: IRoom): boolean =>
 			!localRooms.find(
-				(item) => (room.t === 'd' && room.uids?.length > 1 && room.uids.includes(item._id)) || [item.rid, item._id].includes(room._id),
+				(item) =>
+					(room.t === 'd' && room.uids && room.uids.length > 1 && room.uids?.includes(item._id)) || [item.rid, item._id].includes(room._id),
 			);
-		const usersfilter = (user) => !localRooms.find((room) => room.t === 'd' && room.uids?.length === 2 && room.uids.includes(user._id));
 
-		const userMap = (user) => ({
+		const usersfilter = (user: IUser): boolean =>
+			!localRooms.find((room) => room.t === 'd' && room.uids && room.uids?.length === 2 && room.uids.includes(user._id));
+
+		const userMap = (user: {
+			_id: string;
+			name?: string;
+			username?: string;
+			avatarETag?: string;
+		}): Pick<IRoom, '_id' | 't' | 'fname' | 'name' | 'avatarETag'> => ({
 			_id: user._id,
 			t: 'd',
 			name: user.username,
@@ -111,7 +133,7 @@ const useSearchItems = (filterText) => {
 	}, [localRooms, name, spotlight]);
 };
 
-const useInput = (initial) => {
+const useInput = (initial: string): { value: string; onChange: FormEventHandler; setValue: Dispatch<SetStateAction<string>> } => {
 	const [value, setValue] = useState(initial);
 	const onChange = useMutableCallback((e) => {
 		setValue(e.currentTarget.value);
@@ -119,12 +141,12 @@ const useInput = (initial) => {
 	return { value, onChange, setValue };
 };
 
-const toggleSelectionState = (next, current, input) => {
-	input.setAttribute('aria-activedescendant', next.id);
-	next.setAttribute('aria-selected', true);
+const toggleSelectionState = (next: HTMLElement, current: HTMLElement | undefined, input: HTMLInputElement | undefined): void => {
+	input?.setAttribute('aria-activedescendant', next.id);
+	next.setAttribute('aria-selected', 'true');
 	next.classList.add('rcx-sidebar-item--selected');
 	if (current) {
-		current.setAttribute('aria-selected', false);
+		current.removeAttribute('aria-selected');
 		current.classList.remove('rcx-sidebar-item--selected');
 	}
 };
@@ -132,17 +154,22 @@ const toggleSelectionState = (next, current, input) => {
 /**
  * @type import('react').ForwardRefExoticComponent<{ onClose: unknown } & import('react').RefAttributes<HTMLElement>>
  */
-const SearchList = forwardRef(function SearchList({ onClose }, ref) {
+
+type SearchListProps = {
+	onClose: () => void;
+};
+
+const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, ref): ReactElement {
 	const listId = useUniqueId();
 	const t = useTranslation();
 	const { setValue: setFilterValue, ...filter } = useInput('');
 
-	const autofocus = useAutoFocus();
+	const autofocus = useAutoFocus<HTMLElement>();
 
-	const listRef = useRef();
-	const boxRef = useRef();
+	const listRef = useRef<VirtuosoHandle>(null);
+	const boxRef = useRef<HTMLDivElement>(null);
 
-	const selectedElement = useRef();
+	const selectedElement: MutableRefObject<HTMLElement | null | undefined> = useRef(null);
 	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
@@ -176,13 +203,13 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 		let nextSelectedElement = null;
 
 		if (dir === 'up') {
-			nextSelectedElement = selectedElement.current.parentElement.previousSibling.querySelector('a');
+			nextSelectedElement = (selectedElement.current?.parentElement?.previousSibling as HTMLElement).querySelector('a');
 		} else {
-			nextSelectedElement = selectedElement.current.parentElement.nextSibling.querySelector('a');
+			nextSelectedElement = (selectedElement.current?.parentElement?.nextSibling as HTMLElement).querySelector('a');
 		}
 
 		if (nextSelectedElement) {
-			toggleSelectionState(nextSelectedElement, selectedElement.current, autofocus.current);
+			toggleSelectionState(nextSelectedElement, selectedElement.current || undefined, autofocus.current);
 			return nextSelectedElement;
 		}
 		return selectedElement.current;
@@ -190,12 +217,12 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 
 	const resetCursor = useMutableCallback(() => {
 		itemIndexRef.current = 0;
-		listRef.current.scrollToIndex({ index: itemIndexRef.current });
+		listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 
 		selectedElement.current = boxRef.current?.querySelector('a.rcx-sidebar-item');
 
 		if (selectedElement.current) {
-			toggleSelectionState(selectedElement.current, undefined, autofocus.current);
+			toggleSelectionState(selectedElement.current, undefined, autofocus?.current);
 		}
 	});
 
@@ -208,10 +235,10 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 	}, [filterText, resetCursor]);
 
 	useEffect(() => {
-		if (!autofocus.current) {
+		if (!autofocus?.current) {
 			return;
 		}
-		const unsubscribe = tinykeys(autofocus.current, {
+		const unsubscribe = tinykeys(autofocus?.current, {
 			Escape: (event) => {
 				event.preventDefault();
 				setFilterValue((value) => {
@@ -226,13 +253,13 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 			ArrowUp: () => {
 				const currentElement = changeSelection('up');
 				itemIndexRef.current = Math.max(itemIndexRef.current - 1, 0);
-				listRef.current.scrollToIndex({ index: itemIndexRef.current });
+				listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 				selectedElement.current = currentElement;
 			},
 			ArrowDown: () => {
 				const currentElement = changeSelection('down');
 				itemIndexRef.current = Math.min(itemIndexRef.current + 1, items?.length + 1);
-				listRef.current.scrollToIndex({ index: itemIndexRef.current });
+				listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 				selectedElement.current = currentElement;
 			},
 			Enter: () => {
@@ -241,7 +268,7 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 				}
 			},
 		});
-		return () => {
+		return (): void => {
 			unsubscribe();
 		};
 	}, [autofocus, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
@@ -289,7 +316,7 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 					totalCount={items?.length}
 					data={items}
 					components={{ Scroller: ScrollerWithCustomProps }}
-					itemContent={(index, data) => <Row data={itemData} item={data} />}
+					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 					ref={listRef}
 				/>
 			</Box>
