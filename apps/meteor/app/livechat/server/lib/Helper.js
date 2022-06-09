@@ -531,8 +531,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { token } = guest;
-	// TODO: refactor this to use normal await
-	Promise.await(Livechat.setDepartmentForGuest({ token, department: departmentId }));
+	await Livechat.setDepartmentForGuest({ token, department: departmentId });
 	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;
