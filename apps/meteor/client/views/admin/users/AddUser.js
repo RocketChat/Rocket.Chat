@@ -13,7 +13,7 @@ export function AddUser({ roles, onReload, ...props }) {
 
 	const router = useRoute('admin-users');
 
-	const { value: roleData } = useEndpointData('roles.list', '');
+	const { value: roleData } = useEndpointData('/v1/roles.list', '');
 	const [errors, setErrors] = useState({});
 
 	const validationKeys = {

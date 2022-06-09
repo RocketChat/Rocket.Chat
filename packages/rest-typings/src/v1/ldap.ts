@@ -22,17 +22,17 @@ const ldapTestSearchPropsSchema = {
 export const isLdapTestSearch = ajv.compile<ldapTestSearchProps>(ldapTestSearchPropsSchema);
 
 export type LDAPEndpoints = {
-	'ldap.testConnection': {
+	'/v1/ldap.testConnection': {
 		POST: () => {
 			message: string;
 		};
 	};
-	'ldap.testSearch': {
+	'/v1/ldap.testSearch': {
 		POST: (params: ldapTestSearchProps) => {
 			message: string;
 		};
 	};
-	'ldap.syncNow': {
+	'/v1/ldap.syncNow': {
 		POST: () => {
 			message: string;
 		};

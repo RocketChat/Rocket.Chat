@@ -17,7 +17,7 @@ type AgentInfoProps = {
 
 export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
-	const result = useEndpointData(`livechat/users/agent/${uid}`);
+	const result = useEndpointData(`/v1/livechat/users/agent/${uid}`);
 
 	const { useMaxChatsPerAgentDisplay } = useFormsSubscription();
 
