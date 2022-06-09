@@ -114,7 +114,7 @@ Template.visitorEdit.onCreated(async function () {
 	this.autorun(async () => {
 		const { visitorId } = Template.currentData();
 		if (visitorId) {
-			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${visitorId}`);
+			const { visitor } = await APIClient.get('/v1/livechat/visitors.info', { visitorId });
 			this.visitor.set(visitor);
 		}
 	});
@@ -122,15 +122,15 @@ Template.visitorEdit.onCreated(async function () {
 	const rid = Template.currentData().roomId;
 
 	this.autorun(async () => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${rid}`);
-		const { customFields } = await APIClient.v1.get(`livechat/custom-fields?count=${CUSTOM_FIELDS_COUNT}`);
+		const { room } = await APIClient.get('/v1/rooms.info', { roomId: rid });
+		const { customFields } = await APIClient.get('/v1/livechat/custom-fields', { count: CUSTOM_FIELDS_COUNT });
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 		this.customFields.set(customFields || []);
 	});
 
 	const uid = Meteor.userId();
-	const { departments } = await APIClient.v1.get(`livechat/agents/${uid}/departments`);
+	const { departments } = await APIClient.get(`/v1/livechat/agents/${uid}/departments`);
 	const agentDepartments = departments.map((dept) => dept.departmentId);
 	this.agentDepartments.set(agentDepartments);
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {

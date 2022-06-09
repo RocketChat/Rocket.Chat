@@ -12,6 +12,7 @@ declare module 'meteor/mongo' {
 		onSkippedEntries(callback: Function): void;
 		waitUntilCaughtUp(): void;
 		_defineTooFarBehind(value: number): void;
+		_entryQueue?: unknown[];
 	}
 
 	interface MongoConnection {

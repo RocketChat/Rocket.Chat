@@ -41,8 +41,10 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 		agentId: string;
 		ts: Date;
 	};
-
 	livechatData?: ILivechatData;
+	contactManager?: {
+		username: string;
+	};
 }
 
 export interface ILivechatVisitorDTO {

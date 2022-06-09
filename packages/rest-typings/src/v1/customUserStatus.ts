@@ -36,20 +36,20 @@ const CustomUserStatusListSchema = {
 export const isCustomUserStatusListProps = ajv.compile<CustomUserStatusListProps>(CustomUserStatusListSchema);
 
 export type CustomUserStatusEndpoints = {
-	'custom-user-status.list': {
+	'/v1/custom-user-status.list': {
 		GET: (params: CustomUserStatusListProps) => PaginatedResult<{
 			statuses: IUserStatus[];
 		}>;
 	};
-	'custom-user-status.create': {
+	'/v1/custom-user-status.create': {
 		POST: (params: { name: string; statusType?: string }) => {
 			customUserStatus: ICustomUserStatus;
 		};
 	};
-	'custom-user-status.delete': {
+	'/v1/custom-user-status.delete': {
 		POST: (params: { customUserStatusId: string }) => void;
 	};
-	'custom-user-status.update': {
+	'/v1/custom-user-status.update': {
 		POST: (params: { id: string; name?: string; statusType?: string }) => {
 			customUserStatus: ICustomUserStatus;
 		};

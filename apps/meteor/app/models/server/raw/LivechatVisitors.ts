@@ -1,5 +1,14 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { AggregationCursor, Cursor, DeleteWriteOpResultObject, FilterQuery, FindOneOptions, UpdateQuery, WriteOpResult } from 'mongodb';
+import {
+	AggregationCursor,
+	Cursor,
+	DeleteWriteOpResultObject,
+	FilterQuery,
+	FindOneOptions,
+	UpdateQuery,
+	WriteOpResult,
+	UpdateWriteOpResult,
+} from 'mongodb';
 import type { ILivechatVisitor, ISetting } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
@@ -268,20 +277,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		return this.removeById(_id);
 	}
 
-	removeContactManagerByUsername(manager: string): Promise<WriteOpResult> {
-		const query = {
-			contactManager: {
-				username: manager,
-			},
-		};
-		const update: UpdateQuery<ILivechatVisitor> = {
-			$unset: {
-				contactManager: 1,
-			},
-		};
-		return this.update(query, update);
-	}
-
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<WriteOpResult | void> {
 		const update: DeepWriteable<UpdateQuery<ILivechatVisitor>> = {
 			$addToSet: {},
@@ -310,6 +305,21 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		}
 
 		return this.update({ _id }, update as UpdateQuery<ILivechatVisitor>);
+	}
+
+	removeContactManagerByUsername(manager: string): Promise<UpdateWriteOpResult> {
+		return this.updateMany(
+			{
+				contactManager: {
+					username: manager,
+				},
+			},
+			{
+				$unset: {
+					contactManager: true,
+				},
+			},
+		);
 	}
 }
 

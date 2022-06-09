@@ -23,16 +23,16 @@ const licensesAddPropsSchema = {
 export const isLicensesAddProps = ajv.compile<licensesAddProps>(licensesAddPropsSchema);
 
 export type LicensesEndpoints = {
-	'licenses.get': {
+	'/v1/licenses.get': {
 		GET: () => { licenses: Array<ILicense> };
 	};
-	'licenses.add': {
+	'/v1/licenses.add': {
 		POST: (params: licensesAddProps) => void;
 	};
-	'licenses.maxActiveUsers': {
+	'/v1/licenses.maxActiveUsers': {
 		GET: () => { maxActiveUsers: number | null; activeUsers: number };
 	};
-	'licenses.requestSeatsLink': {
+	'/v1/licenses.requestSeatsLink': {
 		GET: () => { url: string };
 	};
 };

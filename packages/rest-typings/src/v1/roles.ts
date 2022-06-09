@@ -198,12 +198,12 @@ type RoleSyncProps = {
 };
 
 export type RolesEndpoints = {
-	'roles.list': {
+	'/v1/roles.list': {
 		GET: () => {
 			roles: IRole[];
 		};
 	};
-	'roles.sync': {
+	'/v1/roles.sync': {
 		GET: (params: RoleSyncProps) => {
 			roles: {
 				update: IRole[];
@@ -211,36 +211,36 @@ export type RolesEndpoints = {
 			};
 		};
 	};
-	'roles.create': {
+	'/v1/roles.create': {
 		POST: (params: RoleCreateProps) => {
 			role: IRole;
 		};
 	};
 
-	'roles.addUserToRole': {
+	'/v1/roles.addUserToRole': {
 		POST: (params: RoleAddUserToRoleProps) => {
 			role: IRole;
 		};
 	};
 
-	'roles.getUsersInRole': {
+	'/v1/roles.getUsersInRole': {
 		GET: (params: RolesGetUsersInRoleProps) => {
 			users: IUserInRole[];
 			total: number;
 		};
 	};
 
-	'roles.update': {
+	'/v1/roles.update': {
 		POST: (role: RoleUpdateProps) => {
 			role: IRole;
 		};
 	};
 
-	'roles.delete': {
+	'/v1/roles.delete': {
 		POST: (prop: RoleDeleteProps) => void;
 	};
 
-	'roles.removeUserFromRole': {
+	'/v1/roles.removeUserFromRole': {
 		POST: (props: RoleRemoveUserFromRoleProps) => {
 			role: IRole;
 		};
