@@ -27,7 +27,6 @@ export const getDefaultUserFields = (): DefaultUserFields => ({
 	'services.github': 1,
 	'services.gitlab': 1,
 	'services.tokenpass': 1,
-	'services.blockstack': 1,
 	'services.password.bcrypt': 1,
 	'services.totp.enabled': 1,
 	'services.email2fa.enabled': 1,

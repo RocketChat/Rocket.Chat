@@ -1,13 +1,26 @@
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models';
+import { Users } from '../../../models/server/raw';
 
 export const Contacts = {
 	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
 		check(token, String);
 
 		const visitorEmail = s.trim(email).toLowerCase();
+
+		if (contactManager?.username) {
+			// verify if the user exists with this username and has a livechat-agent role
+			const user = Promise.await(Users.findOneByUsername(contactManager.username, { projection: { roles: 1 } }));
+			if (!user) {
+				throw new Meteor.Error('error-contact-manager-not-found', `No user found with username ${contactManager.username}`);
+			}
+			if (!user.roles || !Array.isArray(user.roles) || !user.roles.includes('livechat-agent')) {
+				throw new Meteor.Error('error-invalid-contact-manager', 'The contact manager must have the role "livechat-agent"');
+			}
+		}
 
 		let contactId;
 		const updateUser = {

@@ -17,7 +17,7 @@ export const useThreadsList = (
 } => {
 	const threadsList = useMemo(() => new ThreadsList(options), [options]);
 
-	const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
+	const getThreadsList = useEndpoint('GET', '/v1/chat.getThreadsList');
 
 	const fetchMessages = useCallback(
 		async (start, end) => {
