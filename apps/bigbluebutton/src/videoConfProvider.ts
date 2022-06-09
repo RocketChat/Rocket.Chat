@@ -1,3 +1,4 @@
+import { HttpStatusCode } from "@rocket.chat/apps-engine/definition/accessors";
 import type { IVideoConferenceUser } from "@rocket.chat/apps-engine/definition/videoConferences";
 import type { IVideoConfProvider, IVideoConferenceOptions, VideoConfData, VideoConfDataExtended } from "@rocket.chat/apps-engine/definition/videoConfProviders";
 import type { BigBlueButtonApp } from "./BigBlueButtonApp";
@@ -79,7 +80,7 @@ export class BBBProvider implements IVideoConfProvider {
 
 	public secret: string = '';
 
-	public name = 'Big Blue Button';
+	public name = 'BigBlueButton';
 
 	public shaType: 'sha256' | 'sha1' = 'sha1';
 
@@ -91,11 +92,48 @@ export class BBBProvider implements IVideoConfProvider {
 	public async generateUrl(call: VideoConfData): Promise<string> {
 		this.checkConfiguration();
 
+		this.createMeeting(call);
+
+		return this.getUrlFor('join', {
+			password: 'rocket.chat.attendee',
+			meetingID: call._id,
+			fullName: 'Guest',
+			userID: 'guest',
+			joinViaHtml5: true,
+			guest: true,
+		});
+	}
+
+	public async customizeUrl(call: VideoConfDataExtended, user: IVideoConferenceUser, options: IVideoConferenceOptions): Promise<string> {
+		if (!user) {
+			return this.getUrlFor('join', {
+				password: 'rocket.chat.attendee',
+				meetingID: call._id,
+				fullName: 'Guest',
+				userID: 'guest',
+				joinViaHtml5: true,
+				guest: true,
+			});
+		}
+
+		const isModerator = call.createdBy._id === user._id;
+
+		return this.getUrlFor('join', {
+			password: isModerator ? 'rocket.chat.moderator' : 'rocket.chat.attendee',
+			meetingID: call._id,
+			fullName: user.name || user.username,
+			userID: user._id,
+			joinViaHtml5: true,
+			avatarURL: Meteor.absoluteUrl(`avatar/${user.username}`),
+		});
+	}
+
+	private async createMeeting(call: VideoConfData): Promise<void> {
 		const createUrl = this.getUrlFor('create', {
 			name: call.type === 'direct' ? 'Direct' : call.title || 'Unnamed',
 			meetingID: call._id,
-			attendeePW: 'ap',
-			moderatorPW: 'mp',
+			attendeePW: 'rocket.chat.attendee',
+			moderatorPW: 'rocket.chat.moderator',
 			welcome: '<br>Welcome to <b>%%CONFNAME%%</b>!',
 			meta_html5chat: false,
 			meta_html5navbar: false,
@@ -111,6 +149,7 @@ export class BBBProvider implements IVideoConfProvider {
 
 		const doc = this.parseString(content);
 		if (!doc?.response?.returnCode?.[0]) {
+			this.app.getLogger().error("Failed to create BBB Video Conference.")
 			throw new Error('Failed to create BBB video conference');
 		}
 
@@ -120,14 +159,11 @@ export class BBBProvider implements IVideoConfProvider {
 			callbackURL: (`api/v1/videoconference.bbb.update/${call._id}`),
 		});
 
-
-
-
-		// return `${this.url}/${call._id}`;
-	}
-
-	public async customizeUrl(call: VideoConfDataExtended, user: IVideoConferenceUser, options: IVideoConferenceOptions): Promise<string> {
-		return call.url;
+		const hookResult = await this.app.getAccessors().http.get(hookApi)
+		if (hookResult.statusCode !== HttpStatusCode.OK) {
+			this.app.getLogger().error("Failed to create BBB Video Conference.")
+			throw new Error('Failed to create BBB video conference');
+		}
 	}
 
 	private getParser() {

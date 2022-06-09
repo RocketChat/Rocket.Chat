@@ -6,6 +6,7 @@
 		"@rocket.chat/apps-engine": "../../../Rocket.Chat.Apps-engine",
 		"@types/jest": "^27.4.1",
 		"@types/node": "14.14.6",
+		"@types/xml2js": "^0",
 		"eslint": "^8.12.0",
 		"jest": "^27.5.1",
 		"ts-jest": "^27.1.4",
@@ -21,5 +22,8 @@
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"dependencies": {
+		"xml2js": "^0.4.23"
+	}
 }

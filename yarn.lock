@@ -4224,7 +4224,7 @@ __metadata:
 
 "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fbigbluebutton%40workspace%3Aapps%2Fbigbluebutton":
   version: 1.33.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=58626d&locator=%40rocket.chat%2Fbigbluebutton%40workspace%3Aapps%2Fbigbluebutton"
+  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=a37d48&locator=%40rocket.chat%2Fbigbluebutton%40workspace%3Aapps%2Fbigbluebutton"
   dependencies:
     adm-zip: ^0.4.9
     cryptiles: ^4.1.3
@@ -4232,13 +4232,13 @@ __metadata:
     semver: ^5.5.0
     stack-trace: 0.0.10
     uuid: ^3.2.1
-  checksum: fb77bcc3294aadd46c089f5eea2f6e29e7102038e5b1bef25827eb5940bb1743780258a3012baf445ea3eb6449043e142aa8d1c91ba604f99dd8e06c0cf517c3
+  checksum: 4cc2dce5330a1fa8920b7a24b74d00efa88a35d940efad29a5bac46c83bb6ee432674edc89596e164a427871a1cd71d4d829eb4a2d1a478cc3a956414fb1e1c9
   languageName: node
   linkType: hard
 
 "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fjitsi%40workspace%3Aapps%2Fjitsi":
   version: 1.33.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=58626d&locator=%40rocket.chat%2Fjitsi%40workspace%3Aapps%2Fjitsi"
+  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=a37d48&locator=%40rocket.chat%2Fjitsi%40workspace%3Aapps%2Fjitsi"
   dependencies:
     adm-zip: ^0.4.9
     cryptiles: ^4.1.3
@@ -4246,13 +4246,13 @@ __metadata:
     semver: ^5.5.0
     stack-trace: 0.0.10
     uuid: ^3.2.1
-  checksum: fb77bcc3294aadd46c089f5eea2f6e29e7102038e5b1bef25827eb5940bb1743780258a3012baf445ea3eb6449043e142aa8d1c91ba604f99dd8e06c0cf517c3
+  checksum: 4cc2dce5330a1fa8920b7a24b74d00efa88a35d940efad29a5bac46c83bb6ee432674edc89596e164a427871a1cd71d4d829eb4a2d1a478cc3a956414fb1e1c9
   languageName: node
   linkType: hard
 
 "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
   version: 1.33.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=58626d&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
+  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=a37d48&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
   dependencies:
     adm-zip: ^0.4.9
     cryptiles: ^4.1.3
@@ -4260,13 +4260,13 @@ __metadata:
     semver: ^5.5.0
     stack-trace: 0.0.10
     uuid: ^3.2.1
-  checksum: fb77bcc3294aadd46c089f5eea2f6e29e7102038e5b1bef25827eb5940bb1743780258a3012baf445ea3eb6449043e142aa8d1c91ba604f99dd8e06c0cf517c3
+  checksum: 4cc2dce5330a1fa8920b7a24b74d00efa88a35d940efad29a5bac46c83bb6ee432674edc89596e164a427871a1cd71d4d829eb4a2d1a478cc3a956414fb1e1c9
   languageName: node
   linkType: hard
 
 "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fpexip%40workspace%3Aapps%2Fpexip":
   version: 1.33.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=58626d&locator=%40rocket.chat%2Fpexip%40workspace%3Aapps%2Fpexip"
+  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=a37d48&locator=%40rocket.chat%2Fpexip%40workspace%3Aapps%2Fpexip"
   dependencies:
     adm-zip: ^0.4.9
     cryptiles: ^4.1.3
@@ -4274,7 +4274,7 @@ __metadata:
     semver: ^5.5.0
     stack-trace: 0.0.10
     uuid: ^3.2.1
-  checksum: fb77bcc3294aadd46c089f5eea2f6e29e7102038e5b1bef25827eb5940bb1743780258a3012baf445ea3eb6449043e142aa8d1c91ba604f99dd8e06c0cf517c3
+  checksum: 4cc2dce5330a1fa8920b7a24b74d00efa88a35d940efad29a5bac46c83bb6ee432674edc89596e164a427871a1cd71d4d829eb4a2d1a478cc3a956414fb1e1c9
   languageName: node
   linkType: hard
 
@@ -4299,10 +4299,12 @@ __metadata:
     "@rocket.chat/apps-engine": ../../../Rocket.Chat.Apps-engine
     "@types/jest": ^27.4.1
     "@types/node": 14.14.6
+    "@types/xml2js": ^0
     eslint: ^8.12.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
     typescript: ~4.3.4
+    xml2js: ^0.4.23
   languageName: unknown
   linkType: soft
 
@@ -8225,6 +8227,15 @@ __metadata:
     "@types/node": "*"
     xpath: 0.0.27
   checksum: 8fe8fc709ba070c46249800105301a533eb95e1a7a696986e4ac753aed1d238a826bce2b1e0d2548559e03f4e57bee27e26df69417766814bc0dd6a9bf2a1763
+  languageName: node
+  linkType: hard
+
+"@types/xml2js@npm:^0":
+  version: 0.4.11
+  resolution: "@types/xml2js@npm:0.4.11"
+  dependencies:
+    "@types/node": "*"
+  checksum: d0e7d2a8c7e0a53147c777a6756bdea0eb26a3de0d3c1f42c17e63332e4e2dc532f687c19ca26a0518336f5de60e1ec4345d7ef71e7ba0656fcf3390c9388eb5
   languageName: node
   linkType: hard
 
@@ -34378,7 +34389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml2js@npm:0.4.23":
+"xml2js@npm:0.4.23, xml2js@npm:^0.4.23":
   version: 0.4.23
   resolution: "xml2js@npm:0.4.23"
   dependencies:
