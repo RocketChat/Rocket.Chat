@@ -1,6 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
+import { ButtonGroup } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-const Footer: FC = ({ children }) => <Box mb='x8'>{children}</Box>;
+const Footer: FC = ({ children }) => <ButtonGroup>{children}</ButtonGroup>;
 
 export default Footer;

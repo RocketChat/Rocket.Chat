@@ -28,7 +28,7 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 	const canViewEngagement = useHasLicense('engagement-dashboard');
 
 	return (
-		<Card>
+		<Card data-qa-id='usage-card'>
 			<Card.Title>{t('Usage')}</Card.Title>
 			<Card.Body flexDirection={vertical ? 'column' : 'row'}>
 				<Card.Col>
@@ -104,7 +104,7 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 				<Card.Divider />
 				<Card.Col>
 					<Card.Col.Section>
-						<Card.Col.Title>{t('Rooms')}</Card.Col.Title>
+						<Card.Col.Title>{t('Total_rooms')}</Card.Col.Title>
 						<TextSeparator
 							label={
 								<>
@@ -155,7 +155,7 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 						/>
 					</Card.Col.Section>
 					<Card.Col.Section>
-						<Card.Col.Title>{t('Messages')}</Card.Col.Title>
+						<Card.Col.Title>{t('Total_messages')}</Card.Col.Title>
 						<TextSeparator label={t('Stats_Total_Messages')} value={statistics.totalMessages} />
 						<TextSeparator label={t('Total_Threads')} value={statistics.totalThreads} />
 						<TextSeparator label={t('Stats_Total_Messages_Channel')} value={statistics.totalChannelMessages} />

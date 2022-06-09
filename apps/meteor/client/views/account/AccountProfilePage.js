@@ -47,7 +47,7 @@ const AccountProfilePage = () => {
 	const logout = useLogout();
 	const [loggingOut, setLoggingOut] = useState(false);
 
-	const logoutOtherClients = useEndpoint('POST', 'users.logoutOtherClients');
+	const logoutOtherClients = useEndpoint('POST', '/v1/users.logoutOtherClients');
 	const deleteOwnAccount = useMethod('deleteUserOwnAccount');
 	const saveFn = useMethod('saveUserProfile');
 

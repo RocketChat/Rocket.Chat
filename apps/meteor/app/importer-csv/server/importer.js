@@ -1,7 +1,7 @@
 import { Random } from 'meteor/random';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import { Users } from '../../models/server';
+import { Users, Settings as SettingsRaw } from '../../models/server';
 
 export class CsvImporter extends Base {
 	constructor(info, importRecord) {
@@ -119,7 +119,8 @@ export class CsvImporter extends Base {
 					});
 				}
 
-				super.updateRecord({ 'count.users': parsedUsers.length });
+				SettingsRaw.incrementValueById('CSV_Importer_Count', usersCount);
+				super.updateRecord({ 'count.users': usersCount });
 				return increaseProgressCount();
 			}
 
