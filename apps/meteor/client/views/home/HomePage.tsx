@@ -1,5 +1,5 @@
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
-import { useSetting, useLayout, useAllPermissions } from '@rocket.chat/ui-contexts';
+import { useSetting, useLayout, useTranslation, useAllPermissions } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import BurgerMenu from '../../components/BurgerMenu';
@@ -13,6 +13,7 @@ const custom = false;
 const editLayoutPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 
 const HomePage = (): ReactElement => {
+	const t = useTranslation();
 	const title = useSetting('Layout_Home_Title') as string;
 	const { isMobile } = useLayout();
 	const canEditLayout = useAllPermissions(editLayoutPermissions);
@@ -35,7 +36,7 @@ const HomePage = (): ReactElement => {
 				{canEditLayout && (
 					<Button is='a' href='/admin/settings/Layout'>
 						<>
-							<Icon name='pencil' size='x16' /> Customize
+							<Icon name='pencil' size='x16' /> {t('Customize')}
 						</>
 					</Button>
 				)}
