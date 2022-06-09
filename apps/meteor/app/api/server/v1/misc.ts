@@ -14,6 +14,7 @@ import {
 	isMethodCallAnonProps,
 	isMeteorCall,
 } from '@rocket.chat/rest-typings';
+import { IUser } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
@@ -166,17 +167,24 @@ API.v1.addRoute(
 	'me',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const fields = getDefaultUserFields();
-			const user = Users.findOneById(this.userId, { fields });
+			const { services, ...user } = Users.findOneById(this.userId, { fields }) as IUser;
 
-			// The password hash shouldn't be leaked but the client may need to know if it exists.
-			if (user?.services?.password?.bcrypt) {
-				user.services.password.exists = true;
-				delete user.services.password.bcrypt;
-			}
-
-			return API.v1.success(this.getUserInfo(user));
+			return API.v1.success(
+				this.getUserInfo({
+					...user,
+					...(services && {
+						services: {
+							...services,
+							password: {
+								// The password hash shouldn't be leaked but the client may need to know if it exists.
+								exists: Boolean(services?.password?.bcrypt),
+							} as any,
+						},
+					}),
+				}),
+			);
 		},
 	},
 );

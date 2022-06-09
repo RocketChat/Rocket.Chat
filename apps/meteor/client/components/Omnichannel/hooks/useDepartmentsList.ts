@@ -28,7 +28,7 @@ export const useDepartmentsList = (
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
 
-	const getDepartments = useEndpoint('GET', 'livechat/department');
+	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
 	useComponentDidUpdate(() => {
 		options && reload();

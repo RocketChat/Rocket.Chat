@@ -19,7 +19,7 @@ const useUsersAutoComplete = (term: string): AutocompleteData => {
 		}),
 		[term],
 	);
-	const { value: data } = useEndpointData('users.autocomplete', params);
+	const { value: data } = useEndpointData('/v1/users.autocomplete', params);
 
 	return useMemo<AutocompleteData>(() => {
 		if (!data) {

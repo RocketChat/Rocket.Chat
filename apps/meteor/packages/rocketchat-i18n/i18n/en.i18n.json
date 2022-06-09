@@ -3596,8 +3596,6 @@
   "Rate Limiter_Description": "Control the rate of requests sent or recieved by your server to prevent cyber attacks and scraping.",
   "Rate_Limiter_Limit_RegisterUser": "Default number calls to the rate limiter for registering a user",
   "Rate_Limiter_Limit_RegisterUser_Description": "Number of default calls for user registering endpoints(REST and real-time API's), allowed within the time range defined in the API Rate Limiter section.",
-  "RD Station": "RD Station",
-  "RDStation_Token": "RD Station Token",
   "Reached_seat_limit_banner_warning": "*No more seats available*  \nThis workspace has reached its seat limit so no more members can join. *[Request More Seats](__url__)*",
   "React_when_read_only": "Allow Reacting",
   "React_when_read_only_changed_successfully": "Allow reacting when read only changed successfully",

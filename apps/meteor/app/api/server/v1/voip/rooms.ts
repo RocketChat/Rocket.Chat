@@ -83,7 +83,11 @@ const parseAndValidate = (property: string, date?: string): DateParam => {
 
 API.v1.addRoute(
 	'voip/room',
-	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 } },
+	{
+		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		permissionsRequired: ['inbound-voip-calls'],
+	},
 	{
 		async get() {
 			const defaultCheckParams = {
@@ -213,7 +217,7 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'voip/room.close',
-	{ authRequired: true, validateParams: isVoipRoomCloseProps },
+	{ authRequired: true, validateParams: isVoipRoomCloseProps, permissionsRequired: ['inbound-voip-calls'] },
 	{
 		async post() {
 			const { rid, token, options } = this.bodyParams;

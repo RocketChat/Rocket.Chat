@@ -74,10 +74,10 @@ const StatisticsListSchema = {
 export const isStatisticsListProps = ajv.compile<StatisticsListProps>(StatisticsListSchema);
 
 export type StatisticsEndpoints = {
-	'statistics': {
+	'/v1/statistics': {
 		GET: (params: StatisticsProps) => IStats;
 	};
-	'statistics.list': {
+	'/v1/statistics.list': {
 		GET: (params: StatisticsListProps) => {
 			statistics: IStats[];
 			count: number;
@@ -85,7 +85,7 @@ export type StatisticsEndpoints = {
 			total: number;
 		};
 	};
-	'statistics.telemetry': {
+	'/v1/statistics.telemetry': {
 		POST: (params: TelemetryPayload) => any;
 	};
 };

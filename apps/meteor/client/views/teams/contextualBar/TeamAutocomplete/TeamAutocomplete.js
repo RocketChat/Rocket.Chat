@@ -8,7 +8,7 @@ const TeamAutocomplete = (props) => {
 	const [filter, setFilter] = useState('');
 
 	const { value: data } = useEndpointData(
-		'teams.autocomplete',
+		'/v1/teams.autocomplete',
 		useMemo(() => ({ name: filter }), [filter]),
 	);
 

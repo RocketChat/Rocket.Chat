@@ -36,7 +36,7 @@ const AgentsPage = (): ReactElement => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const query = useQuery({ text: debouncedFilter, current, itemsPerPage }, debouncedSort);
-	const { reload, ...result } = useEndpointData('livechat/users/agent', query);
+	const { reload, ...result } = useEndpointData('/v1/livechat/users/agent', query);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
