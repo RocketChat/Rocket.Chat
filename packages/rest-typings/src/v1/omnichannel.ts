@@ -978,4 +978,12 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/webrtc.call/:callId': {
 		PUT: (params: { rid: string; status: 'ended' }) => void;
 	};
+
+	'/v1/livechat/visitors.search': {
+		GET: (
+			params: PaginatedRequest<{
+				term: string;
+			}>,
+		) => PaginatedResult<{ visitors: any[] }>;
+	};
 };
