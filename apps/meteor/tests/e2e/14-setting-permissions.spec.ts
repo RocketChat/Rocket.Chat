@@ -47,10 +47,10 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 			await admin.rolesSettingsFindInput().fill('Layout');
 			await admin.getPage().locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
 			const isOptionChecked = await admin.getPage().isChecked('table tbody tr:first-child td:nth-child(6) label input');
-			const changeHomeTitleSelected = await admin.getPage().isChecked('table tbody tr:nth-child(3) td:nth-child(6) label input');
+			const changeHomeTitleSelected = await admin.getPage().isChecked('table tbody tr:nth-child(4) td:nth-child(6) label input');
 			if (!isOptionChecked && !changeHomeTitleSelected) {
 				await admin.getPage().click('table tbody tr:first-child td:nth-child(6) label');
-				await admin.getPage().click('table tbody tr:nth-child(3) td:nth-child(6) label');
+				await admin.getPage().click('table tbody tr:nth-child(4) td:nth-child(6) label');
 			}
 		});
 	});
@@ -110,7 +110,7 @@ test.describe('[Rocket.Chat Settings based permissions]', () => {
 			await admin.rolesSettingsFindInput().fill('Layout');
 			await admin.getPage().locator('table tbody tr:first-child td:nth-child(1) >> text="Layout"').waitFor();
 			await admin.getPage().click('table tbody tr td:nth-child(6) label');
-			await admin.getPage().click('table tbody tr:nth-child(3) td:nth-child(6) label');
+			await admin.getPage().click('table tbody tr:nth-child(4) td:nth-child(6) label');
 		});
 	});
 });
