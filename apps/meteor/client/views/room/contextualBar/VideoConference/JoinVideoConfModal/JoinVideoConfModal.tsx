@@ -44,7 +44,7 @@ const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoCo
 	const params = useMemo(() => ({ roomId: rid }), [rid]);
 
 	// TODO: Experimental only, this data will come from the new collection
-	const { phase, value } = useEndpointData(`${room.t === 'c' ? 'channels.members' : 'groups.members'}`, params);
+	const { phase, value } = useEndpointData(`${room.t === 'c' ? '/v1/channels.members' : '/v1/groups.members'}`, params);
 
 	return (
 		<VideoConfModal>
