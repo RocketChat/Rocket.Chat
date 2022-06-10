@@ -15,7 +15,7 @@ export interface IFormDataUpload {
 
 export const getUploadFormData = async ({ request }: { request: Request }): Promise<IFormDataUpload> =>
 	new Promise<IFormDataUpload>((resolve, reject) => {
-		const bb = busboy({ headers: request.headers, defParamCharset: 'utf8'  });
+		const bb = busboy({ headers: request.headers, defParamCharset: 'utf8' });
 
 		const fields: IFormDataUpload = {};
 
