@@ -1,4 +1,4 @@
-import { IUserList } from '@rocket.chat/core-typings';
+import { IRole, IUser } from '@rocket.chat/core-typings';
 import { Box, TableRow, TableCell } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
 import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -8,8 +8,8 @@ import { Roles } from '../../../../../app/models/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 
 type UsersTableRowProps = {
-	user: IUserList;
-	onClick: (id: IUserList['_id']) => void;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>;
+	onClick: (id: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>['_id']) => void;
 	mediaQuery: boolean;
 };
 
@@ -19,8 +19,8 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 	const statusText = active ? t(capitalize(status as string) as TranslationKey) : t('Disabled');
 
 	const roleNames = (roles || [])
-		.map((roleId) => Roles.findOne(roleId, { fields: { name: 1 } })?.name)
-		.filter((roleName) => !!roleName)
+		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
+		.filter((roleName): roleName is string => !!roleName)
 		.join(', ');
 
 	return (
