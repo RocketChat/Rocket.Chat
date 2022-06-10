@@ -23,6 +23,8 @@ addAction('video-conf', ({ room }) => {
 	const enabledGroups = useSetting('VideoConf_Enable_Groups');
 	const enabledLiveChat = useSetting('Omnichannel_call_provider') === 'Jitsi';
 
+	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
+
 	const groups = useStableArray(
 		[
 			enabledDMs && 'direct',
@@ -59,8 +61,8 @@ addAction('video-conf', ({ room }) => {
 			icon: 'phone',
 			action: handleOpenVideoConf,
 			full: true,
-			order: 4,
+			order: live ? -1 : 4,
 		}),
-		[handleOpenVideoConf, groups],
+		[handleOpenVideoConf, groups, live],
 	);
 });

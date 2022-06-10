@@ -156,6 +156,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await this.VideoConference.setEndedById(call._id);
+
+		return true;
 	}
 
 	private async createMessage(rid: IRoom['_id'], user: IUser, extraData: Partial<IMessage> = {}): Promise<IMessage['_id']> {
