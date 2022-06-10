@@ -1,24 +1,24 @@
-import { ISettingBase, SectionName, SettingId, GroupId, TabId } from '@rocket.chat/core-typings';
+import { ISettingBase, SectionName, SettingId, GroupId, TabId, ISettingColor } from '@rocket.chat/core-typings';
 import { SettingsContextQuery } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-export interface IEditableSetting extends ISettingBase {
+export type EditableSetting = (ISettingBase | ISettingColor) & {
 	disabled: boolean;
 	changed: boolean;
 	invisible: boolean;
-}
+};
 
 export type EditableSettingsContextQuery = SettingsContextQuery & {
 	changed?: boolean;
 };
 
 export type EditableSettingsContextValue = {
-	readonly queryEditableSetting: (_id: SettingId) => Subscription<IEditableSetting | undefined>;
-	readonly queryEditableSettings: (query: EditableSettingsContextQuery) => Subscription<IEditableSetting[]>;
+	readonly queryEditableSetting: (_id: SettingId) => Subscription<EditableSetting | undefined>;
+	readonly queryEditableSettings: (query: EditableSettingsContextQuery) => Subscription<EditableSetting[]>;
 	readonly queryGroupSections: (_id: GroupId, tab?: TabId) => Subscription<SectionName[]>;
 	readonly queryGroupTabs: (_id: GroupId) => Subscription<TabId[]>;
-	readonly dispatch: (changes: Partial<IEditableSetting>[]) => void;
+	readonly dispatch: (changes: Partial<EditableSetting>[]) => void;
 };
 
 export const EditableSettingsContext = createContext<EditableSettingsContextValue>({
@@ -27,7 +27,7 @@ export const EditableSettingsContext = createContext<EditableSettingsContextValu
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
 	queryEditableSettings: () => ({
-		getCurrentValue: (): IEditableSetting[] => [],
+		getCurrentValue: (): EditableSetting[] => [],
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
 	queryGroupSections: () => ({
@@ -41,14 +41,14 @@ export const EditableSettingsContext = createContext<EditableSettingsContextValu
 	dispatch: () => undefined,
 });
 
-export const useEditableSetting = (_id: SettingId): IEditableSetting | undefined => {
+export const useEditableSetting = (_id: SettingId): EditableSetting | undefined => {
 	const { queryEditableSetting } = useContext(EditableSettingsContext);
 
 	const subscription = useMemo(() => queryEditableSetting(_id), [queryEditableSetting, _id]);
 	return useSubscription(subscription);
 };
 
-export const useEditableSettings = (query?: EditableSettingsContextQuery): IEditableSetting[] => {
+export const useEditableSettings = (query?: EditableSettingsContextQuery): EditableSetting[] => {
 	const { queryEditableSettings } = useContext(EditableSettingsContext);
 	const subscription = useMemo(() => queryEditableSettings(query ?? {}), [queryEditableSettings, query]);
 	return useSubscription(subscription);
@@ -68,5 +68,5 @@ export const useEditableSettingsGroupTabs = (_id: SettingId): TabId[] => {
 	return useSubscription(subscription);
 };
 
-export const useEditableSettingsDispatch = (): ((changes: Partial<IEditableSetting>[]) => void) =>
+export const useEditableSettingsDispatch = (): ((changes: Partial<EditableSetting>[]) => void) =>
 	useContext(EditableSettingsContext).dispatch;
