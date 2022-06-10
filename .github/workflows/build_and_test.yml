@@ -160,7 +160,7 @@ jobs:
       matrix:
         node-version: ['14.18.3']
         mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
-        test-type: ['unit', 'api', 'ui-legacy', 'ui']
+        test-type: ['unit', 'api', 'ui']
 
     steps:
       - name: Launch MongoDB
