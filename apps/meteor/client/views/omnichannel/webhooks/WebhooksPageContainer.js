@@ -18,7 +18,7 @@ const reduceSettings = (settings) =>
 const WebhooksPageContainer = () => {
 	const t = useTranslation();
 
-	const { value: data, phase: state, error } = useEndpointData('livechat/integrations.settings');
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/integrations.settings');
 
 	const canViewLivechatWebhooks = usePermission('view-livechat-webhooks');
 

@@ -9,7 +9,7 @@ addAction('webRTCVideo', ({ room }) => {
 
 	const handleClick = useCallback(async (): Promise<void> => {
 		if (!room.callStatus || room.callStatus === 'declined' || room.callStatus === 'ended') {
-			await APIClient.v1.get('livechat/webrtc.call', { rid: room._id });
+			await APIClient.get('/v1/livechat/webrtc.call', { rid: room._id });
 		}
 		window.open(`/meet/${room._id}`, room._id);
 	}, [room._id, room.callStatus]);
