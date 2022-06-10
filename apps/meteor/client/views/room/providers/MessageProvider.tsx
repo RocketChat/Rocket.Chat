@@ -10,6 +10,7 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
+import { useTabBarOpen } from './ToolboxProvider';
 
 export const MessageProvider = memo(function MessageProvider({
 	rid,
@@ -20,6 +21,7 @@ export const MessageProvider = memo(function MessageProvider({
 	broadcast?: boolean;
 	children: ReactNode;
 }) {
+	const tabBarOpen = useTabBarOpen();
 	const [routeName, params, queryStringParams] = useCurrentRoute();
 	const { isEmbedded, isMobile } = useLayout();
 	const oembedEnabled = Boolean(useSetting('API_Embed'));
@@ -73,7 +75,7 @@ export const MessageProvider = memo(function MessageProvider({
 						message: msg,
 					})
 			: (msg: IMessage) => (actionLink: string) => (): void => {
-					actionLinks.run(actionLink, msg, undefined);
+					actionLinks.run(actionLink, msg, tabBarOpen);
 			  };
 		return {
 			oembedEnabled,
@@ -112,7 +114,7 @@ export const MessageProvider = memo(function MessageProvider({
 				dateAndTime,
 			},
 		};
-	}, [isEmbedded, oembedEnabled, isMobile, broadcast, time, dateAndTime, router, params, rid, routeName, queryStringParams]);
+	}, [isEmbedded, oembedEnabled, isMobile, broadcast, time, dateAndTime, router, params, rid, routeName, tabBarOpen, queryStringParams]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });

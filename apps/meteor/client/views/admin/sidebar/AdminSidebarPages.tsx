@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import React, { memo, FC } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import Sidebar from '../../../components/Sidebar';
+import SidebarItemsAssembler from '../../../components/Sidebar/SidebarItemsAssembler';
 import { useUpgradeTabParams } from '../../hooks/useUpgradeTabParams';
 import { itemsSubscription } from '../sidebarItems';
 import UpgradeTab from './UpgradeTab';
@@ -18,7 +18,7 @@ const AdminSidebarPages: FC<AdminSidebarPagesProps> = ({ currentPath }) => {
 	return (
 		<Box display='flex' flexDirection='column' flexShrink={0} pb='x8'>
 			{!isLoading && tabType && <UpgradeTab type={tabType} currentPath={currentPath} trialEndDate={trialEndDate} />}
-			<Sidebar.ItemsAssembler items={items} currentPath={currentPath} />
+			<SidebarItemsAssembler items={items} currentPath={currentPath} />
 		</Box>
 	);
 };

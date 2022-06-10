@@ -85,6 +85,10 @@ class SideNav extends BasePage {
 		return this.getPage().locator('//li[@class="rcx-option"]//div[contains(text(), "Administration")]');
 	}
 
+	public omnichannel(): Locator {
+		return this.getPage().locator('li.rcx-option >> text="Omnichannel"');
+	}
+
 	public logout(): Locator {
 		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]');
 	}
@@ -111,11 +115,11 @@ class SideNav extends BasePage {
 	}
 
 	public newChannelBtn(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Channel' });
+		return this.getPage().locator('li.rcx-option >> text="Channel"');
 	}
 
 	public newDiscussionBtn(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Discussion' });
+		return this.getPage().locator('li.rcx-option >> text="Discussion"');
 	}
 
 	public newChannelIcon(): Locator {
@@ -206,7 +210,6 @@ class SideNav extends BasePage {
 		await this.searchChannel(channelName);
 	}
 
-	// Gets a channel from the rooms list
 	public getChannelFromList(channelName: any): Locator {
 		return this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
 	}
@@ -241,10 +244,16 @@ class SideNav extends BasePage {
 		// mainContent.messageInput().should('be.focused');
 	}
 
-	public async findFindForChat(userName: string): Promise<void> {
+	public async findForChat(target: string): Promise<void> {
 		await this.searchUser().click();
-		await this.searchInput().type(userName, { delay: 300 });
+		await this.searchInput().type(target, { delay: 100 });
 		await this.getPage().keyboard.press(ENTER);
+	}
+
+	public async doLogout(): Promise<void> {
+		await this.getPage().goto('/home');
+		await this.sidebarUserMenu().click();
+		await this.logout().click();
 	}
 }
 
