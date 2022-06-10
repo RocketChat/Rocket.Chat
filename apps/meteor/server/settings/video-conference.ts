@@ -17,7 +17,7 @@ settingsRegistry.addGroup('Video_Conference', function () {
 		public: true,
 	});
 
-	this.add('VideoConf_Enable_DMs', false, {
+	this.add('VideoConf_Enable_DMs', true, {
 		type: 'boolean',
 		enableQuery: {
 			_id: 'VideoConf_Enabled',
@@ -26,7 +26,7 @@ settingsRegistry.addGroup('Video_Conference', function () {
 		public: true,
 	});
 
-	this.add('VideoConf_Enable_Channels', false, {
+	this.add('VideoConf_Enable_Channels', true, {
 		type: 'boolean',
 		enableQuery: {
 			_id: 'VideoConf_Enabled',
@@ -35,7 +35,7 @@ settingsRegistry.addGroup('Video_Conference', function () {
 		public: true,
 	});
 
-	this.add('VideoConf_Enable_Groups', false, {
+	this.add('VideoConf_Enable_Groups', true, {
 		type: 'boolean',
 		enableQuery: {
 			_id: 'VideoConf_Enabled',
@@ -44,7 +44,7 @@ settingsRegistry.addGroup('Video_Conference', function () {
 		public: true,
 	});
 
-	this.add('VideoConf_Enable_Teams', false, {
+	this.add('VideoConf_Enable_Teams', true, {
 		type: 'boolean',
 		enableQuery: {
 			_id: 'VideoConf_Enabled',
