@@ -5,10 +5,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
 import Section from '../Section';
-import DownloadDataButton from '../data/DownloadDataButton';
-import LegendSymbol from '../data/LegendSymbol';
-import PeriodSelector from '../data/PeriodSelector';
-import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
+import DownloadDataButton from '../dataView/DownloadDataButton';
+import LegendSymbol from '../dataView/LegendSymbol';
+import PeriodSelector from '../dataView/PeriodSelector';
+import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useMessageOrigins } from './useMessageOrigins';
 import { useTopFivePopularChannels } from './useTopFivePopularChannels';
 

@@ -248,20 +248,6 @@ export class LivechatVisitors extends Base {
 		const query = { _id };
 		return this.remove(query);
 	}
-
-	removeContactManagerByUsername(manager) {
-		const query = {
-			contactManager: {
-				username: manager,
-			},
-		};
-		const update = {
-			$unset: {
-				contactManager: 1,
-			},
-		};
-		return this.update(query, update);
-	}
 }
 
 export default new LivechatVisitors();

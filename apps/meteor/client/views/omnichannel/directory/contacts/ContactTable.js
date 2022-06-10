@@ -55,7 +55,7 @@ function ContactTable({ setContactReload }) {
 			}),
 	);
 
-	const { value: data, reload } = useEndpointData('livechat/visitors.search', query);
+	const { value: data, reload } = useEndpointData('/v1/livechat/visitors.search', query);
 
 	useEffect(() => {
 		setContactReload(() => reload);

@@ -14,13 +14,13 @@ API.v1.addRoute(
 			const { sort, fields } = this.parseJsonQuery();
 			const {
 				agents,
-				departmentId,
-				open,
-				tags,
-				roomName,
-				onhold,
 				createdAt: createdAtParam,
 				closedAt: closedAtParam,
+				open,
+				onhold,
+				departmentId,
+				tags,
+				roomName,
 			} = this.requestParams();
 			let { customFields } = this.requestParams();
 

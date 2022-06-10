@@ -4,7 +4,6 @@ declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface ServerMethods {
 		'livechat:addMonitor': (...args: any[]) => any;
-		'livechat:changeLivechatStatus': (...args: any[]) => any;
 		'livechat:closeRoom': (...args: any[]) => any;
 		'livechat:discardTranscript': (...args: any[]) => any;
 
@@ -39,7 +38,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:returnAsInquiry': (...args: any[]) => any;
 		'livechat:sendTranscript': (...args: any[]) => any;
 		'livechat:transfer': (...args: any[]) => any;
-		'livechat:saveAgentInfo': (...args: any[]) => any;
 		'livechat:saveAppearance': (...args: any[]) => any;
 		'livechat:saveBusinessHour': (...args: any[]) => any;
 		'livechat:saveCustomField': (...args: any[]) => any;
