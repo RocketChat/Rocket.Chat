@@ -11,46 +11,42 @@ import {
 	VideoConfButton,
 	VideoConfPopupFooter,
 	VideoConfPopupTitle,
-	VideoConfPopupIndicators,
-	VideoConfPopupClose,
 } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement } from 'react';
 
-import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
-import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
+import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
+import RoomAvatar from '../../../../../../components/avatar/RoomAvatar';
+import { useChangePreference } from '../../../../../../contexts/VideoConfContext';
 
-type ReceivingPopupProps = {
+type CallingPopupProps = {
 	id: string;
 	room: IRoom;
-	position: number;
-	current: number;
-	total: number;
 	onClose: (id: string) => void;
-	onMute: (id: string) => void;
-	onConfirm: () => void;
 };
 
-const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, onConfirm }: ReceivingPopupProps): ReactElement => {
+const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
-	const setPreferences = useSetPreferences();
+	const changePreference = useChangePreference();
 
-	const handleJoinCall = useMutableCallback(() => {
-		setPreferences(controllersConfig);
-		onConfirm();
+	const handleToggleMicPref = useMutableCallback(() => {
+		changePreference('mic', !controllersConfig.mic);
+		handleToggleMic();
+	});
+
+	const handleToggleCamPref = useMutableCallback(() => {
+		changePreference('cam', !controllersConfig.cam);
+		handleToggleCam();
 	});
 
 	return (
-		<VideoConfPopup position={position}>
+		<VideoConfPopup>
 			<VideoConfPopupContent>
 				{/* Design Team has planned x48 */}
-				<VideoConfPopupClose title={t('Close')} onClick={(): void => onMute(id)} />
 				<RoomAvatar room={room} size='x40' />
-				{current && total ? <VideoConfPopupIndicators current={current} total={total} /> : null}
-				<VideoConfPopupTitle text='Incoming call from' icon='phone-in' />
+				<VideoConfPopupTitle text='Calling' icon='phone-out' counter />
 				{directUserId && (
 					<Box display='flex' alignItems='center' mbs='x8'>
 						<ReactiveUserStatus uid={directUserId} />
@@ -68,23 +64,20 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
 						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMic}
+						onClick={handleToggleMicPref}
 					/>
 					<VideoConfController
 						primary={controllersConfig.cam}
 						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
 						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCam}
+						onClick={handleToggleCamPref}
 					/>
 				</VideoConfPopupControllers>
 				<VideoConfPopupFooter>
-					<VideoConfButton primary onClick={handleJoinCall}>
-						{t('Accept')}
-					</VideoConfButton>
 					{onClose && (
-						<VideoConfButton danger onClick={(): void => onClose(id)}>
-							{t('Decline')}
+						<VideoConfButton primary icon='phone-disabled' onClick={(): void => onClose(id)}>
+							{t('Cancel')}
 						</VideoConfButton>
 					)}
 				</VideoConfPopupFooter>
@@ -93,4 +86,4 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 	);
 };
 
-export default ReceivingPopup;
+export default CallingPopup;

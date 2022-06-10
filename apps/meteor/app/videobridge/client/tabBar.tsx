@@ -5,7 +5,7 @@ import { useSetting, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
-import { useVideoConfPopupDispatch, useStartCall, useVideoConfPopupDismiss } from '../../../client/contexts/VideoConfPopupContext';
+import { useDispatchOutgoing, useDismissOutgoing, useStartCall } from '../../../client/contexts/VideoConfContext';
 
 // TODO: fix mocked config
 addAction('video-conf', ({ room }) => {
@@ -13,8 +13,8 @@ addAction('video-conf', ({ room }) => {
 	const startCall = useStartCall();
 	const user = useUser();
 
-	const dispatchPopup = useVideoConfPopupDispatch();
-	const dismissPopup = useVideoConfPopupDismiss();
+	const dispatchPopup = useDispatchOutgoing();
+	const dismissPopup = useDismissOutgoing();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 	const enabled = useSetting('VideoConf_Enabled');
