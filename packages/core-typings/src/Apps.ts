@@ -33,9 +33,17 @@ export type AppLicense = {
 	expireDate: string;
 };
 
+export enum AppSubscriptionStatus {
+	Trialing = 'trialing',
+	Active = 'active',
+	Cancelled = 'cancelled',
+	Cancelling = 'cancelling',
+	PastDue = 'pastDue',
+}
+
 export type AppSubscriptionInfo = {
 	typeOf: string;
-	status: string;
+	status: AppSubscriptionStatus;
 	statusFromBilling: boolean;
 	isSeatBased: boolean;
 	seats: number;
@@ -44,7 +52,6 @@ export type AppSubscriptionInfo = {
 	startDate: string;
 	periodEnd: string;
 	endDate: string;
-	externallyManaged: boolean;
 	isSubscribedViaBundle: boolean;
 };
 
@@ -62,6 +69,10 @@ export type App = {
 		raw: string;
 		rendered: string;
 	};
+	detailedChangelog: {
+		raw: string;
+		rendered: string;
+	};
 	categories: string[];
 	version: string;
 	price: number;
@@ -70,7 +81,7 @@ export type App = {
 	iconFileContent: string;
 	installed?: boolean;
 	isEnterpriseOnly?: boolean;
-	isPurchased?: string;
+	isPurchased?: boolean;
 	isSubscribed: boolean;
 	bundledIn: {
 		bundleId: string;
