@@ -28,7 +28,6 @@ const config: PlaywrightTestConfig = {
 	retries: 3,
 	workers: 1,
 	timeout: 42 * 1000,
-	globalTimeout: 2 * 60 * 1000,
 };
 
 export default config;
