@@ -15,7 +15,6 @@ export type VideoConfIncomingCall = {
 
 type VideoConfPopupContextValue = {
 	dispatch: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
-	dismiss: () => void;
 	startCall: (rid: IRoom['_id'], title?: string) => void;
 	acceptCall: (callId: string) => void;
 	joinCall: (callId: string) => void;
@@ -28,31 +27,24 @@ type VideoConfPopupContextValue = {
 	useIsRinging: () => boolean;
 };
 
-export const VideoConfPopupContext = createContext<VideoConfPopupContextValue>({
-	dispatch: () => undefined,
-	dismiss: () => undefined,
-	startCall: () => undefined,
-	acceptCall: () => undefined,
-	joinCall: () => undefined,
-	dismissCall: () => undefined,
-	abortCall: () => undefined,
-	useIncomingCalls: () => [],
-	rejectIncomingCall: () => undefined,
-	setPreferences: () => undefined,
-	changePreference: () => undefined,
-	useIsRinging: () => false,
-});
+export const VideoConfPopupContext = createContext<VideoConfPopupContextValue | undefined>(undefined);
+const useVideoContext = (): VideoConfPopupContextValue => {
+	const context = useContext(VideoConfPopupContext);
+	if (!context) {
+		throw new Error('Must be running in VideoConf Context');
+	}
 
-export const useVideoConfPopupDispatch = (): VideoConfPopupContextValue['dispatch'] => useContext(VideoConfPopupContext).dispatch;
-export const useVideoConfPopupDismiss = (): VideoConfPopupContextValue['dismiss'] => useContext(VideoConfPopupContext).dismiss;
-export const useStartCall = (): VideoConfPopupContextValue['startCall'] => useContext(VideoConfPopupContext).startCall;
-export const useAcceptCall = (): VideoConfPopupContextValue['acceptCall'] => useContext(VideoConfPopupContext).acceptCall;
-export const useJoinCall = (): VideoConfPopupContextValue['joinCall'] => useContext(VideoConfPopupContext).joinCall;
-export const useDismissCall = (): VideoConfPopupContextValue['dismissCall'] => useContext(VideoConfPopupContext).dismissCall;
-export const useAbortCall = (): VideoConfPopupContextValue['abortCall'] => useContext(VideoConfPopupContext).abortCall;
-export const useRejectIncomingCall = (): VideoConfPopupContextValue['rejectIncomingCall'] =>
-	useContext(VideoConfPopupContext).rejectIncomingCall;
-export const useGetIncomingCalls = (): VideoConfPopupContextValue['useIncomingCalls'] => useContext(VideoConfPopupContext).useIncomingCalls;
-export const useSetPreferences = (): VideoConfPopupContextValue['setPreferences'] => useContext(VideoConfPopupContext).setPreferences;
-export const useChangePreference = (): VideoConfPopupContextValue['changePreference'] => useContext(VideoConfPopupContext).changePreference;
-export const useGetIsRinging = (): VideoConfPopupContextValue['useIsRinging'] => useContext(VideoConfPopupContext).useIsRinging;
+	return context;
+};
+
+export const useVideoConfPopupDispatch = (): VideoConfPopupContextValue['dispatch'] => useVideoContext().dispatch;
+export const useStartCall = (): VideoConfPopupContextValue['startCall'] => useVideoContext().startCall;
+export const useAcceptCall = (): VideoConfPopupContextValue['acceptCall'] => useVideoContext().acceptCall;
+export const useJoinCall = (): VideoConfPopupContextValue['joinCall'] => useVideoContext().joinCall;
+export const useDismissCall = (): VideoConfPopupContextValue['dismissCall'] => useVideoContext().dismissCall;
+export const useAbortCall = (): VideoConfPopupContextValue['abortCall'] => useVideoContext().abortCall;
+export const useRejectIncomingCall = (): VideoConfPopupContextValue['rejectIncomingCall'] => useVideoContext().rejectIncomingCall;
+export const useGetIncomingCalls = (): VideoConfPopupContextValue['useIncomingCalls'] => useVideoContext().useIncomingCalls;
+export const useSetPreferences = (): VideoConfPopupContextValue['setPreferences'] => useVideoContext().setPreferences;
+export const useChangePreference = (): VideoConfPopupContextValue['changePreference'] => useVideoContext().changePreference;
+export const useGetIsRinging = (): VideoConfPopupContextValue['useIsRinging'] => useVideoContext().useIsRinging;

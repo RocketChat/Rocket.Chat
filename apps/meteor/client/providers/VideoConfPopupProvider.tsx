@@ -19,7 +19,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 
 	useEffect(
 		() =>
-			VideoConfManager.once('call/join', (props) => {
+			VideoConfManager.on('call/join', (props) => {
 				const open = (): void => {
 					const popup = window.open(props.url);
 
@@ -43,10 +43,11 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 		[setModal],
 	);
 
+	useEffect(() => VideoConfManager.on('direct/stopped', () => setOutgoing(undefined)), []);
+
 	const contextValue = useMemo(
 		() => ({
 			dispatch: (option: Omit<VideoConfPopupPayload, 'id'>): void => setOutgoing({ ...option, id: option.rid }),
-			dismiss: (): void => setOutgoing(undefined),
 			startCall: (rid: IRoom['_id']): Promise<void> => VideoConfManager.startCall(rid),
 			acceptCall: (callId: string): void => VideoConfManager.acceptIncomingCall(callId),
 			joinCall: (callId: string): Promise<void> => VideoConfManager.joinCall(callId),

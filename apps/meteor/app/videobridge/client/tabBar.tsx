@@ -2,10 +2,9 @@ import React, { useMemo } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 
-import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
-import { useVideoConfPopupDispatch, useStartCall, useVideoConfPopupDismiss } from '../../../client/contexts/VideoConfPopupContext';
+import { useVideoConfPopupDispatch, useStartCall } from '../../../client/contexts/VideoConfPopupContext';
 
 // TODO: fix mocked config
 addAction('video-conf', ({ room }) => {
@@ -13,7 +12,6 @@ addAction('video-conf', ({ room }) => {
 	const startCall = useStartCall();
 
 	const dispatchPopup = useVideoConfPopupDispatch();
-	const dismissPopup = useVideoConfPopupDismiss();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 
@@ -23,10 +21,6 @@ addAction('video-conf', ({ room }) => {
 
 		if (room.t === 'd') {
 			dispatchPopup({ rid: room._id });
-			// TODO: remove VideoConfManager
-			VideoConfManager.once('direct/stopped', () => {
-				dismissPopup();
-			});
 		}
 	});
 
