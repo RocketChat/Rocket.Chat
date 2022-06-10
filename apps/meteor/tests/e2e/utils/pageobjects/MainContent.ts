@@ -384,7 +384,7 @@ export default class MainContent extends BasePage {
 				break;
 			case 'star':
 				await this.messageStar().click();
-				await expect(this.getPage().locator('div.toast-message:has-text("Message has been starred")')).toBeVisible();
+				await expect(this.getPage().locator('div.rcx-toastbar:has-text("Message has been starred")')).toBeVisible();
 				break;
 			case 'unread':
 				await this.messageUnread().click();
@@ -410,10 +410,6 @@ export default class MainContent extends BasePage {
 
 	public async acceptDeleteMessage(): Promise<void> {
 		await this.modalDeleteMessageButton().click();
-	}
-
-	public toastSuccess(): Locator {
-		return this.getPage().locator('.toast-message');
 	}
 
 	public getQuotedMessage(): Locator {

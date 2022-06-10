@@ -149,7 +149,7 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 	const canCreateTeam = usePermission('create-team');
 	const isCreateButtonEnabled = canSave && canCreateTeam;
 
-	const createTeam = useEndpointActionExperimental('POST', 'teams.create');
+	const createTeam = useEndpointActionExperimental('POST', '/v1/teams.create');
 
 	const onCreate = useCallback(async () => {
 		const params = {

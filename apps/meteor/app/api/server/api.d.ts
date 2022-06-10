@@ -7,7 +7,7 @@ import type {
 	PathPattern,
 	UrlParams,
 } from '@rocket.chat/rest-typings';
-import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
+import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
 
 import { ITwoFactorOptions } from '../../2fa/server/code';
@@ -82,6 +82,7 @@ type PartialThis = {
 };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
 	// TODO make it unsafe
 	readonly queryParams: TMethod extends 'GET'
@@ -96,27 +97,43 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		? T
 		: Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+	/* @deprecated */
 	requestParams(): OperationParams<TMethod, TPathPattern>;
-	getLoggedInUser(): IUser | undefined;
+	getLoggedInUser(): TOptions extends { authRequired: true } ? IUser : IUser | undefined;
 	getPaginationItems(): {
 		readonly offset: number;
 		readonly count: number;
 	};
 	parseJsonQuery(): {
-		sort: Record<string, unknown>;
-		fields: Record<string, unknown>;
+		sort: Record<string, 1 | -1>;
+		fields: Record<string, 0 | 1>;
 		query: Record<string, unknown>;
 	};
 	/* @deprecated */
 	getUserFromParams(): IUser;
+	/* @deprecated */
+	getUserInfo(me: IUser): TOptions extends { authRequired: true }
+		? IUser & {
+				email?: string;
+				settings: {
+					profile: {};
+					preferences: unknown;
+				};
+				avatarUrl: string;
+		  }
+		: undefined;
+	insertUserObject<T>({ object, userId }: { object: { [key: string]: unknown }; userId: string }): { [key: string]: unknown } & T;
+	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;
 			readonly userId: string;
+			readonly token: string;
 	  }
 	: {
 			readonly user: null;
-			readonly userId: null;
+			readonly userId: undefined;
+			readonly token?: string;
 	  });
 
 export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
@@ -140,7 +157,7 @@ type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}>
 };
 
 declare class APIClass<TBasePath extends string = '/'> {
-	fieldSeparator(fieldSeparator: unknown): void;
+	fieldSeparator: string;
 
 	limitedUserFieldsToExclude(fields: { [x: string]: unknown }, limitedUserFieldsToExclude: unknown): { [x: string]: unknown };
 
