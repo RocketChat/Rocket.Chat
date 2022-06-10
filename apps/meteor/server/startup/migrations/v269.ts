@@ -6,10 +6,10 @@ const getFlag = async (key: string): Promise<boolean> => Boolean((await Settings
 addMigration({
 	version: 269,
 	async up() {
-		let dmEnabled = true;
-		let channelEnabled = true;
-		let groupEnabled = true;
-		let teamsEnabled = true;
+		let dmEnabled: boolean;
+		let channelEnabled: boolean;
+		let groupEnabled: boolean;
+		let teamsEnabled: boolean;
 
 		const bbbEnabled = await getFlag('bigbluebutton_Enabled');
 		const jitsiEnabled = await getFlag('Jitsi_Enabled');
