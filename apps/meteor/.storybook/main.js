@@ -1,22 +1,14 @@
 const { resolve, relative, join } = require('path');
 
-const glob = require('glob');
 const webpack = require('webpack');
 
-const getStories = () => [
-	...glob.sync(`${__dirname}/../client/**/*.stories.{js,tsx}`, {
-		ignore: ['**/node_modules/**'],
-	}),
-	...glob.sync(`${__dirname}/../app/**/*.stories.{js,tsx}`, {
-		ignore: ['**/node_modules/**'],
-	}),
-	...glob.sync(`${__dirname}/../ee/**/*.stories.{js,tsx}`, {
-		ignore: ['**/node_modules/**'],
-	}),
-];
-
 module.exports = {
-	stories: [...getStories()],
+	stories: [
+		'../client/**/*.stories.{js,tsx}',
+		'../app/**/*.stories.{js,tsx}',
+		'../ee/app/**/*.stories.{js,tsx}',
+		'../ee/client/**/*.stories.{js,tsx}',
+	],
 	addons: [
 		'@storybook/addon-essentials',
 		'@storybook/addon-interactions',
