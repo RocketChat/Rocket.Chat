@@ -104,19 +104,15 @@ callbacks.add(
 				const consumerUrl = Providers.getConsumerUrl(provider, url);
 
 				const parsedConsumerUrl = URL.parse(consumerUrl, true);
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				data.parsedUrl = {
-					...data.parsedUrl,
-					...parsedConsumerUrl,
-				};
+				_.extend(data.parsedUrl, parsedConsumerUrl);
 
 				data.urlObj.port = parsedConsumerUrl.port;
 				data.urlObj.hostname = parsedConsumerUrl.hostname;
 				data.urlObj.pathname = parsedConsumerUrl.pathname;
 				data.urlObj.query = parsedConsumerUrl.query;
 
-				data.urlObj.search = null;
-				data.urlObj.host = null;
+				delete data.urlObj.search;
+				delete data.urlObj.host;
 			}
 		}
 		return data;

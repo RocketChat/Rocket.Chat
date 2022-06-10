@@ -110,7 +110,10 @@ type ChainedCallbackSignatures = {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
-	'oembed:beforeGetUrlContent': (data: { urlObj: Url.UrlWithParsedQuery; parsedUrl: ParsedUrl }) => {
+	'oembed:beforeGetUrlContent': (data: {
+		urlObj: Omit<Url.UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
+		parsedUrl: ParsedUrl;
+	}) => {
 		urlObj: Url.UrlWithParsedQuery;
 		parsedUrl: ParsedUrl;
 	};

@@ -17,15 +17,16 @@ import {
 	OEmbedMeta,
 } from '@rocket.chat/core-typings';
 
+import { Logger } from '../../logger/server';
 import { Messages } from '../../models/server';
 import { OEmbedCache } from '../../models/server/raw';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { isURL } from '../../../lib/utils/isURL';
-import { SystemLogger } from '../../../server/lib/logger/system';
 import { Info } from '../../utils/server';
 import { fetch } from '../../../server/lib/http/fetch';
 
+const log = new Logger('OEmbed');
 //  Detect encoding
 //  Priority:
 //  Detected == HTTP Header > Detected == HTML meta > HTTP Header > HTML meta > Detected > Default (utf-8)
@@ -105,7 +106,7 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 		parsedUrl,
 	});
 
-	/*  This prop is neither passed or returned by the callback, so I'll just comment it from now
+	/*  This prop is neither passed or returned by the callback, so I'll just comment it for now
 	if (data.attachments != null) {
 		return data;
 	} */
@@ -114,6 +115,7 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 
 	const sizeLimit = 250000;
 
+	log.debug(`Fetching ${url} following redirects ${redirectCount} times`);
 	const response = await fetch(
 		url,
 		{
@@ -136,26 +138,27 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 		chunks.push(chunk);
 
 		if (totalSize > sizeLimit) {
-			SystemLogger.info({ msg: 'OEmbed request size exceeded', url });
+			log.warn({ msg: 'OEmbed request size exceeded', url });
 			break;
 		}
 	}
 
+	log.debug('Obtained response from server with length of', totalSize);
 	const buffer = Buffer.concat(chunks);
-	const responseHeaders: { [key: string]: string } = {};
-	response.headers.forEach((value, key) => {
-		responseHeaders[key] = value;
-	});
-
 	return {
-		headers: responseHeaders,
+		// @ts-expect-error - fetch types are kinda weird
+		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		parsedUrl,
 		statusCode: response.status,
 	};
 };
 
-const getUrlMeta = function (url: string, withFragment?: boolean): OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult {
+const getUrlMeta = async function (
+	url: string,
+	withFragment?: boolean,
+): Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined> {
+	log.debug('Obtaining metadata for URL', url);
 	const urlObj = URL.parse(url);
 	if (withFragment != null) {
 		const queryStringObj = querystring.parse(urlObj.query || '');
@@ -169,7 +172,13 @@ const getUrlMeta = function (url: string, withFragment?: boolean): OEmbedUrlWith
 		}
 		urlObj.path = path;
 	}
-	const content = Promise.await(getUrlContent(urlObj, 5));
+	log.debug('Fetching url content', urlObj.path);
+	let content: OEmbedUrlContentResult | undefined;
+	try {
+		content = await getUrlContent(urlObj, 5);
+	} catch (e) {
+		log.error('Error fetching url content', e);
+	}
 
 	if (!content) {
 		return;
@@ -179,7 +188,9 @@ const getUrlMeta = function (url: string, withFragment?: boolean): OEmbedUrlWith
 		return content;
 	}
 
+	log.debug('Parsing metadata for URL', url);
 	const metas: { [k: string]: string } = {};
+
 	if (content?.body) {
 		const escapeMeta = (name: string, value: string): string => {
 			metas[name] = metas[name] || he.unescape(value);
@@ -229,17 +240,20 @@ const getUrlMetaWithCache = async function (
 	url: string,
 	withFragment?: boolean,
 ): Promise<OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult> {
+	log.debug('Getting oembed metadata for', url);
 	const cache = await OEmbedCache.findOneById(url);
 
 	if (cache != null) {
+		log.debug('Found oembed metadata in cache for', url);
 		return cache.data;
 	}
-	const data = getUrlMeta(url, withFragment);
+	const data = await getUrlMeta(url, withFragment);
 	if (data != null) {
 		try {
+			log.debug('Saving oembed metadata in cache for', url);
 			await OEmbedCache.createWithIdAndData(url, data);
 		} catch (_error) {
-			SystemLogger.error({ msg: 'OEmbed duplicated record', url });
+			log.error({ msg: 'OEmbed duplicated record', url });
 		}
 		return data;
 	}
@@ -277,11 +291,15 @@ const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
 	oembedHtml?.replace('iframe', 'iframe style="max-width: 100%;width:400px;height:225px"');
 
 const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
+	log.debug('Parsing message URLs');
 	if (Array.isArray(message.urls)) {
+		log.debug('URLs found', message.urls.length);
 		const attachments: MessageAttachment[] = [];
+
 		let changed = false;
 		for await (const item of message.urls) {
 			if (item.ignoreParse === true) {
+				log.debug('URL ignored', item.url);
 				break;
 			}
 			if (!isURL(item.url)) {
@@ -320,7 +338,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 };
 
 const OEmbed: {
-	getUrlMeta: (url: string, withFragment?: boolean) => OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult;
+	getUrlMeta: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult>;
 	getUrlMetaWithCache: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined>;
 	rocketUrlParser: (message: IMessage) => Promise<IMessage>;
 } = {
