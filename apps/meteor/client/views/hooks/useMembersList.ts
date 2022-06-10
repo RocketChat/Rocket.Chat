@@ -16,9 +16,9 @@ type MembersListOptions = {
 };
 
 const endpointsByRoomType = {
-	d: 'im.members',
-	p: 'groups.members',
-	c: 'channels.members',
+	d: '/v1/im.members',
+	p: '/v1/groups.members',
+	c: '/v1/channels.members',
 } as const;
 
 export const useMembersList = (

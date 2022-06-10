@@ -74,15 +74,6 @@ const avatarProviders = {
 		}
 	},
 
-	blockstack(user) {
-		if (user.services && user.services.blockstack && user.services.blockstack.image && settings.get('Blockstack_Enable')) {
-			return {
-				service: 'blockstack',
-				url: user.services.blockstack.image,
-			};
-		}
-	},
-
 	customOAuth(user) {
 		const avatars = [];
 		for (const service in user.services) {

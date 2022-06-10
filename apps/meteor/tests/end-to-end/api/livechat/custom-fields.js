@@ -44,6 +44,27 @@ describe('LIVECHAT - custom fields', function () {
 					.end(done);
 			});
 		});
+		it('should return an array of custom fields even requested with count and offset params', (done) => {
+			updatePermission('view-l-room', ['admin']).then(() => {
+				request
+					.get(api('livechat/custom-fields'))
+					.set(credentials)
+					.query({
+						count: 5,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.customFields).to.be.an('array');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('livechat/custom-fields/id', () => {

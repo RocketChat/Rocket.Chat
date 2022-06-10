@@ -64,8 +64,8 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
-	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData('livechat/priorities.list');
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');
+	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData('/v1/livechat/priorities.list');
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
