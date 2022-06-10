@@ -15,7 +15,7 @@ import {
 
 API.v1.addRoute(
 	'livechat/department',
-	{ authRequired: true, validateParams: isLivechatDepartmentProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -23,23 +23,24 @@ API.v1.addRoute(
 
 			const { text, enabled, onlyMyDepartments, excludeDepartmentId } = this.queryParams;
 
-			const { departments, total } = Promise.await(
-				findDepartments({
-					userId: this.userId,
-					text,
-					enabled: enabled === 'true',
-					onlyMyDepartments: onlyMyDepartments === 'true',
-					excludeDepartmentId,
-					pagination: {
-						offset,
-						count,
-						// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
-						// or the form { [k: keyof T]: number | string }
-						sort: sort as any,
-					},
-				}),
-			);
+			if (!isLivechatDepartmentProps(this.queryParams)) {
+				return API.v1.failure('Invalid body params');
+			}
 
+			const { departments, total } = await findDepartments({
+				userId: this.userId,
+				text,
+				enabled: enabled === 'true',
+				onlyMyDepartments: onlyMyDepartments === 'true',
+				excludeDepartmentId,
+				pagination: {
+					offset,
+					count,
+					// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
+					// or the form { [k: keyof T]: number | string }
+					sort: sort as any,
+				},
+			});
 			return API.v1.success({ departments, count: departments.length, offset, total });
 		},
 		post() {

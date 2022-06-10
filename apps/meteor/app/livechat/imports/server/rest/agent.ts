@@ -1,9 +1,11 @@
+import { isLivechatAgentDepartmentProps } from '@rocket.chat/rest-typings';
+
 import { API } from '../../../../api/server';
 import { findAgentDepartments } from '../../../server/api/lib/agents';
 
 API.v1.addRoute(
 	'livechat/agents/:agentId/departments',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAgentDepartmentProps },
 	{
 		async get() {
 			const { agentId } = this.urlParams;

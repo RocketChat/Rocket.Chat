@@ -346,7 +346,7 @@ type LivechatDepartmentProps = PaginatedRequest<{
 	excludeDepartmentId?: string;
 }>;
 
-const LivechatDepartmentSchema = {
+const LivechatDepartmentSchema: JSONSchemaType<LivechatDepartmentProps> = {
 	type: 'object',
 	properties: {
 		text: {
@@ -382,11 +382,8 @@ const LivechatDepartmentSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		fields: {
-			type: 'string',
-			nullable: true,
-		},
 	},
+	required: [],
 	additionalProperties: false,
 };
 
@@ -803,6 +800,77 @@ const LivechatUsersAgentSchema = {
 
 export const isLivechatUsersAgentProps = ajv.compile<LivechatUsersAgentProps>(LivechatUsersAgentSchema);
 
+type LivechatAgentsDepartmentsProps = { agentId: string; enabledDepartmentsOnly?: string };
+const LivechatAgentsDepartmentsSchema: JSONSchemaType<LivechatAgentsDepartmentsProps> = {
+	type: 'object',
+	properties: {
+		agentId: {
+			type: 'string',
+		},
+		enabledDepartmentsOnly: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['agentId'],
+	additionalProperties: false,
+};
+export const isLivechatAgentDepartmentProps = ajv.compile<LivechatAgentsDepartmentsProps>(LivechatAgentsDepartmentsSchema);
+
+type LivechatBusinessHourProps = { _id: string; type: string };
+const LivechatBusinessHoursSchema: JSONSchemaType<LivechatBusinessHourProps> = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+		},
+		type: {
+			type: 'string',
+		},
+	},
+	required: ['_id', 'type'],
+	additionalProperties: false,
+};
+export const isLivechatBusinessHoursSchema = ajv.compile<LivechatBusinessHourProps>(LivechatBusinessHoursSchema);
+
+type LivechatAnalyticsDashboardGenericProps = { start: string; end: string; departmentId?: string };
+const LivechatAnalyticsDashboardGenericSchema: JSONSchemaType<LivechatAnalyticsDashboardGenericProps> = {
+	type: 'object',
+	properties: {
+		start: {
+			type: 'string',
+		},
+		end: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['start', 'end'],
+	additionalProperties: false,
+};
+export const isLivechatAnalyticsDashboardGenericSchema = ajv.compile<LivechatAnalyticsDashboardGenericProps>(
+	LivechatAnalyticsDashboardGenericSchema,
+);
+
+type LivechatAnalyticsChartsAgentStatusProps = { departmentId?: string };
+const LivechatAnalyticsChartsAgentStatusSchema: JSONSchemaType<LivechatAnalyticsChartsAgentStatusProps> = {
+	type: 'object',
+	properties: {
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+export const isLivechatAnalyticsChartsAgentStatusSchema = ajv.compile<LivechatAnalyticsChartsAgentStatusProps>(
+	LivechatAnalyticsChartsAgentStatusSchema,
+);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -993,34 +1061,34 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	'livechat/agents/:agentId/departments': {
-		GET: (params: { agentId: string; enabledDepartmentsOnly?: string }) => { departments: ILivechatDepartmentAgents[] };
+	'/v1/livechat/agents/:agentId/departments': {
+		GET: (params: LivechatAgentsDepartmentsProps) => { departments: ILivechatDepartmentAgents[] };
 	};
 
-	'livechat/business-hour': {
-		GET: (params: { _id: string; type: string }) => {
+	'/v1/livechat/business-hour': {
+		GET: (params: LivechatBusinessHourProps) => {
 			businessHour: ILivechatBusinessHour;
 		};
 	};
 
-	'livechat/analytics/dashboards/conversation-totalizers': {
-		GET: (params: { start: string; end: string; departmentId?: string }) => IConversationTotalizers;
+	'/v1/livechat/analytics/dashboards/conversation-totalizers': {
+		GET: (params: LivechatAnalyticsDashboardGenericProps) => IConversationTotalizers;
 	};
 
-	'livechat/analytics/dashboards/agents-productivity-totalizers': {
-		GET: (params: { start: string; end: string; departmentId?: string }) => IAgentProductivityTotalizers;
+	'/v1/livechat/analytics/dashboards/agents-productivity-totalizers': {
+		GET: (params: LivechatAnalyticsDashboardGenericProps) => IAgentProductivityTotalizers;
 	};
 
-	'livechat/analytics/dashboards/chats-totalizers': {
-		GET: (params: { start: string; end: string; departmentId?: string }) => IChatTotalizers;
+	'/v1/livechat/analytics/dashboards/chats-totalizers': {
+		GET: (params: LivechatAnalyticsDashboardGenericProps) => IChatTotalizers;
 	};
 
-	'livechat/analytics/dashboards/productivity-totalizers': {
-		GET: (params: { start: string; end: string; departmentId?: string }) => IProductivityTotalizers;
+	'/v1/livechat/analytics/dashboards/productivity-totalizers': {
+		GET: (params: LivechatAnalyticsDashboardGenericProps) => IProductivityTotalizers;
 	};
 
-	'livechat/analytics/dashboards/charts/chats': {
-		GET: (params: { start: string; end: string; departmentId?: string }) => {
+	'/v1/livechat/analytics/dashboards/charts/chats': {
+		GET: (params: LivechatAnalyticsDashboardGenericProps) => {
 			open: number;
 			closed: number;
 			queued: number;
@@ -1028,8 +1096,8 @@ export type OmnichannelEndpoints = {
 		};
 	};
 
-	'livechat/analytics/dashboards/charts/chats-per-agent': {
-		GET: (params: { start: string; end: string; departmentId?: string }) => {
+	'/v1/livechat/analytics/dashboards/charts/chats-per-agent': {
+		GET: (params: LivechatAnalyticsDashboardGenericProps) => {
 			[agentId: string]: {
 				open: number;
 				closed: number;
@@ -1038,8 +1106,8 @@ export type OmnichannelEndpoints = {
 		};
 	};
 
-	'livechat/analytics/dashboards/charts/agents-status': {
-		GET: (params: { departmentId?: string }) => {
+	'/v1/livechat/analytics/dashboards/charts/agents-status': {
+		GET: (params: LivechatAnalyticsChartsAgentStatusProps) => {
 			offline: number;
 			away: number;
 			busy: number;
@@ -1047,8 +1115,8 @@ export type OmnichannelEndpoints = {
 		};
 	};
 
-	'livechat/analytics/dashboards/charts/chats-per-department': {
-		GET: (params: { start: string; end: string; departmentId?: string }) => {
+	'/v1/livechat/analytics/dashboards/charts/chats-per-department': {
+		GET: (params: LivechatAnalyticsDashboardGenericProps) => {
 			[departmentName: string]: {
 				open: number;
 				closed: number;
@@ -1056,8 +1124,8 @@ export type OmnichannelEndpoints = {
 		};
 	};
 
-	'livechat/analytics/dashboards/charts/timings': {
-		GET: (params: { start: string; end: string; departmentId?: string }) => {
+	'/v1/livechat/analytics/dashboards/charts/timings': {
+		GET: (params: LivechatAnalyticsDashboardGenericProps) => {
 			response: {
 				avg: number;
 				longest: number;

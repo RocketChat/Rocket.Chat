@@ -1,8 +1,7 @@
-import { Match, check } from 'meteor/check';
 import { IAgentProductivityTotalizers, IConversationTotalizers, IChatTotalizers, IProductivityTotalizers } from '@rocket.chat/core-typings';
+import { isLivechatAnalyticsDashboardGenericSchema, isLivechatAnalyticsChartsAgentStatusSchema } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { hasPermission } from '../../../../authorization/server';
 import {
 	findAllChatsStatus,
 	getProductivityMetrics,
@@ -33,18 +32,11 @@ type ChatsPerAgentResponse = {
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversation-totalizers',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAnalyticsDashboardGenericSchema, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -66,18 +58,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/agents-productivity-totalizers',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAnalyticsDashboardGenericSchema, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -104,18 +89,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/chats-totalizers',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAnalyticsDashboardGenericSchema, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -135,18 +113,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/productivity-totalizers',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAnalyticsDashboardGenericSchema, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -169,18 +140,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAnalyticsDashboardGenericSchema, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -201,18 +165,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-agent',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAnalyticsDashboardGenericSchema, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -233,13 +190,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/agents-status',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAnalyticsChartsAgentStatusSchema, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
-
 			const { departmentId } = this.requestParams();
 
 			const result = findAllAgentsStatus({ departmentId });
@@ -251,18 +204,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-department',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAnalyticsDashboardGenericSchema, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -283,18 +229,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/timings',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatAnalyticsDashboardGenericSchema, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-livechat-manager')) {
-				return API.v1.unauthorized();
-			}
 			const { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
