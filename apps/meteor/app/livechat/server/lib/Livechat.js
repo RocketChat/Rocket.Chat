@@ -343,7 +343,7 @@ export const Livechat = {
 				}
 			}
 
-			userId = await LivechatVisitors.insert(userData);
+			userId = await LivechatVisitors.insertOne(userData);
 		}
 
 		await LivechatVisitors.updateById(userId, updateUser);

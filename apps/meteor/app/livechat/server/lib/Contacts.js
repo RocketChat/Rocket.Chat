@@ -48,7 +48,7 @@ export const Contacts = {
 					ts: new Date(),
 				};
 
-				contactId = await LivechatVisitors.insert(userData);
+				contactId = await LivechatVisitors.insertOne(userData);
 			}
 		}
 
