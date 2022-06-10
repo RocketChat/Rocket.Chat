@@ -1,7 +1,6 @@
-import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import type { ILivechatAgent, IVoipRoom } from '@rocket.chat/core-typings';
-import { isVoipRoomProps, isVoipRoomsProps } from '@rocket.chat/rest-typings/dist/v1/voip';
+import { isVoipRoomProps, isVoipRoomsProps, isVoipRoomCloseProps } from '@rocket.chat/rest-typings/dist/v1/voip';
 
 import { API } from '../../api';
 import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
@@ -218,16 +217,10 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'voip/room.close',
-	{ authRequired: true, permissionsRequired: ['inbound-voip-calls'] },
+	{ authRequired: true, validateParams: isVoipRoomCloseProps, permissionsRequired: ['inbound-voip-calls'] },
 	{
 		async post() {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-				comment: Match.Maybe(String),
-				tags: Match.Maybe([String]),
-			});
-			const { rid, token, comment, tags } = this.bodyParams;
+			const { rid, token, options } = this.bodyParams;
 
 			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
 			if (!visitor) {
@@ -240,7 +233,7 @@ API.v1.addRoute(
 			if (!room.open) {
 				return API.v1.failure('room-closed');
 			}
-			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, comment, tags);
+			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, 'voip-call-wrapup', options);
 			if (!closeResult) {
 				return API.v1.failure();
 			}

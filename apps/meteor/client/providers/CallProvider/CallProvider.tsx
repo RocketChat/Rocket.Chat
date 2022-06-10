@@ -319,14 +319,8 @@ export const CallProvider: FC = ({ children }) => {
 				}
 				return '';
 			},
-			closeRoom: async (data?: { comment: string; tags: string[] }): Promise<void> => {
-				roomInfo &&
-					(await voipCloseRoomEndpoint({
-						rid: roomInfo.rid,
-						token: roomInfo.v.token || '',
-						comment: data?.comment || '',
-						tags: data?.tags,
-					}));
+			closeRoom: async ({ comment, tags }: { comment?: string; tags?: string[] }): Promise<void> => {
+				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', options: { comment, tags } }));
 				homeRoute.push({});
 				const queueAggregator = voipClient.getAggregator();
 				if (queueAggregator) {
