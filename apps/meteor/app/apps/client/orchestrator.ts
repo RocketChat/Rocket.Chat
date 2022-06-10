@@ -132,30 +132,33 @@ class AppClientOrchestrator {
 
 	public async getApps(): Promise<App[]> {
 		const result = await APIClient.get('/apps');
+
 		if ('apps' in result) {
-			return result.apps;
+			// TODO: chapter day: multiple results are returned, but we only need one
+			return result.apps as App[];
 		}
-		throw new Error('Apps not found');
+		throw new Error('Invalid response from API');
 	}
 
 	public async getAppsFromMarketplace(): Promise<App[]> {
 		const result = await APIClient.get('/apps', { marketplace: 'true' });
 
-		if ('apps' in result) {
-			const { apps: appsOverviews } = result;
-			return appsOverviews.map((app) => {
-				const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt } = app;
-				return {
-					...latest,
-					price,
-					pricingPlans,
-					purchaseType,
-					isEnterpriseOnly,
-					modifiedAt,
-				};
-			});
+		if (!Array.isArray(result)) {
+			// TODO: chapter day: multiple results are returned, but we only need one
+			throw new Error('Invalid response from API');
 		}
-		throw new Error('Apps not found');
+
+		return (result as App[]).map((app: App) => {
+			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt } = app;
+			return {
+				...latest,
+				price,
+				pricingPlans,
+				purchaseType,
+				isEnterpriseOnly,
+				modifiedAt,
+			};
+		});
 	}
 
 	public async getAppsOnBundle(bundleId: string): Promise<App[]> {
@@ -257,12 +260,14 @@ class AppClientOrchestrator {
 		throw new Error('Failed to build external url');
 	}
 
-	public async getCategories(): Promise<Serialized<ICategory>[]> {
+	public async getCategories(): Promise<Serialized<ICategory[]>> {
 		const result = await APIClient.get('/apps', { categories: 'true' });
-		if ('categories' in result) {
-			return result.categories;
+
+		if (Array.isArray(result)) {
+			// TODO: chapter day: multiple results are returned, but we only need one
+			return result as Serialized<ICategory>[];
 		}
-		throw new Error('Categories not found');
+		throw new Error('Failed to get categories');
 	}
 
 	public getUIHost(): RealAppsEngineUIHost {
@@ -274,7 +279,7 @@ export const Apps = new AppClientOrchestrator();
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
-		Meteor.call('/apps/is-enabled', (error: Error, isEnabled: boolean) => {
+		Meteor.call('apps/is-enabled', (error: Error, isEnabled: boolean) => {
 			if (error) {
 				Apps.handleError(error);
 				return;
