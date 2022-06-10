@@ -14,7 +14,7 @@ type SectionProps = {
 	sectionName: string;
 	tabName?: string;
 	solo: boolean;
-	help?: ReactElement | string;
+	help?: ReactNode;
 	children?: ReactNode;
 };
 
