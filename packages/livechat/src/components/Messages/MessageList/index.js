@@ -98,6 +98,10 @@ export class MessageList extends MemoizedComponent {
 		window.removeEventListener('resize', this.handleResize);
 	}
 
+	isVideoConfMessage(message) {
+		return Boolean(message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat'));
+	}
+
 	renderItems = ({
 		attachmentResolver = getAttachmentUrl,
 		avatarResolver,
@@ -116,7 +120,7 @@ export class MessageList extends MemoizedComponent {
 			const message = messages[i];
 			const nextMessage = messages[i + 1];
 
-			if ((message.t === constants.webRTCCallStartedMessageType || message.t === constants.jitsiCallStartedMessageType)
+			if ((message.t === constants.webRTCCallStartedMessageType)
 				&& message.actionLinks && message.actionLinks.length
 				&& ongoingCall && isCallOngoing(ongoingCall.callStatus)
 				&& !message.webRtcCallEndTs) {
@@ -124,6 +128,17 @@ export class MessageList extends MemoizedComponent {
 				items.push(
 					<JoinCallButton callStatus={ongoingCall.callStatus} url={url} callProvider={callProvider} rid={rid} />,
 				);
+				continue;
+			}
+
+			const videoConfJoinBlock = message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
+			if (videoConfJoinBlock) {
+				if (ongoingCall && isCallOngoing(ongoingCall.callStatus)) {
+					const { url, callProvider, rid } = incomingCallAlert || {};
+					items.push(
+						<JoinCallButton callStatus={ongoingCall.callStatus} url={url} callProvider={callProvider} rid={rid} />,
+					);
+				}
 				continue;
 			}
 

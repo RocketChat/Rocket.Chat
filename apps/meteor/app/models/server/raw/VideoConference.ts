@@ -1,11 +1,11 @@
 import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
-import type { IVideoConference, IGroupVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { VideoConference, IGroupVideoConference, ILivechatVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 import type { IndexSpecification, InsertionModel } from './BaseRaw';
 
-export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
+export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { rid: 1, status: 1, createdAt: 1 }, unique: false }];
 	}
@@ -13,7 +13,7 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 	public async findRecentByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
-	): Promise<Cursor<IVideoConference>> {
+	): Promise<Cursor<VideoConference>> {
 		return this.find(
 			{
 				rid,
@@ -32,8 +32,8 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		);
 	}
 
-	public async createDirect(callDetails: Pick<IVideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string> {
-		const call: InsertionModel<IVideoConference> = {
+	public async createDirect(callDetails: Pick<VideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string> {
+		const call: InsertionModel<VideoConference> = {
 			type: 'direct',
 			users: [],
 			messages: {},
@@ -61,15 +61,30 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		return (await this.insertOne(call)).insertedId;
 	}
 
+	public async createLivechat(
+		callDetails: Required<Pick<ILivechatVideoConference, 'rid' | 'createdBy' | 'providerName'>>,
+	): Promise<string> {
+		const call: InsertionModel<ILivechatVideoConference> = {
+			type: 'livechat',
+			users: [],
+			messages: {},
+			status: VideoConferenceStatus.STARTED,
+			createdAt: new Date(),
+			...callDetails,
+		};
+
+		return (await this.insertOne(call)).insertedId;
+	}
+
 	public updateOneById(
 		_id: string,
-		update: UpdateQuery<IVideoConference> | Partial<IVideoConference>,
+		update: UpdateQuery<VideoConference> | Partial<VideoConference>,
 		options?: UpdateOneOptions,
 	): Promise<UpdateWriteOpResult> {
 		return this.updateOne({ _id }, update, options);
 	}
 
-	public async setEndedById(callId: string, endedBy: { _id: string; name: string; username: string }): Promise<void> {
+	public async setEndedById(callId: string, endedBy?: { _id: string; name: string; username: string }): Promise<void> {
 		await this.updateOneById(callId, {
 			$set: {
 				endedBy,
@@ -115,7 +130,7 @@ export class VideoConferenceRaw extends BaseRaw<IVideoConference> {
 		});
 	}
 
-	public async setMessageById(callId: string, messageType: keyof IVideoConference['messages'], messageId: string): Promise<void> {
+	public async setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void> {
 		await this.updateOneById(callId, {
 			$set: {
 				[`messages.${messageType}`]: messageId,

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
-import { isVideoConferenceMessage } from '@rocket.chat/core-typings';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 // import { callbacks } from '../../../lib/callbacks';
@@ -308,62 +307,6 @@ Meteor.startup(function () {
 		data(message) {
 			return {
 				username: message.u.username,
-			};
-		},
-	});
-	MessageTypes.registerType({
-		id: 'video-direct-calling',
-		system: true,
-		message: 'video_direct_calling',
-		data(message) {
-			return {
-				username: message.u.username,
-			};
-		},
-	});
-	MessageTypes.registerType({
-		id: 'video-direct-missed',
-		system: true,
-		message: 'video_direct_missed',
-		data(message) {
-			return {
-				username: message.u.username,
-			};
-		},
-	});
-	MessageTypes.registerType({
-		id: 'video-direct-started',
-		system: true,
-		message: 'video_direct_started',
-		data(message) {
-			return {
-				username: message.u.username,
-			};
-		},
-	});
-	MessageTypes.registerType({
-		id: 'video-direct-ended',
-		system: true,
-		message: 'video_direct_ended',
-	});
-	MessageTypes.registerType({
-		id: 'video-conference-started',
-		system: true,
-		message: 'video_conference_started',
-		data(message) {
-			return {
-				conference: (isVideoConferenceMessage(message) && message.videoConf.title) || '',
-				username: message.u.username,
-			};
-		},
-	});
-	MessageTypes.registerType({
-		id: 'video-conference',
-		system: true,
-		message: 'video_conference_item',
-		data(message) {
-			return {
-				conference: (isVideoConferenceMessage(message) && message.videoConf.title) || '',
 			};
 		},
 	});

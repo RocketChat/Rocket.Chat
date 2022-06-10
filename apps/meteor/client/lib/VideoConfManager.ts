@@ -127,7 +127,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		debug && console.log(`[VideoConf] Starting new call on room ${roomId}`);
 		this.startingNewCall = true;
 
-		const { data } = await APIClient.post('/v1/video-conference.start', { roomId, title }).catch((e: unknown) => {
+		const { data } = await APIClient.post('/v1/video-conference.start', { roomId, title }).catch((e: any) => {
 			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
 			this.startingNewCall = false;
 			this.emit('start/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
@@ -141,6 +141,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			case 'direct':
 				return this.callUser({ uid: data.callee, rid: roomId, callId: data.callId });
 			case 'videoconference':
+				return this.joinCall(data.callId);
+			case 'livechat':
 				return this.joinCall(data.callId);
 		}
 	}

@@ -43,6 +43,7 @@ import notifications from '../../../notifications/server/lib/Notifications';
 import { Users as UsersRaw, LivechatVisitors as LivechatVisitorsRaw } from '../../../models/server/raw';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
+import { VideoConf } from '../../../../server/sdk';
 
 const logger = new Logger('Livechat');
 
@@ -1412,6 +1413,11 @@ export const Livechat = {
 	updateCallStatus(callId, rid, status, user) {
 		Rooms.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
+			const call = Promise.await(VideoConf.get(callId));
+			if (call) {
+				return Promise.await(VideoConf.endLivechatCall(callId));
+			}
+
 			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date() }, user);
 		}
 	},

@@ -13,7 +13,12 @@ export type ConferenceInstructions = {
 	callId: string;
 };
 
-export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'];
+export type LivechatInstructions = {
+	type: 'livechat';
+	callId: string;
+};
+
+export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'];
 export interface IVideoConferenceUser extends Pick<IUser, '_id' | 'username' | 'name'> {
 	ts: Date;
 }
@@ -55,14 +60,22 @@ export interface IGroupVideoConference extends IVideoConference {
 	title: string;
 }
 
-export type VideoConference = IDirectVideoConference | IGroupVideoConference;
+export interface ILivechatVideoConference extends IVideoConference {
+	type: 'livechat';
+}
 
-export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions;
+export type VideoConference = IDirectVideoConference | IGroupVideoConference | ILivechatVideoConference;
 
-export const isDirectVideoConference = (call: IVideoConference): call is IDirectVideoConference => {
+export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions | LivechatInstructions;
+
+export const isDirectVideoConference = (call: VideoConference | undefined | null): call is IDirectVideoConference => {
 	return call?.type === 'direct';
 };
 
-export const isGroupVideoConference = (call: IVideoConference): call is IGroupVideoConference => {
+export const isGroupVideoConference = (call: VideoConference | undefined | null): call is IGroupVideoConference => {
 	return call?.type === 'videoconference';
+};
+
+export const isLivechatVideoConference = (call: VideoConference | undefined | null): call is ILivechatVideoConference => {
+	return call?.type === 'livechat';
 };
