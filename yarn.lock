@@ -4837,6 +4837,7 @@ __metadata:
     "@types/chai-dom": 0.0.12
     "@types/chai-spies": ^1.0.3
     "@types/clipboard": ^2.0.7
+    "@types/codemirror": ^5
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.2
     "@types/dompurify": ^2.2.2
@@ -7051,6 +7052,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/codemirror@npm:^5":
+  version: 5.60.5
+  resolution: "@types/codemirror@npm:5.60.5"
+  dependencies:
+    "@types/tern": "*"
+  checksum: 423b6378b6415b626d9f54d37d69477f96940b30a695d4ec36402feb59a96f7ab42d1c17b8472fbb222a0966f6061deee234e37bcd3e34c75836e989dc95929d
+  languageName: node
+  linkType: hard
+
 "@types/color-convert@npm:^2.0.0":
   version: 2.0.0
   resolution: "@types/color-convert@npm:2.0.0"
@@ -7126,6 +7136,13 @@ __metadata:
   version: 1.0.0
   resolution: "@types/eslint-visitor-keys@npm:1.0.0"
   checksum: a90f0b023e357a59ea04268e0387cfb0ea06703068cc48fe2ca97fa158bcf3c51a6611a56bdbdf763e3451150b92bba3fb5d0b689fc55f856cae8555ec366a63
+  languageName: node
+  linkType: hard
+
+"@types/estree@npm:*":
+  version: 0.0.51
+  resolution: "@types/estree@npm:0.0.51"
+  checksum: e56a3bcf759fd9185e992e7fdb3c6a5f81e8ff120e871641607581fb3728d16c811702a7d40fa5f869b7f7b4437ab6a87eb8d98ffafeee51e85bbe955932a189
   languageName: node
   linkType: hard
 
@@ -7950,6 +7967,15 @@ __metadata:
   version: 1.0.8
   resolution: "@types/tapable@npm:1.0.8"
   checksum: b4b754dd0822c407b8f29ef6b766490721c276880f9e976d92ee2b3ef915f11a05a2442ae36c8978bcd872ad6bc833b0a2c4d267f2d611590668a366bad50652
+  languageName: node
+  linkType: hard
+
+"@types/tern@npm:*":
+  version: 0.23.4
+  resolution: "@types/tern@npm:0.23.4"
+  dependencies:
+    "@types/estree": "*"
+  checksum: d8fd304f147ed08f1d075f09cb8d440b7f785f69c9ec5c30eadf98132fe3f58f3b1bbbd11283858bb261afac5a2039c1c255f290b0f6e4a47cd6a746f30a6aa8
   languageName: node
   linkType: hard
 

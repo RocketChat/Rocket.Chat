@@ -89,6 +89,7 @@
 		"@types/chai-dom": "0.0.12",
 		"@types/chai-spies": "^1.0.3",
 		"@types/clipboard": "^2.0.7",
+		"@types/codemirror": "^5",
 		"@types/cookie-parser": "^1.4.2",
 		"@types/dompurify": "^2.2.2",
 		"@types/ejson": "^2.2.0",
