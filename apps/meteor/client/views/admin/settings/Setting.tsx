@@ -106,6 +106,8 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			JSON.stringify(value) !== JSON.stringify(packageValue)) &&
 		!disabled;
 
+	// @todo: type check props based on setting type
+
 	return (
 		<MemoizedSetting
 			className={className}

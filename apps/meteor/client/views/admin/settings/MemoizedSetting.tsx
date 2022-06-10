@@ -1,6 +1,6 @@
 import { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { Callout, Field, Margins } from '@rocket.chat/fuselage';
-import React, { memo, ReactElement } from 'react';
+import React, { ElementType, memo, ReactElement, ReactNode } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
 import AssetSettingInput from './inputs/AssetSettingInput';
@@ -19,11 +19,32 @@ import SelectSettingInput from './inputs/SelectSettingInput';
 import SelectTimezoneSettingInput from './inputs/SelectTimezoneSettingInput';
 import StringSettingInput from './inputs/StringSettingInput';
 
+// @todo: the props are loosely typed because `Setting` needs to typecheck them.
+const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
+	boolean: BooleanSettingInput,
+	string: StringSettingInput,
+	relativeUrl: RelativeUrlSettingInput,
+	password: PasswordSettingInput,
+	int: IntSettingInput,
+	select: SelectSettingInput,
+	multiSelect: MultiSelectSettingInput,
+	language: LanguageSettingInput,
+	color: ColorSettingInput,
+	font: FontSettingInput,
+	code: CodeSettingInput,
+	action: ActionSettingInput,
+	asset: AssetSettingInput,
+	roomPick: RoomPickSettingInput,
+	timezone: SelectTimezoneSettingInput,
+	date: GenericSettingInput, // @todo: implement
+	group: GenericSettingInput, // @todo: implement
+};
+
 type MemoizedSettingProps = {
 	_id?: string;
 	type: ISettingBase['type'];
-	hint?: ReactElement | string;
-	callout?: ReactElement | string;
+	hint?: ReactNode;
+	callout?: ReactNode;
 	value?: SettingValue;
 	editor?: SettingEditor;
 	onChangeValue?: (value: unknown) => void;
@@ -53,24 +74,7 @@ const MemoizedSetting = ({
 		return null;
 	}
 
-	const InputComponent: (props: any) => ReactElement =
-		{
-			boolean: BooleanSettingInput,
-			string: StringSettingInput,
-			relativeUrl: RelativeUrlSettingInput,
-			password: PasswordSettingInput,
-			int: IntSettingInput,
-			select: SelectSettingInput,
-			multiSelect: MultiSelectSettingInput,
-			language: LanguageSettingInput,
-			color: ColorSettingInput,
-			font: FontSettingInput,
-			code: CodeSettingInput,
-			action: ActionSettingInput,
-			asset: AssetSettingInput,
-			roomPick: RoomPickSettingInput,
-			timezone: SelectTimezoneSettingInput,
-		}[type as string] || GenericSettingInput;
+	const InputComponent = inputsByType[type];
 
 	return (
 		<Field className={className}>
