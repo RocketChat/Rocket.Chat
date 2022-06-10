@@ -16,7 +16,7 @@ export const VoipFooter = (): ReactElement | null => {
 	const t = useTranslation();
 	const callerInfo = useCallerInfo();
 	const callActions = useCallActions();
-	const dispatchEvent = useEndpoint('POST', 'voip/events');
+	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');
 
 	const createRoom = useCallCreateRoom();
 	const openRoom = useCallOpenRoom();

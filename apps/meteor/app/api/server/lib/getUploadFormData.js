@@ -9,7 +9,6 @@ export const getUploadFormData = async ({ request }) =>
 		bb.on('file', (fieldname, file, { filename, encoding, mimeType: mimetype }) => {
 			const fileData = [];
 
-			console.log(file);
 			file.on('data', (data) => fileData.push(data));
 
 			file.on('end', () => {

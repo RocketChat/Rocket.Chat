@@ -460,7 +460,7 @@ const VoipRoomsSchema: JSONSchemaType<VoipRooms> = {
 
 export const isVoipRoomsProps = ajv.compile<VoipRooms>(VoipRoomsSchema);
 
-type VoipRoomClose = { rid: string; token: string; comment: string; tags?: string[] };
+type VoipRoomClose = { rid: string; token: string; options: { comment?: string; tags?: string[] } };
 
 const VoipRoomCloseSchema: JSONSchemaType<VoipRoomClose> = {
 	type: 'object',
@@ -471,71 +471,77 @@ const VoipRoomCloseSchema: JSONSchemaType<VoipRoomClose> = {
 		token: {
 			type: 'string',
 		},
-		comment: {
-			type: 'string',
-		},
-		tags: {
-			type: 'array',
-			items: {
-				type: 'string',
+		options: {
+			type: 'object',
+			properties: {
+				comment: {
+					type: 'string',
+					nullable: true,
+				},
+				tags: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
 			},
-			nullable: true,
 		},
 	},
-	required: ['rid', 'token', 'comment'],
+	required: ['rid', 'token'],
 	additionalProperties: false,
 };
 
 export const isVoipRoomCloseProps = ajv.compile<VoipRoomClose>(VoipRoomCloseSchema);
 
 export type VoipEndpoints = {
-	'connector.extension.getRegistrationInfoByUserId': {
+	'/v1/connector.extension.getRegistrationInfoByUserId': {
 		GET: (params: ConnectorExtensionGetRegistrationInfoByUserId) => IRegistrationInfo | { result: string };
 	};
-	'voip/queues.getSummary': {
+	'/v1/voip/queues.getSummary': {
 		GET: () => { summary: IQueueSummary[] };
 	};
-	'voip/queues.getQueuedCallsForThisExtension': {
+	'/v1/voip/queues.getQueuedCallsForThisExtension': {
 		GET: (params: VoipQueuesGetQueuedCallsForThisExtension) => IQueueMembershipDetails;
 	};
-	'voip/queues.getMembershipSubscription': {
+	'/v1/voip/queues.getMembershipSubscription': {
 		GET: (params: VoipQueuesGetMembershipSubscription) => IQueueMembershipSubscription;
 	};
-	'omnichannel/extensions': {
+	'/v1/omnichannel/extensions': {
 		GET: (params: OmnichannelExtensions) => PaginatedResult<{ extensions: IVoipExtensionWithAgentInfo[] }>;
 	};
-	'omnichannel/extension': {
+	'/v1/omnichannel/extension': {
 		GET: (params: OmnichannelExtension) => {
 			extensions: string[];
 		};
 	};
-	'omnichannel/agent/extension': {
+	'/v1/omnichannel/agent/extension': {
 		GET: (params: OmnichannelAgentExtensionGET) => { extension: Pick<IUser, '_id' | 'username' | 'extension'> };
 		POST: (params: OmnichannelAgentExtensionPOST) => void;
 		DELETE: (params: OmnichannelAgentExtensionDELETE) => void;
 	};
-	'omnichannel/agents/available': {
+	'/v1/omnichannel/agents/available': {
 		GET: (params: OmnichannelAgentsAvailable) => PaginatedResult<{ agents: ILivechatAgent[] }>;
 	};
-	'voip/events': {
+	'/v1/voip/events': {
 		POST: (params: VoipEvents) => void;
 	};
-	'voip/room': {
+	'/v1/voip/room': {
 		GET: (params: VoipRoom) => {
 			room: IVoipRoom;
 			newRoom: boolean;
 		};
 	};
-	'voip/managementServer/checkConnection': {
+	'/v1/voip/managementServer/checkConnection': {
 		GET: (params: VoipManagementServerCheckConnection) => IManagementServerConnectionStatus;
 	};
-	'voip/callServer/checkConnection': {
+	'/v1/voip/callServer/checkConnection': {
 		GET: (params: VoipCallServerCheckConnection) => IManagementServerConnectionStatus;
 	};
-	'voip/rooms': {
+	'/v1/voip/rooms': {
 		GET: (params: VoipRooms) => PaginatedResult<{ rooms: IVoipRoom[] }>;
 	};
-	'voip/room.close': {
+	'/v1/voip/room.close': {
 		POST: (params: VoipRoomClose) => { rid: string };
 	};
 };

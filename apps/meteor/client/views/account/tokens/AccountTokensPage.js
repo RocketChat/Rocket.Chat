@@ -8,7 +8,7 @@ import AddToken from './AddToken';
 
 const AccountTokensPage = () => {
 	const t = useTranslation();
-	const { value: data, reload } = useEndpointData('users.getPersonalAccessTokens');
+	const { value: data, reload } = useEndpointData('/v1/users.getPersonalAccessTokens');
 
 	return (
 		<Page>
