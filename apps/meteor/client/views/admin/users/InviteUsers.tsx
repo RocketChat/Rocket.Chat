@@ -1,11 +1,13 @@
 import { Box, Button, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, ReactElement, ChangeEvent } from 'react';
+import React, { useCallback, useState, ReactElement, ChangeEvent, ComponentProps } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import VerticalBar from '../../../components/VerticalBar';
 
-const InviteUsers = ({ ...props }): ReactElement => {
+type InviteUsersProps = ComponentProps<typeof VerticalBar.ScrollableContent>;
+
+const InviteUsers = (props: InviteUsersProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [text, setText] = useState('');

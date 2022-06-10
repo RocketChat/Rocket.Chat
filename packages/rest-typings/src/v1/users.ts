@@ -1,4 +1,4 @@
-import type { ITeam, IUser, IUserList } from '@rocket.chat/core-typings';
+import type { ITeam, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -142,7 +142,7 @@ export type UsersEndpoints = {
 	};
 	'/v1/users.list': {
 		GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
-			users: IUserList[];
+			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
 		}>;
 	};
 	'/v1/users.listTeams': {

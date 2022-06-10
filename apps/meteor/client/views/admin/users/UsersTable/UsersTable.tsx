@@ -17,7 +17,11 @@ import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import UsersTableRow from './UsersTableRow';
 
-const UsersTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement | null => {
+type UsersTableProps = {
+	reload: MutableRefObject<() => void>;
+};
+
+const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
