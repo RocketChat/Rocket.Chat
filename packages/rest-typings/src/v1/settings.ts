@@ -65,34 +65,34 @@ type SettingsUpdatePropDefault = {
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
 export type SettingsEndpoints = {
-	'settings.public': {
+	'/v1/settings.public': {
 		GET: () => PaginatedResult & {
 			settings: Array<ISetting>;
 		};
 	};
 
-	'settings.oauth': {
+	'/v1/settings.oauth': {
 		GET: () => {
 			services: Partial<OauthCustomConfiguration>[];
 		};
 	};
 
-	'settings.addCustomOAuth': {
+	'/v1/settings.addCustomOAuth': {
 		POST: (params: { name: string }) => void;
 	};
 
-	'settings': {
+	'/v1/settings': {
 		GET: () => {
 			settings: ISetting[];
 		};
 	};
 
-	'settings/:_id': {
+	'/v1/settings/:_id': {
 		GET: () => Pick<ISetting, '_id' | 'value'>;
 		POST: (params: SettingsUpdateProps) => void;
 	};
 
-	'service.configurations': {
+	'/v1/service.configurations': {
 		GET: () => {
 			configurations: Array<{
 				appId: string;

@@ -14,7 +14,7 @@ type RoomAvatarProps = {
 	room: {
 		_id: string;
 		type?: string;
-		t: string;
+		t?: string;
 		avatarETag?: string;
 	};
 };
