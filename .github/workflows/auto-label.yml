@@ -2,6 +2,7 @@ name: 'Auto label QA'
 on:
   pull_request:
     types: [opened, synchronize, labeled, unlabeled]
+permissions: write-all
 jobs:
   build:
     runs-on: ubuntu-latest
