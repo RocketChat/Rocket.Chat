@@ -4,9 +4,6 @@ import { BannerPlatform, IBanner, IBannerDismiss, Optional } from '@rocket.chat/
 import type { IUser } from '@rocket.chat/core-typings';
 import { Banners, BannersDismiss, Users } from '@rocket.chat/models';
 
-import '../../models/Banners';
-import '../../models/BannersDismiss';
-import '../../models/Users';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IBannerService } from '../../sdk/types/IBannerService';
 import { api } from '../../sdk/api';

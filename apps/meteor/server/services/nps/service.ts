@@ -4,9 +4,6 @@ import { Db } from 'mongodb';
 import { NPSStatus, INpsVoteStatus, INpsVote, INps } from '@rocket.chat/core-typings';
 import { Nps, NpsVote, Settings } from '@rocket.chat/models';
 
-import '../../models/Nps';
-import '../../models/NpsVote';
-import '../../models/Settings';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';

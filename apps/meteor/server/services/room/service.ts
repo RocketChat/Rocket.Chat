@@ -2,7 +2,6 @@ import { Db } from 'mongodb';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import '../../models/Users';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
 import { Authorization } from '../../sdk';

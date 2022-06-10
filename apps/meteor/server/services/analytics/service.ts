@@ -4,7 +4,6 @@ import { Analytics } from '@rocket.chat/models';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IAnalyticsService } from '../../sdk/types/IAnalyticsService';
-import '../../models/Analytics';
 
 export class AnalyticsService extends ServiceClassInternal implements IAnalyticsService {
 	protected name = 'analytics';

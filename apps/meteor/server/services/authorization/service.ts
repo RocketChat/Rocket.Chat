@@ -7,13 +7,6 @@ import { IAuthorization, RoomAccessValidator } from '../../sdk/types/IAuthorizat
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { canAccessRoom } from './canAccessRoom';
-import '../../models/Subscriptions';
-import '../../models/Settings';
-import '../../models/Rooms';
-import '../../models/TeamMember';
-import '../../models/Team';
-import '../../models/Roles';
-import '../../models/Users';
 import { License } from '../../sdk';
 
 import './canAccessRoomLivechat';

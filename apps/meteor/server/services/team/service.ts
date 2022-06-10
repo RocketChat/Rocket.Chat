@@ -5,11 +5,6 @@ import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMembe
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 
-import '../../models/Rooms';
-import '../../models/Subscriptions';
-import '../../models/Team';
-import '../../models/TeamMember';
-import '../../models/Users';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
