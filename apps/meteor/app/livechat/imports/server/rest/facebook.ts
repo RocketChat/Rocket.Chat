@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { Random } from 'meteor/random';
 
 import { API } from '../../../../api/server';
@@ -47,9 +48,23 @@ API.v1.addRoute('livechat/facebook', {
 			return API.v1.failure('Invalid signature');
 		}
 
-		const sendMessage = {
+		const sendMessage: {
 			message: {
-				rid: mid,
+				_id?: string;
+				token: string;
+				msg?: string;
+				rid?: string;
+			};
+			roomInfo: {
+				facebook: {
+					page: unknown;
+				};
+			};
+			guest: ILivechatVisitor;
+			agent: any;
+		} = {
+			message: {
+				_id: mid,
 				token,
 				msg: text,
 			},
@@ -58,8 +73,8 @@ API.v1.addRoute('livechat/facebook', {
 					page,
 				},
 			},
+			guest: {} as ILivechatVisitor,
 			agent: undefined,
-			guest: undefined,
 		};
 		let visitor = LivechatVisitors.getVisitorByToken(token);
 		if (visitor) {
@@ -69,13 +84,10 @@ API.v1.addRoute('livechat/facebook', {
 			} else {
 				sendMessage.message.rid = Random.id();
 			}
-			sendMessage.message.token = visitor.token;
 		} else {
 			sendMessage.message.rid = Random.id();
-			sendMessage.message.token = token;
-
 			const userId = Livechat.registerGuest({
-				token: sendMessage.message.token,
+				token,
 				name: `${firstName} ${lastName}`,
 				email: undefined,
 				department: undefined,
@@ -88,7 +100,6 @@ API.v1.addRoute('livechat/facebook', {
 			visitor = LivechatVisitors.findOneById(userId);
 		}
 
-		sendMessage.message.msg = text;
 		sendMessage.guest = visitor;
 
 		return API.v1.success(Livechat.sendMessage(sendMessage));
