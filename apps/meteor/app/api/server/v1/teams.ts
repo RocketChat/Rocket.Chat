@@ -562,6 +562,13 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+
+			const canViewInfo = hasPermission(this.userId, 'view-all-teams');
+
+			if (!canViewInfo) {
+				return API.v1.unauthorized();
+			}
+
 			check(
 				this.queryParams,
 				Match.OneOf(
