@@ -158,9 +158,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['14.18.3']
         mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
-        test-type: ['unit', 'api', 'ui']
 
     steps:
       - name: Launch MongoDB
@@ -168,10 +166,10 @@ jobs:
         with:
           mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '14.18.3'
 
       - name: Setup Chrome
         run: |
@@ -219,16 +217,13 @@ jobs:
             ${{ runner.os }}-turbo-
             ${{ runner.os }}-
 
-      - name: Yarn install
-        # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
+      - name: yarn install
         run: yarn
 
       - name: Unit Test
-        if: ${{ matrix.test-type == 'unit' }}
         run: yarn testunit
 
       - name: E2E Test API
-        if: ${{ matrix.test-type == 'api' }}
         run: |
           docker logs rocketchat --tail=50
 
@@ -252,13 +247,11 @@ jobs:
           exit $s
 
       - name: Install Playwright
-        if: ${{ matrix.test-type == 'ui' }}
         run: |
           cd ./apps/meteor
           npx playwright install --with-deps
 
       - name: E2E Test UI
-        if: ${{ matrix.test-type == 'ui' }}
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
