@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
-import { addAction } from '../../../client/views/room/lib/Toolbox';
+import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
 import { useVideoConfPopupDispatch, useStartCall, useVideoConfPopupDismiss } from '../../../client/contexts/VideoConfPopupContext';
 
@@ -11,11 +11,29 @@ import { useVideoConfPopupDispatch, useStartCall, useVideoConfPopupDismiss } fro
 addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
 	const startCall = useStartCall();
+	const user = useUser();
 
 	const dispatchPopup = useVideoConfPopupDispatch();
 	const dismissPopup = useVideoConfPopupDismiss();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
+	const enabled = useSetting('VideoConf_Enabled');
+	const enabledDMs = useSetting('VideoConf_Enable_DMs');
+	const enabledChannel = useSetting('VideoConf_Enable_Channels');
+	const enabledTeams = useSetting('VideoConf_Enable_Teams');
+	const enabledGroups = useSetting('VideoConf_Enable_Groups');
+
+	const enableOption = enabled && (!user?.username || !room.muted?.includes(user.username));
+
+	const groups = useStableArray(
+		[
+			enabledDMs && 'direct',
+			enabledDMs && 'direct_multiple',
+			enabledGroups && 'group',
+			enabledTeams && 'team',
+			enabledChannel && 'channel',
+		].filter(Boolean) as ToolboxActionConfig['groups'],
+	);
 
 	const handleStartConference = useMutableCallback((confTitle) => {
 		startCall(room._id, confTitle);
@@ -35,15 +53,18 @@ addAction('video-conf', ({ room }) => {
 	);
 
 	return useMemo(
-		() => ({
-			groups: ['direct', 'group', 'channel'],
-			id: 'video-conference',
-			title: 'Video Conference',
-			icon: 'phone',
-			action: handleOpenVideoConf,
-			full: true,
-			order: 999,
-		}),
-		[handleOpenVideoConf],
+		() =>
+			enableOption
+				? {
+						groups,
+						id: 'video-conference',
+						title: 'Video Conference',
+						icon: 'phone',
+						action: handleOpenVideoConf,
+						full: true,
+						order: 4,
+				  }
+				: null,
+		[handleOpenVideoConf, groups, enableOption],
 	);
 });

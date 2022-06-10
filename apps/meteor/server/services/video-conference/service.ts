@@ -2,7 +2,6 @@ import { Db } from 'mongodb';
 import type {
 	IRoom,
 	IUser,
-	IVideoConference,
 	VideoConferenceInstructions,
 	DirectCallInstructions,
 	ConferenceInstructions,
@@ -64,7 +63,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.startGroup(caller, room._id, title || room.fname || room.name || '');
 	}
 
-	public async join(uid: IUser['_id'], callId: IVideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
+	public async join(uid: IUser['_id'], callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
 		const call = await this.VideoConference.findOneById(callId);
 		if (!call) {
 			throw new Error('invalid-call');
@@ -78,7 +77,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.joinCall(call, user, options);
 	}
 
-	public async cancel(uid: IUser['_id'], callId: IVideoConference['_id']): Promise<void> {
+	public async cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
 		const call = await this.VideoConference.findOneById(callId);
 		if (!call || !isDirectVideoConference(call)) {
 			throw new Error('invalid-call');
@@ -101,11 +100,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
 	}
 
-	public async get(callId: IVideoConference['_id']): Promise<Omit<IVideoConference, 'providerData'> | null> {
+	public async get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null> {
 		return this.VideoConference.findOneById(callId, { projection: { providerData: 0 } });
 	}
 
-	public async getUnfiltered(callId: IVideoConference['_id']): Promise<IVideoConference | null> {
+	public async getUnfiltered(callId: VideoConference['_id']): Promise<VideoConference | null> {
 		return this.VideoConference.findOneById(callId);
 	}
 
@@ -126,7 +125,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	public async setProviderData(callId: IVideoConference['_id'], data: IVideoConference['providerData'] | undefined): Promise<void> {
+	public async setProviderData(callId: VideoConference['_id'], data: VideoConference['providerData'] | undefined): Promise<void> {
 		this.VideoConference.setProviderDataById(callId, data);
 	}
 
@@ -235,7 +234,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 			providerName,
 		});
-		const call = await this.get(callId);
+		const call = await this.getUnfiltered(callId);
 		if (!call) {
 			throw new Error('failed-to-create-direct-call');
 		}
@@ -274,7 +273,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 			providerName,
 		});
-		const call = await this.get(callId);
+		const call = await this.getUnfiltered(callId);
 		if (!call) {
 			throw new Error('failed-to-create-group-call');
 		}
@@ -295,7 +294,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async joinCall(
-		call: IVideoConference,
+		call: VideoConference,
 		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
@@ -327,7 +326,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return room?.fname || room?.name || rid;
 	}
 
-	private async generateNewUrl(call: IVideoConference): Promise<string> {
+	private async generateNewUrl(call: VideoConference): Promise<string> {
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -339,7 +338,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				_id: call._id,
 				type: call.type,
 				rid: call.rid,
-				createdBy: call.createdBy as Required<IVideoConference['createdBy']>,
+				createdBy: call.createdBy as Required<VideoConference['createdBy']>,
 				title,
 				providerData: call.providerData,
 			})
@@ -349,7 +348,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async getUrl(
-		call: IVideoConference,
+		call: VideoConference,
 		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
@@ -367,7 +366,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			type: call.type,
 			rid: call.rid,
 			url: call.url,
-			createdBy: call.createdBy as Required<IVideoConference['createdBy']>,
+			createdBy: call.createdBy as Required<VideoConference['createdBy']>,
 			providerData: call.providerData,
 			...(isGroupVideoConference(call) ? { title: call.title } : {}),
 		};
@@ -383,7 +382,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	private async addUserToCall(call: IVideoConference, { _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
+	private async addUserToCall(call: VideoConference, { _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
 		await this.VideoConference.addUserById(call._id, { _id, username, name });
 
 		if (call.type === 'direct' || !call.messages.started) {
