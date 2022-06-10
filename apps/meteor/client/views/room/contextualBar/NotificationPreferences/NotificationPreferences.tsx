@@ -1,11 +1,26 @@
 import { Button, ButtonGroup, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
+import { NotificationFormValues } from './NotificationPreferencesWithData';
 import NotificationByDevice from './components/NotificationByDevice';
 import NotificationToogle from './components/NotificationToogle';
 import { Preferences } from './components/Preferences';
+
+type NotificationPreferencesProps = {
+	handleClose: () => void;
+	formValues: NotificationFormValues;
+	formHandlers: Record<string, (e: unknown) => void>;
+	formHasUnsavedChanges: boolean;
+	handlePlaySound: () => void;
+	handleOptions: {
+		alerts: [string, string][];
+		audio: [string, string][];
+		sound: [string, string][];
+	};
+	handleSaveButton: () => void;
+};
 
 const NotificationPreferences = ({
 	handleClose,
@@ -15,7 +30,7 @@ const NotificationPreferences = ({
 	handlePlaySound,
 	handleOptions,
 	handleSaveButton,
-}) => {
+}: NotificationPreferencesProps): ReactElement => {
 	const t = useTranslation();
 
 	return (

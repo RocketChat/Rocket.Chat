@@ -456,7 +456,6 @@ export type RoomsEndpoints = {
 			success: boolean;
 		};
 	};
-
 	'/v1/rooms.upload/:rid': {
 		POST: (params: {
 			file: File;
@@ -468,5 +467,21 @@ export type RoomsEndpoints = {
 			msg?: string;
 			tmid?: string;
 		}) => { message: IMessage };
+	};
+	'/v1/rooms.saveNotification': {
+		POST: (params: {
+			roomId: string;
+			notifications: {
+				disableNotifications: string;
+				muteGroupMentions: string;
+				hideUnreadStatus: string;
+				desktopNotifications: string;
+				audioNotificationValue: string;
+				mobilePushNotifications: string;
+				emailNotifications: string;
+			};
+		}) => {
+			success: boolean;
+		};
 	};
 };
