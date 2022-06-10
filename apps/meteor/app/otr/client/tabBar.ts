@@ -9,7 +9,7 @@ const template = lazy(() => import('../../../client/views/room/contextualBar/OTR
 addAction('otr', () => {
 	const enabled = useSetting('OTR_Enable');
 
-	const shouldAddAction = enabled && (window.crypto || crypto);
+	const shouldAddAction = enabled && global.crypto;
 
 	useEffect(() => {
 		if (shouldAddAction) {

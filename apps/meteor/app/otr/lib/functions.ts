@@ -1,6 +1,6 @@
 import { IOTRAlgorithm } from './IOTR';
 
-const { subtle } = crypto || window.crypto;
+const { subtle } = global.crypto;
 
 export const joinEncryptedData = ({ encryptedData, iv }: { encryptedData: ArrayBuffer; iv: Uint8Array }): Uint8Array => {
 	const cipherText = new Uint8Array(encryptedData);

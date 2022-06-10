@@ -17,7 +17,7 @@ import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Notifications } from '../../notifications/client';
 import { APIClient } from '../../utils/client';
 import { otrSystemMessages } from '../lib/constants';
-import { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom, userPresenceUsername } from '../lib/IOTR';
+import { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
 import {
 	decryptAES,
 	deriveBits,
@@ -89,7 +89,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	acknowledge(): void {
-		APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this.roomId }] });
+		APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
 		this.peerId &&
 			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
@@ -180,7 +180,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	async encryptText(data: string | Uint8Array): Promise<string> {
-		if (typeof data === 'string' || !_.isObject(data)) {
+		if (typeof data === 'string') {
 			data = new TextEncoder().encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 		try {
@@ -275,10 +275,9 @@ export class OTRRoom implements IOTRRoom {
 
 				try {
 					const obj = await Presence.get(data.userId);
-					if (!obj) {
+					if (!obj?.username) {
 						throw new Meteor.Error('user-not-defined', 'User not defined.');
 					}
-					const username = await userPresenceUsername(obj.username);
 
 					if (data.refresh && this.state.get() === OtrRoomState.ESTABLISHED) {
 						this.reset();
@@ -293,7 +292,7 @@ export class OTRRoom implements IOTRRoom {
 								variant: 'warning',
 								title: TAPi18n.__('OTR'),
 								children: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', {
-									username,
+									username: obj.username,
 								}),
 								confirmText: TAPi18n.__('Yes'),
 								cancelText: TAPi18n.__('No'),
@@ -340,10 +339,9 @@ export class OTRRoom implements IOTRRoom {
 			case 'end':
 				try {
 					const obj = await Presence.get(this.peerId);
-					if (!obj) {
+					if (!obj?.username) {
 						throw new Meteor.Error('user-not-defined', 'User not defined.');
 					}
-					const username = await userPresenceUsername(obj.username);
 
 					if (this.state.get() === OtrRoomState.ESTABLISHED) {
 						this.reset();
@@ -353,7 +351,7 @@ export class OTRRoom implements IOTRRoom {
 							props: {
 								variant: 'warning',
 								title: TAPi18n.__('OTR'),
-								children: TAPi18n.__('Username_ended_the_OTR_session', { username }),
+								children: TAPi18n.__('Username_ended_the_OTR_session', { username: obj.username }),
 								confirmText: TAPi18n.__('Ok'),
 								onClose: imperativeModal.close,
 								onConfirm: imperativeModal.close,

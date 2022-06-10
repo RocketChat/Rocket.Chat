@@ -40,7 +40,7 @@ class OTR implements IOTR {
 			return;
 		}
 
-		this.instancesByRoomId[roomId] = new OTRRoom(userId, roomId); // eslint-disable-line no-use-before-define
+		this.instancesByRoomId[roomId] = new OTRRoom(userId, roomId);
 		return this.instancesByRoomId[roomId];
 	}
 }
