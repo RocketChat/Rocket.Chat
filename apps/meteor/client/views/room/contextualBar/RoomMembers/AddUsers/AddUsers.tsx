@@ -1,17 +1,25 @@
 import { Field, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import VerticalBar from '../../../../../components/VerticalBar';
 
-const AddUsers = ({ onClickClose, onClickBack, onClickSave, value, onChange }) => {
+type AddUsersProps = {
+	onClickClose: () => void;
+	onClickBack: () => void;
+	onClickSave: () => Promise<void>;
+	value: string[];
+	onChange: (value: string[], action?: string) => void;
+};
+
+const AddUsers = ({ onClickClose, onClickBack, onClickSave, value, onChange }: AddUsersProps): ReactElement => {
 	const t = useTranslation();
 
 	return (
 		<>
 			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
+				{onClickBack && <VerticalBar.Back onClick={onClickBack} name='arrow-back' />}
 				<VerticalBar.Text>{t('Add_users')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>

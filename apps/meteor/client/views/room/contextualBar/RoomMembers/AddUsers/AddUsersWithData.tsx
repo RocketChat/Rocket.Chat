@@ -1,20 +1,30 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import AddUsers from './AddUsers';
 
-const AddUsersWithData = ({ rid, onClickBack, reload }) => {
+type AddUsersWithDataProps = {
+	rid: string;
+	onClickBack: () => void;
+	reload: () => void;
+};
+
+type AddUsersInitialProps = {
+	users: string[];
+};
+
+const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const onClickClose = useTabBarClose();
 	const saveAction = useMethod('addUsersToRoom');
 
-	const { values, handlers } = useForm({ users: [] });
-	const { users } = values;
+	const { values, handlers } = useForm({ users: [''] });
+	const { users } = values as AddUsersInitialProps;
 	const { handleUsers } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
@@ -34,7 +44,7 @@ const AddUsersWithData = ({ rid, onClickBack, reload }) => {
 			onClickBack();
 			reload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	});
 
