@@ -564,6 +564,12 @@ describe('miscellaneous', function () {
 			updateSetting('API_Enable_Shields', false).then(() => {
 				request
 					.get(api('shield.svg'))
+					.query({
+						type: 'online',
+						icon: true,
+						channel: 'general',
+						name: 'Rocket.Chat',
+					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {

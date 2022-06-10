@@ -10,13 +10,13 @@ import EditUser from './EditUser';
 
 const EditUserWithData = ({ uid, onReload, ...props }: { uid: IUser['_id']; onReload: () => void }): ReactElement => {
 	const t = useTranslation();
-	const { value: roleData, phase: roleState, error: roleError } = useEndpointData('roles.list');
+	const { value: roleData, phase: roleState, error: roleError } = useEndpointData('/v1/roles.list');
 	const {
 		value: data,
 		phase: state,
 		error,
 	} = useEndpointData(
-		'users.info',
+		'/v1/users.info',
 		useMemo(() => ({ userId: uid }), [uid]),
 	);
 

@@ -25,7 +25,7 @@ const AdminUserInfoWithData = ({ uid, onReload, ...props }) => {
 		error,
 		reload: reloadUserInfo,
 	} = useEndpointData(
-		'users.info',
+		'/v1/users.info',
 		useMemo(() => ({ ...(uid && { userId: uid }) }), [uid]),
 	);
 

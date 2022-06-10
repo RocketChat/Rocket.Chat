@@ -110,13 +110,13 @@ export interface IUser extends IRocketChatRecord {
 	active: boolean;
 	username?: string;
 	nickname?: string;
-	bio?: string;
 	name?: string;
 	services?: IUserServices;
 	emails?: IUserEmail[];
 	status?: UserStatus;
 	statusConnection?: string;
 	lastLogin?: Date;
+	bio?: string;
 	avatarOrigin?: string;
 	avatarETag?: string;
 	utcOffset?: number;

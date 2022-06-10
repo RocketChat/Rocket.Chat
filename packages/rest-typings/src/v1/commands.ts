@@ -3,26 +3,26 @@ import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type CommandsEndpoints = {
-	'commands.get': {
+	'/v1/commands.get': {
 		GET: (params: { command: string }) => {
-			command: SlashCommand;
+			command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
 		};
 	};
-	'commands.list': {
+	'/v1/commands.list': {
 		GET: (
 			params: PaginatedRequest<{
 				fields?: string;
 			}>,
 		) => PaginatedResult<{
-			commands: SlashCommand[];
+			commands: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>[];
 		}>;
 	};
-	'commands.run': {
+	'/v1/commands.run': {
 		POST: (params: { command: string; params?: string; roomId: string; tmid?: string; triggerId: string }) => {
 			result: unknown;
 		};
 	};
-	'commands.preview': {
+	'/v1/commands.preview': {
 		GET: (params: { command: string; params?: string; roomId: string }) => {
 			preview: SlashCommandPreviews;
 		};

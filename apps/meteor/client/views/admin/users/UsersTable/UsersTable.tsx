@@ -53,7 +53,7 @@ const UsersTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		500,
 	);
 
-	const { value, phase, reload: reloadList } = useEndpointData('users.list', query);
+	const { value, phase, reload: reloadList } = useEndpointData('/v1/users.list', query);
 
 	useEffect(() => {
 		reload.current = reloadList;
