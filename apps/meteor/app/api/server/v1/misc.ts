@@ -104,8 +104,6 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
  *                            type: object
  *                          gitlab:
  *                            type: object
- *                          tokenpass:
- *                            type: object
  *                          password:
  *                            type: object
  *                            properties:

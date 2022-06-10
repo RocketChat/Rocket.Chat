@@ -310,7 +310,6 @@ type RoomsSaveRoomSettingsProps = {
 	readOnly?: boolean;
 	reactWhenReadOnly?: boolean;
 	default?: boolean;
-	tokenpass?: string;
 	encrypted?: boolean;
 	favorite?: {
 		defaultValue?: boolean;
@@ -362,10 +361,6 @@ const RoomsSaveRoomSettingsSchema = {
 		},
 		default: {
 			type: 'boolean',
-			nullable: true,
-		},
-		tokenpass: {
-			type: 'string',
 			nullable: true,
 		},
 		encrypted: {
