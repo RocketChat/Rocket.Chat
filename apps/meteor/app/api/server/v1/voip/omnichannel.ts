@@ -109,7 +109,7 @@ API.v1.addRoute(
 			}
 
 			if (!user) {
-				return API.v1.notFound();
+				return API.v1.notFound('User not found or does not have livechat-agent role');
 			}
 
 			try {

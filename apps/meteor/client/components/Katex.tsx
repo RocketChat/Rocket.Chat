@@ -11,7 +11,7 @@ type KatexProps = {
 };
 
 const Katex = ({ text, options }: KatexProps): ReactElement => (
-	<span dangerouslySetInnerHTML={{ __html: createKatexMessageRendering(options)(text) }} />
+	<span dangerouslySetInnerHTML={{ __html: createKatexMessageRendering(options, false)(text) }} />
 );
 
 export default memo(Katex);

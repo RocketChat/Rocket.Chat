@@ -43,7 +43,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 
 	const canCreate = (parentRoom || defaultParentRoom) && name;
 
-	const createDiscussion = useEndpointActionExperimental('POST', 'rooms.createDiscussion');
+	const createDiscussion = useEndpointActionExperimental('POST', '/v1/rooms.createDiscussion');
 
 	const create = useMutableCallback(async (): Promise<void> => {
 		try {
@@ -94,7 +94,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									value={parentRoom}
 									onChange={handleParentRoom}
 									placeholder={t('Discussion_target_channel_description')}
-									disabled={defaultParentRoom}
+									disabled={Boolean(defaultParentRoom)}
 								/>
 							)}
 						</Field.Row>
