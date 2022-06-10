@@ -1534,9 +1534,11 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	async logoutBySessionIdAndUserId({
 		sessionId,
 		userId,
+		logoutBy,
 	}: {
 		sessionId: ISession['sessionId'];
 		userId: IUser['_id'];
+		logoutBy?: IUser['_id'];
 	}): Promise<UpdateWriteOpResult> {
 		const query = {
 			sessionId,
@@ -1548,7 +1550,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		const updateObj = {
 			$set: {
 				logoutAt,
-				logoutBy: userId,
+				logoutBy: logoutBy || userId,
 			},
 		};
 
