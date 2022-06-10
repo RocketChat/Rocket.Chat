@@ -259,16 +259,20 @@ const getUrlMetaWithCache = async function (
 	}
 };
 
-const isObjWithRequiredHeaders = (obj: any): obj is { contentLength: string; contentType: string } =>
-	'contentLength' in obj && 'contentType' in obj;
+const hasOnlyContentLength = (obj: any): obj is { contentLength: string } => 'contentLength' in obj && Object.keys(obj).length === 1;
+const hasOnlyContentType = (obj: any): obj is { contentType: string } => 'contentType' in obj && Object.keys(obj).length === 1;
+const hasContentLengthAndContentType = (obj: any): obj is { contentLength: string; contentType: string } =>
+	'contentLength' in obj && 'contentType' in obj && Object.keys(obj).length === 2;
 
-const getRelevantHeaders = function (headersObj: { [key: string]: string }): { contentLength: string; contentType: string } | void {
+const getRelevantHeaders = function (headersObj: {
+	[key: string]: string;
+}): { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string } | void {
 	const headers = {
 		...(headersObj.contentLength && { contentLength: headersObj.contentLength }),
 		...(headersObj.contentType && { contentType: headersObj.contentType }),
 	};
 
-	if (isObjWithRequiredHeaders(headers)) {
+	if (hasOnlyContentLength(headers) || hasOnlyContentType(headers) || hasContentLengthAndContentType(headers)) {
 		return headers;
 	}
 };

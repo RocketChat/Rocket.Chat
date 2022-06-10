@@ -17,7 +17,7 @@ type MessageUrl = {
 	url: string;
 	source?: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string; contentType: string };
+	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
 	ignoreParse?: boolean;
 	parsedUrl?: Pick<Url.UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
