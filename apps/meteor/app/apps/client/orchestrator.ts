@@ -133,13 +133,22 @@ class AppClientOrchestrator {
 	public async getApps(): Promise<App[]> {
 		const result = await APIClient.get('/apps');
 
-		return result;
+		if ('apps' in result) {
+			// TODO: chapter day: multiple results are returned, but we only need one
+			return result.apps as App[];
+		}
+		throw new Error('Invalid response from API');
 	}
 
 	public async getAppsFromMarketplace(): Promise<App[]> {
 		const result = await APIClient.get('/apps', { marketplace: 'true' });
 
-		return result.map((app: App) => {
+		if (!Array.isArray(result)) {
+			// TODO: chapter day: multiple results are returned, but we only need one
+			throw new Error('Invalid response from API');
+		}
+
+		return (result as App[]).map((app: App) => {
 			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt } = app;
 			return {
 				...latest,
@@ -254,7 +263,11 @@ class AppClientOrchestrator {
 	public async getCategories(): Promise<Serialized<ICategory[]>> {
 		const result = await APIClient.get('/apps', { categories: 'true' });
 
-		return result;
+		if (Array.isArray(result)) {
+			// TODO: chapter day: multiple results are returned, but we only need one
+			return result as Serialized<ICategory>[];
+		}
+		throw new Error('Failed to get categories');
 	}
 
 	public getUIHost(): RealAppsEngineUIHost {
@@ -266,7 +279,7 @@ export const Apps = new AppClientOrchestrator();
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
-		Meteor.call('/apps/is-enabled', (error: Error, isEnabled: boolean) => {
+		Meteor.call('apps/is-enabled', (error: Error, isEnabled: boolean) => {
 			if (error) {
 				Apps.handleError(error);
 				return;

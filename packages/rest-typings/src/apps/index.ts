@@ -73,13 +73,22 @@ export type AppsEndpoints = {
 			  })
 			| ((params: {
 					purchaseType?: 'buy' | 'subscription';
-					marketplace?: 'true' | 'false';
+					marketplace?: 'false';
+					version?: string;
+					appId?: string;
+					details?: 'true' | 'false';
+			  }) => {
+					apps: App[];
+			  })
+			| ((params: {
+					purchaseType?: 'buy' | 'subscription';
+					marketplace: 'true';
 					version?: string;
 					appId?: string;
 					details?: 'true' | 'false';
 			  }) => App[])
 			| ((params: { categories: 'true' | 'false' }) => {
-					createdDate: string;
+					createdDate: Date;
 					description: string;
 					id: string;
 					modifiedDate: Date;
