@@ -9,7 +9,7 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 
 type UsersTableRowProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>;
-	onClick: (id: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>['_id']) => void;
+	onClick: (id: IUser['_id']) => void;
 	mediaQuery: boolean;
 };
 
