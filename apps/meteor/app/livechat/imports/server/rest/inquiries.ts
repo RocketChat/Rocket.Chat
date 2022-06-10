@@ -35,8 +35,8 @@ API.v1.addRoute(
 					department: 1,
 				},
 			});
-			const totalCount = await cursor.count();
-			const inquiries = await cursor.toArray();
+
+			const [totalCount, inquiries] = await Promise.all([cursor.count(), cursor.toArray()]);
 
 			return API.v1.success({
 				inquiries,
@@ -60,7 +60,7 @@ API.v1.addRoute(
 
 			const { userId, inquiryId } = this.bodyParams;
 
-			if (userId && !(await Users.findOneById(userId, { fields: { _id: 1 } }))) {
+			if (userId && !(await Users.findOneById(userId, { projection: { _id: 1 } }))) {
 				return API.v1.failure('The user is invalid');
 			}
 			return API.v1.success({
