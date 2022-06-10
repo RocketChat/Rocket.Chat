@@ -73,22 +73,27 @@ export type AppsEndpoints = {
 			  })
 			| ((params: {
 					purchaseType?: 'buy' | 'subscription';
-					marketplace?: 'true' | 'false';
+					marketplace?: 'false';
 					version?: string;
 					appId?: string;
 					details?: 'true' | 'false';
 			  }) => {
 					apps: App[];
 			  })
+			| ((params: {
+					purchaseType?: 'buy' | 'subscription';
+					marketplace: 'true';
+					version?: string;
+					appId?: string;
+					details?: 'true' | 'false';
+			  }) => App[])
 			| ((params: { categories: 'true' | 'false' }) => {
-					categories: {
-						createdDate: string;
-						description: string;
-						id: string;
-						modifiedDate: Date;
-						title: string;
-					}[];
-			  });
+					createdDate: Date;
+					description: string;
+					id: string;
+					modifiedDate: Date;
+					title: string;
+			  }[]);
 
 		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted: IPermission[] }) => {
 			app: App;
