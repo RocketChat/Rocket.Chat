@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Request } from 'express';
 
 import { EmojiCustom } from '../../../models/server/raw';
 import { API } from '../api';
@@ -68,7 +69,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { emoji, ...fields } = await getUploadFormData({
-				request: this.request,
+				request: this.request as Request,
 			});
 
 			if (!emoji) {
@@ -100,7 +101,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { emoji, ...fields } = await getUploadFormData({
-				request: this.request,
+				request: this.request as Request,
 			});
 
 			if (!fields._id) {

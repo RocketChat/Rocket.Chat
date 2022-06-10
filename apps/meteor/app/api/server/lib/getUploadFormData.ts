@@ -10,7 +10,7 @@ export interface IFormDataFields {
 }
 
 export interface IFormDataUpload {
-	[key: string]: IFormDataFields;
+	[key: string]: IFormDataFields | any;
 }
 
 export const getUploadFormData = async ({ request }: { request: Request }): Promise<IFormDataUpload> =>
