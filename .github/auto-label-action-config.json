@@ -1,0 +1,3 @@
+{
+	"ignore": ["stat: needs QA", "stat: QA skipped", "stat: QA tested"]
+}
