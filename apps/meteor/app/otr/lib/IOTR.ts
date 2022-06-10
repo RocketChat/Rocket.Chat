@@ -2,7 +2,6 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { OtrRoomState } from './OtrRoomState';
-import { UserPresence } from '../../../client/lib/presence';
 import type { OTRRoom } from '../client/OTRRoom';
 
 export interface IOnUserStreamData {
@@ -48,5 +47,3 @@ export interface IOTR {
 export type publicKeyObject = ReturnType<<T extends U, U extends JsonWebKey>() => T>;
 
 export interface IOTRAlgorithm extends EcKeyAlgorithm, EcdhKeyDeriveParams {}
-
-export const userPresenceUsername = async (username: UserPresence['username']): Promise<string> => username as string;
