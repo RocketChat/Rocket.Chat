@@ -1,0 +1,14 @@
+<template name="userActionIndicator" args="rid, tmid">
+	{{#if data}}
+		<div class="rc-message-box__activity">
+			{{#each data}}
+				<span class="rc-message-box__activity-user">{{ users }}</span>
+				{{#if multi}}
+					{{_ "are" }}&nbsp;{{_ action}}{{#unless end}},{{/unless}}
+				{{else}}
+					{{_ "is" }}&nbsp;{{_ action}}{{#unless end}},{{/unless}}
+				{{/if}}
+			{{/each}}
+		</div>
+	{{/if}}
+</template>

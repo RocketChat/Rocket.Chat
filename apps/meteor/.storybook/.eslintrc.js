@@ -1,0 +1,1 @@
+../client/.eslintrc.js

@@ -1,0 +1,156 @@
+<template name="loginForm">
+	<form id="login-card" class="content-background-color color-primary-font-color" method='/' novalidate>
+		{{#if state 'wait-activation'}}
+			<header>
+				<h2 data-i18n="Registration_Succeeded">{{{_ "Registration_Succeeded"}}}</h2>
+				<p>{{_ "Wait_activation_warning"}}</p>
+				<p>{{_ "Please_wait_activation"}}</p>
+			</header>
+		{{else if state 'wait-email-activation'}}
+			<header>
+				<h2 data-i18n="Registration_Succeeded">{{{_ "Registration_Succeeded"}}}</h2>
+				<p>{{_ "We_have_sent_registration_email"}}</p>
+			</header>
+		{{else}}
+			{{> loginServices }}
+			{{#if needsValidateEmail}}
+				<div class="alert error-color error-background error-border">
+					{{_ "You_need_confirm_email"}}
+				</div>
+			{{/if}}
+
+			<div class="fields">
+				{{#if state 'login'}}
+					{{#if showFormLogin}}
+						<div class="rc-input">
+							<label class="rc-input__label" for="emailOrUsername">
+								<div class="rc-input__wrapper">
+									<input name="emailOrUsername" id="emailOrUsername" type="text" class="rc-input__element"
+										autocapitalize="off" autocorrect="off"
+										placeholder="{{emailOrUsernamePlaceholder}}" autofocus>
+									<div class="input-error"></div>
+								</div>
+							</label>
+						</div>
+						<div class="rc-input">
+							<label class="rc-input__label" for="pass">
+								<div class="rc-input__wrapper">
+									<input name="pass" id="pass" type="password" class="rc-input__element"
+										autocapitalize="off" autocorrect="off"
+										placeholder="{{passwordPlaceholder}}" autofocus>
+									<div class="input-error"></div>
+								</div>
+							</label>
+						</div>
+					{{/if}}
+				{{/if}}
+				{{#if state 'register'}}
+					<div class="rc-input">
+						<label class="rc-input__label" for="name">
+							<div class="rc-input__wrapper">
+								<input name="name" id="name" type="text" class="rc-input__element"
+									autocapitalize="off" autocorrect="off"
+									placeholder="{{namePlaceholder}}" autofocus>
+								<div class="input-error"></div>
+							</div>
+						</label>
+					</div>
+					<div class="rc-input">
+						<label class="rc-input__label" for="email">
+							<div class="rc-input__wrapper">
+								<input name="email" id="email" type="text" class="rc-input__element"
+									autocapitalize="off" autocorrect="off"
+									placeholder="{{_ "Email"}}" autofocus>
+								<div class="input-error"></div>
+							</div>
+						</label>
+					</div>
+
+					<div class="rc-input">
+						<label class="rc-input__label" for="pass">
+							<div class="rc-input__wrapper">
+								<input name="pass" id="pass" type="password" class="rc-input__element"
+									autocapitalize="off" autocorrect="off"
+									placeholder="{{passwordPlaceholder}}" autofocus>
+								<div class="input-error"></div>
+							</div>
+						</label>
+					</div>
+					{{#if requirePasswordConfirmation}}
+						<div class="rc-input">
+							<label class="rc-input__label" for="confirm-pass">
+								<div class="rc-input__wrapper">
+									<input name="confirm-pass" id="confirm-pass" type="password" class="rc-input__element"
+										autocapitalize="off" autocorrect="off"
+										placeholder="{{confirmPasswordPlaceholder}}" autofocus>
+									<div class="input-error"></div>
+								</div>
+							</label>
+						</div>
+					{{/if}}
+					{{#if manuallyApproveNewUsers}}
+						<div class="rc-input">
+							<label class="rc-input__label" for="confirm-pass">
+								<div class="rc-input__wrapper">
+									<input name="reason" id="reason" type="text" class="rc-input__element"
+										autocapitalize="off" autocorrect="off"
+										placeholder="{{_ 'Reason_To_Join'}}" autofocus>
+									<div class="input-error"></div>
+								</div>
+							</label>
+						</div>
+					{{/if}}
+				{{/if}}
+				{{#if state 'forgot-password' 'email-verification'}}
+					<div class="rc-input">
+						<label class="rc-input__label" for="email">
+							<div class="rc-input__wrapper">
+								<input name="email" id="email" type="text" class="rc-input__element"
+									autocapitalize="off" autocorrect="off"
+									placeholder="{{_ "Email"}}" autofocus value="{{#if state 'email-verification'}}{{typedEmail}}{{/if}}">
+								<div class="input-error"></div>
+							</div>
+						</label>
+					</div>
+				{{/if}}
+			</div>
+
+			<div class="rc-button__group rc-button__group--vertical">
+				{{#if state 'login'}}
+					{{#if showFormLogin}}
+						<button class='rc-button rc-button--primary login'>{{btnLoginSave}}</button>
+
+						{{#if passwordResetAllowed}}
+							<button type="button" class="rc-button rc-button--nude forgot-password">{{_ 'Forgot_password'}}</button>
+						{{/if}}
+					{{/if}}
+
+					{{#if registrationAllowed}}
+						<button type="button" class="rc-button rc-button--nude register">{{_ 'Register_new_account'}}</button>
+					{{else}}
+						{{#if linkReplacementText}}
+							<div class="register-link-replacement">
+								{{{linkReplacementText}}}
+							</div>
+						{{/if}}
+					{{/if}}
+				{{else}}
+					<div class="rc-button__group rc-button__group--vertical">
+						<button class='rc-button rc-button--primary login'>{{btnLoginSave}}</button>
+					</div>
+				{{/if}}
+			</div>
+		{{/if}}
+		{{#unless state 'login'}}
+			<div class="rc-button__group rc-button__group--vertical">
+				<button type="button" class="rc-button rc-button--nude back-to-login">{{_ 'Back_to_login'}}</button>
+			</div>
+		{{/unless}}
+	</form>
+	<div class='login-terms'>
+		{{{loginTerms}}}
+		<div class="powered-by">
+			Powered by <a class="color-tertiary-font-color" href="https://rocket.chat">Open Source Chat Platform Rocket.Chat</a>.
+		</div>
+	</div>
+</template>
