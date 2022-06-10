@@ -381,22 +381,22 @@ export type GroupsEndpoints = {
 			messages: IMessage[];
 		}>;
 	};
-	'groups.addModerator': {
+	'/v1/groups.addModerator': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'groups.removeModerator': {
+	'/v1/groups.removeModerator': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'groups.addOwner': {
+	'/v1/groups.addOwner': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'groups.removeOwner': {
+	'/v1/groups.removeOwner': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'groups.addLeader': {
+	'/v1/groups.addLeader': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
-	'groups.removeLeader': {
+	'/v1/groups.removeLeader': {
 		POST: (params: { roomId: string; userId: string }) => {};
 	};
 };

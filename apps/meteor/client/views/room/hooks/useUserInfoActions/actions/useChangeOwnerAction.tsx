@@ -17,12 +17,12 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const { _id: uid } = user;
 	const userCanSetOwner = usePermission('set-owner', rid);
 	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
-	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 
 	if (!room) {
 		throw Error('Room not provided');
 	}
 
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const [roomCanSetOwner] = getRoomDirectives(room);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 

@@ -21,17 +21,16 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 	const userCanRemove = usePermission('remove-user', rid);
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
-
-	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	if (!room) {
 		throw Error('Room not provided');
 	}
 
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const [roomCanRemove] = getRoomDirectives(room);
 
-	const removeFromTeam = useEndpointActionExperimental('POST', 'teams.removeMember', t('User_has_been_removed_from_team'));
+	const removeFromTeam = useEndpointActionExperimental('POST', '/v1/teams.removeMember', t('User_has_been_removed_from_team'));
 	const removeFromRoom = useEndpointActionExperimental('POST', `${endpointPrefix}.kick`, t('User_has_been_removed_from_s', roomName));
 
 	const removeUserOptionAction = useMutableCallback(() => {

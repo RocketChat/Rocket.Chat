@@ -18,12 +18,12 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 
 	const userCanSetModerator = usePermission('set-moderator', rid);
 	const isModerator = useUserHasRoomRole(uid, rid, 'moderator');
-	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 
 	if (!room) {
 		throw Error('Room not provided');
 	}
 
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const [roomCanSetModerator] = getRoomDirectives(room);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 

@@ -16,12 +16,12 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
 	const userCanSetLeader = usePermission('set-leader', rid);
-	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 
 	if (!room) {
 		throw Error('Room not provided');
 	}
 
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const [roomCanSetLeader] = getRoomDirectives(room);
 	const isLeader = useUserHasRoomRole(uid, rid, 'leader');
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
