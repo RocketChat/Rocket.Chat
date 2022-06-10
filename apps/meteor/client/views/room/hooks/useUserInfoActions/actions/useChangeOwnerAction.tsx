@@ -10,18 +10,19 @@ import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
+// TODO: Remove endpoint concatenation
 export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
 	const userCanSetOwner = usePermission('set-owner', rid);
 	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
-	const endpointPrefix = room?.t === 'p' ? 'groups' : 'channels';
 
 	if (!room) {
 		throw Error('Room not provided');
 	}
 
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const [roomCanSetOwner] = getRoomDirectives(room);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
