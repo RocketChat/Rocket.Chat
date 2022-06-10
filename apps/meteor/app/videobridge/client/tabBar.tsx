@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetting, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
@@ -11,12 +11,13 @@ import { useVideoConfPopupDispatch, useStartCall, useVideoConfPopupDismiss } fro
 addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
 	const startCall = useStartCall();
+	const user = useUser();
 
 	const dispatchPopup = useVideoConfPopupDispatch();
 	const dismissPopup = useVideoConfPopupDismiss();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
-
+	const enabled = useSetting('VideoConf_Enabled');
 	const enabledDMs = useSetting('VideoConf_Enable_DMs');
 	const enabledChannel = useSetting('VideoConf_Enable_Channels');
 	const enabledTeams = useSetting('VideoConf_Enable_Teams');
@@ -24,6 +25,8 @@ addAction('video-conf', ({ room }) => {
 	const enabledLiveChat = useSetting('Omnichannel_call_provider') === 'Jitsi';
 
 	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
+
+	const enableOption = enabled && (!user?.username || !room.muted?.includes(user.username));
 
 	const groups = useStableArray(
 		[
@@ -54,15 +57,18 @@ addAction('video-conf', ({ room }) => {
 	);
 
 	return useMemo(
-		() => ({
-			groups,
-			id: 'video-conference',
-			title: 'Video Conference',
-			icon: 'phone',
-			action: handleOpenVideoConf,
-			full: true,
-			order: live ? -1 : 4,
-		}),
-		[handleOpenVideoConf, groups, live],
+		() =>
+			enableOption
+				? {
+						groups,
+						id: 'video-conference',
+						title: 'Video Conference',
+						icon: 'phone',
+						action: handleOpenVideoConf,
+						full: true,
+						order: live ? -1 : 4,
+				  }
+				: null,
+		[handleOpenVideoConf, groups, enableOption, live],
 	);
 });
