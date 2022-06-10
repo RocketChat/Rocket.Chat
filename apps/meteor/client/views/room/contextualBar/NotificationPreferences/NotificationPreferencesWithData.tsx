@@ -22,10 +22,10 @@ const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement
 	const t = useTranslation();
 
 	const subscription = useUserSubscription(rid);
-	console.log("subs = ", subscription);
+
 	const customSound = useCustomSound();
 	const handleClose = useTabBarClose();
-	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification', t('Room_updated_successfully'));
+	const saveSettings = useEndpointActionExperimental('POST', '/v1/rooms.saveNotification', t('Room_updated_successfully'));
 
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({
 		turnOn: !subscription?.disableNotifications,

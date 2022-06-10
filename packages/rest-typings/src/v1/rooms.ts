@@ -468,7 +468,7 @@ export type RoomsEndpoints = {
 			tmid?: string;
 		}) => { message: IMessage };
 	};
-	'rooms.saveNotification': {
+	'/v1/rooms.saveNotification': {
 		POST: (params: {
 			roomId: string;
 			notifications: {
