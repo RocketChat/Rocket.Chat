@@ -1,13 +1,24 @@
+import { isSettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement, ReactNode, useMemo } from 'react';
 
 import { useEditableSettings, useEditableSettingsDispatch } from '../EditableSettingsContext';
 import SectionSkeleton from './SectionSkeleton';
 import Setting from './Setting';
 
-function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, ...props }) {
+type SectionProps = {
+	groupId: string;
+	hasReset?: boolean;
+	sectionName: string;
+	tabName?: string;
+	solo: boolean;
+	help?: ReactNode;
+	children?: ReactNode;
+};
+
+function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, help, children }: SectionProps): ReactElement {
 	const editableSettings = useEditableSettings(
 		useMemo(
 			() => ({
@@ -32,26 +43,41 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, ..
 		dispatch(
 			editableSettings
 				.filter(({ disabled }) => !disabled)
-				.map(({ _id, value, packageValue, editor, packageEditor }) => ({
-					_id,
-					value: packageValue,
-					editor: packageEditor,
-					changed: JSON.stringify(value) !== JSON.stringify(packageValue) || JSON.stringify(editor) !== JSON.stringify(packageEditor),
-				})),
+				.map((setting) => {
+					if (isSettingColor(setting)) {
+						return {
+							_id: setting._id,
+							value: setting.packageValue,
+							editor: setting.packageEditor,
+							changed:
+								JSON.stringify(setting.value) !== JSON.stringify(setting.packageValue) ||
+								JSON.stringify(setting.editor) !== JSON.stringify(setting.packageEditor),
+						};
+					}
+					return {
+						_id: setting._id,
+						value: setting.packageValue,
+						changed: JSON.stringify(setting.value) !== JSON.stringify(setting.packageValue),
+					};
+				}),
 		);
 	});
 
 	const t = useTranslation();
 
-	const handleResetSectionClick = () => {
+	const handleResetSectionClick = (): void => {
 		reset();
 	};
 
 	return (
-		<Accordion.Item data-qa-section={sectionName} noncollapsible={solo || !sectionName} title={sectionName && t(sectionName)}>
-			{props.help && (
+		<Accordion.Item
+			data-qa-section={sectionName}
+			noncollapsible={solo || !sectionName}
+			title={sectionName && t(sectionName as TranslationKey)}
+		>
+			{help && (
 				<Box is='p' color='hint' fontScale='p2'>
-					{props.help}
+					{help}
 				</Box>
 			)}
 
@@ -60,7 +86,7 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, ..
 					<Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />
 				))}
 
-				{props.children}
+				{children}
 			</FieldGroup>
 			{hasReset && canReset && (
 				<Button
