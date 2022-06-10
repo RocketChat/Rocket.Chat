@@ -24,11 +24,11 @@ export default class Agents extends BasePage {
 	}
 
 	public agentAdded(): Locator {
-		return this.getPage().locator('table tr td:first-child div div div div');
+		return this.getPage().locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:first-child');
 	}
 
 	public agentListStatus(): Locator {
-		return this.getPage().locator('table tr:first-child td:nth-child(4)');
+		return this.getPage().locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:nth-child(4)');
 	}
 
 	public userInfoTab(): Locator {
@@ -64,7 +64,9 @@ export default class Agents extends BasePage {
 	}
 
 	public btnTableRemove(): Locator {
-		return this.getPage().locator('table tr td:nth-child(5) button');
+		return this.getPage().locator(
+			'[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:nth-child(5) [title="Remove"]',
+		);
 	}
 
 	public agentStatus(): Locator {
