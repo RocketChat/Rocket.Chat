@@ -6,7 +6,6 @@ import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
 
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
