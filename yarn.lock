@@ -4873,6 +4873,7 @@ __metadata:
     "@types/psl": ^1.1.0
     "@types/react": ~17.0.42
     "@types/react-dom": ~17.0.14
+    "@types/react-input-mask": ^2
     "@types/rewire": ^2.5.28
     "@types/semver": ^7.3.9
     "@types/sharp": ^0.30.2
@@ -5027,6 +5028,7 @@ __metadata:
     react-dom: ~17.0.2
     react-hook-form: ^7.30.0
     react-i18next: ^11.16.7
+    react-input-mask: ^2.0.4
     react-keyed-flatten-children: ^1.3.0
     react-query: ^3.38.0
     react-virtuoso: ^1.11.1
@@ -7759,6 +7761,15 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: b54cd0ef573236b3d87fe7493e6d1c36d8b4ca37a3b46364272a5c91ac178e3296b68ea1aeb299ce68f12ad663c5720ee890d0539b14881c6754bdcbdb0befa0
+  languageName: node
+  linkType: hard
+
+"@types/react-input-mask@npm:^2":
+  version: 2.0.5
+  resolution: "@types/react-input-mask@npm:2.0.5"
+  dependencies:
+    "@types/react": "*"
+  checksum: 35a4bd4c369d17266a3168715a9a3f1f7fb3e062fa51622bc305a32696734e0342666b322a0dfe0ba963d94a4aee267b5335d981cf4b72ca1637f0311fb88f37
   languageName: node
   linkType: hard
 
@@ -27764,6 +27775,19 @@ __metadata:
   peerDependencies:
     react: ^16.3.0 || ^17.0.0
   checksum: cc3309ddc87446ade742c7d0e88ef089dd8b6981f21506a2bb27daf01a8803ac697f64157c4ffc7e81dfcf3892b54a4072dbc3652fd9addcf6d22dd0b87ab723
+  languageName: node
+  linkType: hard
+
+"react-input-mask@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "react-input-mask@npm:2.0.4"
+  dependencies:
+    invariant: ^2.2.4
+    warning: ^4.0.2
+  peerDependencies:
+    react: ">=0.14.0"
+    react-dom: ">=0.14.0"
+  checksum: 429b46c54c9572fe2d4856c399c41c3b02b3ac398adde88e6f8f5f6dd95999528551d84222e0925a538eec775b2330e7b56c40dd79549addfe8b10e901ed4446
   languageName: node
   linkType: hard
 
