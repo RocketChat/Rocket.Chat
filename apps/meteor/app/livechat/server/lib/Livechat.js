@@ -1414,9 +1414,8 @@ export const Livechat = {
 	updateCallStatus(callId, rid, status, user) {
 		Rooms.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
-			const call = Promise.await(VideoConf.get(callId));
-			if (call) {
-				return Promise.await(VideoConf.endLivechatCall(callId));
+			if (Promise.await(VideoConf.endLivechatCall(callId))) {
+				return;
 			}
 
 			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date() }, user);
