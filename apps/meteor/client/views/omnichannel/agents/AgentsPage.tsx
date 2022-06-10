@@ -97,7 +97,7 @@ const AgentsPage = (): ReactElement => {
 						<Pagination
 							current={current}
 							itemsPerPage={itemsPerPage}
-							count={result.value.count}
+							count={result.value.total}
 							onSetItemsPerPage={setItemsPerPage}
 							onSetCurrent={setCurrent}
 							{...paginationProps}
