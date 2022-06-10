@@ -38,7 +38,8 @@ const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement
 		emailAlert: (subscription?.emailPrefOrigin === 'subscription' && subscription.emailNotifications) || 'default',
 	});
 
-	const { turnOn, muteGroupMentions, showCounter, showMentions, desktopAlert, desktopSound, mobileAlert, emailAlert } = values as NotificationFormValues;
+	const { turnOn, muteGroupMentions, showCounter, showMentions, desktopAlert, desktopSound, mobileAlert, emailAlert } =
+		values as NotificationFormValues;
 
 	const defaultOption: [string, string][] = [
 		['default', t('Default')],
@@ -55,7 +56,7 @@ const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement
 		sound: [['none None', t('None')], ['default', t('Default')], ...customSoundAsset] as [string, string][],
 	};
 
-	const handlePlaySound = () => customSound.play(desktopSound);
+	const handlePlaySound = (): void => customSound.play(desktopSound);
 
 	const handleSaveButton = useMutableCallback(() => {
 		const notifications = {

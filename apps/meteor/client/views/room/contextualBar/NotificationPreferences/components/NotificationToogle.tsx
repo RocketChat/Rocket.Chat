@@ -4,10 +4,10 @@ import React, { memo, ReactElement } from 'react';
 
 type NotificationToogleProps = {
 	label: string;
-	description?: string
+	description?: string;
 	onChange: (e: unknown) => void;
 	defaultChecked: boolean;
-}
+};
 
 const NotificationToogle = ({ label, description, onChange, defaultChecked }: NotificationToogleProps): ReactElement => {
 	const id = useUniqueId();

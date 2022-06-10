@@ -3,10 +3,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
+import { NotificationFormValues } from './NotificationPreferencesWithData';
 import NotificationByDevice from './components/NotificationByDevice';
 import NotificationToogle from './components/NotificationToogle';
 import { Preferences } from './components/Preferences';
-import { NotificationFormValues } from './NotificationPreferencesWithData';
 
 type NotificationPreferencesProps = {
 	handleClose: () => void;
@@ -20,7 +20,7 @@ type NotificationPreferencesProps = {
 		sound: [string, string][];
 	};
 	handleSaveButton: () => void;
-}
+};
 
 const NotificationPreferences = ({
 	handleClose,
