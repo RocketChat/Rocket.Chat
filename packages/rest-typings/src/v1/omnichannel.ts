@@ -13,9 +13,7 @@ import type {
 	IRoom,
 	ISetting,
 	ILivechatBusinessHour,
-	SettingValue,
 	IBusinessHourWorkHour,
-	ILivechatCustomField,
 	ILivechatInquiryRecord,
 	ILivechatTrigger,
 	IConversationTotalizers,
@@ -1198,115 +1196,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: { token: string; department?: string }) => { agent: ILivechatAgent } | void;
 	};
 
-	'livechat/config': {
-		GET: (params: { token: string; department?: string; businessUnit: string }) => { config: any };
-	};
-
-	'omnichannel/contact': {
-		POST: (params: {
-			_id?: string;
-			token: string;
-			name: string;
-			username: string;
-			email?: string;
-			phone?: string;
-			customFields?: any[];
-			contactManager?: any;
-		}) => { contact: string };
-
-		GET: (params: { contactId: string }) => { contact: ILivechatVisitor };
-	};
-
-	'omnichannel/contact.search': {
-		GET: (params: { email?: string; phone?: string }) => { contact: ILivechatVisitor };
-	};
-
-	'livechat/custom.field': {
-		POST: (params: { token: string; key: string; value: string; overwrite: boolean }) => {
-			field: { key: string; value: string; overwrite: boolean };
-		};
-	};
-
-	'livechat/custom.fields': {
-		POST: (params: { token: string; customFields: { key: string; value: string; overwrite: boolean } }) => {
-			fields: {
-				Key: string;
-				value: string;
-				overwrite: boolean;
-			}[];
-		};
-	};
-
-	'livechat/custom-fields/:_id': {
-		GET: (params: { id: string }) => { customField: ILivechatCustomField | null };
-	};
-
-	'livechat/message': {
-		POST: (params: { _id?: string; token: string; rid: string; msg: string; agent: { agentId: string; username: string } }) => {
-			message: IMessage;
-		};
-	};
-
-	'livechat/message/:_id': {
-		GET: (params: { _id: string; token: string; rid: string }) => { message: IMessage };
-		PUT: (params: { _id: string; token: string; rid: string; msg: string }) => { message: IMessage };
-		DELETE: (params: { _id: string; token: string; rid: string }) => {
-			message: {
-				_id: string;
-				ts: string;
-			};
-		};
-	};
-
-	'livechat/messages.history/:rid': {
-		GET: (params: { rid: string; searchText: { text: string }; token: string; ls: string; end: string; limit: string }) => {
-			messages: IMessage[];
-		};
-	};
-
-	'livechat/messages': {
-		POST: (params: { visitor: { token: string }; messages: { msg: string }[] }) => {
-			messages: { username: string; msg: string; ts: string }[];
-		};
-	};
-
-	'livechat/offline.message': {
-		POST: (params: { name: string; email: string; message: string; department?: string; host?: string }) => { message: string };
-	};
-
-	'livechat/room.close': {
-		POST: (params: { rid: string; token: string }) => { rid: string; comment: string };
-	};
-
-	'livechat/room.transfer': {
-		POST: (params: { rid: string; token: string; department: string }) => { room: IOmnichannelRoom };
-	};
-
-	'livechat/room.visitor': {
-		PUT: (params: { rid: string; oldVisitorId: string; newVisitorId: string }) => { room: IOmnichannelRoom };
-	};
-
-	'livechat/transcript': {
-		POST: (params: { token: string; rid: string; email: string; user: any; subject: string }) => { message: string };
-	};
-
-	'livechat/transfer.history/:rid': {
-		GET: (params: { rid: string }) => PaginatedResult<{ history: number[] }>;
-	};
-
-	'livechat/video.call/:token': {
-		GET: (params: { token: string; rid?: string }) => {
-			videoCall: {
-				rid: string;
-				domain: SettingValue;
-				provider: string;
-				room: string;
-				timeout: string;
-			};
-		};
-	};
-
-	'livechat/webrtc.call': {
+	'/v1/livechat/webrtc.call': {
 		GET: (params: { rid?: string }) => { videoCall: { rid: any; provider: string; callStatus: any } };
 	};
 
