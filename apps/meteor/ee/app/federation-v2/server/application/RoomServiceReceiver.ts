@@ -1,29 +1,21 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { FederationRoomServiceReceiver } from '../../../../../app/federation-v2/server/application/RoomServiceReceiver';
+import { IFederationBridge } from '../../../../../app/federation-v2/server/domain/IFederationBridge';
+import { RocketChatMessageAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
+import { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
+import { RocketChatUserAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/User';
+import { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adapters/Room';
+import { FederationRoomChangeJoinRulesDto, FederationRoomChangeNameDto, FederationRoomChangeTopicDto } from './input/RoomReceiverDto';
 
-import { FederatedRoom } from '../domain/FederatedRoom';
-import { FederatedUser } from '../domain/FederatedUser';
-import { EVENT_ORIGIN, IFederationBridge } from '../domain/IFederationBridge';
-import { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
-import { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
-import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
-import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
-import {
-	FederationRoomCreateInputDto,
-	FederationRoomChangeMembershipDto,
-	FederationRoomSendInternalMessageDto,
-	FederationRoomChangeJoinRulesDto,
-	FederationRoomChangeNameDto,
-	FederationRoomChangeTopicDto,
-} from './input/RoomReceiverDto';
-
-export class FederationRoomServiceReceiver {
+export class FederationRoomServiceReceiverEE extends FederationRoomServiceReceiver {
 	constructor(
-		private rocketRoomAdapter: RocketChatRoomAdapter,
-		private rocketUserAdapter: RocketChatUserAdapter,
-		private rocketMessageAdapter: RocketChatMessageAdapter,
-		private rocketSettingsAdapter: RocketChatSettingsAdapter,
-		private bridge: IFederationBridge,
-	) {} // eslint-disable-line no-empty-function
+		protected rocketRoomAdapter: RocketChatRoomAdapterEE,
+		protected rocketUserAdapter: RocketChatUserAdapter,
+		protected rocketMessageAdapter: RocketChatMessageAdapter,
+		protected rocketSettingsAdapter: RocketChatSettingsAdapter,
+		protected bridge: IFederationBridge,
+	) {
+		super(rocketRoomAdapter, rocketUserAdapter, rocketMessageAdapter, rocketSettingsAdapter, bridge);
+	} // eslint-disable-line no-empty-function
 
 	public async changeJoinRules(roomJoinRulesChangeInput: FederationRoomChangeJoinRulesDto): Promise<void> {
 		const { externalRoomId, roomType } = roomJoinRulesChangeInput;

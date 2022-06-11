@@ -40,7 +40,7 @@ export const executeSlashCommand = async (
 	if (!currentUserId || !commands[command]) {
 		return;
 	}
-	
+
 	await commands[command](currentUserId, roomId, invitee);
 };
 

@@ -1,26 +1,25 @@
 import { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import { IFederationBridge } from '../../domain/IFederationBridge';
 import { bridgeLogger } from '../rocket-chat/adapters/logger';
 import { IMatrixEvent } from './definitions/IMatrixEvent';
-import { MatrixEventType } from './definitions/MatrixEventType';
 import { RoomJoinRules } from './definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
+import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 
 export class MatrixBridge implements IFederationBridge {
-	private bridgeInstance: Bridge;
+	protected bridgeInstance: Bridge;
 
-	private isRunning = false;
+	protected isRunning = false;
 
 	constructor(
-		private appServiceId: string,
-		private homeServerUrl: string,
-		private homeServerDomain: string,
-		private bridgeUrl: string,
-		private bridgePort: number,
-		private homeServerRegistrationFile: Record<string, any>,
-		private eventHandler: Function,
+		protected appServiceId: string,
+		protected homeServerUrl: string,
+		protected homeServerDomain: string,
+		protected bridgeUrl: string,
+		protected bridgePort: number,
+		protected homeServerRegistrationFile: Record<string, any>,
+		protected eventHandler: Function,
 	) {
 		this.logInfo();
 	}
@@ -85,42 +84,7 @@ export class MatrixBridge implements IFederationBridge {
 		return matrixUserId;
 	}
 
-	public async createRoom(
-		externalCreatorId: string,
-		externalInviteeId: string,
-		roomType: RoomType,
-		roomName: string,
-		roomTopic?: string,
-	): Promise<string> {
-		const intent = this.bridgeInstance.getIntent(externalCreatorId);
-
-		const visibility = roomType === 'p' || roomType === 'd' ? 'invite' : 'public';
-		const preset = roomType === 'p' || roomType === 'd' ? 'private_chat' : 'public_chat';
-
-		// Create the matrix room
-		const matrixRoom = await intent.createRoom({
-			createAsClient: true,
-			options: {
-				name: roomName,
-				topic: roomTopic,
-				visibility,
-				preset,
-				...this.parametersForDirectMessagesIfNecessary(roomType, externalInviteeId),
-				// eslint-disable-next-line @typescript-eslint/camelcase
-				creation_content: {
-					// eslint-disable-next-line @typescript-eslint/camelcase
-					was_internally_programatically_created: true,
-				},
-			},
-		});
-
-		return matrixRoom.room_id;
-	}
-
-	public async createDirectMessageRoom(
-		externalCreatorId: string,
-		externalInviteeId: string,
-	): Promise<string> {
+	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeId: string): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
 		const visibility = RoomJoinRules.INVITE;
@@ -141,7 +105,7 @@ export class MatrixBridge implements IFederationBridge {
 				},
 			},
 		});
-		console.log({matrixRoom})
+		console.log({ matrixRoom });
 		console.log({
 			createAsClient: true,
 			options: {
@@ -156,7 +120,7 @@ export class MatrixBridge implements IFederationBridge {
 					was_internally_programatically_created: true,
 				},
 			},
-		})
+		});
 
 		return matrixRoom.room_id;
 	}
@@ -175,17 +139,7 @@ export class MatrixBridge implements IFederationBridge {
 		return this;
 	}
 
-	private parametersForDirectMessagesIfNecessary = (roomType: RoomType, invitedUserId: string): Record<string, any> => {
-		return roomType === RoomType.DIRECT_MESSAGE
-			? {
-					// eslint-disable-next-line @typescript-eslint/camelcase
-					is_direct: true,
-					invite: [invitedUserId],
-			  }
-			: {};
-	};
-
-	private logInfo(): void {
+	protected logInfo(): void {
 		bridgeLogger.info(`Running Federation V2:
 			id: ${this.appServiceId}
 			bridgeUrl: ${this.bridgeUrl}
@@ -194,7 +148,7 @@ export class MatrixBridge implements IFederationBridge {
 		`);
 	}
 
-	private async createInstance(): Promise<void> {
+	protected async createInstance(): Promise<void> {
 		bridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
 
 		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
@@ -212,7 +166,7 @@ export class MatrixBridge implements IFederationBridge {
 				onEvent: async (request /* , context*/): Promise<void> => {
 					// Get the event
 					const event = request.getData() as unknown as IMatrixEvent<MatrixEventType>;
-					console.log({event})
+					console.log({ event });
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {
