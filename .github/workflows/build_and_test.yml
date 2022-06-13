@@ -927,36 +927,13 @@ jobs:
             -e MONGO_URL=mongodb://mongo:27017/rocketchat \
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             -e TRANSPORTER=nats://nats:4222 \
+            -e MOLECULER_LOG_LEVEL=info \
             -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
             -e SKIP_PROCESS_EVENT_REGISTRATION=true \
             -e OVERWRITE_SETTING_Site_Url=http://localhost:4000 \
             ${IMAGE_NAME}
 
           # spin up all micro services
-          docker run --name stream-hub -d \
-            --link mongo \
-            --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
-            -e TRANSPORTER=nats://nats:4222 \
-            ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${IMAGE_TAG}
-
-          docker run --name account -d \
-            --link mongo \
-            --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
-            -e TRANSPORTER=nats://nats:4222 \
-            ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${IMAGE_TAG}
-
-          docker run --name authorization -d \
-            --link mongo \
-            --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
-            -e TRANSPORTER=nats://nats:4222 \
-            ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${IMAGE_TAG}
-
           docker run --name ddp-streamer -d \
             --link mongo \
             --link nats \
@@ -965,15 +942,28 @@ jobs:
             -e MONGO_URL=mongodb://mongo:27017/rocketchat \
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             -e TRANSPORTER=nats://nats:4222 \
+            -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${IMAGE_TAG}
 
-          docker run --name presence -d \
-            --link mongo \
-            --link nats \
-            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
-            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
-            -e TRANSPORTER=nats://nats:4222 \
-            ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${IMAGE_TAG}
+      - uses: ./.github/workflows/start-micro-service.yml
+        with:
+          service: stream-hub
+          imageTag: pr-${{ github.event.number }}
+
+      - uses: ./.github/workflows/start-micro-service.yml
+        with:
+          service: account
+          imageTag: pr-${{ github.event.number }}
+
+      - uses: ./.github/workflows/start-micro-service.yml
+        with:
+          service: authorization
+          imageTag: pr-${{ github.event.number }}
+
+      - uses: ./.github/workflows/start-micro-service.yml
+        with:
+          service: presence
+          imageTag: pr-${{ github.event.number }}
 
       - uses: actions/checkout@v3
 
@@ -998,17 +988,26 @@ jobs:
 
       - name: E2E Test API
         run: |
-          docker logs rocketchat --tail=50
-
           cd ./apps/meteor
           for i in $(seq 1 5); do
             docker stop rocketchat
+            docker stop stream-hub
+            docker stop account
+            docker stop authorization
+            docker stop ddp-streamer
+            docker stop presence
+
             docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
             echo $NOW
 
             docker start rocketchat
+            docker start stream-hub
+            docker start account
+            docker start authorization
+            docker start ddp-streamer
+            docker start presence
 
             until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
@@ -1016,7 +1015,14 @@ jobs:
               sleep 10
             done
 
-            npm run testci -- --test=testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100;
+            docker logs rocketchat --tail=50
+            docker logs stream-hub --tail=50
+            docker logs account --tail=50
+            docker logs authorization --tail=50
+            docker logs ddp-streamer --tail=50
+            docker logs presence --tail=50
+
+            npm run testci -- --test=testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100 && docker logs authorization --tail=50;
           done;
           exit $s
 
