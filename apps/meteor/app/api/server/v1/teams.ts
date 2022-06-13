@@ -20,6 +20,7 @@ import { Users } from '../../../models/server';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { Team } from '../../../../server/sdk';
 import { API } from '../api';
+import { C } from 'sip.js/lib/core';
 
 API.v1.addRoute(
 	'teams.list',
@@ -575,13 +576,12 @@ API.v1.addRoute(
 			);
 
 			const teamInfo = await getTeamByIdOrName(this.queryParams);
+
 			if (!teamInfo) {
 				return API.v1.failure('Team not found');
 			}
 
-			const canViewInfo =
-				hasPermission(this.userId, 'view-all-teams', teamInfo.roomId) ||
-				hasPermission(this.userId, 'view-all-team-channels', teamInfo.roomId);
+			const canViewInfo = await Team.getMember(teamInfo._id, this.userId) || hasPermission(this.userId, 'view-all-teams');
 
 			if (!canViewInfo) {
 				return API.v1.unauthorized();
