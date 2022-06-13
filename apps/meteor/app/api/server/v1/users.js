@@ -30,9 +30,12 @@ API.v1.addRoute(
 				});
 			}
 
-			let user = this.getUserFromParams();
-
-			if (!this.isUserFromParams() && !canEditOtherUserAvatar) {
+			let user;
+			if (this.isUserFromParams()) {
+				user = Meteor.users.findOne(this.userId);
+			} else if (canEditOtherUserAvatar) {
+				user = this.getUserFromParams();
+			} else {
 				return API.v1.unauthorized();
 			}
 
