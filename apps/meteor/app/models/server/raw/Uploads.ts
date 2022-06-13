@@ -12,11 +12,11 @@ import {
 	WithId,
 	WriteOpResult,
 } from 'mongodb';
-import { IUpload, IUpload as T } from '@rocket.chat/core-typings';
+import { IUpload } from '@rocket.chat/core-typings';
 
 import { BaseRaw, IndexSpecification, InsertionModel } from './BaseRaw';
 
-const fillTypeGroup = (fileData: Partial<T>): void => {
+const fillTypeGroup = (fileData: Partial<IUpload>): void => {
 	if (!fileData.type) {
 		return;
 	}
@@ -24,12 +24,12 @@ const fillTypeGroup = (fileData: Partial<T>): void => {
 	fileData.typeGroup = fileData.type.split('/').shift();
 };
 
-export class UploadsRaw extends BaseRaw<T> {
+export class UploadsRaw extends BaseRaw<IUpload> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { rid: 1 } }, { key: { uploadedAt: 1 } }, { key: { typeGroup: 1 } }];
 	}
 
-	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): Cursor<T> {
+	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): Cursor<IUpload> {
 		const fileQuery = {
 			rid: roomId,
 			complete: true,
@@ -63,14 +63,14 @@ export class UploadsRaw extends BaseRaw<T> {
 		return this.find(fileQuery, fileOptions);
 	}
 
-	insert(fileData: InsertionModel<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	insert(fileData: InsertionModel<IUpload>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<IUpload>>> {
 		fillTypeGroup(fileData);
 		return super.insertOne(fileData, options);
 	}
 
 	update(
-		filter: FilterQuery<T>,
-		update: UpdateQuery<T> | Partial<T>,
+		filter: FilterQuery<IUpload>,
+		update: UpdateQuery<IUpload> | Partial<IUpload>,
 		options?: UpdateOneOptions & { multi?: boolean },
 	): Promise<WriteOpResult> {
 		if ('$set' in update && update.$set) {
@@ -82,8 +82,14 @@ export class UploadsRaw extends BaseRaw<T> {
 		return super.update(filter, update, options);
 	}
 
-	async insertFileInit(userId: string, store: string, file: { name: string }, extra: object): Promise<InsertOneWriteOpResult<WithId<T>>> {
-		const fileData: IUpload = {
+	/* @deprecated */
+	async insertFileInit(
+		userId: string,
+		store: string,
+		file: { name: string },
+		extra: object,
+	): Promise<InsertOneWriteOpResult<WithId<IUpload>>> {
+		const fileData = {
 			userId,
 			store,
 			complete: false,
@@ -91,6 +97,7 @@ export class UploadsRaw extends BaseRaw<T> {
 			progress: 0,
 			extension: file.name.split('.').pop(),
 			uploadedAt: new Date(),
+			size: 0,
 			...file,
 			...extra,
 		};
