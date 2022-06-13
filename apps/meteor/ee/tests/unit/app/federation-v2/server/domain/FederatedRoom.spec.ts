@@ -74,7 +74,12 @@ describe('FederationEE - Domain - FederatedRoomEE', () => {
 
 	describe('#setRoomType()', () => {
 		it('should set the Room type if its not a direct message room', () => {
-			const federatedRoom = FederatedRoomEE.createInstanceEE('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			const federatedRoom = FederatedRoomEE.createInstanceEE(
+				'!externalId@id',
+				'externalId',
+				{ id: 'userId' } as any,
+				RoomType.PRIVATE_GROUP,
+			);
 			federatedRoom.setRoomType(RoomType.CHANNEL);
 			expect(federatedRoom.internalReference.t).to.be.equal(RoomType.CHANNEL);
 		});
@@ -92,7 +97,12 @@ describe('FederationEE - Domain - FederatedRoomEE', () => {
 
 	describe('#changeRoomName()', () => {
 		it('should change the Room name if its not a direct message room', () => {
-			const federatedRoom = FederatedRoomEE.createInstanceEE('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			const federatedRoom = FederatedRoomEE.createInstanceEE(
+				'!externalId@id',
+				'externalId',
+				{ id: 'userId' } as any,
+				RoomType.PRIVATE_GROUP,
+			);
 			federatedRoom.changeRoomName('newName');
 			expect(federatedRoom.internalReference.name).to.be.equal('newName');
 			expect(federatedRoom.internalReference.fname).to.be.equal('newName');
@@ -111,7 +121,12 @@ describe('FederationEE - Domain - FederatedRoomEE', () => {
 
 	describe('#changeRoomTopic()', () => {
 		it('should change the Room topic if its not a direct message room', () => {
-			const federatedRoom = FederatedRoomEE.createInstanceEE('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			const federatedRoom = FederatedRoomEE.createInstanceEE(
+				'!externalId@id',
+				'externalId',
+				{ id: 'userId' } as any,
+				RoomType.PRIVATE_GROUP,
+			);
 			federatedRoom.changeRoomTopic('newName');
 			expect(federatedRoom.internalReference.description).to.be.equal('newName');
 		});
@@ -129,7 +144,12 @@ describe('FederationEE - Domain - FederatedRoomEE', () => {
 
 	describe('#changeRoomTopic()', () => {
 		it('should change the Room topic if its not a direct message room', () => {
-			const federatedRoom = FederatedRoomEE.createInstanceEE('!externalId@id', 'externalId', { id: 'userId' } as any, RoomType.PRIVATE_GROUP);
+			const federatedRoom = FederatedRoomEE.createInstanceEE(
+				'!externalId@id',
+				'externalId',
+				{ id: 'userId' } as any,
+				RoomType.PRIVATE_GROUP,
+			);
 			federatedRoom.changeRoomTopic('newName');
 			expect(federatedRoom.internalReference.description).to.be.equal('newName');
 		});
