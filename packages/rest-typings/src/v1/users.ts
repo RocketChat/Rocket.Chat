@@ -9,8 +9,10 @@ import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParams
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-export const ajv = new Ajv({
+const ajv = new Ajv({
 	coerceTypes: true,
 });
 
@@ -122,6 +124,12 @@ export type UsersEndpoints = {
 		GET: (params: UsersAutocompleteParamsGET) => {
 			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
 		};
+	};
+
+	'/v1/users.list': {
+		GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
+			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
+		}>;
 	};
 
 	'/v1/users.setAvatar': {

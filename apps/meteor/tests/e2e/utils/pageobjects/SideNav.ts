@@ -101,6 +101,10 @@ class SideNav extends BasePage {
 		return this.getPage().locator('.sidebar');
 	}
 
+	public flexNav(): Locator {
+		return this.getPage().locator('.flex-nav');
+	}
+
 	// Toolbar
 	public spotlightSearchIcon(): Locator {
 		return this.getPage().locator('[data-qa="sidebar-search"]');
@@ -161,7 +165,7 @@ class SideNav extends BasePage {
 	}
 
 	public burgerBtn(): Locator {
-		return this.getPage().locator('.burger, [aria-label="Open_menu"]');
+		return this.getPage().locator('[data-qa-id="burger-menu"]');
 	}
 
 	public sidebarWrap(): Locator {
