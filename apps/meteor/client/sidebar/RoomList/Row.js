@@ -1,8 +1,7 @@
 import { SidebarSection } from '@rocket.chat/fuselage';
 import React, { memo, useMemo } from 'react';
 
-import { useAcceptCall, useRejectIncomingCall } from '../../contexts/VideoConfPopupContext';
-import { useVideoConfIncomingCalls } from '../../lib/VideoConfManager';
+import { useAcceptCall, useRejectIncomingCall, useIncomingCalls } from '../../contexts/VideoConfContext';
 import OmnichannelSection from '../sections/OmnichannelSection';
 import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
 
@@ -15,7 +14,7 @@ const Row = ({ data, item }) => {
 
 	const acceptCall = useAcceptCall();
 	const rejectCall = useRejectIncomingCall();
-	const incomingCalls = useVideoConfIncomingCalls();
+	const incomingCalls = useIncomingCalls();
 	const currentCall = incomingCalls.find((call) => call.rid === item.rid);
 
 	const videoConfActions = useMemo(

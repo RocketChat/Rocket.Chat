@@ -54,14 +54,6 @@ type OmnichannelTypesValues =
 
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
-type VideoConferenceTypes =
-	| 'video-direct-calling'
-	| 'video-direct-missed'
-	| 'video-direct-started'
-	| 'video-direct-ended'
-	| 'video-conference-started'
-	| 'video-conference';
-
 export type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
@@ -94,8 +86,7 @@ export type MessageTypesValues =
 	| TeamMessageTypes
 	| VoipMessageTypesValues
 	| OmnichannelTypesValues
-	| OtrSystemMessages
-	| VideoConferenceTypes;
+	| OtrSystemMessages;
 
 export type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
 export type Token = {

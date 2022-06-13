@@ -2,8 +2,6 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { useMemo } from 'react';
-import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
@@ -20,7 +18,7 @@ const CALL_TIMEOUT = 10000;
 // How long are we gonna wait for a link after accepting an incoming call
 const ACCEPT_TIMEOUT = 5000;
 
-type DirectCallParams = {
+export type DirectCallParams = {
 	uid: IUser['_id'];
 	rid: IRoom['_id'];
 	callId: string;
@@ -136,7 +134,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		debug && console.log(`[VideoConf] Starting new call on room ${roomId}`);
 		this.startingNewCall = true;
 
-		const { data } = await APIClient.post('/v1/video-conference.start', { roomId, title }).catch((e: unknown) => {
+		const { data } = await APIClient.post('/v1/video-conference.start', { roomId, title }).catch((e: any) => {
 			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
 			this.startingNewCall = false;
 			this.emit('start/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
@@ -537,29 +535,5 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		return Boolean(this.incomingDirectCalls.get(callId)?.dismissed);
 	}
 })();
-
-export const useVideoConfIncomingCalls = (): DirectCallParams[] => {
-	const subscribeIncomingCalls: Subscription<DirectCallParams[]> = useMemo(
-		() => ({
-			getCurrentValue: (): DirectCallParams[] => VideoConfManager.getIncomingDirectCalls(),
-			subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('incoming/changed', cb),
-		}),
-		[],
-	);
-
-	return useSubscription(subscribeIncomingCalls);
-};
-
-export const useIsRinging = (): boolean => {
-	const subscribeIsRinging: Subscription<boolean> = useMemo(
-		() => ({
-			getCurrentValue: (): boolean => VideoConfManager.isRinging(),
-			subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('ringing/changed', cb),
-		}),
-		[],
-	);
-
-	return useSubscription(subscribeIsRinging);
-};
 
 Meteor.startup(() => Tracker.autorun(() => VideoConfManager.updateUser()));

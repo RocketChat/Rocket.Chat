@@ -17,7 +17,7 @@ import React, { ReactElement, useMemo } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
+import { useSetPreferences } from '../../../../../contexts/VideoConfContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 

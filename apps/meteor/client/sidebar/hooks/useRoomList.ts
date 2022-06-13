@@ -3,9 +3,9 @@ import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import { useIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
-import { useVideoConfIncomingCalls } from '../../lib/VideoConfManager';
 import { useQueryOptions } from './useQueryOptions';
 
 const query = { open: { $ne: false } };
@@ -27,7 +27,7 @@ export const useRoomList = (): Array<ISubscription> => {
 
 	const inquiries = useQueuedInquiries();
 
-	const incomingCalls = useVideoConfIncomingCalls();
+	const incomingCalls = useIncomingCalls();
 
 	let queue: IRoom[] = emptyQueue;
 	if (inquiries.enabled) {

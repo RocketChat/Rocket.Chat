@@ -59,10 +59,10 @@ export type VideoConference = IDirectVideoConference | IGroupVideoConference;
 
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions;
 
-export const isDirectVideoConference = (call: IVideoConference): call is IDirectVideoConference => {
+export const isDirectVideoConference = (call: VideoConference | undefined | null): call is IDirectVideoConference => {
 	return call?.type === 'direct';
 };
 
-export const isGroupVideoConference = (call: IVideoConference): call is IGroupVideoConference => {
+export const isGroupVideoConference = (call: VideoConference | undefined | null): call is IGroupVideoConference => {
 	return call?.type === 'videoconference';
 };
