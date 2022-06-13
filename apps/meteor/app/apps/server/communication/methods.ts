@@ -8,10 +8,9 @@ import { AppServerOrchestrator } from '../orchestrator';
 
 const waitToLoad = function (orch: AppServerOrchestrator): unknown {
 	return new Promise<void>((resolve) => {
-		let id = setInterval(() => {
+		const id = setInterval(() => {
 			if (orch.isEnabled() && orch.isLoaded()) {
 				clearInterval(id);
-				id = -1 as unknown as NodeJS.Timeout;
 				resolve();
 			}
 		}, 100);
@@ -20,10 +19,9 @@ const waitToLoad = function (orch: AppServerOrchestrator): unknown {
 
 const waitToUnload = function (orch: AppServerOrchestrator): unknown {
 	return new Promise<void>((resolve) => {
-		let id = setInterval(() => {
+		const id = setInterval(() => {
 			if (!orch.isEnabled() && !orch.isLoaded()) {
 				clearInterval(id);
-				id = -1 as unknown as NodeJS.Timeout;
 				resolve();
 			}
 		}, 100);
