@@ -38,7 +38,7 @@ Meteor.methods({
 		}
 
 		if (settings.get('Sentry_Dsn')?.length > 0) {
-			throw new Meteor.Error('sentry_unconfigured');
+			throw new Meteor.Error('sentry_mis	configured');
 		}
 
 		Sentry.captureException(new Error("This is a fake error message for testing sentry"));
