@@ -89,12 +89,20 @@ class SideNav extends BasePage {
 		return this.getPage().locator('li.rcx-option >> text="Omnichannel"');
 	}
 
+	get users(): Locator {
+		return this.getPage().locator('.flex-nav [href="/admin/users"]');
+	}
+
 	public logout(): Locator {
 		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]');
 	}
 
 	public sideNavBar(): Locator {
 		return this.getPage().locator('.sidebar');
+	}
+
+	public flexNav(): Locator {
+		return this.getPage().locator('.flex-nav');
 	}
 
 	// Toolbar
@@ -157,7 +165,7 @@ class SideNav extends BasePage {
 	}
 
 	public burgerBtn(): Locator {
-		return this.getPage().locator('.burger, [aria-label="Open_menu"]');
+		return this.getPage().locator('[data-qa-id="burger-menu"]');
 	}
 
 	public sidebarWrap(): Locator {

@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { MessageBlock } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
 import { useMessageOembedMaxWidth } from '../../../contexts/MessageContext';
@@ -117,14 +117,22 @@ const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
 
 	return (
-		<Box width={oembedWidth}>
+		<>
 			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
-					return <OEmbedResolver meta={data} key={index} />;
+					return (
+						<MessageBlock width={oembedWidth}>
+							<OEmbedResolver meta={data} key={index} />
+						</MessageBlock>
+					);
 				}
-				return <UrlPreview {...data} key={index} />;
+				return (
+					<MessageBlock width={oembedWidth}>
+						<UrlPreview {...data} key={index} />
+					</MessageBlock>
+				);
 			})}
-		</Box>
+		</>
 	);
 };
 

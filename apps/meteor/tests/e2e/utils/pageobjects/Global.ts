@@ -8,10 +8,6 @@ class Global extends BasePage {
 		return this.getPage().locator('.rc-modal-wrapper');
 	}
 
-	public modal(): Locator {
-		return this.getPage().locator('.rcx-modal');
-	}
-
 	public modalConfirm(): Locator {
 		return this.getPage().locator('.rcx-modal .rcx-button--primary-danger');
 	}
@@ -50,6 +46,11 @@ class Global extends BasePage {
 
 	public getToastBarSuccess(): Locator {
 		return this.getPage().locator('.rcx-toastbar.rcx-toastbar--success');
+	}
+
+	// Flexnav refers account sidebar and admin sidebar
+	public flexNav(): Locator {
+		return this.getPage().locator('.flex-nav');
 	}
 
 	public async confirmPopup(): Promise<void> {
