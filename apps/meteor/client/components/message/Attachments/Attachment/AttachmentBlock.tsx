@@ -3,7 +3,11 @@ import React, { FC } from 'react';
 
 import Attachment from './Attachment';
 
-const Block: FC<{ pre?: JSX.Element | string | undefined; color?: string | undefined }> = ({ pre, color = 'neutral-600', children }) => (
+const AttachmentBlock: FC<{ pre?: JSX.Element | string | undefined; color?: string | undefined }> = ({
+	pre,
+	color = 'neutral-600',
+	children,
+}) => (
 	<Attachment>
 		{pre}
 		<Box
@@ -19,4 +23,4 @@ const Block: FC<{ pre?: JSX.Element | string | undefined; color?: string | undef
 	</Attachment>
 );
 
-export default Block;
+export default AttachmentBlock;
