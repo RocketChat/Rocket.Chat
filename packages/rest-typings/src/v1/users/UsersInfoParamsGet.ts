@@ -4,7 +4,9 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type UsersInfoParamsGet = { userId: string } | { username: string };
+export type UsersInfoParamsGet = ({ userId: string } | { username: string }) & {
+	fields: string;
+};
 
 const UsersInfoParamsGetSchema = {
 	anyOf: [
@@ -13,6 +15,10 @@ const UsersInfoParamsGetSchema = {
 			properties: {
 				userId: {
 					type: 'string',
+				},
+				fields: {
+					type: 'string',
+					nullable: true,
 				},
 			},
 			required: ['userId'],
@@ -23,6 +29,10 @@ const UsersInfoParamsGetSchema = {
 			properties: {
 				username: {
 					type: 'string',
+				},
+				fields: {
+					type: 'string',
+					nullable: true,
 				},
 			},
 			required: ['username'],
