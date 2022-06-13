@@ -2,9 +2,9 @@ import { Box } from '@rocket.chat/fuselage';
 import React, { ComponentProps, FC } from 'react';
 
 import { useFormatMemorySize } from '../../../../hooks/useFormatMemorySize';
-import Title from './Title';
+import Title from './AttachmentTitle';
 
-const Size: FC<ComponentProps<typeof Box> & { size: number }> = ({ size, ...props }) => {
+const AttachmentSize: FC<ComponentProps<typeof Box> & { size: number }> = ({ size, ...props }) => {
 	const format = useFormatMemorySize();
 	return (
 		<Title flexShrink={0} {...props}>
@@ -13,4 +13,4 @@ const Size: FC<ComponentProps<typeof Box> & { size: number }> = ({ size, ...prop
 	);
 };
 
-export default Size;
+export default AttachmentSize;
