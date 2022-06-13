@@ -6,7 +6,7 @@ const ajv = new Ajv({
 
 export type UserRegisterParamsPOST = {
 	username: string;
-
+	name?: string;
 	email: string;
 	pass: string;
 	secret?: string;
@@ -19,6 +19,11 @@ const UserRegisterParamsPostSchema = {
 		username: {
 			type: 'string',
 			minLength: 3,
+		},
+
+		name: {
+			type: 'string',
+			nullable: true,
 		},
 		email: {
 			type: 'string',
