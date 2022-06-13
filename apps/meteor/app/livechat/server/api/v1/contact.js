@@ -18,7 +18,9 @@ API.v1.addRoute(
 					email: Match.Maybe(String),
 					phone: Match.Maybe(String),
 					customFields: Match.Maybe(Object),
-					contactManager: Match.Maybe(Object),
+					contactManager: Match.Maybe({
+						username: String,
+					}),
 				});
 
 				const contact = Contacts.registerContact(this.bodyParams);

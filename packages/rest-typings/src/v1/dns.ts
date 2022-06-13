@@ -39,12 +39,12 @@ const DnsResolveSrvSchema = {
 export const isDnsResolveSrvProps = ajv.compile<DnsResolveSrvProps>(DnsResolveSrvSchema);
 
 export type DnsEndpoints = {
-	'dns.resolve.srv': {
+	'/v1/dns.resolve.srv': {
 		GET: (params: DnsResolveSrvProps) => {
 			resolved: Record<string, string | number>;
 		};
 	};
-	'dns.resolve.txt': {
+	'/v1/dns.resolve.txt': {
 		POST: (params: DnsResolveTxtProps) => {
 			resolved: string;
 			// resolved: Record<string, string | number>;

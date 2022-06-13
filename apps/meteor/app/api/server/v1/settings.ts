@@ -154,7 +154,7 @@ API.v1.addRoute(
 		},
 		post: {
 			twoFactorRequired: true,
-			async action(): Promise<ResultFor<'POST', 'settings/:_id'>> {
+			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
 				if (!hasPermission(this.userId, 'edit-privileged-setting')) {
 					return API.v1.unauthorized();
 				}

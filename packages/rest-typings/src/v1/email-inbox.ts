@@ -157,20 +157,20 @@ const EmailInboxSearchPropsSchema = {
 export const isEmailInboxSearch = ajv.compile<EmailInboxSearchProps>(EmailInboxSearchPropsSchema);
 
 export type EmailInboxEndpoints = {
-	'email-inbox.list': {
+	'/v1/email-inbox.list': {
 		GET: (params: EmailInboxListProps) => PaginatedResult<{ emailInboxes: IEmailInbox[] }>;
 	};
-	'email-inbox': {
+	'/v1/email-inbox': {
 		POST: (params: EmailInboxProps) => { _id: string };
 	};
-	'email-inbox/:_id': {
+	'/v1/email-inbox/:_id': {
 		GET: (params: void) => IEmailInbox | null;
 		DELETE: (params: void) => { _id: string };
 	};
-	'email-inbox.search': {
+	'/v1/email-inbox.search': {
 		GET: (params: EmailInboxSearchProps) => { emailInbox: IEmailInbox | null };
 	};
-	'email-inbox.send-test/:_id': {
+	'/v1/email-inbox.send-test/:_id': {
 		POST: (params: void) => { _id: string };
 	};
 };

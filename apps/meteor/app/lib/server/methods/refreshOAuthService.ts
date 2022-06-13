@@ -23,6 +23,6 @@ Meteor.methods({
 
 		ServiceConfiguration.configurations.remove({});
 
-		await Settings.update({ _id: /^(Accounts_OAuth_|SAML_|CAS_|Blockstack_).+/ }, { $set: { _updatedAt: new Date() } }, { multi: true });
+		await Settings.update({ _id: /^(Accounts_OAuth_|SAML_|CAS_).+/ }, { $set: { _updatedAt: new Date() } }, { multi: true });
 	},
 });

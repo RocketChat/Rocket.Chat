@@ -1,5 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { AggregationCursor, Cursor, FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
+import { AggregationCursor, Cursor, FilterQuery, FindOneOptions, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import type { ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 
@@ -105,5 +105,20 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		};
 
 		return this.find(query, options);
+	}
+
+	removeContactManagerByUsername(manager: string): Promise<UpdateWriteOpResult> {
+		return this.updateMany(
+			{
+				contactManager: {
+					username: manager,
+				},
+			},
+			{
+				$unset: {
+					contactManager: true,
+				},
+			},
+		);
 	}
 }

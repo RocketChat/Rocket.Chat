@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw } from '@rocket.chat/models';
+import { Users as UsersRaw, LivechatVisitors as LivechatVisitorsRaw } from '@rocket.chat/models';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -925,6 +925,7 @@ export const Livechat = {
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
 			LivechatDepartmentAgents.removeByAgentId(_id);
+			Promise.await(LivechatVisitorsRaw.removeContactManagerByUsername(username));
 			return true;
 		}
 

@@ -45,7 +45,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		return this.updateOne({ _id }, update);
 	}
 
-	setAliases(_id: string, aliases: string): Promise<UpdateWriteOpResult> {
+	setAliases(_id: string, aliases: string[]): Promise<UpdateWriteOpResult> {
 		const update = {
 			$set: {
 				aliases,

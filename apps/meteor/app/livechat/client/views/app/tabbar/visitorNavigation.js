@@ -65,9 +65,10 @@ Template.visitorNavigation.onCreated(async function () {
 		this.isLoading.set(true);
 		const offset = this.offset.get();
 		if (currentData && currentData.rid) {
-			const { pages, total } = await APIClient.v1.get(
-				`livechat/visitors.pagesVisited/${currentData.rid}?count=${ITEMS_COUNT}&offset=${offset}`,
-			);
+			const { pages, total } = await APIClient.get(`/v1/livechat/visitors.pagesVisited/${currentData.rid}`, {
+				count: ITEMS_COUNT,
+				offset,
+			});
 			this.isLoading.set(false);
 			this.total.set(total);
 			this.pages.set(this.pages.get().concat(pages));

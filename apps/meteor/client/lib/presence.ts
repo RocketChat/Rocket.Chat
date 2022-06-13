@@ -51,6 +51,15 @@ const notify = (presence: UserPresence): void => {
 	}
 };
 
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+	export interface Endpoints {
+		'/v1/users.presence': {
+			GET: (params: { ids: string[] }) => UsersPresencePayload;
+		};
+	}
+}
+
 const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	let timer: ReturnType<typeof setTimeout>;
 
@@ -81,7 +90,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 					ids: [...currentUids],
 				};
 
-				const { users } = (await APIClient.v1.get('users.presence', params)) as UsersPresencePayload;
+				const { users } = await APIClient.get('/v1/users.presence', params);
 
 				users.forEach((user) => {
 					if (!store.has(user._id)) {
