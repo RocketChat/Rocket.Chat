@@ -17,9 +17,10 @@ export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<
 	return useCallback(async () => {
 		try {
 			const data = await sendData(params);
-
-			if (successMessage) {
+			if (successMessage && data.success) {
 				dispatchToastMessage({ type: 'success', message: successMessage });
+			} else {
+				throw data.error;
 			}
 
 			return data;
