@@ -1,14 +1,14 @@
 import { useRoutePath, useCurrentRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, useCallback, useEffect } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect } from 'react';
 import { useSubscription } from 'use-subscription';
 
+import { itemsSubscription } from '.';
 import { menu, SideNav } from '../../../app/ui-utils/client';
 import Sidebar from '../../components/Sidebar';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 import SettingsProvider from '../../providers/SettingsProvider';
-import { itemsSubscription } from './sidebarItems';
 
-const AccountSidebar = () => {
+const AccountSidebar = (): ReactElement => {
 	const t = useTranslation();
 
 	const items = useSubscription(itemsSubscription);
@@ -22,14 +22,15 @@ const AccountSidebar = () => {
 		SideNav.closeFlex();
 	}, []);
 
-	const [currentRouteName, ...rest] = useCurrentRoute();
-	const currentPath = useRoutePath(currentRouteName, ...rest);
+	const currentRoute = useCurrentRoute();
+	const [currentRouteName, currentRouteParams, currentQueryStringParams, currentRouteGroupName] = currentRoute;
+	const currentPath = useRoutePath(currentRouteName || '', currentRouteParams, currentQueryStringParams);
 
 	useEffect(() => {
-		if (currentRouteName !== 'account') {
+		if (currentRouteGroupName !== 'account') {
 			SideNav.closeFlex();
 		}
-	}, [currentRouteName]);
+	}, [currentRouteGroupName]);
 
 	// TODO: uplift this provider
 	return (
