@@ -240,6 +240,7 @@ jobs:
 
             until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
+              ((c++)) && ((c==10)) && exit 1
               sleep 10
             done
 
@@ -269,6 +270,7 @@ jobs:
 
           until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && exit 1
             sleep 10
           done
 
@@ -764,15 +766,17 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
+      - run: yarn install
+
+      - run: yarn build
+
       - name: Build Docker images
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:pr-${{ github.event.number }}"
+          IMAGE_TAG="pr-${{ github.event.number }}"
 
-          # first install repo dependencies
-          yarn
-          yarn build
+          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${IMAGE_TAG}"
 
           echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
 
@@ -1001,6 +1005,7 @@ jobs:
 
             until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
               echo "Waiting Rocket.Chat to start up"
+              ((c++)) && ((c==10)) && exit 1
               sleep 10
             done
 
@@ -1030,6 +1035,7 @@ jobs:
 
           until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && exit 1
             sleep 10
           done
 
