@@ -1,18 +1,18 @@
 /* eslint-disable complexity */
 import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription } from '@rocket.chat/core-typings';
-import { MessageBody } from '@rocket.chat/fuselage';
+import { MessageBody, MessageBlock } from '@rocket.chat/fuselage';
 import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
 import { isE2EEMessage } from '../../../../../lib/isE2EEMessage';
-import Attachments from '../../../../components/Message/Attachments';
-import MessageActions from '../../../../components/Message/MessageActions';
-import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
-import DiscussionMetric from '../../../../components/Message/Metrics/Discussion';
-import ThreadMetric from '../../../../components/Message/Metrics/Thread';
+import Attachments from '../../../../components/message/Attachments';
+import MessageActions from '../../../../components/message/MessageActions';
+import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
+import DiscussionMetric from '../../../../components/message/Metrics/Discussion';
+import ThreadMetric from '../../../../components/message/Metrics/Thread';
 import { useUserData } from '../../../../hooks/useUserData';
 import { UserPresence } from '../../../../lib/presence';
-import MessageBlock from '../../../blocks/MessageBlock';
+import MessageBlockUiKit from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
@@ -54,7 +54,11 @@ const MessageContent: FC<{ message: IMessage; sequential: boolean; subscription?
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</MessageBody>
 			)}
-			{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+			{message.blocks && (
+				<MessageBlock fixedWidth>
+					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
+				</MessageBlock>
+			)}
 			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}

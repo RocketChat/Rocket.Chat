@@ -988,7 +988,7 @@ export class UsersRaw extends BaseRaw {
 
 	getAvailableAgentsIncludingExt(includeExt, text, options) {
 		const query = {
-			roles: { $in: ['livechat-agent', 'livechat-manager', 'livechat-monitor'] },
+			roles: { $in: ['livechat-agent'] },
 			$and: [
 				...(text && text.trim()
 					? [{ $or: [{ username: new RegExp(escapeRegExp(text), 'i') }, { name: new RegExp(escapeRegExp(text), 'i') }] }]

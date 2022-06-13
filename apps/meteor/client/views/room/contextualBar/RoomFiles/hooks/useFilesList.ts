@@ -32,14 +32,14 @@ export const useFilesList = (
 	}, [filesList, options]);
 
 	const roomTypes = {
-		c: 'channels.files',
-		l: 'channels.files',
-		v: 'channels.files',
-		d: 'im.files',
-		p: 'groups.files',
+		c: '/v1/channels.files',
+		l: '/v1/channels.files',
+		v: '/v1/channels.files',
+		d: '/v1/im.files',
+		p: '/v1/groups.files',
 	} as const;
 
-	const apiEndPoint = room ? roomTypes[room.t] : 'channels.files';
+	const apiEndPoint = room ? roomTypes[room.t] : '/v1/channels.files';
 
 	const getFiles = useEndpoint('GET', apiEndPoint);
 

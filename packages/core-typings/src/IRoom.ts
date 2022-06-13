@@ -84,6 +84,9 @@ export interface IRoom extends IRocketChatRecord {
 	description?: string;
 	createdOTR?: boolean;
 	e2eKeyId?: string;
+	federated?: boolean;
+
+	channel?: { _id: string };
 }
 
 export interface ICreatedRoom extends IRoom {

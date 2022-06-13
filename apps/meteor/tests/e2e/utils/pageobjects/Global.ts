@@ -8,10 +8,6 @@ class Global extends BasePage {
 		return this.getPage().locator('.rc-modal-wrapper');
 	}
 
-	public modal(): Locator {
-		return this.getPage().locator('.rcx-modal');
-	}
-
 	public modalConfirm(): Locator {
 		return this.getPage().locator('.rcx-modal .rcx-button--primary-danger');
 	}
@@ -40,8 +36,16 @@ class Global extends BasePage {
 		return this.getPage().locator('.rc-modal .upload-preview-title');
 	}
 
-	public toastAlert(): Locator {
-		return this.getPage().locator('.toast-message');
+	public getToastBar(): Locator {
+		return this.getPage().locator('.rcx-toastbar');
+	}
+
+	public getToastBarError(): Locator {
+		return this.getPage().locator('.rcx-toastbar.rcx-toastbar--error');
+	}
+
+	public getToastBarSuccess(): Locator {
+		return this.getPage().locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
 	public async confirmPopup(): Promise<void> {
@@ -50,12 +54,8 @@ class Global extends BasePage {
 		await this.modalConfirm().click();
 	}
 
-	// public async setWindowSize(width, height): Promise<void> {
-	// 	cy.viewport(width, height);
-	// }
-	//
-	public async dismissToast(): Promise<void> {
-		await this.toastAlert().click();
+	public async dismissToastBar(): Promise<void> {
+		await this.getToastBar().locator('button').click();
 	}
 }
 

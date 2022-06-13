@@ -99,7 +99,7 @@ Template.visitorForward.onCreated(async function () {
 		}
 	});
 
-	const { departments } = await APIClient.v1.get('livechat/department?enabled=true');
+	const { departments } = await APIClient.get('/v1/livechat/department', { enabled: true });
 	this.departments.set(departments);
 });
 
