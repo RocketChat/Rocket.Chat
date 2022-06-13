@@ -3,11 +3,15 @@ import { Readable } from 'stream';
 import { Request } from 'express';
 import busboy from 'busboy';
 
-export const getUploadFormData = async ({ request }: { request: Request }): Promise<unknown> =>
+export const getUploadFormData = async ({
+	request,
+}: {
+	request: Request;
+}): Promise<{ file: Readable; filename: string; encoding: string; mimetype: string; fileBuffer: Buffer }> =>
 	new Promise((resolve, reject) => {
 		const bb = busboy({ headers: request.headers, defParamCharset: 'utf8' });
 
-		const fields: { [key: string]: unknown } = {};
+		const fields: { file: Readable; filename: string; encoding: string; mimetype: string; fileBuffer: Buffer } = Object.create(null);
 
 		bb.on(
 			'file',
