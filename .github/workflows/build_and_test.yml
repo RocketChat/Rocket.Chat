@@ -945,25 +945,81 @@ jobs:
             -e MOLECULER_LOG_LEVEL=info \
             ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${IMAGE_TAG}
 
-      - uses: ./.github/workflows/start-micro-service.yml
-        with:
-          service: stream-hub
-          imageTag: pr-${{ github.event.number }}
+      - name: stream-hub
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-      - uses: ./.github/workflows/start-micro-service.yml
-        with:
-          service: account
-          imageTag: pr-${{ github.event.number }}
+          docker run --name stream-hub -d \
+            --link mongo \
+            --link nats \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            -e MOLECULER_LOG_LEVEL=info \
+            ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:pr-${{ github.event.number }}
 
-      - uses: ./.github/workflows/start-micro-service.yml
-        with:
-          service: authorization
-          imageTag: pr-${{ github.event.number }}
+          until echo "$(docker logs stream-hub)" | grep -q "NetworkBroker started successfully"; do
+            echo "Waiting 'stream-hub' to start up"
+            ((c++)) && ((c==10)) && exit 1
+            sleep 10
+          done
 
-      - uses: ./.github/workflows/start-micro-service.yml
-        with:
-          service: presence
-          imageTag: pr-${{ github.event.number }}
+      - name: account
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          docker run --name account -d \
+            --link mongo \
+            --link nats \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            -e MOLECULER_LOG_LEVEL=info \
+            ghcr.io/${LOWERCASE_REPOSITORY}/account-service:pr-${{ github.event.number }}
+
+          until echo "$(docker logs account)" | grep -q "NetworkBroker started successfully"; do
+            echo "Waiting 'account' to start up"
+            ((c++)) && ((c==10)) && exit 1
+            sleep 10
+          done
+
+      - name: authorization
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          docker run --name authorization -d \
+            --link mongo \
+            --link nats \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            -e MOLECULER_LOG_LEVEL=info \
+            ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:pr-${{ github.event.number }}
+
+          until echo "$(docker logs authorization)" | grep -q "NetworkBroker started successfully"; do
+            echo "Waiting 'authorization' to start up"
+            ((c++)) && ((c==10)) && exit 1
+            sleep 10
+          done
+
+      - name: presence
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          docker run --name presence -d \
+            --link mongo \
+            --link nats \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            -e MOLECULER_LOG_LEVEL=info \
+            ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:pr-${{ github.event.number }}
+
+          until echo "$(docker logs presence)" | grep -q "NetworkBroker started successfully"; do
+            echo "Waiting 'presence' to start up"
+            ((c++)) && ((c==10)) && exit 1
+            sleep 10
+          done
 
       - uses: actions/checkout@v3
 
