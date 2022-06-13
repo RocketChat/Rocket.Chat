@@ -1,25 +1,18 @@
 import Ajv from 'ajv';
 
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+
 const ajv = new Ajv({ coerceTypes: true });
 
-export type ChannelsHistoryProps =
-	| {
-			roomId: string;
-			latest?: string;
-			showThreadMessages?: 'false' | 'true';
-			oldest?: string;
-			unreads?: 'true' | 'false';
-			inclusive?: 'false' | 'true';
-	  }
-	| {
-			roomName: string;
-			latest?: string;
-			showThreadMessages?: 'false' | 'true';
-			oldest?: string;
-			unreads?: 'true' | 'false';
-			inclusive?: 'false' | 'true';
-	  };
-
+export type ChannelsHistoryProps = PaginatedRequest<
+	({ roomId: string } | { roomName: string }) & {
+		latest?: string;
+		showThreadMessages?: 'false' | 'true';
+		oldest?: string;
+		unreads?: 'true' | 'false';
+		inclusive?: 'false' | 'true';
+	}
+>;
 const channelsHistoryPropsSchema = {
 	oneOf: [
 		{
@@ -52,6 +45,18 @@ const channelsHistoryPropsSchema = {
 				unreads: {
 					type: 'string',
 					enum: ['true', 'false'],
+					nullable: true,
+				},
+				count: {
+					type: 'number',
+					nullable: true,
+				},
+				offset: {
+					type: 'number',
+					nullable: true,
+				},
+				sort: {
+					type: 'string',
 					nullable: true,
 				},
 			},
@@ -88,6 +93,18 @@ const channelsHistoryPropsSchema = {
 				unreads: {
 					type: 'string',
 					enum: ['true', 'false'],
+					nullable: true,
+				},
+				count: {
+					type: 'number',
+					nullable: true,
+				},
+				offset: {
+					type: 'number',
+					nullable: true,
+				},
+				sort: {
+					type: 'string',
 					nullable: true,
 				},
 			},

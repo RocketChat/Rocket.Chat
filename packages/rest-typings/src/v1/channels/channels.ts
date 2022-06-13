@@ -6,6 +6,7 @@ import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
 import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
+import type { ChannelsHistoryProps } from './ChannelsHistoryProps';
 import type { ChannelsMessagesProps } from './ChannelsMessagesProps';
 import type { ChannelsOpenProps } from './ChannelsOpenProps';
 import type { ChannelsSetAnnouncementProps } from './ChannelsSetAnnouncementProps';
@@ -27,24 +28,7 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'/v1/channels.history': {
-		GET: (
-			params: PaginatedRequest<
-				| {
-						roomId: string;
-						latest?: string;
-						showThreadMessages?: 'false' | 'true';
-						oldest?: string;
-						inclusive?: 'false' | 'true';
-				  }
-				| {
-						roomName: string;
-						latest?: string;
-						showThreadMessages?: 'false' | 'true';
-						oldest?: string;
-						inclusive?: 'false' | 'true';
-				  }
-			>,
-		) => PaginatedResult<{
+		GET: (params: ChannelsHistoryProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
