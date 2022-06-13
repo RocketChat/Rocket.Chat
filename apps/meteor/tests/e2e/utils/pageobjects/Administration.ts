@@ -3,14 +3,6 @@ import { Locator, expect } from '@playwright/test';
 import BasePage from './BasePage';
 
 export default class Administration extends BasePage {
-	public flexNav(): Locator {
-		return this.getPage().locator('.flex-nav');
-	}
-
-	public flexNavContent(): Locator {
-		return this.getPage().locator('.flex-nav');
-	}
-
 	public settingsSearch(): Locator {
 		return this.getPage().locator('input[type=search]');
 	}
@@ -105,6 +97,10 @@ export default class Administration extends BasePage {
 
 	public notFoundChannelOrUser(): Locator {
 		return this.getPage().locator("//div[text()='No data found']");
+	}
+
+	public notFoundChannels(): Locator {
+		return this.getPage().locator("//div[text()='No results found']");
 	}
 
 	public usersRocketCat(): Locator {
@@ -673,10 +669,6 @@ export default class Administration extends BasePage {
 
 	public layoutButtonExpandContent(): Locator {
 		return this.getPage().locator('.section:nth-of-type(2) .rc-button.rc-button--nude');
-	}
-
-	public toastSuccess(): Locator {
-		return this.getPage().locator('.toast-success');
 	}
 
 	public modalCancel(): Locator {

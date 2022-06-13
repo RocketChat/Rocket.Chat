@@ -49,13 +49,13 @@ function wrapMeteorDDPCalls(): void {
 			});
 			Meteor.connection.onMessage(_message);
 		};
+		const method = encodeURIComponent(message.method.replace(/\//g, ':'));
 
-		APIClient.v1
-			.post(`${endpoint}/${encodeURIComponent(message.method.replace(/\//g, ':'))}`, restParams)
+		APIClient.post(`/v1/${endpoint}/${method}`, restParams)
 			.then(({ message: _message }) => {
 				processResult(_message);
 				if (message.method === 'login') {
-					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
+					const parsedMessage = DDPCommon.parseDDP(_message as any) as { result?: { token?: string } };
 					if (parsedMessage.result?.token) {
 						Meteor.loginWithToken(parsedMessage.result.token);
 					}
