@@ -5,7 +5,7 @@ import { reason, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from '../mocks/userAndPas
 import { IRegister } from '../interfaces/Login';
 import { BACKSPACE } from '../mocks/keyboardKeyMock';
 
-class SetupWizard extends BasePage {
+export default class SetupWizard extends BasePage {
 	private nextStep(): Locator {
 		return this.getPage().locator('//button[contains(text(), "Next")]');
 	}
@@ -114,33 +114,24 @@ class SetupWizard extends BasePage {
 		return this.getPage().locator('//div[@name="country"]/../following-sibling::span');
 	}
 
-	public async goNext(): Promise<void> {
-		await this.nextStep().click();
-	}
-
 	private stepThreeInputInvalidMail(): Locator {
 		return this.getPage().locator('//input[@name="email"]/../../span[contains(text(), "This field is required")]');
 	}
 
 	public async stepTwoSuccess(): Promise<void> {
 		await this.organizationName().type(reason);
-
 		await this.organizationType().click();
 		await this.organizationTypeSelect().click();
 		await expect(this.getPage().locator('.rcx-options')).toHaveCount(0);
-
 		await this.industry().click();
 		await this.industrySelect().click();
 		await expect(this.getPage().locator('.rcx-options')).toHaveCount(0);
-
 		await this.size().click();
 		await this.sizeSelect().click();
 		await expect(this.getPage().locator('.rcx-options')).toHaveCount(0);
-
 		await this.country().click();
 		await this.countrySelect().click();
-
-		await this.goNext();
+		await this.nextStep().click();
 	}
 
 	public async stepThreeSuccess(): Promise<void> {
@@ -148,8 +139,7 @@ class SetupWizard extends BasePage {
 	}
 
 	public async stepOneFailedBlankFields(): Promise<void> {
-		await this.goNext();
-
+		await this.nextStep().click();
 		await expect(this.fullNameInvalidText()).toBeVisible();
 		await expect(this.userNameInvalidText()).toBeVisible();
 		await expect(this.companyEmailInvalidText()).toBeVisible();
@@ -161,15 +151,12 @@ class SetupWizard extends BasePage {
 		await this.userName().type(adminCredentials.name);
 		await this.companyEmail().type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
 		await this.password().type(adminCredentials.password);
-
-		await this.goNext();
-
+		await this.nextStep().click();
 		await expect(this.companyEmail()).toBeFocused();
 	}
 
 	public async stepTwoFailedWithBlankFields(): Promise<void> {
-		await this.goNext();
-
+		await this.nextStep().click();
 		await expect(this.organizationName()).toBeVisible();
 		await expect(this.industryInvalidSelect()).toBeVisible();
 		await expect(this.sizeInvalidSelect()).toBeVisible();
@@ -180,13 +167,6 @@ class SetupWizard extends BasePage {
 		await this.registeredServer().type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
 		await this.registeredServer().click({ clickCount: 3 });
 		await this.keyboardPress(BACKSPACE);
-
 		await expect(this.stepThreeInputInvalidMail()).toBeVisible();
 	}
-
-	async goToHome(): Promise<void> {
-		await this.goToWorkspace().click();
-	}
 }
-
-export default SetupWizard;
