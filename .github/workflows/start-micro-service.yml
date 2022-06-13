@@ -1,3 +1,5 @@
+name: Start Rocket.Chat micro service Docker container
+
 on:
   workflow_call:
     inputs:
