@@ -11,7 +11,6 @@ import CreateChannel, { CreateChannelProps } from './CreateChannel';
 type CreateChannelWithDataProps = {
 	onClose: () => void;
 	teamId?: string;
-	reload: () => void;
 };
 
 type UseFormValues = {
@@ -24,7 +23,7 @@ type UseFormValues = {
 	broadcast: boolean;
 };
 
-const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWithDataProps): ReactElement => {
+const CreateChannelWithData = ({ onClose, teamId = '' }: CreateChannelWithDataProps): ReactElement => {
 	const createChannel = useEndpointActionExperimental('POST', '/v1/channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', '/v1/groups.create');
 	const canCreateChannel = usePermission('create-c');
@@ -103,8 +102,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 		}
 
 		onClose();
-		reload();
-	}, [broadcast, createChannel, createPrivateChannel, description, encrypted, name, onClose, readOnly, teamId, type, users, reload]);
+	}, [broadcast, createChannel, createPrivateChannel, description, encrypted, name, onClose, readOnly, teamId, type, users]);
 
 	return (
 		<CreateChannel
