@@ -89,6 +89,10 @@ class SideNav extends BasePage {
 		return this.getPage().locator('li.rcx-option >> text="Omnichannel"');
 	}
 
+	get users(): Locator {
+		return this.getPage().locator('.flex-nav [href="/admin/users"]');
+	}
+
 	public logout(): Locator {
 		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]');
 	}
