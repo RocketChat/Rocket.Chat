@@ -1,4 +1,4 @@
-import type { AggregationCursor, Cursor, FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
+import type { AggregationCursor, Cursor, FilterQuery, FindOneOptions, WithoutProjection, UpdateWriteOpResult } from 'mongodb';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
@@ -21,4 +21,5 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		_emailOrPhoneOrNameOrUsername: string,
 		options: FindOneOptions<ILivechatVisitor>,
 	): Cursor<ILivechatVisitor>;
+	removeContactManagerByUsername(manager: string): Promise<UpdateWriteOpResult>;
 }
