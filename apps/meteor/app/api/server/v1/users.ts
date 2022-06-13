@@ -835,6 +835,12 @@ API.v1.addRoute(
 	},
 );
 
+// status: 'online' | 'offline' | 'away' | 'busy';
+// message?: string;
+// _id: string;
+// connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+// };
+
 API.v1.addRoute(
 	'users.getStatus',
 	{ authRequired: true },
@@ -844,9 +850,9 @@ API.v1.addRoute(
 				const user = Users.findOneById(this.userId);
 				return API.v1.success({
 					_id: user._id,
-					message: user.statusText,
-					connectionStatus: user.statusConnection,
-					status: user.status,
+					// message: user.statusText,
+					connectionStatus: (user.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 				});
 			}
 
@@ -854,8 +860,8 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				_id: user._id,
-				message: user.statusText,
-				status: user.status,
+				// message: user.statusText,
+				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 			});
 		},
 	},

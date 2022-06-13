@@ -176,7 +176,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.presence': {
-		GET: (params: { from: string; ids: string | string[] }) => UsersPresencePayload;
+		GET: (params: { from?: string; ids: string | string[] }) => UsersPresencePayload;
 	};
 
 	'/v1/users.removePersonalAccessToken': {
