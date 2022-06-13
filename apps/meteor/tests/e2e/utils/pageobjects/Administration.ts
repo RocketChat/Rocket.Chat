@@ -99,6 +99,10 @@ export default class Administration extends BasePage {
 		return this.getPage().locator("//div[text()='No data found']");
 	}
 
+	public notFoundChannels(): Locator {
+		return this.getPage().locator("//div[text()='No results found']");
+	}
+
 	public usersRocketCat(): Locator {
 		return this.getPage().locator('td=Rocket.Cat');
 	}
