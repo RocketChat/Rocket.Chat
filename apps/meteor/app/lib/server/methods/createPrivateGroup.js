@@ -19,22 +19,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 
-		// validate extra data schema
-		check(
-			extraData,
-			Match.ObjectIncluding({
-				tokenpass: Match.Maybe({
-					require: String,
-					tokens: [
-						{
-							token: String,
-							balance: String,
-						},
-					],
-				}),
-			}),
-		);
-
 		return createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, {
 			customFields,
 			...extraData,
