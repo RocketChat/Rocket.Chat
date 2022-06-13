@@ -3,16 +3,17 @@ import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks'
 import { useSetting, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
+import { useVideoConfDispatchOutgoing, useVideoConfStartCall } from '../../../client/contexts/VideoConfContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
-import { useDispatchOutgoing, useStartCall } from '../../../client/contexts/VideoConfContext';
 
 // TODO: fix mocked config
 addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
-	const startCall = useStartCall();
+	const startCall = useVideoConfStartCall();
 	const user = useUser();
 
-	const dispatchPopup = useDispatchOutgoing();
+	const dispatchPopup = useVideoConfDispatchOutgoing();
+
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 	const enabled = useSetting('VideoConf_Enabled');
 	const enabledDMs = useSetting('VideoConf_Enable_DMs');
