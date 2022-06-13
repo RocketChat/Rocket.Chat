@@ -147,7 +147,7 @@ test.describe('[Administration]', () => {
 					});
 					test('expect dont user when write wrong name', async () => {
 						await admin.usersFilter().type('any_user_wrong');
-						await expect(admin.notFoundChannelOrUser()).toBeVisible();
+						await expect(admin.notFoundChannels()).toBeVisible();
 					});
 				});
 
