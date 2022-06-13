@@ -108,9 +108,8 @@ export const createDirectRoom = function (members: IUser[], roomExtraData = {}, 
 	} else {
 		const memberIds = members.map((member) => member._id);
 		const membersWithPreferences = Users.find({ _id: { $in: memberIds } }, { projection: { 'username': 1, 'settings.preferences': 1 } });
-console.log({ options })
+
 		membersWithPreferences.forEach((member) => {
-			console.log({ member })
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
 			Subscriptions.updateOne(
 				{ rid, 'u._id': member._id },

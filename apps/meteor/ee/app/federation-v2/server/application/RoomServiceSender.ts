@@ -2,10 +2,10 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederationRoomServiceSender } from '../../../../../app/federation-v2/server/application/RoomServiceSender';
-import { FederatedRoom } from '../../../../../app/federation-v2/server/domain/FederatedRoom';
 import { FederatedUser } from '../../../../../app/federation-v2/server/domain/FederatedUser';
 import { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/User';
+import { FederatedRoomEE } from '../domain/FederatedRoom';
 import { IFederationBridgeEE } from '../domain/IFederationBridge';
 import { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adapters/Room';
@@ -69,7 +69,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 				roomName,
 				internalRoom.topic,
 			);
-			const newFederatedRoom = FederatedRoom.createInstance(
+			const newFederatedRoom = FederatedRoomEE.createInstance(
 				externalRoomId,
 				externalRoomId,
 				federatedInviterUser,
@@ -79,7 +79,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 			await this.rocketRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoom._id, newFederatedRoom);
 		}
 
-		const federatedRoom = (await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId)) as FederatedRoom;
+		const federatedRoom = (await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId)) as FederatedRoomEE;
 		const wasInvitedWhenTheRoomWasCreated = federatedRoom.isDirectMessage();
 		if (isInviteeFromTheSameHomeServer) {
 			await this.bridge.createUser(

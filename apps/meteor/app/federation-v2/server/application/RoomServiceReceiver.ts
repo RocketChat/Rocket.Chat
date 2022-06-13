@@ -118,7 +118,7 @@ export class FederationRoomServiceReceiver {
 		const federatedInviterUser = await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviterId);
 
 		if (!affectedFederatedRoom && eventOrigin === EVENT_ORIGIN.REMOTE) {
-			const members = [federatedInviterUser, federatedInviteeUser] as any[];
+			const members = [federatedInviterUser, federatedInviteeUser] as FederatedUser[];
 			const newFederatedRoom = FederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,

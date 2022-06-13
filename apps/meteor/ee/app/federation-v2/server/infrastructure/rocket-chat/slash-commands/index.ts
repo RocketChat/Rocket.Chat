@@ -6,8 +6,6 @@ import {
 
 const EE_FEDERATION_COMMANDS = {
 	...FEDERATION_COMMANDS,
-	// 'setup-room': async () => {},
-	// 'invite': async () => {},
 };
 
 function federation(providedCommand: string, stringParams: string | undefined, item: Record<string, any>): void {

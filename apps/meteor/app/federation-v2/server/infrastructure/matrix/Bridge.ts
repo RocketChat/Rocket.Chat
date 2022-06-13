@@ -105,22 +105,6 @@ export class MatrixBridge implements IFederationBridge {
 				},
 			},
 		});
-		console.log({ matrixRoom });
-		console.log({
-			createAsClient: true,
-			options: {
-				visibility,
-				preset,
-				// eslint-disable-next-line @typescript-eslint/camelcase
-				is_direct: true,
-				invite: [externalInviteeId],
-				// eslint-disable-next-line @typescript-eslint/camelcase
-				creation_content: {
-					// eslint-disable-next-line @typescript-eslint/camelcase
-					was_internally_programatically_created: true,
-				},
-			},
-		});
 
 		return matrixRoom.room_id;
 	}
@@ -166,7 +150,6 @@ export class MatrixBridge implements IFederationBridge {
 				onEvent: async (request /* , context*/): Promise<void> => {
 					// Get the event
 					const event = request.getData() as unknown as IMatrixEvent<MatrixEventType>;
-					console.log({ event });
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {
