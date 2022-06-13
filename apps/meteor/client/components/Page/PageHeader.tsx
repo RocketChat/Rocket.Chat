@@ -1,6 +1,6 @@
 import { Box, ActionButton } from '@rocket.chat/fuselage';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useContext, FC, ReactNode } from 'react';
+import React, { useContext, FC, ReactNode, ComponentProps } from 'react';
 
 import BurgerMenu from '../BurgerMenu';
 import TemplateHeader from '../Header';
@@ -10,7 +10,7 @@ type PageHeaderProps = {
 	title: ReactNode;
 	onClickBack?: () => void;
 	borderBlockEndColor?: string;
-};
+} & ComponentProps<typeof Box>;
 
 const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }) => {
 	const t = useTranslation();
