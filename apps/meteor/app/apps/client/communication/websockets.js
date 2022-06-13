@@ -50,7 +50,7 @@ export class AppWebsocketReceiver extends Emitter {
 	}
 
 	onCommandAddedOrUpdated = (command) => {
-		APIClient.v1.get('commands.get', { command }).then((result) => {
+		APIClient.get('/v1/commands.get', { command }).then((result) => {
 			slashCommands.commands[command] = result.command;
 		});
 	};

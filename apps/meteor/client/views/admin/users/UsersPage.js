@@ -77,7 +77,7 @@ function UsersPage() {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const { value: data = {}, reload: reloadList } = useEndpointData('users.list', query);
+	const { value: data = {}, reload: reloadList } = useEndpointData('/v1/users.list', query);
 
 	const reload = () => {
 		seatsCap?.reload();

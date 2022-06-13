@@ -69,7 +69,7 @@ function TeamsTable() {
 
 	const query = useQuery(params, sort, 'teams');
 
-	const { value: data = {} } = useEndpointData('directory', query);
+	const { value: data = {} } = useEndpointData('/v1/directory', query);
 
 	const onClick = useMemo(
 		() => (name, type) => (e) => {

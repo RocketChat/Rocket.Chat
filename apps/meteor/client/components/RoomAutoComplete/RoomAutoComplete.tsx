@@ -20,7 +20,7 @@ type RoomAutoCompleteProps<T> = Omit<ComponentProps<typeof AutoComplete>, 'value
 const RoomAutoComplete = <T,>(props: RoomAutoCompleteProps<T>): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
-		'rooms.autocomplete.channelAndPrivate',
+		'/v1/rooms.autocomplete.channelAndPrivate',
 		useMemo(() => query(filter), [filter]),
 	);
 	const options = useMemo(
