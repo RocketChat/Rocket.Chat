@@ -105,7 +105,7 @@ export interface ITeamService {
 	autocomplete(uid: string, name: string): Promise<ITeamAutocompleteResult[]>;
 	getAllPublicTeams(options?: WithoutProjection<FindOneOptions<ITeam>>): Promise<Array<ITeam>>;
 	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
-	getMember(teamId: string, userId: string, options?: FindOneOptions<ITeamMember>): Promise<ITeamMember | null>
+	getMember(teamId: string, userId: string, options?: FindOneOptions<ITeamMember>): Promise<ITeamMember | null>;
 	update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void>;
 	listTeamsBySubscriberUserId(uid: string, options?: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember> | null>;
 	insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void>;
@@ -113,5 +113,5 @@ export interface ITeamService {
 	removeAllMembersFromTeam(teamId: string): Promise<void>;
 	removeRolesFromMember(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<boolean>;
 	getStatistics(): Promise<ITeamStats>;
-	findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]>
+	findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]>;
 }
