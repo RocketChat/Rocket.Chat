@@ -33,5 +33,16 @@ addMigration({
 				},
 			},
 		);
+
+		await Settings.updateOne(
+			{
+				_id: 'Layout_Home_Body',
+			},
+			{
+				$set: {
+					packageValue: newValue,
+				},
+			},
+		);
 	},
 });
