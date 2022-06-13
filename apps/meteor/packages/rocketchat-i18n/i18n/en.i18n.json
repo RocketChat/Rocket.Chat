@@ -3773,6 +3773,8 @@
   "Sentry": "Sentry",
   "Sentry_Description": "Self-hosted and cloud-based application monitoring that helps software teams see clearer, solve quicker, & learn continuously.",
   "Sentry_Dsn": "Sentry DSN",
+  "Sentry_Test_Connection": "Test Sentry Connection",
+  "Sentry_Test_Connection_Description": "After Click Test Check Sentry dashboard For Any Custom Error",
   "Sentry_Trace_Sample_Rate": "Sentry Trace Sample Rate",
   "Sentry_Trace_Sample_Rate_Description": "Set Trace Sample Rate to 1.0 to capture 100% of transactions for performance monitoring. We recommend adjusting this value in production",
   "Strict_Origin": "Strict origin",

@@ -29,6 +29,17 @@ settingsRegistry.addGroup('Sentry', function () {
 			value: true,
 		},
 		i18nLabel: 'Sentry_Trace_Sample_Rate',
-        i18nDescription: 'Sentry_Trace_Sample_Rate_Description',
+		i18nDescription: 'Sentry_Trace_Sample_Rate_Description',
+	});
+
+	this.add('Sentry_Test_Connection', 'sentry_test_connection', {
+		type: 'action',
+		actionText: 'Test_Connection',
+		i18nLabel: 'Test_Connection',
+        i18nDescription: 'Sentry_Test_Connection_Description',
+        enableQuery: {
+			_id: 'Sentry_Integration_Enabled',
+			value: true,
+		},
 	});
 });
