@@ -4740,7 +4740,7 @@
   "Voip_call_ended_unexpectedly": "通話が予期せず終了しました：__reason__",
   "Voip_call_wrapup": "通話の要約メモが追加されました：__comment__",
   "VoIP_JWT_Secret": "VoIP JWTシークレット",
-  "VoIP_JWT_Secret_description": "これにより、サーバーからクライアントに内線番号の詳細を共有するための秘密鍵を、プレーンテキストではなくJWTとして設定できます。これを設定しないと、内線番号の登録の詳細はプレーンテキストで送信されます",
+  "VoIP_JWT_Secret_Description": "これにより、サーバーからクライアントに内線番号の詳細を共有するための秘密鍵を、プレーンテキストではなくJWTとして設定できます。これを設定しないと、内線番号の登録の詳細はプレーンテキストで送信されます",
   "Chat_opened_by_visitor": "訪問者によってチャットが開かれています",
   "Wait_activation_warning": "ログインするには、管理者が手動でアカウントを有効にすることが必要です。",
   "Waiting_queue": "待機キュー",

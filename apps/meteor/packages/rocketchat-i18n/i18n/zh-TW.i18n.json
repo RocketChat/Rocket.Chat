@@ -4481,7 +4481,7 @@
   "Voip_call_ended_unexpectedly": "通話意外結束： __reason__",
   "Voip_call_wrapup": "已新增通話總結附註：__comment__",
   "VoIP_JWT_Secret": "VoIP JWT 密鑰",
-  "VoIP_JWT_Secret_description": "這可讓您設定密鑰，以便從伺服器將分機詳細資料以 JWT 格式 (而非純文字格式) 分享至用戶端。如果您未進行設定，則分機註冊詳細資料將以純文字格式傳送",
+  "VoIP_JWT_Secret_Description": "這可讓您設定密鑰，以便從伺服器將分機詳細資料以 JWT 格式 (而非純文字格式) 分享至用戶端。如果您未進行設定，則分機註冊詳細資料將以純文字格式傳送",
   "Wait_activation_warning": "您的帳號必須由管理員手動啟用後才能登入。",
   "Waiting_queue": "等待佇列",
   "Waiting_queue_message": "等待佇列訊息",

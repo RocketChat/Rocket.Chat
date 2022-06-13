@@ -39,7 +39,7 @@ function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 			voipEnabled ? (
 				<VoipExtensionsPage />
 			) : (
-				<NoResults icon='warning' title={t('Voip_is_disabled')} description={t('Voip_is_disabled_description')}></NoResults>
+				<NoResults icon='warning' title={t('Voip_is_disabled')} description={t('Voip_is_disabled_Description')}></NoResults>
 			),
 		[t, voipEnabled],
 	);

@@ -4739,7 +4739,7 @@
   "Voip_call_ended_unexpectedly": "Llamada finalizada inesperadamente: __reason__",
   "Voip_call_wrapup": "Se han añadido notas de cierre: __comment__",
   "VoIP_JWT_Secret": "Secreto JWT VoIP",
-  "VoIP_JWT_Secret_description": "Te permite definir una clave secreta para compartir datos de extensión de servidor a cliente como JWT en vez de en texto sin formato. Si no lo configuras, los datos de registro de la extensión se enviarán como texto sin formato.",
+  "VoIP_JWT_Secret_Description": "Te permite definir una clave secreta para compartir datos de extensión de servidor a cliente como JWT en vez de en texto sin formato. Si no lo configuras, los datos de registro de la extensión se enviarán como texto sin formato.",
   "Chat_opened_by_visitor": "Chat abierto por el visitante",
   "Wait_activation_warning": "Antes de poder iniciar sesión, un administrador debe activar tu cuenta manualmente.",
   "Waiting_queue": "Cola de espera",

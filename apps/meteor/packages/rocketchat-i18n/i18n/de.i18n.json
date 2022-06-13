@@ -4739,7 +4739,7 @@
   "Voip_call_ended_unexpectedly": "Anruf unerwartet beendet: __reason__",
   "Voip_call_wrapup": "Abschließende Notizen zum Anruf hinzugefügt: __comment__",
   "VoIP_JWT_Secret": "Geheimer VoIP JWT-Schlüssel",
-  "VoIP_JWT_Secret_description": "Hiermit können Sie einen geheimen Schlüssel für die Weitergabe von Erweiterungsdetails vom Server zum Client als JWT anstelle von Klartext festlegen. Wenn Sie dies nicht einrichten, werden die Details der Erweiterungsregistrierung im Klartext gesendet.",
+  "VoIP_JWT_Secret_Description": "Hiermit können Sie einen geheimen Schlüssel für die Weitergabe von Erweiterungsdetails vom Server zum Client als JWT anstelle von Klartext festlegen. Wenn Sie dies nicht einrichten, werden die Details der Erweiterungsregistrierung im Klartext gesendet.",
   "Chat_opened_by_visitor": "Chat vom Benutzer begonnen",
   "Wait_activation_warning": "Bevor Sie sich anmelden können, muss das Konto von einem Administrator manuell aktiviert werden",
   "Waiting_queue": "Warteschlange",

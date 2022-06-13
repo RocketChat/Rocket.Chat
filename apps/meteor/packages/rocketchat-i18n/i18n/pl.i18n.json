@@ -4735,7 +4735,7 @@
   "Voip_call_ended_unexpectedly": "Połączenie nieoczekiwanie zakończone: __reason__",
   "Voip_call_wrapup": "Dodano notatki z podsumowania rozmowy: __comment__",
   "VoIP_JWT_Secret": "Klucz tajny VoIP JWT",
-  "VoIP_JWT_Secret_description": "Pozwala na ustawienie tajnego klucza do udostępniania klientowi szczegółów rozszerzenia z serwera jako JWT zamiast zwykłego tekstu. Jeśli opcja ta nie zostanie skonfigurowana, szczegóły rejestracji rozszerzenia będą wysyłane jako zwykły tekst",
+  "VoIP_JWT_Secret_Description": "Pozwala na ustawienie tajnego klucza do udostępniania klientowi szczegółów rozszerzenia z serwera jako JWT zamiast zwykłego tekstu. Jeśli opcja ta nie zostanie skonfigurowana, szczegóły rejestracji rozszerzenia będą wysyłane jako zwykły tekst",
   "Chat_opened_by_visitor": "Czat otwarty przez gościa",
   "Wait_activation_warning": "Zanim się zalogujesz, twoje konto musi być aktywowane przez administratora.",
   "Waiting_queue": "Kolejka oczekujących",
