@@ -4,16 +4,16 @@ import React, { ReactElement } from 'react';
 
 import PageHeader from '../../components/Page/PageHeader';
 
-const editLayoutPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
+const EDIT_LAYOUT_PERMISSIONS = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 
 const HomepageHeader = (): ReactElement => {
 	const t = useTranslation();
 	const title = useSetting('Layout_Home_Title') as string;
-	const canEditLayout = useAllPermissions(editLayoutPermissions);
+	const canEditLayout = useAllPermissions(EDIT_LAYOUT_PERMISSIONS);
 	return (
-		<PageHeader title={title}>
+		<PageHeader title={title} data-qa-id='home-header' backgroundColor='neutral-100'>
 			{canEditLayout && (
-				<Button is='a' href='/admin/settings/Layout'>
+				<Button is='a' href='/admin/settings/Layout' data-qa-id='home-header-customize-button'>
 					<>
 						<Icon name='pencil' size='x16' /> {t('Customize')}
 					</>

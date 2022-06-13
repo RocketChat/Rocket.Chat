@@ -1,9 +1,8 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import Page from '../../components/Page/Page';
 import CustomHomePage from './CustomHomePage';
-import HomePageHeader from './HomePageHeader';
+import DefaultHomePage from './DefaultHomePage';
 
 const HomePage = (): ReactElement => {
 	const custom = useSetting('Layout_Custom_Body');
@@ -12,11 +11,7 @@ const HomePage = (): ReactElement => {
 		return <CustomHomePage />;
 	}
 
-	return (
-		<Page data-qa='page-home'>
-			<HomePageHeader />
-		</Page>
-	);
+	return <DefaultHomePage />;
 };
 
 export default HomePage;
