@@ -1,4 +1,4 @@
-import type { IVoipRoom } from '@rocket.chat/core-typings';
+import type { CallStates, IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
@@ -80,6 +80,16 @@ export const useCallActions = (): CallActionsType => {
 		throw new Error('useCallActions only if Calls are enabled and ready');
 	}
 	return context.actions;
+};
+
+export const useCallerStatus = (): CallStates => {
+	const context = useContext(CallContext);
+
+	if (isCallContextReady(context)) {
+		return context.voipClient.callState;
+	}
+
+	return 'INITIAL';
 };
 
 export const useCallerInfo = (): VoIpCallerInfo => {
