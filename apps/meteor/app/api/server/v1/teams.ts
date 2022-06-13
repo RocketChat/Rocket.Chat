@@ -562,12 +562,6 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const canViewInfo = hasPermission(this.userId, 'view-all-teams');
-
-			if (!canViewInfo) {
-				return API.v1.unauthorized();
-			}
-
 			check(
 				this.queryParams,
 				Match.OneOf(
@@ -583,6 +577,14 @@ API.v1.addRoute(
 			const teamInfo = await getTeamByIdOrName(this.queryParams);
 			if (!teamInfo) {
 				return API.v1.failure('Team not found');
+			}
+
+			const canViewInfo =
+				hasPermission(this.userId, 'view-all-teams', teamInfo.roomId) ||
+				hasPermission(this.userId, 'view-all-team-channels', teamInfo.roomId);
+
+			if (!canViewInfo) {
+				return API.v1.unauthorized();
 			}
 
 			return API.v1.success({ teamInfo });
