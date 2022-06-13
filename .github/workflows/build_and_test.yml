@@ -866,3 +866,179 @@ jobs:
               docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
             fi
           fi
+
+  test-ee:
+    runs-on: ubuntu-20.04
+    needs: services-image-build-pr
+
+    strategy:
+      matrix:
+        mongodb-version: ['4.4']
+
+    steps:
+      - name: Launch MongoDB
+        uses: wbari/start-mongoDB@v0.2
+        with:
+          mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
+
+      - name: Launch NATS
+        run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
+
+      - name: Use Node.js 14.18.3
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14.18.3'
+
+      - name: Setup Chrome
+        run: |
+          npm i chromedriver
+
+      - name: Configure Replica Set
+        run: |
+          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+          docker exec mongo mongo --eval 'rs.status()'
+
+      # TODO move startup/restart to its own github action
+      - name: Start up Rocket.Chat
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          IMAGE_TAG="pr-${{ github.event.number }}"
+
+          # TODO this needs to be different on develop and on release
+          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
+
+          docker run --name rocketchat -d \
+            --link mongo \
+            --link nats \
+            -p 3000:3000 \
+            -e TEST_MODE=true \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
+            -e SKIP_PROCESS_EVENT_REGISTRATION=true \
+            -e OVERWRITE_SETTING_Site_Url=http://localhost:4000 \
+            ${IMAGE_NAME}
+
+          # spin up all micro services
+          docker run --name stream-hub -d \
+            --link mongo \
+            --link nats \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${IMAGE_TAG}
+
+          docker run --name account -d \
+            --link mongo \
+            --link nats \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${IMAGE_TAG}
+
+          docker run --name authorization -d \
+            --link mongo \
+            --link nats \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${IMAGE_TAG}
+
+          docker run --name ddp-streamer -d \
+            --link mongo \
+            --link nats \
+            -p 4000:4000 \
+            -e PORT=4000 \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${IMAGE_TAG}
+
+          docker run --name presence -d \
+            --link mongo \
+            --link nats \
+            -e MONGO_URL=mongodb://mongo:27017/rocketchat \
+            -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+            -e TRANSPORTER=nats://nats:4222 \
+            ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${IMAGE_TAG}
+
+      - uses: actions/checkout@v3
+
+      - uses: c-hive/gha-yarn-cache@v2
+
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
+
+      - name: yarn install
+        run: yarn
+
+      - name: Unit Test
+        run: yarn testunit
+
+      - name: E2E Test API
+        run: |
+          docker logs rocketchat --tail=50
+
+          cd ./apps/meteor
+          for i in $(seq 1 5); do
+            docker stop rocketchat
+            docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+
+            NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+            echo $NOW
+
+            docker start rocketchat
+
+            until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+              echo "Waiting Rocket.Chat to start up"
+              sleep 10
+            done
+
+            npm run testci -- --test=testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100;
+          done;
+          exit $s
+
+      - name: Install Playwright
+        run: |
+          cd ./apps/meteor
+          npx playwright install --with-deps
+
+      - name: E2E Test UI
+        run: |
+          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+          Xvfb -screen 0 1024x768x24 :99 &
+
+          docker logs rocketchat --tail=50
+
+          docker stop rocketchat
+          docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
+
+          NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
+          echo $NOW
+
+          docker start rocketchat
+
+          until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            sleep 10
+          done
+
+          cd ./apps/meteor
+          npm run testci -- --enterprise --test=test:playwright:ee
+
+      - name: Store playwright test trace
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: playwright-test-trace
+          path: ./apps/meteor/tests/e2e/test-failures*
