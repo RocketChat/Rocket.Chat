@@ -15,4 +15,3 @@ export type CallStates =
 	| 'ON_HOLD'
 	| 'UNREGISTERED'
 	| 'ERROR';
-
