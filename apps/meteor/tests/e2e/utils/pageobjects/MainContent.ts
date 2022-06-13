@@ -161,6 +161,10 @@ export default class MainContent extends BasePage {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "js-emojipicker-search")]');
 	}
 
+	public emojiPickerChangeTone(): Locator {
+		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "change-tone")]');
+	}
+
 	public emojiGrinning(): Locator {
 		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-grinning")]');
 	}
