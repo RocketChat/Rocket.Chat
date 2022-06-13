@@ -115,6 +115,8 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	/* @deprecated */
 	getUserFromParams(): IUser;
 	/* @deprecated */
+	isUserFromParams(): boolean;
+	/* @deprecated */
 	getUserInfo(me: IUser): TOptions extends { authRequired: true }
 		? IUser & {
 				email?: string;

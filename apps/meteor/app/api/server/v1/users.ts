@@ -18,7 +18,13 @@ import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
-import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, checkUsernameAvailability } from '../../../lib/server';
+import {
+	validateCustomFields,
+	saveUser,
+	saveCustomFieldsWithoutValidation,
+	checkUsernameAvailability,
+	setStatusText,
+} from '../../../lib/server';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
@@ -27,6 +33,7 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
 import { isValidQuery } from '../lib/isValidQuery';
+import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 
 API.v1.addRoute(
 	'users.create',
@@ -740,6 +747,115 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.getPresence',
+	{ authRequired: true },
+	{
+		get() {
+			if (this.isUserFromParams()) {
+				const user = Users.findOneById(this.userId);
+				return API.v1.success({
+					presence: user.status || 'offline',
+					connectionStatus: user.statusConnection || 'offline',
+					...(user.lastLogin && { lastLogin: user.lastLogin }),
+				});
+			}
+
+			const user = this.getUserFromParams();
+
+			return API.v1.success({
+				presence: user.status || 'offline',
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.setStatus',
+	{ authRequired: true },
+	{
+		post() {
+			check(
+				this.bodyParams,
+				Match.ObjectIncluding({
+					status: Match.Maybe(String),
+					message: Match.Maybe(String),
+				}),
+			);
+
+			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
+				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
+					method: 'users.setStatus',
+				});
+			}
+
+			const user = this.getUserFromParams();
+			if (!hasPermission(this.userId, 'edit-other-user-info')) {
+				return API.v1.unauthorized();
+			}
+
+			Meteor.runAsUser(user._id, () => {
+				if (this.bodyParams.message || this.bodyParams.message === '') {
+					setStatusText(user._id, this.bodyParams.message);
+				}
+				if (this.bodyParams.status) {
+					const validStatus = ['online', 'away', 'offline', 'busy'];
+					if (validStatus.includes(this.bodyParams.status)) {
+						const { status } = this.bodyParams;
+
+						if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+							throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+								method: 'users.setStatus',
+							});
+						}
+
+						Meteor.users.update(user._id, {
+							$set: {
+								status,
+								statusDefault: status,
+							},
+						});
+
+						setUserStatus(user, status);
+					} else {
+						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+							method: 'users.setStatus',
+						});
+					}
+				}
+			});
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.getStatus',
+	{ authRequired: true },
+	{
+		get() {
+			if (this.isUserFromParams()) {
+				const user = Users.findOneById(this.userId);
+				return API.v1.success({
+					_id: user._id,
+					message: user.statusText,
+					connectionStatus: user.statusConnection,
+					status: user.status,
+				});
+			}
+
+			const user = this.getUserFromParams();
+
+			return API.v1.success({
+				_id: user._id,
+				message: user.statusText,
+				status: user.status,
 			});
 		},
 	},

@@ -5,33 +5,9 @@ import _ from 'underscore';
 import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings/server';
-import { saveUser, setUserAvatar, saveCustomFields, setStatusText } from '../../../lib/server';
+import { saveUser, setUserAvatar, saveCustomFields } from '../../../lib/server';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
-
-API.v1.addRoute(
-	'users.getPresence',
-	{ authRequired: true },
-	{
-		get() {
-			if (this.isUserFromParams()) {
-				const user = Users.findOneById(this.userId);
-				return API.v1.success({
-					presence: user.status,
-					connectionStatus: user.statusConnection,
-					lastLogin: user.lastLogin,
-				});
-			}
-
-			const user = this.getUserFromParams();
-
-			return API.v1.success({
-				presence: user.status,
-			});
-		},
-	},
-);
 
 API.v1.addRoute(
 	'users.setAvatar',
@@ -54,12 +30,9 @@ API.v1.addRoute(
 				});
 			}
 
-			let user;
-			if (this.isUserFromParams()) {
-				user = Meteor.users.findOne(this.userId);
-			} else if (canEditOtherUserAvatar) {
-				user = this.getUserFromParams();
-			} else {
+			let user = this.getUserFromParams();
+
+			if (!this.isUserFromParams() && !canEditOtherUserAvatar) {
 				return API.v1.unauthorized();
 			}
 
@@ -95,96 +68,6 @@ API.v1.addRoute(
 			}
 
 			setUserAvatar(user, image.fileBuffer, image.mimetype, 'rest');
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.getStatus',
-	{ authRequired: true },
-	{
-		get() {
-			if (this.isUserFromParams()) {
-				const user = Users.findOneById(this.userId);
-				return API.v1.success({
-					_id: user._id,
-					message: user.statusText,
-					connectionStatus: user.statusConnection,
-					status: user.status,
-				});
-			}
-
-			const user = this.getUserFromParams();
-
-			return API.v1.success({
-				_id: user._id,
-				message: user.statusText,
-				status: user.status,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.setStatus',
-	{ authRequired: true },
-	{
-		post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe(String),
-					message: Match.Maybe(String),
-				}),
-			);
-
-			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
-					method: 'users.setStatus',
-				});
-			}
-
-			let user;
-			if (this.isUserFromParams()) {
-				user = Meteor.users.findOne(this.userId);
-			} else if (hasPermission(this.userId, 'edit-other-user-info')) {
-				user = this.getUserFromParams();
-			} else {
-				return API.v1.unauthorized();
-			}
-
-			Meteor.runAsUser(user._id, () => {
-				if (this.bodyParams.message || this.bodyParams.message === '') {
-					setStatusText(user._id, this.bodyParams.message);
-				}
-				if (this.bodyParams.status) {
-					const validStatus = ['online', 'away', 'offline', 'busy'];
-					if (validStatus.includes(this.bodyParams.status)) {
-						const { status } = this.bodyParams;
-
-						if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-							throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-								method: 'users.setStatus',
-							});
-						}
-
-						Meteor.users.update(user._id, {
-							$set: {
-								status,
-								statusDefault: status,
-							},
-						});
-
-						setUserStatus(user, status);
-					} else {
-						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
-							method: 'users.setStatus',
-						});
-					}
-				}
-			});
 
 			return API.v1.success();
 		},
