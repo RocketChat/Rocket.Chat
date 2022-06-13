@@ -8,10 +8,6 @@ class Global extends BasePage {
 		return this.getPage().locator('.rc-modal-wrapper');
 	}
 
-	public modal(): Locator {
-		return this.getPage().locator('.rcx-modal');
-	}
-
 	public modalConfirm(): Locator {
 		return this.getPage().locator('.rcx-modal .rcx-button--primary-danger');
 	}
