@@ -76,4 +76,15 @@ describe('Federation - Domain - FederatedRoom', () => {
 			expect(federatedRoom.isFederated()).to.be.false;
 		});
 	});
+
+	describe('#buildRoomIdForDirectMessages()', () => {
+		it('should return a string with the users id concatenated', () => {
+			expect(
+				FederatedRoom.buildRoomIdForDirectMessages(
+					{ internalReference: { _id: 'userId1' } } as any,
+					{ internalReference: { _id: 'userId2' } } as any,
+				),
+			).to.be.equal('userId1userId2');
+		});
+	});
 });
