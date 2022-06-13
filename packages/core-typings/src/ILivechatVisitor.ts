@@ -21,7 +21,7 @@ export interface IVisitorEmail {
 }
 
 interface ILivechatData {
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 export interface ILivechatVisitor extends IRocketChatRecord {
