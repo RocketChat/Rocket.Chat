@@ -1,6 +1,6 @@
 import { IMessage } from '@rocket.chat/core-typings';
 
-export class FederationRoomInviteUserDto {
+export class FederationCreateDMAndInviteUserDto {
 	internalInviterId: string;
 
 	internalRoomId: string;

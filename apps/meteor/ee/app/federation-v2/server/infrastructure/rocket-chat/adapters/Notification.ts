@@ -1,6 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { api } from '../../../../../../server/sdk/api';
+import { api } from '../../../../../../../server/sdk/api';
 
 export class RocketChatNotificationAdapter {
 	public notifyWithEphemeralMessage(i18nMessageKey: string, userId: string, roomId: string, language = 'en'): void {

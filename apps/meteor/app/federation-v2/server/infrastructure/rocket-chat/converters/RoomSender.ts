@@ -1,17 +1,17 @@
 import { IMessage } from '@rocket.chat/core-typings';
 
-import { FederationRoomInviteUserDto, FederationRoomSendExternalMessageDto } from '../../../application/input/RoomSenderDto';
+import { FederationCreateDMAndInviteUserDto, FederationRoomSendExternalMessageDto } from '../../../application/input/RoomSenderDto';
 
 export class FederationRoomSenderConverter {
-	public static toRoomInviteUserDto(
+	public static toCreateDirectMessageRoomDto(
 		internalInviterId: string,
 		internalRoomId: string,
 		externalInviteeId: string,
-	): FederationRoomInviteUserDto {
+	): FederationCreateDMAndInviteUserDto {
 		const normalizedInviteeId = externalInviteeId.replace('@', '');
 		const inviteeUsernameOnly = externalInviteeId.split(':')[0]?.replace('@', '');
 
-		return Object.assign(new FederationRoomInviteUserDto(), {
+		return Object.assign(new FederationCreateDMAndInviteUserDto(), {
 			internalInviterId,
 			internalRoomId,
 			rawInviteeId: externalInviteeId,

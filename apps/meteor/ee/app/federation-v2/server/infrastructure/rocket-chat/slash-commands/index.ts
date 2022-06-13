@@ -1,0 +1,18 @@
+import { slashCommands } from '../../../../../../../app/utils/lib/slashCommand';
+import {
+	executeSlashCommand,
+	FEDERATION_COMMANDS,
+} from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands';
+
+const EE_FEDERATION_COMMANDS = {
+	...FEDERATION_COMMANDS,
+};
+
+function federation(providedCommand: string, stringParams: string | undefined, item: Record<string, any>): void {
+	Promise.await(executeSlashCommand(providedCommand, stringParams, item, EE_FEDERATION_COMMANDS));
+}
+
+slashCommands.add('federation', federation, {
+	description: 'Federation_slash_commands',
+	params: '#command (dm, setup-room, invite) #user',
+});

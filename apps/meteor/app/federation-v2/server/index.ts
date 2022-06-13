@@ -1,15 +1,15 @@
+import { FederationFactoryEE } from '../../../ee/app/federation-v2/server/infrastructure/Factory';
 import { FederationFactory } from './infrastructure/Factory';
+import './infrastructure/rocket-chat/slash-commands';
 
-const PROCESSING_CONCURRENCY = 1;
+export const FEDERATION_PROCESSING_CONCURRENCY = 1;
 
 const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
-rocketSettingsAdapter.initialize();
 const queueInstance = FederationFactory.buildQueue();
-const federation = FederationFactory.buildBridge(rocketSettingsAdapter, queueInstance);
-const rocketRoomAdapter = FederationFactory.buildRocketRoomAdapter();
+const federation = FederationFactoryEE.buildBridge(rocketSettingsAdapter, queueInstance);
+const rocketRoomAdapter = FederationFactoryEE.buildRocketRoomAdapter();
 const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
 const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
-const rocketNotificationAdapter = FederationFactory.buildRocketNotificationdapter();
 
 const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
 	rocketRoomAdapter,
@@ -24,12 +24,19 @@ export const federationRoomServiceSender = FederationFactory.buildRoomServiceSen
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketSettingsAdapter,
-	rocketNotificationAdapter,
 	federation,
 );
 
-(async (): Promise<void> => {
-	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), PROCESSING_CONCURRENCY);
+export const runFederation = async (): Promise<void> => {
+	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 	await federation.start();
 	await rocketSettingsAdapter.onFederationEnabledStatusChanged(federation.onFederationAvailabilityChanged.bind(federation));
+};
+
+export const stopFederation = async (): Promise<void> => {
+	await federation.stop();
+};
+
+(async (): Promise<void> => {
+	await runFederation();
 })();
