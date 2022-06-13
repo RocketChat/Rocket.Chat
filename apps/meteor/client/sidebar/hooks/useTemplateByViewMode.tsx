@@ -1,11 +1,11 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { ComponentType, useMemo } from 'react';
 
 import Condensed from '../Item/Condensed';
 import Extended from '../Item/Extended';
 import Medium from '../Item/Medium';
 
-export const useTemplateByViewMode = () => {
+export const useTemplateByViewMode = (): ComponentType<any> => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	return useMemo(() => {
 		switch (sidebarViewMode) {

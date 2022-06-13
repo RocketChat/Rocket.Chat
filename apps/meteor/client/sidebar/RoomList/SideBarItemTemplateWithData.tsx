@@ -1,13 +1,23 @@
+/* eslint-disable react/display-name */
+import {
+	IMessage,
+	IRoom,
+	isDirectMessageRoom,
+	isMultipleDirectMessageRoom,
+	isOmnichannelRoom,
+	ISubscription,
+} from '@rocket.chat/core-typings';
 import { Badge, Sidebar } from '@rocket.chat/fuselage';
-import { useLayout } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { AllHTMLAttributes, ComponentType, memo, ReactElement, ReactNode } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
+import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
-const getMessage = (room, lastMessage, t) => {
+const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnType<typeof useTranslation>): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}
@@ -17,28 +27,67 @@ const getMessage = (room, lastMessage, t) => {
 	if (lastMessage.u?.username === room.u?.username) {
 		return `${t('You')}: ${normalizeSidebarMessage(lastMessage, t)}`;
 	}
-	if (room.t === 'd' && room.uids && room.uids.length <= 2) {
+	if (isDirectMessageRoom(room) && !isMultipleDirectMessageRoom(room)) {
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
 };
 
+type RoomListRowProps = {
+	extended: boolean;
+	t: ReturnType<typeof useTranslation>;
+	SideBarItemTemplate: ComponentType<
+		{
+			icon: ReactNode;
+			title: ReactNode;
+			avatar: ReactNode;
+			// actions: unknown;
+			href: string;
+			time?: Date;
+			menu?: ReactNode;
+			menuOptions?: unknown;
+			subtitle?: ReactNode;
+			titleIcon?: string;
+			badges?: ReactNode;
+			threadUnread?: boolean;
+			unread?: boolean;
+			selected?: boolean;
+			is?: string;
+		} & AllHTMLAttributes<HTMLElement>
+	>;
+	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
+	openedRoom?: string;
+	// sidebarViewMode: 'extended';
+	isAnonymous?: boolean;
+
+	room: ISubscription & IRoom;
+	lastMessage?: IMessage;
+	id?: string;
+	/* @deprecated */
+	style?: AllHTMLAttributes<HTMLElement>['style'];
+
+	selected: boolean;
+
+	sidebarViewMode: unknown;
+};
+
 function SideBarItemTemplateWithData({
 	room,
 	id,
-	extended,
 	selected,
+	style,
+
+	extended,
 	SideBarItemTemplate,
 	AvatarTemplate,
 	t,
-	style,
 	// sidebarViewMode,
 	isAnonymous,
-}) {
+}: RoomListRowProps): ReactElement {
 	const { sidebar } = useLayout();
 
-	const href = roomCoordinator.getRouteLink(room.t, room);
-	const title = roomCoordinator.getRoomName(room.t, room);
+	const href = roomCoordinator.getRouteLink(room.t, room) || '';
+	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
 	const {
 		lastMessage,
@@ -55,14 +104,15 @@ function SideBarItemTemplateWithData({
 		cl,
 	} = room;
 
-	const highlighted = !hideUnreadStatus && (alert || unread);
+	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
 	const icon = (
-		<Sidebar.Item.Icon highlighted={highlighted}>
-			<RoomIcon highlighted={highlighted} room={room} placement='sidebar' />
+		// TODO: Remove icon='at'
+		<Sidebar.Item.Icon highlighted={highlighted} icon='at'>
+			<RoomIcon room={room} placement='sidebar' />
 		</Sidebar.Item.Icon>
 	);
 
-	const isQueued = room.status === 'queued';
+	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 
 	const threadUnread = tunread.length > 0;
 	const message = extended && getMessage(room, lastMessage, t);
@@ -74,7 +124,8 @@ function SideBarItemTemplateWithData({
 	const showBadge = !hideUnreadStatus || (!hideMentionStatus && userMentions);
 	const badges =
 		showBadge && isUnread ? (
-			<Badge style={{ flexShrink: 0 }} variant={variant}>
+			// TODO: Remove any
+			<Badge {...({ style: { flexShrink: 0 } } as any)} variant={variant}>
 				{unread + tunread?.length}
 			</Badge>
 		) : null;
@@ -84,12 +135,12 @@ function SideBarItemTemplateWithData({
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
-			aria-level='2'
+			aria-level={2}
 			unread={highlighted}
 			threadUnread={threadUnread}
 			selected={selected}
 			href={href}
-			onClick={() => !selected && sidebar.toggle()}
+			onClick={(): void => !selected && sidebar.toggle()}
 			aria-label={title}
 			title={title}
 			time={lastMessage?.ts}
@@ -101,7 +152,7 @@ function SideBarItemTemplateWithData({
 			menu={
 				!isAnonymous &&
 				!isQueued &&
-				(() => (
+				((): ReactElement => (
 					<RoomMenu
 						alert={alert}
 						threadUnread={threadUnread}
@@ -111,7 +162,6 @@ function SideBarItemTemplateWithData({
 						type={type}
 						cl={cl}
 						name={title}
-						status={room.status}
 					/>
 				))
 			}
@@ -119,19 +169,27 @@ function SideBarItemTemplateWithData({
 	);
 }
 
-function safeDateNotEqualCheck(a, b) {
+function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | undefined): boolean {
 	if (!a || !b) {
 		return a !== b;
 	}
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const propsAreEqual = (prevProps, nextProps) => {
-	if (
-		['id', 'style', 'extended', 'selected', 'SideBarItemTemplate', 'AvatarTemplate', 't', 'sidebarViewMode'].some(
-			(key) => prevProps[key] !== nextProps[key],
-		)
-	) {
+const keys: (keyof RoomListRowProps)[] = [
+	'id',
+	'style',
+	'extended',
+	'selected',
+	'SideBarItemTemplate',
+	'AvatarTemplate',
+	't',
+	'sidebarViewMode',
+];
+
+// eslint-disable-next-line react/no-multi-comp
+export default memo(SideBarItemTemplateWithData, (prevProps, nextProps) => {
+	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;
 	}
 
@@ -151,7 +209,7 @@ const propsAreEqual = (prevProps, nextProps) => {
 	if (prevProps.room.alert !== nextProps.room.alert) {
 		return false;
 	}
-	if (prevProps.room.v?.status !== nextProps.room.v?.status) {
+	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room.v.status !== nextProps.room.v.status) {
 		return false;
 	}
 	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
@@ -159,6 +217,4 @@ const propsAreEqual = (prevProps, nextProps) => {
 	}
 
 	return true;
-};
-
-export default memo(SideBarItemTemplateWithData, propsAreEqual);
+});
