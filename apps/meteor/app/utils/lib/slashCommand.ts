@@ -27,7 +27,7 @@ export const slashCommands = {
 			permission: options.permission,
 			clientOnly: options.clientOnly || false,
 			result,
-			providesPreview,
+			providesPreview: Boolean(providesPreview),
 			previewer,
 			previewCallback,
 		} as SlashCommand;

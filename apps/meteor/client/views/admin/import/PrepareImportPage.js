@@ -53,9 +53,9 @@ function PrepareImportPage() {
 	const newImportRoute = useRoute('admin-import-new');
 	const importProgressRoute = useRoute('admin-import-progress');
 
-	const getImportFileData = useEndpoint('GET', 'getImportFileData');
-	const getCurrentImportOperation = useEndpoint('GET', 'getCurrentImportOperation');
-	const startImport = useEndpoint('POST', 'startImport');
+	const getImportFileData = useEndpoint('GET', '/v1/getImportFileData');
+	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
+	const startImport = useEndpoint('POST', '/v1/startImport');
 
 	useEffect(() => {
 		const streamer = new Meteor.Streamer('importers');

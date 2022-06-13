@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import UserCard from '../../../../../components/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
@@ -15,7 +15,10 @@ import { FormSkeleton } from '../../Skeleton';
 const AgentField = ({ agent, isSmall = false }) => {
 	const t = useTranslation();
 	const { username } = agent;
-	const { value, phase: state } = useEndpointData(`users.info?username=${username}`);
+	const { value, phase: state } = useEndpointData(
+		`/v1/users.info`,
+		useMemo(() => ({ username }), [username]),
+	);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;

@@ -12,24 +12,24 @@ import type { DmMemberProps } from './DmMembersProps';
 import type { DmMessagesProps } from './DmMessagesProps';
 
 export type ImEndpoints = {
-	'im.create': {
+	'/v1/im.create': {
 		POST: (params: DmCreateProps) => {
 			room: IRoom & { rid: IRoom['_id'] };
 		};
 	};
-	'im.delete': {
+	'/v1/im.delete': {
 		POST: (params: DmDeleteProps) => void;
 	};
-	'im.close': {
+	'/v1/im.close': {
 		POST: (params: DmCloseProps) => void;
 	};
-	'im.kick': {
+	'/v1/im.kick': {
 		POST: (params: DmCloseProps) => void;
 	};
-	'im.leave': {
+	'/v1/im.leave': {
 		POST: (params: DmLeaveProps) => void;
 	};
-	'im.counters': {
+	'/v1/im.counters': {
 		GET: (params: { roomId: string; userId?: string }) => {
 			joined: boolean;
 			unreads: number | null;
@@ -40,40 +40,40 @@ export type ImEndpoints = {
 			userMentions: number | null;
 		};
 	};
-	'im.files': {
+	'/v1/im.files': {
 		GET: (params: DmFileProps) => PaginatedResult<{
 			files: IUpload[];
 		}>;
 	};
-	'im.history': {
+	'/v1/im.history': {
 		GET: (params: DmHistoryProps) => {
 			messages: Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | '_updatedAt' | 'u'>[];
 		};
 	};
 
-	'im.members': {
+	'/v1/im.members': {
 		GET: (params: DmMemberProps) => PaginatedResult<{
 			members: Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'>[];
 		}>;
 	};
-	'im.messages': {
+	'/v1/im.messages': {
 		GET: (params: DmMessagesProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};
-	'im.messages.others': {
+	'/v1/im.messages.others': {
 		GET: (params: PaginatedRequest<{ roomId: IRoom['_id']; query?: string; fields?: string }>) => PaginatedResult<{ messages: IMessage[] }>;
 	};
-	'im.list': {
+	'/v1/im.list': {
 		GET: (params: PaginatedRequest<{ fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;
 	};
-	'im.list.everyone': {
+	'/v1/im.list.everyone': {
 		GET: (params: PaginatedRequest<{ query: string; fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;
 	};
-	'im.open': {
+	'/v1/im.open': {
 		POST: (params: { roomId: string }) => void;
 	};
-	'im.setTopic': {
+	'/v1/im.setTopic': {
 		POST: (params: { roomId: string; topic?: string }) => {
 			topic?: string;
 		};

@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useRef, FC } from 'react';
 
-import { ISettings, ISettingsPayload } from '../../../../app/apps/client/@types/IOrchestrator';
+import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
 import APIsDisplay from './APIsDisplay';
@@ -49,7 +49,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 				(Object.values(settings || {}) as ISetting[]).map((value) => ({
 					...value,
 					value: current?.[value.id],
-				})) as unknown as ISettingsPayload,
+				})),
 			);
 		} catch (e) {
 			handleAPIError(e);
