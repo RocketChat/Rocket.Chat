@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "5.0.0",
+	"version": "5.0.0-develop",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -132,7 +132,7 @@
 		"@types/uuid": "^8.3.4",
 		"@types/xml-crypto": "^1.4.1",
 		"@types/xmldom": "^0.1.30",
-		"@typescript-eslint/eslint-plugin": "^2.34.0",
+		"@typescript-eslint/eslint-plugin": "^5.28.0",
 		"@typescript-eslint/parser": "^3.0.0",
 		"autoprefixer": "^9.8.8",
 		"babel-eslint": "^10.1.0",
