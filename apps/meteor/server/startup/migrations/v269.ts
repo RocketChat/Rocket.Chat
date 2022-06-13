@@ -1,7 +1,6 @@
 import { VoipRoom } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
-// Removes deprecated RDStation functionality from Omnichannel
 addMigration({
 	version: 269,
 	async up() {
