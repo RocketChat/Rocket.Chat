@@ -79,8 +79,8 @@ export default class Administration extends BasePage {
 		return this.getPage().locator("//div[text()='No data found']");
 	}
 
-	public usersInRole(): Locator {
-		return this.getPage().locator('button:contains("Users in role")');
+	public notFoundChannels(): Locator {
+		return this.getPage().locator("//div[text()='No results found']");
 	}
 
 	public usersFilter(): Locator {

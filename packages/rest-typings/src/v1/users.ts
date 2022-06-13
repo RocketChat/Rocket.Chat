@@ -1,6 +1,9 @@
 import type { ITeam, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
 const ajv = new Ajv({
 	coerceTypes: true,
 });
@@ -136,6 +139,11 @@ export type UsersEndpoints = {
 		GET: (params: UsersAutocomplete) => {
 			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
 		};
+	};
+	'/v1/users.list': {
+		GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
+			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
+		}>;
 	};
 	'/v1/users.listTeams': {
 		GET: (params: UsersListTeams) => { teams: Array<ITeam> };
