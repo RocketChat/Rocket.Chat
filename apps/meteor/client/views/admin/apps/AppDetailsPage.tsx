@@ -38,7 +38,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
-	const { installed, settings, apis, privacyPolicySummary, permissions } = appData || {};
+	const { installed, settings, apis, privacyPolicySummary, permissions, tosLink, privacyLink } = appData || {};
 	const showApis = apis?.length;
 
 	const saveAppSettings = useCallback(async () => {
@@ -102,7 +102,14 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 							{Boolean(!tab || tab === 'details') && <AppDetailsPageContent app={appData} />}
 							{Boolean((!tab || tab === 'details') && !!showApis) && <APIsDisplay apis={apis || []} />}
-							{tab === 'security' && <AppSecurityPage privacyPolicySummary={privacyPolicySummary} appPermissions={permissions} />}
+							{tab === 'security' && (
+								<AppSecurityPage
+									privacyPolicySummary={privacyPolicySummary}
+									appPermissions={permissions}
+									tosLink={tosLink}
+									privacyLink={privacyLink}
+								/>
+							)}
 							{tab === 'logs' && <AppLogsPage id={id} />}
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay

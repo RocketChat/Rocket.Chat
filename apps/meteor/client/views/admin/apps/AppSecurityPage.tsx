@@ -6,9 +6,11 @@ import React, { FC } from 'react';
 type AppSecurityPageProps = {
 	privacyPolicySummary: string | undefined;
 	appPermissions: Permission[] | undefined;
+	tosLink: string | undefined;
+	privacyLink: string | undefined;
 };
 
-const AppSecurityPage: FC<AppSecurityPageProps> = ({ privacyPolicySummary, appPermissions }) => {
+const AppSecurityPage: FC<AppSecurityPageProps> = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }) => {
 	const t = useTranslation();
 
 	const defaultPermissions = [
@@ -73,8 +75,12 @@ const AppSecurityPage: FC<AppSecurityPageProps> = ({ privacyPolicySummary, appPe
 							{t('Policies')}
 						</Box>
 						<Box display='flex' flexDirection='column'>
-							<Box is='a'>Terms of use</Box>
-							<Box is='a'>Privacy policy</Box>
+							<Box is='a' href={tosLink}>
+								Terms of use
+							</Box>
+							<Box is='a' href={privacyLink}>
+								Privacy policy
+							</Box>
 						</Box>
 					</Box>
 				</Margins>

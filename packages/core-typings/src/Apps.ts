@@ -68,6 +68,8 @@ export type App = {
 		errors: { [key: string]: string };
 		warnings: { [key: string]: string };
 	};
+	tosLink: string;
+	privacyLink: string;
 	marketplace: unknown;
 	modifiedAt: string;
 	permissions: Permission[];
