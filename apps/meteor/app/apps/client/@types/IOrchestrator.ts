@@ -1,4 +1,3 @@
-import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo';
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings/ISetting';
 
 export interface IDetailedDescription {
@@ -148,7 +147,6 @@ export interface IAppLanguage {
 
 export interface IAppExternalURL {
 	url: string;
-	success: boolean;
 }
 
 export interface ICategory {
@@ -159,10 +157,10 @@ export interface ICategory {
 	title: string;
 }
 
-export interface IDeletedInstalledApp {
-	app: IAppInfo;
-	success: boolean;
-}
+// export interface IDeletedInstalledApp {
+// 	app: IAppInfo;
+// 	success: boolean;
+// }
 
 export interface IAppSynced {
 	app: IAppFromMarketplace;
@@ -191,14 +189,5 @@ export interface ISettings {
 
 export interface ISettingsReturn {
 	settings: ISettings;
-	success: boolean;
-}
-
-export interface ISettingsPayload {
-	settings: ISetting[];
-}
-
-export interface ISettingsSetReturn {
-	updated: ISettings;
 	success: boolean;
 }

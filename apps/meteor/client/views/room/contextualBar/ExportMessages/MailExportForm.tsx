@@ -94,7 +94,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		handleToUsers(toUsers.filter((current) => current !== value));
 	});
 
-	const roomsExport = useEndpoint('POST', 'rooms.export');
+	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 
 	const handleSubmit = async (): Promise<void> => {
 		if (toUsers.length === 0 && additionalEmails === '') {
