@@ -3,10 +3,10 @@ import { Box, Select, SelectOption, Field, Button } from '@rocket.chat/fuselage'
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, ReactElement } from 'react';
 
-import { WebdavAccounts } from '../../../app/models/client';
-import Page from '../../components/Page';
-import { useForm } from '../../hooks/useForm';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { WebdavAccounts } from '../../../../app/models/client';
+import Page from '../../../components/Page';
+import { useForm } from '../../../hooks/useForm';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
 
 type WebdavAccountIntegration = Omit<IWebdavAccount, 'userId' | 'password' | '_updatedAt'>;
 
