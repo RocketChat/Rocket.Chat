@@ -8,6 +8,25 @@ import { settings } from '../../../settings/server';
 import { saveUser, setUserAvatar, saveCustomFields } from '../../../lib/server';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { getURL } from '../../../utils/server';
+
+API.v1.addRoute(
+	'users.getAvatar',
+	{ authRequired: false },
+	{
+		get() {
+			const user = this.getUserFromParams();
+
+			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+			this.response.setHeader('Location', url);
+
+			return {
+				statusCode: 307,
+				body: url,
+			};
+		},
+	},
+);
 
 API.v1.addRoute(
 	'users.setAvatar',
