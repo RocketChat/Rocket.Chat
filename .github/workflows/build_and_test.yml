@@ -180,6 +180,7 @@ jobs:
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
+      # TODO move startup/restart to its own github action
       - name: Start up Rocket.Chat
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
@@ -518,49 +519,6 @@ jobs:
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
-  services-image-build-check:
-    runs-on: ubuntu-20.04
-    if: github.event.pull_request.head.repo.full_name == github.repository
-
-    strategy:
-      matrix:
-        service: ['ddp-streamer']
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14.18.3'
-
-      - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
-
-      - name: Build Docker images
-        env:
-          IMAGE_TAG: check
-        run: |
-          yarn
-          yarn build
-
-          echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
-
-          docker build \
-            --build-arg SERVICE=${{ matrix.service }} \
-            -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} \
-            -f ./ee/apps/ddp-streamer/Dockerfile \
-            .
-
   release-versions:
     runs-on: ubuntu-latest
     outputs:
@@ -772,6 +730,67 @@ jobs:
           docker build -t $IMAGE_NAME:$DOCKER_TAG .
           docker push $IMAGE_NAME:$DOCKER_TAG
 
+  services-image-build-pr:
+    runs-on: ubuntu-20.04
+    needs: [build]
+
+    strategy:
+      matrix:
+        service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 14.18.3
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14.18.3'
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Build Docker images
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:pr-${{ github.event.number }}"
+
+          # first install repo dependencies
+          yarn
+          yarn build
+
+          echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
+
+          if [[ "${{ matrix.service }}" == "ddp-streamer" ]]; then
+            DOCKERFILE_PATH="./ee/apps/ddp-streamer/Dockerfile"
+          else
+            DOCKERFILE_PATH="./apps/meteor/ee/server/services/Dockerfile"
+          fi
+
+          docker build \
+            --build-arg SERVICE=${{ matrix.service }} \
+            -t ${IMAGE_NAME} \
+            -f ${DOCKERFILE_PATH} \
+            .
+
+          docker push ${IMAGE_NAME}
+
+  # TODO change this to only pushed to DockerHub pulling from ghcr.io
   services-image-build:
     runs-on: ubuntu-20.04
     needs: [deploy, release-versions]
