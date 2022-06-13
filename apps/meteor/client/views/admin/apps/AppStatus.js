@@ -107,15 +107,15 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 	};
 
 	const AppStatusStyle = {
-		bg: status.label === 'Disabled' ? colors.y100 : colors.b100,
-		color: status.label === 'Disabled' ? colors.y800 : 'primary-500',
+		bg: status.label === 'Disabled' ? colors.w100 : colors.p100,
+		color: status.label === 'Disabled' ? colors.w800 : colors.p500,
 	};
 
 	return (
 		<Box {...props}>
 			{button && (
 				<Box
-					bg={colors.b100}
+					bg={colors.p100}
 					display='flex'
 					flexDirection='row'
 					alignItems='center'

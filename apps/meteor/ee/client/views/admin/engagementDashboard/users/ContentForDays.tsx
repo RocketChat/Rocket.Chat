@@ -82,7 +82,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 										}}
 										colors={[
 											// TODO: Get it from theme
-											colors.b500,
+											colors.p500,
 										]}
 										enableLabel={false}
 										enableGridY={false}
