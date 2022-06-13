@@ -1,5 +1,5 @@
-import { IEmojiCustom } from '@rocket.chat/core-typings';
-import { SortOptionObject } from 'mongodb';
+import { IEmojiCustom, ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+import { FilterQuery, SortOptionObject } from 'mongodb';
 
 import { EmojiCustom } from '../../../models/server/raw';
 
@@ -7,7 +7,7 @@ export async function findEmojisCustom({
 	query = {},
 	pagination: { offset, count, sort },
 }: {
-	query: {};
+	query: FilterQuery<ILivechatDepartmentRecord>;
 	pagination: { offset: number; count: number; sort: SortOptionObject<IEmojiCustom> };
 }): Promise<{
 	emojis: IEmojiCustom[];

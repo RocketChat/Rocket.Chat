@@ -1,4 +1,4 @@
-import { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server/raw';
@@ -83,7 +83,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid
 
 	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
 		.fetch()
-		.map((item: IMessage) => item.rid);
+		.map((item: ISubscription) => item.rid);
 
 	const rooms = await Rooms.findRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options).toArray();
 
@@ -131,7 +131,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 }> {
 	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
 		.fetch()
-		.map((item: IMessage) => item.rid);
+		.map((item: ISubscription) => item.rid);
 
 	const options = {
 		fields: {
@@ -176,7 +176,7 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 
 	const userRooms = Subscriptions.findByUserIdAndRoles(uid, ['owner'], { fields: { rid: 1 } })
 		.fetch()
-		.map((item: IMessage) => item.rid);
+		.map((item: ISubscription) => item.rid);
 
 	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, userRooms, options).toArray();
 
