@@ -32,12 +32,12 @@ settingsRegistry.addGroup('Sentry', function () {
 		i18nDescription: 'Sentry_Trace_Sample_Rate_Description',
 	});
 
-	this.add('Sentry_Test_Connection', 'sentry_test_connection', {
+	this.add('Sentry_Test_Connection', 'sentryTestConnection', {
 		type: 'action',
 		actionText: 'Test_Connection',
 		i18nLabel: 'Test_Connection',
-        i18nDescription: 'Sentry_Test_Connection_Description',
-        enableQuery: {
+		i18nDescription: 'Sentry_Test_Connection_Description',
+		enableQuery: {
 			_id: 'Sentry_Integration_Enabled',
 			value: true,
 		},

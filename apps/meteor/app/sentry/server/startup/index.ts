@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import * as Sentry from '@sentry/node';
 import { BrowserTracing } from '@sentry/tracing';
 
@@ -23,25 +24,24 @@ settings.watchMultiple(['Sentry_Integration_Enabled', 'Sentry_Dsn', 'Sentry_Trac
 });
 
 Meteor.methods({
-	sentry_test_connection() {
+	sentryTestConnection() {
 		const user = Meteor.user();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'sentry_test_connection',
+				method: 'sentryTestConnection',
 			});
 		}
 
 		if (!hasPermission(user._id, 'test-admin-options')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
-				method: 'sentry_test_connection',
+				method: 'sentryTestConnection',
 			});
 		}
-
-		if (settings.get('Sentry_Dsn')?.length > 0) {
-			throw new Meteor.Error('sentry_mis	configured');
+		const dsn = settings.get('Sentry_Dsn');
+		if (dsn && typeof dsn === 'string' && dsn?.length > 0) {
+			throw new Meteor.Error('sentry_misconfigured');
 		}
 
-		Sentry.captureException(new Error("This is a fake error message for testing sentry"));
-
+		Sentry.captureException(new Error('This is a fake error message for testing sentry'));
 	},
 });
