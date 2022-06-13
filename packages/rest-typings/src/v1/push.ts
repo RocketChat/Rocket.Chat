@@ -53,11 +53,11 @@ const PushGetPropsSchema = {
 export const isPushGetProps = ajv.compile<PushGetProps>(PushGetPropsSchema);
 
 export type PushEndpoints = {
-	'push.token': {
+	'/v1/push.token': {
 		POST: (payload: PushTokenProps) => { result: IPushToken };
 		DELETE: (payload: { token: string }) => void;
 	};
-	'push.get': {
+	'/v1/push.get': {
 		GET: (params: PushGetProps) => {
 			data: {
 				message: IMessage;

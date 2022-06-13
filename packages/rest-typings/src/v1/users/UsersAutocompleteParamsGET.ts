@@ -1,10 +1,10 @@
 import Ajv from 'ajv';
 
-export const ajv = new Ajv({
+const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type UsersAutocompleteParamsGET = { selector: string; };
+export type UsersAutocompleteParamsGET = { selector: string };
 
 const UsersAutocompleteParamsGetSchema = {
 	type: 'object',

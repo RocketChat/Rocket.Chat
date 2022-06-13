@@ -1,5 +1,6 @@
 import type { IExportOperation, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
 import type { UserDeactivateIdleParamsPOST } from './users/UserDeactivateIdleParamsPOST';
 import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
@@ -12,6 +13,26 @@ import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 export const ajv = new Ajv({
 	coerceTypes: true,
 });
+
+type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
+
+const UsersInfoSchema = {
+	type: 'object',
+	properties: {
+		userId: {
+			type: 'string',
+			nullable: true,
+		},
+		username: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isUsersInfoProps = ajv.compile<UsersInfo>(UsersInfoSchema);
 
 type Users2faSendEmailCode = { emailOrUsername: string };
 
@@ -72,49 +93,60 @@ const UsersResetAvatarSchema = {
 
 export const isUsersResetAvatarProps = ajv.compile<UsersResetAvatar>(UsersResetAvatarSchema);
 
+type UsersPresencePayload = {
+	users: UserPresence[];
+	full: boolean;
+};
+
+export type UserPresence = Readonly<
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+>;
+
 export type UsersEndpoints = {
-	'users.2fa.enableEmail': {
+	'/v1/users.2fa.enableEmail': {
 		POST: () => void;
 	};
-	'users.2fa.disableEmail': {
+
+	'/v1/users.2fa.disableEmail': {
 		POST: () => void;
 	};
-	'users.2fa.sendEmailCode': {
+
+	'/v1/users.2fa.sendEmailCode': {
 		POST: (params: Users2faSendEmailCode) => void;
 	};
-	'users.autocomplete': {
+
+	'/v1/users.listTeams': {
+		GET: (params: UsersListTeamsParamsGET) => { teams: ITeam[] };
+	};
+	'/v1/users.autocomplete': {
 		GET: (params: UsersAutocompleteParamsGET) => {
 			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
 		};
 	};
 
-	'users.listTeams': {
-		GET: (params: UsersListTeamsParamsGET) => { teams: ITeam[] };
-	};
-
-	'users.setAvatar': {
+	'/v1/users.setAvatar': {
 		POST: (params: UsersSetAvatar) => void;
 	};
-	'users.resetAvatar': {
+	'/v1/users.resetAvatar': {
 		POST: (params: UsersResetAvatar) => void;
 	};
 
-	'users.requestDataDownload': {
+	'/v1/users.requestDataDownload': {
 		GET: (params: { fullExport?: 'true' | 'false' }) => {
 			requested: boolean;
 			exportOperation: IExportOperation;
 		};
 	};
-	'users.logoutOtherClients': {
+	'/v1/users.logoutOtherClients': {
 		POST: () => {
 			token: string;
 			tokenExpires: string;
 		};
 	};
-	'users.removeOtherTokens': {
+	'/v1/users.removeOtherTokens': {
 		POST: () => void;
 	};
-	'users.resetE2EKey': {
+	'/v1/users.resetE2EKey': {
 		POST: (
 			params:
 				| {
@@ -128,7 +160,7 @@ export type UsersEndpoints = {
 				  },
 		) => void;
 	};
-	'users.resetTOTP': {
+	'/v1/users.resetTOTP': {
 		POST: (
 			params:
 				| {
@@ -143,18 +175,15 @@ export type UsersEndpoints = {
 		) => void;
 	};
 
-	'users.presence': {
-		GET: (params: { from: string; ids: string | string[] }) => {
-			full: boolean;
-			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag'>;
-		};
+	'/v1/users.presence': {
+		GET: (params: { from: string; ids: string | string[] }) => UsersPresencePayload;
 	};
 
-	'users.removePersonalAccessToken': {
+	'/v1/users.removePersonalAccessToken': {
 		POST: (params: { tokenName: string }) => void;
 	};
 
-	'users.getPersonalAccessTokens': {
+	'/v1/users.getPersonalAccessTokens': {
 		GET: () => {
 			tokens: {
 				name?: string;
@@ -164,30 +193,30 @@ export type UsersEndpoints = {
 			}[];
 		};
 	};
-	'users.regeneratePersonalAccessToken': {
+	'/v1/users.regeneratePersonalAccessToken': {
 		POST: (params: { tokenName: string }) => {
 			token: string;
 		};
 	};
-	'users.generatePersonalAccessToken': {
+	'/v1/users.generatePersonalAccessToken': {
 		POST: (params: { tokenName: string; bypassTwoFactor: boolean }) => {
 			token: string;
 		};
 	};
-	'users.getUsernameSuggestion': {
+	'/v1/users.getUsernameSuggestion': {
 		GET: () => {
 			result: string;
 		};
 	};
-	'users.forgotPassword': {
+	'/v1/users.forgotPassword': {
 		POST: (params: { email: string }) => void;
 	};
-	'users.getPreferences': {
+	'/v1/users.getPreferences': {
 		GET: () => {
 			preferences: Required<IUser>['settings']['preferences'];
 		};
 	};
-	'users.createToken': {
+	'/v1/users.createToken': {
 		POST: () => {
 			data: {
 				userId: string;
@@ -196,43 +225,25 @@ export type UsersEndpoints = {
 		};
 	};
 
-	// check(this.bodyParams, {
-	// 	email: String,
-	// 	name: String,
-	// 	password: String,
-	// 	username: String,
-	// 	active: Match.Maybe(Boolean),
-	// 	bio: Match.Maybe(String),
-	// 	nickname: Match.Maybe(String),
-	// 	statusText: Match.Maybe(String),
-	// 	roles: Match.Maybe(Array),
-	// 	joinDefaultChannels: Match.Maybe(Boolean),
-	// 	requirePasswordChange: Match.Maybe(Boolean),
-	// 	setRandomPassword: Match.Maybe(Boolean),
-	// 	sendWelcomeEmail: Match.Maybe(Boolean),
-	// 	verified: Match.Maybe(Boolean),
-	// 	customFields: Match.Maybe(Object),
-	// });
-
-	'users.create': {
+	'/v1/users.create': {
 		POST: (params: UserCreateParamsPOST) => {
 			user: IUser;
 		};
 	};
 
-	'users.setActiveStatus': {
+	'/v1/users.setActiveStatus': {
 		POST: (params: UserSetActiveStatusParamsPOST) => {
 			user: IUser;
 		};
 	};
 
-	'users.deactivateIdle': {
+	'/v1/users.deactivateIdle': {
 		POST: (params: UserDeactivateIdleParamsPOST) => {
 			count: number;
 		};
 	};
 
-	'users.getPresence': {
+	'/v1/users.getPresence': {
 		GET: (
 			params:
 				| {
@@ -251,19 +262,19 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'users.info': {
+	'/v1/users.info': {
 		GET: (params: UsersInfoParamsGet) => {
 			user: IUser & { rooms?: Pick<ISubscription, 'rid' | 'name' | 't' | 'roles' | 'unread'>[] };
 		};
 	};
 
-	'users.register': {
+	'/v1/users.register': {
 		POST: (params: UserRegisterParamsPOST) => {
 			user: Partial<IUser>;
 		};
 	};
 
-	'users.logout': {
+	'/v1/users.logout': {
 		POST: (params: UserLogoutParamsPOST) => {
 			message: string;
 		};
