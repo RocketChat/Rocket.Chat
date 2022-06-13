@@ -48,6 +48,11 @@ class Global extends BasePage {
 		return this.getPage().locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
+	// Flexnav refers account sidebar and admin sidebar
+	public flexNav(): Locator {
+		return this.getPage().locator('.flex-nav');
+	}
+
 	public async confirmPopup(): Promise<void> {
 		await this.modalConfirm().waitFor();
 		// browser.pause(500);

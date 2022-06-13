@@ -1,14 +1,10 @@
 import { addMigration } from '../../lib/migrations';
-import { Settings as RawSettings } from '../../../app/models/server/raw';
+import { Rooms } from '../../../app/models/server';
 
-// Removes unused VoIP settings
 addMigration({
 	version: 269,
-	async up() {
-		await RawSettings.deleteMany({
-			_id: {
-				$in: ['VoIP_Server_Name', 'VoIP_Server_Host', 'VoIP_Server_Websocket_Path', 'VoIP_Server_Websocket_Port'],
-			},
-		});
+	up() {
+		Rooms.tryDropIndex({ 'tokenpass.tokens.token': 1 });
+		Rooms.tryDropIndex({ tokenpass: 1 });
 	},
 });
