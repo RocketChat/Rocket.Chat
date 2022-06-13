@@ -19,7 +19,7 @@ export class MatrixBridgeEE extends MatrixBridge {
 
 	public async createRoom(
 		externalCreatorId: string,
-		externalInviteeId: string,
+		// externalInviteeId: string,
 		roomType: RoomType,
 		roomName: string,
 		roomTopic?: string,

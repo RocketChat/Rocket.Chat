@@ -56,7 +56,7 @@ export class RocketChatRoomAdapter {
 			{ creator: members[0]?._id as string },
 		) as ICreatedRoom;
 		const roomId = rid || _id;
-		MatrixBridgedRoom.insert({ rid: roomId, mri: federatedRoom.externalId });
+		MatrixBridgedRoom.upsert({ rid: roomId }, { rid: roomId, mri: federatedRoom.externalId });
 		await Rooms.setAsFederated(roomId);
 	}
 

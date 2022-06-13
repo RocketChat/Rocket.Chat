@@ -2,6 +2,7 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederatedRoom } from '../../../../../app/federation-v2/server/domain/FederatedRoom';
+import { FederatedUser } from '../../../../../app/federation-v2/server/domain/FederatedUser';
 import { FederatedUserEE } from './FederatedUser';
 
 export class FederatedRoomEE extends FederatedRoom {
@@ -14,11 +15,11 @@ export class FederatedRoomEE extends FederatedRoom {
 	public static createInstance(
 		externalId: string,
 		normalizedExternalId: string,
-		creator: FederatedUserEE,
+		creator: FederatedUser,
 		type: RoomType,
 		name?: string,
-		members?: IUser[],
-	): FederatedRoomEE {
+		members?: FederatedUser[],
+	): FederatedRoom {
 		const roomName = name || FederatedRoom.generateTemporaryName(normalizedExternalId);
 		return Object.assign(new FederatedRoomEE(), {
 			externalId,
