@@ -328,6 +328,7 @@ describe('[Users]', function () {
 					email,
 					name: 'name',
 					username,
+					pass: 'test',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
