@@ -34,6 +34,7 @@
   "access-setting-permissions_description": "Permission to modify setting-based permissions",
   "Accessing_permissions": "Accessing permissions",
   "Account_SID": "Account SID",
+  "Account": "Account",
   "Accounts": "Accounts",
   "Accounts_Description": "Modify workspace member account settings.",
   "Accounts_Admin_Email_Approval_Needed_Default": "<p>The user <b>[name] ([email])</b> has been registered.</p><p>Please check \"Administration -> Users\" to activate or delete it.</p>",
