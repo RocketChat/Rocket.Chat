@@ -27,7 +27,7 @@ export const isVideoConferenceJitsiUpdateTimeoutProps = ajv.compile<VideoConfere
 );
 
 export type VideoConferenceEndpoints = {
-	'video-conference/jitsi.update-timeout': {
+	'/v1/video-conference/jitsi.update-timeout': {
 		POST: (params: VideoConferenceJitsiUpdateTimeout) => {
 			jitsiTimeout: number;
 		};

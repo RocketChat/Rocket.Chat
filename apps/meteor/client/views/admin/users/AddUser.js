@@ -13,7 +13,7 @@ export function AddUser({ roles, onReload, ...props }) {
 
 	const router = useRoute('admin-users');
 
-	const { value: roleData } = useEndpointData('roles.list', '');
+	const { value: roleData } = useEndpointData('/v1/roles.list', '');
 	const [errors, setErrors] = useState({});
 
 	const validationKeys = {
@@ -77,8 +77,8 @@ export function AddUser({ roles, onReload, ...props }) {
 		[router],
 	);
 
-	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
-	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+	const saveAction = useEndpointAction('POST', '/v1/users.create', values, t('User_created_successfully!'));
+	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry', {
 		params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 	});
 

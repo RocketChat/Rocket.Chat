@@ -28,8 +28,9 @@ test.describe('[Permissions]', () => {
 
 		await page.goto('/');
 		await loginPage.login(adminLogin);
-		await sideNav.general().click();
-		await page.goto('/admin/users');
+		await sideNav.sidebarUserMenu().click();
+		await sideNav.admin().click();
+		await sideNav.users.click();
 	});
 
 	test('expect create a user via admin view', async () => {
@@ -45,7 +46,7 @@ test.describe('[Permissions]', () => {
 
 	test('expect user be show on list', async () => {
 		await admin.usersFilter().type(userToBeCreated.email, { delay: 200 });
-		expect(await admin.userInTable(userToBeCreated.email).isVisible()).toBeTruthy();
+		await expect(admin.userInTable(userToBeCreated.email)).toBeVisible();
 	});
 
 	test.describe('disable "userToBeCreated" permissions', () => {
@@ -83,10 +84,10 @@ test.describe('[Permissions]', () => {
 		test('expect not be abble to "mention all"', async () => {
 			await mainContent.sendMessage('@all any_message');
 
-			expect(mainContent.lastMessage()).toContainText('not allowed');
+			await expect(mainContent.lastMessage()).toContainText('not allowed');
 		});
 
-		test('expect not be abble to "delete own message"', async () => {
+		test('expect not be able to "delete own message"', async () => {
 			await mainContent.doReload();
 			await mainContent.sendMessage(`any_message_${uuid()}`);
 			await mainContent.openMessageActionMenu();

@@ -36,7 +36,7 @@ const AgentsPage = (): ReactElement => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const query = useQuery({ text: debouncedFilter, current, itemsPerPage }, debouncedSort);
-	const { reload, ...result } = useEndpointData('livechat/users/agent', query);
+	const { reload, ...result } = useEndpointData('/v1/livechat/users/agent', query);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {
@@ -87,7 +87,7 @@ const AgentsPage = (): ReactElement => {
 							</GenericTableHeaderCell>
 							<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
 						</GenericTableHeader>
-						<GenericTableBody>
+						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
 							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
 							{result.phase === AsyncStatePhase.RESOLVED &&
 								result.value.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
@@ -97,7 +97,7 @@ const AgentsPage = (): ReactElement => {
 						<Pagination
 							current={current}
 							itemsPerPage={itemsPerPage}
-							count={result.value.count}
+							count={result.value.total}
 							onSetItemsPerPage={setItemsPerPage}
 							onSetCurrent={setCurrent}
 							{...paginationProps}
