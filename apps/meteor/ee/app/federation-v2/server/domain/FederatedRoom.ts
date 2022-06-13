@@ -12,14 +12,14 @@ export class FederatedRoomEE extends FederatedRoom {
 
 	public internalReference: IRoom;
 
-	public static createInstance(
+	public static createInstanceEE(
 		externalId: string,
 		normalizedExternalId: string,
 		creator: FederatedUser,
 		type: RoomType,
 		name?: string,
 		members?: FederatedUser[],
-	): FederatedRoom {
+	): FederatedRoomEE {
 		const roomName = name || FederatedRoom.generateTemporaryName(normalizedExternalId);
 		return Object.assign(new FederatedRoomEE(), {
 			externalId,

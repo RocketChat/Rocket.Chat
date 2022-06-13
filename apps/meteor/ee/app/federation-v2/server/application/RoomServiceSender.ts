@@ -69,7 +69,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 				roomName,
 				internalRoom.topic,
 			);
-			const newFederatedRoom = FederatedRoomEE.createInstance(
+			const newFederatedRoom = FederatedRoomEE.createInstanceEE(
 				externalRoomId,
 				externalRoomId,
 				federatedInviterUser,

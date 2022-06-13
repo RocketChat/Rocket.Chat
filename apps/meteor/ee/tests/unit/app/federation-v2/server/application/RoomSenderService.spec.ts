@@ -148,7 +148,7 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 			roomAdapter.getFederatedRoomByInternalId.onCall(1).resolves(room);
 			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
 			await service.inviteUserToAFederatedRoom({ normalizedInviteeId: 'normalizedInviteeId', rawInviteeId: 'rawInviteeId' } as any);
-			const roomResult = FederatedRoomEE.createInstance('externalRoomId', 'externalRoomId', user as any, RoomType.CHANNEL, 'roomName');
+			const roomResult = FederatedRoomEE.createInstanceEE('externalRoomId', 'externalRoomId', user as any, RoomType.CHANNEL, 'roomName');
 
 			expect(bridge.createRoom.calledWith('externalInviterId', 'externalInviteeId', RoomType.CHANNEL, 'roomName', 'topic')).to.be.true;
 			expect(roomAdapter.updateFederatedRoomByInternalRoomId.calledWith('internalRoomId', roomResult)).to.be.true;
