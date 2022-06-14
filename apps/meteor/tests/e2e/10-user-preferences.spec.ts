@@ -74,7 +74,7 @@ test.describe('[User Preferences]', () => {
 
 		test.describe('[User Info Change]', () => {
 			const newName = faker.name.findName();
-			const newUserName = `${faker.name.lastName()}${faker.name.firstName()}`;
+			const newUserName = `${faker.internet.userName(newName)}`;
 
 			test('expect click on the profile link', async () => {
 				await sideNav.profile.click();
