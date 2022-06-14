@@ -1,8 +1,8 @@
 import { Locator, expect } from '@playwright/test';
 
-import { ILogin, IRegister } from '../interfaces/Login';
+import { ILogin, IRegister } from '../utils/interfaces/Login';
 import { BasePage } from './BasePage';
-import { HOME_SELECTOR, REGISTER_STEP2_BUTTON } from '../mocks/waitSelectorsMock';
+import { HOME_SELECTOR, REGISTER_STEP2_BUTTON } from '../utils/mocks/waitSelectorsMock';
 
 export class LoginPage extends BasePage {
 	private get registerButton(): Locator {

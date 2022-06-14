@@ -1,9 +1,9 @@
 import { expect, Locator } from '@playwright/test';
 
 import { BasePage } from './BasePage';
-import { reason, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from '../mocks/userAndPasswordMock';
-import { IRegister } from '../interfaces/Login';
-import { BACKSPACE } from '../mocks/keyboardKeyMock';
+import { reason, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from '../utils/mocks/userAndPasswordMock';
+import { IRegister } from '../utils/interfaces/Login';
+import { BACKSPACE } from '../utils/mocks/keyboardKeyMock';
 
 export class SetupWizard extends BasePage {
 	private get nextStep(): Locator {

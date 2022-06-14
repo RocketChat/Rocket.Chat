@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { Global, FlexTab, MainContent, SideNav, LoginPage } from './utils/pageobjects';
+import { Global, FlexTab, MainContent, SideNav, LoginPage } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { LOCALHOST } from './utils/mocks/urlMock';
 import { publicChannelCreated, setPublicChannelCreated } from './utils/mocks/checks';

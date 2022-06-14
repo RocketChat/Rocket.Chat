@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
-import { LoginPage, ChannelCreation } from './utils/pageobjects';
+import { LoginPage, ChannelCreation } from './pageobjects';
 import { validUserInserted, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Channel]', async () => {

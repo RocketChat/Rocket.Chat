@@ -1,10 +1,15 @@
 import { expect, test, Browser } from '@playwright/test';
 
-import { FlexTab, MainContent, SideNav, LoginPage } from './utils/pageobjects';
+import { FlexTab, MainContent, SideNav, LoginPage } from './pageobjects';
 import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
-import { ChatContext } from './utils/types/ChatContext';
 
-const createBrowserContextForChat = async (browser: Browser, baseURL: string): Promise<ChatContext> => {
+const createBrowserContextForChat = async (
+	browser: Browser,
+	baseURL: string,
+): Promise<{
+	mainContent: MainContent;
+	sideNav: SideNav;
+}> => {
 	const page = await browser.newPage();
 
 	const loginPage = new LoginPage(page);
@@ -37,7 +42,10 @@ test.describe('[Messaging]', () => {
 	});
 
 	test.describe('[Normal messaging]', async () => {
-		let anotherContext: ChatContext;
+		let anotherContext: {
+			mainContent: MainContent;
+			sideNav: SideNav;
+		};
 
 		test.describe('[General channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {

@@ -1,7 +1,7 @@
 import { Locator, expect } from '@playwright/test';
 
 import { BasePage } from './BasePage';
-import { ENTER } from '../mocks/keyboardKeyMock';
+import { ENTER } from '../utils/mocks/keyboardKeyMock';
 
 export class ChannelCreation extends BasePage {
 	private get buttonCreate(): Locator {

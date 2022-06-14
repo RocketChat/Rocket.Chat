@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import faker from '@faker-js/faker';
 
 import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
-import { SideNav, Administration, LoginPage } from './utils/pageobjects';
+import { SideNav, Administration, LoginPage } from './pageobjects';
 
 test.describe('[Rocket.Chat Settings based permissions]', () => {
 	let admin: Administration;

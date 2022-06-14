@@ -1,7 +1,7 @@
 import { expect, Locator } from '@playwright/test';
 
 import { BasePage } from './BasePage';
-import { ENTER } from '../mocks/keyboardKeyMock';
+import { ENTER } from '../utils/mocks/keyboardKeyMock';
 
 export class SideNav extends BasePage {
 	get channelType(): Locator {

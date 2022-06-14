@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { adminLogin, ROCKET_CAT } from './utils/mocks/userAndPasswordMock';
-import { FlexTab, Administration, LoginPage, SideNav } from './utils/pageobjects';
+import { FlexTab, Administration, LoginPage, SideNav } from './pageobjects';
 import { ROCKET_CAT_SELECTOR } from './utils/mocks/waitSelectorsMock';
 import { Checkbox } from './utils/enums/Checkbox';
 

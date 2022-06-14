@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { VALID_EMAIL, adminLogin } from './utils/mocks/userAndPasswordMock';
 import { setupWizardStepRegex } from './utils/mocks/urlMock';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
-import { LoginPage, SetupWizard } from './utils/pageobjects';
+import { LoginPage, SetupWizard } from './pageobjects';
 
 test.describe('[Wizard]', () => {
 	let setupWizard: SetupWizard;

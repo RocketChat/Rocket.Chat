@@ -2,7 +2,7 @@ import { Page, test, expect } from '@playwright/test';
 
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { userMock } from './utils/mocks/userMock';
-import { LoginPage, MainContent, SideNav } from './utils/pageobjects';
+import { LoginPage, MainContent, SideNav } from './pageobjects';
 
 test.describe('[Message Popup]', () => {
 	let page: Page;
