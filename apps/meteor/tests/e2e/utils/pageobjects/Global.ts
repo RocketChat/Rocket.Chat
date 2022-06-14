@@ -1,8 +1,8 @@
 import { Locator } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 
-export default class Global extends BasePage {
+export class Global extends BasePage {
 	public modalConfirm(): Locator {
 		return this.getPage().locator('.rcx-modal .rcx-button--primary-danger');
 	}

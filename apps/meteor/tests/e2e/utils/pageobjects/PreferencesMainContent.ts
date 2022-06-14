@@ -1,8 +1,8 @@
 import { expect, Locator } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 
-export default class PreferencesMainContent extends BasePage {
+export class PreferencesMainContent extends BasePage {
 	public realNameTextInput(): Locator {
 		return this.getPage().locator('//label[contains(text(), "Name")]/..//input');
 	}

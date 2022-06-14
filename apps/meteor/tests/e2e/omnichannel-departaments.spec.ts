@@ -1,9 +1,6 @@
 import { test, Page, expect } from '@playwright/test';
 
-import LoginPage from './utils/pageobjects/LoginPage';
-import Global from './utils/pageobjects/Global';
-import SideNav from './utils/pageobjects/SideNav';
-import Departments from './utils/pageobjects/Departments';
+import { Departments, SideNav, Global, LoginPage } from './utils/pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Department]', () => {

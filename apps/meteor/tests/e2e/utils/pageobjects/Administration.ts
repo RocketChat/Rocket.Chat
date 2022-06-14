@@ -1,8 +1,8 @@
 import { Locator, expect } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 
-export default class Administration extends BasePage {
+export class Administration extends BasePage {
 	public settingsSearch(): Locator {
 		return this.getPage().locator('input[type=search]');
 	}

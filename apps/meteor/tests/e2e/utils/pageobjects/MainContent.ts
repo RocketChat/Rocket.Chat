@@ -2,9 +2,9 @@ import fs from 'fs';
 
 import { expect, Locator } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 
-export default class MainContent extends BasePage {
+export class MainContent extends BasePage {
 	public mainContent(): Locator {
 		return this.getPage().locator('.main-content');
 	}

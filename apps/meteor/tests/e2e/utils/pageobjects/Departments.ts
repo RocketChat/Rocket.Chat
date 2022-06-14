@@ -1,8 +1,8 @@
 import { Locator, expect } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 
-export default class Departments extends BasePage {
+export class Departments extends BasePage {
 	get departmentsLink(): Locator {
 		return this.getPage().locator('a[href="omnichannel/departments"]');
 	}

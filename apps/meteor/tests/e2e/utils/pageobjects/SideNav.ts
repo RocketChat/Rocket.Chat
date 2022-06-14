@@ -1,9 +1,9 @@
 import { expect, Locator } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 import { ENTER } from '../mocks/keyboardKeyMock';
 
-export default class SideNav extends BasePage {
+export class SideNav extends BasePage {
 	public channelType(): Locator {
 		return this.getPage().locator(
 			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',

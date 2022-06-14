@@ -1,9 +1,9 @@
 import { Locator, expect } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 import { ENTER } from '../mocks/keyboardKeyMock';
 
-export default class ChannelCreation extends BasePage {
+export class ChannelCreation extends BasePage {
 	private buttonCreate(): Locator {
 		return this.getPage().locator('[data-qa="sidebar-create"]');
 	}

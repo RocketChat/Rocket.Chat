@@ -3,11 +3,7 @@ import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL } from './utils/mocks/urlMock';
 import { adminLogin, validUserInserted, registerUser } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/LoginPage';
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import Administration from './utils/pageobjects/Administration';
-import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
+import { LoginPage, MainContent, SideNav, Administration, PreferencesMainContent } from './utils/pageobjects';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 

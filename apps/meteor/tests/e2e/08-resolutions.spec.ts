@@ -1,9 +1,6 @@
 import { test, expect, Browser } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import LoginPage from './utils/pageobjects/LoginPage';
-import Global from './utils/pageobjects/Global';
+import { Global, MainContent, SideNav, LoginPage } from './utils/pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 let loginPage: LoginPage;

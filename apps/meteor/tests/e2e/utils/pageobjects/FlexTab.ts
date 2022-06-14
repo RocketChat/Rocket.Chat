@@ -1,10 +1,15 @@
-import { expect, Locator } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
-import BasePage from './BasePage';
-import Global from './Global';
+import { BasePage } from './BasePage';
+import { Global } from './Global';
 
-export default class FlexTab extends BasePage {
-	private global = new Global(this.getPage());
+export class FlexTab extends BasePage {
+	private global: Global;
+
+	constructor(page: Page) {
+		super(page);
+		this.global = new Global(page);
+	}
 
 	public mainSideBar(): Locator {
 		return this.getPage().locator('//main//aside');

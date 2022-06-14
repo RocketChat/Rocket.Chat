@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import FlexTab from './utils/pageobjects/FlexTab';
-import LoginPage from './utils/pageobjects/LoginPage';
+import { LoginPage, FlexTab, SideNav, MainContent } from './utils/pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Main Elements Render]', function () {

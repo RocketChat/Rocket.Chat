@@ -1,8 +1,8 @@
 import { Locator, expect } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 
-export default class Discussion extends BasePage {
+export class Discussion extends BasePage {
 	public startDiscussionContextItem(): Locator {
 		return this.getPage().locator('[data-qa-id="start-discussion"][data-qa-type="message-action"]');
 	}

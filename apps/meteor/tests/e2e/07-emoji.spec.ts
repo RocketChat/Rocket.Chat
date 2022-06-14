@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import LoginPage from './utils/pageobjects/LoginPage';
+import { SideNav, MainContent, LoginPage } from './utils/pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Emoji]', function () {

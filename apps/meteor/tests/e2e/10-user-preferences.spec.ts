@@ -1,11 +1,7 @@
 import { test, expect } from '@playwright/test';
 import faker from '@faker-js/faker';
 
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import LoginPage from './utils/pageobjects/LoginPage';
-import FlexTab from './utils/pageobjects/FlexTab';
-import PreferencesMainContent from './utils/pageobjects/PreferencesMainContent';
+import { PreferencesMainContent, MainContent, SideNav, LoginPage, FlexTab } from './utils/pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import { clearMessages } from './utils/helpers/clearMessages';
 import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';

@@ -2,10 +2,7 @@ import { test, Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 
-import Discussion from './utils/pageobjects/Discussion';
-import LoginPage from './utils/pageobjects/LoginPage';
-import SideNav from './utils/pageobjects/SideNav';
-import MainContent from './utils/pageobjects/MainContent';
+import { MainContent, Discussion, LoginPage, SideNav } from './utils/pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Discussion]', () => {

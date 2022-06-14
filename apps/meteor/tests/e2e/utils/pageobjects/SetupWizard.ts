@@ -1,11 +1,11 @@
 import { expect, Locator } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 import { reason, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from '../mocks/userAndPasswordMock';
 import { IRegister } from '../interfaces/Login';
 import { BACKSPACE } from '../mocks/keyboardKeyMock';
 
-export default class SetupWizard extends BasePage {
+export class SetupWizard extends BasePage {
 	private nextStep(): Locator {
 		return this.getPage().locator('//button[contains(text(), "Next")]');
 	}

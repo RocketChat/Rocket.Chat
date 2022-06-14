@@ -1,9 +1,6 @@
 import { expect, test, Browser } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import LoginPage from './utils/pageobjects/LoginPage';
-import FlexTab from './utils/pageobjects/FlexTab';
+import { FlexTab, MainContent, SideNav, LoginPage } from './utils/pageobjects';
 import { adminLogin, validUserInserted } from './utils/mocks/userAndPasswordMock';
 import { ChatContext } from './utils/types/ChatContext';
 

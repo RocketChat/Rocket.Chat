@@ -1,8 +1,8 @@
 import { Locator, expect } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 
-export default class Agents extends BasePage {
+export class Agents extends BasePage {
 	public agentsLink(): Locator {
 		return this.getPage().locator('a[href="omnichannel/agents"]');
 	}

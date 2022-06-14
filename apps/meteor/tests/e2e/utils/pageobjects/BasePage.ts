@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-export default class BasePage {
+export class BasePage {
 	private page: Page;
 
 	constructor(page: Page) {

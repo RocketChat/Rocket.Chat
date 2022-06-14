@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-import SetupWizard from './utils/pageobjects/SetupWizard';
 import { VALID_EMAIL, adminLogin } from './utils/mocks/userAndPasswordMock';
 import { setupWizardStepRegex } from './utils/mocks/urlMock';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
-import LoginPage from './utils/pageobjects/LoginPage';
+import { LoginPage, SetupWizard } from './utils/pageobjects';
 
 test.describe('[Wizard]', () => {
 	let setupWizard: SetupWizard;

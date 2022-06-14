@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import LoginPage from './utils/pageobjects/LoginPage';
-import Global from './utils/pageobjects/Global';
+import { Global, LoginPage } from './utils/pageobjects';
 import { VALID_EMAIL, INVALID_EMAIL, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Forgot Password]', () => {
