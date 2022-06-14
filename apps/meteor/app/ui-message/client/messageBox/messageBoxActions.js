@@ -26,7 +26,8 @@ messageBox.actions.add('Create_new', 'Video_message', {
 		(!settings.get('FileUpload_MediaTypeWhiteList') || settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
 	action: async ({ rid, tmid, messageBox }) => {
 		const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-		if (permissionStatus.state === 'denied') return dispatchToastMessage({ type: 'error', message: t('Camera_blocked_change_browser_setting_to_allow') });
+		if (permissionStatus.state === 'denied')
+			return dispatchToastMessage({ type: 'error', message: t('Camera_blocked_change_browser_setting_to_allow') });
 		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox, { rid, tmid });
 	},
 });
