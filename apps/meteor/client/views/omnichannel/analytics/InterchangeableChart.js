@@ -15,11 +15,13 @@ const getChartTooltips = (chartName) => {
 		case 'Avg_reaction_time':
 			return {
 				callbacks: {
-					title(tooltipItem, data) {
-						return data.labels[tooltipItem[0].index];
+					title([ctx]) {
+						const { dataset } = ctx;
+						return dataset.label;
 					},
-					label(tooltipItem, data) {
-						return secondsToHHMMSS(data.datasets[0].data[tooltipItem.index]);
+					label(ctx) {
+						const { dataset, dataIndex } = ctx;
+						return secondsToHHMMSS(dataset.data[dataIndex]);
 					},
 				},
 			};
