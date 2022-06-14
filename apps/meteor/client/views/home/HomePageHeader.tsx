@@ -11,7 +11,7 @@ const HomepageHeader = (): ReactElement => {
 	const title = useSetting('Layout_Home_Title') as string;
 	const canEditLayout = useAllPermissions(EDIT_LAYOUT_PERMISSIONS);
 	return (
-		<PageHeader title={title} data-qa-id='home-header' backgroundColor='neutral-100'>
+		<PageHeader title={title} data-qa-id='home-header'>
 			{canEditLayout && (
 				<Button is='a' href='/admin/settings/Layout' data-qa-id='home-header-customize-button'>
 					<>
