@@ -11,7 +11,6 @@ import ExternalLink from '../../../components/ExternalLink';
 
 const DOCS_URL = 'https://google.com';
 
-// Mobile Apps card for homepage
 const DocumentationCard = (): ReactElement => {
 	const t = useTranslation();
 

@@ -13,7 +13,6 @@ const WINDOWS_APP_URL = 'https://google.com';
 const LINUX_APP_URL = 'https://google.com';
 const MAC_APP_URL = 'https://google.com';
 
-// Mobile Apps card for homepage
 const DesktopAppsCard = (): ReactElement => {
 	const t = useTranslation();
 

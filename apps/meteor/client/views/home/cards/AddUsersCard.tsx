@@ -8,8 +8,6 @@ import CardFooterWrapper from '../../../components/Card/CardFooterWrapper';
 import CardIcon from '../../../components/Card/CardIcon';
 import CardTitle from '../../../components/Card/Title';
 
-// Add users card for homepage
-// Should only be visible for admins
 const AddUsersCard = (): ReactElement => {
 	const t = useTranslation();
 

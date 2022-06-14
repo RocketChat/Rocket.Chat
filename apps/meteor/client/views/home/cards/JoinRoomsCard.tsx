@@ -17,7 +17,7 @@ const JoinRoomsCard = (): ReactElement => {
 
 	return (
 		<Card variant='light'>
-			<CardTitle>{t('Homepage_card_join_rooms_title')}</CardTitle>
+			<CardTitle>{t('Join_rooms')}</CardTitle>
 
 			<CardBody>{t('Discover_public_channels_and_teams_in_the_workspace_directory')}</CardBody>
 
