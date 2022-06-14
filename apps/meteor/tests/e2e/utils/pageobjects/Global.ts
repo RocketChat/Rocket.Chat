@@ -35,4 +35,20 @@ export default class Global extends BasePage {
 	public async dismissToastBar(): Promise<void> {
 		await this.getToastBar().locator('button').click();
 	}
+
+	public modal(): Locator {
+		return this.getPage().locator('#modal-root');
+	}
+
+	public btnModalCancel(): Locator {
+		return this.getPage().locator(
+			'#modal-root div dialog div.rcx-modal__inner div.rcx-modal__footer div div button.rcx-button--ghost.rcx-button',
+		);
+	}
+
+	public btnModalRemove(): Locator {
+		return this.getPage().locator(
+			'#modal-root div dialog div.rcx-modal__inner div.rcx-modal__footer div div button.rcx-button--primary-danger.rcx-button',
+		);
+	}
 }

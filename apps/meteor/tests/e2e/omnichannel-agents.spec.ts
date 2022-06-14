@@ -4,12 +4,15 @@ import { adminLogin } from './utils/mocks/userAndPasswordMock';
 import LoginPage from './utils/pageobjects/LoginPage';
 import SideNav from './utils/pageobjects/SideNav';
 import Agents from './utils/pageobjects/Agents';
+import Global from './utils/pageobjects/Global';
 
 test.describe('[Agents]', () => {
 	let loginPage: LoginPage;
 	let page: Page;
 	let sideNav: SideNav;
 	let agents: Agents;
+	let global: Global;
+
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
 		const rootPath = '/';
@@ -75,12 +78,12 @@ test.describe('[Agents]', () => {
 					await agents.doRemoveAgent();
 				});
 				test('expect modal is not visible after cancel delete agent', async () => {
-					await agents.btnModalCancel().click();
-					await expect(agents.modal()).not.toBeVisible();
+					await global.btnModalCancel().click();
+					await expect(global.modal()).not.toBeVisible();
 				});
 				test('expect agent is removed from user info tab', async () => {
-					await agents.btnModalRemove().click();
-					await expect(agents.modal()).not.toBeVisible();
+					await global.btnModalRemove().click();
+					await expect(global.modal()).not.toBeVisible();
 					await expect(agents.agentAdded()).not.toBeVisible();
 				});
 			});
@@ -93,12 +96,12 @@ test.describe('[Agents]', () => {
 					await agents.btnTableRemove().click();
 				});
 				test('expect modal is not visible after cancel delete agent', async () => {
-					await agents.btnModalCancel().click();
-					await expect(agents.modal()).not.toBeVisible();
+					await global.btnModalCancel().click();
+					await expect(global.modal()).not.toBeVisible();
 				});
 				test('expect agent is removed from agents table', async () => {
-					await agents.btnModalRemove().click();
-					await expect(agents.modal()).not.toBeVisible();
+					await global.btnModalRemove().click();
+					await expect(global.modal()).not.toBeVisible();
 					await expect(agents.agentAdded()).not.toBeVisible();
 				});
 			});
