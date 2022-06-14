@@ -1078,7 +1078,7 @@ jobs:
             docker logs ddp-streamer --tail=50
             docker logs presence --tail=50
 
-            npm run testci -- --test=testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100 && docker logs authorization --tail=50;
+            npm run testapi && s=0 && break || s=$? && docker logs rocketchat --tail=100 && docker logs authorization --tail=50;
           done;
           exit $s
 
@@ -1095,12 +1095,23 @@ jobs:
           docker logs rocketchat --tail=50
 
           docker stop rocketchat
+          docker stop stream-hub
+          docker stop account
+          docker stop authorization
+          docker stop ddp-streamer
+          docker stop presence
+
           docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%SZ")
           echo $NOW
 
           docker start rocketchat
+          docker start stream-hub
+          docker start account
+          docker start authorization
+          docker start ddp-streamer
+          docker start presence
 
           until echo "$(docker logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
             echo "Waiting Rocket.Chat to start up"
@@ -1108,8 +1119,15 @@ jobs:
             sleep 10
           done
 
+          docker logs rocketchat --tail=50
+          docker logs stream-hub --tail=50
+          docker logs account --tail=50
+          docker logs authorization --tail=50
+          docker logs ddp-streamer --tail=50
+          docker logs presence --tail=50
+
           cd ./apps/meteor
-          npm run testci -- --enterprise --test=test:playwright:ee
+          npm run test:playwright:ee
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
