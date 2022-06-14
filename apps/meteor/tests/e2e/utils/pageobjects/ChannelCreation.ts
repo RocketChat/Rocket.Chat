@@ -9,11 +9,11 @@ export default class ChannelCreation extends BasePage {
 	}
 
 	private inputChannelName(): Locator {
-		return this.getPage().locator('[placeholder="Channel Name"]');
+		return this.getPage().locator('[data-qa="create-channel-modal"] [data-qa-type="channel-name-input"]');
 	}
 
 	private inputChannelDescription(): Locator {
-		return this.getPage().locator('[placeholder="What is this channel about?"]');
+		return this.getPage().locator('[data-qa="create-channel-modal"] [data-qa-type="channel-topic-input"]');
 	}
 
 	private buttonCreateChannel(): Locator {
@@ -25,11 +25,11 @@ export default class ChannelCreation extends BasePage {
 	}
 
 	private buttonConfirmCreation(): Locator {
-		return this.getPage().locator('//button[contains(text(), "Create" )]');
+		return this.getPage().locator('[data-qa="create-channel-modal"] [data-qa-type="create-channel-confirm-button"]');
 	}
 
 	private privateChannel(): Locator {
-		return this.getPage().locator('//label[contains(text(),"Private")]/../following-sibling::label/i');
+		return this.getPage().locator('[data-qa="create-channel-modal"] [data-qa-type="channel-private-toggle"]');
 	}
 
 	private searchChannel(): Locator {
