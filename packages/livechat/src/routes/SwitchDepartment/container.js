@@ -28,12 +28,10 @@ class SwitchDepartmentContainer extends Component {
 		}
 
 		if (!room) {
-			let user = null;
-			try {
-				user = await Livechat.grantVisitor({ visitor: { department, token } });
-			} catch (e) {
+			const user =  await Livechat.grantVisitor({ visitor: { department, token } }).catch ((e) => {
 				console.error(e);
-			}
+				return Promise.reject(e); // not sure if should fail or return undefined
+			});
 			await dispatch({ user, alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts) });
 			return history.go(-1);
 		}
