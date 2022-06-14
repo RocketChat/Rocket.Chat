@@ -9,8 +9,7 @@ import PageContext from './PageContext';
 type PageHeaderProps = {
 	title: ReactNode;
 	onClickBack?: () => void;
-	borderBlockEndColor?: string;
-} & ComponentProps<typeof Box>;
+} & Omit<ComponentProps<typeof Box>, 'title'>;
 
 const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }) => {
 	const t = useTranslation();
