@@ -53,7 +53,7 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 				tooltipCallbacks,
 			});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error.message });
 		}
 	});
 

@@ -21,31 +21,27 @@ const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = fa
 			...tooltipCallbacks,
 		},
 		scales: {
-			xAxes: [
-				{
-					scaleLabel: {
-						display: false,
-					},
-					gridLines: {
-						display: true,
-						color: 'rgba(0, 0, 0, 0.03)',
-					},
+			xAxis: {
+				title: {
+					display: false,
 				},
-			],
-			yAxes: [
-				{
-					scaleLabel: {
-						display: false,
-					},
-					gridLines: {
-						display: true,
-						color: 'rgba(0, 0, 0, 0.03)',
-					},
-					ticks: {
-						beginAtZero: true,
-					},
+				grid: {
+					display: true,
+					color: 'rgba(0, 0, 0, 0.03)',
 				},
-			],
+			},
+			yAxis: {
+				title: {
+					display: false,
+				},
+				grid: {
+					display: true,
+					color: 'rgba(0, 0, 0, 0.03)',
+				},
+				ticks: {
+					beginAtZero: true,
+				},
+			},
 		},
 		hover: {
 			animationDuration: 0, // duration of animations when hovering an item
@@ -72,11 +68,11 @@ const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = fa
 	}
 
 	if (smallTicks) {
-		config.scales.xAxes[0].ticks = {
+		config.scales.xAxis[0].ticks = {
 			fontSize: 8,
 		};
 
-		config.scales.yAxes[0].ticks = {
+		config.scales.yAxis[0].ticks = {
 			beginAtZero: true,
 			fontSize: 8,
 		};
@@ -151,8 +147,8 @@ export const drawLineChart = async (chart, chartContext, chartLabels, dataLabels
 			fill: false,
 		});
 	});
-	const chartImport = await import('chart.js');
-	const Chart = chartImport.default;
+	const chartjs = await import('chart.js/auto');
+	const Chart = chartjs.default;
 	return new Chart(chart, {
 		type: 'line',
 		data: {
@@ -177,8 +173,8 @@ export const drawDoughnutChart = async (chart, title, chartContext, dataLabels, 
 	if (chartContext) {
 		chartContext.destroy();
 	}
-	const chartImport = await import('chart.js');
-	const Chart = chartImport.default;
+	const chartjs = await import('chart.js/auto');
+	const Chart = chartjs.default;
 	return new Chart(chart, {
 		type: 'doughnut',
 		data: {
