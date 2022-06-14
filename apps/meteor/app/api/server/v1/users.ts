@@ -794,8 +794,12 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = this.getUserFromParams();
-			if (!hasPermission(this.userId, 'edit-other-user-info')) {
+			let user;
+			if (this.isUserFromParams()) {
+				user = Meteor.users.findOne(this.userId);
+			} else if (hasPermission(this.userId, 'edit-other-user-info')) {
+				user = this.getUserFromParams();
+			} else {
 				return API.v1.unauthorized();
 			}
 
