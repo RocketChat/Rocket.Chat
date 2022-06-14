@@ -51,13 +51,6 @@ export interface IRoom extends IRocketChatRecord {
 
 	prid?: string;
 	avatarETag?: string;
-	tokenpass?: {
-		require: string;
-		tokens: {
-			token: string;
-			balance: number;
-		}[];
-	};
 
 	teamMain?: boolean;
 	teamId?: string;
@@ -173,6 +166,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	priorityId: any;
 	livechatData: any;
 	queuedAt?: Date;
+	status?: 'queued'; // TODO: missing types for this
 
 	ts: Date;
 	label?: string;
@@ -258,7 +252,6 @@ export type RoomAdminFieldsType =
 	| 'topic'
 	| 'msgs'
 	| 'archived'
-	| 'tokenpass'
 	| 'teamId'
 	| 'teamMain'
 	| 'announcement'

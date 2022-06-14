@@ -110,30 +110,31 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 	return (
 		<VerticalBar.ScrollableContent is='form' {...props}>
 			<Box alignSelf='center'>
-				<UserInfo.Avatar margin='auto' size={'x332'} title={username} username={username} />
+				<UserInfo.Avatar data-qa='AgentEdit-Avatar' margin='auto' size={'x332'} title={username} username={username} />
 			</Box>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={name} disabled />
+					<TextInput data-qa='AgentEditTextInput-Name' flexGrow={1} value={name} disabled />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={username} disabled addon={<Icon name='at' size='x20' />} />
+					<TextInput data-qa='AgentEditTextInput-Username' flexGrow={1} value={username} disabled addon={<Icon name='at' size='x20' />} />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Email')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={email} disabled addon={<Icon name='mail' size='x20' />} />
+					<TextInput data-qa='AgentEditTextInput-Email' flexGrow={1} value={email} disabled addon={<Icon name='mail' size='x20' />} />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Departments')}</Field.Label>
 				<Field.Row>
 					<MultiSelect
+						data-qa='AgentEditTextInput-Departaments'
 						options={options}
 						value={departments}
 						placeholder={t('Select_an_option')}
@@ -146,6 +147,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 				<Field.Label>{t('Status')}</Field.Label>
 				<Field.Row>
 					<Select
+						data-qa='AgentEditTextInput-Status'
 						options={[
 							['available', t('Available')],
 							['not-available', t('Not_Available')],
@@ -164,7 +166,12 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 				<Field>
 					<Field.Label>{t('VoIP_Extension')}</Field.Label>
 					<Field.Row>
-						<TextInput flexGrow={1} value={voipExtension as string} onChange={handleVoipExtension} />
+						<TextInput
+							data-qa='AgentEditTextInput-VoIP_Extension'
+							flexGrow={1}
+							value={voipExtension as string}
+							onChange={handleVoipExtension}
+						/>
 					</Field.Row>
 				</Field>
 			)}
@@ -172,10 +179,22 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 			<Field.Row>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 					<Margins inlineEnd='x4'>
-						<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges && !maxChatUnsaved} onClick={handleReset}>
+						<Button
+							data-qa='AgentEditButtonReset'
+							flexGrow={1}
+							type='reset'
+							disabled={!hasUnsavedChanges && !maxChatUnsaved}
+							onClick={handleReset}
+						>
 							{t('Reset')}
 						</Button>
-						<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !maxChatUnsaved} onClick={handleSave}>
+						<Button
+							data-qa='AgentEditButtonSave'
+							mie='none'
+							flexGrow={1}
+							disabled={!hasUnsavedChanges && !maxChatUnsaved}
+							onClick={handleSave}
+						>
 							{t('Save')}
 						</Button>
 					</Margins>
