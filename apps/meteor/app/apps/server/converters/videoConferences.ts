@@ -1,4 +1,4 @@
-import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import type { VideoConference as AppVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
 import type { IVideoConference } from '@rocket.chat/core-typings';
 
 import { VideoConf } from '../../../../server/sdk';
@@ -12,27 +12,23 @@ export class AppVideoConferencesConverter {
 		this.orch = orch;
 	}
 
-	async convertById(callId: string): Promise<VideoConference | undefined> {
+	async convertById(callId: string): Promise<AppVideoConference | undefined> {
 		const call = await VideoConf.getUnfiltered(callId);
 
 		return this.convertVideoConference(call);
 	}
 
-	convertVideoConference(call: IVideoConference | null): VideoConference | undefined {
+	convertVideoConference(call: IVideoConference | null): AppVideoConference | undefined {
 		if (!call) {
 			return;
 		}
 
 		return {
 			...call,
-		} as VideoConference;
+		} as AppVideoConference;
 	}
 
-	convertAppVideoConference(call: VideoConference | null): IVideoConference | undefined {
-		if (!call) {
-			return;
-		}
-
+	convertAppVideoConference(call: AppVideoConference): IVideoConference {
 		return {
 			...call,
 		} as IVideoConference;
