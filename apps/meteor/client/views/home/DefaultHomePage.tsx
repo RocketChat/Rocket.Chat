@@ -1,5 +1,5 @@
-import { Grid } from '@rocket.chat/fuselage';
-import { usePermission, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { Box, Grid } from '@rocket.chat/fuselage';
+import { usePermission, useAtLeastOnePermission, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import Page from '../../components/Page/Page';
@@ -15,12 +15,20 @@ import MobileAppsCard from './cards/MobileAppsCard';
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
 const DefaultHomePage = (): ReactElement => {
+	const t = useTranslation();
 	const canAddUsers = usePermission('view-user-administration');
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
+	const workspaceName = useSetting('Site_Name');
 
 	return (
 		<Page data-qa='page-home' data-qa-type='default' backgroundColor='neutral-100'>
 			<HomePageHeader />
+			<Box marginBlock='x36' marginInline='x24' minHeight='x40'>
+				<Box is='h1' fontScale='h1' flexGrow={1}>
+					{/* eslint-disable-next-line @typescript-eslint/camelcase */}
+					{t('Welcome_to', { Site_Name: workspaceName || 'Rocket.Chat' })}
+				</Box>
+			</Box>
 			<PageScrollableContent>
 				{/* Fix grid styling */}
 				<Grid>
