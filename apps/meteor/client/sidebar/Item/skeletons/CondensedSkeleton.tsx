@@ -1,9 +1,9 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { VFC } from 'react';
 
 import Condensed from '../Condensed';
 
-const CondensedSkeleton = ({ showAvatar }) => (
+const CondensedSkeleton: VFC<{ showAvatar: boolean }> = ({ showAvatar }) => (
 	<Box height='x28'>
 		<Condensed
 			title={<Skeleton width='100%' />}
