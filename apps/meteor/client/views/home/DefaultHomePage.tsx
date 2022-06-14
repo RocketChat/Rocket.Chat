@@ -19,7 +19,7 @@ const DefaultHomePage = (): ReactElement => {
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 
 	return (
-		<Page data-qa='page-home' backgroundColor='neutral-100'>
+		<Page data-qa='page-home' data-qa-type='default' backgroundColor='neutral-100'>
 			<HomePageHeader />
 			<PageScrollableContent>
 				{/* Fix grid styling */}

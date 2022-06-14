@@ -17,7 +17,7 @@ const DesktopAppsCard = (): ReactElement => {
 	const t = useTranslation();
 
 	return (
-		<Card variant='light'>
+		<Card variant='light' data-qa-id='homepage-desktop-apps-card'>
 			<CardTitle>{t('Desktop_apps')}</CardTitle>
 
 			<CardBody>{t('Install_rocket_chat_on_the_your_preferred_desktop_platform')}</CardBody>

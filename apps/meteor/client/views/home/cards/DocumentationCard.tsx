@@ -15,7 +15,7 @@ const DocumentationCard = (): ReactElement => {
 	const t = useTranslation();
 
 	return (
-		<Card variant='light'>
+		<Card variant='light' data-qa-id='homepage-documentation-card'>
 			<CardTitle>{t('Documentation')}</CardTitle>
 
 			<CardBody>{t('Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat')}</CardBody>

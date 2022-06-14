@@ -16,7 +16,7 @@ const JoinRoomsCard = (): ReactElement => {
 	};
 
 	return (
-		<Card variant='light'>
+		<Card variant='light' data-qa-id='homepage-join-rooms-card'>
 			<CardTitle>{t('Join_rooms')}</CardTitle>
 
 			<CardBody>{t('Discover_public_channels_and_teams_in_the_workspace_directory')}</CardBody>

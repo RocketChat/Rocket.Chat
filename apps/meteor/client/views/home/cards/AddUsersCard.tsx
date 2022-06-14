@@ -17,7 +17,7 @@ const AddUsersCard = (): ReactElement => {
 	};
 
 	return (
-		<Card variant='light'>
+		<Card variant='light' data-qa-id='homepage-add-users-card'>
 			<CardTitle>
 				{t('Add_users')}
 				<CardIcon name='info' mis='x4' />
