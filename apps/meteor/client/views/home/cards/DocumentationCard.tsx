@@ -17,14 +17,14 @@ const DocumentationCard = (): ReactElement => {
 
 	return (
 		<Card variant='light'>
-			<CardTitle>{t('Homepage_card_docs_title')}</CardTitle>
+			<CardTitle>{t('Documentation')}</CardTitle>
 
-			<CardBody>{t('Homepage_card_docs_description')}</CardBody>
+			<CardBody>{t('Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat')}</CardBody>
 
 			<CardFooterWrapper>
 				<CardFooter>
 					<ExternalLink to={DOCS_URL}>
-						<Button>{t('Homepage_card_docs_action_button')}</Button>
+						<Button>{t('See_documentation')}</Button>
 					</ExternalLink>
 				</CardFooter>
 			</CardFooterWrapper>

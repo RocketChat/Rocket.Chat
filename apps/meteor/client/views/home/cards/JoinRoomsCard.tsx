@@ -7,8 +7,6 @@ import Card from '../../../components/Card/Card';
 import CardFooterWrapper from '../../../components/Card/CardFooterWrapper';
 import CardTitle from '../../../components/Card/Title';
 
-// Join Rooms card for homepage
-// Should only be visible to those with permission to create new channels/groups
 const JoinRoomsCard = (): ReactElement => {
 	const t = useTranslation();
 
@@ -21,10 +19,10 @@ const JoinRoomsCard = (): ReactElement => {
 		<Card variant='light'>
 			<CardTitle>{t('Homepage_card_join_rooms_title')}</CardTitle>
 
-			<CardBody>{t('Homepage_card_join_rooms_description')}</CardBody>
+			<CardBody>{t('Discover_public_channels_and_teams_in_the_workspace_directory')}</CardBody>
 
 			<CardFooterWrapper>
-				<Button onClick={handleDirectory}>{t('Homepage_card_join_rooms_action_button')}</Button>
+				<Button onClick={handleDirectory}>{t('Open_directory')}</Button>
 			</CardFooterWrapper>
 		</Card>
 	);

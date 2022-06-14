@@ -20,7 +20,7 @@ const CreateChannelsCard = (): ReactElement => {
 		<Card variant='light'>
 			<CardTitle>{t('Create_channels')}</CardTitle>
 
-			<CardBody>{t('Homepage_card_create_channels_description')}</CardBody>
+			<CardBody>{t('Create_a_public_channel_that_new_workspace_members_can_join')}</CardBody>
 
 			<CardFooterWrapper>
 				<Button onClick={openCreateChannelModal}>{t('Create_channel')}</Button>

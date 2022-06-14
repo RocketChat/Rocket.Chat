@@ -19,20 +19,20 @@ const DesktopAppsCard = (): ReactElement => {
 
 	return (
 		<Card variant='light'>
-			<CardTitle>{t('Homepage_card_desktop_apps_title')}</CardTitle>
+			<CardTitle>{t('Desktop_apps')}</CardTitle>
 
-			<CardBody>{t('Homepage_card_desktop_apps_description')}</CardBody>
+			<CardBody>{t('Install_rocket_chat_on_the_your_preferred_desktop_platform')}</CardBody>
 
 			<CardFooterWrapper>
 				<CardFooter>
 					<ExternalLink to={WINDOWS_APP_URL}>
-						<Button>{t('Homepage_card_desktop_apps_action_button_windows')}</Button>
+						<Button>{t('Platform_Windows')}</Button>
 					</ExternalLink>
 					<ExternalLink to={LINUX_APP_URL}>
-						<Button>{t('Homepage_card_desktop_apps_action_button_linux')}</Button>
+						<Button>{t('Platform_Linux')}</Button>
 					</ExternalLink>
 					<ExternalLink to={MAC_APP_URL}>
-						<Button>{t('Homepage_card_desktop_apps_action_button_mac')}</Button>
+						<Button>{t('Platform_Mac')}</Button>
 					</ExternalLink>
 				</CardFooter>
 			</CardFooterWrapper>

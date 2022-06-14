@@ -12,23 +12,22 @@ import ExternalLink from '../../../components/ExternalLink';
 const GOOGLE_PLAY_URL = 'https://google.com';
 const APP_STORE_URL = 'https://google.com';
 
-// Mobile Apps card for homepage
 const MobileAppsCard = (): ReactElement => {
 	const t = useTranslation();
 
 	return (
 		<Card variant='light'>
-			<CardTitle>{t('Homepage_card_mobile_apps_title')}</CardTitle>
+			<CardTitle>{t('Mobile_apps')}</CardTitle>
 
-			<CardBody>{t('Homepage_card_mobile_apps_description')}</CardBody>
+			<CardBody>{t('Take_rocket_chat_with_you_with_mobile_applications')}</CardBody>
 
 			<CardFooterWrapper>
 				<CardFooter>
 					<ExternalLink to={GOOGLE_PLAY_URL}>
-						<Button>{t('Homepage_card_mobile_apps_action_button_google')}</Button>
+						<Button>{t('Google_Play')}</Button>
 					</ExternalLink>
 					<ExternalLink to={APP_STORE_URL}>
-						<Button>{t('Homepage_card_mobile_apps_action_button_apple')}</Button>
+						<Button>{t('App_Store')}</Button>
 					</ExternalLink>
 				</CardFooter>
 			</CardFooterWrapper>

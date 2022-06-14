@@ -25,7 +25,7 @@ const AddUsersCard = (): ReactElement => {
 				<CardIcon name='info' mis='x4' />
 			</CardTitle>
 
-			<CardBody>{t('Homepage_card_add_users_description')}</CardBody>
+			<CardBody>{t('Invite_and_add_members_to_this_workspace_to_start_communicating')}</CardBody>
 
 			<CardFooterWrapper>
 				<Button primary onClick={handleOpenUsersRoute}>
