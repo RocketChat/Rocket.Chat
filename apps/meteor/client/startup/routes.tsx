@@ -26,7 +26,6 @@ const MeetPage = lazy(() => import('../views/meet/MeetPage'));
 const DirectoryPage = lazy(() => import('../views/directory/DirectoryPage'));
 const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
-const AccountRoute = lazy(() => import('../views/account/AccountRoute'));
 
 FlowRouter.wait();
 
@@ -74,8 +73,8 @@ FlowRouter.route('/meet/:rid', {
 	async action(_params, queryParams) {
 		if (queryParams?.token !== undefined) {
 			// visitor login
-			const visitor = await APIClient.v1.get(`livechat/visitor/${queryParams?.token}`);
-			if (visitor?.visitor) {
+			const result = await APIClient.get(`/v1/livechat/visitor/${queryParams.token}`);
+			if ('visitor' in result) {
 				appLayout.render(<MeetPage />);
 				return;
 			}
@@ -159,17 +158,6 @@ FlowRouter.route('/livechat-queue', {
 		appLayout.render(
 			<MainLayout>
 				<OmnichannelQueueList />
-			</MainLayout>,
-		);
-	},
-});
-
-FlowRouter.route('/account/:group?', {
-	name: 'account',
-	action: () => {
-		appLayout.render(
-			<MainLayout>
-				<AccountRoute />
 			</MainLayout>,
 		);
 	},

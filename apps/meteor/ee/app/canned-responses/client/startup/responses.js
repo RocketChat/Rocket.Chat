@@ -34,7 +34,7 @@ Meteor.startup(() => {
 				}
 				events[response.type](response);
 			});
-			const { responses } = await APIClient.v1.get('canned-responses.get');
+			const { responses } = await APIClient.get('/v1/canned-responses.get');
 			responses.forEach((response) => CannedResponse.insert(response));
 			c.stop();
 		} catch (error) {

@@ -22,7 +22,7 @@ export const useTeamsChannelList = (
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const apiEndPoint = useEndpoint('GET', 'teams.listRooms');
+	const apiEndPoint = useEndpoint('GET', '/v1/teams.listRooms');
 	const [teamsChannelList, setTeamsChannelList] = useState(() => new RecordList<IRoom>());
 	const reload = useCallback(() => setTeamsChannelList(new RecordList<IRoom>()), []);
 
