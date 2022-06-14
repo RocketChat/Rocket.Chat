@@ -73,7 +73,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 		</Modal>
 	);
 };
-
+// TODO: Remove endpoint concatenation
 export const useUserInfoActions = (user = {}, rid, reload) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -99,7 +99,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	const isIgnored = currentSubscription && currentSubscription.ignored && currentSubscription.ignored.indexOf(uid) > -1;
 	const isMuted = getUserIsMuted(room, user, otherUserCanPostReadonly);
 
-	const endpointPrefix = room.t === 'p' ? 'groups' : 'channels';
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 
 	const roomDirectives = room && room.t && roomCoordinator.getRoomDirectives(room.t);
 

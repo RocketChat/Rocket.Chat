@@ -11,7 +11,7 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 
 	const params = useMemo(() => ({ appId: _id }), [_id]);
 
-	const { value: data, phase: state, error, reload } = useEndpointData('oauth-apps.get', params);
+	const { value: data, phase: state, error, reload } = useEndpointData('/v1/oauth-apps.get', params);
 
 	const onChange = useCallback(() => {
 		reload();

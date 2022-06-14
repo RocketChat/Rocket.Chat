@@ -48,7 +48,7 @@ function CustomSoundsRoute(): ReactElement {
 		500,
 	);
 
-	const { reload, ...result } = useEndpointData('custom-sounds.list', query);
+	const { reload, ...result } = useEndpointData('/v1/custom-sounds.list', query);
 
 	const handleItemClick = useCallback(
 		(_id) => (): void => {

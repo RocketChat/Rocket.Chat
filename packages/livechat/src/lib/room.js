@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 
 import { Livechat } from '../api';
 import { CallStatus, isCallOngoing } from '../components/Calls/CallStatus';
-import { setCookies, upsert, canRenderMessage, parse } from '../components/helpers';
+import { setCookies, upsert, canRenderMessage } from '../components/helpers';
 import { store, initialState } from '../store';
 import { normalizeAgent } from './api';
 import Commands from './commands';
@@ -174,8 +174,6 @@ Livechat.onMessage(async (message) => {
 	}
 
 	message = transformAgentInformationOnMessage(message);
-
-	message.msg = parse(message.msg);
 
 	await store.setState({
 		messages: upsert(store.state.messages, message, ({ _id }) => _id === message._id, ({ ts }) => ts),

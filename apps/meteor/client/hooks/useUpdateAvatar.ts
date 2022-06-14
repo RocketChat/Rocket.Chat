@@ -19,10 +19,11 @@ type AvatarServiceObject = {
 
 type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
 
-const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => typeof avatarObj === 'string';
-const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObject => !isAvatarReset(avatarObj) && 'service' in avatarObj;
+const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => avatarObj === 'reset';
+const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObject =>
+	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' in avatarObj;
 const isAvatarUrl = (avatarObj: AvatarObject): avatarObj is AvatarUrlObj =>
-	!isAvatarReset(avatarObj) && 'service' && 'avatarUrl' in avatarObj;
+	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' && 'avatarUrl' in avatarObj;
 
 export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']): (() => void) => {
 	const t = useTranslation();
@@ -48,9 +49,9 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']): 
 		[userId],
 	);
 
-	const saveAvatarAction = useEndpointUpload('users.setAvatar', saveAvatarQuery, successText);
-	const saveAvatarUrlAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, successText);
-	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, successText);
+	const saveAvatarAction = useEndpointUpload('/v1/users.setAvatar', successText);
+	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', saveAvatarQuery, successText);
+	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', resetAvatarQuery, successText);
 
 	const updateAvatar = useCallback(async () => {
 		if (isAvatarReset(avatarObj)) {

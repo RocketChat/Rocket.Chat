@@ -10,7 +10,7 @@ const SendTestButton = ({ id }: SendTestButtonProps): ReactElement => {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const sendTest = useEndpoint('POST', `email-inbox.send-test/${id}`);
+	const sendTest = useEndpoint('POST', `/v1/email-inbox.send-test/${id}`);
 
 	const handleOnClick = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
 		e.preventDefault();

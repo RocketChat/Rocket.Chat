@@ -38,8 +38,8 @@ function NewImportPage() {
 	const newImportRoute = useRoute('admin-import-new');
 	const prepareImportRoute = useRoute('admin-import-prepare');
 
-	const uploadImportFile = useEndpoint('POST', 'uploadImportFile');
-	const downloadPublicImportFile = useEndpoint('POST', 'downloadPublicImportFile');
+	const uploadImportFile = useEndpoint('POST', '/v1/uploadImportFile');
+	const downloadPublicImportFile = useEndpoint('POST', '/v1/downloadPublicImportFile');
 
 	useEffect(() => {
 		if (importerKey && !importer) {
