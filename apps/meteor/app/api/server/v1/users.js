@@ -3,6 +3,12 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
+import {
+	isUsersSetAvatarProps,
+	isUsersUpdateParamsPOST,
+	isUsersUpdateOwnBasicInfoParamsPOST,
+	isUsersSetPreferencesParamsPOST,
+} from '@rocket.chat/rest-typings/dist/v1/users';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
@@ -427,19 +433,13 @@ API.v1.addRoute(
 	},
 );
 
+// -------------------------------------------------------------
+// TO-DO
 API.v1.addRoute(
 	'users.setAvatar',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersSetAvatarProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					avatarUrl: Match.Maybe(String),
-					userId: Match.Maybe(String),
-					username: Match.Maybe(String),
-				}),
-			);
 			const canEditOtherUserAvatar = hasPermission(this.userId, 'edit-other-user-avatar');
 
 			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
@@ -494,6 +494,7 @@ API.v1.addRoute(
 		},
 	},
 );
+// -------------------------------------------------------------
 
 API.v1.addRoute(
 	'users.getStatus',
@@ -585,31 +586,13 @@ API.v1.addRoute(
 	},
 );
 
+// -------------------------------------------------------------
+// TO-DO
 API.v1.addRoute(
 	'users.update',
-	{ authRequired: true, twoFactorRequired: true },
+	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
 		post() {
-			check(this.bodyParams, {
-				userId: String,
-				data: Match.ObjectIncluding({
-					email: Match.Maybe(String),
-					name: Match.Maybe(String),
-					password: Match.Maybe(String),
-					username: Match.Maybe(String),
-					bio: Match.Maybe(String),
-					nickname: Match.Maybe(String),
-					statusText: Match.Maybe(String),
-					active: Match.Maybe(Boolean),
-					roles: Match.Maybe(Array),
-					joinDefaultChannels: Match.Maybe(Boolean),
-					requirePasswordChange: Match.Maybe(Boolean),
-					sendWelcomeEmail: Match.Maybe(Boolean),
-					verified: Match.Maybe(Boolean),
-					customFields: Match.Maybe(Object),
-				}),
-			});
-
 			const userData = _.extend({ _id: this.bodyParams.userId }, this.bodyParams.data);
 
 			Meteor.runAsUser(this.userId, () => saveUser(this.userId, userData));
@@ -635,25 +618,15 @@ API.v1.addRoute(
 		},
 	},
 );
+// -------------------------------------------------------------
 
+// -------------------------------------------------------------
+// TO-DO
 API.v1.addRoute(
 	'users.updateOwnBasicInfo',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
 	{
 		post() {
-			check(this.bodyParams, {
-				data: Match.ObjectIncluding({
-					email: Match.Maybe(String),
-					name: Match.Maybe(String),
-					username: Match.Maybe(String),
-					nickname: Match.Maybe(String),
-					statusText: Match.Maybe(String),
-					currentPassword: Match.Maybe(String),
-					newPassword: Match.Maybe(String),
-				}),
-				customFields: Match.Maybe(Object),
-			});
-
 			const userData = {
 				email: this.bodyParams.data.email,
 				realname: this.bodyParams.data.name,
@@ -680,6 +653,7 @@ API.v1.addRoute(
 		},
 	},
 );
+// -------------------------------------------------------------
 
 API.v1.addRoute(
 	'users.createToken',
@@ -715,47 +689,13 @@ API.v1.addRoute(
 	},
 );
 
+// -------------------------------------------------------------
+// TO-DO
 API.v1.addRoute(
 	'users.setPreferences',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isUsersSetPreferencesParamsPOST },
 	{
 		post() {
-			check(this.bodyParams, {
-				userId: Match.Maybe(String),
-				data: Match.ObjectIncluding({
-					newRoomNotification: Match.Maybe(String),
-					newMessageNotification: Match.Maybe(String),
-					clockMode: Match.Maybe(Number),
-					useEmojis: Match.Maybe(Boolean),
-					convertAsciiEmoji: Match.Maybe(Boolean),
-					saveMobileBandwidth: Match.Maybe(Boolean),
-					collapseMediaByDefault: Match.Maybe(Boolean),
-					autoImageLoad: Match.Maybe(Boolean),
-					emailNotificationMode: Match.Maybe(String),
-					unreadAlert: Match.Maybe(Boolean),
-					notificationsSoundVolume: Match.Maybe(Number),
-					desktopNotifications: Match.Maybe(String),
-					pushNotifications: Match.Maybe(String),
-					enableAutoAway: Match.Maybe(Boolean),
-					highlights: Match.Maybe(Array),
-					desktopNotificationRequireInteraction: Match.Maybe(Boolean),
-					messageViewMode: Match.Maybe(Number),
-					showMessageInMainThread: Match.Maybe(Boolean),
-					hideUsernames: Match.Maybe(Boolean),
-					hideRoles: Match.Maybe(Boolean),
-					displayAvatars: Match.Maybe(Boolean),
-					hideFlexTab: Match.Maybe(Boolean),
-					sendOnEnter: Match.Maybe(String),
-					language: Match.Maybe(String),
-					sidebarShowFavorites: Match.Optional(Boolean),
-					sidebarShowUnread: Match.Optional(Boolean),
-					sidebarSortby: Match.Optional(String),
-					sidebarViewMode: Match.Optional(String),
-					sidebarDisplayAvatar: Match.Optional(Boolean),
-					sidebarGroupByType: Match.Optional(Boolean),
-					muteFocusedConversations: Match.Optional(Boolean),
-				}),
-			});
 			if (this.bodyParams.userId && this.bodyParams.userId !== this.userId && !hasPermission(this.userId, 'edit-other-user-info')) {
 				throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
 			}
@@ -785,6 +725,7 @@ API.v1.addRoute(
 		},
 	},
 );
+// -------------------------------------------------------------
 
 API.v1.addRoute(
 	'users.forgotPassword',
