@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -794,18 +795,20 @@ API.v1.addRoute(
 				});
 			}
 
-			let user;
+			let user: IUser | undefined;
 			if (this.isUserFromParams()) {
-				user = Meteor.users.findOne(this.userId);
+				user = Meteor.users.findOne(this.userId) as IUser;
 			} else if (hasPermission(this.userId, 'edit-other-user-info')) {
 				user = this.getUserFromParams();
-			} else {
+			}
+
+			if (user === undefined) {
 				return API.v1.unauthorized();
 			}
 
 			Meteor.runAsUser(user._id, () => {
 				if (this.bodyParams.message || this.bodyParams.message === '') {
-					setStatusText(user._id, this.bodyParams.message);
+					setStatusText(user!._id, this.bodyParams.message);
 				}
 				if (this.bodyParams.status) {
 					const validStatus = ['online', 'away', 'offline', 'busy'];
@@ -818,7 +821,7 @@ API.v1.addRoute(
 							});
 						}
 
-						Meteor.users.update(user._id, {
+						Meteor.users.update(user!._id, {
 							$set: {
 								status,
 								statusDefault: status,
