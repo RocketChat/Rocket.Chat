@@ -42,7 +42,7 @@ const ManagersRoute = (): ReactElement => {
 		500,
 	);
 
-	const { reload, ...result } = useEndpointData('livechat/users/manager', query);
+	const { reload, ...result } = useEndpointData('/v1/livechat/users/manager', query);
 	const canViewManagers = usePermission('manage-livechat-managers');
 
 	if (!canViewManagers) {

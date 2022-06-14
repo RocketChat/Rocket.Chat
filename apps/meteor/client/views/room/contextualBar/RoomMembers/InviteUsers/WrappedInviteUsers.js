@@ -17,7 +17,7 @@ const WrappedInviteUsers = ({ rid, tabBar, onClickBack }) => {
 	const handleEdit = useMutableCallback(() => setEditing(true));
 	const onClickBackEditing = useMutableCallback(() => setEditing(false));
 
-	const findOrCreateInvite = useEndpoint('POST', 'findOrCreateInvite');
+	const findOrCreateInvite = useEndpoint('POST', '/v1/findOrCreateInvite');
 
 	const [{ days = 1, maxUses = 0 }, setDayAndMaxUses] = useState({});
 

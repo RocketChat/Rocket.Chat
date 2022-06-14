@@ -142,7 +142,7 @@ describe('Invites', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-token');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				})
 				.end(done);
 		});

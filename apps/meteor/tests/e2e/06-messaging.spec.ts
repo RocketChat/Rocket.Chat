@@ -158,7 +158,7 @@ test.describe('[Messaging]', () => {
 				});
 
 				test('expect not show modal after click in cancel button', async () => {
-					await mainContent.cancelClick();
+					await mainContent.modalCancelButton().click();
 					await expect(mainContent.modalFilePreview()).not.toBeVisible();
 				});
 

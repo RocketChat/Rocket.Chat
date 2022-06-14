@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
-import toastr from 'toastr';
 
 import { hasPermission } from '../../app/authorization/client';
 import { register } from '../../app/markdown/lib/hljs';
@@ -15,13 +14,6 @@ import 'highlight.js/styles/github.css';
 import * as banners from '../lib/banners';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
-
-if (window.DISABLE_ANIMATION) {
-	toastr.options.timeOut = 1;
-	toastr.options.showDuration = 0;
-	toastr.options.hideDuration = 0;
-	toastr.options.extendedTimeOut = 0;
-}
 
 Meteor.startup(() => {
 	fireGlobalEvent('startup', true);

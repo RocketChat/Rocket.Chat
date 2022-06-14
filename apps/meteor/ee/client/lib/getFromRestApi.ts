@@ -1,4 +1,4 @@
-import { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
 
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
@@ -10,7 +10,7 @@ export const getFromRestApi =
 			? void
 			: Serialized<OperationParams<'GET', MatchPathPattern<TPath>>>,
 	): Promise<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>> => {
-		const response = await APIClient.get(endpoint.replace(/^\/+/, ''), params);
+		const response = await APIClient.get(endpoint.replace(/^\/+/, '') as TPath, params as any);
 
 		if (typeof response === 'string') {
 			throw new Error('invalid response data type');
