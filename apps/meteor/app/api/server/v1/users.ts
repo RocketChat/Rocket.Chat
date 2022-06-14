@@ -443,11 +443,11 @@ API.v1.addRoute(
 				throw new Meteor.Error('not-authorized', 'Not Authorized');
 			}
 
-			const user = Users.getLoginTokensByUserId(this.userId).fetch()[0] as IUser;
+			const user = Users.getLoginTokensByUserId(this.userId).fetch()[0] as IUser | undefined;
 
 			return API.v1.success({
 				tokens:
-					user.services?.resume?.loginTokens
+					user?.services?.resume?.loginTokens
 						?.filter((loginToken: any) => loginToken.type === 'personalAccessToken')
 						.map((loginToken: IPersonalAccessToken) => ({
 							name: loginToken.name,
