@@ -25,7 +25,7 @@ jobs:
     outputs:
       release: ${{ steps.by-tag.outputs.release }}
       latest-release: ${{ steps.latest.outputs.latest-release }}
-      docker-tag: ${{ steps.latest.outputs.docker-tag }}
+      docker-tag: ${{ steps.docker.outputs.docker-tag }}
     steps:
       - id: by-tag
         run: |
@@ -46,7 +46,7 @@ jobs:
           echo "LATEST_RELEASE: ${LATEST_RELEASE}"
           echo "::set-output name=latest-release::${LATEST_RELEASE}"
 
-      - id: docker-tag
+      - id: docker
         run: |
           if [[ '${{ github.event_name }}' == 'pull_request' ]]; then
             DOCKER_TAG="pr-${{ github.event.number }}"
@@ -508,11 +508,6 @@ jobs:
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          IMAGE_TAG="${{ needs.release-versions.outputs.docker-tag }}"
-
-          # TODO this needs to be different on develop and on release
-          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
-
           docker run --name rocketchat -d \
             --link mongo \
             --link nats \
@@ -525,7 +520,7 @@ jobs:
             -e SKIP_PROCESS_EVENT_REGISTRATION=true \
             -e OVERWRITE_SETTING_Site_Url=http://localhost:4000 \
             --label 'traefik.http.routers.rocketchat.rule=PathPrefix(`/`)' \
-            ${IMAGE_NAME}
+            ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.docker-tag }}
 
           # spin up all micro services
           docker run --name ddp-streamer -d \
@@ -538,7 +533,7 @@ jobs:
             -e MOLECULER_LOG_LEVEL=info \
             --label 'traefik.http.services.ddp-streamer.loadbalancer.server.port=4000' \
             --label 'traefik.http.routers.ddp-streamer.rule=PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)' \
-            ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${IMAGE_TAG}
+            ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${{ needs.release-versions.outputs.docker-tag }}
 
       - name: stream-hub
         run: |
@@ -913,7 +908,9 @@ jobs:
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.docker-tag }}"
+          IMAGE_TAG="${{ needs.release-versions.outputs.docker-tag }}"
+
+          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${IMAGE_TAG}"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
