@@ -1,7 +1,7 @@
 import { Locator, expect } from '@playwright/test';
-import { faker } from '@faker-js/faker';
 
 import BasePage from './BasePage';
+import { IRegister } from '../interfaces/Login';
 
 export default class LiveChat extends BasePage {
 	get btnOpenLiveChat(): Locator {
@@ -53,13 +53,9 @@ export default class LiveChat extends BasePage {
 		await Promise.all(elements.map((element) => expect(element).toBeVisible()));
 	}
 
-	public async doSendMessage(): Promise<void> {
-		const fullName = faker.name.findName();
-		const [firstName] = fullName.split(' ');
-		const email = faker.internet.email(firstName.toLowerCase());
-
-		await this.inputName.type(fullName);
-		await this.inputEmail.type(email);
+	public async doSendMessage(liveChatUser: IRegister): Promise<void> {
+		await this.inputName.type(liveChatUser.name);
+		await this.inputEmail.type(liveChatUser.email);
 		await this.textAreaMessage.type('any_message');
 		await this.btnSendMessage.click();
 	}

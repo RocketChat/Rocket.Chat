@@ -7,3 +7,4 @@ export { default as MainContent } from './MainContent';
 export { default as PreferencesMainContent } from './PreferencesMainContent';
 export { default as SetupWizard } from './SetupWizard';
 export { default as SideNav } from './SideNav';
+export { default as Agents } from './Agents';

@@ -81,9 +81,9 @@ export default class Agents extends BasePage {
 		return this.getPage().locator(`[data-qa="AgentEditTextInput-${id}"]`);
 	}
 
-	public async doAddAgent(): Promise<void> {
+	public async doAddAgent(user: string): Promise<void> {
 		await this.textAgentsTitle().waitFor();
-		await this.inputAgentsUserName().type('Rocket.Cat', { delay: 50 });
+		await this.inputAgentsUserName().type(user, { delay: 50 });
 
 		await this.userOption().click();
 		await this.btnAddAgents().click();
