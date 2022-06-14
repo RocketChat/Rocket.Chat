@@ -9,8 +9,8 @@ import CardFooter from '../../../components/Card/Footer';
 import CardTitle from '../../../components/Card/Title';
 import ExternalLink from '../../../components/ExternalLink';
 
-const GOOGLE_PLAY_URL = 'https://google.com';
-const APP_STORE_URL = 'https://google.com';
+const GOOGLE_PLAY_URL = 'https://go.rocket.chat/i/hp-mobile-app-google';
+const APP_STORE_URL = 'https://go.rocket.chat/i/hp-mobile-app-apple';
 
 const MobileAppsCard = (): ReactElement => {
 	const t = useTranslation();

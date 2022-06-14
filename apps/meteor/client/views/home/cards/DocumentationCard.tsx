@@ -9,7 +9,7 @@ import CardFooter from '../../../components/Card/Footer';
 import CardTitle from '../../../components/Card/Title';
 import ExternalLink from '../../../components/ExternalLink';
 
-const DOCS_URL = 'https://google.com';
+const DOCS_URL = 'https://go.rocket.chat/i/hp-documentation';
 
 const DocumentationCard = (): ReactElement => {
 	const t = useTranslation();

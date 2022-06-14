@@ -9,9 +9,9 @@ import CardFooter from '../../../components/Card/Footer';
 import CardTitle from '../../../components/Card/Title';
 import ExternalLink from '../../../components/ExternalLink';
 
-const WINDOWS_APP_URL = 'https://google.com';
-const LINUX_APP_URL = 'https://google.com';
-const MAC_APP_URL = 'https://google.com';
+const WINDOWS_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-windows';
+const LINUX_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-linux';
+const MAC_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-mac';
 
 const DesktopAppsCard = (): ReactElement => {
 	const t = useTranslation();
