@@ -16,7 +16,6 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { License } from '../../sdk';
 
 import './canAccessRoomLivechat';
-import './canAccessRoomTokenpass';
 
 export let Subscriptions: SubscriptionsRaw;
 export let Settings: SettingsRaw;
@@ -116,13 +115,12 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {
-		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'tokenpass'>>(rid, {
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(rid, {
 			projection: {
 				_id: 1,
 				t: 1,
 				teamId: 1,
 				prid: 1,
-				tokenpass: 1,
 			},
 		});
 

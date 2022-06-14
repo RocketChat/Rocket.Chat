@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "5.0.0",
+	"version": "5.0.0-develop",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -329,7 +329,7 @@
 		"react-virtuoso": "^1.11.1",
 		"redis": "^4.0.6",
 		"semver": "^7.3.7",
-		"sharp": "^0.30.4",
+		"sharp": "^0.30.6",
 		"sip.js": "^0.20.0",
 		"sodium-native": "^3.3.0",
 		"sodium-plus": "^0.9.0",

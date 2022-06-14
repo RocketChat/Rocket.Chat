@@ -2,11 +2,7 @@ import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
 
-class PreferencesMainContent extends BasePage {
-	public formTextInput(): Locator {
-		return this.getPage().locator('.rocket-form');
-	}
-
+export default class PreferencesMainContent extends BasePage {
 	public realNameTextInput(): Locator {
 		return this.getPage().locator('//label[contains(text(), "Name")]/..//input');
 	}
@@ -21,10 +17,6 @@ class PreferencesMainContent extends BasePage {
 
 	public passwordTextInput(): Locator {
 		return this.getPage().locator('//label[contains(text(), "Password")]/..//input');
-	}
-
-	public resendVerificationEmailBtn(): Locator {
-		return this.getPage().locator('#resend-verification-email');
 	}
 
 	public avatarFileInput(): Locator {
@@ -47,19 +39,8 @@ class PreferencesMainContent extends BasePage {
 		await this.realNameTextInput().fill(realName);
 	}
 
-	public async changeEmail(email: string): Promise<void> {
-		await this.emailTextInput().fill(email);
-	}
-
 	public async saveChanges(): Promise<void> {
 		await expect(this.submitBtn()).toBeEnabled();
 		await this.submitBtn().click();
 	}
-
-	public async changeAvatarUpload(url: string): Promise<void> {
-		await this.avatarFileInput().setInputFiles(url);
-		await this.useUploadedAvatar().click();
-	}
 }
-
-export default PreferencesMainContent;

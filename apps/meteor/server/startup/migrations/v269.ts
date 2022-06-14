@@ -1,20 +1,10 @@
-import { VoipRoom } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
+import { Rooms } from '../../../app/models/server';
 
-// Removes deprecated RDStation functionality from Omnichannel
 addMigration({
 	version: 269,
-	async up() {
-		// mark all voip rooms as inbound which doesn't have any direction property set or has an invalid value
-		await VoipRoom.updateMany(
-			{
-				$or: [{ direction: { $exists: false } }, { direction: { $nin: ['inbound', 'outbound'] } }],
-			},
-			{
-				$set: {
-					direction: 'inbound',
-				},
-			},
-		);
+	up() {
+		Rooms.tryDropIndex({ 'tokenpass.tokens.token': 1 });
+		Rooms.tryDropIndex({ tokenpass: 1 });
 	},
 });
