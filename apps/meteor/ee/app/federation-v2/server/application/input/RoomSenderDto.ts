@@ -9,3 +9,25 @@ export class FederationRoomInviteUserDto {
 
 	inviteeUsernameOnly: string;
 }
+
+class FederationInviteeDto {
+	rawInviteeId: string;
+
+	inviteeUsernameOnly: string;
+
+	normalizedInviteeId: string;
+}
+
+export class FederationOnRoomCreationDto {
+	internalInviterId: string;
+
+	internalRoomId: string;
+
+	invitees: FederationInviteeDto[];
+}
+
+export class FederationSetupRoomDto {
+	internalInviterId: string;
+
+	internalRoomId: string;
+}

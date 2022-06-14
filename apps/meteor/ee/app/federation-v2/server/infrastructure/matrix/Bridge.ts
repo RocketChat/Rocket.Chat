@@ -3,7 +3,7 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { MatrixBridge } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
 import { IFederationBridgeEE } from '../../domain/IFederationBridge';
 
-export class MatrixBridgeEE extends MatrixBridge {
+export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE {
 	constructor(
 		protected appServiceId: string,
 		protected homeServerUrl: string,
@@ -19,7 +19,6 @@ export class MatrixBridgeEE extends MatrixBridge {
 
 	public async createRoom(
 		externalCreatorId: string,
-		// externalInviteeId: string,
 		roomType: RoomType,
 		roomName: string,
 		roomTopic?: string,

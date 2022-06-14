@@ -115,27 +115,40 @@ export const createRoom = function <T extends RoomType>(
 	}
 	const room = Rooms.createWithFullRoomData(roomProps);
 
-	for (const username of [...new Set(members as string[])]) {
-		const member = Users.findOneByUsername(username, {
-			fields: { 'username': 1, 'settings.preferences': 1 },
-		});
-		if (!member) {
-			continue;
-		}
-
+	const shouldBeHandledByFederation = room.federated === true;
+	if (shouldBeHandledByFederation) {
 		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-
 		extra.open = true;
+		extra.ls = now;
 
 		if (room.prid) {
 			extra.prid = room.prid;
 		}
 
-		if (username === owner.username) {
-			extra.ls = now;
-		}
+		Subscriptions.createWithRoomAndUser(room, owner, extra);
+	} else {
+		for (const username of [...new Set(members as string[])]) {
+			const member = Users.findOneByUsername(username, {
+				fields: { 'username': 1, 'settings.preferences': 1 },
+			});
+			if (!member) {
+				continue;
+			}
 
-		Subscriptions.createWithRoomAndUser(room, member, extra);
+			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
+
+			extra.open = true;
+
+			if (room.prid) {
+				extra.prid = room.prid;
+			}
+
+			if (username === owner.username) {
+				extra.ls = now;
+			}
+
+			Subscriptions.createWithRoomAndUser(room, member, extra);
+		}
 	}
 
 	addUserRoles(owner._id, ['owner'], room._id);
@@ -150,6 +163,9 @@ export const createRoom = function <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
+	if (shouldBeHandledByFederation) {
+		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
+	}
 
 	Apps.triggerEvent('IPostRoomCreate', room);
 

@@ -92,7 +92,6 @@ export class FederationRoomServiceSender {
 		if (!federatedRoom) {
 			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
-
 		await this.bridge.sendMessage(federatedRoom.externalId, federatedSender.externalId, message.msg);
 
 		return message;

@@ -53,9 +53,9 @@ export class MatrixBridge implements IFederationBridge {
 		if (!this.isRunning) {
 			return;
 		}
+		this.isRunning = false;
 		// the http server might take some minutes to shutdown, and this promise can take some time to be resolved
 		await this.bridgeInstance?.close();
-		this.isRunning = false;
 	}
 
 	public async getUserProfileInformation(externalUserId: string): Promise<any> {

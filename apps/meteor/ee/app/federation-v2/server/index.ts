@@ -42,6 +42,7 @@ onToggledFeature('federation', {
 			await stopFederation();
 			queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 			await runFederationEE();
+			FederationFactoryEE.setupListeners(federationRoomServiceSenderEE, rocketSettingsAdapter);
 		}),
 	down: () =>
 		Meteor.startup(async () => {

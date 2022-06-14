@@ -5,7 +5,6 @@ import { IFederationBridge } from '../../../../../app/federation-v2/server/domai
 export interface IFederationBridgeEE extends IFederationBridge {
 	createRoom(
 		externalCreatorId: string,
-		externalInviteeId: string,
 		roomType: RoomType,
 		roomName: string,
 		roomTopic?: string,

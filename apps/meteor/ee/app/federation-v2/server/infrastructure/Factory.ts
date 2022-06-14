@@ -1,3 +1,4 @@
+import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { FederationFactory } from '../../../../../app/federation-v2/server/infrastructure/Factory';
 import { MatrixRoomMessageSentHandler } from '../../../../../app/federation-v2/server/infrastructure/matrix/handlers/Room';
 import { InMemoryQueue } from '../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
@@ -12,6 +13,8 @@ import { MatrixEventsHandlerEE } from './matrix/handlers';
 import { MatrixRoomJoinRulesChangedHandler, MatrixRoomNameChangedHandler, MatrixRoomTopicChangedHandler } from './matrix/handlers/Room';
 import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapterEE } from './rocket-chat/adapters/Room';
+import { FederationRoomSenderConverterEE } from './rocket-chat/converters/RoomSender';
+import { FederationHooksEE } from './rocket-chat/hooks';
 
 export class FederationFactoryEE {
 	public static buildRoomServiceReceiver(
@@ -70,5 +73,9 @@ export class FederationFactoryEE {
 
 	public static buildRocketNotificationdapter(): RocketChatNotificationAdapter {
 		return new RocketChatNotificationAdapter();
+	}
+
+	public static setupListeners(roomServiceSender: FederationRoomServiceSenderEE, settingsAdapter: RocketChatSettingsAdapter): void {
+		FederationHooksEE.onFederatedRoomCreated(async (room: IRoom, owner: IUser, originalMemberList: string[]) => await roomServiceSender.handleOnRoomCreation(FederationRoomSenderConverterEE.toOnRoomCreationDto(owner._id, owner.username as string, room._id, originalMemberList, settingsAdapter.getHomeServerDomain())));
 	}
 }
