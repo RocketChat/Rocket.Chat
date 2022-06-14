@@ -26,27 +26,27 @@ test.describe('[Message Popup]', () => {
 	test.describe('User mentions', () => {
 		test('expect show message popup', async () => {
 			await mainContent.setTextToInput('@');
-			expect(await mainContent.messagePopUp().isVisible()).toBeTruthy();
+			expect(await mainContent.messagePopUp.isVisible()).toBeTruthy();
 		});
 
 		test('expect popup title to be people', async () => {
 			await mainContent.setTextToInput('@');
-			expect(await mainContent.messagePopUpTitle().locator('text=People').isVisible()).toBeTruthy();
+			expect(await mainContent.messagePopUpTitle.locator('text=People').isVisible()).toBeTruthy();
 		});
 
 		test('expect show "userMock.username" in options', async () => {
 			await mainContent.setTextToInput('@');
-			expect(await mainContent.messagePopUpItems().locator(`text=${userMock.username}`).isVisible()).toBeTruthy();
+			expect(await mainContent.messagePopUpItems.locator(`text=${userMock.username}`).isVisible()).toBeTruthy();
 		});
 
 		test('expect show "all" option', async () => {
 			await mainContent.setTextToInput('@');
-			expect(await mainContent.messagePopUpItems().locator('text=all').isVisible()).toBeTruthy();
+			expect(await mainContent.messagePopUpItems.locator('text=all').isVisible()).toBeTruthy();
 		});
 
 		test('expect show "here" option', async () => {
 			await mainContent.setTextToInput('@');
-			expect(await mainContent.messagePopUpItems().locator('text=here').isVisible()).toBeTruthy();
+			expect(await mainContent.messagePopUpItems.locator('text=here').isVisible()).toBeTruthy();
 		});
 	});
 });

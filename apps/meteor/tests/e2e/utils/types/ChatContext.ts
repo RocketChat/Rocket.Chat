@@ -1,5 +1,4 @@
-import MainContent from '../pageobjects/MainContent';
-import SideNav from '../pageobjects/SideNav';
+import { MainContent, SideNav } from '../pageobjects';
 
 export type ChatContext = {
 	mainContent: MainContent;

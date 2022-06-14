@@ -21,8 +21,8 @@ test.describe('[Department]', () => {
 		global = new Global(page);
 
 		await loginPage.login(adminLogin);
-		await sideNav.sidebarUserMenu().click();
-		await sideNav.omnichannel().click();
+		await sideNav.sidebarUserMenu.click();
+		await sideNav.omnichannel.click();
 	});
 
 	test.describe('[Render]', async () => {

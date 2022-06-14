@@ -3,64 +3,64 @@ import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class Administration extends BasePage {
-	public settingsSearch(): Locator {
-		return this.getPage().locator('input[type=search]');
+	get settingsSearch(): Locator {
+		return this.page.locator('input[type=search]');
 	}
 
-	public settingsLink(): Locator {
-		return this.getPage().locator('.flex-nav [href="/admin/settings"]');
+	get settingsLink(): Locator {
+		return this.page.locator('.flex-nav [href="/admin/settings"]');
 	}
 
-	public groupSettingsPageBack(): Locator {
-		return this.getPage().locator('button[title="Back"]');
+	get groupSettingsPageBack(): Locator {
+		return this.page.locator('button[title="Back"]');
 	}
 
-	public infoLink(): Locator {
-		return this.getPage().locator('//div[contains(text(),"Info")]');
+	get infoLink(): Locator {
+		return this.page.locator('//div[contains(text(),"Info")]');
 	}
 
-	public roomsLink(): Locator {
-		return this.getPage().locator('.flex-nav [href="/admin/rooms"]');
+	get roomsLink(): Locator {
+		return this.page.locator('.flex-nav [href="/admin/rooms"]');
 	}
 
-	public usersLink(): Locator {
-		return this.getPage().locator('.flex-nav [href="/admin/users"]');
+	get usersLink(): Locator {
+		return this.page.locator('.flex-nav [href="/admin/users"]');
 	}
 
-	public accountSettingsButton(): Locator {
-		return this.getPage().locator('[data-qa-id="Accounts"] button');
+	get accountSettingsButton(): Locator {
+		return this.page.locator('[data-qa-id="Accounts"] button');
 	}
 
-	public generalSettingsButton(): Locator {
-		return this.getPage().locator('[data-qa-id="General"] button');
+	get generalSettingsButton(): Locator {
+		return this.page.locator('[data-qa-id="General"] button');
 	}
 
-	public layoutSettingsButton(): Locator {
-		return this.getPage().locator('[data-qa-id="Layout"] button');
+	get layoutSettingsButton(): Locator {
+		return this.page.locator('[data-qa-id="Layout"] button');
 	}
 
-	public permissionsLink(): Locator {
-		return this.getPage().locator('.flex-nav [href="/admin/permissions"]');
+	get permissionsLink(): Locator {
+		return this.page.locator('.flex-nav [href="/admin/permissions"]');
 	}
 
-	public infoDeployment(): Locator {
-		return this.getPage().locator('//div[text()="Deployment"]');
+	get infoDeployment(): Locator {
+		return this.page.locator('//div[text()="Deployment"]');
 	}
 
-	public infoLicense(): Locator {
-		return this.getPage().locator('//div[text()="License"]');
+	get infoLicense(): Locator {
+		return this.page.locator('//div[text()="License"]');
 	}
 
-	public infoUsage(): Locator {
-		return this.getPage().locator('//div[text()="Usage"]');
+	get infoUsage(): Locator {
+		return this.page.locator('//div[text()="Usage"]');
 	}
 
-	public infoFederation(): Locator {
-		return this.getPage().locator('//section[@data-qa="admin-info"]//div[text()="Federation"]');
+	get infoFederation(): Locator {
+		return this.page.locator('//section[@data-qa="admin-info"]//div[text()="Federation"]');
 	}
 
-	public roomsSearchForm(): Locator {
-		return this.getPage().locator('input[placeholder ="Search Rooms"]');
+	get roomsSearchForm(): Locator {
+		return this.page.locator('input[placeholder ="Search Rooms"]');
 	}
 
 	public async verifyCheckBoxRendered(checkBoxes: string[]): Promise<void> {
@@ -71,295 +71,295 @@ export class Administration extends BasePage {
 		await Promise.all(expected);
 	}
 
-	public roomsGeneralChannel(): Locator {
-		return this.getPage().locator('//table//tbody//tr[1]//..//div//div//div//div[text()="general"]');
+	get roomsGeneralChannel(): Locator {
+		return this.page.locator('//table//tbody//tr[1]//..//div//div//div//div[text()="general"]');
 	}
 
-	public notFoundChannelOrUser(): Locator {
-		return this.getPage().locator("//div[text()='No data found']");
+	get notFoundChannelOrUser(): Locator {
+		return this.page.locator("//div[text()='No data found']");
 	}
 
-	public notFoundChannels(): Locator {
-		return this.getPage().locator("//div[text()='No results found']");
+	get notFoundChannels(): Locator {
+		return this.page.locator("//div[text()='No results found']");
 	}
 
-	public usersFilter(): Locator {
-		return this.getPage().locator('input[placeholder="Search Users"]');
+	get usersFilter(): Locator {
+		return this.page.locator('input[placeholder="Search Users"]');
 	}
 
 	public userInTable(id: string): Locator {
-		return this.getPage().locator(`tr > td:has-text("${id}")`);
+		return this.page.locator(`tr > td:has-text("${id}")`);
 	}
 
-	public rolesSettingsFindInput(): Locator {
-		return this.getPage().locator('[data-qa="PermissionTable-PermissionsTableFilter"]');
+	get rolesSettingsFindInput(): Locator {
+		return this.page.locator('[data-qa="PermissionTable-PermissionsTableFilter"]');
 	}
 
-	public rolesSettingsTab(): Locator {
-		return this.getPage().locator('[data-qa="PermissionTable-Settings"]');
+	get rolesSettingsTab(): Locator {
+		return this.page.locator('[data-qa="PermissionTable-Settings"]');
 	}
 
-	public homeTitleInput(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Layout_Home_Title"]');
+	get homeTitleInput(): Locator {
+		return this.page.locator('[data-qa-setting-id="Layout_Home_Title"]');
 	}
 
-	public buttonSave(): Locator {
-		return this.getPage().locator('button.save');
+	get buttonSave(): Locator {
+		return this.page.locator('button.save');
 	}
 
-	public generalSectionIframeIntegration(): Locator {
-		return this.getPage().locator('[data-qa-section="Iframe_Integration"]');
+	get generalSectionIframeIntegration(): Locator {
+		return this.page.locator('[data-qa-section="Iframe_Integration"]');
 	}
 
-	public generalIframeSendTargetOrigin(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Iframe_Integration_send_target_origin"]');
+	get generalIframeSendTargetOrigin(): Locator {
+		return this.page.locator('[data-qa-setting-id="Iframe_Integration_send_target_origin"]');
 	}
 
-	public generalSectionNotifications(): Locator {
-		return this.getPage().locator('[data-qa-section="Notifications"]');
+	get generalSectionNotifications(): Locator {
+		return this.page.locator('[data-qa-section="Notifications"]');
 	}
 
-	public generalSectionRestApi(): Locator {
-		return this.getPage().locator('[data-qa-section="REST API"]');
+	get generalSectionRestApi(): Locator {
+		return this.page.locator('[data-qa-section="REST API"]');
 	}
 
-	public generalSectionReporting(): Locator {
-		return this.getPage().locator('[data-qa-section="Reporting"]');
+	get generalSectionReporting(): Locator {
+		return this.page.locator('[data-qa-section="Reporting"]');
 	}
 
-	public generalSectionStreamCast(): Locator {
-		return this.getPage().locator('[data-qa-section="Stream_Cast"]');
+	get generalSectionStreamCast(): Locator {
+		return this.page.locator('[data-qa-section="Stream_Cast"]');
 	}
 
-	public generalSectionUTF8(): Locator {
-		return this.getPage().locator('[data-qa-section="UTF8"]');
+	get generalSectionUTF8(): Locator {
+		return this.page.locator('[data-qa-section="UTF8"]');
 	}
 
-	public generalSiteUrl(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Site_Url"]');
+	get generalSiteUrl(): Locator {
+		return this.page.locator('[data-qa-setting-id="Site_Url"]');
 	}
 
-	public generalSiteUrlReset(): Locator {
-		return this.getPage().locator('//label[@title="Site_Url"]//following-sibling::button');
+	get generalSiteUrlReset(): Locator {
+		return this.page.locator('//label[@title="Site_Url"]//following-sibling::button');
 	}
 
-	public generalSiteName(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Site_Name"]');
+	get generalSiteName(): Locator {
+		return this.page.locator('[data-qa-setting-id="Site_Name"]');
 	}
 
-	public generalSiteNameReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="Site_Name"]');
+	get generalSiteNameReset(): Locator {
+		return this.page.locator('[data-qa-reset-setting-id="Site_Name"]');
 	}
 
-	public generalHomeTitleReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="Layout_Home_Title"]');
+	get generalHomeTitleReset(): Locator {
+		return this.page.locator('[data-qa-reset-setting-id="Layout_Home_Title"]');
 	}
 
-	public generalLanguage(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Language"]');
+	get generalLanguage(): Locator {
+		return this.page.locator('[data-qa-setting-id="Language"]');
 	}
 
-	public generalSelfSignedCerts(): Locator {
-		return this.getPage().locator('//label[@data-qa-setting-id="Allow_Invalid_SelfSigned_Certs"]//i');
+	get generalSelfSignedCerts(): Locator {
+		return this.page.locator('//label[@data-qa-setting-id="Allow_Invalid_SelfSigned_Certs"]//i');
 	}
 
-	public generalSelfSignedCertsReset(): Locator {
-		return this.getPage().locator('//button[@data-qa-reset-setting-id="Allow_Invalid_SelfSigned_Certs"]');
+	get generalSelfSignedCertsReset(): Locator {
+		return this.page.locator('//button[@data-qa-reset-setting-id="Allow_Invalid_SelfSigned_Certs"]');
 	}
 
-	public generalFavoriteRoom(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Favorite_Rooms"]');
+	get generalFavoriteRoom(): Locator {
+		return this.page.locator('[data-qa-setting-id="Favorite_Rooms"]');
 	}
 
-	public generalFavoriteRoomReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="Favorite_Rooms"]');
+	get generalFavoriteRoomReset(): Locator {
+		return this.page.locator('[data-qa-reset-setting-id="Favorite_Rooms"]');
 	}
 
-	public generalCdnPrefix(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="CDN_PREFIX"]');
+	get generalCdnPrefix(): Locator {
+		return this.page.locator('[data-qa-setting-id="CDN_PREFIX"]');
 	}
 
-	public generalCdnPrefixReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="CDN_PREFIX"]');
+	get generalCdnPrefixReset(): Locator {
+		return this.page.locator('[data-qa-reset-setting-id="CDN_PREFIX"]');
 	}
 
-	public generalForceSSL(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Force_SSL"]');
+	get generalForceSSL(): Locator {
+		return this.page.locator('[data-qa-setting-id="Force_SSL"]');
 	}
 
-	public generalForceSSLReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="Force_SSL"]');
+	get generalForceSSLReset(): Locator {
+		return this.page.locator('[data-qa-reset-setting-id="Force_SSL"]');
 	}
 
-	public generalGoogleTagId(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="GoogleTagManager_id"]');
+	get generalGoogleTagId(): Locator {
+		return this.page.locator('[data-qa-setting-id="GoogleTagManager_id"]');
 	}
 
-	public generalGoogleTagIdReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="GoogleTagManager_id"]');
+	get generalGoogleTagIdReset(): Locator {
+		return this.page.locator('[data-qa-reset-setting-id="GoogleTagManager_id"]');
 	}
 
-	public generalBugsnagKey(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Bugsnag_api_key"]');
+	get generalBugsnagKey(): Locator {
+		return this.page.locator('[data-qa-setting-id="Bugsnag_api_key"]');
 	}
 
-	public generalBugsnagKeyReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="Bugsnag_api_key"]');
+	get generalBugsnagKeyReset(): Locator {
+		return this.page.locator('[data-qa-reset-setting-id="Bugsnag_api_key"]');
 	}
 
-	public robotsFileContents(): Locator {
-		return this.getPage().locator('#Robot_Instructions_File_Content');
+	get robotsFileContents(): Locator {
+		return this.page.locator('#Robot_Instructions_File_Content');
 	}
 
-	public robotsFileContentsReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="Robot_Instructions_File_Content"]');
+	get robotsFileContentsReset(): Locator {
+		return this.page.locator('[data-qa-reset-setting-id="Robot_Instructions_File_Content"]');
 	}
 
-	public defaultReferrerPolicy(): Locator {
-		return this.getPage().locator('//div[@data-qa-setting-id="Default_Referrer_Policy"]');
+	get defaultReferrerPolicy(): Locator {
+		return this.page.locator('//div[@data-qa-setting-id="Default_Referrer_Policy"]');
 	}
 
-	public defaultReferrerPolicyReset(): Locator {
-		return this.getPage().locator('[data-qa-reset-setting-id="Default_Referrer_Policy"]');
+	get defaultReferrerPolicyReset(): Locator {
+		return this.page.locator('[data-qa-reset-setting-id="Default_Referrer_Policy"]');
 	}
 
-	public defaultReferrerPolicyOptions(): Locator {
-		return this.getPage().locator('.rcx-options .rcx-option:first-child');
+	get defaultReferrerPolicyOptions(): Locator {
+		return this.page.locator('.rcx-options .rcx-option:first-child');
 	}
 
-	public generalIframeSend(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Iframe_Integration_send_enable"]');
+	get generalIframeSend(): Locator {
+		return this.page.locator('[data-qa-setting-id="Iframe_Integration_send_enable"]');
 	}
 
-	public generalIframeReceive(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Iframe_Integration_receive_enable"]');
+	get generalIframeReceive(): Locator {
+		return this.page.locator('[data-qa-setting-id="Iframe_Integration_receive_enable"]');
 	}
 
-	public generalIframeReceiveOrigin(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Iframe_Integration_receive_origin"]');
+	get generalIframeReceiveOrigin(): Locator {
+		return this.page.locator('[data-qa-setting-id="Iframe_Integration_receive_origin"]');
 	}
 
-	public generalNotificationsMaxRoomMembers(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Notifications_Max_Room_Members"]');
+	get generalNotificationsMaxRoomMembers(): Locator {
+		return this.page.locator('[data-qa-setting-id="Notifications_Max_Room_Members"]');
 	}
 
-	public generalRestApiUserLimit(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="API_User_Limit"]');
+	get generalRestApiUserLimit(): Locator {
+		return this.page.locator('[data-qa-setting-id="API_User_Limit"]');
 	}
 
-	public generalReporting(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Statistics_reporting"]');
+	get generalReporting(): Locator {
+		return this.page.locator('[data-qa-setting-id="Statistics_reporting"]');
 	}
 
-	public generalStreamCastAddress(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Stream_Cast_Address"]');
+	get generalStreamCastAddress(): Locator {
+		return this.page.locator('[data-qa-setting-id="Stream_Cast_Address"]');
 	}
 
-	public generalUTF8UsernamesRegex(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="UTF8_User_Names_Validation"]');
+	get generalUTF8UsernamesRegex(): Locator {
+		return this.page.locator('[data-qa-setting-id="UTF8_User_Names_Validation"]');
 	}
 
-	public generalUTF8ChannelsRegex(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="UTF8_Channel_Names_Validation"]');
+	get generalUTF8ChannelsRegex(): Locator {
+		return this.page.locator('[data-qa-setting-id="UTF8_Channel_Names_Validation"]');
 	}
 
-	public generalUTF8NamesSlug(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="UTF8_Names_Slugify"]');
+	get generalUTF8NamesSlug(): Locator {
+		return this.page.locator('[data-qa-setting-id="UTF8_Names_Slugify"]');
 	}
 
-	public accountsSectionDefaultUserPreferences(): Locator {
-		return this.getPage().locator('[data-qa-section="Accounts_Default_User_Preferences"]');
+	get accountsSectionDefaultUserPreferences(): Locator {
+		return this.page.locator('[data-qa-section="Accounts_Default_User_Preferences"]');
 	}
 
-	public accountsEnableAutoAway(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_enableAutoAway"]');
+	get accountsEnableAutoAway(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_enableAutoAway"]');
 	}
 
-	public accountsIdleTimeLimit(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_idleTimeLimit"]');
+	get accountsIdleTimeLimit(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_idleTimeLimit"]');
 	}
 
-	public accountsDesktopNotifications(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_desktopNotifications"]');
+	get accountsDesktopNotifications(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_desktopNotifications"]');
 	}
 
-	public accountsMobileNotifications(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_pushNotifications"]');
+	get accountsMobileNotifications(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_pushNotifications"]');
 	}
 
-	public accountsUnreadAlert(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_unreadAlert"]');
+	get accountsUnreadAlert(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_unreadAlert"]');
 	}
 
-	public accountsConvertAsciiEmoji(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_convertAsciiEmoji"]');
+	get accountsConvertAsciiEmoji(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_convertAsciiEmoji"]');
 	}
 
-	public accountsAutoImageLoad(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]');
+	get accountsAutoImageLoad(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_autoImageLoad"]');
 	}
 
-	public accountsSaveMobileBandwidth(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_saveMobileBandwidth"]');
+	get accountsSaveMobileBandwidth(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_saveMobileBandwidth"]');
 	}
 
-	public accountsCollapseMediaByDefault(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_collapseMediaByDefault"]');
+	get accountsCollapseMediaByDefault(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_collapseMediaByDefault"]');
 	}
 
-	public accountsHideUsernames(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_hideUsernames"]');
+	get accountsHideUsernames(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_hideUsernames"]');
 	}
 
-	public accountsHideRoles(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_hideRoles"]');
+	get accountsHideRoles(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_hideRoles"]');
 	}
 
-	public accountsHideFlexTab(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]');
+	get accountsHideFlexTab(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]');
 	}
 
-	public accountsDisplayAvatars(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_displayAvatars"]');
+	get accountsDisplayAvatars(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_displayAvatars"]');
 	}
 
-	public accountsSendOnEnter(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_sendOnEnter"]');
+	get accountsSendOnEnter(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_sendOnEnter"]');
 	}
 
-	public accountsMessageViewMode(): Locator {
-		return this.getPage().locator('//div[@data-qa-setting-id="Accounts_Default_User_Preferences_messageViewMode"]//div//span');
+	get accountsMessageViewMode(): Locator {
+		return this.page.locator('//div[@data-qa-setting-id="Accounts_Default_User_Preferences_messageViewMode"]//div//span');
 	}
 
-	public accountsEmailNotificationMode(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_emailNotificationMode"]');
+	get accountsEmailNotificationMode(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_emailNotificationMode"]');
 	}
 
-	public accountsNewRoomNotification(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_newRoomNotification"]');
+	get accountsNewRoomNotification(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_newRoomNotification"]');
 	}
 
-	public accountsNewMessageNotification(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_newMessageNotification"]');
+	get accountsNewMessageNotification(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_newMessageNotification"]');
 	}
 
-	public accountsNotificationsSoundVolume(): Locator {
-		return this.getPage().locator('[data-qa-setting-id="Accounts_Default_User_Preferences_notificationsSoundVolume"]');
+	get accountsNotificationsSoundVolume(): Locator {
+		return this.page.locator('[data-qa-setting-id="Accounts_Default_User_Preferences_notificationsSoundVolume"]');
 	}
 
 	public adminCheckBox(checkBox: string): Locator {
-		return this.getPage().locator(`//label[text()="${checkBox}"]/preceding-sibling::label/i`);
+		return this.page.locator(`//label[text()="${checkBox}"]/preceding-sibling::label/i`);
 	}
 
-	public inputPermissionsSearch(): Locator {
-		return this.getPage().locator('.main-content input[placeholder="Search"]');
+	get inputPermissionsSearch(): Locator {
+		return this.page.locator('.main-content input[placeholder="Search"]');
 	}
 
 	public getCheckboxPermission(label: string, column = 6): Locator {
-		return this.getPage().locator(`tr td:has-text("${label}") ~ td:nth-child(${column})`).locator('label').first();
+		return this.page.locator(`tr td:has-text("${label}") ~ td:nth-child(${column})`).locator('label').first();
 	}
 
-	public userInfoActions(): Locator {
-		return this.getPage().locator('[data-qa-id="UserInfoActions"]');
+	get userInfoActions(): Locator {
+		return this.page.locator('[data-qa-id="UserInfoActions"]');
 	}
 }

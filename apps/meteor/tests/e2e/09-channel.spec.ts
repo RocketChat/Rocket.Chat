@@ -39,7 +39,7 @@ test.describe('[Channel]', () => {
 		test.describe('[SpotlightSearch]', async () => {
 			test.describe('general:', () => {
 				test('expect search general', async () => {
-					await sideNav.spotlightSearchIcon().click();
+					await sideNav.spotlightSearchIcon.click();
 					await sideNav.searchChannel('general');
 				});
 
@@ -51,7 +51,7 @@ test.describe('[Channel]', () => {
 
 			test.describe('user created channel:', () => {
 				test('expect search the user created channel', async () => {
-					await sideNav.spotlightSearchIcon().click();
+					await sideNav.spotlightSearchIcon.click();
 					await sideNav.searchChannel(publicChannelName);
 				});
 
@@ -64,7 +64,7 @@ test.describe('[Channel]', () => {
 
 		test.describe('[SideNav Channel List]', () => {
 			test.beforeAll(async () => {
-				await mainContent.messageInput().click();
+				await mainContent.messageInput.click();
 			});
 
 			test.describe('general:', async () => {
@@ -98,14 +98,14 @@ test.describe('[Channel]', () => {
 
 		test.describe('Adding a user to the room:', async () => {
 			test.beforeAll(async () => {
-				if (await global.getToastBar().isVisible()) {
+				if (await global.getToastBar.isVisible()) {
 					await global.dismissToastBar();
 				}
 				await flexTab.operateFlexTab('members', true);
 			});
 
 			test.afterAll(async () => {
-				if (await global.getToastBar().isVisible()) {
+				if (await global.getToastBar.isVisible()) {
 					await global.dismissToastBar();
 				}
 				await flexTab.operateFlexTab('members', false);
@@ -114,7 +114,7 @@ test.describe('[Channel]', () => {
 			test('expect add people to the room', async () => {
 				await flexTab.addPeopleToChannel(targetUser);
 				hasUserAddedInChannel = true;
-				await expect(global.getToastBarSuccess()).toBeVisible();
+				await expect(global.getToastBarSuccess).toBeVisible();
 			});
 		});
 
@@ -122,24 +122,24 @@ test.describe('[Channel]', () => {
 			test.describe('[Channel topic edit]', async () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('info', true);
-					await flexTab.editNameBtn().click();
+					await flexTab.editNameBtn.click();
 				});
 
 				test.afterAll(async () => {
-					if (await global.getToastBar().isVisible()) {
+					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					if (await flexTab.mainSideBar().isVisible()) {
-						await flexTab.mainSideBarClose().click();
+					if (await flexTab.mainSideBar.isVisible()) {
+						await flexTab.mainSideBarClose.click();
 					}
 				});
 
 				test('expect edit the topic input', async () => {
-					await flexTab.editTopicTextInput().fill('TOPIC EDITED');
+					await flexTab.editTopicTextInput.fill('TOPIC EDITED');
 				});
 
 				test('expect save the topic', async () => {
-					await flexTab.editNameSave().click();
+					await flexTab.editNameSave.click();
 				});
 
 				test('expect show the new topic', async () => {
@@ -150,57 +150,57 @@ test.describe('[Channel]', () => {
 			test.describe('[Channel announcement edit]', async () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('info', true);
-					await flexTab.editNameBtn().click();
+					await flexTab.editNameBtn.click();
 				});
 
 				test.afterAll(async () => {
-					if (await global.getToastBar().isVisible()) {
+					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					if (await flexTab.mainSideBar().isVisible()) {
-						await flexTab.mainSideBarClose().click();
+					if (await flexTab.mainSideBar.isVisible()) {
+						await flexTab.mainSideBarClose.click();
 					}
 				});
 
 				test('expect edit the announcement input', async () => {
-					await flexTab.editAnnouncementTextInput().type('ANNOUNCEMENT EDITED');
+					await flexTab.editAnnouncementTextInput.type('ANNOUNCEMENT EDITED');
 				});
 
 				test('expect save the announcement', async () => {
-					await flexTab.editNameSave().click();
+					await flexTab.editNameSave.click();
 				});
 
 				test('expect show the new announcement', async () => {
-					await expect(flexTab.thirdSetting()).toHaveText('ANNOUNCEMENT EDITED');
+					await expect(flexTab.thirdSetting).toHaveText('ANNOUNCEMENT EDITED');
 				});
 			});
 
 			test.describe('[Channel description edit]', async () => {
 				test.beforeAll(async () => {
 					await flexTab.operateFlexTab('info', true);
-					await flexTab.editNameBtn().click();
+					await flexTab.editNameBtn.click();
 				});
 
 				test.afterAll(async () => {
-					if (await global.getToastBar().isVisible()) {
+					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					if (await flexTab.mainSideBar().isVisible()) {
-						await flexTab.mainSideBarClose().click();
+					if (await flexTab.mainSideBar.isVisible()) {
+						await flexTab.mainSideBarClose.click();
 					}
 				});
 
 				test('expect edit the description input', async () => {
-					await flexTab.editDescriptionTextInput().type('DESCRIPTION EDITED');
+					await flexTab.editDescriptionTextInput.type('DESCRIPTION EDITED');
 				});
 
 				test('expect save the description', async () => {
-					await flexTab.editNameSave().click();
+					await flexTab.editNameSave.click();
 				});
 
 				test('expect show the new description', async () => {
-					await flexTab.mainSideBarBack().click();
-					await expect(flexTab.fourthSetting()).toHaveText('DESCRIPTION EDITED');
+					await flexTab.mainSideBarBack.click();
+					await expect(flexTab.fourthSetting).toHaveText('DESCRIPTION EDITED');
 				});
 			});
 		});
@@ -217,7 +217,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await global.getToastBar().isVisible()) {
+					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
 					await flexTab.operateFlexTab('members', false);
@@ -239,7 +239,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await global.getToastBar().isVisible()) {
+					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
 					await flexTab.operateFlexTab('members', false);
@@ -250,17 +250,17 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect dismiss the toast', async () => {
-					if (await global.getToastBar().isVisible()) {
+					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
 				});
 
 				test('expect the last message should be a subscription role added', async () => {
-					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
+					await expect(mainContent.lastMessageRoleAdded).toBeVisible();
 				});
 
 				test('expect show the target username in owner add message', async () => {
-					await expect(mainContent.lastMessageRoleAdded()).toContainText(targetUser);
+					await expect(mainContent.lastMessageRoleAdded).toContainText(targetUser);
 				});
 			});
 
@@ -275,7 +275,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await global.getToastBar().isVisible()) {
+					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
 					await flexTab.operateFlexTab('members', false);
@@ -286,42 +286,42 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect be that the last message is a subscription role added', async () => {
-					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
+					await expect(mainContent.lastMessageRoleAdded).toBeVisible();
 				});
 			});
 
 			test.describe('Channel name edit', async () => {
 				test.beforeAll(async () => {
-					if (await global.getToastBar().isVisible()) {
+					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
 					await flexTab.operateFlexTab('info', true);
 				});
 
 				test.afterAll(async () => {
-					if (await global.getToastBar().isVisible()) {
+					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
 
-					if (await flexTab.mainSideBar().isVisible()) {
+					if (await flexTab.mainSideBar.isVisible()) {
 						await flexTab.operateFlexTab('info', false);
 					}
 				});
 
 				test('expect show the old name', async () => {
-					await expect(flexTab.firstSetting()).toHaveText(publicChannelName);
+					await expect(flexTab.firstSetting).toHaveText(publicChannelName);
 				});
 
 				test('expect click the edit name', async () => {
-					await flexTab.editNameBtn().click();
+					await flexTab.editNameBtn.click();
 				});
 
 				test('expect edit the name input', async () => {
-					await flexTab.editNameTextInput().fill(`NAME-EDITED-${publicChannelName}`);
+					await flexTab.editNameTextInput.fill(`NAME-EDITED-${publicChannelName}`);
 				});
 
 				test('expect save the name', async () => {
-					await flexTab.editNameSave().click();
+					await flexTab.editNameSave.click();
 				});
 
 				test('expect show the new name', async () => {

@@ -18,24 +18,24 @@ test.describe('[Forgot Password]', () => {
 	test('expect be required', async () => {
 		loginPage.submit();
 
-		await expect(loginPage.emailInvalidText()).toBeVisible();
+		await expect(loginPage.emailInvalidText).toBeVisible();
 	});
 
 	test('expect invalid for email without domain', async () => {
-		await loginPage.emailField().type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
+		await loginPage.emailField.type(INVALID_EMAIL_WITHOUT_MAIL_PROVIDER);
 		await loginPage.submit();
-		await expect(loginPage.emailInvalidText()).toBeVisible();
+		await expect(loginPage.emailInvalidText).toBeVisible();
 	});
 
 	test('expect be invalid for email with invalid domain', async () => {
-		await loginPage.emailField().type(INVALID_EMAIL);
+		await loginPage.emailField.type(INVALID_EMAIL);
 		await loginPage.submit();
-		await expect(loginPage.emailInvalidText()).toBeVisible();
+		await expect(loginPage.emailInvalidText).toBeVisible();
 	});
 
 	test('expect user type a valid email', async () => {
-		await loginPage.emailField().type(VALID_EMAIL);
+		await loginPage.emailField.type(VALID_EMAIL);
 		await loginPage.submit();
-		await expect(global.getToastBarSuccess()).toBeVisible();
+		await expect(global.getToastBarSuccess).toBeVisible();
 	});
 });

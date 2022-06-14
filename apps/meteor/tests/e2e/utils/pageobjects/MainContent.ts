@@ -5,210 +5,210 @@ import { expect, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class MainContent extends BasePage {
-	public mainContent(): Locator {
-		return this.getPage().locator('.main-content');
+	get mainContent(): Locator {
+		return this.page.locator('.main-content');
 	}
 
-	public emptyFavoriteStar(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-room-header")]//*[contains(@class, "rcx-icon--name-star")]');
+	get emptyFavoriteStar(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-room-header")]//*[contains(@class, "rcx-icon--name-star")]');
 	}
 
-	public favoriteStar(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-room-header")]//*[contains(@class, "rcx-icon--name-star-filled")]');
+	get favoriteStar(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-room-header")]//*[contains(@class, "rcx-icon--name-star-filled")]');
 	}
 
 	public channelTitle(title: string): Locator {
-		return this.getPage().locator('.rcx-room-header', { hasText: title });
+		return this.page.locator('.rcx-room-header', { hasText: title });
 	}
 
-	public messageInput(): Locator {
-		return this.getPage().locator('[name="msg"]');
+	get messageInput(): Locator {
+		return this.page.locator('[name="msg"]');
 	}
 
-	public sendBtn(): Locator {
-		return this.getPage().locator('.rc-message-box__icon.js-send');
+	get sendBtn(): Locator {
+		return this.page.locator('.rc-message-box__icon.js-send');
 	}
 
-	public messageBoxActions(): Locator {
-		return this.getPage().locator('(//*[contains(@class, "rc-message-box__icon")])[1]');
+	get messageBoxActions(): Locator {
+		return this.page.locator('(//*[contains(@class, "rc-message-box__icon")])[1]');
 	}
 
-	public recordBtn(): Locator {
-		return this.getPage().locator('[data-qa-id="audio-record"]');
+	get recordBtn(): Locator {
+		return this.page.locator('[data-qa-id="audio-record"]');
 	}
 
-	public emojiBtn(): Locator {
-		return this.getPage().locator('.rc-message-box__icon.emoji-picker-icon');
+	get emojiBtn(): Locator {
+		return this.page.locator('.rc-message-box__icon.emoji-picker-icon');
 	}
 
-	public messagePopUp(): Locator {
-		return this.getPage().locator('.message-popup');
+	get messagePopUp(): Locator {
+		return this.page.locator('.message-popup');
 	}
 
-	public messagePopUpTitle(): Locator {
-		return this.getPage().locator('.message-popup-title');
+	get messagePopUpTitle(): Locator {
+		return this.page.locator('.message-popup-title');
 	}
 
-	public messagePopUpItems(): Locator {
-		return this.getPage().locator('.message-popup-items');
+	get messagePopUpItems(): Locator {
+		return this.page.locator('.message-popup-items');
 	}
 
-	public messagePopUpFirstItem(): Locator {
-		return this.getPage().locator('.popup-item.selected');
+	get messagePopUpFirstItem(): Locator {
+		return this.page.locator('.popup-item.selected');
 	}
 
-	public lastMessageUser(): Locator {
-		return this.getPage().locator('.message:last-child div:nth-child(2) button');
+	get lastMessageUser(): Locator {
+		return this.page.locator('.message:last-child div:nth-child(2) button');
 	}
 
-	public lastMessageFileName(): Locator {
-		return this.getPage().locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div a:nth-child(1)');
+	get lastMessageFileName(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div a:nth-child(1)');
 	}
 
-	public lastMessage(): Locator {
-		return this.getPage().locator('.messages-box [data-qa-type="message"]').last();
+	get lastMessage(): Locator {
+		return this.page.locator('.messages-box [data-qa-type="message"]').last();
 	}
 
-	public lastMessageRoleAdded(): Locator {
-		return this.getPage().locator('.message:last-child.subscription-role-added .body');
+	get lastMessageRoleAdded(): Locator {
+		return this.page.locator('.message:last-child.subscription-role-added .body');
 	}
 
-	public lastMessageUserTag(): Locator {
-		return this.getPage().locator('.message:last-child .role-tag');
+	get lastMessageUserTag(): Locator {
+		return this.page.locator('.message:last-child .role-tag');
 	}
 
-	public lastMessageForMessageTest(): Locator {
-		return this.getPage().locator('[data-qa-type="message"]:last-child div.message-body-wrapper div:nth-child(2)');
+	get lastMessageForMessageTest(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child div.message-body-wrapper div:nth-child(2)');
 	}
 
-	public messageOptionsBtns(): Locator {
-		return this.getPage().locator('.message:last-child .message-actions');
+	get messageOptionsBtns(): Locator {
+		return this.page.locator('.message:last-child .message-actions');
 	}
 
-	public messageReply(): Locator {
-		return this.getPage().locator('[data-qa-id="reply-in-thread"]');
+	get messageReply(): Locator {
+		return this.page.locator('[data-qa-id="reply-in-thread"]');
 	}
 
-	public messageEdit(): Locator {
-		return this.getPage().locator('[data-qa-id="edit-message"]');
+	get messageEdit(): Locator {
+		return this.page.locator('[data-qa-id="edit-message"]');
 	}
 
-	public messageDelete(): Locator {
-		return this.getPage().locator('[data-qa-id="delete-message"]');
+	get messageDelete(): Locator {
+		return this.page.locator('[data-qa-id="delete-message"]');
 	}
 
-	public messagePermalink(): Locator {
-		return this.getPage().locator('[data-qa-id="permalink"]');
+	get messagePermalink(): Locator {
+		return this.page.locator('[data-qa-id="permalink"]');
 	}
 
-	public messageCopy(): Locator {
-		return this.getPage().locator('[data-qa-id="copy"]');
+	get messageCopy(): Locator {
+		return this.page.locator('[data-qa-id="copy"]');
 	}
 
-	public messageQuote(): Locator {
-		return this.getPage().locator('[data-qa-id="quote-message"]');
+	get messageQuote(): Locator {
+		return this.page.locator('[data-qa-id="quote-message"]');
 	}
 
-	public messageStar(): Locator {
-		return this.getPage().locator('[data-qa-id="star-message"]');
+	get messageStar(): Locator {
+		return this.page.locator('[data-qa-id="star-message"]');
 	}
 
-	public messageUnread(): Locator {
-		return this.getPage().locator('[data-id="mark-message-as-unread"][data-type="message-action"]');
+	get messageUnread(): Locator {
+		return this.page.locator('[data-id="mark-message-as-unread"][data-type="message-action"]');
 	}
 
-	public emojiPickerMainScreen(): Locator {
-		return this.getPage().locator('.emoji-picker');
+	get emojiPickerMainScreen(): Locator {
+		return this.page.locator('.emoji-picker');
 	}
 
-	public emojiPickerPeopleIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-people")]');
+	get emojiPickerPeopleIcon(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-people")]');
 	}
 
-	public emojiPickerNatureIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-nature")]');
+	get emojiPickerNatureIcon(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-nature")]');
 	}
 
-	public emojiPickerFoodIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-food")]');
+	get emojiPickerFoodIcon(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-food")]');
 	}
 
-	public emojiPickerActivityIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-activity")]');
+	get emojiPickerActivityIcon(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-activity")]');
 	}
 
-	public emojiPickerTravelIcon(): Locator {
-		return this.getPage().locator('.emoji-picker .icon-travel');
+	get emojiPickerTravelIcon(): Locator {
+		return this.page.locator('.emoji-picker .icon-travel');
 	}
 
-	public emojiPickerObjectsIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-objects")]');
+	get emojiPickerObjectsIcon(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-objects")]');
 	}
 
-	public emojiPickerSymbolsIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-symbols")]');
+	get emojiPickerSymbolsIcon(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-symbols")]');
 	}
 
-	public emojiPickerFlagsIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-flags")]');
+	get emojiPickerFlagsIcon(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-flags")]');
 	}
 
-	public emojiPickerCustomIcon(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-rocket")]');
+	get emojiPickerCustomIcon(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "icon-rocket")]');
 	}
 
-	public emojiPickerFilter(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "js-emojipicker-search")]');
+	get emojiPickerFilter(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "js-emojipicker-search")]');
 	}
 
-	public emojiPickerChangeTone(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "change-tone")]');
+	get emojiPickerChangeTone(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "change-tone")]');
 	}
 
-	public emojiGrinning(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-grinning")]');
+	get emojiGrinning(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-grinning")]');
 	}
 
-	public emojiSmile(): Locator {
-		return this.getPage().locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-smile")]');
+	get emojiSmile(): Locator {
+		return this.page.locator('//*[contains(@class, "emoji-picker")]//*[contains(@class, "emoji-smile")]');
 	}
 
-	public modalTitle(): Locator {
-		return this.getPage().locator('#modal-root .rcx-modal__title');
+	get modalTitle(): Locator {
+		return this.page.locator('#modal-root .rcx-modal__title');
 	}
 
-	public modalCancelButton(): Locator {
-		return this.getPage().locator('#modal-root .rcx-button-group--align-end .rcx-button--ghost');
+	get modalCancelButton(): Locator {
+		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--ghost');
 	}
 
-	public modalDeleteMessageButton(): Locator {
-		return this.getPage().locator('#modal-root .rcx-button-group--align-end .rcx-button--primary-danger');
+	get modalDeleteMessageButton(): Locator {
+		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary-danger');
 	}
 
-	public buttonSend(): Locator {
-		return this.getPage().locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
+	get buttonSend(): Locator {
+		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
 
-	public modalFilePreview(): Locator {
-		return this.getPage().locator(
+	get modalFilePreview(): Locator {
+		return this.page.locator(
 			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
 		);
 	}
 
-	public fileName(): Locator {
-		return this.getPage().locator('//div[@id="modal-root"]//fieldset//div[1]//label');
+	get fileName(): Locator {
+		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//label');
 	}
 
-	public fileDescription(): Locator {
-		return this.getPage().locator('//div[@id="modal-root"]//fieldset//div[2]//label');
+	get fileDescription(): Locator {
+		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//label');
 	}
 
 	public async waitForLastMessageEqualsHtml(text: string): Promise<void> {
-		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
+		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
 
 	public async waitForLastMessageEqualsText(text: string): Promise<void> {
-		await expect(this.getPage().locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
+		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
 
 	public async sendMessage(text: string): Promise<void> {
@@ -217,19 +217,19 @@ export class MainContent extends BasePage {
 	}
 
 	public async addTextToInput(text: any): Promise<void> {
-		await this.messageInput().type(text);
+		await this.messageInput.type(text);
 	}
 
 	public async setTextToInput(text: string, options: { delay?: number } = {}): Promise<void> {
-		await this.messageInput().click({ clickCount: 3 });
-		await this.getPage().keyboard.press('Backspace');
-		await this.messageInput().type(text, { delay: options.delay ?? 0 });
+		await this.messageInput.click({ clickCount: 3 });
+		await this.page.keyboard.press('Backspace');
+		await this.messageInput.type(text, { delay: options.delay ?? 0 });
 	}
 
 	public async dragAndDropFile(): Promise<void> {
 		const contract = await fs.promises.readFile('./tests/e2e/utils/fixtures/any_file.txt', 'utf-8');
 
-		const dataTransfer = await this.getPage().evaluateHandle((contract) => {
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'any_file.txt', {
 				type: 'text/plain',
@@ -238,7 +238,7 @@ export class MainContent extends BasePage {
 			return data;
 		}, contract);
 
-		await this.getPage().dispatchEvent(
+		await this.page.dispatchEvent(
 			'div.dropzone-overlay.dropzone-overlay--enabled.background-transparent-darkest.color-content-background-color',
 			'drop',
 			{ dataTransfer },
@@ -246,100 +246,100 @@ export class MainContent extends BasePage {
 	}
 
 	public async sendFileClick(): Promise<void> {
-		await this.buttonSend().click();
+		await this.buttonSend.click();
 	}
 
-	public descriptionInput(): Locator {
-		return this.getPage().locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
+	get descriptionInput(): Locator {
+		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
 	}
 
-	public fileNameInput(): Locator {
-		return this.getPage().locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
+	get fileNameInput(): Locator {
+		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
 	}
 
 	public async setFileName(): Promise<void> {
-		await this.fileNameInput().fill('any_file1.txt');
+		await this.fileNameInput.fill('any_file1.txt');
 	}
 
 	public async setDescription(): Promise<void> {
-		await this.descriptionInput().type('any_description');
+		await this.descriptionInput.type('any_description');
 	}
 
-	public getFileDescription(): Locator {
-		return this.getPage().locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div p');
+	get getFileDescription(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div p');
 	}
 
 	public async selectAction(action: string): Promise<void> {
 		switch (action) {
 			case 'edit':
-				await this.messageEdit().click();
-				await this.messageInput().fill('this message was edited');
+				await this.messageEdit.click();
+				await this.messageInput.fill('this message was edited');
 				await this.keyboardPress('Enter');
-				await expect(this.lastMessageForMessageTest()).toHaveText('this message was edited');
+				await expect(this.lastMessageForMessageTest).toHaveText('this message was edited');
 				break;
 			case 'reply':
-				this.messageReply().click();
+				this.messageReply.click();
 				break;
 			case 'delete':
-				await this.messageDelete().click();
+				await this.messageDelete.click();
 				await this.acceptDeleteMessage();
-				await expect(this.lastMessageForMessageTest()).not.toHaveText('Message for Message Delete Tests');
+				await expect(this.lastMessageForMessageTest).not.toHaveText('Message for Message Delete Tests');
 				break;
 			case 'permalink':
-				await this.messagePermalink().click();
+				await this.messagePermalink.click();
 				break;
 			case 'copy':
-				await this.messageCopy().click();
+				await this.messageCopy.click();
 				break;
 			case 'quote':
-				await this.messageQuote().click();
-				await this.messageInput().type('this is a quote message');
+				await this.messageQuote.click();
+				await this.messageInput.type('this is a quote message');
 				await this.keyboardPress('Enter');
 				break;
 			case 'star':
-				await this.messageStar().click();
-				await expect(this.getPage().locator('div.rcx-toastbar:has-text("Message has been starred")')).toBeVisible();
+				await this.messageStar.click();
+				await expect(this.page.locator('div.rcx-toastbar:has-text("Message has been starred")')).toBeVisible();
 				break;
 			case 'unread':
-				await this.messageUnread().click();
+				await this.messageUnread.click();
 				break;
 			case 'reaction':
-				await this.messageReply().click();
-				await this.emojiPickerPeopleIcon().click();
-				await this.emojiGrinning().click();
+				await this.messageReply.click();
+				await this.emojiPickerPeopleIcon.click();
+				await this.emojiGrinning.click();
 				break;
 		}
 	}
 
 	public async openMessageActionMenu(): Promise<void> {
-		await this.getPage().locator('.messages-box [data-qa-type="message"]:last-child').hover();
-		await this.getPage().locator('[data-qa-type="message"]:last-child div.message-actions__menu').waitFor();
-		await this.getPage().locator('[data-qa-type="message"]:last-child div.message-actions__menu').click();
+		await this.page.locator('.messages-box [data-qa-type="message"]:last-child').hover();
+		await this.page.locator('[data-qa-type="message"]:last-child div.message-actions__menu').waitFor();
+		await this.page.locator('[data-qa-type="message"]:last-child div.message-actions__menu').click();
 	}
 
 	public async openMoreActionMenu(): Promise<void> {
-		await this.getPage().locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
-		await this.getPage().waitForSelector('.rc-popover__content');
+		await this.page.locator('.rc-message-box [data-qa-id="menu-more-actions"]').click();
+		await this.page.waitForSelector('.rc-popover__content');
 	}
 
 	public async acceptDeleteMessage(): Promise<void> {
-		await this.modalDeleteMessageButton().click();
+		await this.modalDeleteMessageButton.click();
 	}
 
-	public waitForLastMessageTextAttachmentEqualsText(): Locator {
-		return this.getPage().locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
+	get waitForLastMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
 	}
 
-	public userCard(): Locator {
-		return this.getPage().locator('[data-qa="UserCard"]');
+	get userCard(): Locator {
+		return this.page.locator('[data-qa="UserCard"]');
 	}
 
-	public viewUserProfile(): Locator {
-		return this.getPage().locator('[data-qa="UserCard"] a');
+	get viewUserProfile(): Locator {
+		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
 	public async doReload(): Promise<void> {
-		await this.getPage().reload({ waitUntil: 'load' });
-		await this.getPage().waitForSelector('.messages-box');
+		await this.page.reload({ waitUntil: 'load' });
+		await this.page.waitForSelector('.messages-box');
 	}
 }

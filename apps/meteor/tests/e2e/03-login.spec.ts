@@ -21,7 +21,7 @@ test.describe('[Login]', () => {
 			password: 'any_password1',
 		};
 		await loginPage.login(invalidUserPassword);
-		await expect(global.getToastBarError()).toBeVisible();
+		await expect(global.getToastBarError).toBeVisible();
 	});
 
 	test('expect user make login', async () => {

@@ -8,6 +8,7 @@ import { LoginPage, SetupWizard } from './utils/pageobjects';
 test.describe('[Wizard]', () => {
 	let setupWizard: SetupWizard;
 	let loginPage: LoginPage;
+
 	test.beforeEach(async ({ page }) => {
 		setupWizard = new SetupWizard(page);
 		loginPage = new LoginPage(page);
@@ -26,7 +27,7 @@ test.describe('[Wizard]', () => {
 
 		test('expect go to Step 3 successfully', async () => {
 			await setupWizard.stepTwoSuccess();
-			await expect(setupWizard.getPage()).toHaveURL(setupWizardStepRegex._3);
+			await expect(setupWizard.page).toHaveURL(setupWizardStepRegex._3);
 		});
 	});
 
@@ -38,11 +39,11 @@ test.describe('[Wizard]', () => {
 		});
 
 		test('expect have email field to register the server', async () => {
-			await expect(setupWizard.registeredServer()).toBeVisible();
+			await expect(setupWizard.registeredServer).toBeVisible();
 		});
 
 		test('expect start "Register" button disabled', async () => {
-			await expect(setupWizard.registerButton()).toBeDisabled();
+			await expect(setupWizard.registerButton).toBeDisabled();
 		});
 
 		test('expect show an error on invalid email', async () => {
@@ -50,13 +51,13 @@ test.describe('[Wizard]', () => {
 		});
 
 		test('expect enable "Register" button when email is valid and terms checked', async () => {
-			await setupWizard.registeredServer().type(VALID_EMAIL);
-			await setupWizard.agreementField().click();
-			await expect(setupWizard.registerButton()).toBeEnabled();
+			await setupWizard.registeredServer.type(VALID_EMAIL);
+			await setupWizard.agreementField.click();
+			await expect(setupWizard.registerButton).toBeEnabled();
 		});
 
 		test('expect have option for standalone server', async () => {
-			await expect(setupWizard.standaloneServer()).toBeVisible();
+			await expect(setupWizard.standaloneServer).toBeVisible();
 		});
 	});
 
@@ -69,12 +70,12 @@ test.describe('[Wizard]', () => {
 		});
 
 		test('expect confirm the standalone option', async () => {
-			await expect(setupWizard.goToWorkspace()).toBeVisible();
-			await expect(setupWizard.standaloneConfirmText()).toBeVisible();
+			await expect(setupWizard.goToWorkspace).toBeVisible();
+			await expect(setupWizard.standaloneConfirmText).toBeVisible();
 		});
 
 		test('expect confirm standalone', async () => {
-			await setupWizard.goToWorkspace().click();
+			await setupWizard.goToWorkspace.click();
 			await setupWizard.waitForSelector(HOME_SELECTOR);
 		});
 	});

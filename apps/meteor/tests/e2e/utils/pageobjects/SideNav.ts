@@ -4,177 +4,177 @@ import { BasePage } from './BasePage';
 import { ENTER } from '../mocks/keyboardKeyMock';
 
 export class SideNav extends BasePage {
-	public channelType(): Locator {
-		return this.getPage().locator(
+	get channelType(): Locator {
+		return this.page.locator(
 			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
 		);
 	}
 
-	public channelName(): Locator {
-		return this.getPage().locator('#modal-root [placeholder="Channel Name"]');
+	get channelName(): Locator {
+		return this.page.locator('#modal-root [placeholder="Channel Name"]');
 	}
 
-	public saveChannelBtn(): Locator {
-		return this.getPage().locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
+	get saveChannelBtn(): Locator {
+		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
-	public sidebarUserMenu(): Locator {
-		return this.getPage().locator('[data-qa="sidebar-avatar-button"]');
+	get sidebarUserMenu(): Locator {
+		return this.page.locator('[data-qa="sidebar-avatar-button"]');
 	}
 
-	public statusOnline(): Locator {
-		return this.getPage().locator('(//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "online")])[1]');
+	get statusOnline(): Locator {
+		return this.page.locator('(//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "online")])[1]');
 	}
 
-	public statusAway(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "away")]');
+	get statusAway(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "away")]');
 	}
 
-	public statusBusy(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "busy")]');
+	get statusBusy(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "busy")]');
 	}
 
-	public statusOffline(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "offline")]');
+	get statusOffline(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-box--with-inline-elements") and contains(text(), "offline")]');
 	}
 
-	public account(): Locator {
-		return this.getPage().locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]');
+	get account(): Locator {
+		return this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "My Account")]');
 	}
 
-	public admin(): Locator {
-		return this.getPage().locator('//li[@class="rcx-option"]//div[contains(text(), "Administration")]');
+	get admin(): Locator {
+		return this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "Administration")]');
 	}
 
-	public omnichannel(): Locator {
-		return this.getPage().locator('li.rcx-option >> text="Omnichannel"');
+	get omnichannel(): Locator {
+		return this.page.locator('li.rcx-option >> text="Omnichannel"');
 	}
 
 	get users(): Locator {
-		return this.getPage().locator('.flex-nav [href="/admin/users"]');
+		return this.page.locator('.flex-nav [href="/admin/users"]');
 	}
 
-	public logout(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]');
+	get logout(): Locator {
+		return this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]');
 	}
 
-	public sideNavBar(): Locator {
-		return this.getPage().locator('.sidebar');
+	get sideNavBar(): Locator {
+		return this.page.locator('.sidebar');
 	}
 
-	public flexNav(): Locator {
-		return this.getPage().locator('.flex-nav');
+	get flexNav(): Locator {
+		return this.page.locator('.flex-nav');
 	}
 
-	public spotlightSearchIcon(): Locator {
-		return this.getPage().locator('[data-qa="sidebar-search"]');
+	get spotlightSearchIcon(): Locator {
+		return this.page.locator('[data-qa="sidebar-search"]');
 	}
 
-	public spotlightSearch(): Locator {
-		return this.getPage().locator('[data-qa="sidebar-search-input"]');
+	get spotlightSearch(): Locator {
+		return this.page.locator('[data-qa="sidebar-search-input"]');
 	}
 
-	public spotlightSearchPopUp(): Locator {
-		return this.getPage().locator('[data-qa="sidebar-search-result"]');
+	get spotlightSearchPopUp(): Locator {
+		return this.page.locator('[data-qa="sidebar-search-result"]');
 	}
 
-	public newChannelBtnToolbar(): Locator {
-		return this.getPage().locator('[data-qa="sidebar-create"]');
+	get newChannelBtnToolbar(): Locator {
+		return this.page.locator('[data-qa="sidebar-create"]');
 	}
 
-	public newChannelBtn(): Locator {
-		return this.getPage().locator('li.rcx-option >> text="Channel"');
+	get newChannelBtn(): Locator {
+		return this.page.locator('li.rcx-option >> text="Channel"');
 	}
 
-	public general(): Locator {
+	get general(): Locator {
 		return this.getChannelFromList('general');
 	}
 
-	public preferences(): Locator {
-		return this.getPage().locator('[href="/account/preferences"]');
+	get preferences(): Locator {
+		return this.page.locator('[href="/account/preferences"]');
 	}
 
-	public profile(): Locator {
-		return this.getPage().locator('[href="/account/profile"]');
+	get profile(): Locator {
+		return this.page.locator('[href="/account/profile"]');
 	}
 
-	public preferencesClose(): Locator {
-		return this.getPage().locator('//*[contains(@class,"flex-nav")]//i[contains(@class, "rcx-icon--name-cross")]');
+	get preferencesClose(): Locator {
+		return this.page.locator('//*[contains(@class,"flex-nav")]//i[contains(@class, "rcx-icon--name-cross")]');
 	}
 
-	public burgerBtn(): Locator {
-		return this.getPage().locator('[data-qa-id="burger-menu"]');
+	get burgerBtn(): Locator {
+		return this.page.locator('[data-qa-id="burger-menu"]');
 	}
 
-	public firstSidebarItemMenu(): Locator {
-		return this.getPage().locator('[data-qa=sidebar-avatar-button]');
+	get firstSidebarItemMenu(): Locator {
+		return this.page.locator('[data-qa=sidebar-avatar-button]');
 	}
 
-	public returnToMenuInLowResolution(): Locator {
-		return this.getPage().locator('//button[@aria-label="Close menu"]');
+	get returnToMenuInLowResolution(): Locator {
+		return this.page.locator('//button[@aria-label="Close menu"]');
 	}
 
 	public async isSideBarOpen(): Promise<boolean> {
-		return !!(await this.sideNavBar().getAttribute('style'));
+		return !!(await this.sideNavBar.getAttribute('style'));
 	}
 
 	public async openChannel(channelName: string): Promise<void> {
-		await this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();
-		await this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).click();
-		await expect(this.getPage().locator('.rcx-room-header')).toContainText(channelName);
+		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();
+		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).click();
+		await expect(this.page.locator('.rcx-room-header')).toContainText(channelName);
 	}
 
 	public async searchChannel(channelName: string): Promise<void> {
-		await expect(this.spotlightSearch()).toBeVisible();
+		await expect(this.spotlightSearch).toBeVisible();
 
-		await this.spotlightSearch().click();
+		await this.spotlightSearch.click();
 
-		await expect(this.spotlightSearch()).toBeFocused();
-		await this.spotlightSearch().type(channelName);
+		await expect(this.spotlightSearch).toBeFocused();
+		await this.spotlightSearch.type(channelName);
 
-		await expect(this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).first()).toContainText(channelName);
+		await expect(this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).first()).toContainText(channelName);
 
-		await this.spotlightSearchPopUp().click();
+		await this.spotlightSearchPopUp.click();
 	}
 
 	public getChannelFromList(channelName: any): Locator {
-		return this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
 	}
 
-	private searchUser(): Locator {
-		return this.getPage().locator('[data-qa="sidebar-search"]');
+	get searchUser(): Locator {
+		return this.page.locator('[data-qa="sidebar-search"]');
 	}
 
-	private searchInput(): Locator {
-		return this.getPage().locator('[data-qa="sidebar-search-input"]');
+	get searchInput(): Locator {
+		return this.page.locator('[data-qa="sidebar-search-input"]');
 	}
 
 	public async createChannel(channelName: any, isPrivate: any /* isReadOnly*/): Promise<void> {
-		await this.newChannelBtnToolbar().click();
+		await this.newChannelBtnToolbar.click();
 
-		await this.newChannelBtn().click();
+		await this.newChannelBtn.click();
 
 		if (!isPrivate) {
-			await this.channelType().click();
+			await this.channelType.click();
 		}
 
-		await this.channelName().type(channelName);
+		await this.channelName.type(channelName);
 
-		await expect(this.saveChannelBtn()).toBeEnabled();
+		await expect(this.saveChannelBtn).toBeEnabled();
 
-		await this.saveChannelBtn().click();
-		await expect(this.channelType()).not.toBeVisible();
+		await this.saveChannelBtn.click();
+		await expect(this.channelType).not.toBeVisible();
 	}
 
 	public async findForChat(target: string): Promise<void> {
-		await this.searchUser().click();
-		await this.searchInput().type(target, { delay: 100 });
-		await this.getPage().keyboard.press(ENTER);
+		await this.searchUser.click();
+		await this.searchInput.type(target, { delay: 100 });
+		await this.page.keyboard.press(ENTER);
 	}
 
 	public async doLogout(): Promise<void> {
-		await this.getPage().goto('/home');
-		await this.sidebarUserMenu().click();
-		await this.logout().click();
+		await this.page.goto('/home');
+		await this.sidebarUserMenu.click();
+		await this.logout.click();
 	}
 }

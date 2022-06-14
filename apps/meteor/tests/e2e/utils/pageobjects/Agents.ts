@@ -3,108 +3,108 @@ import { Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class Agents extends BasePage {
-	public agentsLink(): Locator {
-		return this.getPage().locator('a[href="omnichannel/agents"]');
+	get agentsLink(): Locator {
+		return this.page.locator('a[href="omnichannel/agents"]');
 	}
 
-	public textAgentsTitle(): Locator {
-		return this.getPage().locator('h2 >> text="Agents"');
+	get textAgentsTitle(): Locator {
+		return this.page.locator('h2 >> text="Agents"');
 	}
 
-	public inputAgentsUserName(): Locator {
-		return this.getPage().locator('input').first();
+	get inputAgentsUserName(): Locator {
+		return this.page.locator('input').first();
 	}
 
-	public userOption(): Locator {
-		return this.getPage().locator('.rcx-option >> text="Rocket.Cat"');
+	get userOption(): Locator {
+		return this.page.locator('.rcx-option >> text="Rocket.Cat"');
 	}
 
-	public btnAddAgents(): Locator {
-		return this.getPage().locator('button.rcx-button--primary.rcx-button >> text="Add"');
+	get btnAddAgents(): Locator {
+		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
 	}
 
-	public agentAdded(): Locator {
-		return this.getPage().locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:first-child');
+	get agentAdded(): Locator {
+		return this.page.locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:first-child');
 	}
 
-	public agentListStatus(): Locator {
-		return this.getPage().locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:nth-child(4)');
+	get agentListStatus(): Locator {
+		return this.page.locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:nth-child(4)');
 	}
 
-	public userInfoTab(): Locator {
-		return this.getPage().locator('h3 div');
+	get userInfoTab(): Locator {
+		return this.page.locator('h3 div');
 	}
 
-	public agentInfo(): Locator {
-		return this.getPage().locator('[data-qa="AgentInfoUserInfoUserName"]');
+	get agentInfo(): Locator {
+		return this.page.locator('[data-qa="AgentInfoUserInfoUserName"]');
 	}
 
-	public agentInfoUserInfoLabel(): Locator {
-		return this.getPage().locator('[data-qa="AgentInfoUserInfoLabel"]');
+	get agentInfoUserInfoLabel(): Locator {
+		return this.page.locator('[data-qa="AgentInfoUserInfoLabel"]');
 	}
 
-	public btnClose(): Locator {
-		return this.getPage().locator('[data-qa="VerticalBarActionClose"]');
+	get btnClose(): Locator {
+		return this.page.locator('[data-qa="VerticalBarActionClose"]');
 	}
 
-	public userAvatar(): Locator {
-		return this.getPage().locator('[data-qa="AgentUserInfoAvatar"]');
+	get userAvatar(): Locator {
+		return this.page.locator('[data-qa="AgentUserInfoAvatar"]');
 	}
 
-	public btnEdit(): Locator {
-		return this.getPage().locator('[data-qa="AgentInfoAction-Edit"]');
+	get btnEdit(): Locator {
+		return this.page.locator('[data-qa="AgentInfoAction-Edit"]');
 	}
 
-	public btnRemove(): Locator {
-		return this.getPage().locator('[data-qa="AgentInfoAction-Remove"]');
+	get btnRemove(): Locator {
+		return this.page.locator('[data-qa="AgentInfoAction-Remove"]');
 	}
 
 	public availabilityOption(availability: string): Locator {
-		return this.getPage().locator(`div.rcx-options[role="listbox"] div.rcx-box ol[role="listbox"] li[value="${availability}"]`);
+		return this.page.locator(`div.rcx-options[role="listbox"] div.rcx-box ol[role="listbox"] li[value="${availability}"]`);
 	}
 
-	public btnTableRemove(): Locator {
-		return this.getPage().locator(
+	get btnTableRemove(): Locator {
+		return this.page.locator(
 			'[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:nth-child(5) [title="Remove"]',
 		);
 	}
 
-	public agentStatus(): Locator {
-		return this.getPage().locator('[data-qa="AgentEditTextInput-Status"]');
+	get agentStatus(): Locator {
+		return this.page.locator('[data-qa="AgentEditTextInput-Status"]');
 	}
 
-	public btnAgentSave(): Locator {
-		return this.getPage().locator('[data-qa="AgentEditButtonSave"]');
+	get btnAgentSave(): Locator {
+		return this.page.locator('[data-qa="AgentEditButtonSave"]');
 	}
 
 	public getAgentInputs(id: string): Locator {
-		return this.getPage().locator(`[data-qa="AgentEditTextInput-${id}"]`);
+		return this.page.locator(`[data-qa="AgentEditTextInput-${id}"]`);
 	}
 
 	public async doAddAgent(): Promise<void> {
-		await this.textAgentsTitle().waitFor();
-		await this.inputAgentsUserName().type('Rocket.Cat', { delay: 50 });
+		await this.textAgentsTitle.waitFor();
+		await this.inputAgentsUserName.type('Rocket.Cat', { delay: 50 });
 
-		await this.userOption().click();
-		await this.btnAddAgents().click();
+		await this.userOption.click();
+		await this.btnAddAgents.click();
 	}
 
 	public async getListOfExpectedInputs(): Promise<void> {
 		const inputs = ['Name', 'Username', 'Email', 'Departaments', 'Status'].map((id) => this.getAgentInputs(id));
 		await Promise.all(inputs.map((input) => expect(input).toBeVisible()));
-		await this.btnClose().click();
+		await this.btnClose.click();
 	}
 
 	public async doChangeUserStatus(availability: string): Promise<void> {
-		await this.agentAdded().click();
-		await this.btnEdit().click();
-		await this.agentStatus().click();
+		await this.agentAdded.click();
+		await this.btnEdit.click();
+		await this.agentStatus.click();
 		await this.availabilityOption(availability).click();
-		await this.btnAgentSave().click();
+		await this.btnAgentSave.click();
 	}
 
 	public async doRemoveAgent(): Promise<void> {
-		await this.agentAdded().click();
-		await this.btnRemove().click();
+		await this.agentAdded.click();
+		await this.btnRemove.click();
 	}
 }

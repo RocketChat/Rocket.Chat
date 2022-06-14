@@ -1,25 +1,21 @@
 import { Page } from '@playwright/test';
 
 export class BasePage {
-	private page: Page;
+	public page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
 	}
 
-	public getPage(): Page {
-		return this.page;
+	async goto(path: string): Promise<void> {
+		await this.page.goto(path);
 	}
 
-	public async goto(path: string): Promise<void> {
-		await this.getPage().goto(path);
+	async waitForSelector(selector: string): Promise<void> {
+		await this.page.waitForSelector(selector);
 	}
 
-	public async waitForSelector(selector: string): Promise<void> {
-		await this.getPage().waitForSelector(selector);
-	}
-
-	public async keyboardPress(key: string): Promise<void> {
-		await this.getPage().keyboard.press(key);
+	async keyboardPress(key: string): Promise<void> {
+		await this.page.keyboard.press(key);
 	}
 }
