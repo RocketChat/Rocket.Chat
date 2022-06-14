@@ -37,7 +37,7 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 	const onClickClose = useMutableCallback(() => tabBar?.close());
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const pruneMessagesAction = useEndpoint('POST', 'rooms.cleanHistory');
+	const pruneMessagesAction = useEndpoint('POST', '/v1/rooms.cleanHistory');
 
 	const [fromDate, setFromDate] = useState(new Date('0001-01-01T00:00:00Z'));
 	const [toDate, setToDate] = useState(new Date('9999-12-31T23:59:59Z'));

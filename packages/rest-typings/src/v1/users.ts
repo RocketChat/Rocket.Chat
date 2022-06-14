@@ -1,11 +1,14 @@
 import type { ITeam, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-type UsersInfo = { userId?: IUser['_id']; userName?: IUser['username'] };
+type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
 
 const UsersInfoSchema = {
 	type: 'object',
@@ -14,7 +17,7 @@ const UsersInfoSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		userName: {
+		username: {
 			type: 'string',
 			nullable: true,
 		},
@@ -114,27 +117,41 @@ const UsersResetAvatarSchema = {
 
 export const isUsersResetAvatarProps = ajv.compile<UsersResetAvatar>(UsersResetAvatarSchema);
 
+type UsersPresencePayload = {
+	users: UserPresence[];
+	full: boolean;
+};
+
+export type UserPresence = Readonly<
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+>;
+
 export type UsersEndpoints = {
-	'users.info': {
+	'/v1/users.info': {
 		GET: (params: UsersInfo) => {
 			user: IUser;
 		};
 	};
-	'users.2fa.sendEmailCode': {
+	'/v1/users.2fa.sendEmailCode': {
 		POST: (params: Users2faSendEmailCode) => void;
 	};
-	'users.autocomplete': {
+	'/v1/users.autocomplete': {
 		GET: (params: UsersAutocomplete) => {
 			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
 		};
 	};
-	'users.listTeams': {
+	'/v1/users.list': {
+		GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
+			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
+		}>;
+	};
+	'/v1/users.listTeams': {
 		GET: (params: UsersListTeams) => { teams: Array<ITeam> };
 	};
-	'users.setAvatar': {
+	'/v1/users.setAvatar': {
 		POST: (params: UsersSetAvatar) => void;
 	};
-	'users.resetAvatar': {
+	'/v1/users.resetAvatar': {
 		POST: (params: UsersResetAvatar) => void;
 	};
 };

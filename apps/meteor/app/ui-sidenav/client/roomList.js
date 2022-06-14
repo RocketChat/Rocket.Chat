@@ -26,7 +26,6 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'services.tokenpass': 1,
 				'messageViewMode': 1,
 			},
 		});
@@ -72,12 +71,6 @@ Template.roomList.helpers({
 
 			if (this.identifier === 'tokens') {
 				types = ['c', 'p'];
-			}
-
-			if (['c', 'p'].includes(this.identifier)) {
-				query.tokens = { $exists: false };
-			} else if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
-				query.tokens = { $exists: true };
 			}
 
 			if (getUserPreference(user, 'sidebarShowUnread')) {
@@ -129,7 +122,7 @@ const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
 	return {
-		lowerCaseName: String(name).toLowerCase(),
+		lowerCaseName: String(!room.prid ? name : fname).toLowerCase(),
 		lowerCaseFName: String(fname).toLowerCase(),
 	};
 };
