@@ -48,11 +48,11 @@ jobs:
 
       - id: docker-tag
         run: |
-          if '${{ github.event_name }}' == 'pull_request' ; then
+          if [[ '${{ github.event_name }}' == 'pull_request' ]]; then
             DOCKER_TAG="pr-${{ github.event.number }}"
           elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+' ; then
             DOCKER_TAG="$GITHUB_REF_NAME"
-          elif $GITHUB_REF == 'refs/heads/develop' ; then
+          elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
             DOCKER_TAG="develop"
           fi
           echo "DOCKER_TAG: ${DOCKER_TAG}"
