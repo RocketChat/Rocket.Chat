@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, RequiredField } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 /*
@@ -7,7 +7,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
  * @param {Object} message - The message object
  */
 
-function Gimme(_command: 'gimme', params: string, item: IMessage): void {
+function Gimme(_command: 'gimme', params: string, item: RequiredField<Partial<IMessage>, 'rid'>): void {
 	const msg = item;
 	msg.msg = `༼ つ ◕_◕ ༽つ ${params}`;
 	Meteor.call('sendMessage', msg);

@@ -53,12 +53,6 @@ jobs:
       #   run: |
       #     npx package-lock-check
 
-      - name: Cache cypress
-        id: cache-cypress
-        uses: actions/cache@v2
-        with:
-          path: /home/runner/.cache/Cypress
-          key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
       - uses: c-hive/gha-yarn-cache@v2
       - name: Cache turbo
         id: cache-turbo
@@ -118,7 +112,6 @@ jobs:
           git version
 
       - name: yarn install
-        # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
         run: yarn
 
       - run: yarn lint
@@ -212,15 +205,6 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Cache cypress
-        id: cache-cypress
-        uses: actions/cache@v2
-        with:
-          path: /home/runner/.cache/Cypress
-          key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-cypress-
-            ${{ runner.os }}-
       - uses: c-hive/gha-yarn-cache@v2
       - name: Cache turbo
         id: cache-turbo
@@ -256,17 +240,6 @@ jobs:
           Xvfb -screen 0 1024x768x24 :99 &
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-      - name: E2E Test UI (Legacy - Cypress)
-        env:
-          TEST_MODE: 'true'
-          MONGO_URL: mongodb://localhost:27017/rocketchat
-          MONGO_OPLOG_URL: mongodb://localhost:27017/local
-        run: |
-          cd ./apps/meteor
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
-          for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
-
       - name: E2E Test UI
         env:
           TEST_MODE: 'true'
@@ -284,20 +257,6 @@ jobs:
         with:
           name: playwright-test-trace
           path: ./apps/meteor/tests/e2e/test-failures*
-
-      - name: Store cypress test screenshots
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: cypress-test-screenshots
-          path: ./apps/meteor/tests/cypress/screenshots*
-
-      - name: Store cypress test videos
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: cypress-test-videos
-          path: ./apps/meteor/tests/cypress/videos*
 
   test-ee:
     runs-on: ubuntu-20.04
@@ -345,12 +304,6 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Cache cypress
-        id: cache-cypress
-        uses: actions/cache@v2
-        with:
-          path: /home/runner/.cache/Cypress
-          key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
       - uses: c-hive/gha-yarn-cache@v2
       - name: Cache turbo
         id: cache-turbo
@@ -364,7 +317,6 @@ jobs:
             ${{ runner.os }}-
 
       - name: Yarn install
-        # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
         run: yarn
 
       - name: Build micro services
@@ -386,25 +338,6 @@ jobs:
 
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testapi && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-      - name: E2E Test UI (Legacy - Cypress)
-        env:
-          TEST_MODE: 'true'
-          MONGO_URL: mongodb://localhost:27017/rocketchat
-          MONGO_OPLOG_URL: mongodb://localhost:27017/local
-          ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
-          TRANSPORTER: nats://localhost:4222
-          CYPRESS_BASE_URL: http://localhost:4000
-          CYPRESS_TEST_API_URL: http://localhost:4000
-          OVERWRITE_SETTING_Site_Url: http://localhost:4000
-          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
-        run: |
-          echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-          Xvfb -screen 0 1024x768x24 :99 &
-
-          cd ./apps/meteor/
-
-          for i in $(seq 1 2); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
-
       - name: Install Playwright
         run: |
           cd ./apps/meteor/
@@ -417,8 +350,7 @@ jobs:
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
           TRANSPORTER: nats://localhost:4222
-          CYPRESS_BASE_URL: http://localhost:4000
-          CYPRESS_TEST_API_URL: http://localhost:4000
+          TEST_API_URL: http://localhost:4000
           OVERWRITE_SETTING_Site_Url: http://localhost:4000
           SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
@@ -436,19 +368,6 @@ jobs:
           name: ee-playwright-test-trace
           path: ./apps/meteor/tests/e2e/test-failures*
 
-      - name: Store cypress test screenshots
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ee-cypress-test-screenshots
-          path: ./apps/meteor/tests/cypress/screenshots*
-
-      - name: Store cypress test videos
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: ee-cypress-test-videos
-          path: ./apps/meteor/tests/cypress/videos*
   #   notification:
   #     runs-on: ubuntu-20.04
   #     needs: test

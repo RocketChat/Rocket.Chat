@@ -1,19 +1,13 @@
 import { expect, Locator } from '@playwright/test';
 
 import BasePage from './BasePage';
-// import mainContent from './main-content.page';
 import { ENTER } from '../mocks/keyboardKeyMock';
 
-class SideNav extends BasePage {
-	// New channel
+export default class SideNav extends BasePage {
 	public channelType(): Locator {
 		return this.getPage().locator(
 			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
 		);
-	}
-
-	public channelReadOnly(): Locator {
-		return this.getPage().locator('.create-channel__switches .rc-switch__button');
 	}
 
 	public channelName(): Locator {
@@ -24,41 +18,8 @@ class SideNav extends BasePage {
 		return this.getPage().locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
-	// Account box
-	public getPopOverContent(): Locator {
-		return this.getPage().locator('.rc-popover__content');
-	}
-
-	public accountBoxUserName(): Locator {
-		return this.getPage().locator('.sidebar__account-username');
-	}
-
-	public accountBoxUserAvatar(): Locator {
-		return this.getPage().locator('.sidebar__account .avatar-image');
-	}
-
-	public accountMenu(): Locator {
-		return this.getPage().locator('.sidebar__account');
-	}
-
-	public sidebarHeader(): Locator {
-		return this.getPage().locator('.sidebar__header');
-	}
-
 	public sidebarUserMenu(): Locator {
 		return this.getPage().locator('[data-qa="sidebar-avatar-button"]');
-	}
-
-	public sidebarMenu(): Locator {
-		return this.getPage().locator('.sidebar__toolbar-button-icon--menu');
-	}
-
-	public popOverContent(): Locator {
-		return this.getPage().locator('.rc-popover__content');
-	}
-
-	public popOverHideOption(): Locator {
-		return this.getPage().locator('.rcx-option__content:contains("Hide")');
 	}
 
 	public statusOnline(): Locator {
@@ -85,6 +46,14 @@ class SideNav extends BasePage {
 		return this.getPage().locator('//li[@class="rcx-option"]//div[contains(text(), "Administration")]');
 	}
 
+	public omnichannel(): Locator {
+		return this.getPage().locator('li.rcx-option >> text="Omnichannel"');
+	}
+
+	get users(): Locator {
+		return this.getPage().locator('.flex-nav [href="/admin/users"]');
+	}
+
 	public logout(): Locator {
 		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]');
 	}
@@ -93,7 +62,10 @@ class SideNav extends BasePage {
 		return this.getPage().locator('.sidebar');
 	}
 
-	// Toolbar
+	public flexNav(): Locator {
+		return this.getPage().locator('.flex-nav');
+	}
+
 	public spotlightSearchIcon(): Locator {
 		return this.getPage().locator('[data-qa="sidebar-search"]');
 	}
@@ -111,31 +83,13 @@ class SideNav extends BasePage {
 	}
 
 	public newChannelBtn(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Channel' });
+		return this.getPage().locator('li.rcx-option >> text="Channel"');
 	}
 
-	public newDiscussionBtn(): Locator {
-		return this.getPage().locator('//*[contains(@class, "rcx-option__content")]', { hasText: 'Discussion' });
-	}
-
-	public newChannelIcon(): Locator {
-		return this.getPage().locator('[data-qa="sidebar-create-channel"]');
-	}
-
-	// Rooms List
 	public general(): Locator {
 		return this.getChannelFromList('general');
 	}
 
-	public channelLeave(): Locator {
-		return this.getPage().locator('.leave-room');
-	}
-
-	public channelHoverIcon(): Locator {
-		return this.getPage().locator('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off');
-	}
-
-	// Account
 	public preferences(): Locator {
 		return this.getPage().locator('[href="/account/preferences"]');
 	}
@@ -144,51 +98,32 @@ class SideNav extends BasePage {
 		return this.getPage().locator('[href="/account/profile"]');
 	}
 
-	public avatar(): Locator {
-		return this.getPage().locator('[href="/changeavatar"]');
-	}
-
 	public preferencesClose(): Locator {
 		return this.getPage().locator('//*[contains(@class,"flex-nav")]//i[contains(@class, "rcx-icon--name-cross")]');
 	}
 
 	public burgerBtn(): Locator {
-		return this.getPage().locator('.burger, [aria-label="Open_menu"]');
-	}
-
-	public sidebarWrap(): Locator {
-		return this.getPage().locator('.sidebar-wrap');
-	}
-
-	public firstSidebarItem(): Locator {
-		return this.getPage().locator('.sidebar-item');
+		return this.getPage().locator('[data-qa-id="burger-menu"]');
 	}
 
 	public firstSidebarItemMenu(): Locator {
 		return this.getPage().locator('[data-qa=sidebar-avatar-button]');
 	}
 
-	public popoverOverlay(): Locator {
-		return this.getPage().locator('.rc-popover.rc-popover--sidebar-item');
-	}
-
 	public returnToMenuInLowResolution(): Locator {
 		return this.getPage().locator('//button[@aria-label="Close menu"]');
 	}
 
-	// Check if navbar is open
 	public async isSideBarOpen(): Promise<boolean> {
 		return !!(await this.sideNavBar().getAttribute('style'));
 	}
 
-	// Opens a channel via rooms list
-	public async openChannel(channelName: any): Promise<void> {
+	public async openChannel(channelName: string): Promise<void> {
 		await this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();
 		await this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).click();
 		await expect(this.getPage().locator('.rcx-room-header')).toContainText(channelName);
 	}
 
-	// Opens a channel via spotlight search
 	public async searchChannel(channelName: string): Promise<void> {
 		await expect(this.spotlightSearch()).toBeVisible();
 
@@ -200,10 +135,6 @@ class SideNav extends BasePage {
 		await expect(this.getPage().locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).first()).toContainText(channelName);
 
 		await this.spotlightSearchPopUp().click();
-	}
-
-	public async searchChannelAndOpen(channelName: string): Promise<void> {
-		await this.searchChannel(channelName);
 	}
 
 	public getChannelFromList(channelName: any): Locator {
@@ -231,18 +162,13 @@ class SideNav extends BasePage {
 
 		await expect(this.saveChannelBtn()).toBeEnabled();
 
-		// if (isReadOnly) {
-		// 	this.channelReadOnly.click();
-		// }
-
 		await this.saveChannelBtn().click();
 		await expect(this.channelType()).not.toBeVisible();
-		// mainContent.messageInput().should('be.focused');
 	}
 
 	public async findForChat(target: string): Promise<void> {
 		await this.searchUser().click();
-		await this.searchInput().type(target, { delay: 300 });
+		await this.searchInput().type(target, { delay: 100 });
 		await this.getPage().keyboard.press(ENTER);
 	}
 
@@ -252,5 +178,3 @@ class SideNav extends BasePage {
 		await this.logout().click();
 	}
 }
-
-export default SideNav;

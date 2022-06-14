@@ -2,7 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { secondsToHHMMSS } from '../../../../../app/utils/lib/timeConverter';
+import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
@@ -45,7 +45,7 @@ const ChatDurationChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
+	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/timings', params);
 
 	reloadRef.current.chatDurationChart = reload;
 

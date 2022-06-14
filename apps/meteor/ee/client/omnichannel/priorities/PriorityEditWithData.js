@@ -9,7 +9,7 @@ import PriorityEdit from './PriorityEdit';
 
 function PriorityEditWithData({ priorityId, reload }) {
 	const query = useMemo(() => ({ priorityId }), [priorityId]);
-	const { value: data, phase: state, error } = useEndpointData('livechat/priorities.getOne', query);
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/priorities.getOne', query);
 
 	const t = useTranslation();
 

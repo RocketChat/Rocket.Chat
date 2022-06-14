@@ -17,7 +17,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	const isSingleBH = useIsSingleBusinessHours();
 
 	const { value: data, phase: state } = useEndpointData(
-		'livechat/business-hour',
+		'/v1/livechat/business-hour',
 		useMemo(() => ({ _id: id, type }), [id, type]),
 	);
 
