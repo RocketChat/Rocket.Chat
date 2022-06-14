@@ -909,6 +909,14 @@ jobs:
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
+      - name: Launch Traefik
+        run: |
+          docker run --name traefik -d \
+          -p 3000:80 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          traefik:2.7 \
+          --providers.docker=true
+
       # TODO move startup/restart to its own github action
       - name: Start up Rocket.Chat
         run: |
@@ -922,7 +930,6 @@ jobs:
           docker run --name rocketchat -d \
             --link mongo \
             --link nats \
-            -p 3000:3000 \
             -e TEST_MODE=true \
             -e MONGO_URL=mongodb://mongo:27017/rocketchat \
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
@@ -931,18 +938,20 @@ jobs:
             -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
             -e SKIP_PROCESS_EVENT_REGISTRATION=true \
             -e OVERWRITE_SETTING_Site_Url=http://localhost:4000 \
+            --label 'traefik.http.routers.rocketchat.rule=PathPrefix(`/`)' \
             ${IMAGE_NAME}
 
           # spin up all micro services
           docker run --name ddp-streamer -d \
             --link mongo \
             --link nats \
-            -p 4000:4000 \
             -e PORT=4000 \
             -e MONGO_URL=mongodb://mongo:27017/rocketchat \
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
+            --label 'traefik.http.services.ddp-streamer.loadbalancer.server.port=4000' \
+            --label 'traefik.http.routers.ddp-streamer.rule=PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)' \
             ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${IMAGE_TAG}
 
       - name: stream-hub
