@@ -22,6 +22,7 @@ import './rootUrlChange';
 import './routes';
 import './setupWizard';
 import './slashCommands';
+import './sentry';
 import './startup';
 import './streamMessage';
 import './theme';
