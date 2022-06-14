@@ -6,7 +6,7 @@ import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';
 import { LoginPage, SideNav, MainContent, Agents } from './utils/pageobjects';
 import { createRegisterUser, adminLogin } from './utils/mocks/userAndPasswordMock';
 
-test.describe('[Livechat]', () => {
+test.describe.only('[Livechat]', () => {
 	let page: Page;
 	let liveChat: LiveChat;
 	const liveChatUser = createRegisterUser();
@@ -58,14 +58,16 @@ test.describe('[Livechat]', () => {
 			await sideNav.sidebarUserMenu().click();
 			await sideNav.omnichannel().click();
 			await agent.agentsLink().click();
-			await agent.doAddAgent('rocketchat.internal.admin.test@rocket.chat');
+			await agent.doAddAgent('RocketChat Internal Admin Test');
 			await sideNav.omnichannelGoBackButton.click();
 			await page.reload();
 			await liveChat.btnOpenLiveChat('R').click();
 			await liveChat.doSendMessage(liveChatUser, false);
 			await liveChat.onlineAgentMessage.type('this_a_test_message');
 			await liveChat.btnSendMessageToOnlineAgent.click();
-			await sideNav.findForChat(liveChatUser.name);
+
+			await agent.clickOnLiveChatCall(liveChatUser.name).click();
+
 			await mainContent.sendMessage('this_a_test_message');
 		});
 

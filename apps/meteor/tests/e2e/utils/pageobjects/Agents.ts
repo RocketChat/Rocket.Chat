@@ -15,6 +15,10 @@ export default class Agents extends BasePage {
 		return this.getPage().locator('input').first();
 	}
 
+	public userOption(userName: string): Locator {
+		return this.getPage().locator(`.rcx-option >> text="${userName}"`);
+	}
+
 	public btnAddAgents(): Locator {
 		return this.getPage().locator('button.rcx-button--primary.rcx-button >> text="Add"');
 	}
@@ -77,10 +81,14 @@ export default class Agents extends BasePage {
 		return this.getPage().locator(`[data-qa="AgentEditTextInput-${id}"]`);
 	}
 
+	clickOnLiveChatCall(name: string): Locator {
+		return this.getPage().locator(`[data-qa="sidebar-item-title"] >> text="${name}"`);
+	}
+
 	public async doAddAgent(user: string): Promise<void> {
 		await this.textAgentsTitle().waitFor();
 		await this.inputAgentsUserName().type(user, { delay: 50 });
-		await this.keyboardPress('Enter');
+		await this.userOption(user).click();
 		await this.btnAddAgents().click();
 	}
 
