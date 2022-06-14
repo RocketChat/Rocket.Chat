@@ -1,17 +1,21 @@
 import { IRoom, isDirectMessageRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC } from 'react';
+import React, { ComponentProps, ReactElement } from 'react';
 
 import { ReactiveUserStatus } from '../UserStatus';
 import { OmnichannelRoomIcon } from './OmnichannelRoomIcon';
 
-export const RoomIcon: FC<{
+export const RoomIcon = ({
+	room,
+	size = 'x16',
+	isIncomingCall,
+	placement,
+}: {
 	room: IRoom;
-	size: ComponentProps<typeof Icon>['size'];
-	highlighted?: boolean;
+	size?: ComponentProps<typeof Icon>['size'];
 	isIncomingCall?: boolean;
 	placement: 'sidebar' | 'default';
-}> = ({ room, size = 'x16', isIncomingCall, placement }) => {
+}): ReactElement | null => {
 	if (isIncomingCall) {
 		return <Icon name='phone' size={size} />;
 	}

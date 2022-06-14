@@ -3,7 +3,7 @@ import { expect, Locator } from '@playwright/test';
 import BasePage from './BasePage';
 import Global from './Global';
 
-class FlexTab extends BasePage {
+export default class FlexTab extends BasePage {
 	private global = new Global(this.getPage());
 
 	public mainSideBar(): Locator {
@@ -22,23 +22,10 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('//main/header//*[contains(@class, "rcx-icon--name-kebab")]/..');
 	}
 
-	public moreActions(): Locator {
-		return this.getPage().locator('.rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
-	}
-
-	public sendBtn(): Locator {
-		return this.getPage().locator('.rcx-vertical-bar .rc-message-box__icon.js-send');
-	}
-
 	public messageInput(): Locator {
 		return this.getPage().locator('.rcx-vertical-bar .js-input-message');
 	}
 
-	public threadTab(): Locator {
-		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-thread');
-	}
-
-	// Channel Info Tab
 	public channelTab(): Locator {
 		return this.getPage().locator('(//main//*[contains(@class, "rcx-icon--name-info-circled")])[1]/..');
 	}
@@ -49,48 +36,8 @@ class FlexTab extends BasePage {
 		);
 	}
 
-	public channelSettingName(): Locator {
-		return this.getPage().locator('.channel-settings .rc-user-info__name');
-	}
-
-	public archiveBtn(): Locator {
-		return this.getPage().locator('.clearfix:last-child .icon-pencil');
-	}
-
-	public archiveRadio(): Locator {
-		return this.getPage().locator('.editing');
-	}
-
-	public archiveSave(): Locator {
-		return this.getPage().locator('.save');
-	}
-
 	public editNameBtn(): Locator {
 		return this.getPage().locator('//aside//button[contains(text(), "Edit")]');
-	}
-
-	public editTopicBtn(): Locator {
-		return this.getPage().locator('[data-edit="topic"]');
-	}
-
-	public editAnnouncementBtn(): Locator {
-		return this.getPage().locator('[data-edit="announcement"]');
-	}
-
-	public editDescriptionBtn(): Locator {
-		return this.getPage().locator('[data-edit="description"]');
-	}
-
-	public editNotificationBtn(): Locator {
-		return this.getPage().locator('[data-edit="desktopNotifications"]');
-	}
-
-	public editMobilePushBtn(): Locator {
-		return this.getPage().locator('[data-edit="mobilePushNotifications"]');
-	}
-
-	public editEmailNotificationBtn(): Locator {
-		return this.getPage().locator('[data-edit="emailNotifications"]');
 	}
 
 	public editUnreadAlertBtn(): Locator {
@@ -117,25 +64,12 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('//aside//button[contains(text(), "Save")]');
 	}
 
-	public deleteBtn(): Locator {
-		return this.getPage().locator('.channel-settings .js-delete');
-	}
-
-	// Members Tab
 	public membersTab(): Locator {
 		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-members');
 	}
 
 	public membersTabContent(): Locator {
 		return this.getPage().locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-members');
-	}
-
-	public userSearchBar(): Locator {
-		return this.getPage().locator('//*[@placeholder="Search by username"]');
-	}
-
-	public removeUserBtn(): Locator {
-		return this.getPage().locator('.remove-user');
 	}
 
 	public setOwnerBtn(): Locator {
@@ -150,39 +84,14 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('[value="muteUser"]');
 	}
 
-	public viewAllBtn(): Locator {
-		return this.getPage().locator('.button.back');
-	}
-
-	public startVideoCall(): Locator {
-		return this.getPage().locator('.start-video-call');
-	}
-
-	public startAudioCall(): Locator {
-		return this.getPage().locator('.start-audio-call');
-	}
-
-	public showAll(): Locator {
-		return this.getPage().locator('.see-all');
-	}
-
-	public membersUserInfo(): Locator {
-		return this.getPage().locator('.flex-tab-container .info');
-	}
-
 	public avatarImage(): Locator {
 		return this.getPage().locator('(//aside[contains(@class, "rcx-vertical-bar")]//*[contains(@class, "avatar")])[1]');
-	}
-
-	public memberUserName(): Locator {
-		return this.getPage().locator('.info h3');
 	}
 
 	public memberRealName(): Locator {
 		return this.getPage().locator('[data-qa="UserInfoUserName"]');
 	}
 
-	// Search Tab
 	public searchTab(): Locator {
 		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-magnifier');
 	}
@@ -199,31 +108,20 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('.new-day');
 	}
 
-	// Notifications Tab
 	public notificationsTab(): Locator {
 		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Notifications Preferences")]');
-		// return this.getPage().locator('.rcx-option__content:contains("Notifications Preferences")');
 	}
 
 	public notificationsSettings(): Locator {
 		return this.getPage().locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-bell');
 	}
 
-	// Files Tab
 	public filesTab(): Locator {
 		return this.getPage().locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-clip');
 	}
 
-	public fileItem(): Locator {
-		return this.getPage().locator('.uploaded-files-list ul:first-child');
-	}
-
 	public filesTabContent(): Locator {
 		return this.getPage().locator('aside > h3 > div > i.rcx-icon--name-attachment');
-	}
-
-	public fileDelete(): Locator {
-		return this.getPage().locator('.uploaded-files-list ul:first-child .file-delete');
 	}
 
 	public fileDownload(): Locator {
@@ -234,17 +132,14 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('.uploaded-files-list ul:first-child .room-file-item');
 	}
 
-	// Mentions Tab
 	public mentionsTab(): Locator {
 		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Mentions")]');
 	}
 
 	public mentionsTabContent(): Locator {
 		return this.getPage().locator('aside > h3 > div > i.rcx-icon--name-at');
-		// aside//h3//div//i[contains(@class, "i.rcx-icon--name-at")]
 	}
 
-	// Starred Tab
 	public starredTab(): Locator {
 		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Starred Messages")]');
 	}
@@ -253,7 +148,6 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('aside > h3 > div > i.rcx-icon--name-star');
 	}
 
-	// Pinned Tab
 	public pinnedTab(): Locator {
 		return this.getPage().locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Pinned Messages")]');
 	}
@@ -278,11 +172,6 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('//main//aside//div[contains(text(), "Description")]//following-sibling::div');
 	}
 
-	// admin view flexTab items
-	public usersSendInvitationTab(): Locator {
-		return this.getPage().locator('.tab-button:not(.hidden) .tab-button-icon--send');
-	}
-
 	public usersAddUserTab(): Locator {
 		return this.getPage().locator('//button[text()="New"]');
 	}
@@ -291,16 +180,8 @@ class FlexTab extends BasePage {
 		return this.getPage().locator('//div[text()="Add User"]//button');
 	}
 
-	public usersSendInvitationTextArea(): Locator {
-		return this.getPage().locator('#inviteEmails');
-	}
-
 	public usersButtonCancel(): Locator {
 		return this.getPage().locator('//button[text()="Cancel"]');
-	}
-
-	public usersSendInvitationSend(): Locator {
-		return this.getPage().locator('.button.send');
 	}
 
 	public usersButtonSave(): Locator {
@@ -351,26 +232,6 @@ class FlexTab extends BasePage {
 
 	public usersAddUserRandomPassword(): Locator {
 		return this.getPage().locator('//div[text()="Set random password and send by email"]/following-sibling::label//input');
-	}
-
-	public emojiNewAliases(): Locator {
-		return this.getPage().locator('#aliases');
-	}
-
-	public emojiNewImageInput(): Locator {
-		return this.getPage().locator('#image');
-	}
-
-	public usersView(): Locator {
-		return this.getPage().locator('.rcx-vertical-bar:contains("User Info")');
-	}
-
-	public usersActivate(): Locator {
-		return this.getPage().locator('.rcx-option__content:contains("Activate")');
-	}
-
-	public usersDeactivate(): Locator {
-		return this.getPage().locator('.rcx-option__content:contains("Deactivate")');
 	}
 
 	public closeThreadMessage(): Locator {
@@ -435,22 +296,12 @@ class FlexTab extends BasePage {
 		await userEl.click();
 	}
 
-	public async archiveChannel(): Promise<void> {
-		await this.archiveBtn().waitFor();
-		await this.archiveBtn().click();
-		await this.archiveRadio().waitFor();
-		await this.archiveRadio().click();
-		await this.archiveSave().click();
-	}
-
 	public async addPeopleToChannel(user: string): Promise<void> {
 		await this.addUserButton().click();
 		await this.chooseUserSearch().type(user);
 		await this.getPage().waitForTimeout(3000);
 		await this.chooseUserOptions().click();
 		await this.addUserButtonAfterChoose().click();
-		// await this.getPage().waitForSelector('.-autocomplete-item');
-		// await this.getPage().click('.-autocomplete-item');
 	}
 
 	public async operateFlexTab(desiredTab: string, desiredState: boolean): Promise<void> {
@@ -554,5 +405,3 @@ class FlexTab extends BasePage {
 		await this.getPage().locator(`li[value=${role}]`).click();
 	}
 }
-
-export default FlexTab;

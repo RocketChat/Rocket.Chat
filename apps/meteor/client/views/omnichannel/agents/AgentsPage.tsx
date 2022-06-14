@@ -87,7 +87,7 @@ const AgentsPage = (): ReactElement => {
 							</GenericTableHeaderCell>
 							<GenericTableHeaderCell w='x60'>{t('Remove')}</GenericTableHeaderCell>
 						</GenericTableHeader>
-						<GenericTableBody>
+						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
 							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
 							{result.phase === AsyncStatePhase.RESOLVED &&
 								result.value.users.map((user) => <AgentsPageRow key={user._id} user={user} mediaQuery={mediaQuery} reload={reload} />)}
@@ -97,7 +97,7 @@ const AgentsPage = (): ReactElement => {
 						<Pagination
 							current={current}
 							itemsPerPage={itemsPerPage}
-							count={result.value.count}
+							count={result.value.total}
 							onSetItemsPerPage={setItemsPerPage}
 							onSetCurrent={setCurrent}
 							{...paginationProps}
