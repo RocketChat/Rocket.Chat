@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import _ from 'lodash';
 import React, { FC } from 'react';
 
-import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { SectionStatus } from '../Section';
 import { DNSRecordItem } from './DNSRecordItem';
 import { DNSText } from './DNSText';

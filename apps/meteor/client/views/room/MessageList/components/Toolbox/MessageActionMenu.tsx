@@ -1,8 +1,8 @@
 import { MessageToolboxItem, Option } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, Fragment, useRef, ComponentProps } from 'react';
 
 import { MessageActionConfig } from '../../../../../../app/ui-utils/client/lib/MessageAction';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { ToolboxDropdown } from './ToolboxDropdown';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order'>;

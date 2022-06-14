@@ -166,7 +166,7 @@ const AppsWithData = ({
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar(e);
+		closeTabBar();
 		triggerSubmitView({
 			viewId,
 			appId,
@@ -182,7 +182,7 @@ const AppsWithData = ({
 
 	const handleCancel = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar(e);
+		closeTabBar();
 		return triggerCancel({
 			appId,
 			viewId,
@@ -196,7 +196,7 @@ const AppsWithData = ({
 
 	const handleClose = useMutableCallback((e) => {
 		prevent(e);
-		closeTabBar(e);
+		closeTabBar();
 		return triggerCancel({
 			appId,
 			viewId,

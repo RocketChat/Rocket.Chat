@@ -1,17 +1,23 @@
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useRoute,
+	useUserId,
+	useUserSubscription,
+	useUserRoom,
+	useUserSubscriptionByName,
+	usePermission,
+	useAllPermissions,
+	useMethod,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { usePermission, useAllPermissions } from '../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserId, useUserSubscription, useUserRoom, useUserSubscriptionByName } from '../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
@@ -67,7 +73,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 		</Modal>
 	);
 };
-
+// TODO: Remove endpoint concatenation
 export const useUserInfoActions = (user = {}, rid, reload) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -93,7 +99,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	const isIgnored = currentSubscription && currentSubscription.ignored && currentSubscription.ignored.indexOf(uid) > -1;
 	const isMuted = getUserIsMuted(room, user, otherUserCanPostReadonly);
 
-	const endpointPrefix = room.t === 'p' ? 'groups' : 'channels';
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 
 	const roomDirectives = room && room.t && roomCoordinator.getRoomDirectives(room.t);
 

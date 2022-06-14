@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
@@ -20,9 +20,8 @@ export const useRoomsList = (
 } => {
 	const [itemsList, setItemsList] = useState(() => new RecordList<IRoom>());
 	const reload = useCallback(() => setItemsList(new RecordList<IRoom>()), []);
-	const endpoint = 'rooms.autocomplete.channelAndPrivate.withPagination';
 
-	const getRooms = useEndpoint('GET', endpoint);
+	const getRooms = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate.withPagination');
 
 	useComponentDidUpdate(() => {
 		options && reload();

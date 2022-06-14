@@ -7,7 +7,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { OAuth } from 'meteor/oauth';
 
 import './swapSessionStorage';
-import { isURL } from '../../utils/lib/isURL';
+import { isURL } from '../../../lib/utils/isURL';
 
 // Request custom OAuth credentials for the user
 // @param options {optional}

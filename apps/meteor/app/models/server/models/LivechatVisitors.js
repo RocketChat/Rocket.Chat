@@ -13,6 +13,7 @@ export class LivechatVisitors extends Base {
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 }, { sparse: true });
 		this.tryEnsureIndex({ name: 1 }, { sparse: true });
 		this.tryEnsureIndex({ username: 1 });
+		this.tryEnsureIndex({ 'contactManager.username': 1 }, { sparse: true });
 	}
 
 	/**

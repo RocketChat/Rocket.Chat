@@ -13,7 +13,7 @@ import { targetUser } from './utils/mocks/interations';
 
 let hasUserAddedInChannel = false;
 
-test.describe.serial('[Channel]', () => {
+test.describe('[Channel]', () => {
 	let flexTab: FlexTab;
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
@@ -36,7 +36,6 @@ test.describe.serial('[Channel]', () => {
 		if (!publicChannelCreated) {
 			await sideNav.createChannel(publicChannelName, false);
 			await setPublicChannelCreated(true);
-			console.log('public channel not found, creating one...');
 		}
 		await sideNav.openChannel('general');
 	});
@@ -96,9 +95,6 @@ test.describe.serial('[Channel]', () => {
 		});
 	});
 
-	/*
-	 * Skipped tests below
-	 * */
 	test.describe('[Usage]', () => {
 		test.beforeAll(async () => {
 			await sideNav.openChannel(publicChannelName);
@@ -106,15 +102,15 @@ test.describe.serial('[Channel]', () => {
 
 		test.describe('Adding a user to the room:', async () => {
 			test.beforeAll(async () => {
-				if (await global.toastAlert().isVisible()) {
-					await global.dismissToast();
+				if (await global.getToastBar().isVisible()) {
+					await global.dismissToastBar();
 				}
 				await flexTab.operateFlexTab('members', true);
 			});
 
 			test.afterAll(async () => {
-				if (await global.toastAlert().isVisible()) {
-					await global.dismissToast();
+				if (await global.getToastBar().isVisible()) {
+					await global.dismissToastBar();
 				}
 				await flexTab.operateFlexTab('members', false);
 			});
@@ -122,7 +118,7 @@ test.describe.serial('[Channel]', () => {
 			test('expect add people to the room', async () => {
 				await flexTab.addPeopleToChannel(targetUser);
 				hasUserAddedInChannel = true;
-				await expect(global.toastAlert()).toBeVisible();
+				await expect(global.getToastBarSuccess()).toBeVisible();
 			});
 		});
 
@@ -134,8 +130,8 @@ test.describe.serial('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
+					if (await global.getToastBar().isVisible()) {
+						await global.dismissToastBar();
 					}
 					if (await flexTab.mainSideBar().isVisible()) {
 						await flexTab.mainSideBarClose().click();
@@ -162,25 +158,24 @@ test.describe.serial('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
+					if (await global.getToastBar().isVisible()) {
+						await global.dismissToastBar();
 					}
 					if (await flexTab.mainSideBar().isVisible()) {
 						await flexTab.mainSideBarClose().click();
 					}
 				});
 
-				test.skip('expect edit the announcement input', async () => {
+				test('expect edit the announcement input', async () => {
 					await flexTab.editAnnouncementTextInput().type('ANNOUNCEMENT EDITED');
 				});
 
-				test.skip('expect save the announcement', async () => {
+				test('expect save the announcement', async () => {
 					await flexTab.editNameSave().click();
 				});
 
-				// FIXME: breaking in CI
-				test.skip('expect show the new announcement', async () => {
-					await expect(flexTab.thirdSetting('ANNOUNCEMENT EDITED')).toHaveText('ANNOUNCEMENT EDITED');
+				test('expect show the new announcement', async () => {
+					await expect(flexTab.thirdSetting()).toHaveText('ANNOUNCEMENT EDITED');
 				});
 			});
 
@@ -191,8 +186,8 @@ test.describe.serial('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
+					if (await global.getToastBar().isVisible()) {
+						await global.dismissToastBar();
 					}
 					if (await flexTab.mainSideBar().isVisible()) {
 						await flexTab.mainSideBarClose().click();
@@ -226,8 +221,8 @@ test.describe.serial('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
+					if (await global.getToastBar().isVisible()) {
+						await global.dismissToastBar();
 					}
 					await flexTab.operateFlexTab('members', false);
 				});
@@ -248,8 +243,8 @@ test.describe.serial('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
+					if (await global.getToastBar().isVisible()) {
+						await global.dismissToastBar();
 					}
 					await flexTab.operateFlexTab('members', false);
 				});
@@ -259,16 +254,16 @@ test.describe.serial('[Channel]', () => {
 				});
 
 				test('expect dismiss the toast', async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
+					if (await global.getToastBar().isVisible()) {
+						await global.dismissToastBar();
 					}
 				});
 
-				test.skip('expect the last message should be a subscription role added', async () => {
+				test('expect the last message should be a subscription role added', async () => {
 					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
 				});
 
-				test.skip('expect show the target username in owner add message', async () => {
+				test('expect show the target username in owner add message', async () => {
 					await expect(mainContent.lastMessageRoleAdded()).toContainText(targetUser);
 				});
 			});
@@ -284,33 +279,32 @@ test.describe.serial('[Channel]', () => {
 				});
 
 				test.afterAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
+					if (await global.getToastBar().isVisible()) {
+						await global.dismissToastBar();
 					}
 					await flexTab.operateFlexTab('members', false);
 				});
-				// FIXME: breaking in CI
-				test.skip('expect set rocket cat as moderator', async () => {
+
+				test('expect set rocket cat as moderator', async () => {
 					await flexTab.setUserModerator(targetUser);
 				});
 
-				// FIXME: not finding element in CI
-				test.skip('expect be that the last message is a subscription role added', async () => {
+				test('expect be that the last message is a subscription role added', async () => {
 					await expect(mainContent.lastMessageRoleAdded()).toBeVisible();
 				});
 			});
 
 			test.describe('Channel name edit', async () => {
 				test.beforeAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
+					if (await global.getToastBar().isVisible()) {
+						await global.dismissToastBar();
 					}
 					await flexTab.operateFlexTab('info', true);
 				});
 
 				test.afterAll(async () => {
-					if (await global.toastAlert().isVisible()) {
-						await global.dismissToast();
+					if (await global.getToastBar().isVisible()) {
+						await global.dismissToastBar();
 					}
 
 					if (await flexTab.mainSideBar().isVisible()) {

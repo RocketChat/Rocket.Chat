@@ -1,12 +1,9 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, FieldGroup } from '@rocket.chat/fuselage';
+import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useMemo, useEffect, FC, ChangeEvent } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useAbsoluteUrl } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useFileInput } from '../../../hooks/useFileInput';
@@ -56,7 +53,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		[previousName, name, aliases, previousAliases, emojiFile],
 	);
 
-	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
+	const saveAction = useEndpointUpload('/v1/emoji-custom.update', t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		if (!name) {
@@ -85,7 +82,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 
 	const deleteAction = useEndpointAction(
 		'POST',
-		'emoji-custom.delete',
+		'/v1/emoji-custom.delete',
 		useMemo(() => ({ emojiId: _id }), [_id]),
 	);
 

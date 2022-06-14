@@ -1,9 +1,9 @@
 import { IUIKitContextualBarInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import { useCurrentRoute } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import { getUserInteractionPayloadByViewId } from '../../../../app/ui-message/client/ActionManager';
-import { useCurrentRoute } from '../../../contexts/RouterContext';
 import { App } from '../../admin/apps/types';
 import { useRoom } from '../contexts/RoomContext';
 

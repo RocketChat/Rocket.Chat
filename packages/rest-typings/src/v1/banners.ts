@@ -1,26 +1,104 @@
-import type { BannerPlatform, IBanner } from "@rocket.chat/core-typings";
+import Ajv from 'ajv';
+import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
+
+const ajv = new Ajv({
+	coerceTypes: true,
+});
+
+type BannersGetNew = {
+	platform: BannerPlatform;
+	bid: IBanner['_id'];
+};
+
+const BannersGetNewSchema = {
+	type: 'object',
+	properties: {
+		platform: {
+			type: 'string',
+			enum: ['1', '2'],
+		},
+		bid: {
+			type: 'string',
+		},
+	},
+	required: ['platform', 'bid'],
+	additionalProperties: false,
+};
+
+export const isBannersGetNewProps = ajv.compile<BannersGetNew>(BannersGetNewSchema);
+
+type BannersId = {
+	platform: BannerPlatform;
+};
+
+const BannersIdSchema = {
+	type: 'object',
+	properties: {
+		platform: {
+			type: 'string',
+		},
+	},
+	required: ['platform'],
+	additionalProperties: false,
+};
+
+export const isBannersIdProps = ajv.compile<BannersId>(BannersIdSchema);
+
+type Banners = {
+	platform: BannerPlatform;
+};
+
+const BannersSchema = {
+	type: 'object',
+	properties: {
+		platform: {
+			type: 'string',
+		},
+	},
+	required: ['platform'],
+	additionalProperties: false,
+};
+
+export const isBannersProps = ajv.compile<Banners>(BannersSchema);
+
+type BannersDismiss = {
+	bannerId: string;
+};
+
+const BannersDismissSchema = {
+	type: 'object',
+	properties: {
+		bannerId: {
+			type: 'string',
+		},
+	},
+	required: ['bannerId'],
+	additionalProperties: false,
+};
+
+export const isBannersDismissProps = ajv.compile<BannersDismiss>(BannersDismissSchema);
 
 export type BannersEndpoints = {
-  /* @deprecated */
-  "banners.getNew": {
-    GET: (params: { platform: BannerPlatform; bid: IBanner["_id"] }) => {
-      banners: IBanner[];
-    };
-  };
+	/* @deprecated */
+	'/v1/banners.getNew': {
+		GET: (params: BannersGetNew) => {
+			banners: IBanner[];
+		};
+	};
 
-  "banners/:id": {
-    GET: (params: { platform: BannerPlatform }) => {
-      banners: IBanner[];
-    };
-  };
+	'/v1/banners/:id': {
+		GET: (params: BannersId) => {
+			banners: IBanner[];
+		};
+	};
 
-  banners: {
-    GET: (params: { platform: BannerPlatform }) => {
-      banners: IBanner[];
-    };
-  };
+	'/v1/banners': {
+		GET: (params: Banners) => {
+			banners: IBanner[];
+		};
+	};
 
-  "banners.dismiss": {
-    POST: (params: { bannerId: string }) => void;
-  };
+	'/v1/banners.dismiss': {
+		POST: (params: BannersDismiss) => void;
+	};
 };

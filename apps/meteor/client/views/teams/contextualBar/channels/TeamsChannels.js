@@ -1,8 +1,7 @@
 import { useMutableCallback, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { usePermission } from '../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';

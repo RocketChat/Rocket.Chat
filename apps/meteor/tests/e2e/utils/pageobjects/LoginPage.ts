@@ -4,7 +4,7 @@ import { ILogin, IRegister } from '../interfaces/Login';
 import BasePage from './BasePage';
 import { HOME_SELECTOR, REGISTER_STEP2_BUTTON } from '../mocks/waitSelectorsMock';
 
-class LoginPage extends BasePage {
+export default class LoginPage extends BasePage {
 	private registerButton(): Locator {
 		return this.getPage().locator('button.register');
 	}
@@ -19,10 +19,6 @@ class LoginPage extends BasePage {
 
 	public registerNextButton(): Locator {
 		return this.getPage().locator('button[data-loading-text=" Please_wait ..."]');
-	}
-
-	public registerMessage(): Locator {
-		return this.getPage().locator('//form[@id["login-card"]]//header//p');
 	}
 
 	public emailOrUsernameField(): Locator {
@@ -41,24 +37,8 @@ class LoginPage extends BasePage {
 		return this.getPage().locator('[name=pass]');
 	}
 
-	public userNameField(): Locator {
-		return this.getPage().locator('[name=username]');
-	}
-
 	public confirmPasswordField(): Locator {
 		return this.getPage().locator('[name=confirm-pass]');
-	}
-
-	public getToastError(): Locator {
-		return this.getPage().locator('.toast');
-	}
-
-	public getToastMessageSuccess(): Locator {
-		return this.getPage().locator('.toast-message');
-	}
-
-	public emailOrUsernameInvalidText(): Locator {
-		return this.getPage().locator('[name=emailOrUsername]~.input-error');
 	}
 
 	public nameInvalidText(): Locator {
@@ -77,12 +57,8 @@ class LoginPage extends BasePage {
 		return this.getPage().locator('[name=confirm-pass]~.input-error');
 	}
 
-	public getHomeMessage(): Locator {
-		return this.getPage().locator('//span[@class="rc-header__block"]');
-	}
-
-	public async open(path: string): Promise<void> {
-		await super.goto(path);
+	public getSideBarAvatarButton(): Locator {
+		return this.getPage().locator('[data-qa="sidebar-avatar-button"]');
 	}
 
 	public async gotToRegister(): Promise<void> {
@@ -135,6 +111,9 @@ class LoginPage extends BasePage {
 		await expect(this.confirmPasswordInvalidText()).toBeVisible();
 		await expect(this.confirmPasswordInvalidText()).toHaveText('The password confirmation does not match password');
 	}
-}
 
-export default LoginPage;
+	public async logout(): Promise<void> {
+		await this.getSideBarAvatarButton().click();
+		await this.getPage().locator('li.rcx-option >> text="Logout"').click();
+	}
+}

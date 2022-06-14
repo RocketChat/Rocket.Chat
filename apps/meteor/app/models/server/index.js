@@ -20,6 +20,9 @@ export { AppsPersistenceModel } from './models/apps-persistence-model';
 export { AppsModel } from './models/apps-model';
 export { FederationRoomEvents } from './models/FederationRoomEvents';
 
+export { MatrixBridgedRoom } from './models/MatrixBridgedRoom';
+export { MatrixBridgedUser } from './models/MatrixBridgedUser';
+
 export {
 	Base,
 	BaseDb,

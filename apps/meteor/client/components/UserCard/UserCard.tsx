@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ActionButton, Skeleton } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { forwardRef, ReactNode, ComponentProps } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import MarkdownText from '../MarkdownText';
 import * as Status from '../UserStatus';
 import UserAvatar from '../avatar/UserAvatar';
@@ -70,7 +70,7 @@ const UserCard = forwardRef(function UserCard(
 	const t = useTranslation();
 
 	return (
-		<UserCardContainer className={className} ref={ref} style={style}>
+		<UserCardContainer data-qa='UserCard' className={className} ref={ref} style={style}>
 			<Box>
 				{!username ? <Skeleton width='x124' height='x124' variant='rect' /> : <UserAvatar username={username} etag={etag} size='x124' />}
 				{actions && (
