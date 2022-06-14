@@ -1,27 +1,27 @@
-import { Sidebar, ActionButton } from '@rocket.chat/fuselage';
+import { Sidebar, ActionButton, IconProps } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useState } from 'react';
+import React, { memo, useState, VFC } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
-/**
- * @param {Object} props
- * @param {React.ReactNode} props.icon
- * @param {React.ReactNode} props.title
- * @param {any} props.avatar
- * @param {any} props.actions
- * @param {any} props.href
- * @param {any} props.time
- * @param {any} props.menu
- * @param {any} props.menuOptions
- * @param {React.ReactNode} props.subtitle
- * @param {any} props.titleIcon
- * @param {any} props.badges
- * @param {any} props.threadUnread
- * @param {any} props.unread
- * @param {any} props.selected
- */
-const Extended = ({
+type ExtendedProps = {
+	icon?: IconProps['name'];
+	title?: React.ReactNode;
+	avatar?: React.ReactNode | boolean;
+	actions?: React.ReactNode;
+	href?: string;
+	time?: any;
+	menu?: () => React.ReactNode;
+	subtitle?: React.ReactNode;
+	badges?: React.ReactNode;
+	unread?: boolean;
+	selected?: boolean;
+	menuOptions?: any;
+	titleIcon?: React.ReactNode;
+	threadUnread?: boolean;
+};
+
+const Extended: VFC<ExtendedProps> = ({
 	icon,
 	title = '',
 	avatar,
@@ -29,11 +29,11 @@ const Extended = ({
 	href,
 	time,
 	menu,
-	menuOptions,
+	menuOptions: _menuOptions,
 	subtitle = '',
-	titleIcon,
+	titleIcon: _titleIcon,
 	badges,
-	threadUnread,
+	threadUnread: _threadUnread,
 	unread,
 	selected,
 	...props
@@ -52,13 +52,13 @@ const Extended = ({
 	};
 
 	return (
-		<Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} href={href} clickable={!!href}>
+		<Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} {...(href as any)} clickable={!!href}>
 			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 			<Sidebar.Item.Content>
 				<Sidebar.Item.Content>
 					<Sidebar.Item.Wrapper>
 						{icon}
-						<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread && 'rcx-sidebar-item--highlighted'}>
+						<Sidebar.Item.Title data-qa='sidebar-item-title' className={(unread && 'rcx-sidebar-item--highlighted') as string}>
 							{title}
 						</Sidebar.Item.Title>
 						{time && <Sidebar.Item.Time>{formatDate(time)}</Sidebar.Item.Time>}
@@ -66,9 +66,7 @@ const Extended = ({
 				</Sidebar.Item.Content>
 				<Sidebar.Item.Content>
 					<Sidebar.Item.Wrapper>
-						<Sidebar.Item.Subtitle tabIndex='-1' className={unread && 'rcx-sidebar-item--highlighted'}>
-							{subtitle}
-						</Sidebar.Item.Subtitle>
+						<Sidebar.Item.Subtitle className={(unread && 'rcx-sidebar-item--highlighted') as string}>{subtitle}</Sidebar.Item.Subtitle>
 						<Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>
 						{menu && (
 							<Sidebar.Item.Menu {...handleMenuEvent}>
