@@ -17,6 +17,7 @@ test.describe('[Agents]', () => {
 		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 		agents = new Agents(page);
+		global = new Global(page);
 
 		await loginPage.login(adminLogin);
 		await sideNav.sidebarUserMenu.click();
