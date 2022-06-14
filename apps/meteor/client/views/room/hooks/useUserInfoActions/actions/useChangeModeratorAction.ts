@@ -24,7 +24,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	}
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
-	const [roomCanSetModerator] = getRoomDirectives(room);
+	const { roomCanSetModerator } = getRoomDirectives(room);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const changeModeratorEndpoint = isModerator ? 'removeModerator' : 'addModerator';

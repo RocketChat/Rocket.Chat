@@ -13,7 +13,7 @@ import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUser
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 
 // TODO: Remove endpoint concatenation
-export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id'], reload: () => void): Action | undefined => {
+export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id'], reload?: () => void): Action | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
@@ -28,7 +28,7 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 	}
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
-	const [roomCanRemove] = getRoomDirectives(room);
+	const { roomCanRemove } = getRoomDirectives(room);
 
 	const removeFromTeam = useEndpointActionExperimental('POST', '/v1/teams.removeMember', t('User_has_been_removed_from_team'));
 	const removeFromRoom = useEndpointActionExperimental('POST', `${endpointPrefix}.kick`, t('User_has_been_removed_from_s', roomName));
@@ -43,14 +43,14 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 					...(roomKeys.length && { rooms: roomKeys }),
 				});
 				closeModal();
-				reload();
+				reload?.();
 			}
 		};
 
 		const handleRemoveFromRoom = async (rid: IRoom['_id'], uid: IUser['_id']): Promise<void> => {
 			await removeFromRoom({ roomId: rid, userId: uid });
 			closeModal();
-			reload();
+			reload?.();
 		};
 
 		if (room.teamMain && room.teamId) {

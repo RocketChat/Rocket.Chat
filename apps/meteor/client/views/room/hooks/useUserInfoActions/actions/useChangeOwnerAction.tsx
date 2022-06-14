@@ -23,7 +23,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	}
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
-	const [roomCanSetOwner] = getRoomDirectives(room);
+	const { roomCanSetOwner } = getRoomDirectives(room);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
