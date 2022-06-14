@@ -55,7 +55,7 @@ export async function findUsersToAutocomplete({
  * Returns a new query object with the inclusive fields only
  * @param {Object} query search query for matching rows
  */
-export function getInclusiveFields(query: Query): {} {
+export function getInclusiveFields(query: {} | { [k: keyof Query]: 1 }): {} {
 	const newQuery = Object.create(null);
 
 	for (const [key, value] of Object.entries(query)) {
@@ -99,11 +99,19 @@ export function getNonEmptyFields(fields: {}): {
 	return { ...defaultFields, ...fields };
 }
 
+const _defaultQuery = {
+	$or: [
+		{ 'emails.address': { $regex: '', $options: 'i' } },
+		{ username: { $regex: '', $options: 'i' } },
+		{ name: { $regex: '', $options: 'i' } },
+	],
+};
+
 /**
  * get the default query if **query** is empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} query the query from parsed jsonQuery
  */
-export function getNonEmptyQuery(query: Query): unknown {
+export function getNonEmptyQuery(query: Query): typeof _defaultQuery | (typeof _defaultQuery & Query) {
 	const defaultQuery = {
 		$or: [
 			{ 'emails.address': { $regex: '', $options: 'i' } },

@@ -22,12 +22,12 @@ export async function findMentionedMessages({
 	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
-	const user = await Users.findOneById(uid, { fields: { username: 1 } });
+	const user: IUser | null = await Users.findOneById(uid, { fields: { username: 1 } });
 	if (!user) {
 		throw new Error('invalid-user');
 	}
 
-	const cursor = await Messages.findVisibleByMentionAndRoomId((user as IUser).username, roomId, {
+	const cursor = await Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,

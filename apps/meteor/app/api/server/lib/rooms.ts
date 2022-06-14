@@ -1,4 +1,4 @@
-import { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { IRoom, ISubscription } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server/raw';
@@ -66,7 +66,9 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 	return Rooms.findOneById(rid, { fields: adminFields });
 }
 
-export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<unknown> {
+export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{
+	items: IRoom[];
+}> {
 	const options = {
 		fields: {
 			_id: 1,
@@ -83,7 +85,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid
 
 	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
 		.fetch()
-		.map((item: ISubscription) => item.rid);
+		.map((item: Pick<ISubscription, 'rid'>) => item.rid);
 
 	const rooms = await Rooms.findRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options).toArray();
 
@@ -92,7 +94,9 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid
 	};
 }
 
-export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<unknown> {
+export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{
+	items: IRoom[];
+}> {
 	if (!(await hasAtLeastOnePermissionAsync(uid, ['view-room-administration', 'can-audit']))) {
 		throw new Error('error-not-authorized');
 	}
@@ -131,7 +135,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 }> {
 	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
 		.fetch()
-		.map((item: ISubscription) => item.rid);
+		.map((item: Pick<ISubscription, 'rid'>) => item.rid);
 
 	const options = {
 		fields: {
@@ -158,7 +162,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 }
 
 export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name: string }): Promise<{
-	items: IMessage[];
+	items: IRoom[];
 }> {
 	const options = {
 		fields: {
@@ -176,7 +180,7 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 
 	const userRooms = Subscriptions.findByUserIdAndRoles(uid, ['owner'], { fields: { rid: 1 } })
 		.fetch()
-		.map((item: ISubscription) => item.rid);
+		.map((item: Pick<ISubscription, 'rid'>) => item.rid);
 
 	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, userRooms, options).toArray();
 
