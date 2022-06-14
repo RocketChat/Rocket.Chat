@@ -50,6 +50,10 @@ export default class SideNav extends BasePage {
 		return this.getPage().locator('li.rcx-option >> text="Omnichannel"');
 	}
 
+	get omnichannelGoBackButton(): Locator {
+		return this.getPage().locator('[data-qa="SideBarHeaderOmnichannel"] .rcx-button');
+	}
+
 	get users(): Locator {
 		return this.getPage().locator('.flex-nav [href="/admin/users"]');
 	}

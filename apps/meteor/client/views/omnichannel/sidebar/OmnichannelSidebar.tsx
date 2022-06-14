@@ -35,7 +35,7 @@ const OmnichannelSidebar: FC = () => {
 	return (
 		<SettingsProvider privileged>
 			<Sidebar>
-				<Sidebar.Header onClose={closeOmnichannelFlex} title={<>{t('Omnichannel')}</>} />
+				<Sidebar.Header data-qa='SideBarHeaderOmnichannel' onClose={closeOmnichannelFlex} title={<>{t('Omnichannel')}</>} />
 				<Sidebar.Content>
 					<SidebarItemsAssemblerProps items={items} currentPath={currentPath} />
 				</Sidebar.Content>

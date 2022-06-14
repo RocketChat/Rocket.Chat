@@ -4,8 +4,8 @@ import BasePage from './BasePage';
 import { IRegister } from '../interfaces/Login';
 
 export default class LiveChat extends BasePage {
-	get btnOpenLiveChat(): Locator {
-		return this.getPage().locator('[aria-label="L"]');
+	btnOpenLiveChat(label: string): Locator {
+		return this.getPage().locator(`[aria-label="${label}"]`);
 	}
 
 	get btnSounds(): Locator {
@@ -32,12 +32,20 @@ export default class LiveChat extends BasePage {
 		return this.getPage().locator('[name="message"]');
 	}
 
-	get btnSendMessage(): Locator {
-		return this.getPage().locator('[type="submit"] >> text="Send"');
+	btnSendMessage(btnText: string): Locator {
+		return this.getPage().locator(`[type="submit"] >> text="${btnText}"`);
 	}
 
 	get btnOk(): Locator {
 		return this.getPage().locator('button >> text="OK"');
+	}
+
+	get onlineAgentMessage(): Locator {
+		return this.getPage().locator('[contenteditable="true"]');
+	}
+
+	get btnSendMessageToOnlineAgent(): Locator {
+		return this.getPage().locator('footer div div div:nth-child(3) button');
 	}
 
 	public async renderAllElements(): Promise<void> {
@@ -45,7 +53,7 @@ export default class LiveChat extends BasePage {
 			this.inputName,
 			this.inputEmail,
 			this.textAreaMessage,
-			this.btnSendMessage,
+			this.btnSendMessage('Send'),
 			this.btnSounds,
 			this.btnMinimize,
 			this.btnExpand,
@@ -53,10 +61,13 @@ export default class LiveChat extends BasePage {
 		await Promise.all(elements.map((element) => expect(element).toBeVisible()));
 	}
 
-	public async doSendMessage(liveChatUser: IRegister): Promise<void> {
+	public async doSendMessage(liveChatUser: IRegister, isOffline = true): Promise<void> {
+		const buttonLabel = isOffline ? 'Send' : 'Start chat';
 		await this.inputName.type(liveChatUser.name);
 		await this.inputEmail.type(liveChatUser.email);
-		await this.textAreaMessage.type('any_message');
-		await this.btnSendMessage.click();
+		if (isOffline) {
+			await this.textAreaMessage.type('any_message');
+		}
+		await this.btnSendMessage(buttonLabel).click();
 	}
 }

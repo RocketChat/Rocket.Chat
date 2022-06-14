@@ -10,33 +10,36 @@ test.describe('[Livechat]', () => {
 	let page: Page;
 	let liveChat: LiveChat;
 	const liveChatUser = createRegisterUser();
-	test.beforeAll(async ({ browser }) => {
-		const { isLocal } = verifyTestBaseUrl();
 
-		if (isLocal) {
-			await updateMailToLiveChat();
-		}
-		page = await browser.newPage();
-		const liveChatUrl = '/livechat';
-		await page.goto(liveChatUrl);
+	test.describe('[Offline message]', () => {
+		test.beforeAll(async ({ browser }) => {
+			const { isLocal } = verifyTestBaseUrl();
 
-		liveChat = new LiveChat(page);
-		await liveChat.btnOpenLiveChat.click();
-	});
+			if (isLocal) {
+				await updateMailToLiveChat();
+			}
+			page = await browser.newPage();
+			const liveChatUrl = '/livechat';
+			await page.goto(liveChatUrl);
 
-	test.describe('[Render]', () => {
-		test('expect show all inputs', async () => {
-			await liveChat.renderAllElements();
+			liveChat = new LiveChat(page);
+			await liveChat.btnOpenLiveChat('L').click();
+		});
+
+		test.describe('[Render]', () => {
+			test('expect show all inputs', async () => {
+				await liveChat.renderAllElements();
+			});
+		});
+
+		test.describe('[Actions]', () => {
+			test('expect send message to live chat', async () => {
+				await liveChat.doSendMessage(liveChatUser);
+			});
 		});
 	});
 
-	test.describe('[Actions]', () => {
-		test('expect send message to live chat', async () => {
-			await liveChat.doSendMessage(liveChatUser);
-		});
-	});
-
-	test.describe('[Show message to agent]', () => {
+	test.describe('[Send message to online agent]', () => {
 		let loginPage: LoginPage;
 		let sideNav: SideNav;
 		let mainContent: MainContent;
@@ -44,7 +47,7 @@ test.describe('[Livechat]', () => {
 		test.beforeAll(async ({ browser }) => {
 			const context = await browser.newContext();
 			const otherContextPage = await context.newPage();
-			otherContextPage.goto('/');
+			await otherContextPage.goto('/');
 
 			loginPage = new LoginPage(otherContextPage);
 			sideNav = new SideNav(otherContextPage);
@@ -55,13 +58,19 @@ test.describe('[Livechat]', () => {
 			await sideNav.sidebarUserMenu().click();
 			await sideNav.omnichannel().click();
 			await agent.agentsLink().click();
-			await agent.doAddAgent('rocket.chat');
+			await agent.doAddAgent('rocketchat.internal.admin.test@rocket.chat');
+			await sideNav.omnichannelGoBackButton.click();
+			await page.reload();
+			await liveChat.btnOpenLiveChat('R').click();
+			await liveChat.doSendMessage(liveChatUser, false);
+			await liveChat.onlineAgentMessage.type('this_a_test_message');
+			await liveChat.btnSendMessageToOnlineAgent.click();
 			await sideNav.findForChat(liveChatUser.name);
 			await mainContent.sendMessage('this_a_test_message');
 		});
 
 		test('expect message is received from agent', async () => {
-			expect(1).toBe(1);
+			expect(1).toEqual(1);
 		});
 	});
 });

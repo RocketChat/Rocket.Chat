@@ -15,10 +15,6 @@ export default class Agents extends BasePage {
 		return this.getPage().locator('input').first();
 	}
 
-	public userOption(): Locator {
-		return this.getPage().locator('.rcx-option >> text="Rocket.Cat"');
-	}
-
 	public btnAddAgents(): Locator {
 		return this.getPage().locator('button.rcx-button--primary.rcx-button >> text="Add"');
 	}
@@ -84,8 +80,7 @@ export default class Agents extends BasePage {
 	public async doAddAgent(user: string): Promise<void> {
 		await this.textAgentsTitle().waitFor();
 		await this.inputAgentsUserName().type(user, { delay: 50 });
-
-		await this.userOption().click();
+		await this.keyboardPress('Enter');
 		await this.btnAddAgents().click();
 	}
 
