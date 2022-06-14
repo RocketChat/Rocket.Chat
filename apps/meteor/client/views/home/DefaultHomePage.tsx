@@ -1,5 +1,5 @@
 import { Grid } from '@rocket.chat/fuselage';
-import { usePermission, useAllPermissions } from '@rocket.chat/ui-contexts';
+import { usePermission, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import Page from '../../components/Page/Page';
@@ -16,7 +16,7 @@ const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
 const DefaultHomePage = (): ReactElement => {
 	const canAddUsers = usePermission('view-user-administration');
-	const canCreateChannel = useAllPermissions(CREATE_CHANNEL_PERMISSIONS);
+	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 
 	return (
 		<Page data-qa='page-home' backgroundColor='neutral-100'>
