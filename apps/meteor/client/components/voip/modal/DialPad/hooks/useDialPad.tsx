@@ -47,6 +47,13 @@ export const useDialPad = (): DialPadStateHandlers => {
 		setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
 	}, [setError, t]);
 
+	const handleOnChange = useCallback(
+		(e: FormEvent<HTMLInputElement>): void => {
+			onChange(e);
+		},
+		[onChange],
+	);
+
 	useEffect(() => {
 		setDisabled(!value);
 		clearErrors('PhoneInput');
@@ -62,7 +69,7 @@ export const useDialPad = (): DialPadStateHandlers => {
 		inputRef: ref,
 		inputError: errors.PhoneInput?.message,
 		isButtonDisabled: disabled,
-		handleInputChange: onChange,
+		handleInputChange: handleOnChange,
 		handleBackspaceClick,
 		handlePadButtonClick,
 		handleCallButtonClick,

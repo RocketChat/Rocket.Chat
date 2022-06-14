@@ -1,15 +1,25 @@
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useLayout, useToastMessageDispatch, useRoute, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import {
+	useLayout,
+	useToastMessageDispatch,
+	useRoute,
+	usePermission,
+	useMethod,
+	useTranslation,
+	useSetModal,
+} from '@rocket.chat/ui-contexts';
+import React, { memo, ReactElement, useCallback } from 'react';
 
+import DialPadModal from '../../components/voip/modal/DialPad/DialPadModal';
 import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
-import { OmnichannelCallToggle } from './components/OmnichannelCallToggle';
+import { OmnichannelCallToggle } from './actions/OmnichannelCallToggle';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
+	const setModal = useSetModal();
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const isCallEnabled = useIsCallEnabled();
 	const hasPermission = usePermission('view-omnichannel-contact-center');
@@ -21,15 +31,10 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const queueListRoute = useRoute('livechat-queue');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const availableIcon = {
+	const omnichannelIcon = {
 		title: agentAvailable ? t('Available') : t('Not_Available'),
 		color: agentAvailable ? 'success' : undefined,
 		icon: agentAvailable ? 'message' : 'message-disabled',
-	} as const;
-
-	const directoryIcon = {
-		title: t('Contact_Center'),
-		icon: 'contact',
 	} as const;
 
 	const handleAvailableStatusChange = useMutableCallback(async () => {
@@ -53,6 +58,10 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		}
 	});
 
+	const openDialModal = useCallback(() => {
+		setModal(<DialPadModal handleClose={(): void => setModal(null)} />);
+	}, [setModal]);
+
 	// The className is a paliative while we make TopBar.ToolBox optional on fuselage
 	return (
 		<Sidebar.TopBar.ToolBox className='omnichannel-sidebar' {...props}>
@@ -60,8 +69,11 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 			<Sidebar.TopBar.Actions>
 				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}
 				{isCallEnabled && <OmnichannelCallToggle />}
-				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
-				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={(): void => handleRoute('directory')} />}
+				<Sidebar.TopBar.Action {...omnichannelIcon} onClick={handleAvailableStatusChange} />
+				{hasPermission && (
+					<Sidebar.TopBar.Action title={t('Contact_Center')} icon='contact' onClick={(): void => handleRoute('directory')} />
+				)}
+				{isCallEnabled && <Sidebar.TopBar.Action title={t('New_Call')} icon='dialpad' onClick={openDialModal} />}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);

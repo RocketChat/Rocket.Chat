@@ -1,12 +1,12 @@
 import { Box, Button, Icon, Field, Modal, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
-import InputMask from 'react-input-mask';
+import MaskedInput from 'react-text-mask';
 
 import Pad from './Pad';
 import { useDialPad } from './hooks/useDialPad';
 
-const DialPadModal = (): ReactElement => {
+const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElement => {
 	const t = useTranslation();
 
 	const {
@@ -25,21 +25,16 @@ const DialPadModal = (): ReactElement => {
 		<Modal w='400px'>
 			<Modal.Header>
 				<Modal.Title />
-				<Modal.Close />
+				<Modal.Close onClick={handleClose} />
 			</Modal.Header>
 			<Modal.Content display='flex' justifyContent='center' flexDirection='column'>
 				<Field>
-					<InputMask
-						value={inputValue}
-						name={inputName}
-						mask='+99 (99) 99999-9999'
-						onChange={handleInputChange}
-						maskChar=''
-						alwaysShowMask={false}
-					>
-						{({ onChange, name }: any): ReactElement => (
+					<MaskedInput
+						mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
+						guide={false}
+						render={(ref, props): ReactElement => (
 							<TextInput
-								ref={inputRef}
+								ref={ref}
 								textAlign='center'
 								placeholder={t('Phone_number')}
 								addon={
@@ -48,11 +43,10 @@ const DialPadModal = (): ReactElement => {
 									</Button>
 								}
 								error={inputError}
-								onChange={onChange}
-								name={name}
+								name={inputName}
 							/>
 						)}
-					</InputMask>
+					/>
 					<Field.Error h='20px' textAlign='center'>
 						{inputError}
 					</Field.Error>
