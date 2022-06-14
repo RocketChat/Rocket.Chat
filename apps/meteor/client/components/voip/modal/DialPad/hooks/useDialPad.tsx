@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 
 type DialPadStateHandlers = {
 	inputName: string;
-	inputValue: string;
 	inputRef: RefCallback<HTMLInputElement>;
 	inputError: string | undefined;
 	isButtonDisabled: boolean;
@@ -47,13 +46,6 @@ export const useDialPad = (): DialPadStateHandlers => {
 		setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
 	}, [setError, t]);
 
-	const handleOnChange = useCallback(
-		(e: FormEvent<HTMLInputElement>): void => {
-			onChange(e);
-		},
-		[onChange],
-	);
-
 	useEffect(() => {
 		setDisabled(!value);
 		clearErrors('PhoneInput');
@@ -65,11 +57,10 @@ export const useDialPad = (): DialPadStateHandlers => {
 
 	return {
 		inputName: 'PhoneInput',
-		inputValue: value,
 		inputRef: ref,
 		inputError: errors.PhoneInput?.message,
 		isButtonDisabled: disabled,
-		handleInputChange: handleOnChange,
+		handleInputChange: onChange,
 		handleBackspaceClick,
 		handlePadButtonClick,
 		handleCallButtonClick,
