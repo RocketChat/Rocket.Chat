@@ -14,7 +14,6 @@ const userDeactivateIdleSchema = {
 	properties: {
 		daysIdle: {
 			type: 'number',
-			minimum: 1,
 		},
 		role: {
 			type: 'string',
