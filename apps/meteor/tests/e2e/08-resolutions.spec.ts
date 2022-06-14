@@ -3,11 +3,13 @@ import { test, expect, Browser } from '@playwright/test';
 import MainContent from './utils/pageobjects/MainContent';
 import SideNav from './utils/pageobjects/SideNav';
 import LoginPage from './utils/pageobjects/LoginPage';
+import Global from './utils/pageobjects/Global';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 let loginPage: LoginPage;
 let mainContent: MainContent;
 let sideNav: SideNav;
+let global: Global;
 
 async function initConfig(
 	browser: Browser,
@@ -23,6 +25,7 @@ async function initConfig(
 	await loginPage.login(adminLogin);
 	sideNav = new SideNav(page);
 	mainContent = new MainContent(page);
+	global = new Global(page);
 	return { loginPage, sideNav, mainContent };
 }
 
@@ -90,19 +93,19 @@ test.describe('[Resolution]', function () {
 				test('expect close the sidenav when press the preferences link', async () => {
 					await sideNav.preferences().click();
 					await sideNav.getPage().mouse.click(640, 30);
-					await expect(await sideNav.isSideBarOpen()).toBeTruthy;
+					await expect(await global.flexNav().isVisible()).toBeFalsy;
 				});
 
 				test('expect close the sidenav when press the profile link', async () => {
 					await sideNav.profile().click();
 					await sideNav.getPage().mouse.click(640, 30);
-					await expect(await sideNav.isSideBarOpen()).toBeTruthy;
+					await expect(await sideNav.flexNav().isVisible()).toBeFalsy;
 				});
 
 				test('expect close the preferences nav', async () => {
 					await sideNav.preferencesClose().click();
 					await sideNav.getPage().mouse.click(640, 30);
-					await expect(await sideNav.isSideBarOpen()).toBeFalsy;
+					await expect(await sideNav.flexNav().isVisible()).toBeTruthy;
 				});
 			});
 		});
