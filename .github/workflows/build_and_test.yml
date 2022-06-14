@@ -520,7 +520,6 @@ jobs:
             -e MOLECULER_LOG_LEVEL=info \
             -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
             -e SKIP_PROCESS_EVENT_REGISTRATION=true \
-            -e OVERWRITE_SETTING_Site_Url=http://localhost:4000 \
             --label 'traefik.http.routers.rocketchat.rule=PathPrefix(`/`)' \
             ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.docker-tag }}
 
