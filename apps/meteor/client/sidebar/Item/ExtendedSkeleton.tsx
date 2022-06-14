@@ -1,9 +1,9 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { VFC } from 'react';
 
 import Extended from './Extended';
 
-const ExtendedSkeleton = ({ showAvatar }) => (
+const ExtendedSkeleton: VFC<{ showAvatar: boolean }> = ({ showAvatar }) => (
 	<Box height='x44'>
 		<Extended
 			title={<Skeleton width='100%' />}

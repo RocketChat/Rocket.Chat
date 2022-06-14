@@ -1,8 +1,23 @@
-import { Sidebar, ActionButton } from '@rocket.chat/fuselage';
+import { Sidebar, ActionButton, IconProps } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useState } from 'react';
+import React, { FC, memo, ReactElement, useState } from 'react';
 
-const Condensed = ({ icon, title = '', titleIcon, avatar, actions, href, menuOptions, unread, menu, badges, threadUnread, ...props }) => {
+type CondensedProps = {
+	title: ReactElement | string;
+	titleIcon?: ReactElement;
+	avatar: ReactElement | boolean;
+	icon?: IconProps['name'];
+	actions?: ReactElement;
+	href?: string;
+	unread?: boolean;
+	menu?: () => ReactElement;
+	menuOptions?: any;
+	selected?: boolean;
+	badges?: ReactElement;
+	clickable?: boolean;
+};
+
+const Condensed: FC<CondensedProps> = ({ icon, title = '', avatar, actions, href, unread, menu, badges, ...props }) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -15,12 +30,12 @@ const Condensed = ({ icon, title = '', titleIcon, avatar, actions, href, menuOpt
 	};
 
 	return (
-		<Sidebar.Item {...props} href={href} clickable={!!href}>
+		<Sidebar.Item {...props} {...({ href } as any)} clickable={!!href}>
 			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 			<Sidebar.Item.Content>
 				<Sidebar.Item.Wrapper>
 					{icon}
-					<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread && 'rcx-sidebar-item--highlighted'}>
+					<Sidebar.Item.Title data-qa='sidebar-item-title' className={(unread && 'rcx-sidebar-item--highlighted') as string}>
 						{title}
 					</Sidebar.Item.Title>
 				</Sidebar.Item.Wrapper>
