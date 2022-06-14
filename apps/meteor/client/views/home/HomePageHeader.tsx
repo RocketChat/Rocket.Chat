@@ -14,9 +14,7 @@ const HomepageHeader = (): ReactElement => {
 		<PageHeader title={title} data-qa-id='home-header'>
 			{canEditLayout && (
 				<Button is='a' href='/admin/settings/Layout' data-qa-id='home-header-customize-button'>
-					<>
-						<Icon name='pencil' size='x16' /> {t('Customize')}
-					</>
+					<Icon name='pencil' size='x16' /> {t('Customize')}
 				</Button>
 			)}
 		</PageHeader>
