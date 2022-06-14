@@ -10,8 +10,14 @@ export const getUploadFormData = async ({
 }): Promise<{ file: Readable; filename: string; encoding: string; mimetype: string; fileBuffer: Buffer }> =>
 	new Promise((resolve, reject) => {
 		const bb = busboy({ headers: request.headers, defParamCharset: 'utf8' });
-
-		const fields: { file: Readable; filename: string; encoding: string; mimetype: string; fileBuffer: Buffer } = Object.create(null);
+		let fields: {
+			[key: string]: string | string[] | unknown;
+			file: Readable;
+			filename: string;
+			encoding: string;
+			mimetype: string;
+			fileBuffer: Buffer;
+		} = Object.create(null);
 
 		bb.on(
 			'file',
@@ -29,7 +35,7 @@ export const getUploadFormData = async ({
 						return reject('Just 1 file is allowed');
 					}
 
-					fields[fieldname] = {
+					fields = {
 						file,
 						filename,
 						encoding,
@@ -40,8 +46,8 @@ export const getUploadFormData = async ({
 			},
 		);
 
-		bb.on('field', (fieldname: string, value: unknown) => {
-			fields[fieldname] = value;
+		bb.on('field', (fieldname: string, value: string & Readable & Buffer) => {
+			fields[fieldname as keyof typeof fields] = value;
 		});
 
 		bb.on('finish', () => resolve(fields));
