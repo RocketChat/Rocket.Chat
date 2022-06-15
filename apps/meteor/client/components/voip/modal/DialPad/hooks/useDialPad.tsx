@@ -1,5 +1,5 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import { FormEvent, RefCallback, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, RefCallback, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 type DialPadStateHandlers = {
@@ -7,7 +7,7 @@ type DialPadStateHandlers = {
 	inputRef: RefCallback<HTMLInputElement>;
 	inputError: string | undefined;
 	isButtonDisabled: boolean;
-	handleInputChange: (event: FormEvent<HTMLInputElement>) => void;
+	handleOnChange: (e: ChangeEvent<HTMLInputElement>) => void;
 	handleBackspaceClick: () => void;
 	handlePadButtonClick: (digit: string | number) => void;
 	handleCallButtonClick: () => void;
@@ -43,6 +43,7 @@ export const useDialPad = (): DialPadStateHandlers => {
 	);
 
 	const handleCallButtonClick = useCallback((): void => {
+		// TODO: Waiting for backend to implement this feature
 		setError('PhoneInput', { message: t('Something_went_wrong_try_again_later') });
 	}, [setError, t]);
 
@@ -60,7 +61,7 @@ export const useDialPad = (): DialPadStateHandlers => {
 		inputRef: ref,
 		inputError: errors.PhoneInput?.message,
 		isButtonDisabled: disabled,
-		handleInputChange: onChange,
+		handleOnChange: onChange,
 		handleBackspaceClick,
 		handlePadButtonClick,
 		handleCallButtonClick,

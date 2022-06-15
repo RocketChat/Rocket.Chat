@@ -1,21 +1,20 @@
 import { Button, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ChangeEvent, FocusEvent, FormEvent, forwardRef, ReactElement, Ref } from 'react';
+import React, { ChangeEvent, FocusEvent, forwardRef, ReactElement, Ref } from 'react';
 
 type DialInputProps = {
-	onChange: (e: ChangeEvent<HTMLElement>) => void;
-	onBlur?: (event: FocusEvent<HTMLElement, Element>) => void;
-	handleInputChange: (event: FormEvent<HTMLInputElement>) => void;
-	handleBackspaceClick: () => void;
 	inputRef: Ref<HTMLInputElement>;
-	isButtonDisabled: boolean;
-	inputError: string | undefined;
 	inputName: string;
+	inputError: string | undefined;
+	isButtonDisabled: boolean;
+	onBlur?: (event: FocusEvent<HTMLElement, Element>) => void;
+	handleBackspaceClick: () => void;
+	handleOnChange: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export const DialInput = forwardRef(function DialInput(
-	{ onChange, handleInputChange, handleBackspaceClick, inputRef, isButtonDisabled, inputError, inputName }: DialInputProps,
+	{ handleBackspaceClick, handleOnChange, inputRef, isButtonDisabled, inputError, inputName }: DialInputProps,
 	ref,
 ): ReactElement {
 	const t = useTranslation();
@@ -32,10 +31,7 @@ export const DialInput = forwardRef(function DialInput(
 				</Button>
 			}
 			error={inputError}
-			onChange={(e: unknown): void => {
-				handleInputChange(e as FormEvent<HTMLInputElement>);
-				onChange(e as ChangeEvent<HTMLElement>);
-			}}
+			onChange={handleOnChange}
 			name={inputName}
 		/>
 	);

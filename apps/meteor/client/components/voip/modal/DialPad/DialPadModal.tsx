@@ -12,12 +12,13 @@ const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElemen
 		inputRef,
 		inputError,
 		isButtonDisabled,
-		handleInputChange,
+		handleOnChange,
 		handleBackspaceClick,
 		handlePadButtonClick,
 		handleCallButtonClick,
 	} = useDialPad();
 
+	const mask = (rawValue = ''): (string | RegExp)[] => Array<string | RegExp>('+').concat(rawValue.split('').map(() => /\d/));
 	return (
 		<Modal w='400px'>
 			<Modal.Header>
@@ -27,18 +28,17 @@ const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElemen
 			<Modal.Content display='flex' justifyContent='center' flexDirection='column'>
 				<Field>
 					<MaskedInput
-						mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
+						mask={mask}
 						guide={false}
-						render={(ref, props): ReactElement => (
+						render={(ref): ReactElement => (
 							<DialInput
 								ref={ref}
 								inputName={inputName}
 								inputRef={inputRef}
 								inputError={inputError}
-								handleInputChange={handleInputChange}
 								handleBackspaceClick={handleBackspaceClick}
 								isButtonDisabled={isButtonDisabled}
-								{...props}
+								handleOnChange={handleOnChange}
 							/>
 						)}
 					/>
