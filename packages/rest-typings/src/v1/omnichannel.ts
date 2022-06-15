@@ -849,10 +849,13 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/monitors/:username': {
 		GET: () => ILivechatMonitor;
 	};
-	'/v1/livechat/tags.list': {
+	'/v1/livechat/tags': {
 		GET: (params: LivechatTagsListProps) => PaginatedResult<{
 			tags: ILivechatTag[];
 		}>;
+	};
+	'/v1/livechat/tags/:tagId': {
+		GET: () => ILivechatTag;
 	};
 	'/v1/livechat/department': {
 		GET: (params: LivechatDepartmentProps) => PaginatedResult<{
