@@ -1,9 +1,23 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { ILivechatDepartmentRecord, IUser } from '@rocket.chat/core-typings';
+import { FilterQuery } from 'mongodb';
 
 import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export async function findUsersToAutocomplete({ uid, selector }) {
+export async function findUsersToAutocomplete({
+	uid,
+	selector,
+}: {
+	uid: string;
+	selector: {
+		exceptions: string[];
+		conditions: FilterQuery<ILivechatDepartmentRecord>;
+		term: string;
+	};
+}): Promise<{
+	items: IUser[];
+}> {
 	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
 		return { items: [] };
 	}
@@ -39,8 +53,8 @@ export async function findUsersToAutocomplete({ uid, selector }) {
  * Returns a new query object with the inclusive fields only
  * @param {Object} query search query for matching rows
  */
-export function getInclusiveFields(query) {
-	const newQuery = {};
+export function getInclusiveFields(query: { [k: string]: 1 }): {} {
+	const newQuery = Object.create(null);
 
 	for (const [key, value] of Object.entries(query)) {
 		if (value === 1) {
@@ -55,7 +69,16 @@ export function getInclusiveFields(query) {
  * get the default fields if **fields** are empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} fields the fields from parsed jsonQuery
  */
-export function getNonEmptyFields(fields) {
+export function getNonEmptyFields(fields: {}): {
+	name: number;
+	username: number;
+	emails: number;
+	roles: number;
+	status: number;
+	active: number;
+	avatarETag: number;
+	lastLogin: number;
+} {
 	const defaultFields = {
 		name: 1,
 		username: 1,
@@ -74,11 +97,21 @@ export function getNonEmptyFields(fields) {
 	return { ...defaultFields, ...fields };
 }
 
+const _defaultQuery = {
+	$or: [
+		{ 'emails.address': { $regex: '', $options: 'i' } },
+		{ username: { $regex: '', $options: 'i' } },
+		{ name: { $regex: '', $options: 'i' } },
+	],
+};
+
 /**
  * get the default query if **query** is empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} query the query from parsed jsonQuery
  */
-export function getNonEmptyQuery(query) {
+
+type Query = { [k: string]: unknown };
+export function getNonEmptyQuery(query: Query): typeof _defaultQuery | (typeof _defaultQuery & Query) {
 	const defaultQuery = {
 		$or: [
 			{ 'emails.address': { $regex: '', $options: 'i' } },
