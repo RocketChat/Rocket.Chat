@@ -19,7 +19,7 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, value, onChange }: A
 	return (
 		<>
 			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} name='arrow-back' />}
+				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
 				<VerticalBar.Text>{t('Add_users')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
