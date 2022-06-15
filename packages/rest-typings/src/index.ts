@@ -177,7 +177,8 @@ export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
 export * from './v1/emojiCustom';
 
-export * from './v1/UsersSetAvatarParamsPOST';
-export * from './v1/UsersSetPreferenceParamsPOST';
-export * from './v1/UsersUpdateOwnBasicInfoParamsPOST';
-export * from './v1/UsersUpdateParamsPOST';
+export * from './v1/users';
+export * from './v1/users/UsersSetAvatarParamsPOST';
+export * from './v1/users/UsersSetPreferenceParamsPOST';
+export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
+export * from './v1/users/UsersUpdateParamsPOST';
