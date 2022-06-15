@@ -23,17 +23,14 @@ const DefaultHomePage = (): ReactElement => {
 	return (
 		<Page data-qa='page-home' data-qa-type='default' backgroundColor='neutral-100'>
 			<HomePageHeader />
-			<Box marginBlock='x42' marginInline='x24' minHeight='x40'>
-				<Box is='h1' fontScale='h1'>
+			<PageScrollableContent>
+				<Box is='h1' fontScale='h1' marginBlock='x42' minHeight='x40'>
 					{/* eslint-disable-next-line @typescript-eslint/camelcase */}
 					{t('Welcome_to', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
-			</Box>
-			<Box is='h3' fontScale='h3' marginBlock='x16' marginInline='x24'>
-				{t('Some_ideas_to_get_you_started')}
-			</Box>
-			<PageScrollableContent>
-				{/* Fix grid styling */}
+				<Box is='h3' fontScale='h3' marginBlock='x16'>
+					{t('Some_ideas_to_get_you_started')}
+				</Box>
 				<Grid>
 					{canAddUsers && (
 						<Grid.Item>
