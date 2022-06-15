@@ -1,5 +1,5 @@
 import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
-import { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
 import { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 
 import { VideoConf } from '../../../../server/sdk';
@@ -16,6 +16,17 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 		this.orch.debugLog(`The App ${appId} is getting the video conference byId: "${callId}"`);
 
 		return this.orch.getConverters()?.get('videoConferences').convertById(callId);
+	}
+
+	protected async create(call: AppVideoConference, appId: string): Promise<string> {
+		this.orch.debugLog(`The App ${appId} is creating a video conference.`);
+
+		return (
+			await VideoConf.create({
+				type: 'videoconference',
+				...call,
+			})
+		).callId;
 	}
 
 	protected async update(call: VideoConference, appId: string): Promise<void> {
