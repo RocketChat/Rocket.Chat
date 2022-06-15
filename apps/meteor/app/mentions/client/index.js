@@ -1,0 +1,1 @@
+export { createMentionsMessageRenderer } from './client';

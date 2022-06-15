@@ -1,0 +1,53 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"target": "es2018",
+		"lib": ["esnext", "dom"],
+
+		"allowJs": true,
+		"checkJs": false,
+		"jsx": "react",
+		// "incremental": true,
+		"noEmit": true,
+
+		/* Strict Type-Checking Options */
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": false,
+
+		/* Additional Checks */
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": false,
+		"noFallthroughCasesInSwitch": false,
+
+		/* Module Resolution Options */
+		"baseUrl": ".",
+		"paths": {
+			/* Support absolute /imports/* with a leading '/' */
+			"/*": ["*"]
+		},
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"preserveSymlinks": true
+
+		// "sourceMap": true,
+		// "declaration": true,
+		// "removeComments": false,
+		// "emitDecoratorMetadata": true,
+		// "experimentalDecorators": true,
+	},
+	"exclude": [
+		"./.meteor/**",
+		"./packages/**",
+		"./imports/client**",
+		"**/dist/**",
+		// "./ee/server/services/**"
+		"node_modules"
+	],
+	"ts-node": {
+		"files": true
+	}
+}
