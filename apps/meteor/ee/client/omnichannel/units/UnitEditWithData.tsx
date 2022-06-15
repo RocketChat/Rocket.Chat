@@ -14,7 +14,7 @@ const UnitEditWithData: FC<{
 }> = function UnitEditWithData({ unitId, reload, title }) {
 	const query = useMemo(() => ({ unitId }), [unitId]);
 
-	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/units.getOne', query);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/units/${unitId}`);
 
 	const {
 		value: unitMonitors,

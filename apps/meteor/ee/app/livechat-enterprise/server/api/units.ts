@@ -1,52 +1,6 @@
 import { API } from '../../../../../app/api/server';
-import { deprecationWarning } from '../../../../../app/api/server/helpers/deprecationWarning';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
-
-API.v1.addRoute(
-	'livechat/units.list',
-	{ authRequired: true },
-	{
-		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { text } = this.queryParams;
-
-			const response = await findUnits({
-				userId: this.userId,
-				text,
-				pagination: {
-					offset,
-					count,
-					sort,
-				},
-			});
-
-			return API.v1.success(deprecationWarning({ response, endpoint: 'livechat/units.list' }));
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/units.getOne',
-	{ authRequired: true },
-	{
-		async get() {
-			const { unitId } = this.queryParams;
-
-			if (!unitId) {
-				return API.v1.failure('Missing "unitId" query parameter');
-			}
-
-			const unit = await findUnitById({
-				userId: this.userId,
-				unitId,
-			});
-
-			return API.v1.success(deprecationWarning({ response: unit, endpoint: 'livechat/units.getOne' }));
-		},
-	},
-);
 
 API.v1.addRoute(
 	'livechat/unitMonitors.list',
