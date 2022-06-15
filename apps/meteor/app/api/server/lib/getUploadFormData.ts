@@ -1,7 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { Readable } from 'stream';
 
-import { Request } from 'express';
+import { Meteor } from 'meteor/meteor';
+import type { Request } from 'express';
+
 import busboy from 'busboy';
 import { ValidateFunction } from 'ajv';
 
