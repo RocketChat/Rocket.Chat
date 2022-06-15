@@ -1,27 +1,27 @@
 import { Meteor } from 'meteor/meteor';
+import { SettingValue } from '@rocket.chat/core-typings';
 
 import { Settings } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
+import { AppServerOrchestrator } from '../orchestrator';
 
-const waitToLoad = function (orch) {
-	return new Promise((resolve) => {
-		let id = setInterval(() => {
+const waitToLoad = function (orch: AppServerOrchestrator): unknown {
+	return new Promise<void>((resolve) => {
+		const id = setInterval(() => {
 			if (orch.isEnabled() && orch.isLoaded()) {
 				clearInterval(id);
-				id = -1;
 				resolve();
 			}
 		}, 100);
 	});
 };
 
-const waitToUnload = function (orch) {
-	return new Promise((resolve) => {
-		let id = setInterval(() => {
+const waitToUnload = function (orch: AppServerOrchestrator): unknown {
+	return new Promise<void>((resolve) => {
+		const id = setInterval(() => {
 			if (!orch.isEnabled() && !orch.isLoaded()) {
 				clearInterval(id);
-				id = -1;
 				resolve();
 			}
 		}, 100);
@@ -29,21 +29,24 @@ const waitToUnload = function (orch) {
 };
 
 export class AppMethods {
-	constructor(orch) {
-		this._orch = orch;
+	private orch: AppServerOrchestrator;
 
-		this._addMethods();
+	constructor(orch: AppServerOrchestrator) {
+		this.orch = orch;
+
+		this.addMethods();
 	}
 
-	isEnabled() {
-		return typeof this._orch !== 'undefined' && this._orch.isEnabled();
+	isEnabled(): SettingValue {
+		return typeof this.orch !== 'undefined' && this.orch.isEnabled();
 	}
 
-	isLoaded() {
-		return typeof this._orch !== 'undefined' && this._orch.isEnabled() && this._orch.isLoaded();
+	isLoaded(): boolean {
+		return Boolean(typeof this.orch !== 'undefined' && this.orch.isEnabled() && this.orch.isLoaded());
 	}
 
-	_addMethods() {
+	private addMethods(): void {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const instance = this;
 
 		Meteor.methods({
@@ -56,13 +59,14 @@ export class AppMethods {
 			},
 
 			'apps/go-enable': twoFactorRequired(function _appsGoEnable() {
-				if (!Meteor.userId()) {
+				const uid = Meteor.userId();
+				if (!uid) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 						method: 'apps/go-enable',
 					});
 				}
 
-				if (!hasPermission(Meteor.userId(), 'manage-apps')) {
+				if (!hasPermission(uid, 'manage-apps')) {
 					throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 						method: 'apps/go-enable',
 					});
@@ -70,17 +74,18 @@ export class AppMethods {
 
 				Settings.updateValueById('Apps_Framework_enabled', true);
 
-				Promise.await(waitToLoad(instance._orch));
+				Promise.await(waitToLoad(instance.orch));
 			}),
 
 			'apps/go-disable': twoFactorRequired(function _appsGoDisable() {
-				if (!Meteor.userId()) {
+				const uid = Meteor.userId();
+				if (!uid) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 						method: 'apps/go-enable',
 					});
 				}
 
-				if (!hasPermission(Meteor.userId(), 'manage-apps')) {
+				if (!hasPermission(uid, 'manage-apps')) {
 					throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 						method: 'apps/go-enable',
 					});
@@ -88,7 +93,7 @@ export class AppMethods {
 
 				Settings.updateValueById('Apps_Framework_enabled', false);
 
-				Promise.await(waitToUnload(instance._orch));
+				Promise.await(waitToUnload(instance.orch));
 			}),
 		});
 	}
