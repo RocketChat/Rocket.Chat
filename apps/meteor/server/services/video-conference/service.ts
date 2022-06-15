@@ -379,7 +379,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const joinUrl = await this.getUrl(call);
 		const messageId = await this.createLivechatMessage(rid, user, callId, joinUrl);
-		this.VideoConference.setMessageById(callId, 'started', messageId);
+		await this.VideoConference.setMessageById(callId, 'started', messageId);
 
 		return {
 			type: 'livechat',
