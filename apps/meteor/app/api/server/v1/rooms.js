@@ -86,9 +86,12 @@ API.v1.addRoute(
 			}
 
 			const [file, fields] = Promise.await(
-				getUploadFormData({
-					request: this.request,
-				}),
+				getUploadFormData(
+					{
+						request: this.request,
+					},
+					{ field: 'file' },
+				),
 			);
 
 			if (!file) {
