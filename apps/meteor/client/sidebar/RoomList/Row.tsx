@@ -35,8 +35,8 @@ const Row = ({ data, item }: { data: RoomListRowProps; item: ISubscription & IRo
 
 	const videoConfActions = useMemo(
 		() => ({
-			acceptCall: () => acceptCall(currentCall.callId),
-			rejectCall: () => rejectCall(currentCall.callId),
+			acceptCall: (): void => acceptCall(currentCall?.callId as string),
+			rejectCall: (): void => rejectCall(currentCall?.callId as string),
 		}),
 		[acceptCall, rejectCall, currentCall],
 	);
