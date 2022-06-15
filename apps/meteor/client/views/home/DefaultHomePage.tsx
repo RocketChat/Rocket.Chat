@@ -5,6 +5,7 @@ import React, { ReactElement } from 'react';
 import Page from '../../components/Page/Page';
 import PageScrollableContent from '../../components/Page/PageScrollableContent';
 import HomePageHeader from './HomePageHeader';
+import HomepageGridItem from './HomepageGridItem';
 import AddUsersCard from './cards/AddUsersCard';
 import CreateChannelsCard from './cards/CreateChannelsCard';
 import DesktopAppsCard from './cards/DesktopAppsCard';
@@ -33,27 +34,27 @@ const DefaultHomePage = (): ReactElement => {
 				</Box>
 				<Grid>
 					{canAddUsers && (
-						<Grid.Item>
+						<HomepageGridItem>
 							<AddUsersCard />
-						</Grid.Item>
+						</HomepageGridItem>
 					)}
 					{canCreateChannel && (
-						<Grid.Item>
+						<HomepageGridItem>
 							<CreateChannelsCard />
-						</Grid.Item>
+						</HomepageGridItem>
 					)}
-					<Grid.Item>
+					<HomepageGridItem>
 						<JoinRoomsCard />
-					</Grid.Item>
-					<Grid.Item>
+					</HomepageGridItem>
+					<HomepageGridItem>
 						<MobileAppsCard />
-					</Grid.Item>
-					<Grid.Item>
+					</HomepageGridItem>
+					<HomepageGridItem>
 						<DesktopAppsCard />
-					</Grid.Item>
-					<Grid.Item>
+					</HomepageGridItem>
+					<HomepageGridItem>
 						<DocumentationCard />
-					</Grid.Item>
+					</HomepageGridItem>
 				</Grid>
 			</PageScrollableContent>
 		</Page>
