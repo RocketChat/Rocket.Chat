@@ -49,13 +49,12 @@ export const getUploadFormData = async <T extends string, K, V extends ValidateF
 				file.on('data', (data: any) => fileData.push(data));
 
 				file.on('end', () => {
-					if (fields.hasOwnProperty(fieldname)) {
+					if (uploadedFile) {
 						return reject('Just 1 file is allowed');
 					}
 					if (options.field && fieldname !== options.field) {
 						return reject('Invalid field name');
 					}
-
 					uploadedFile = {
 						file,
 						filename,
