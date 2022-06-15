@@ -137,7 +137,6 @@ function SideBarItemTemplateWithData({
 			data-qa='sidebar-item'
 			aria-level={2}
 			unread={highlighted}
-			threadUnread={threadUnread}
 			selected={selected}
 			href={href}
 			onClick={(): void => !selected && sidebar.toggle()}

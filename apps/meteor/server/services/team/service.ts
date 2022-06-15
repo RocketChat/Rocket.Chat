@@ -647,7 +647,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			};
 		}
 
-		const users = await this.Users.find({ ...query }).toArray();
+		const users = await this.Users.findActive({ ...query }).toArray();
 		const userIds = users.map((m) => m._id);
 		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset, {
 			userId: { $in: userIds },

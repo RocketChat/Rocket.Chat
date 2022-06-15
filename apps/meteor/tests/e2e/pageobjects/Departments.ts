@@ -1,87 +1,87 @@
 import { Locator, expect } from '@playwright/test';
 
-import BasePage from './BasePage';
+import { BasePage } from './BasePage';
 
-export default class Departments extends BasePage {
+export class Departments extends BasePage {
 	get departmentsLink(): Locator {
-		return this.getPage().locator('a[href="omnichannel/departments"]');
+		return this.page.locator('a[href="omnichannel/departments"]');
 	}
 
 	get btnNewDepartment(): Locator {
-		return this.getPage().locator('button.rcx-button >> text="New"');
+		return this.page.locator('button.rcx-button >> text="New"');
 	}
 
 	get btnSaveDepartment(): Locator {
-		return this.getPage().locator('button.rcx-button--primary.rcx-button >> text="Save"');
+		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Save"');
 	}
 
 	get btnBack(): Locator {
-		return this.getPage().locator('button.rcx-button >> text="Back"');
+		return this.page.locator('button.rcx-button >> text="Back"');
 	}
 
 	get enabledToggle(): Locator {
 		// temporary selector
-		return this.getPage().locator('[data-qa="DepartmentEditToggle-Enabled"] span label');
+		return this.page.locator('[data-qa="DepartmentEditToggle-Enabled"] span label');
 	}
 
 	get nameInput(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentEditTextInput-Name"]');
+		return this.page.locator('[data-qa="DepartmentEditTextInput-Name"]');
 	}
 
 	get descriptionInput(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentEditTextInput-Description"]');
+		return this.page.locator('[data-qa="DepartmentEditTextInput-Description"]');
 	}
 
 	get showOnRegistrationPage(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentEditToggle-ShowOnRegistrationPage"] span label');
+		return this.page.locator('[data-qa="DepartmentEditToggle-ShowOnRegistrationPage"] span label');
 	}
 
 	get emailInput(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentEditTextInput-Email"]');
+		return this.page.locator('[data-qa="DepartmentEditTextInput-Email"]');
 	}
 
 	get showOnOfflinePageToggle(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentEditToggle-ShowOnOfflinePage"] span label');
+		return this.page.locator('[data-qa="DepartmentEditToggle-ShowOnOfflinePage"] span label');
 	}
 
 	get selectLiveChatDepartmentOfflineMessageToChannel(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentSelect-LivechatDepartmentOfflineMessageToChannel"]');
+		return this.page.locator('[data-qa="DepartmentSelect-LivechatDepartmentOfflineMessageToChannel"]');
 	}
 
 	get requestTagBeforeClosingChatToggle(): Locator {
-		return this.getPage().locator('[data-qa="DiscussionToggle-RequestTagBeforeCLosingChat"] span label');
+		return this.page.locator('[data-qa="DiscussionToggle-RequestTagBeforeCLosingChat"] span label');
 	}
 
 	get selectAgentsTable(): Locator {
-		return this.getPage().locator('[data-qa="DepartmentSelect-AgentsTable"]');
+		return this.page.locator('[data-qa="DepartmentSelect-AgentsTable"]');
 	}
 
 	get btnAddAgent(): Locator {
-		return this.getPage().locator('button.rcx-button--primary.rcx-button >> text="Add"');
+		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
 	}
 
 	public virtuosoOptions(option: string): Locator {
-		return this.getPage().locator(`[data-test-id="virtuoso-scroller"] .rcx-option >> text="${option}"`);
+		return this.page.locator(`[data-test-id="virtuoso-scroller"] .rcx-option >> text="${option}"`);
 	}
 
 	get departmentAdded(): Locator {
-		return this.getPage().locator('table tr:first-child td:first-child ');
+		return this.page.locator('table tr:first-child td:first-child ');
 	}
 
 	get btnTableDeleteDepartment(): Locator {
-		return this.getPage().locator('table tr:first-child td:nth-child(6) button');
+		return this.page.locator('table tr:first-child td:nth-child(6) button');
 	}
 
 	get btnModalCancelDeleteDepartment(): Locator {
-		return this.getPage().locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--ghost');
+		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--ghost');
 	}
 
 	get btnModalDeleteDepartment(): Locator {
-		return this.getPage().locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--primary-danger');
+		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--primary-danger');
 	}
 
 	get modalDepartment(): Locator {
-		return this.getPage().locator('#modal-root');
+		return this.page.locator('#modal-root');
 	}
 
 	public async getAddScreen(): Promise<void> {
