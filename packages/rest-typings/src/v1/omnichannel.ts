@@ -12,6 +12,7 @@ import type {
 	IOmnichannelRoom,
 	IRoom,
 	ISetting,
+	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
@@ -782,6 +783,38 @@ const LivechatUsersAgentSchema = {
 
 export const isLivechatUsersAgentProps = ajv.compile<LivechatUsersAgentProps>(LivechatUsersAgentSchema);
 
+type LivechatPrioritiesProps = PaginatedRequest<{ text?: string }>;
+
+const LivechatPrioritiesPropsSchema = {
+	type: 'object',
+	properties: {
+		text: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isLivechatPrioritiesProps = ajv.compile<LivechatPrioritiesProps>(LivechatPrioritiesPropsSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -985,5 +1018,11 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/webrtc.call/:callId': {
 		PUT: (params: { rid: string; status: 'ended' }) => void;
+	};
+	'/v1/livechat/priorities': {
+		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ priorities: ILivechatPriority[] }>;
+	};
+	'/v1/livechat/priorities/:priorityId': {
+		GET: () => ILivechatPriority;
 	};
 };
