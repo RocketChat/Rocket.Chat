@@ -382,13 +382,18 @@ const LivechatDepartmentSchema = {
 
 export const isLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
 
-type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string }>;
+type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string; onlyMyDepartments?: 'true' | 'false' }>;
 
 const LivechatDepartmentsAvailableByUnitIdSchema = {
 	type: 'object',
 	properties: {
 		text: {
 			type: 'string',
+		},
+		onlyMyDepartments: {
+			type: 'string',
+			enum: ['true', 'false'],
+			nullable: true,
 		},
 		count: {
 			type: 'number',
@@ -446,7 +451,7 @@ const LivechatDepartmentsByUnitSchema = {
 
 export const isLivechatDepartmentsByUnitProps = ajv.compile<LivechatDepartmentsByUnitProps>(LivechatDepartmentsByUnitSchema);
 
-type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{ text: string }>;
+type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{}>;
 
 const LivechatDepartmentsByUnitIdSchema = {
 	type: 'object',
@@ -842,7 +847,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: LivechatDepartmentDepartmentIdAgentsGET) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
 		POST: (params: LivechatDepartmentDepartmentIdAgentsPOST) => void;
 	};
-	'/v1/livechat/departments.available-by-unit/:id': {
+	'/v1/livechat/units/:unitId/departments/available': {
 		GET: (params: LivechatDepartmentsAvailableByUnitIdProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
@@ -853,7 +858,7 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	'/v1/livechat/departments.by-unit/:id': {
+	'/v1/livechat/units/:unitId/departments': {
 		GET: (params: LivechatDepartmentsByUnitIdProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;

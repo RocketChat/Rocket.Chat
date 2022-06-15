@@ -1,9 +1,10 @@
 import { API } from '../../../../../app/api/server';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
 
 API.v1.addRoute(
-	'livechat/unitMonitors.list',
+	'livechat/units/:unitId/monitors',
 	{ authRequired: true },
 	{
 		async get() {
@@ -73,6 +74,49 @@ API.v1.addRoute(
 			const { id } = this.urlParams;
 
 			return LivechatEnterprise.removeUnit(id);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/units/:unitId/departments',
+	{ authRequired: true },
+	{
+		async get() {
+			const { offset, count } = this.getPaginationItems();
+			const { unitId } = this.urlParams;
+
+			const { departments, total } = await findAllDepartmentsByUnit(unitId, offset, count);
+
+			return API.v1.success({
+				departments,
+				count: departments.length,
+				offset,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/units/:unitId/departments/available',
+	{ authRequired: true },
+	{
+		get() {
+			const { offset, count } = this.getPaginationItems();
+			const { unitId } = this.urlParams;
+			const { text, onlyMyDepartments } = this.queryParams;
+
+			const { departments, total } = Promise.await(
+				findAllDepartmentsAvailable(this.userId, unitId, offset, count, text, onlyMyDepartments === 'true'),
+			);
+
+			return API.v1.success({
+				departments,
+				count: departments.length,
+				offset,
+				total,
+			});
 		},
 	},
 );
