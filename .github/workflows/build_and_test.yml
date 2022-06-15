@@ -365,13 +365,6 @@ jobs:
         with:
           mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
       - name: Launch NATS
         run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
 
