@@ -1,17 +1,11 @@
+import { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import React, { memo, ReactElement } from 'react';
 
 import SideBarItemTemplateWithData from '../RoomList/SideBarItemTemplateWithData';
 import UserItem from './UserItem';
 
 type RowProps = {
-	item: {
-		_id: string;
-		t: 'd' | string;
-		u: {
-			_id: string;
-			username: string;
-		};
-	};
+	item: ISubscription & IRoom;
 	data: Record<string, any>;
 };
 
