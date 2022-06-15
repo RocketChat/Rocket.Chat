@@ -13,16 +13,16 @@ Meteor.methods({
 		methodDeprecationLogger.warn('authorization:saveRole will be deprecated in future versions of Rocket.Chat');
 		const userId = Meteor.userId();
 
+		if (!isRoleCreateProps(roleData)) {
+			throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.', {
+				method: 'authorization:saveRole',
+			});
+		}
+
 		if (!userId || !hasPermission(userId, 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:saveRole',
 				action: 'Accessing_permissions',
-			});
-		}
-
-		if (!isRoleCreateProps(roleData)) {
-			throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.', {
-				method: 'authorization:saveRole',
 			});
 		}
 

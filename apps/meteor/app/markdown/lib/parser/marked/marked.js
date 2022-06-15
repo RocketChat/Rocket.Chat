@@ -100,7 +100,7 @@ export const marked = (message, { marked: { gfm, tables, breaks, pedantic, smart
 
 	const window = getGlobalWindow();
 	const DomPurify = createDOMPurify(window);
-	message.html = DomPurify.sanitize(message.html, { ADD_ATTR: ['target'] });
+	message.html = DomPurify.sanitize(message.html, { ADD_ATTR: ['target'], FORBID_ATTR: ['style'], FORBID_TAGS: ['style'] });
 
 	return message;
 };

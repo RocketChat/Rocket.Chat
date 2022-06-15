@@ -462,9 +462,12 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const { image, ...fields } = await getUploadFormData({
-				request: this.request,
-			});
+			const [image, fields] = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'image' },
+			);
 
 			if (!image) {
 				return API.v1.failure("The 'image' param is required");
