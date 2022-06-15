@@ -196,7 +196,7 @@
 		"@rocket.chat/emitter": "~0.31.12",
 		"@rocket.chat/forked-matrix-appservice-bridge": "^4.0.1",
 		"@rocket.chat/forked-matrix-bot-sdk": "^0.6.0-beta.2",
-		"@rocket.chat/fuselage": "0.31.13",
+		"@rocket.chat/fuselage": "0.32.0-dev.49",
 		"@rocket.chat/fuselage-hooks": "~0.31.12",
 		"@rocket.chat/fuselage-polyfills": "~0.31.12",
 		"@rocket.chat/fuselage-toastbar": "^0.32.0-dev.22",
