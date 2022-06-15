@@ -4,14 +4,21 @@ description: 'Build Rocket.Chat Docker image'
 inputs:
   docker-tag:
     required: true
-    type: string
   service:
     required: true
-    type: string
 
 runs:
   using: "composite"
   steps:
+    # - shell: bash
+    #   name: Free disk space
+    #   run: |
+    #     sudo swapoff -a
+    #     sudo rm -f /swapfile
+    #     sudo apt clean
+    #     docker rmi $(docker image ls -aq)
+    #     df -h
+
     - shell: bash
       run: |
         LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
@@ -34,4 +41,4 @@ runs:
           -f ${DOCKERFILE_PATH} \
           .
 
-        docker push ${IMAGE_NAME}
+        # docker push ${IMAGE_NAME}

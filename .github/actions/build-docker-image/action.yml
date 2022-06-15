@@ -4,17 +4,23 @@ description: 'Build Rocket.Chat Docker image'
 inputs:
   root-dir:
     required: true
-    type: string
   docker-tag:
     required: true
-    type: string
   release:
     required: true
-    type: string
 
 runs:
-  using: "composite"
+  using: composite
   steps:
+    # - shell: bash
+    #   name: Free disk space
+    #   run: |
+    #     sudo swapoff -a
+    #     sudo rm -f /swapfile
+    #     sudo apt clean
+    #     docker rmi $(docker image ls -aq)
+    #     df -h
+
     - shell: bash
       run: |
         cd ${{ inputs.root-dir }}
@@ -50,4 +56,5 @@ runs:
 
         echo "Build ${{ inputs.release }} Docker image"
         docker build -t $IMAGE_NAME .
-        docker push $IMAGE_NAME
+
+        # docker push $IMAGE_NAME

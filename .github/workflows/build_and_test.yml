@@ -190,31 +190,36 @@ jobs:
           name: build
           path: /tmp/build/Rocket.Chat.tar.gz
 
-  build-docker-image:
+  test:
     runs-on: ubuntu-20.04
     needs: [build, release-versions]
 
     strategy:
       matrix:
-        release: ['official', 'preview', 'alpine']
+        node-version: ['14.18.3']
+        mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+      - name: Launch MongoDB
+        uses: wbari/start-mongoDB@v0.2
         with:
-          registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
+          mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
-      - name: Free disk space
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup Chrome
         run: |
-          sudo swapoff -a
-          sudo rm -f /swapfile
-          sudo apt clean
-          docker rmi $(docker image ls -aq)
-          df -h
+          npm i chromedriver
+
+      - name: Configure Replica Set
+        run: |
+          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+          docker exec mongo mongo --eval 'rs.status()'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -228,82 +233,21 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-      - uses: ./.github/actions/build-docker-image
+      - name: Build Docker image
+        if: matrix.mongodb-version != '5.0'
+        uses: ./.github/actions/build-docker-image
         with:
           root-dir: /tmp/build
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
-          release: ${{ matrix.release }}
+          release: official
 
-  services-build-docker-image:
-    runs-on: ubuntu-20.04
-    needs: [build, release-versions]
-
-    strategy:
-      matrix:
-        service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v3
+      - name: Build Alpine Docker image
+        if: matrix.mongodb-version == '5.0'
+        uses: ./.github/actions/build-docker-image
         with:
-          node-version: '14.18.3'
-      - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - run: yarn install
-
-      - run: yarn build
-
-      - uses: ./.github/actions/build-docker-image-service
-        with:
+          root-dir: /tmp/build
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
-          service: ${{ matrix.service }}
-
-  test:
-    runs-on: ubuntu-20.04
-    needs: [build-docker-image, release-versions]
-
-    strategy:
-      matrix:
-        mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
-
-    steps:
-      - name: Launch MongoDB
-        uses: wbari/start-mongoDB@v0.2
-        with:
-          mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
-
-      - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14.18.3'
-
-      - name: Setup Chrome
-        run: |
-          npm i chromedriver
-
-      - name: Configure Replica Set
-        run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-          docker exec mongo mongo --eval 'rs.status()'
+          release: alpine
 
       # TODO move startup/restart to its own github action
       - name: Start up Rocket.Chat
@@ -317,7 +261,6 @@ jobs:
             IMAGE_TAG="${IMAGE_TAG}.alpine"
           fi;
 
-          # TODO this needs to be different on develop and on release
           IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
 
           docker run --name rocketchat -d \
@@ -327,8 +270,6 @@ jobs:
             -e MONGO_URL=mongodb://mongo:27017/rocketchat \
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             ${IMAGE_NAME}
-
-      - uses: actions/checkout@v3
 
       - uses: c-hive/gha-yarn-cache@v2
 
@@ -411,13 +352,16 @@ jobs:
 
   test-ee:
     runs-on: ubuntu-20.04
-    needs: [services-build-docker-image, release-versions]
+    needs: [build, release-versions]
 
     strategy:
       matrix:
+        node-version: ['14.18.3']
         mongodb-version: ['4.4']
 
     steps:
+      - uses: actions/checkout@v3
+
       - name: Launch MongoDB
         uses: wbari/start-mongoDB@v0.2
         with:
@@ -433,10 +377,61 @@ jobs:
       - name: Launch NATS
         run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
 
-      - name: Use Node.js 14.18.3
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: '14.18.3'
+          node-version: ${{ matrix.node-version }}
+
+      - uses: c-hive/gha-yarn-cache@v2
+
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
+
+      - name: yarn install
+        run: yarn
+
+      - run: yarn build
+
+      - name: Unit Test
+        run: yarn testunit
+
+      - name: "Build Docker image: account"
+        uses: ./.github/actions/build-docker-image-service
+        with:
+          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          service: account
+
+      - name: "Build Docker image: authorization"
+        uses: ./.github/actions/build-docker-image-service
+        with:
+          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          service: authorization
+
+      - name: "Build Docker image: ddp-streamer"
+        uses: ./.github/actions/build-docker-image-service
+        with:
+          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          service: ddp-streamer
+
+      - name: "Build Docker image: presence"
+        uses: ./.github/actions/build-docker-image-service
+        with:
+          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          service: presence
+
+      - name: "Build Docker image: stream-hub"
+        uses: ./.github/actions/build-docker-image-service
+        with:
+          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          service: stream-hub
 
       - name: Setup Chrome
         run: |
@@ -486,7 +481,7 @@ jobs:
             --label 'traefik.http.routers.ddp-streamer.rule=PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)' \
             ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${{ needs.release-versions.outputs.docker-tag }}
 
-      - name: stream-hub
+      - name: "Start service: stream-hub"
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -505,7 +500,7 @@ jobs:
             sleep 10
           done
 
-      - name: account
+      - name: "Start service: account"
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -524,7 +519,7 @@ jobs:
             sleep 10
           done
 
-      - name: authorization
+      - name: "Start service: authorization"
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -543,7 +538,7 @@ jobs:
             sleep 10
           done
 
-      - name: presence
+      - name: "Start service: presence"
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -561,27 +556,6 @@ jobs:
             ((c++)) && ((c==10)) && exit 1
             sleep 10
           done
-
-      - uses: actions/checkout@v3
-
-      - uses: c-hive/gha-yarn-cache@v2
-
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
-
-      - name: yarn install
-        run: yarn
-
-      - name: Unit Test
-        run: yarn testunit
 
       - name: E2E Test API
         run: |
