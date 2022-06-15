@@ -200,8 +200,6 @@ jobs:
         mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
 
     steps:
-      - uses: actions/checkout@v3
-
       - name: Launch MongoDB
         uses: wbari/start-mongoDB@v0.2
         with:
@@ -220,6 +218,27 @@ jobs:
         run: |
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
+
+      - uses: actions/checkout@v3
+
+      - uses: c-hive/gha-yarn-cache@v2
+
+      - name: Cache turbo
+        id: cache-turbo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules/.turbo
+          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-
+
+      - name: yarn install
+        run: yarn
+
+      - name: Unit Test
+        run: yarn testunit
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -270,25 +289,6 @@ jobs:
             -e MONGO_URL=mongodb://mongo:27017/rocketchat \
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             ${IMAGE_NAME}
-
-      - uses: c-hive/gha-yarn-cache@v2
-
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
-
-      - name: yarn install
-        run: yarn
-
-      - name: Unit Test
-        run: yarn testunit
 
       - name: E2E Test API
         run: |
@@ -360,8 +360,6 @@ jobs:
         mongodb-version: ['4.4']
 
     steps:
-      - uses: actions/checkout@v3
-
       - name: Launch MongoDB
         uses: wbari/start-mongoDB@v0.2
         with:
@@ -381,6 +379,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Setup Chrome
+        run: |
+          npm i chromedriver
+
+      - name: Configure Replica Set
+        run: |
+          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+          docker exec mongo mongo --eval 'rs.status()'
+
+      - uses: actions/checkout@v3
 
       - uses: c-hive/gha-yarn-cache@v2
 
@@ -432,15 +441,6 @@ jobs:
         with:
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
           service: stream-hub
-
-      - name: Setup Chrome
-        run: |
-          npm i chromedriver
-
-      - name: Configure Replica Set
-        run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-          docker exec mongo mongo --eval 'rs.status()'
 
       - name: Launch Traefik
         run: |
