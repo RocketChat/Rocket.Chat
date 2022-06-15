@@ -33,7 +33,7 @@
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"testci": "node .scripts/start.js",
 		"test:e2e": "playwright test",
-		"test:e2e:ee": "cross-env ENTERPRISE=true yarn test:playwright",
+		"test:e2e:ee": "cross-env ENTERPRISE=true E2E_COVERAGE=true yarn test:playwright",
 		"testapi": "mocha --config ./.mocharc.api.js",
 		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
 		".testunit:server": "mocha --config ./.mocharc.js",
