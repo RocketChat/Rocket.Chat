@@ -656,22 +656,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	/* Helper routines for checking call actions BEGIN */
 
 	private canRejectCall(): boolean {
-		if (this._callState !== 'OFFER_RECEIVED' && this._callState !== 'OFFER_SENT') {
-			return false;
-		}
-		return true;
+		return ['OFFER_RECEIVED', 'OFFER_SENT'].includes(this._callState);
 	}
 
 	private canEndOrHoldCall(): boolean {
-		if (
-			this._callState !== 'ANSWER_SENT' &&
-			this._callState !== 'ANSWER_RECEIVED' &&
-			this._callState !== 'IN_CALL' &&
-			this._callState !== 'ON_HOLD'
-		) {
-			return false;
-		}
-		return true;
+		return ['ANSWER_SENT', 'ANSWER_RECEIVED', 'IN_CALL', 'ON_HOLD'].includes(this._callState);
 	}
 
 	/* Helper routines for checking call actions END */

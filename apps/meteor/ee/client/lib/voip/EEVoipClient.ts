@@ -38,16 +38,15 @@ export class EEVoipClient extends VoIPUser {
 		this.session = inviter;
 		this.setupSessionEventHandlers(inviter);
 		this._opInProgress = Operation.OP_SEND_INVITE;
-		inviter.invite().then(() => {
-			this._callState = 'OFFER_SENT';
-			const callerInfo: ICallerInfo = {
-				callerId: inviter.remoteIdentity.uri.user ? inviter.remoteIdentity.uri.user : '',
-				callerName: inviter.remoteIdentity.displayName,
-				host: inviter.remoteIdentity.uri.host,
-			};
-			this._callerInfo = callerInfo;
-			this._userState = UserState.UAC;
-		});
+		await inviter.invite();
+		this._callState = 'OFFER_SENT';
+		const callerInfo: ICallerInfo = {
+			callerId: inviter.remoteIdentity.uri.user ? inviter.remoteIdentity.uri.user : '',
+			callerName: inviter.remoteIdentity.displayName,
+			host: inviter.remoteIdentity.uri.host,
+		};
+		this._callerInfo = callerInfo;
+		this._userState = UserState.UAC;
 	}
 
 	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoIPUser> {

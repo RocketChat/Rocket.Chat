@@ -84,49 +84,47 @@ export const CallProvider: FC = ({ children }) => {
 
 	const createRoom = useCallback(
 		async (caller: ICallerInfo): Promise<IVoipRoom['_id']> => {
-			if (user) {
-				const { visitor } = await visitorEndpoint({
-					visitor: {
-						token: Random.id(),
-						phone: caller.callerId,
-						name: caller.callerName || caller.callerId,
-					},
-				});
-				const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
-				openRoom(voipRoom.room._id);
-				voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
-				const queueAggregator = result.voipClient?.getAggregator();
-				if (queueAggregator) {
-					queueAggregator.callStarted();
-				}
-				return voipRoom.room._id;
+			if (!user) {
+				return '';
 			}
-			return '';
+			const { visitor } = await visitorEndpoint({
+				visitor: {
+					token: Random.id(),
+					phone: caller.callerId,
+					name: caller.callerName || caller.callerId,
+				},
+			});
+			const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
+			openRoom(voipRoom.room._id);
+			voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
+			const queueAggregator = result.voipClient?.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.callStarted();
+			}
+			return voipRoom.room._id;
 		},
 		[result.voipClient, setRoomInfo, user, visitorEndpoint, voipEndpoint],
 	);
 
 	const onCallEstablished = useCallback(
 		async (callDetails: ICallDetails): Promise<IVoipRoom['_id'] | undefined> => {
-			if (!result.voipClient) {
-				return;
-			}
-			if (!callDetails.callInfo) {
+			if (!result.voipClient || !callDetails.callInfo) {
 				return;
 			}
 			stopRingback();
-			if (callDetails.userState === UserState.UAC) {
-				// Agent has sent Invite. So it must create a room.
-				const { callInfo } = callDetails;
-				// While making the call, there is no remote media element available.
-				// When the call is ringing we have that element created. But we still
-				// do not want it to be attached.
-				// When call gets established, then switch the media renderer.
-				remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
-				const roomId = await createRoom(callInfo);
-				dispatchEvent({ event: VoipClientEvents['VOIP-CALL-STARTED'], rid: roomId });
-				return roomId;
+			if (callDetails.userState !== UserState.UAC) {
+				return;
 			}
+			// Agent has sent Invite. So it must create a room.
+			const { callInfo } = callDetails;
+			// While making the call, there is no remote media element available.
+			// When the call is ringing we have that element created. But we still
+			// do not want it to be attached.
+			// When call gets established, then switch the media renderer.
+			remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
+			const roomId = await createRoom(callInfo);
+			dispatchEvent({ event: VoipClientEvents['VOIP-CALL-STARTED'], rid: roomId });
+			return roomId;
 		},
 		[createRoom, dispatchEvent, result.voipClient],
 	);
@@ -276,16 +274,10 @@ export const CallProvider: FC = ({ children }) => {
 	});
 
 	const onRinging = useMutableCallback((): void => {
-		if (!result.voipClient) {
+		if (!result.voipClient || !user) {
 			return;
 		}
-		if (!user) {
-			return;
-		}
-
-		if (result.voipClient.userState === UserState.UAC) {
-			startRingback(user);
-		}
+		startRingback(user);
 	});
 
 	useEffect(() => {
@@ -299,7 +291,7 @@ export const CallProvider: FC = ({ children }) => {
 		result.voipClient.onNetworkEvent('localnetworkoffline', onNetworkDisconnected);
 		result.voipClient.on('callestablished', (callDetails: ICallDetails) => onCallEstablished(callDetails));
 		result.voipClient.on('ringing', onRinging);
-		result.voipClient.on('incomingcall', () => user && startRingback(user));
+		result.voipClient.on('incomingcall', onRinging);
 		result.voipClient.on('callterminated', () => stopRingback());
 
 		return (): void => {
@@ -308,7 +300,7 @@ export const CallProvider: FC = ({ children }) => {
 			result.voipClient?.offNetworkEvent('connectionerror', onNetworkDisconnected);
 			result.voipClient?.offNetworkEvent('localnetworkonline', onNetworkConnected);
 			result.voipClient?.offNetworkEvent('localnetworkoffline', onNetworkDisconnected);
-			result.voipClient?.off('incomingcall', () => user && startRingback(user));
+			result.voipClient?.off('incomingcall', onRinging);
 			result.voipClient?.off('ringing', onRinging);
 			result.voipClient?.off('callestablished', (callDetails: ICallDetails) => onCallEstablished(callDetails));
 			result.voipClient?.off('callterminated', () => stopRingback());
