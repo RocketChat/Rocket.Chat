@@ -28,9 +28,13 @@ export const APIClient = new RestApiClient({
 	baseUrl: baseURI.replace(/\/$/, ''),
 });
 
-APIClient.use(function (request, next) {
+APIClient.use(async function (request, next) {
 	try {
-		return next(...request);
+		const res = await next(...request);
+		if (!res.ok) {
+			throw await res.json();
+		}
+		return res;
 	} catch (e) {
 		return new Promise((resolve, reject) => {
 			process2faReturn({
@@ -42,7 +46,7 @@ APIClient.use(function (request, next) {
 					return resolve(
 						next(request[0], request[1], {
 							...request[2],
-							headers: { ...request[2].headers, 'x-2fa-code': code, 'x-2fa-method': method },
+							headers: { ...request[2]?.headers, 'x-2fa-code': code, 'x-2fa-method': method },
 						}),
 					);
 				},
