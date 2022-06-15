@@ -5,9 +5,9 @@ const ajv = new Ajv({
 });
 
 export type UserSetAvatarParamsPOST = {
-	avatarUrl: string;
-	userId: string;
-	username: string;
+	avatarUrl?: string;
+	userId?: string;
+	username?: string;
 };
 
 const UserSetAvatarParamsPostSchema = {
@@ -15,15 +15,18 @@ const UserSetAvatarParamsPostSchema = {
 	properties: {
 		avatarUrl: {
 			type: 'string',
+			nullable: true,
 		},
 		userId: {
 			type: 'string',
+			nullable: true,
 		},
 		username: {
 			type: 'string',
+			nullable: true,
 		},
 	},
-	required: ['avatarUrl', 'userId', 'username'],
+	required: [],
 	additionalProperties: false,
 };
 

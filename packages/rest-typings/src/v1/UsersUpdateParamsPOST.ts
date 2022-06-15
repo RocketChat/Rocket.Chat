@@ -7,19 +7,19 @@ const ajv = new Ajv({
 export type UsersUpdateParamsPOST = {
 	userId: string;
 	data: {
-		email: string;
-		name: string;
-		password: string;
-		username: string;
-		bio: string;
-		nickname: string;
-		statusText: string;
-		active: boolean;
-		roles: string[];
-		joinDefaultChannels: boolean;
-		requirePasswordChange: boolean;
-		sendWelcomeEmail: boolean;
-		verified: boolean;
+		email?: string;
+		name?: string;
+		password?: string;
+		username?: string;
+		bio?: string;
+		nickname?: string;
+		statusText?: string;
+		active?: boolean;
+		roles?: string[];
+		joinDefaultChannels?: boolean;
+		requirePasswordChange?: boolean;
+		sendWelcomeEmail?: boolean;
+		verified?: boolean;
 		customFields?: {};
 	};
 };
@@ -35,66 +35,65 @@ const UsersUpdateParamsPostSchema = {
 			properties: {
 				email: {
 					type: 'string',
+					nullable: true,
 				},
 				name: {
 					type: 'string',
+					nullable: true,
 				},
 				password: {
 					type: 'string',
+					nullable: true,
 				},
 				username: {
 					type: 'string',
+					nullable: true,
 				},
 				bio: {
 					type: 'string',
+					nullable: true,
 				},
 				nickname: {
 					type: 'string',
+					nullable: true,
 				},
 				statusText: {
 					type: 'string',
+					nullable: true,
 				},
 				active: {
 					type: 'boolean',
+					nullable: true,
 				},
 				roles: {
 					type: 'array',
 					items: {
 						type: 'string',
 					},
+					nullable: true,
 				},
 				joinDefaultChannels: {
 					type: 'boolean',
+					nullable: true,
 				},
 				requirePasswordChange: {
 					type: 'boolean',
+					nullable: true,
 				},
 				sendWelcomeEmail: {
 					type: 'boolean',
+					nullable: true,
 				},
 				verified: {
 					type: 'boolean',
+					nullable: true,
 				},
 				customFields: {
 					type: 'object',
 					nullable: true,
 				},
 			},
-			required: [
-				'email',
-				'name',
-				'password',
-				'username',
-				'bio',
-				'nickname',
-				'statusText',
-				'active',
-				'roles',
-				'joinDefaultChannels',
-				'requirePasswordChange',
-				'sendWelcomeEmail',
-				'verified',
-			],
+			required: [],
 			additionalProperties: false,
 		},
 	},

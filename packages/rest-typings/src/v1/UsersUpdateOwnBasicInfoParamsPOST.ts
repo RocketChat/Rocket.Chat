@@ -6,13 +6,13 @@ const ajv = new Ajv({
 
 export type UsersUpdateOwnBasicInfoParamsPOST = {
 	data: {
-		email: string;
-		name: string;
-		username: string;
-		nickname: string;
-		statusText: string;
-		currentPassword: string;
-		newPassword: string;
+		email?: string;
+		name?: string;
+		username?: string;
+		nickname?: string;
+		statusText?: string;
+		currentPassword?: string;
+		newPassword?: string;
 	};
 	customFields?: {};
 };
@@ -25,27 +25,34 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 			properties: {
 				email: {
 					type: 'string',
+					nullable: true,
 				},
 				name: {
 					type: 'string',
+					nullable: true,
 				},
 				username: {
 					type: 'string',
+					nullable: true,
 				},
 				nickname: {
 					type: 'string',
+					nullable: true,
 				},
 				statusText: {
 					type: 'string',
+					nullable: true,
 				},
 				currentPassword: {
 					type: 'string',
+					nullable: true,
 				},
 				newPassword: {
 					type: 'string',
+					nullable: true,
 				},
 			},
-			required: ['email', 'name', 'username', 'nickname', 'statusText', 'currentPassword', 'newPassword'],
+			required: [],
 			additionalProperties: false,
 		},
 		customFields: {

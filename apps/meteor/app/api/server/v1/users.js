@@ -8,7 +8,7 @@ import {
 	isUsersUpdateParamsPOST,
 	isUsersUpdateOwnBasicInfoParamsPOST,
 	isUsersSetPreferencesParamsPOST,
-} from '@rocket.chat/rest-typings/dist/v1/users';
+} from '@rocket.chat/rest-typings';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';

@@ -5,32 +5,32 @@ const ajv = new Ajv({
 });
 
 export type UsersSetPreferencesParamsPOST = {
-	userId: string;
+	userId?: string;
 	data: {
-		newRoomNotification: string;
-		newMessageNotification: string;
-		clockMode: number;
-		useEmojis: boolean;
-		convertAsciiEmoji: boolean;
-		saveMobileBandwidth: boolean;
-		collapseMediaByDefault: boolean;
-		autoImageLoad: boolean;
-		emailNotificationMode: string;
-		unreadAlert: boolean;
-		notificationsSoundVolume: number;
-		desktopNotifications: string;
-		pushNotifications: string;
-		enableAutoAway: boolean;
-		highlights: string[];
-		desktopNotificationRequireInteraction: boolean;
-		messageViewMode: number;
-		showMessageInMainThread: boolean;
-		hideUsernames: boolean;
-		hideRoles: boolean;
-		displayAvatars: boolean;
-		hideFlexTab: boolean;
-		sendOnEnter: string;
-		language: string;
+		newRoomNotification?: string;
+		newMessageNotification?: string;
+		clockMode?: number;
+		useEmojis?: boolean;
+		convertAsciiEmoji?: boolean;
+		saveMobileBandwidth?: boolean;
+		collapseMediaByDefault?: boolean;
+		autoImageLoad?: boolean;
+		emailNotificationMode?: string;
+		unreadAlert?: boolean;
+		notificationsSoundVolume?: number;
+		desktopNotifications?: string;
+		pushNotifications?: string;
+		enableAutoAway?: boolean;
+		highlights?: string[];
+		desktopNotificationRequireInteraction?: boolean;
+		messageViewMode?: number;
+		showMessageInMainThread?: boolean;
+		hideUsernames?: boolean;
+		hideRoles?: boolean;
+		displayAvatars?: boolean;
+		hideFlexTab?: boolean;
+		sendOnEnter?: string;
+		language?: string;
 		sidebarShowFavorites?: boolean;
 		sidebarShowUnread?: boolean;
 		sidebarSortby?: string;
@@ -46,84 +46,109 @@ const UsersSetPreferencesParamsPostSchema = {
 	properties: {
 		userId: {
 			type: 'string',
+			nullable: true,
 		},
 		data: {
 			type: 'object',
 			properties: {
 				newRoomNotification: {
 					type: 'string',
+					nullable: true,
 				},
 				newMessageNotification: {
 					type: 'string',
+					nullable: true,
 				},
 				clockMode: {
 					type: 'number',
+					nullable: true,
 				},
 				useEmojis: {
 					type: 'boolean',
+					nullable: true,
 				},
 				convertAsciiEmoji: {
 					type: 'boolean',
+					nullable: true,
 				},
 				saveMobileBandwidth: {
 					type: 'boolean',
+					nullable: true,
 				},
 				collapseMediaByDefault: {
 					type: 'boolean',
+					nullable: true,
 				},
 				autoImageLoad: {
 					type: 'boolean',
+					nullable: true,
 				},
 				emailNotificationMode: {
 					type: 'string',
+					nullable: true,
 				},
 				unreadAlert: {
 					type: 'boolean',
+					nullable: true,
 				},
 				notificationsSoundVolume: {
 					type: 'number',
+					nullable: true,
 				},
 				desktopNotifications: {
 					type: 'string',
+					nullable: true,
 				},
 				pushNotifications: {
 					type: 'string',
+					nullable: true,
 				},
 				enableAutoAway: {
 					type: 'boolean',
+					nullable: true,
 				},
 				highlights: {
 					type: 'array',
 					items: {
 						type: 'string',
 					},
+					nullable: true,
 				},
 				desktopNotificationRequireInteraction: {
 					type: 'boolean',
+					nullable: true,
 				},
 				messageViewMode: {
 					type: 'number',
+					nullable: true,
 				},
 				showMessageInMainThread: {
 					type: 'boolean',
+					nullable: true,
 				},
 				hideUsernames: {
 					type: 'boolean',
+					nullable: true,
 				},
 				hideRoles: {
 					type: 'boolean',
+					nullable: true,
 				},
 				displayAvatars: {
 					type: 'boolean',
+					nullable: true,
 				},
 				hideFlexTab: {
 					type: 'boolean',
+					nullable: true,
 				},
 				sendOnEnter: {
 					type: 'string',
+					nullable: true,
 				},
 				language: {
 					type: 'string',
+					nullable: true,
 				},
 				sidebarShowFavorites: {
 					type: 'boolean',
@@ -154,36 +179,11 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 			},
-			required: [
-				'newRoomNotification',
-				'newMessageNotification',
-				'clockMode',
-				'useEmojis',
-				'convertAsciiEmoji',
-				'saveMobileBandwidth',
-				'collapseMediaByDefault',
-				'autoImageLoad',
-				'emailNotificationMode',
-				'unreadAlert',
-				'notificationsSoundVolume',
-				'desktopNotifications',
-				'pushNotifications',
-				'enableAutoAway',
-				'highlights',
-				'desktopNotificationRequireInteraction',
-				'messageViewMode',
-				'showMessageInMainThread',
-				'hideUsernames',
-				'hideRoles',
-				'displayAvatars',
-				'hideFlexTab',
-				'sendOnEnter',
-				'language',
-			],
+			required: [],
 			additionalProperties: false,
 		},
 	},
-	required: ['userId', 'data'],
+	required: ['data'],
 	additionalProperties: false,
 };
 
