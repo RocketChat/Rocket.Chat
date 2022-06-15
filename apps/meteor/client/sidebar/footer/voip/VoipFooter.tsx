@@ -2,7 +2,7 @@ import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import React, { MouseEvent, ReactElement } from 'react';
 
 import { CallActionsType } from '../../../contexts/CallContext';
 
@@ -19,6 +19,7 @@ type VoipFooterPropsType = {
 	tooltips: {
 		mute: string;
 		holdCall: string;
+		holdCallEEOnly: string;
 		acceptCall: string;
 		endCall: string;
 	};
@@ -29,6 +30,7 @@ type VoipFooterPropsType = {
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
 	anonymousText: string;
+	isEnterprise: boolean;
 };
 
 export const VoipFooter = ({
@@ -48,6 +50,7 @@ export const VoipFooter = ({
 	dispatchEvent,
 	openedRoomInfo,
 	anonymousText,
+	isEnterprise = false,
 }: VoipFooterPropsType): ReactElement => {
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
@@ -55,6 +58,13 @@ export const VoipFooter = ({
 					cursor: pointer;
 			  `
 			: '';
+
+	const handleHold = (e: MouseEvent<HTMLButtonElement>): void => {
+		e.stopPropagation();
+		const eventName = paused ? 'VOIP-CALL-UNHOLD' : 'VOIP-CALL-ON-HOLD';
+		dispatchEvent({ event: VoipClientEvents[eventName], rid: openedRoomInfo.rid });
+		togglePause(!paused);
+	};
 
 	return (
 		<SidebarFooter elevated>
@@ -74,13 +84,13 @@ export const VoipFooter = ({
 						{title}
 					</Box>
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
-						<ButtonGroup medium>
+						<ButtonGroup medium className='sidebar--custom-colors'>
 							<Button
 								disabled={paused}
 								title={tooltips.mute}
 								small
 								square
-								nude
+								ghost
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
@@ -89,19 +99,12 @@ export const VoipFooter = ({
 								{muted ? <Icon name='mic' color='neutral-500' size='x24' /> : <Icon name='mic' color='info' size='x24' />}
 							</Button>
 							<Button
-								title={tooltips.holdCall}
+								title={isEnterprise ? tooltips.holdCall : tooltips.holdCallEEOnly}
+								disabled={!isEnterprise}
 								small
 								square
-								nude
-								onClick={(e): void => {
-									e.stopPropagation();
-									if (paused) {
-										dispatchEvent({ event: VoipClientEvents['VOIP-CALL-UNHOLD'], rid: openedRoomInfo.rid });
-									} else {
-										dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ON-HOLD'], rid: openedRoomInfo.rid });
-									}
-									togglePause(!paused);
-								}}
+								ghost
+								onClick={handleHold}
 							>
 								{paused ? (
 									<Icon name='pause-unfilled' color='neutral-500' size='x24' />
