@@ -141,14 +141,17 @@ const useSearchItems = (filterText: string): any => {
 
 		const filteredRooms = spotlight?.rooms.filter(roomFilter);
 		const filteredUsers = spotlight?.users.filter(filterUsersUnique).filter(usersfilter).map(userMap);
-		const resultsFromServer: {
+
+		type resultsFromServerType = {
 			_id: string;
 			t: 'd';
 			name: string;
 			fname?: string;
 			avatarETag?: string | undefined;
 			uids?: string[] | undefined;
-		}[] = [...filteredUsers, ...filteredRooms];
+		}[];
+
+		const resultsFromServer = [...(filteredUsers as resultsFromServerType), ...(filteredRooms as resultsFromServerType)];
 
 		const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
 
