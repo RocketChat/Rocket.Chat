@@ -78,12 +78,10 @@ API.v1.addRoute(
 				const {
 					userId,
 					data: { active },
-					confirmRelinquish = false,
+					confirmRelinquish,
 				} = this.bodyParams;
 
-				Meteor.runAsUser(this.userId, () => {
-					Meteor.call('setUserActiveStatus', userId, active, confirmRelinquish);
-				});
+				Meteor.call('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
 			}
 			const { fields } = this.parseJsonQuery();
 
@@ -115,7 +113,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 				  };
 
-			Meteor.runAsUser(this.userId, () => Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions));
+			Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }),
@@ -172,12 +170,16 @@ API.v1.addRoute(
 				});
 			}
 
-			let user;
-			if (this.isUserFromParams()) {
-				user = Meteor.users.findOne(this.userId);
-			} else if (canEditOtherUserAvatar) {
-				user = this.getUserFromParams();
-			} else {
+			let user = ((): IUser | undefined => {
+				if (this.isUserFromParams()) {
+					return Meteor.users.findOne(this.userId) as IUser | undefined;
+				}
+				if (canEditOtherUserAvatar) {
+					return this.getUserFromParams();
+				}
+			})();
+
+			if (!user) {
 				return API.v1.unauthorized();
 			}
 
@@ -782,7 +784,12 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const hashedToken = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
+			const xAuthToken = this.request.headers['x-auth-token'] as string;
+
+			if (!xAuthToken) {
+				throw new Meteor.Error('error-parameter-required', 'x-auth-token is required');
+			}
+			const hashedToken = Accounts._hashLoginToken(xAuthToken);
 
 			if (!(await UsersRaw.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
@@ -796,8 +803,8 @@ API.v1.addRoute(
 			const tokenExpires = new Date(token!.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000);
 
 			return API.v1.success({
-				token: this.request.headers['x-auth-token'],
-				tokenExpires: tokenExpires.toISOString(),
+				token: xAuthToken,
+				tokenExpires: tokenExpires.toISOString() || '',
 			});
 		},
 	},
@@ -1063,3 +1070,9 @@ API.v1.addRoute(
 		},
 	},
 );
+
+settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
+	const userRegisterRoute = '/api/v1/users.registerpost';
+
+	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
+});

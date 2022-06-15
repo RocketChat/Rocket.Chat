@@ -22,6 +22,7 @@ export type UsersUpdateParamsPOST = {
 		verified?: boolean;
 		customFields?: {};
 	};
+	confirmRelinquish?: boolean;
 };
 
 const UsersUpdateParamsPostSchema = {
@@ -29,6 +30,9 @@ const UsersUpdateParamsPostSchema = {
 	properties: {
 		userId: {
 			type: 'string',
+		},
+		confirmRelinquish: {
+			type: 'boolean',
 		},
 		data: {
 			type: 'object',
