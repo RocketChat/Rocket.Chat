@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import LoginPage from './utils/pageobjects/LoginPage';
+import { SideNav, MainContent, LoginPage } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Emoji]', function () {
@@ -26,89 +24,89 @@ test.describe('[Emoji]', function () {
 
 	test.describe('Render:', () => {
 		test.beforeAll(async () => {
-			await mainContent.emojiBtn().click();
+			await mainContent.emojiBtn.click();
 		});
 
 		test.afterAll(async () => {
-			await mainContent.emojiSmile().first().click();
+			await mainContent.emojiSmile.first().click();
 			await mainContent.setTextToInput('');
 		});
 
 		test('expect show the emoji picker menu', async () => {
-			await expect(mainContent.emojiPickerMainScreen()).toBeVisible();
+			await expect(mainContent.emojiPickerMainScreen).toBeVisible();
 		});
 
 		test('expect click the emoji picker people tab', async () => {
-			await mainContent.emojiPickerPeopleIcon().click();
+			await mainContent.emojiPickerPeopleIcon.click();
 		});
 
 		test('expect show the emoji picker people tab', async () => {
-			await expect(mainContent.emojiPickerPeopleIcon()).toBeVisible();
+			await expect(mainContent.emojiPickerPeopleIcon).toBeVisible();
 		});
 
 		test('expect show the emoji picker nature tab', async () => {
-			await expect(mainContent.emojiPickerNatureIcon()).toBeVisible();
+			await expect(mainContent.emojiPickerNatureIcon).toBeVisible();
 		});
 
 		test('expect show the emoji picker food tab', async () => {
-			await expect(mainContent.emojiPickerFoodIcon()).toBeVisible();
+			await expect(mainContent.emojiPickerFoodIcon).toBeVisible();
 		});
 
 		test('expect show the emoji picker activity tab', async () => {
-			await expect(mainContent.emojiPickerActivityIcon()).toBeVisible();
+			await expect(mainContent.emojiPickerActivityIcon).toBeVisible();
 		});
 
 		test('expect show the emoji picker travel tab', async () => {
-			await expect(mainContent.emojiPickerTravelIcon()).toBeVisible();
+			await expect(mainContent.emojiPickerTravelIcon).toBeVisible();
 		});
 
 		test('expect show the emoji picker objects tab', async () => {
-			await expect(mainContent.emojiPickerObjectsIcon()).toBeVisible();
+			await expect(mainContent.emojiPickerObjectsIcon).toBeVisible();
 		});
 
 		test('expect show the emoji picker symbols tab', async () => {
-			await expect(mainContent.emojiPickerSymbolsIcon()).toBeVisible();
+			await expect(mainContent.emojiPickerSymbolsIcon).toBeVisible();
 		});
 
 		test('expect show the emoji picker flags tab', async () => {
-			await expect(mainContent.emojiPickerFlagsIcon()).toBeVisible();
+			await expect(mainContent.emojiPickerFlagsIcon).toBeVisible();
 		});
 
 		test('expect show the emoji picker custom tab', async () => {
-			await expect(mainContent.emojiPickerCustomIcon()).toBeVisible();
+			await expect(mainContent.emojiPickerCustomIcon).toBeVisible();
 		});
 
 		test('expect show the emoji picker change tone button', async () => {
-			await expect(mainContent.emojiPickerChangeTone()).toBeVisible();
+			await expect(mainContent.emojiPickerChangeTone).toBeVisible();
 		});
 
 		test('expect show the emoji picker search bar', async () => {
-			await expect(mainContent.emojiPickerFilter()).toBeVisible();
+			await expect(mainContent.emojiPickerFilter).toBeVisible();
 		});
 	});
 
 	test.describe('[Usage]', () => {
 		test.describe('send emoji via screen:', () => {
 			test.beforeAll(async () => {
-				await mainContent.emojiBtn().click();
-				await mainContent.emojiPickerPeopleIcon().click();
+				await mainContent.emojiBtn.click();
+				await mainContent.emojiPickerPeopleIcon.click();
 			});
 
 			test('expect select a grinning emoji', async () => {
-				await mainContent.emojiGrinning().first().click();
+				await mainContent.emojiGrinning.first().click();
 			});
 
 			test('expect be that the value on the message input is the same as the emoji clicked', async () => {
-				await expect(mainContent.messageInput()).toHaveValue(':grinning: ');
+				await expect(mainContent.messageInput).toHaveValue(':grinning: ');
 			});
 
 			test('expect send the emoji', async () => {
 				await mainContent.addTextToInput(' ');
-				await mainContent.getPage().keyboard.press('Enter');
+				await mainContent.page.keyboard.press('Enter');
 			});
 
 			test('expect be that the value on the message is the same as the emoji clicked', async () => {
-				await expect(mainContent.lastMessage()).toContainText('😀');
+				await expect(mainContent.lastMessage).toContainText('😀');
 			});
 		});
 
@@ -118,31 +116,31 @@ test.describe('[Emoji]', function () {
 			});
 
 			test('expect show the emoji popup bar', async () => {
-				await expect(mainContent.messagePopUp()).toBeVisible();
+				await expect(mainContent.messagePopUp).toBeVisible();
 			});
 
 			test('expect be that the emoji popup bar title is emoji', async () => {
-				await expect(mainContent.messagePopUpTitle()).toContainText('Emoji');
+				await expect(mainContent.messagePopUpTitle).toContainText('Emoji');
 			});
 
 			test('expect show the emoji popup bar items', async () => {
-				await expect(mainContent.messagePopUpItems()).toBeVisible();
+				await expect(mainContent.messagePopUpItems).toBeVisible();
 			});
 
 			test('expect click the first emoji on the popup list', async () => {
-				await mainContent.messagePopUpFirstItem().click();
+				await mainContent.messagePopUpFirstItem.click();
 			});
 
 			test('expect be that the value on the message input is the same as the emoji clicked', async () => {
-				await expect(mainContent.messageInput()).toHaveValue(':smiley: ');
+				await expect(mainContent.messageInput).toHaveValue(':smiley: ');
 			});
 
 			test('expect send the emoji', async () => {
-				await mainContent.sendBtn().click();
+				await mainContent.sendBtn.click();
 			});
 
 			test('expect be that the value on the message is the same as the emoji clicked', async () => {
-				await expect(mainContent.lastMessage()).toContainText('😃');
+				await expect(mainContent.lastMessage).toContainText('😃');
 			});
 		});
 
