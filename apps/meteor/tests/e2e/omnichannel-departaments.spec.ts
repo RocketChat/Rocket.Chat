@@ -1,9 +1,6 @@
 import { test, Page, expect } from '@playwright/test';
 
-import LoginPage from './utils/pageobjects/LoginPage';
-import Global from './utils/pageobjects/Global';
-import SideNav from './utils/pageobjects/SideNav';
-import Departments from './utils/pageobjects/Departments';
+import { Departments, SideNav, Global, LoginPage } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Department]', () => {
@@ -24,8 +21,8 @@ test.describe('[Department]', () => {
 		global = new Global(page);
 
 		await loginPage.login(adminLogin);
-		await sideNav.sidebarUserMenu().click();
-		await sideNav.omnichannel().click();
+		await sideNav.sidebarUserMenu.click();
+		await sideNav.omnichannel.click();
 	});
 
 	test.describe('[Render]', async () => {
