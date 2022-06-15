@@ -53,7 +53,7 @@ export const getUploadFormData = async <T extends string, K, V extends ValidateF
 						return reject('Just 1 file is allowed');
 					}
 					if (options.field && fieldname !== options.field) {
-						return reject('Invalid field name');
+						return reject(new Meteor.Error('invalid-field'));
 					}
 					uploadedFile = {
 						file,
