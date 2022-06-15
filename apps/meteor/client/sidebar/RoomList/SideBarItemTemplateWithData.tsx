@@ -69,7 +69,7 @@ type RoomListRowProps = {
 	selected: boolean;
 
 	sidebarViewMode: unknown;
-	videoConfActions: {
+	videoConfActions?: {
 		[action: string]: () => void;
 	};
 };
