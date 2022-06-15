@@ -1,51 +1,51 @@
 import { Locator, expect } from '@playwright/test';
 
-import BasePage from './BasePage';
-import { IRegister } from '../interfaces/Login';
+import { BasePage } from './BasePage';
+import { IRegister } from '../utils/interfaces/Login';
 
-export default class LiveChat extends BasePage {
+export class LiveChat extends BasePage {
 	btnOpenLiveChat(label: string): Locator {
-		return this.getPage().locator(`[aria-label="${label}"]`);
+		return this.page.locator(`[aria-label="${label}"]`);
 	}
 
 	get btnSounds(): Locator {
-		return this.getPage().locator('header nav button[content="Sound is on"]');
+		return this.page.locator('header nav button[content="Sound is on"]');
 	}
 
 	get btnMinimize(): Locator {
-		return this.getPage().locator('header nav button[content="Minimize chat"]');
+		return this.page.locator('header nav button[content="Minimize chat"]');
 	}
 
 	get btnExpand(): Locator {
-		return this.getPage().locator('header nav button[content="Expand chat"]');
+		return this.page.locator('header nav button[content="Expand chat"]');
 	}
 
 	get inputName(): Locator {
-		return this.getPage().locator('[name="name"]');
+		return this.page.locator('[name="name"]');
 	}
 
 	get inputEmail(): Locator {
-		return this.getPage().locator('[name="email"]');
+		return this.page.locator('[name="email"]');
 	}
 
 	get textAreaMessage(): Locator {
-		return this.getPage().locator('[name="message"]');
+		return this.page.locator('[name="message"]');
 	}
 
 	btnSendMessage(btnText: string): Locator {
-		return this.getPage().locator(`[type="submit"] >> text="${btnText}"`);
+		return this.page.locator(`[type="submit"] >> text="${btnText}"`);
 	}
 
 	get btnOk(): Locator {
-		return this.getPage().locator('button >> text="OK"');
+		return this.page.locator('button >> text="OK"');
 	}
 
 	get onlineAgentMessage(): Locator {
-		return this.getPage().locator('[contenteditable="true"]');
+		return this.page.locator('[contenteditable="true"]');
 	}
 
 	get btnSendMessageToOnlineAgent(): Locator {
-		return this.getPage().locator('footer div div div:nth-child(3) button');
+		return this.page.locator('footer div div div:nth-child(3) button');
 	}
 
 	public async renderAllElements(): Promise<void> {

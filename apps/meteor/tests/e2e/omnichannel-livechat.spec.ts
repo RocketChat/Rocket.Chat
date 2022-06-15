@@ -1,9 +1,8 @@
 import { test, Page, expect } from '@playwright/test';
 
-import LiveChat from './utils/pageobjects/LiveChat';
 import { updateMailToLiveChat } from './utils/helpers/updateMailToLiveChat';
 import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';
-import { LoginPage, SideNav, MainContent, Agents } from './utils/pageobjects';
+import { LoginPage, SideNav, MainContent, Agents, LiveChat } from './pageobjects';
 import { createRegisterUser, adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe.only('[Livechat]', () => {
@@ -55,18 +54,18 @@ test.describe.only('[Livechat]', () => {
 			agent = new Agents(otherContextPage);
 
 			await loginPage.login(adminLogin);
-			await sideNav.sidebarUserMenu().click();
-			await sideNav.omnichannel().click();
-			await agent.agentsLink().click();
+			await sideNav.sidebarUserMenu.click();
+			await sideNav.omnichannel.click();
+			await agent.agentsLink.click();
 			await agent.doAddAgent('RocketChat Internal Admin Test');
-			await sideNav.omnichannelGoBackButton.click();
+			// await sideNav.omnichannelGoBackButton.click();
 			await page.reload();
 			await liveChat.btnOpenLiveChat('R').click();
 			await liveChat.doSendMessage(liveChatUser, false);
 			await liveChat.onlineAgentMessage.type('this_a_test_message');
 			await liveChat.btnSendMessageToOnlineAgent.click();
 
-			await agent.clickOnLiveChatCall(liveChatUser.name).click();
+			// await agent.clickOnLiveChatCall(liveChatUser.name).click();
 
 			await mainContent.sendMessage('this_a_test_message');
 		});
