@@ -808,10 +808,13 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/room.join': {
 		GET: (params: LiveChatRoomJoin) => { success: boolean };
 	};
-	'/v1/livechat/monitors.list': {
+	'/v1/livechat/monitors': {
 		GET: (params: LivechatMonitorsListProps) => PaginatedResult<{
 			monitors: ILivechatMonitor[];
 		}>;
+	};
+	'/v1/livechat/monitors/:username': {
+		GET: () => ILivechatMonitor;
 	};
 	'/v1/livechat/tags.list': {
 		GET: (params: LivechatTagsListProps) => PaginatedResult<{
