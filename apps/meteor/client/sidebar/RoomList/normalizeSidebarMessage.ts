@@ -1,11 +1,10 @@
+import { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 
 import { filterMarkdown } from '../../../app/markdown/lib/markdown';
 
-export const normalizeSidebarMessage = (
-	message: { attachments: { title?: string; description?: string }[]; msg?: string },
-	t: (key: string) => string,
-): string | undefined => {
+export const normalizeSidebarMessage = (message: IMessage, t: ReturnType<typeof useTranslation>): string | undefined => {
 	if (message.msg) {
 		return escapeHTML(filterMarkdown(message.msg));
 	}
