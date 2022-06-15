@@ -1,3 +1,4 @@
+import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
@@ -7,13 +8,13 @@ import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import AddUsers from './AddUsers';
 
 type AddUsersWithDataProps = {
-	rid: string;
+	rid: IRoom['_id'];
 	onClickBack: () => void;
 	reload: () => void;
 };
 
 type AddUsersInitialProps = {
-	users: string[];
+	users: IUser['username'][];
 };
 
 const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): ReactElement => {
@@ -44,11 +45,11 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 			onClickBack();
 			reload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	return <AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} value={users} onChange={onChangeUsers} />;
+	return <AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} users={users} onChange={onChangeUsers} />;
 };
 
 export default AddUsersWithData;
