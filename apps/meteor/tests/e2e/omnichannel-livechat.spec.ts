@@ -5,7 +5,7 @@ import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';
 import { LoginPage, SideNav, MainContent, Agents, LiveChat } from './pageobjects';
 import { createRegisterUser, adminLogin } from './utils/mocks/userAndPasswordMock';
 
-test.describe.only('[Livechat]', () => {
+test.describe('[Livechat]', () => {
 	let page: Page;
 	let liveChat: LiveChat;
 	const liveChatUser = createRegisterUser();

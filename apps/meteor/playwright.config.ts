@@ -14,7 +14,7 @@ const localInserts = isLocal
 const config: PlaywrightTestConfig = {
 	...localInserts,
 	use: {
-		headless: false,
+		headless: true,
 		viewport: { width: 1368, height: 768 },
 		ignoreHTTPSErrors: true,
 		video: 'retain-on-failure',
