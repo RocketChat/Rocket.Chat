@@ -3185,6 +3185,7 @@
   "New_Business_Hour": "New Business Hour",
   "New_Canned_Response": "New Canned Response",
   "New_Call": "New Call",
+  "New_Call_Enterprise_Edition_Only": "New Call (Enterprise Edition Only)",
   "New_chat_in_queue": "New chat in queue",
   "New_chat_priority": "Priority Changed: __user__ changed the priority to __priority__",
   "New_chat_transfer": "New Chat Transfer: __transfer__",

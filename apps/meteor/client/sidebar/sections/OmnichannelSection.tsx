@@ -11,7 +11,8 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement, useCallback } from 'react';
 
-import DialPadModal from '../../components/voip/modal/DialPad/DialPadModal';
+import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
+import DialPadModal from '../../../ee/client/voip/modal/DialPad/DialPadModal';
 import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
@@ -24,6 +25,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const isCallEnabled = useIsCallEnabled();
 	const hasPermission = usePermission('view-omnichannel-contact-center');
 	const agentAvailable = useOmnichannelAgentAvailable();
+	const voipLicense = useHasLicense('voip-enterprise');
 
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
 	const { sidebar } = useLayout();
@@ -59,8 +61,10 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	});
 
 	const openDialModal = useCallback(() => {
-		setModal(<DialPadModal handleClose={(): void => setModal(null)} />);
-	}, [setModal]);
+		if (voipLicense) {
+			setModal(<DialPadModal handleClose={(): void => setModal(null)} />);
+		}
+	}, [voipLicense, setModal]);
 
 	// The className is a paliative while we make TopBar.ToolBox optional on fuselage
 	return (
@@ -73,7 +77,13 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				{hasPermission && (
 					<Sidebar.TopBar.Action title={t('Contact_Center')} icon='contact' onClick={(): void => handleRoute('directory')} />
 				)}
-				{isCallEnabled && <Sidebar.TopBar.Action title={t('New_Call')} icon='dialpad' onClick={openDialModal} />}
+				{isCallEnabled && (
+					<Sidebar.TopBar.Action
+						title={voipLicense ? t('New_Call') : t('New_Call_Enterprise_Edition_Only')}
+						icon='dialpad'
+						onClick={openDialModal}
+					/>
+				)}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);
