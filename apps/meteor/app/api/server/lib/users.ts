@@ -53,7 +53,7 @@ export async function findUsersToAutocomplete({
  * Returns a new query object with the inclusive fields only
  * @param {Object} query search query for matching rows
  */
-export function getInclusiveFields(query: {} | { [k: keyof Query]: 1 }): {} {
+export function getInclusiveFields(query: { [k: string]: 1 }): {} {
 	const newQuery = Object.create(null);
 
 	for (const [key, value] of Object.entries(query)) {
