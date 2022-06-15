@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Readable } from 'stream';
 
 import { Request } from 'express';
