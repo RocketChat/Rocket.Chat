@@ -1,0 +1,37 @@
+name: 'Build Docker image'
+description: 'Build Rocket.Chat Docker image'
+
+inputs:
+  docker-tag:
+    required: true
+    type: string
+  service:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+        IMAGE_TAG="${{ inputs.docker-tag }}"
+
+        IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ inputs.service }}-service:${IMAGE_TAG}"
+
+        echo "Building Docker image for service: ${{ inputs.service }}:${IMAGE_TAG}"
+
+        if [[ "${{ inputs.service }}" == "ddp-streamer" ]]; then
+          DOCKERFILE_PATH="./ee/apps/ddp-streamer/Dockerfile"
+        else
+          DOCKERFILE_PATH="./apps/meteor/ee/server/services/Dockerfile"
+        fi
+
+        docker build \
+          --build-arg SERVICE=${{ inputs.service }} \
+          -t ${IMAGE_NAME} \
+          -f ${DOCKERFILE_PATH} \
+          .
+
+        docker push ${IMAGE_NAME}

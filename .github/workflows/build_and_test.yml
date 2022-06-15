@@ -228,42 +228,11 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-      - name: Build Docker image
-        run: |
-          cd /tmp/build
-
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-          IMAGE_NAME="rocket.chat"
-          if [[ '${{ matrix.release }}' = 'preview' ]]; then
-            IMAGE_NAME="${IMAGE_NAME}.preview"
-          fi;
-
-          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:${{ needs.release-versions.outputs.docker-tag }}"
-          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
-            IMAGE_NAME="${IMAGE_NAME}.${{ matrix.release }}"
-          fi;
-
-          echo "Build Docker image ${IMAGE_NAME}"
-
-          DOCKER_PATH="${GITHUB_WORKSPACE}/apps/meteor/.docker"
-          if [[ '${{ matrix.release }}' = 'preview' ]]; then
-            DOCKER_PATH="${DOCKER_PATH}-mongo"
-          fi;
-
-          DOCKERFILE_PATH="${DOCKER_PATH}/Dockerfile"
-          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
-            DOCKERFILE_PATH="${DOCKERFILE_PATH}.${{ matrix.release }}"
-          fi;
-
-          echo "Copy Dockerfile for release: ${{ matrix.release }}"
-          cp $DOCKERFILE_PATH ./Dockerfile
-          if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
-            cp ${DOCKER_PATH}/entrypoint.sh .
-          fi;
-
-          echo "Build ${{ matrix.release }} Docker image"
-          docker build -t $IMAGE_NAME .
-          docker push $IMAGE_NAME
+      - uses: ./.github/actions/build-docker-image
+        with:
+          root-dir: /tmp/build
+          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          release: ${{ matrix.release }}
 
   services-build-docker-image:
     runs-on: ubuntu-20.04
@@ -303,29 +272,10 @@ jobs:
 
       - run: yarn build
 
-      - name: Build Docker images
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          IMAGE_TAG="${{ needs.release-versions.outputs.docker-tag }}"
-
-          IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${IMAGE_TAG}"
-
-          echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
-
-          if [[ "${{ matrix.service }}" == "ddp-streamer" ]]; then
-            DOCKERFILE_PATH="./ee/apps/ddp-streamer/Dockerfile"
-          else
-            DOCKERFILE_PATH="./apps/meteor/ee/server/services/Dockerfile"
-          fi
-
-          docker build \
-            --build-arg SERVICE=${{ matrix.service }} \
-            -t ${IMAGE_NAME} \
-            -f ${DOCKERFILE_PATH} \
-            .
-
-          docker push ${IMAGE_NAME}
+      - uses: ./.github/actions/build-docker-image-service
+        with:
+          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          service: ${{ matrix.service }}
 
   test:
     runs-on: ubuntu-20.04
