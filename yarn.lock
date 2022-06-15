@@ -3847,9 +3847,11 @@ __metadata:
     "@types/codemirror": ^5
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.2
+    "@types/cors": ^2.8.5
     "@types/dompurify": ^2.2.2
     "@types/ejson": ^2.2.0
     "@types/express": ^4.17.12
+    "@types/express-rate-limit": ^5.1.3
     "@types/fibers": ^3.1.1
     "@types/google-libphonenumber": ^7.4.21
     "@types/imap": ^0.8.35
@@ -5911,6 +5913,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cors@npm:^2.8.5":
+  version: 2.8.12
+  resolution: "@types/cors@npm:2.8.12"
+  checksum: 8c45f112c7d1d2d831b4b266f2e6ed33a1887a35dcbfe2a18b28370751fababb7cd045e745ef84a523c33a25932678097bf79afaa367c6cb3fa0daa7a6438257
+  languageName: node
+  linkType: hard
+
 "@types/dompurify@npm:^2.2.2":
   version: 2.3.3
   resolution: "@types/dompurify@npm:2.3.3"
@@ -5965,6 +5974,15 @@ __metadata:
   version: 3.0.0
   resolution: "@types/events@npm:3.0.0"
   checksum: 9a424c2da210957d5636e0763e8c9fc3aaeee35bf411284ddec62a56a6abe31de9c7c2e713dabdd8a76ff98b47db2bd52f61310be6609641d6234cc842ecbbe3
+  languageName: node
+  linkType: hard
+
+"@types/express-rate-limit@npm:^5.1.3":
+  version: 5.1.3
+  resolution: "@types/express-rate-limit@npm:5.1.3"
+  dependencies:
+    "@types/express": "*"
+  checksum: 44c0b79e48a9416309459e4aad7dbac6bdf0e1777ed2d9620d1512eecfacbd32d7d1b86789c116ced32e926b595ea55d212076b46ea934676ab352e260233686
   languageName: node
   linkType: hard
 
@@ -7648,7 +7666,7 @@ __metadata:
     human-interval: ~1.0.0
     moment-timezone: ~0.5.27
     mongodb: ~3.5.0
-  checksum: f5f68008298f9482631f1f494e392cd6b8ba7971a3b0ece81ae2abe60f53d67973ff4476156fa5c9c41b8b58c4ccd284e95c545e0523996dfd05f9a80b843e07
+  checksum: cc8c1bbba7545628d9d039c58e701ff65cf07f241f035b731716eec0d5ef906ce09d60c3b321bbfb9e6c641994d1afd23aaeb92d645b33bf7be9942f13574173
   languageName: node
   linkType: hard
 
