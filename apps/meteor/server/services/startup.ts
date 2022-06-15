@@ -3,7 +3,6 @@ import { MongoInternals } from 'meteor/mongo';
 import { AnalyticsService } from './analytics/service';
 import { api } from '../sdk/api';
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
-import { AuthorizationTokenpass } from '../../app/tokenpass/server/roomAccessValidator.internalService';
 import { BannerService } from './banner/service';
 import { LDAPService } from './ldap/service';
 import { MediaService } from './image/service';
@@ -21,7 +20,6 @@ const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 api.registerService(new AnalyticsService(db));
 api.registerService(new AuthorizationLivechat());
-api.registerService(new AuthorizationTokenpass());
 api.registerService(new BannerService(db));
 api.registerService(new LDAPService());
 api.registerService(new MediaService());

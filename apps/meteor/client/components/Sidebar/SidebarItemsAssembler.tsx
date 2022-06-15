@@ -25,7 +25,6 @@ const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentP
 					tag={t.has(tag as Parameters<typeof t>[0]) ? t(tag as Parameters<typeof t>[0]) : undefined}
 				/>
 			))}
-			;
 		</>
 	);
 };
