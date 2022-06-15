@@ -1,11 +1,11 @@
-import { Permission } from '@rocket.chat/core-typings';
+import { AppPermission } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 type AppSecurityPageProps = {
 	privacyPolicySummary: string | undefined;
-	appPermissions: Permission[] | undefined;
+	appPermissions: AppPermission[] | undefined;
 	tosLink: string | undefined;
 	privacyLink: string | undefined;
 };
