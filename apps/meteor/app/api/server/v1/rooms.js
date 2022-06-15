@@ -85,7 +85,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { file, ...fields } = Promise.await(
+			const [file, fields] = Promise.await(
 				getUploadFormData({
 					request: this.request,
 				}),

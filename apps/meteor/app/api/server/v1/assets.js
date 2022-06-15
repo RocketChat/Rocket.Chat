@@ -9,7 +9,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			const { refreshAllClients, ...files } = Promise.await(
+			const [asset, { refreshAllClients }, assetName] = Promise.await(
 				getUploadFormData({
 					request: this.request,
 				}),
@@ -17,16 +17,12 @@ API.v1.addRoute(
 
 			const assetsKeys = Object.keys(RocketChatAssets.assets);
 
-			const [assetName] = Object.keys(files);
-
 			const isValidAsset = assetsKeys.includes(assetName);
 			if (!isValidAsset) {
 				throw new Meteor.Error('error-invalid-asset', 'Invalid asset');
 			}
 
 			Meteor.runAsUser(this.userId, () => {
-				const { [assetName]: asset } = files;
-
 				Meteor.call('setAsset', asset.fileBuffer, asset.mimetype, assetName);
 				if (refreshAllClients) {
 					Meteor.call('refreshClients');

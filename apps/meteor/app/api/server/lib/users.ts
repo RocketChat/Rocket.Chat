@@ -5,8 +5,6 @@ import { FilterQuery } from 'mongodb';
 import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-type Query = { [k: string]: unknown };
-
 export async function findUsersToAutocomplete({
 	uid,
 	selector,
@@ -111,6 +109,8 @@ const _defaultQuery = {
  * get the default query if **query** is empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} query the query from parsed jsonQuery
  */
+
+type Query = { [k: string]: unknown };
 export function getNonEmptyQuery(query: Query): typeof _defaultQuery | (typeof _defaultQuery & Query) {
 	const defaultQuery = {
 		$or: [

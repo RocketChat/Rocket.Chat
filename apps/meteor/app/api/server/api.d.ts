@@ -9,6 +9,7 @@ import type {
 } from '@rocket.chat/rest-typings';
 import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
+import type { Request } from 'express';
 
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
@@ -68,13 +69,6 @@ type Options = (
 	  }
 ) & {
 	validateParams?: ValidateFunction;
-};
-
-type Request = {
-	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-	url: string;
-	headers: Record<string, string>;
-	body: any;
 };
 
 type PartialThis = {

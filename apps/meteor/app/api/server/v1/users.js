@@ -462,7 +462,7 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const { image, ...fields } = await getUploadFormData({
+			const [image, fields] = await getUploadFormData({
 				request: this.request,
 			});
 
