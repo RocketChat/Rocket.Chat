@@ -90,4 +90,8 @@ import './v263';
 import './v264';
 import './v265';
 import './v266';
+import './v267';
+import './v268';
+import './v269';
+import './v270-deviceManagement';
 import './xrun';

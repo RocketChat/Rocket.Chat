@@ -138,7 +138,7 @@ export class SAUMonitorClass {
 		if (!data) {
 			return;
 		}
-		await Sessions.createOrUpdate(data);
+		await Sessions.insertOne({ ...data, createdAt: new Date() });
 	}
 
 	private async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {

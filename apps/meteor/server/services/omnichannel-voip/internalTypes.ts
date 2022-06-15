@@ -1,3 +1,5 @@
+import { IMessage } from '@rocket.chat/core-typings';
+
 export type FindVoipRoomsParams = {
 	agents?: string[];
 	open?: boolean;
@@ -13,3 +15,5 @@ export type FindVoipRoomsParams = {
 		offset?: number;
 	};
 };
+
+export type IOmniRoomClosingMessage = Pick<IMessage, 't' | 'groupable'> & Partial<Pick<IMessage, 'msg'>>;

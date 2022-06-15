@@ -21,5 +21,22 @@ describe('[CustomSounds]', function () {
 				})
 				.end(done);
 		});
+		it('should return custom sounds even requested with count and offset params', (done) => {
+			request
+				.get(api('custom-sounds.list'))
+				.set(credentials)
+				.expect(200)
+				.query({
+					count: 5,
+					offset: 0,
+				})
+				.expect((res) => {
+					expect(res.body).to.have.property('sounds').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
 	});
 });
