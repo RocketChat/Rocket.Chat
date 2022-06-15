@@ -111,8 +111,6 @@ describe('Parse Parameters', () => {
 		expect(result).to.be.an('Array').with.lengthOf(2);
 		expect(result[0]).to.be.equal(value1.replace(/\\\"/g, '"'));
 		expect(result[1]).to.be.equal(value2.replace(/\\\"/g, '"'));
-
-		// .and.eql([`this is "value1" here`, `"value2"`]);
 	});
 
 	it('should not ignore empty quoted parameters', () => {
