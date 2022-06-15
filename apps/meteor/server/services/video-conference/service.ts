@@ -69,7 +69,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-call');
 		}
 
-		const user = await this.Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(uid, { projection: { name: 1, username: 1 } });
+		const user = await this.Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>(uid, {
+			projection: { name: 1, username: 1, avatarETag: 1 },
+		});
 		if (!user) {
 			throw new Error('failed-to-load-own-data');
 		}
@@ -173,6 +175,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				{
 					type: 'actions',
 					appId: 'videoconf-core',
+					value: title,
 					elements: [
 						{
 							appId: 'videoconf-core',
@@ -295,7 +298,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async joinCall(
 		call: VideoConference,
-		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
+		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
 		const url = this.getUrl(call, user, options);
@@ -382,8 +385,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	private async addUserToCall(call: VideoConference, { _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
-		await this.VideoConference.addUserById(call._id, { _id, username, name });
+	private async addUserToCall(
+		call: VideoConference,
+		{ _id, username, name, avatarETag }: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
+	): Promise<void> {
+		await this.VideoConference.addUserById(call._id, { _id, username, name, avatarETag });
 
 		if (call.type === 'direct' || !call.messages.started) {
 			return;
