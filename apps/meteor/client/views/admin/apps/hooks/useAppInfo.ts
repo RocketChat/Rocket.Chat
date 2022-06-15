@@ -1,3 +1,4 @@
+import { App } from '@rocket.chat/core-typings';
 import { useEndpoint, EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
@@ -5,7 +6,6 @@ import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { AppsContext } from '../AppsContext';
 import { AppInfo } from '../definitions/AppInfo';
-import { App } from '../types';
 
 const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 	const { bundledIn = [] } = app;
