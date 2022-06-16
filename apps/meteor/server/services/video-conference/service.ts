@@ -172,6 +172,49 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.VideoConference.setProviderDataById(callId, data);
 	}
 
+	public async setEndedBy(callId: VideoConference['_id'], endedBy: IUser['_id']): Promise<void> {
+		const user = await this.Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(endedBy, {
+			projection: { username: 1, name: 1 },
+		});
+		if (!user) {
+			throw new Error('Invalid User');
+		}
+
+		this.VideoConference.setEndedById(callId, {
+			_id: user._id,
+			username: user.username,
+			name: user.name,
+		});
+	}
+
+	public async setEndedAt(callId: VideoConference['_id'], endedAt: Date): Promise<void> {
+		this.VideoConference.setEndedById(callId, undefined, endedAt);
+	}
+
+	public async setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void> {
+		this.VideoConference.setStatusById(callId, status);
+	}
+
+	public async addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void> {
+		const call = await this.get(callId);
+		if (!call) {
+			throw new Error('Invalid video conference');
+		}
+		const user = await this.Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
+			projection: { username: 1, name: 1 },
+		});
+		if (!user) {
+			throw new Error('Invalid User');
+		}
+
+		this.addUserToCall(call, {
+			_id: user._id,
+			username: user.username,
+			name: user.name,
+			ts: ts || new Date(),
+		});
+	}
+
 	public async listProviders(): Promise<{ key: string; label: string }[]> {
 		return videoConfProviders.getProviderList();
 	}
@@ -430,10 +473,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async addUserToCall(
-		call: VideoConference,
-		{ _id, username, name, avatarETag }: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
+		call: AtLeast<VideoConference, '_id' | 'type' | 'messages'>,
+		{ _id, username, name, avatarETag, ts }: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> & { ts?: Date },
 	): Promise<void> {
-		await this.VideoConference.addUserById(call._id, { _id, username, name, avatarETag });
+		await this.VideoConference.addUserById(call._id, { _id, username, name, avatarETag, ts });
 
 		if (call.type === 'direct' || !call.messages.started) {
 			return;
