@@ -34,6 +34,7 @@ import { Apps } from '../../../app/apps/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { getURL } from '../../../app/utils/server';
 import { videoConfProviders } from '../../lib/videoConfProviders';
+import { videoConfTypes } from '../../lib/videoConfTypes';
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -93,39 +94,20 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('no-active-video-conf-provider');
 		}
 
-		const room = await this.Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'uids'>>(rid, {
-			projection: { t: 1, uids: 1 },
-		});
+		const type = await this.getTypeForNewVideoConference(rid);
 
-		if (!room) {
-			throw new Error('invalid-room');
-		}
-
-		if (room.t === 'd' && room.uids && room.uids.length <= 2) {
-			return this.create({
-				createdBy: caller,
-				type: 'direct',
-				rid: room._id,
-				providerName,
-			});
-		}
-
-		if (room.t === 'l') {
-			return this.create({
-				createdBy: caller,
-				type: 'livechat',
-				rid: room._id,
-				providerName,
-			});
-		}
-
-		return this.create({
-			type: 'videoconference',
+		const data = {
+			type,
 			createdBy: caller,
-			rid: room._id,
+			rid,
 			providerName,
-			title,
-		} as IGroupVideoConference & { createdBy: string });
+		} as VideoConferenceCreateData;
+
+		if (data.type === 'videoconference') {
+			data.title = title;
+		}
+
+		return this.create(data);
 	}
 
 	public async join(uid: IUser['_id'], callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
@@ -256,6 +238,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.VideoConference.setEndedById(call._id);
 
 		return true;
+	}
+
+	private async getTypeForNewVideoConference(rid: IRoom['_id']): Promise<VideoConferenceCreateData['type']> {
+		const room = await this.Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(rid, {
+			projection: { t: 1 },
+		});
+
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+
+		return videoConfTypes.getTypeForRoom(room);
+
+		// if (room.t === 'd' && room.uids && room.uids.length > 2) {
+		// 	return 'direct';
+		// }
 	}
 
 	private async createMessage(rid: IRoom['_id'], user: IUser, extraData: Partial<IMessage> = {}): Promise<IMessage['_id']> {

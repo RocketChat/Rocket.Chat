@@ -15,10 +15,12 @@ export type VideoConferenceJoinOptions = {
 	cam?: boolean;
 };
 
+type GroupVideoConferenceCreateData = IGroupVideoConference & { createdBy: IUser['_id'] };
+type DirectVideoConferenceCreateData = IDirectVideoConference & { createdBy: IUser['_id'] };
+type LivechatVideoConferenceCreateData = ILivechatVideoConference & { createdBy: IUser['_id'] };
+
 export type VideoConferenceCreateData = AtLeast<
-	Omit<IDirectVideoConference | IGroupVideoConference | ILivechatVideoConference, 'createdBy'> & {
-		createdBy: IUser['_id'];
-	},
+	DirectVideoConferenceCreateData | GroupVideoConferenceCreateData | LivechatVideoConferenceCreateData,
 	'createdBy' | 'type' | 'rid' | 'providerName' | 'providerData'
 >;
 
