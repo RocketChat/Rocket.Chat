@@ -1,6 +1,5 @@
 import { Mongo } from 'meteor/mongo';
 import type { Collection } from 'mongodb';
-// import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 
 import { SystemLogger } from '../lib/logger/system';
 import { prefix } from './utils';

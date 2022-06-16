@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
@@ -9,10 +8,6 @@ import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TO
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
-
-	constructor(_db: Db) {
-		super();
-	}
 
 	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
 		const { type, name, members = [], readOnly, extraData, options } = params;

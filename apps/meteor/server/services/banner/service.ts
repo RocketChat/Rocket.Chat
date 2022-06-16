@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 import { BannerPlatform, IBanner, IBannerDismiss, Optional } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
@@ -10,11 +9,6 @@ import { api } from '../../sdk/api';
 
 export class BannerService extends ServiceClassInternal implements IBannerService {
 	protected name = 'banner';
-
-	constructor(_db: Db) {
-		super();
-		//
-	}
 
 	async getById(bannerId: string): Promise<null | IBanner> {
 		return Banners.findOneById(bannerId);

@@ -1,6 +1,5 @@
 import { createHash } from 'crypto';
 
-import { Db } from 'mongodb';
 import { NPSStatus, INpsVoteStatus, INpsVote, INps } from '@rocket.chat/core-typings';
 import { Nps, NpsVote, Settings } from '@rocket.chat/models';
 
@@ -12,11 +11,6 @@ import { getBannerForAdmins, notifyAdmins } from './notification';
 
 export class NPSService extends ServiceClassInternal implements INPSService {
 	protected name = 'nps';
-
-	constructor(_db: Db) {
-		super();
-		//
-	}
 
 	async create(nps: NPSCreatePayload): Promise<boolean> {
 		const npsEnabled = await Settings.getValueById('NPS_survey_enabled');

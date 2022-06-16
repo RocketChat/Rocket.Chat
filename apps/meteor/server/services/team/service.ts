@@ -1,4 +1,4 @@
-import { Db, FindOneOptions, FilterQuery, WithoutProjection } from 'mongodb';
+import { FindOneOptions, FilterQuery, WithoutProjection } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '@rocket.chat/core-typings';
@@ -27,10 +27,6 @@ import { saveRoomType } from '../../../app/channel-settings/server/functions/sav
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
-
-	constructor(_db: Db) {
-		super();
-	}
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
 		if (!checkUsernameAvailability(team.name)) {

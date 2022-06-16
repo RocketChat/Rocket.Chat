@@ -1,4 +1,4 @@
-import { Db, FindOneOptions } from 'mongodb';
+import { FindOneOptions } from 'mongodb';
 import _ from 'underscore';
 import type {
 	IVoipExtensionBase,
@@ -33,7 +33,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 	private logger: Logger;
 
-	constructor(_db: Db) {
+	constructor() {
 		super();
 		this.logger = new Logger('OmnichannelVoipService');
 

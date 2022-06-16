@@ -1,4 +1,3 @@
-import type { Db } from 'mongodb';
 import type { IAnalyticsSeatRequest } from '@rocket.chat/core-typings';
 import { Analytics } from '@rocket.chat/models';
 
@@ -7,10 +6,6 @@ import { IAnalyticsService } from '../../sdk/types/IAnalyticsService';
 
 export class AnalyticsService extends ServiceClassInternal implements IAnalyticsService {
 	protected name = 'analytics';
-
-	constructor(_db: Db) {
-		super();
-	}
 
 	async saveSeatRequest(): Promise<void> {
 		Analytics.update({ type: 'seat-request' }, { $inc: { count: 1 } }, { upsert: true });

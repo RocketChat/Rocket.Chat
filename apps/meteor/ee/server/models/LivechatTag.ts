@@ -4,5 +4,5 @@ import type { ILivechatTagModel } from '@rocket.chat/model-typings';
 import MeteorModel from '../../app/models/server/models/LivechatTag';
 import { LivechatTagRaw } from './raw/LivechatTag';
 
-const col = (MeteorModel as any).model.rawCollection();
+const col = MeteorModel.model.rawCollection();
 registerModel('ILivechatTagModel', new LivechatTagRaw(col) as ILivechatTagModel);
