@@ -127,8 +127,8 @@ describe('Parse Parameters', () => {
 	it('should accept line breaks inside quotes', () => {
 		const value1 = `value1
 		is multiline`;
-		const value2 = 'value2';
-		const value3 = 'value3';
+		const value2 = 'value2\nhas a multine too';
+		const value3 = 'value3\rhas a carriage return';
 
 		const parameters = `"${value1}" "${value2}" "${value3}"`;
 		const result = parseParameters(parameters);
@@ -139,13 +139,41 @@ describe('Parse Parameters', () => {
 		expect(result[2]).to.be.equal(value3);
 	});
 
-	it('should accept line breaks without quotes', () => {
-		const value1 = `value1
-_no_spaces`;
+	it('should split on line breaks without quotes', () => {
+		const value1 = `value1`;
 		const value2 = 'value2';
 		const value3 = 'value3';
 
-		const parameters = `${value1} ${value2} ${value3}`;
+		const parameters = `${value1}
+${value2}
+${value3}`;
+
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(3);
+		expect(result[0]).to.be.equal(value1);
+		expect(result[1]).to.be.equal(value2);
+		expect(result[2]).to.be.equal(value3);
+	});
+
+	it('should accept tabs inside quotes', () => {
+		const value1 = `value1		is tabbed`;
+		const value2 = 'value2';
+
+		const parameters = `"${value1}" "${value2}"`;
+		const result = parseParameters(parameters);
+
+		expect(result).to.be.an('Array').with.lengthOf(2);
+		expect(result[0]).to.be.equal(value1);
+		expect(result[1]).to.be.equal(value2);
+	});
+
+	it('should split on tabs without quotes', () => {
+		const value1 = `value1`;
+		const value2 = 'value2';
+		const value3 = 'value3';
+
+		const parameters = `${value1}		${value2}	${value3}`;
 
 		const result = parseParameters(parameters);
 
