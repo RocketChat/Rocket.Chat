@@ -1,12 +1,10 @@
 import { IRoom, IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '@rocket.chat/core-typings';
+import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint, useUserRoom } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
-import { useLayout } from '../../../../contexts/LayoutContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useUser, useUserPreference, useUserSubscription } from '../../../../contexts/UserContext';
+import ToolboxProvider from '../../providers/ToolboxProvider';
 import { MessageListContext, MessageListContextValue } from '../contexts/MessageListContext';
 import { useAutotranslateLanguage } from '../hooks/useAutotranslateLanguage';
 
@@ -15,7 +13,7 @@ const fields = {};
 export const MessageListProvider: FC<{
 	rid: IRoom['_id'];
 }> = memo(function MessageListProvider({ rid, ...props }) {
-	const reactToMessage = useEndpoint('POST', 'chat.react');
+	const reactToMessage = useEndpoint('POST', '/v1/chat.react');
 	const user = useUser();
 	const uid = user?._id;
 	const username = user?.username;
@@ -26,6 +24,10 @@ export const MessageListProvider: FC<{
 	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
 	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
+	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
+	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax'));
+	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax'));
+
 	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
@@ -46,7 +48,7 @@ export const MessageListProvider: FC<{
 								return [];
 							}
 							if (!isMessageReactionsNormalized(message)) {
-								return (message.reactions && message.reactions[reaction]?.usernames.map((username) => `@${username}`)) || [];
+								return message.reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || [];
 							}
 							if (!username) {
 								return message.reactions[reaction].names;
@@ -62,7 +64,7 @@ export const MessageListProvider: FC<{
 			useUserHasReacted: username
 				? (message) =>
 						(reaction): boolean =>
-							Boolean(message.reactions && message.reactions[reaction].usernames.includes(username))
+							Boolean(message.reactions?.[reaction].usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
 				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1)
@@ -79,11 +81,16 @@ export const MessageListProvider: FC<{
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
-
+			showReadReceipt,
 			showRoles,
 			showRealName,
 			showUsername,
-			showReadReceipt,
+			...(katexEnabled && {
+				katex: {
+					dollarSyntaxEnabled: katexDollarSyntaxEnabled,
+					parenthesisSyntaxEnabled: katexParenthesisSyntaxEnabled,
+				},
+			}),
 			highlights: highlights
 				?.map((str) => str.trim())
 				.map((highlight) => ({
@@ -118,10 +125,23 @@ export const MessageListProvider: FC<{
 			showRealName,
 			showUsername,
 			showReadReceipt,
+			katexEnabled,
+			katexDollarSyntaxEnabled,
+			katexParenthesisSyntaxEnabled,
 			highlights,
 			reactToMessage,
 		],
 	);
 
-	return <MessageListContext.Provider value={context} {...props} />;
+	const room = useUserRoom(rid);
+
+	if (!room) {
+		throw new Error('Room not found');
+	}
+
+	return (
+		<ToolboxProvider room={room}>
+			<MessageListContext.Provider value={context} {...props} />
+		</ToolboxProvider>
+	);
 });

@@ -1,14 +1,14 @@
-import React, { ReactNode, Suspense, useEffect, FC } from 'react';
+import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import React, { ReactNode, Suspense, useEffect, ReactElement } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
 import PageSkeleton from '../../components/PageSkeleton';
-import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 
 type OmnichannelRouterProps = {
-	renderRoute?: () => ReactNode;
+	children?: ReactNode;
 };
 
-const OmnichannelRouter: FC<OmnichannelRouterProps> = ({ renderRoute }) => {
+const OmnichannelRouter = ({ children }: OmnichannelRouterProps): ReactElement => {
 	const [routeName] = useCurrentRoute();
 	const defaultRoute = useRoute('omnichannel-current-chats');
 	useEffect(() => {
@@ -22,7 +22,7 @@ const OmnichannelRouter: FC<OmnichannelRouterProps> = ({ renderRoute }) => {
 		SideNav.openFlex(() => undefined);
 	}, []);
 
-	return renderRoute ? <Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense> : <PageSkeleton />;
+	return children ? <Suspense fallback={<PageSkeleton />}>{children}</Suspense> : <PageSkeleton />;
 };
 
 export default OmnichannelRouter;

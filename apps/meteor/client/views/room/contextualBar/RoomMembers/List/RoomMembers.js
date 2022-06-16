@@ -1,11 +1,11 @@
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import DefaultRow from './DefaultRow';
 
 const RoomMembers = ({

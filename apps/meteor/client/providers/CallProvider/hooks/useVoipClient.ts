@@ -1,11 +1,9 @@
 import { IRegistrationInfo, WorkflowTypes } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useUser } from '../../../contexts/UserContext';
 import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
@@ -21,12 +19,22 @@ const empty = {};
 const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
 
 export const useVoipClient = (): UseVoipClientResult => {
-	const voipEnabled = useSetting('VoIP_Enabled');
-	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
-	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
+	const [voipEnabled, setVoipEnabled] = useSafely(useState(useSetting('VoIP_Enabled')));
+	const voipRetryCount = useSetting('VoIP_Retry_Count');
+	const enableKeepAlive = useSetting('VoIP_Enable_Keep_Alive_For_Unstable_Networks');
+	const registrationInfo = useEndpoint('GET', '/v1/connector.extension.getRegistrationInfoByUserId');
+	const membership = useEndpoint('GET', '/v1/voip/queues.getMembershipSubscription');
 	const user = useUser();
+	const subscribeToNotifyLoggedIn = useStream('notify-logged');
 	const iceServers = useWebRtcServers();
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
+
+	useEffect(() => {
+		const voipEnableEventHandler = (enabled: boolean): void => {
+			setVoipEnabled(enabled);
+		};
+		return subscribeToNotifyLoggedIn(`voip.statuschanged`, voipEnableEventHandler);
+	}, [setResult, setVoipEnabled, subscribeToNotifyLoggedIn]);
 
 	useEffect(() => {
 		const uid = user?._id;
@@ -56,7 +64,16 @@ export const useVoipClient = (): UseVoipClientResult => {
 				(async (): Promise<void> => {
 					try {
 						const subscription = await membership({ extension });
-						client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, 'video');
+						client = await SimpleVoipUser.create(
+							extension,
+							password,
+							host,
+							websocketPath,
+							iceServers,
+							Number(voipRetryCount),
+							Boolean(enableKeepAlive),
+							'video',
+						);
 						// Today we are hardcoding workflow mode.
 						// In future, this should be ready from configuration
 						client.setWorkflowMode(WorkflowTypes.CONTACT_CENTER_USER);
@@ -76,7 +93,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 				client.clear();
 			}
 		};
-	}, [iceServers, registrationInfo, setResult, membership, voipEnabled, user?._id, user?.extension]);
+	}, [iceServers, registrationInfo, setResult, membership, voipEnabled, user?._id, user?.extension, voipRetryCount, enableKeepAlive]);
 
 	return result;
 };

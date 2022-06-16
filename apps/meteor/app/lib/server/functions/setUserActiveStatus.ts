@@ -61,7 +61,7 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 
 		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
 			const rooms = getUserSingleOwnedRooms(chatSubscribedRooms as []);
-			throw new Meteor.Error('user-last-owner', '', String(rooms));
+			throw new Meteor.Error('user-last-owner', '', rooms);
 		}
 
 		closeOmnichannelConversations(user, livechatSubscribedRooms);

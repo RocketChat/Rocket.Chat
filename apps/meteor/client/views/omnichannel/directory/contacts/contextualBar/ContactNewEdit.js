@@ -1,5 +1,6 @@
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -7,9 +8,6 @@ import { hasAtLeastOnePermission } from '../../../../../../app/authorization/cli
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -77,7 +75,7 @@ function ContactNewEdit({ id, data, close }) {
 	const [phoneError, setPhoneError] = useState();
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
-	const { value: allCustomFields, phase: state } = useEndpointData('livechat/custom-fields');
+	const { value: allCustomFields, phase: state } = useEndpointData('/v1/livechat/custom-fields');
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
@@ -99,9 +97,17 @@ function ContactNewEdit({ id, data, close }) {
 		[allCustomFields],
 	);
 
-	const saveContact = useEndpoint('POST', 'omnichannel/contact');
-	const emailAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?email=${email}`);
-	const phoneAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?phone=${phone}`);
+	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
+	const emailAlreadyExistsAction = useEndpoint(
+		'GET',
+		'/v1/omnichannel/contact.search',
+		useMemo(() => ({ email }), [email]),
+	);
+	const phoneAlreadyExistsAction = useEndpoint(
+		'GET',
+		'/v1/omnichannel/contact.search',
+		useMemo(() => ({ phone }), [phone]),
+	);
 
 	const checkEmailExists = useMutableCallback(async () => {
 		if (!validateEmail(email)) {

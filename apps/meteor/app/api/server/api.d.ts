@@ -7,7 +7,9 @@ import type {
 	PathPattern,
 	UrlParams,
 } from '@rocket.chat/rest-typings';
-import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
+import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings';
+import type { ValidateFunction } from 'ajv';
+import type { Request } from 'express';
 
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
@@ -54,7 +56,7 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
-type Options =
+type Options = (
 	| {
 			permissionsRequired?: string[];
 			authRequired?: boolean;
@@ -64,13 +66,9 @@ type Options =
 			authRequired: true;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
-	  };
-
-type Request = {
-	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-	url: string;
-	headers: Record<string, string>;
-	body: any;
+	  }
+) & {
+	validateParams?: ValidateFunction;
 };
 
 type PartialThis = {
@@ -78,31 +76,58 @@ type PartialThis = {
 };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
 	// TODO make it unsafe
-	readonly queryParams: TMethod extends 'GET' ? Partial<OperationParams<TMethod, TPathPattern>> : Record<string, string>;
+	readonly queryParams: TMethod extends 'GET'
+		? TOptions extends { validateParams: ValidateFunction<infer T> }
+			? T
+			: Partial<OperationParams<TMethod, TPathPattern>>
+		: Record<string, string>;
 	// TODO make it unsafe
-	readonly bodyParams: TMethod extends 'GET' ? Record<string, unknown> : Partial<OperationParams<TMethod, TPathPattern>>;
+	readonly bodyParams: TMethod extends 'GET'
+		? Record<string, unknown>
+		: TOptions extends { validateParams: ValidateFunction<infer T> }
+		? T
+		: Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+	/* @deprecated */
 	requestParams(): OperationParams<TMethod, TPathPattern>;
+	getLoggedInUser(): TOptions extends { authRequired: true } ? IUser : IUser | undefined;
 	getPaginationItems(): {
 		readonly offset: number;
 		readonly count: number;
 	};
 	parseJsonQuery(): {
-		sort: Record<string, unknown>;
-		fields: Record<string, unknown>;
+		sort: Record<string, 1 | -1>;
+		fields: Record<string, 0 | 1>;
 		query: Record<string, unknown>;
 	};
+	/* @deprecated */
 	getUserFromParams(): IUser;
+	/* @deprecated */
+	getUserInfo(me: IUser): TOptions extends { authRequired: true }
+		? IUser & {
+				email?: string;
+				settings: {
+					profile: {};
+					preferences: unknown;
+				};
+				avatarUrl: string;
+		  }
+		: undefined;
+	insertUserObject<T>({ object, userId }: { object: { [key: string]: unknown }; userId: string }): { [key: string]: unknown } & T;
+	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;
 			readonly userId: string;
+			readonly token: string;
 	  }
 	: {
 			readonly user: null;
-			readonly userId: null;
+			readonly userId: undefined;
+			readonly token?: string;
 	  });
 
 export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
@@ -126,7 +151,7 @@ type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}>
 };
 
 declare class APIClass<TBasePath extends string = '/'> {
-	fieldSeparator(fieldSeparator: unknown): void;
+	fieldSeparator: string;
 
 	limitedUserFieldsToExclude(fields: { [x: string]: unknown }, limitedUserFieldsToExclude: unknown): { [x: string]: unknown };
 
@@ -204,4 +229,9 @@ export declare const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
 	helperMethods: Map<string, (...args: any[]) => unknown>;
+};
+
+export declare const defaultRateLimiterOptions: {
+	numRequestsAllowed: number;
+	intervalTimeInMS: number;
 };

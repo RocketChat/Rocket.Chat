@@ -1,6 +1,6 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
 import { useUTCClock } from '../hooks/useUTCClock';
 
 type LocalTimeProps = {

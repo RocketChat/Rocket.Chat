@@ -16,6 +16,8 @@ export class LivechatDepartment extends Base {
 			numAgents: 1,
 			enabled: 1,
 		});
+		this.tryEnsureIndex({ parentId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ ancestors: 1 }, { sparse: true });
 	}
 
 	// FIND

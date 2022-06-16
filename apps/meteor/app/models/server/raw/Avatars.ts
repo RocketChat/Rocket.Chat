@@ -4,10 +4,12 @@ import { IAvatar as T } from '@rocket.chat/core-typings';
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class AvatarsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { name: 1 }, sparse: true },
-		{ key: { rid: 1 }, sparse: true },
-	];
+	protected modelIndexes(): IndexSpecification[] {
+		return [
+			{ key: { name: 1 }, sparse: true },
+			{ key: { rid: 1 }, sparse: true },
+		];
+	}
 
 	insertAvatarFileInit(name: string, userId: string, store: string, file: { name: string }, extra: object): Promise<UpdateWriteOpResult> {
 		const fileData = {

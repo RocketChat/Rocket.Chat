@@ -1,25 +1,11 @@
-import {
-	Collection,
-	WithoutProjection,
-	FindOneOptions,
-	Cursor,
-	UpdateWriteOpResult,
-	DeleteWriteOpResultObject,
-	FilterQuery,
-} from 'mongodb';
+import { WithoutProjection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
 import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class TeamRaw extends BaseRaw<ITeam> {
-	constructor(public readonly col: Collection<ITeam>, trash?: Collection<ITeam>) {
-		super(col, trash);
-
-		this.col.createIndex({ name: 1 }, { unique: true });
-
-		// this.col.createIndexes([
-		// 	{ key: { status: 1, expireAt: 1 } },
-		// ]);
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { name: 1 }, unique: true }];
 	}
 
 	findByNames(names: Array<string>): Cursor<ITeam>;

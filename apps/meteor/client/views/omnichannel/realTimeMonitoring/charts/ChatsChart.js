@@ -1,7 +1,7 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect } from 'react';
 
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
@@ -38,7 +38,7 @@ const ChatsChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/chats', params);
+	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/chats', params);
 
 	reloadRef.current.chatsChart = reload;
 

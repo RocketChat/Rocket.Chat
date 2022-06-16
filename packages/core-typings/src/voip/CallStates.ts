@@ -5,7 +5,6 @@
 
 export type CallStates =
 	| 'INITIAL'
-	| 'SERVER_CONNECTED'
 	| 'REGISTERED'
 	| 'OFFER_RECEIVED'
 	| 'IDLE'
@@ -13,5 +12,4 @@ export type CallStates =
 	| 'IN_CALL'
 	| 'ON_HOLD'
 	| 'UNREGISTERED'
-	| 'SERVER_DISCONNECTED'
 	| 'ERROR';

@@ -37,7 +37,6 @@ shell-server@0.5.0
 spacebars
 tracker@1.2.0
 
-#rocketchat:google-natural-language
 rocketchat:livechat
 rocketchat:streamer
 rocketchat:version

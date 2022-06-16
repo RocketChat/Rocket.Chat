@@ -1,11 +1,26 @@
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { LivechatVisitors, LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models';
+import { Users } from '../../../models/server/raw';
 
 export const Contacts = {
 	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
 		check(token, String);
+
+		const visitorEmail = s.trim(email).toLowerCase();
+
+		if (contactManager?.username) {
+			// verify if the user exists with this username and has a livechat-agent role
+			const user = Promise.await(Users.findOneByUsername(contactManager.username, { projection: { roles: 1 } }));
+			if (!user) {
+				throw new Meteor.Error('error-contact-manager-not-found', `No user found with username ${contactManager.username}`);
+			}
+			if (!user.roles || !Array.isArray(user.roles) || !user.roles.includes('livechat-agent')) {
+				throw new Meteor.Error('error-invalid-contact-manager', 'The contact manager must have the role "livechat-agent"');
+			}
+		}
 
 		let contactId;
 		const updateUser = {
@@ -25,7 +40,7 @@ export const Contacts = {
 
 			let existingUser = null;
 
-			if (s.trim(email) !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
+			if (visitorEmail !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(visitorEmail))) {
 				contactId = existingUser._id;
 			} else {
 				const userData = {
@@ -39,9 +54,9 @@ export const Contacts = {
 
 		updateUser.$set.name = name;
 		updateUser.$set.phone = (phone && [{ phoneNumber: phone }]) || null;
-		updateUser.$set.visitorEmails = (email && [{ address: email }]) || null;
+		updateUser.$set.visitorEmails = (visitorEmail && [{ address: visitorEmail }]) || null;
 
-		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }).map(({ _id }) => _id);
+		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }).map(({ _id }) => _id);
 
 		const livechatData = Object.keys(customFields)
 			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)

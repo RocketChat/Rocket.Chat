@@ -5,7 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { settings } from '../../settings/client';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../models/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';

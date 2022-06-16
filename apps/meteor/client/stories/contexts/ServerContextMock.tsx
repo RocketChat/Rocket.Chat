@@ -1,17 +1,16 @@
 import { Serialized } from '@rocket.chat/core-typings';
 import type { MatchPathPattern, Method, OperationParams, OperationResult, Path, PathFor } from '@rocket.chat/rest-typings';
+import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import { pathToRegexp } from 'path-to-regexp';
 import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
-
-import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '../../contexts/ServerContext';
 
 const logAction = action('ServerContext');
 
 const randomDelay = (): Promise<UploadResult> => new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
 
-const uploadToEndpoint = (endpoint: string, params: any, formData: any): Promise<UploadResult> =>
-	Promise.resolve(logAction('uploadToEndpoint', endpoint, params, formData)).then(randomDelay);
+const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> =>
+	Promise.resolve(logAction('uploadToEndpoint', endpoint, formData)).then(randomDelay);
 
 const getStream = (streamName: string, options: {} = {}): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
 	logAction('getStream', streamName, options);

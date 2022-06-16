@@ -1,219 +1,248 @@
-import Ajv, { JSONSchemaType } from "ajv";
+import Ajv from 'ajv';
+import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/core-typings';
 
-import type { RocketChatRecordDeleted } from "@rocket.chat/core-typings";
-import type { IRole, IUser } from "@rocket.chat/core-typings";
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
-const ajv = new Ajv();
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
-type RoleCreateProps = Pick<IRole, "name"> &
-  Partial<Pick<IRole, "description" | "scope" | "mandatory2fa">>;
+type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
 
-const roleCreatePropsSchema: JSONSchemaType<RoleCreateProps> = {
-  type: "object",
-  properties: {
-    name: {
-      type: "string",
-    },
-    description: {
-      type: "string",
-      nullable: true,
-    },
-    scope: {
-      type: "string",
-      enum: ["Users", "Subscriptions"],
-      nullable: true,
-    },
-    mandatory2fa: {
-      type: "boolean",
-      nullable: true,
-    },
-  },
-  required: ["name"],
-  additionalProperties: false,
+const roleCreatePropsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		description: {
+			type: 'string',
+			nullable: true,
+		},
+		scope: {
+			type: 'string',
+			enum: ['Users', 'Subscriptions'],
+			nullable: true,
+		},
+		mandatory2fa: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['name'],
+	additionalProperties: false,
 };
 
-export const isRoleCreateProps = ajv.compile(roleCreatePropsSchema);
+export const isRoleCreateProps = ajv.compile<RoleCreateProps>(roleCreatePropsSchema);
 
 type RoleUpdateProps = {
-  roleId: IRole["_id"];
-  name: IRole["name"];
+	roleId: IRole['_id'];
+	name: IRole['name'];
 } & Partial<RoleCreateProps>;
 
-const roleUpdatePropsSchema: JSONSchemaType<RoleUpdateProps> = {
-  type: "object",
-  properties: {
-    roleId: {
-      type: "string",
-    },
-    name: {
-      type: "string",
-    },
-    description: {
-      type: "string",
-      nullable: true,
-    },
-    scope: {
-      type: "string",
-      enum: ["Users", "Subscriptions"],
-      nullable: true,
-    },
-    mandatory2fa: {
-      type: "boolean",
-      nullable: true,
-    },
-  },
-  required: ["roleId", "name"],
-  additionalProperties: false,
+const roleUpdatePropsSchema = {
+	type: 'object',
+	properties: {
+		roleId: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		description: {
+			type: 'string',
+			nullable: true,
+		},
+		scope: {
+			type: 'string',
+			enum: ['Users', 'Subscriptions'],
+			nullable: true,
+		},
+		mandatory2fa: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['roleId', 'name'],
+	additionalProperties: false,
 };
 
-export const isRoleUpdateProps = ajv.compile(roleUpdatePropsSchema);
+export const isRoleUpdateProps = ajv.compile<RoleUpdateProps>(roleUpdatePropsSchema);
 
-type RoleDeleteProps = { roleId: IRole["_id"] };
+type RoleDeleteProps = { roleId: IRole['_id'] };
 
-const roleDeletePropsSchema: JSONSchemaType<RoleDeleteProps> = {
-  type: "object",
-  properties: {
-    roleId: {
-      type: "string",
-    },
-  },
-  required: ["roleId"],
-  additionalProperties: false,
+const roleDeletePropsSchema = {
+	type: 'object',
+	properties: {
+		roleId: {
+			type: 'string',
+		},
+	},
+	required: ['roleId'],
+	additionalProperties: false,
 };
 
-export const isRoleDeleteProps = ajv.compile(roleDeletePropsSchema);
+export const isRoleDeleteProps = ajv.compile<RoleDeleteProps>(roleDeletePropsSchema);
 
 type RoleAddUserToRoleProps = {
-  username: string;
-  // #ToDo: Make it non-optional on the next major release
-  roleId?: string;
-  roleName?: string;
-  roomId?: string;
+	username: string;
+	// #ToDo: Make it non-optional on the next major release
+	roleId?: string;
+	roleName?: string;
+	roomId?: string;
 };
 
-const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
-  type: "object",
-  properties: {
-    username: {
-      type: "string",
-    },
-    roleId: {
-      type: "string",
-      nullable: true,
-    },
-    roleName: {
-      type: "string",
-      nullable: true,
-    },
-    roomId: {
-      type: "string",
-      nullable: true,
-    },
-  },
-  required: ["username"],
-  additionalProperties: false,
+const roleAddUserToRolePropsSchema = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+		roleId: {
+			type: 'string',
+			nullable: true,
+		},
+		roleName: {
+			type: 'string',
+			nullable: true,
+		},
+		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['username'],
+	additionalProperties: false,
 };
 
-export const isRoleAddUserToRoleProps = ajv.compile(
-  roleAddUserToRolePropsSchema
-);
+export const isRoleAddUserToRoleProps = ajv.compile<RoleAddUserToRoleProps>(roleAddUserToRolePropsSchema);
 
 type RoleRemoveUserFromRoleProps = {
-  username: string;
-  // #ToDo: Make it non-optional on the next major release
-  roleId?: string;
-  roleName?: string;
-  roomId?: string;
-  scope?: string;
+	username: string;
+	// #ToDo: Make it non-optional on the next major release
+	roleId?: string;
+	roleName?: string;
+	roomId?: string;
+	scope?: string;
 };
 
-const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRoleProps> =
-  {
-    type: "object",
-    properties: {
-      username: {
-        type: "string",
-      },
-      roleId: {
-        type: "string",
-        nullable: true,
-      },
-      roleName: {
-        type: "string",
-        nullable: true,
-      },
-      roomId: {
-        type: "string",
-        nullable: true,
-      },
-      scope: {
-        type: "string",
-        nullable: true,
-      },
-    },
-    required: ["username"],
-    additionalProperties: false,
-  };
+const roleRemoveUserFromRolePropsSchema = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+		roleId: {
+			type: 'string',
+			nullable: true,
+		},
+		roleName: {
+			type: 'string',
+			nullable: true,
+		},
+		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+		scope: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['username'],
+	additionalProperties: false,
+};
 
-export const isRoleRemoveUserFromRoleProps = ajv.compile(
-  roleRemoveUserFromRolePropsSchema
-);
+export const isRoleRemoveUserFromRoleProps = ajv.compile<RoleRemoveUserFromRoleProps>(roleRemoveUserFromRolePropsSchema);
+
+type RolesGetUsersInRoleProps = PaginatedRequest<{
+	roomId?: string;
+	role: string;
+}>;
+
+const RolesGetUsersInRolePropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+		role: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['role'],
+	additionalProperties: false,
+};
+
+export const isRolesGetUsersInRoleProps = ajv.compile<RolesGetUsersInRoleProps>(RolesGetUsersInRolePropsSchema);
 
 type RoleSyncProps = {
-  updatedSince?: string;
+	updatedSince?: string;
 };
 
 export type RolesEndpoints = {
-  "roles.list": {
-    GET: () => {
-      roles: IRole[];
-    };
-  };
-  "roles.sync": {
-    GET: (params: RoleSyncProps) => {
-      roles: {
-        update: IRole[];
-        remove: RocketChatRecordDeleted<IRole>[];
-      };
-    };
-  };
-  "roles.create": {
-    POST: (params: RoleCreateProps) => {
-      role: IRole;
-    };
-  };
+	'/v1/roles.list': {
+		GET: () => {
+			roles: IRole[];
+		};
+	};
+	'/v1/roles.sync': {
+		GET: (params: RoleSyncProps) => {
+			roles: {
+				update: IRole[];
+				remove: RocketChatRecordDeleted<IRole>[];
+			};
+		};
+	};
+	'/v1/roles.create': {
+		POST: (params: RoleCreateProps) => {
+			role: IRole;
+		};
+	};
 
-  "roles.addUserToRole": {
-    POST: (params: RoleAddUserToRoleProps) => {
-      role: IRole;
-    };
-  };
+	'/v1/roles.addUserToRole': {
+		POST: (params: RoleAddUserToRoleProps) => {
+			role: IRole;
+		};
+	};
 
-  "roles.getUsersInRole": {
-    GET: (params: {
-      roomId: string;
-      role: string;
-      offset: number;
-      count: number;
-    }) => {
-      users: IUser[];
-      total: number;
-    };
-  };
+	'/v1/roles.getUsersInRole': {
+		GET: (params: RolesGetUsersInRoleProps) => {
+			users: IUserInRole[];
+			total: number;
+		};
+	};
 
-  "roles.update": {
-    POST: (role: RoleUpdateProps) => {
-      role: IRole;
-    };
-  };
+	'/v1/roles.update': {
+		POST: (role: RoleUpdateProps) => {
+			role: IRole;
+		};
+	};
 
-  "roles.delete": {
-    POST: (prop: RoleDeleteProps) => void;
-  };
+	'/v1/roles.delete': {
+		POST: (prop: RoleDeleteProps) => void;
+	};
 
-  "roles.removeUserFromRole": {
-    POST: (props: RoleRemoveUserFromRoleProps) => {
-      role: IRole;
-    };
-  };
+	'/v1/roles.removeUserFromRole': {
+		POST: (props: RoleRemoveUserFromRoleProps) => {
+			role: IRole;
+		};
+	};
 };

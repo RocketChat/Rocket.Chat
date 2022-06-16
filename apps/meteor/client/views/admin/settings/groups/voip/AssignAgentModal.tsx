@@ -1,11 +1,9 @@
 import { Button, ButtonGroup, Modal, Select, Field, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, useMemo } from 'react';
 
 import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 
@@ -22,19 +20,20 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 	const [extension, setExtension] = useState(existingExtension || '');
 	const query = useMemo(() => ({ type: 'available' as const, userId: agent }), [agent]);
 
-	const assignAgent = useEndpoint('POST', 'omnichannel/agent/extension');
+	const assignAgent = useEndpoint('POST', '/v1/omnichannel/agent/extension');
 
 	const handleAssignment = useMutableCallback(async () => {
 		try {
 			await assignAgent({ username: agent, extension });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error.message });
+			dispatchToastMessage({ type: 'error', message: (error as Error).message });
 		}
 		reload();
 		closeModal();
 	});
+	const handleAgentChange = useMutableCallback((e) => setAgent(e));
 
-	const { value: availableExtensions, phase: state } = useEndpointData('omnichannel/extension', query);
+	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', query);
 
 	return (
 		<Modal>
@@ -47,7 +46,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 					<Field>
 						<Field.Label>{t('Agent_Without_Extensions')}</Field.Label>
 						<Field.Row>
-							<AutoCompleteAgentWithoutExtension empty onChange={setAgent} currentExtension={extension} />
+							<AutoCompleteAgentWithoutExtension value={agent} onChange={handleAgentChange} currentExtension={extension} />
 						</Field.Row>
 					</Field>
 					<Field>

@@ -213,10 +213,13 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 						}
 
-						const formData = await getUploadFormData({
-							request: this.request,
-						});
-						buff = formData?.app?.fileBuffer;
+						const [app, formData] = await getUploadFormData(
+							{
+								request: this.request,
+							},
+							{ field: 'app' },
+						);
+						buff = app?.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -462,10 +465,13 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 						}
 
-						const formData = await getUploadFormData({
-							request: this.request,
-						});
-						buff = formData?.app?.fileBuffer;
+						const [app, formData] = await getUploadFormData(
+							{
+								request: this.request,
+							},
+							{ field: 'app' },
+						);
+						buff = app?.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -586,6 +592,29 @@ export class AppsRestApi {
 						},
 						body: buf,
 					};
+				},
+			},
+		);
+
+		this.api.addRoute(
+			':id/screenshots',
+			{ authRequired: false },
+			{
+				get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const appId = this.urlParams.id;
+					const headers = getDefaultHeaders();
+
+					try {
+						const { data } = HTTP.get(`${baseUrl}/v1/apps/${appId}/screenshots`, { headers });
+
+						return API.v1.success({
+							screenshots: data,
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the screenshots from the Marketplace:', e.message);
+						return API.v1.failure(e.message);
+					}
 				},
 			},
 		);

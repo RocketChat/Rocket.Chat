@@ -6,7 +6,7 @@ export async function findQueueMetrics({ userId, agentId, includeOfflineAgents, 
 		throw new Error('error-not-authorized');
 	}
 
-	const queue = await LivechatRooms.getQueueMetrics({
+	const result = await LivechatRooms.getQueueMetrics({
 		departmentId,
 		agentId,
 		includeOfflineAgents,
@@ -16,7 +16,11 @@ export async function findQueueMetrics({ userId, agentId, includeOfflineAgents, 
 			count,
 		},
 	});
-	const total = (await LivechatRooms.getQueueMetrics({ departmentId, agentId, includeOfflineAgents })).length;
+
+	const {
+		sortedResults: queue,
+		totalCount: [{ total } = { total: 0 }],
+	} = result[0];
 
 	return {
 		queue,
