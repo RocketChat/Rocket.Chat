@@ -69,11 +69,23 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		return this.updateOne({ _id }, update, options);
 	}
 
-	public async setEndedById(callId: string, endedBy: { _id: string; name: string; username: string }): Promise<void> {
+	public async setEndedById(
+		callId: string,
+		endedBy: { _id: string; name: string; username: string } | undefined,
+		endedAt?: Date,
+	): Promise<void> {
 		await this.updateOneById(callId, {
 			$set: {
 				endedBy,
-				endedAt: new Date(),
+				endedAt: endedAt || new Date(),
+			},
+		});
+	}
+
+	public async setStatusById(callId: string, status: VideoConference['status']): Promise<void> {
+		await this.updateOneById(callId, {
+			$set: {
+				status,
 			},
 		});
 	}
@@ -102,14 +114,14 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		});
 	}
 
-	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'>): Promise<void> {
+	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'> & { ts?: Date }): Promise<void> {
 		await this.updateOneById(callId, {
 			$addToSet: {
 				users: {
 					_id: user._id,
 					username: user.username,
 					name: user.name,
-					ts: new Date(),
+					ts: user.ts || new Date(),
 				},
 			},
 		});
