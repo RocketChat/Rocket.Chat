@@ -42,7 +42,6 @@ export async function configureEmailInboxes(): Promise<void> {
 				tlsOptions: {
 					rejectUnauthorized: false,
 				},
-				// debug: (...args: any[]): void => logger.debug(args),
 			},
 			{
 				deleteAfterRead: false,

@@ -51,8 +51,7 @@ export class IMAPInterceptor extends EventEmitter {
 					this.getEmails();
 
 					// If new message arrived, fetch them
-					this.imap.on('mail', (num: number) => {
-						console.log('new mail event!', num);
+					this.imap.on('mail', () => {
 						this.getEmails();
 					});
 				});
@@ -120,7 +119,6 @@ export class IMAPInterceptor extends EventEmitter {
 				this.log(err);
 				throw err;
 			}
-			console.log('newEmails: ', newEmails);
 			// newEmails => array containing serials of unseen messages
 			if (newEmails.length > 0) {
 				const fetch = this.imap.fetch(newEmails, {
