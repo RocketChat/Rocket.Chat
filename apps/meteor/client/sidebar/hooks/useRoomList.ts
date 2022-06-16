@@ -3,17 +3,17 @@ import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import { useIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
-import { useVideoConfIncomingCalls } from '../../lib/VideoConfManager';
 import { useQueryOptions } from './useQueryOptions';
 
 const query = { open: { $ne: false } };
 
 const emptyQueue: IRoom[] = [];
 
-export const useRoomList = (): Array<ISubscription> => {
-	const [roomList, setRoomList] = useDebouncedState<ISubscription[]>([], 150);
+export const useRoomList = (): Array<ISubscription & IRoom> => {
+	const [roomList, setRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
 
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
@@ -27,7 +27,7 @@ export const useRoomList = (): Array<ISubscription> => {
 
 	const inquiries = useQueuedInquiries();
 
-	const incomingCalls = useVideoConfIncomingCalls();
+	const incomingCalls = useIncomingCalls();
 
 	let queue: IRoom[] = emptyQueue;
 	if (inquiries.enabled) {

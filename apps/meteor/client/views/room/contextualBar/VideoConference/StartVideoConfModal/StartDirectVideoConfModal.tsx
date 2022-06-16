@@ -17,7 +17,7 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
+import { useSetPreferences } from '../../../../../contexts/VideoConfContext';
 
 type StartDirectVideoConfModalProps = {
 	room: IDirectMessageRoom;

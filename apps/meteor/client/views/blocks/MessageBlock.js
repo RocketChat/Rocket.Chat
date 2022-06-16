@@ -6,7 +6,7 @@ import React from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 import { useBlockRendered } from '../../components/message/hooks/useBlockRendered';
-import { useJoinCall } from '../../contexts/VideoConfPopupContext';
+import { useJoinCall } from '../../contexts/VideoConfContext';
 import { renderMessageBody } from '../../lib/utils/renderMessageBody';
 import JoinVideoConfModal from '../room/contextualBar/VideoConference/JoinVideoConfModal';
 import './textParsers';

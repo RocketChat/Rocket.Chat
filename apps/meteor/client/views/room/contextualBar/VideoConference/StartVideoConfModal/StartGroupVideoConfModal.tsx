@@ -17,7 +17,7 @@ import {
 import React, { ReactElement, useState, ChangeEvent } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
+import { useSetPreferences } from '../../../../../contexts/VideoConfContext';
 
 type StartGroupVideoConfModalProps = {
 	room: IRoom;

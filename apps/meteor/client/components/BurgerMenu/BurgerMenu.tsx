@@ -6,11 +6,11 @@ import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import BurgerMenuButton from './BurgerMenuButton';
 
 const BurgerMenu = (): ReactElement => {
-	const { sidebar } = useLayout();
+	const { sidebar, sidenav } = useLayout();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const unreadMessagesBadge = useSession('unread');
 
-	const isSidebarOpen = sidebar.isOpen();
+	const isSidebarOpen = sidebar.isOpen() || sidenav.opened;
 	const toggleSidebar = useMutableCallback(() => sidebar.toggle());
 
 	return (

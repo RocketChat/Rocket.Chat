@@ -1,5 +1,6 @@
 import { Db } from 'mongodb';
 import type {
+	IDirectVideoConference,
 	IRoom,
 	IUser,
 	VideoConferenceInstructions,
@@ -7,6 +8,7 @@ import type {
 	ConferenceInstructions,
 	LivechatInstructions,
 	AtLeast,
+	IGroupVideoConference,
 	IMessage,
 	IVideoConferenceMessage,
 	VideoConference,
@@ -26,7 +28,7 @@ import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { VideoConferenceRaw } from '../../../app/models/server/raw/VideoConference';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
-import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
+import type { IVideoConfService, VideoConferenceCreateData, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Apps } from '../../../app/apps/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -53,7 +55,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.Messages = new MessagesRaw(db.collection('rocketchat_message'));
 	}
 
-	public async start(caller: IUser['_id'], rid: string, title?: string): Promise<VideoConferenceInstructions> {
+	// VideoConference.create: Start a video conference using the type and provider specified as arguments
+	public async create({ type, rid, createdBy, providerName, ...data }: VideoConferenceCreateData): Promise<VideoConferenceInstructions> {
 		const room = await this.Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'uids' | 'name' | 'fname'>>(rid, {
 			projection: { t: 1, uids: 1, name: 1, fname: 1 },
 		});
@@ -62,15 +65,58 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-room');
 		}
 
+		const user = await this.Users.findOneById<IUser>(createdBy, {});
+		if (!user) {
+			throw new Error('failed-to-load-own-data');
+		}
+
+		if (type === 'direct') {
+			if (room.t !== 'd' || !room.uids || room.uids.length > 2) {
+				throw new Error('type-and-room-not-compatible');
+			}
+
+			return this.startDirect(providerName, user, room, data);
+		}
+
+		if (type === 'livechat') {
+			return this.startLivechat(providerName, user, rid);
+		}
+
+		const title = (data as Partial<IGroupVideoConference>).title || room.fname || room.name || '';
+		return this.startGroup(providerName, user, room._id, title, data);
+	}
+
+	// VideoConference.start: Detect the desired type and provider then start a video conference using them
+	public async start(caller: IUser['_id'], rid: string, title?: string): Promise<VideoConferenceInstructions> {
+		const providerName = videoConfProviders.getActiveProvider();
+		if (!providerName) {
+			throw new Error('no-active-video-conf-provider');
+		}
+
+		const room = await this.Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'uids'>>(rid, {
+			projection: { t: 1, uids: 1 },
+		});
+
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+
 		if (room.t === 'd' && room.uids && room.uids.length <= 2) {
-			return this.startDirect(caller, room);
+			return this.create({
+				createdBy: caller,
+				type: 'direct',
+				rid: room._id,
+				providerName,
+			});
 		}
 
-		if (room.t === 'l') {
-			return this.startLivechat(caller, room._id);
-		}
-
-		return this.startGroup(caller, room._id, title || room.fname || room.name || '');
+		return this.create({
+			type: 'videoconference',
+			createdBy: caller,
+			rid: room._id,
+			providerName,
+			title,
+		} as IGroupVideoConference & { createdBy: string });
 	}
 
 	public async join(uid: IUser['_id'], callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
@@ -137,6 +183,49 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	public async setProviderData(callId: VideoConference['_id'], data: VideoConference['providerData'] | undefined): Promise<void> {
 		this.VideoConference.setProviderDataById(callId, data);
+	}
+
+	public async setEndedBy(callId: VideoConference['_id'], endedBy: IUser['_id']): Promise<void> {
+		const user = await this.Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(endedBy, {
+			projection: { username: 1, name: 1 },
+		});
+		if (!user) {
+			throw new Error('Invalid User');
+		}
+
+		this.VideoConference.setEndedById(callId, {
+			_id: user._id,
+			username: user.username,
+			name: user.name,
+		});
+	}
+
+	public async setEndedAt(callId: VideoConference['_id'], endedAt: Date): Promise<void> {
+		this.VideoConference.setEndedById(callId, undefined, endedAt);
+	}
+
+	public async setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void> {
+		this.VideoConference.setStatusById(callId, status);
+	}
+
+	public async addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void> {
+		const call = await this.get(callId);
+		if (!call) {
+			throw new Error('Invalid video conference');
+		}
+		const user = await this.Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
+			projection: { username: 1, name: 1 },
+		});
+		if (!user) {
+			throw new Error('Invalid User');
+		}
+
+		this.addUserToCall(call, {
+			_id: user._id,
+			username: user.username,
+			name: user.name,
+			ts: ts || new Date(),
+		});
 	}
 
 	public async listProviders(): Promise<{ key: string; label: string }[]> {
@@ -266,24 +355,20 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async startDirect(caller: IUser['_id'], { _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>): Promise<DirectCallInstructions> {
-		const callee = uids?.filter((uid) => uid !== caller).pop();
+	private async startDirect(
+		providerName: string,
+		user: IUser,
+		{ _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>,
+		extraData?: Partial<IDirectVideoConference>,
+	): Promise<DirectCallInstructions> {
+		const callee = uids?.filter((uid) => uid !== user._id).pop();
 		if (!callee) {
 			// Are you trying to call yourself?
 			throw new Error('invalid-call-target');
 		}
 
-		const user = await this.Users.findOneById<IUser>(caller, {});
-		if (!user) {
-			throw new Error('failed-to-load-own-data');
-		}
-
-		const providerName = videoConfProviders.getActiveProvider();
-		if (!providerName) {
-			throw new Error('no-active-video-conf-provider');
-		}
-
 		const callId = await this.VideoConference.createDirect({
+			...extraData,
 			rid,
 			createdBy: {
 				_id: user._id,
@@ -310,18 +395,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async startGroup(caller: IUser['_id'], rid: IRoom['_id'], title: string): Promise<ConferenceInstructions> {
-		const user = await this.Users.findOneById<IUser>(caller, {});
-		if (!user) {
-			throw new Error('failed-to-load-own-data');
-		}
-
-		const providerName = videoConfProviders.getActiveProvider();
-		if (!providerName) {
-			throw new Error('no-active-video-conf-provider');
-		}
-
+	private async startGroup(
+		providerName: string,
+		user: IUser,
+		rid: IRoom['_id'],
+		title: string,
+		extraData?: Partial<IGroupVideoConference>,
+	): Promise<ConferenceInstructions> {
 		const callId = await this.VideoConference.createGroup({
+			...extraData,
 			rid,
 			title,
 			createdBy: {
@@ -351,17 +433,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async startLivechat(caller: IUser['_id'], rid: IRoom['_id']): Promise<LivechatInstructions> {
-		const user = await this.Users.findOneById<IUser>(caller, {});
-		if (!user) {
-			throw new Error('failed-to-load-own-data');
-		}
-
-		const providerName = videoConfProviders.getActiveProvider();
-		if (!providerName) {
-			throw new Error('no-active-video-conf-provider');
-		}
-
+	private async startLivechat(providerName: string, user: IUser, rid: IRoom['_id']): Promise<LivechatInstructions> {
 		const callId = await this.VideoConference.createLivechat({
 			rid,
 			createdBy: {
@@ -394,10 +466,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	): Promise<string> {
 		const url = this.getUrl(call, user, options);
 
-		if (call.type !== 'livechat') {
-			if (!call.users.find(({ _id }) => _id === user._id)) {
-				await this.addUserToCall(call, user);
-			}
+		if (call.type !== 'livechat' && !call.users.find(({ _id }) => _id === user._id)) {
+			await this.addUserToCall(call, user);
 		}
 
 		return url;
@@ -478,8 +548,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	private async addUserToCall(call: VideoConference, { _id, username, name }: AtLeast<IUser, '_id' | 'username' | 'name'>): Promise<void> {
-		await this.VideoConference.addUserById(call._id, { _id, username, name });
+	private async addUserToCall(
+		call: AtLeast<VideoConference, '_id' | 'type' | 'messages'>,
+		{ _id, username, name, ts }: AtLeast<IUser, '_id' | 'username' | 'name'> & { ts?: Date },
+	): Promise<void> {
+		await this.VideoConference.addUserById(call._id, { _id, username, name, ts });
 
 		if (call.type === 'direct' || !call.messages.started) {
 			return;
