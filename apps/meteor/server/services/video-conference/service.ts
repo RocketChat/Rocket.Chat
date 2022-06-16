@@ -294,7 +294,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async startGroup(providerName: string, caller: IUser['_id'], rid: IRoom['_id'], title: string, extraData?: Partial<IGroupVideoConference>): Promise<ConferenceInstructions> {
+	private async startGroup(
+		providerName: string,
+		caller: IUser['_id'],
+		rid: IRoom['_id'],
+		title: string,
+		extraData?: Partial<IGroupVideoConference>,
+	): Promise<ConferenceInstructions> {
 		const user = await this.Users.findOneById<IUser>(caller, {});
 		if (!user) {
 			throw new Error('failed-to-load-own-data');
