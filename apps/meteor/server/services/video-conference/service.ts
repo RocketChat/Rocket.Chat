@@ -35,6 +35,9 @@ import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { getURL } from '../../../app/utils/server';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 
+// 24 hours
+const VIDEO_CONFERENCE_TTL = 24 * 60 * 60 * 1000;
+
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
 
@@ -166,7 +169,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null> {
-		return this.VideoConference.findOneById(callId, { projection: { providerData: 0 } });
+		const call = await this.VideoConference.findOneById<Omit<VideoConference, 'providerData'>>(callId, { projection: { providerData: 0 } });
+		if (call && !call.endedAt) {
+			const minimum = new Date(new Date().valueOf() - VIDEO_CONFERENCE_TTL);
+			if (call.createdAt <= minimum) {
+				call.endedAt = new Date(call.createdAt.valueOf() + VIDEO_CONFERENCE_TTL);
+			}
+		}
+
+		return call;
 	}
 
 	public async getUnfiltered(callId: VideoConference['_id']): Promise<VideoConference | null> {
@@ -177,10 +188,21 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		roomId: IRoom['_id'],
 		pagination: { offset?: number; count?: number } = {},
 	): Promise<PaginatedResult<{ data: VideoConference[] }>> {
-		const cursor = await this.VideoConference.findRecentByRoomId(roomId, pagination);
+		const cursor = await this.VideoConference.findAllByRoomId(roomId, pagination);
 
 		const data = (await cursor.toArray()) as VideoConference[];
 		const total = await cursor.count();
+		const minimum = new Date(new Date().valueOf() - VIDEO_CONFERENCE_TTL);
+
+		for (const call of data) {
+			if (call.endedAt) {
+				continue;
+			}
+
+			if (call.createdAt <= minimum) {
+				call.endedAt = new Date(call.createdAt.valueOf() + VIDEO_CONFERENCE_TTL);
+			}
+		}
 
 		return {
 			data,
