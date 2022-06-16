@@ -110,6 +110,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			});
 		}
 
+		if (room.t === 'l') {
+			return this.create({
+				createdBy: caller,
+				type: 'livechat',
+				rid: room._id,
+				providerName,
+			});
+		}
+
 		return this.create({
 			type: 'videoconference',
 			createdBy: caller,

@@ -14,7 +14,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useSetPreferences } from '../../../../../contexts/VideoConfPopupContext';
+import { useSetPreferences } from '../../../../../contexts/VideoConfContext';
 
 type StartOmnichannelVideoConfModalProps = {
 	room: IOmnichannelRoom;
