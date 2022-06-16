@@ -19,6 +19,10 @@ export declare interface IMAPInterceptor {
 export class IMAPInterceptor extends EventEmitter {
 	private imap: IMAP;
 
+	private initialBackoffDurationMS = 30000;
+
+	private backoff: NodeJS.Timeout;
+
 	constructor(
 		imapConfig: IMAP.Config,
 		private options: IMAPOptions = {
@@ -31,17 +35,14 @@ export class IMAPInterceptor extends EventEmitter {
 
 		this.imap = new IMAP({
 			connTimeout: 300000,
-			keepalive: {
-				interval: 5000,
-				idleInterval: 30000,
-				forceNoop: true,
-			},
+			keepalive: true,
 			...imapConfig,
 		});
 
 		// On successfully connected.
 		this.imap.on('ready', () => {
 			if (this.imap.state !== 'disconnected') {
+				clearTimeout(this.backoff);
 				this.openInbox((err) => {
 					if (err) {
 						throw err;
@@ -66,7 +67,9 @@ export class IMAPInterceptor extends EventEmitter {
 			throw err;
 		});
 
-		// this.imap.on('mail', () => this.getEmails());
+		this.imap.on('close', () => {
+			this.reconnect();
+		});
 	}
 
 	log(...msg: any[]): void {
@@ -99,6 +102,15 @@ export class IMAPInterceptor extends EventEmitter {
 			this.log('Restarting IMAP ....');
 			this.start();
 		});
+	}
+
+	reconnect(): void {
+		const loop = async (): Promise<void> => {
+			this.start();
+			this.initialBackoffDurationMS *= 2;
+			this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
+		};
+		this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
 	}
 
 	// Fetch all UNSEEN messages and pass them for further processing

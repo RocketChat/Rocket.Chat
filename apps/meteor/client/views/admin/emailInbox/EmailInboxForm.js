@@ -175,14 +175,14 @@ function EmailInboxForm({ id, data }) {
 			password: imapPassword,
 			secure: imapSecure,
 		};
-		const departmentValue = department.value;
+
 		const payload = {
 			active,
 			name,
 			email,
 			description,
 			senderInfo,
-			department: departmentValue,
+			department,
 			smtp,
 			imap,
 		};
