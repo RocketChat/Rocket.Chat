@@ -22,6 +22,9 @@ addAction('video-conf', ({ room }) => {
 	const enabledChannel = useSetting('VideoConf_Enable_Channels');
 	const enabledTeams = useSetting('VideoConf_Enable_Teams');
 	const enabledGroups = useSetting('VideoConf_Enable_Groups');
+	const enabledLiveChat = useSetting('Omnichannel_call_provider') === 'Jitsi';
+
+	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
 
 	const enableOption = enabled && (!user?.username || !room.muted?.includes(user.username));
 
@@ -30,6 +33,7 @@ addAction('video-conf', ({ room }) => {
 			enabledDMs && 'direct',
 			enabledDMs && 'direct_multiple',
 			enabledGroups && 'group',
+			enabledLiveChat && 'live',
 			enabledTeams && 'team',
 			enabledChannel && 'channel',
 		].filter(Boolean) as ToolboxActionConfig['groups'],
@@ -62,9 +66,9 @@ addAction('video-conf', ({ room }) => {
 						icon: 'phone',
 						action: handleOpenVideoConf,
 						full: true,
-						order: 4,
+						order: live ? -1 : 4,
 				  }
 				: null,
-		[handleOpenVideoConf, groups, enableOption],
+		[handleOpenVideoConf, groups, enableOption, live],
 	);
 });

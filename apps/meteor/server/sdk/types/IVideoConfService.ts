@@ -2,6 +2,7 @@ import type {
 	AtLeast,
 	IDirectVideoConference,
 	IGroupVideoConference,
+	ILivechatVideoConference,
 	IRoom,
 	IUser,
 	VideoConference,
@@ -15,7 +16,7 @@ export type VideoConferenceJoinOptions = {
 };
 
 export type VideoConferenceCreateData = AtLeast<
-	Omit<IDirectVideoConference | IGroupVideoConference, 'createdBy'> & {
+	Omit<IDirectVideoConference | IGroupVideoConference | ILivechatVideoConference, 'createdBy'> & {
 		createdBy: IUser['_id'];
 	},
 	'createdBy' | 'type' | 'rid' | 'providerName' | 'providerData'
@@ -35,4 +36,5 @@ export interface IVideoConfService {
 	setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void>;
 	addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void>;
 	listProviders(): Promise<{ key: string; label: string }[]>;
+	endLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
 }
