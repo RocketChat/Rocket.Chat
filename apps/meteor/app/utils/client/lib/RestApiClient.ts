@@ -30,13 +30,14 @@ export const APIClient = new RestApiClient({
 
 APIClient.use(async function (request, next) {
 	try {
-		const res = await next(...request);
-		if (!res.ok) {
-			throw await res.json();
+		return await next(...request);
+	} catch (error) {
+		if (!(error instanceof Response) || error.status !== 400) {
+			throw error;
 		}
-		return res;
-	} catch (e) {
-		return new Promise((resolve, reject) => {
+
+		return new Promise(async (resolve, reject) => {
+			const e = await error.json();
 			process2faReturn({
 				error: e,
 				result: null,
@@ -46,7 +47,7 @@ APIClient.use(async function (request, next) {
 					return resolve(
 						next(request[0], request[1], {
 							...request[2],
-							headers: { ...request[2]?.headers, 'x-2fa-code': code, 'x-2fa-method': method },
+							headers: { ...request[2].headers, 'x-2fa-code': code, 'x-2fa-method': method },
 						}),
 					);
 				},
