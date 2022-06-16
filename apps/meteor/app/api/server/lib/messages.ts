@@ -19,7 +19,7 @@ export async function findMentionedMessages({
 	total: number;
 }> {
 	const room = await Rooms.findOneById(roomId);
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 	const user: IUser | null = await Users.findOneById(uid, { fields: { username: 1 } });
@@ -60,7 +60,7 @@ export async function findStarredMessages({
 	total: number;
 }> {
 	const room = await Rooms.findOneById(roomId);
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 	const user = await Users.findOneById(uid, { fields: { username: 1 } });
@@ -133,7 +133,7 @@ export async function findSnippetedMessages({
 	}
 	const room = await Rooms.findOneById(roomId);
 
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 
@@ -173,7 +173,7 @@ export async function findDiscussionsFromRoom({
 }> {
 	const room = await Rooms.findOneById(roomId);
 
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 
