@@ -1,4 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import { App, AppPricingPlan } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
@@ -14,26 +16,29 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
-export const apiCurlGetter = (absoluteUrl) => (method, api) => {
-	const example = api.examples[method] || {};
-	return Utilities.curl({
-		url: absoluteUrl(api.computedPath),
-		method,
-		params: example.params,
-		query: example.query,
-		content: example.content,
-		headers: example.headers,
-	}).split('\n');
-};
+export const apiCurlGetter =
+	(absoluteUrl: (path: string) => string) =>
+	(method: string, api: IApiEndpointMetadata): string[] => {
+		const example = (api.examples && api.examples[method]) || {};
+		return Utilities.curl({
+			url: absoluteUrl(api.computedPath),
+			method,
+			params: example.params,
+			query: example.query,
+			content: example.content,
+			headers: example.headers,
+			auth: '',
+		}).split('\n');
+	};
 
-export function handleInstallError(apiError) {
+export function handleInstallError(apiError: { xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } } }): void {
 	if (!apiError.xhr || !apiError.xhr.responseJSON) {
 		return;
 	}
 
 	const { status, messages, error, payload = null } = apiError.xhr.responseJSON;
 
-	let message;
+	let message: string;
 
 	switch (status) {
 		case 'storage_error':
@@ -41,7 +46,7 @@ export function handleInstallError(apiError) {
 			break;
 		case 'app_user_error':
 			message = messages.join('');
-			if (payload && payload.username) {
+			if (payload?.username) {
 				message = t('Apps_User_Already_Exists', { username: payload.username });
 			}
 			break;
@@ -49,20 +54,23 @@ export function handleInstallError(apiError) {
 			if (error) {
 				message = error;
 			} else {
-				message = 'There has been an error installing the app';
+				message = t('There_has_been_an_error_installing_the_app');
 			}
 	}
 
 	dispatchToastMessage({ type: 'error', message });
 }
 
-const shouldHandleErrorAsWarning = (message) => {
+const shouldHandleErrorAsWarning = (message: string): boolean => {
 	const warnings = ['Could not reach the Marketplace'];
 
 	return warnings.includes(message);
 };
 
-export const handleAPIError = (error) => {
+export const handleAPIError = (error: {
+	xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } };
+	message: string;
+}): void => {
 	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
 
 	if (shouldHandleErrorAsWarning(message)) {
@@ -73,13 +81,19 @@ export const handleAPIError = (error) => {
 	dispatchToastMessage({ type: 'error', message });
 };
 
-export const warnStatusChange = (appName, status) => {
+export const warnStatusChange = (appName: string, status: AppStatus): void => {
 	if (appErroredStatuses.includes(status)) {
 		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
 		return;
 	}
 
 	dispatchToastMessage({ type: 'info', message: (t(`App_status_${status}`), appName) });
+};
+
+type appButtonPropsResponse = {
+	action: 'update' | 'install' | 'purchase';
+	icon?: 'reload';
+	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
 };
 
 export const appButtonProps = ({
@@ -92,7 +106,7 @@ export const appButtonProps = ({
 	subscriptionInfo,
 	pricingPlans,
 	isEnterpriseOnly,
-}) => {
+}: App): appButtonPropsResponse | undefined => {
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
 		return {
@@ -153,12 +167,18 @@ export const appButtonProps = ({
 	};
 };
 
-export const appStatusSpanProps = ({ installed, status, subscriptionInfo }) => {
+type appStatusSpanPropsResponse = {
+	type?: 'failed' | 'warning';
+	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Enabled';
+};
+
+export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanPropsResponse | undefined => {
 	if (!installed) {
 		return;
 	}
 
-	const isFailed = appErroredStatuses.includes(status);
+	const isFailed = status && appErroredStatuses.includes(status);
 	if (isFailed) {
 		return {
 			type: 'failed',
@@ -167,7 +187,7 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }) => {
 		};
 	}
 
-	const isEnabled = appEnabledStatuses.includes(status);
+	const isEnabled = status && appEnabledStatuses.includes(status);
 	if (!isEnabled) {
 		return {
 			type: 'warning',
@@ -190,9 +210,9 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }) => {
 	};
 };
 
-export const formatPrice = (price) => `\$${Number.parseFloat(price).toFixed(2)}`;
+export const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;
 
-export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }) => {
+export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
 	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
