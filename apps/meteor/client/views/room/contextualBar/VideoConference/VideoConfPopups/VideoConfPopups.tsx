@@ -2,7 +2,7 @@ import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement, useEffect, useMemo } from 'react';
 
-import { useIncomingCalls, useIsRinging, VideoConfPopupPayload } from '../../../../../contexts/VideoConfContext';
+import { useIncomingCalls, useIsCalling, useIsRinging, VideoConfPopupPayload } from '../../../../../contexts/VideoConfContext';
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 import VideoConfPopup from './VideoConfPopup';
 
@@ -10,6 +10,7 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 	const incomingCalls = useIncomingCalls();
 	const customSound = useCustomSound();
 	const isRinging = useIsRinging();
+	const isCalling = useIsCalling();
 
 	const popups = useMemo(
 		() =>
@@ -44,6 +45,7 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 								id={id}
 								rid={rid}
 								isReceiving={isReceiving}
+								isCalling={isCalling}
 								position={(index + 1) * 10}
 								current={index}
 								total={popups.length}

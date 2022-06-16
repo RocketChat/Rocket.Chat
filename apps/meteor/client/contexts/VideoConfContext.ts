@@ -29,6 +29,7 @@ type VideoConfContextValue = {
 	changePreference: (key: 'cam' | 'mic', value: boolean) => void;
 	queryIncomingCalls: Subscription<DirectCallParams[]>;
 	queryRinging: Subscription<boolean>;
+	queryCalling: Subscription<boolean>;
 };
 
 export const VideoConfContext = createContext<VideoConfContextValue>({
@@ -47,6 +48,10 @@ export const VideoConfContext = createContext<VideoConfContextValue>({
 		subscribe: (): Unsubscribe => (): void => undefined,
 	},
 	queryRinging: {
+		getCurrentValue: (): boolean => false,
+		subscribe: (): Unsubscribe => (): void => undefined,
+	},
+	queryCalling: {
 		getCurrentValue: (): boolean => false,
 		subscribe: (): Unsubscribe => (): void => undefined,
 	},
@@ -69,4 +74,8 @@ export const useIncomingCalls = (): DirectCallParams[] => {
 export const useIsRinging = (): boolean => {
 	const { queryRinging } = useContext(VideoConfContext);
 	return useSubscription(queryRinging);
+};
+export const useIsCalling = (): boolean => {
+	const { queryCalling } = useContext(VideoConfContext);
+	return useSubscription(queryCalling);
 };
