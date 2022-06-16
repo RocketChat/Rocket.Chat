@@ -20,6 +20,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		params?: { startsWith?: boolean; endsWith?: boolean },
 	): any;
 
+	findActive(options?: any): Cursor<IUser>;
+
 	findActiveByIds(userIds: any, options?: any): Cursor<IUser>;
 
 	findByIds(userIds: any, options?: any): Cursor<IUser>;
