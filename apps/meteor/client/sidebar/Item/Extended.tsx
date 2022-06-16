@@ -52,7 +52,7 @@ const Extended: VFC<ExtendedProps> = ({
 	};
 
 	return (
-		<Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} {...(href as any)} clickable={!!href}>
+		<Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} {...({ href } as any)} clickable={!!href}>
 			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 			<Sidebar.Item.Content>
 				<Sidebar.Item.Content>
