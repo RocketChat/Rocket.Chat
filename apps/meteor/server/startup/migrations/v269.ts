@@ -1,10 +1,13 @@
-import { addMigration } from '../../lib/migrations';
-import { Rooms } from '../../../app/models/server';
+import { MongoInternals } from 'meteor/mongo';
 
+import { addMigration } from '../../lib/migrations';
+
+// Remove Deprecated Omnichannel Queue Collection
 addMigration({
 	version: 269,
-	up() {
-		Rooms.tryDropIndex({ 'tokenpass.tokens.token': 1 });
-		Rooms.tryDropIndex({ tokenpass: 1 });
+	async up() {
+		// Remove collection
+		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+		await mongo.db.dropCollection('rocketchat_omnichannel_queue');
 	},
 });
