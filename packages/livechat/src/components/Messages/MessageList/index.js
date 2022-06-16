@@ -133,13 +133,10 @@ export class MessageList extends MemoizedComponent {
 
 			const videoConfJoinBlock = message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 			if (videoConfJoinBlock) {
-				if (ongoingCall && isCallOngoing(ongoingCall.callStatus)) {
-					const { url, callProvider, rid } = incomingCallAlert || {};
-					items.push(
-						<JoinCallButton callStatus={ongoingCall.callStatus} url={url} callProvider={callProvider} rid={rid} />,
-					);
+				// If the call is not accepted yet, don't render the message.
+				if (!ongoingCall || !isCallOngoing(ongoingCall.callStatus)) {
+					continue;
 				}
-				continue;
 			}
 
 			const showDateSeparator = !previousMessage || !isSameDay(parseISO(message.ts), parseISO(previousMessage.ts));
