@@ -13,10 +13,10 @@ const AutoTranslateWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => 
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);
 	const [currentLanguage, setCurrentLanguage] = useState(subscription?.autoTranslateLanguage ?? '');
-	const saveSettings = useEndpointActionExperimental('POST', 'autotranslate.saveSettings');
+	const saveSettings = useEndpointActionExperimental('POST', '/v1/autotranslate.saveSettings');
 
 	const { value: translateData } = useEndpointData(
-		'autotranslate.getSupportedLanguages',
+		'/v1/autotranslate.getSupportedLanguages',
 		useMemo(() => ({ targetLanguage: userLanguage }), [userLanguage]),
 	);
 

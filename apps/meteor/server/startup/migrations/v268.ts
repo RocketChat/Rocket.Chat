@@ -1,13 +1,10 @@
-import { MongoInternals } from 'meteor/mongo';
-
 import { addMigration } from '../../lib/migrations';
+import { Settings } from '../../../app/models/server/raw';
 
-// Remove Deprecated Omnichannel Queue Collection
+// Removes deprecated RDStation functionality from Omnichannel
 addMigration({
 	version: 268,
 	async up() {
-		// Remove collection
-		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-		await mongo.db.dropCollection('rocketchat_omnichannel_queue');
+		await Settings.removeById('Livechat_RDStation_Token');
 	},
 });

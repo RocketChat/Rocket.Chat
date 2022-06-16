@@ -29,7 +29,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 
 		let cachedMembers = [];
 		try {
-			const { members } = await APIClient.get('v1/groups.members', { roomId: id });
+			const { members } = await APIClient.get('/v1/groups.members', { roomId: id });
 
 			cachedMembers = members.map(({ _id, username }) => ({
 				id: _id,

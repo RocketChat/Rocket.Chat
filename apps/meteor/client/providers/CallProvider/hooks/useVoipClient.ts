@@ -22,8 +22,8 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const [voipEnabled, setVoipEnabled] = useSafely(useState(useSetting('VoIP_Enabled')));
 	const voipRetryCount = useSetting('VoIP_Retry_Count');
 	const enableKeepAlive = useSetting('VoIP_Enable_Keep_Alive_For_Unstable_Networks');
-	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
-	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
+	const registrationInfo = useEndpoint('GET', '/v1/connector.extension.getRegistrationInfoByUserId');
+	const membership = useEndpoint('GET', '/v1/voip/queues.getMembershipSubscription');
 	const user = useUser();
 	const subscribeToNotifyLoggedIn = useStream('notify-logged');
 	const iceServers = useWebRtcServers();

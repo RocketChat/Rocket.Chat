@@ -14,10 +14,11 @@ const OmnichannelRoomIcon = new (class extends Emitter {
 		if (!appId || !icon) {
 			return;
 		}
+
 		if (this.icons.has(`${appId}-${icon}`)) {
 			return `${appId}-${icon}`;
 		}
-		APIClient.get(`apps/public/${appId}/get-sidebar-icon`, { icon }).then((response) => {
+		APIClient.get(`/apps/public/${appId}/get-sidebar-icon`, { icon }).then((response: any) => {
 			this.icons.set(
 				`${appId}-${icon}`,
 				DOMPurify.sanitize(response, {
