@@ -17,9 +17,6 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ ts: 1 });
-		// Tokenpass
-		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
-		this.tryEnsureIndex({ tokenpass: 1 }, { sparse: true });
 		// discussions
 		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
@@ -93,38 +90,6 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
-	}
-
-	findByTokenpass(tokens) {
-		const query = {
-			'tokenpass.tokens.token': {
-				$in: tokens,
-			},
-		};
-
-		return this._db.find(query).fetch();
-	}
-
-	setTokensById(_id, tokens) {
-		const update = {
-			$set: {
-				'tokenpass.tokens.token': tokens,
-			},
-		};
-
-		return this.update({ _id }, update);
-	}
-
-	findAllTokenChannels() {
-		const query = {
-			tokenpass: { $exists: true },
-		};
-		const options = {
-			fields: {
-				tokenpass: 1,
-			},
-		};
-		return this._db.find(query, options);
 	}
 
 	setReactionsInLastMessage(roomId, lastMessage) {
@@ -239,16 +204,6 @@ export class Rooms extends Base {
 				streamingOptions,
 			},
 		};
-		return this.update({ _id }, update);
-	}
-
-	setTokenpassById(_id, tokenpass) {
-		const update = {
-			$set: {
-				tokenpass,
-			},
-		};
-
 		return this.update({ _id }, update);
 	}
 
