@@ -19,12 +19,24 @@ export const validUserInserted: ILogin = {
 	email: 'user.name.test@email.com',
 	password: 'any_password',
 };
+
 const validEmail = faker.internet.email();
 
 export const registerUser: IRegister = {
 	email: validEmail,
 	password: 'any_password',
 	name: faker.name.findName(),
+};
+
+export const createRegisterUser = (): IRegister => {
+	const name = faker.name.findName();
+	const [firstName] = name.split(' ');
+	return {
+		email: faker.internet.email(firstName.toLocaleLowerCase()),
+		password: 'any_password',
+		name,
+		username: faker.internet.userName(),
+	};
 };
 
 export const validUser: ILogin = {

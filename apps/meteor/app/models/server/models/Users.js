@@ -60,6 +60,9 @@ export class Users extends Base {
 		this.tryEnsureIndex({ extension: 1 }, { sparse: true, unique: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 
+		this.tryEnsureIndex({ 'active': 1, 'services.email2fa.enabled': 1 }, { sparse: true }); // used by statistics
+		this.tryEnsureIndex({ 'active': 1, 'services.totp.enabled': 1 }, { sparse: true }); // used by statistics
+
 		const collectionObj = this.model.rawCollection();
 		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
@@ -331,30 +334,6 @@ export class Users extends Base {
 		if (settings.get('Livechat_show_agent_email')) {
 			options.fields.emails = 1;
 		}
-
-		return this.findOne(query, options);
-	}
-
-	setTokenpassTcaBalances(_id, tcaBalances) {
-		const update = {
-			$set: {
-				'services.tokenpass.tcaBalances': tcaBalances,
-			},
-		};
-
-		return this.update(_id, update);
-	}
-
-	getTokenBalancesByUserId(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const options = {
-			fields: {
-				'services.tokenpass.tcaBalances': 1,
-			},
-		};
 
 		return this.findOne(query, options);
 	}

@@ -28,7 +28,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		[setEmojiFile],
 	);
 
-	const saveAction = useEndpointUpload('emoji-custom.create', {}, t('Custom_Emoji_Added_Successfully'));
+	const saveAction = useEndpointUpload('/v1/emoji-custom.create', t('Custom_Emoji_Added_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		if (!name) {

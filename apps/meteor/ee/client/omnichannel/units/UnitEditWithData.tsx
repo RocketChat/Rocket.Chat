@@ -14,15 +14,19 @@ const UnitEditWithData: FC<{
 }> = function UnitEditWithData({ unitId, reload, title }) {
 	const query = useMemo(() => ({ unitId }), [unitId]);
 
-	const { value: data, phase: state, error } = useEndpointData('livechat/units.getOne', query);
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/units.getOne', query);
 
-	const { value: unitMonitors, phase: unitMonitorsState, error: unitMonitorsError } = useEndpointData('livechat/unitMonitors.list', query);
+	const {
+		value: unitMonitors,
+		phase: unitMonitorsState,
+		error: unitMonitorsError,
+	} = useEndpointData('/v1/livechat/unitMonitors.list', query);
 
 	const {
 		value: unitDepartments,
 		phase: unitDepartmentsState,
 		error: unitDepartmentsError,
-	} = useEndpointData(`livechat/departments.by-unit/${unitId}`);
+	} = useEndpointData(`/v1/livechat/departments.by-unit/${unitId}`);
 
 	const t = useTranslation();
 
