@@ -6,7 +6,6 @@
 		"outDir": "./dist",
 		"allowJs": true,
 		"checkJs": false,
-
 		"noImplicitAny": true,
 	},
 	"exclude": [

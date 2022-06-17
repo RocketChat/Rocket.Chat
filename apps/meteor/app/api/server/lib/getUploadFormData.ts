@@ -1,49 +1,90 @@
-import busboy from 'busboy';
-import { Request } from 'express';
+import { Readable } from 'stream';
 
-export interface IFormDataFields {
-	file: any;
+import { Meteor } from 'meteor/meteor';
+import type { Request } from 'express';
+import busboy from 'busboy';
+import { ValidateFunction } from 'ajv';
+
+type UploadResult = {
+	file: Readable;
 	filename: string;
 	encoding: string;
 	mimetype: string;
 	fileBuffer: Buffer;
-}
+};
 
-export interface IFormDataUpload {
-	[key: string]: IFormDataFields | any;
-}
-
-export const getUploadFormData = async ({ request }: { request: Request }): Promise<IFormDataUpload> =>
-	new Promise<IFormDataUpload>((resolve, reject) => {
+export const getUploadFormData = async <T extends string, K, V extends ValidateFunction<K>>(
+	{ request }: { request: Request },
+	options: {
+		field?: T;
+		validate?: V;
+	} = {},
+): Promise<
+	[
+		UploadResult,
+		K extends unknown
+			? {
+					[k: string]: string;
+			  }
+			: K,
+		T,
+	]
+> =>
+	new Promise((resolve, reject) => {
 		const bb = busboy({ headers: request.headers, defParamCharset: 'utf8' });
+		const fields: { [K: string]: string } = Object.create(null);
 
-		const fields: IFormDataUpload = {};
+		let uploadedFile: UploadResult | undefined;
 
-		bb.on('file', (fieldname: string, file: any, { filename, encoding, mimeType: mimetype }: Record<string, any>) => {
-			const fileData: any[] = [];
+		let assetName: T | undefined;
 
-			file.on('data', (data: any) => fileData.push(data));
+		bb.on(
+			'file',
+			(
+				fieldname: string,
+				file: Readable,
+				{ filename, encoding, mimeType: mimetype }: { filename: string; encoding: string; mimeType: string },
+			) => {
+				const fileData: Uint8Array[] = [];
 
-			file.on('end', () => {
-				if (fields.hasOwnProperty(fieldname)) {
-					return reject('Just 1 file is allowed');
-				}
+				file.on('data', (data: any) => fileData.push(data));
 
-				fields[fieldname] = {
-					file,
-					filename,
-					encoding,
-					mimetype,
-					fileBuffer: Buffer.concat(fileData),
-				};
-			});
-		});
+				file.on('end', () => {
+					if (uploadedFile) {
+						return reject('Just 1 file is allowed');
+					}
+					if (options.field && fieldname !== options.field) {
+						return reject(new Meteor.Error('invalid-field'));
+					}
+					uploadedFile = {
+						file,
+						filename,
+						encoding,
+						mimetype,
+						fileBuffer: Buffer.concat(fileData),
+					};
 
-		bb.on('field', (fieldname: string, value: any) => {
+					assetName = fieldname as T;
+				});
+			},
+		);
+
+		bb.on('field', (fieldname, value) => {
 			fields[fieldname] = value;
 		});
 
-		bb.on('finish', () => resolve(fields));
+		bb.on('finish', () => {
+			if (!uploadedFile || !assetName) {
+				return reject('No file uploaded');
+			}
+			if (options.validate === undefined) {
+				return resolve([uploadedFile, fields, assetName]);
+			}
+			if (!options.validate(fields)) {
+				return reject(`Invalid fields${options.validate.errors?.join(', ')}`);
+			}
+			return resolve([uploadedFile, fields, assetName]);
+		});
 
 		request.pipe(bb);
 	});
