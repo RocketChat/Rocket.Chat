@@ -42,7 +42,7 @@ export function parseParameters(parameters: string, ignoreExtraUnquotedSpaces = 
 	});
 
 	// If two quoted parameters are not separated by a space, add one automatically
-	line = line.replace(/\u0087\u0086/g, ' ');
+	line = line.replace(/\u0087\u0086/g, '\u0087 \u0086');
 
 	const items = split(line, ignoreExtraUnquotedSpaces);
 
