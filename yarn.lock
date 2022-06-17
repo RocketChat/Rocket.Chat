@@ -4226,29 +4226,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
-    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage": ^0.31.13
-    "@rocket.chat/fuselage-tokens": ~0.31.12
-    "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/ui-contexts": "workspace:^"
-    "@types/dompurify": ^2
     "@types/jest": ^27.4.1
     "@types/react": ~17.0.42
-    dompurify: ^2.2.2
     eslint: ^8.12.0
     jest: ^27.5.1
-    rc-scrollbars: ^1.1.3
     react: ~17.0.2
-    react-hook-form: ^7.30.0
     ts-jest: ^27.1.4
     typescript: ~4.3.4
   peerDependencies:
     "@rocket.chat/fuselage": "*"
-    "@rocket.chat/fuselage-tokens": ~0.31.12
-    dompurify: ^2.2.2
-    rc-scrollbars: ^1.1.3
     react: ~17.0.2
-    react-hook-form: ^7.30.0
   languageName: unknown
   linkType: soft
 
@@ -5961,7 +5949,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dompurify@npm:^2, @types/dompurify@npm:^2.2.2":
+"@types/dompurify@npm:^2.2.2":
   version: 2.3.3
   resolution: "@types/dompurify@npm:2.3.3"
   dependencies:
@@ -12905,13 +12893,6 @@ __metadata:
   version: 1.0.3
   resolution: "dommatrix@npm:1.0.3"
   checksum: 8ac727c1a14cf8de30a5b49a3bd6b2622a661b391fe1ac54e855eaa14a857ed86d63492150b5f70f912acc24fa3acc31d750259c47e9b5801de237624b0a319f
-  languageName: node
-  linkType: hard
-
-"dompurify@npm:^2.2.2":
-  version: 2.3.8
-  resolution: "dompurify@npm:2.3.8"
-  checksum: dc7b32ee57a03fe5166a850071200897cc13fa069287a709e3b2138052d73ec09a87026b9e28c8d2f254a74eaa52ef30644e98e54294c30acbca2a53f1bbc5f4
   languageName: node
   linkType: hard
 
