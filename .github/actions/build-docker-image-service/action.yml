@@ -11,6 +11,10 @@ inputs:
   password:
     required: false
 
+outputs:
+  image-name:
+    value: ${{ steps.build-image.outputs.image-name }}
+
 runs:
   using: "composite"
   steps:
@@ -49,7 +53,7 @@ runs:
         echo "::set-output name=image-name::${IMAGE_NAME}"
 
     - name: Login to GitHub Container Registry
-      if: github.event.pull_request.head.repo.full_name == github.repository
+      if: github.event.pull_request.head.repo.full_name == github.repository || github.ref == 'refs/heads/develop'
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
@@ -58,7 +62,7 @@ runs:
 
     - name: Publish image
       shell: bash
-      if: github.event.pull_request.head.repo.full_name == github.repository
+      if: github.event.pull_request.head.repo.full_name == github.repository || github.ref == 'refs/heads/develop'
       run: |
         echo "Push Docker image: ${{ steps.build-image.outputs.image-name }}"
 

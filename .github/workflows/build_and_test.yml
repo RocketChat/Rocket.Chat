@@ -190,6 +190,40 @@ jobs:
           name: build
           path: /tmp/build/Rocket.Chat.tar.gz
 
+  build-docker-preview:
+    runs-on: ubuntu-20.04
+    needs: [build, release-versions]
+    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - uses: actions/checkout@v3
+
+      - name: Restore build
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: /tmp/build
+
+      - name: Unpack build
+        run: |
+          cd /tmp/build
+          tar xzf Rocket.Chat.tar.gz
+          rm Rocket.Chat.tar.gz
+
+      - name: Build Docker image
+        id: build-docker-image-preview
+        uses: ./.github/actions/build-docker-image
+        with:
+          root-dir: /tmp/build
+          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          release: preview
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
   test:
     runs-on: ubuntu-20.04
     needs: [build, release-versions]
@@ -253,6 +287,7 @@ jobs:
           rm Rocket.Chat.tar.gz
 
       - name: Build Docker image
+        id: build-docker-image
         if: matrix.mongodb-version != '5.0'
         uses: ./.github/actions/build-docker-image
         with:
@@ -263,6 +298,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Build Alpine Docker image
+        id: build-docker-image-alpine
         if: matrix.mongodb-version == '5.0'
         uses: ./.github/actions/build-docker-image
         with:
@@ -739,11 +775,11 @@ jobs:
 
   docker-image-publish:
     runs-on: ubuntu-20.04
-    needs: [deploy, release-versions]
+    needs: [deploy, build-docker-preview, release-versions]
 
     strategy:
       matrix:
-        # this is current a mix of variants and different images
+        # this is currently a mix of variants and different images
         release: ['official', 'preview', 'alpine']
 
     env:
@@ -763,17 +799,26 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Publish Docker image
+      - name: Get Docker image name
+        id: gh-docker
         run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          if [[ '${{ matrix.release }}' = 'preview' ]]; then
-            IMAGE_NAME="${IMAGE_NAME}.preview"
+          if [[ ${{ matrix.release }} == 'official' ]]; then
+            GH_IMAGE_NAME="${{ outputs.build-docker-image.outputs.image-name }}"
+          else
+            GH_IMAGE_NAME="${{ outputs.build-docker-image-${{ matrix.release }}.outputs.image-name }}"
           fi;
 
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:${{ needs.release-versions.outputs.docker-tag }}"
-          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
-            GH_IMAGE_NAME="${IMAGE_NAME}.${{ matrix.release }}"
+          echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
+
+          echo "::set-output name=gh-image-name::${GH_IMAGE_NAME}"
+
+      - name: Pull Docker image
+        run: docker pull ${{ outputs.gh-docker.outputs.gh-image-name }}
+
+      - name: Publish Docker image
+        run: |
+          if [[ '${{ matrix.release }}' = 'preview' ]]; then
+            IMAGE_NAME="${IMAGE_NAME}.preview"
           fi;
 
           # 'develop' or 'tag'
@@ -784,11 +829,8 @@ jobs:
             DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
           fi;
 
-          echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
           echo "IMAGE_NAME: $IMAGE_NAME"
           echo "DOCKER_TAG: $DOCKER_TAG"
-
-          docker pull $GH_IMAGE_NAME
 
           # tag and push the specific tag version
           docker tag $GH_IMAGE_NAME $IMAGE_NAME:$DOCKER_TAG
