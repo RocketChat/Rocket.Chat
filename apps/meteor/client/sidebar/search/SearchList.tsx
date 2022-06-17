@@ -66,16 +66,19 @@ const useSpotlight = (filterText: string, usernames: string[]) => {
 
 	const { value: data, phase: status } = useMethodData('spotlight', args);
 
-	// if (!data) {
-	// 	return {
-	// 		data: {
-	// 			rooms: [{ _id: '', name: '', t: '', uids: [''] }],
-	// 			users: [{ _id: '', status: 'offline', name: '', username: '', outside: false, avatarETag: '' }],
-	// 		},
-	// 		status: 'loading',
-	// 	};
-	// }
-	return useMemo(() => ({ data, status }), [data, status]);
+	return useMemo(() => {
+		if (!data) {
+			return {
+				data: {
+					rooms: [{ _id: '', name: '', t: '', uids: [''] }],
+					users: [{ _id: '', status: 'offline', name: '', username: '', outside: false, avatarETag: '' }],
+				},
+				status: 'loading',
+			};
+		}
+
+		return { data, status };
+	}, [data, status]);
 };
 
 const options = {
