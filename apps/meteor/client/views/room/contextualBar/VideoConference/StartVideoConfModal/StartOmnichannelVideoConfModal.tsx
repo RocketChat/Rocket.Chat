@@ -14,7 +14,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useSetPreferences } from '../../../../../contexts/VideoConfContext';
+import { useVideoConfSetPreferences } from '../../../../../contexts/VideoConfContext';
 
 type StartOmnichannelVideoConfModalProps = {
 	room: IOmnichannelRoom;
@@ -25,7 +25,7 @@ type StartOmnichannelVideoConfModalProps = {
 const StartOmnichannelVideoConfModal = ({ room, onClose, onConfirm }: StartOmnichannelVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const { controllersConfig } = useVideoConfControllers();
-	const setPreferences = useSetPreferences();
+	const setPreferences = useVideoConfSetPreferences();
 
 	const handleStartCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);
