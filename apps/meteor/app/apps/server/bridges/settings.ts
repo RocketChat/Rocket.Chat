@@ -56,6 +56,6 @@ export class AppSettingBridge extends ServerSettingBridge {
 			throw new Error(`The setting "${setting.id}" is not readable.`);
 		}
 
-		throw new Error('Method not implemented.');
+		Settings.updateValueById(setting.id, setting.value);
 	}
 }
