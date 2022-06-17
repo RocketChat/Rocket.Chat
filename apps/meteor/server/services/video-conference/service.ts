@@ -197,6 +197,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	public async setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void> {
 		this.VideoConference.setStatusById(callId, status);
+
+		if (status === VideoConferenceStatus.ENDED) {
+			this.endCall(callId);
+		}
 	}
 
 	public async addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void> {
@@ -223,7 +227,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return videoConfProviders.getProviderList();
 	}
 
-	public async endLivechatCall(callId: VideoConference['_id']): Promise<boolean> {
+	public async declineLivechatCall(callId: VideoConference['_id']): Promise<boolean> {
 		const call = await this.getUnfiltered(callId);
 
 		if (!isLivechatVideoConference(call)) {
@@ -240,6 +244,36 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return true;
 	}
 
+	private async endCall(callId: VideoConference['_id']): Promise<void> {
+		const call = await this.getUnfiltered(callId);
+		if (!call) {
+			return;
+		}
+
+		if (!call.endedAt) {
+			await this.VideoConference.setEndedById(call._id);
+		}
+
+		switch (call.type) {
+			case 'direct':
+				return this.endDirectCall(call);
+			case 'videoconference':
+				return this.endGroupCall(call);
+		}
+	}
+
+	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
+		if (!call.messages.ended) {
+			this.createDirectCallEndedMessage(call);
+		}
+	}
+
+	private async endGroupCall(call: IGroupVideoConference): Promise<void> {
+		if (!call.messages.ended) {
+			this.createGroupCallEndedMessage(call);
+		}
+	}
+
 	private async getTypeForNewVideoConference(rid: IRoom['_id']): Promise<VideoConferenceCreateData['type']> {
 		const room = await this.Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(rid, {
 			projection: { t: 1 },
@@ -250,10 +284,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		return videoConfTypes.getTypeForRoom(room);
-
-		// if (room.t === 'd' && room.uids && room.uids.length > 2) {
-		// 	return 'direct';
-		// }
 	}
 
 	private async createMessage(rid: IRoom['_id'], user: IUser, extraData: Partial<IMessage> = {}): Promise<IMessage['_id']> {
@@ -317,6 +347,45 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					elements: [],
 				},
 			],
+		} as Partial<IVideoConferenceMessage>);
+	}
+
+	private async createDirectCallEndedMessage(call: IDirectVideoConference): Promise<IMessage['_id'] | undefined> {
+		const user = await this.Users.findOneById(call.endedBy?._id || call.createdBy._id);
+		if (!user) {
+			return;
+		}
+
+		const text =
+			user._id === call.endedBy?._id
+				? TAPi18n.__('video_direct_ended_by', {
+						username: user.username || '',
+				  })
+				: TAPi18n.__('video_direct_ended');
+
+		return this.createMessage(call.rid, user, {
+			blocks: [this.buildMessageBlock(text)],
+		} as Partial<IVideoConferenceMessage>);
+	}
+
+	private async createGroupCallEndedMessage(call: IGroupVideoConference): Promise<IMessage['_id'] | undefined> {
+		const user = await this.Users.findOneById(call.endedBy?._id || call.createdBy._id);
+		if (!user) {
+			return;
+		}
+
+		const text =
+			user._id === call.endedBy?._id
+				? TAPi18n.__('video_conference_ended_by', {
+						conference: call.title,
+						username: user.username || '',
+				  })
+				: TAPi18n.__('video_conference_ended', {
+						conference: call.title,
+				  });
+
+		return this.createMessage(call.rid, user, {
+			blocks: [this.buildMessageBlock(text)],
 		} as Partial<IVideoConferenceMessage>);
 	}
 
