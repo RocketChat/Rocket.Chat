@@ -1,9 +1,10 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import { ICreatedRoom, IRoom } from '@rocket.chat/core-typings';
 
 import { FederatedRoom } from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 import { RocketChatRoomAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Room';
 import { MatrixBridgedRoom } from '../../../../../../../app/models/server';
 import { Rooms, Subscriptions } from '../../../../../../../app/models/server/raw';
+import { createDirectMessage } from '../../../../../../../server/methods/createDirectMessage';
 import { FederatedRoomEE } from '../../../domain/FederatedRoom';
 
 export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
@@ -58,6 +59,10 @@ export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 	public async updateFederatedRoomByInternalRoomId(internalRoomId: string, federatedRoom: FederatedRoomEE): Promise<void> {
 		MatrixBridgedRoom.upsert({ rid: internalRoomId }, { rid: internalRoomId, mri: federatedRoom.externalId });
 		await Rooms.setAsFederated(internalRoomId);
+	}
+
+	public async createLocalDirectMessageRoom(members: string[], creatorId: string): Promise<void> {
+		createDirectMessage(members, creatorId) as ICreatedRoom;
 	}
 
 	private createFederatedRoomEEInstance(externalRoomId: string, room: IRoom): FederatedRoomEE {

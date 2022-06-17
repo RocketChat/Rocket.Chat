@@ -79,11 +79,11 @@ export class FederationRoomServiceReceiver {
 		if (!affectedFederatedRoom && eventOrigin === EVENT_ORIGIN.LOCAL) {
 			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
-		const isInviterFromTheSameHomeServer = await this.bridge.isUserIdFromTheSameHomeserver(
+		const isInviterFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
 			externalInviterId,
 			this.rocketSettingsAdapter.getHomeServerDomain(),
 		);
-		const isInviteeFromTheSameHomeServer = await this.bridge.isUserIdFromTheSameHomeserver(
+		const isInviteeFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
 			externalInviteeId,
 			this.rocketSettingsAdapter.getHomeServerDomain(),
 		);

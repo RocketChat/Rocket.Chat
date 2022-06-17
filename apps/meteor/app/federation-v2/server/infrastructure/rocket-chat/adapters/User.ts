@@ -1,6 +1,7 @@
 import { IUser } from '@rocket.chat/core-typings';
 
-import { MatrixBridgedUser, Users } from '../../../../../models/server';
+import { MatrixBridgedUser } from '../../../../../models/server';
+import { Users } from '../../../../../models/server/raw';
 import { FederatedUser } from '../../../domain/FederatedUser';
 
 export class RocketChatUserAdapter {
@@ -47,6 +48,7 @@ export class RocketChatUserAdapter {
 	public async createFederatedUser(federatedUser: FederatedUser): Promise<void> {
 		const existingLocalUser = await Users.findOneByUsername(federatedUser.internalReference.username);
 		if (existingLocalUser) {
+			await Users.setAsFederated(existingLocalUser._id);
 			return MatrixBridgedUser.upsert(
 				{ uid: existingLocalUser._id },
 				{
@@ -56,7 +58,7 @@ export class RocketChatUserAdapter {
 				},
 			);
 		}
-		const newLocalUserId = await Users.create({
+		const { insertedId } = await Users.insertOne({
 			username: federatedUser.internalReference.username,
 			type: federatedUser.internalReference.type,
 			status: federatedUser.internalReference.status,
@@ -64,11 +66,12 @@ export class RocketChatUserAdapter {
 			roles: federatedUser.internalReference.roles,
 			name: federatedUser.internalReference.name,
 			requirePasswordChange: federatedUser.internalReference.requirePasswordChange,
+			federated: true,
 		});
 		MatrixBridgedUser.upsert(
-			{ uid: newLocalUserId },
+			{ uid: insertedId },
 			{
-				uid: newLocalUserId,
+				uid: insertedId,
 				mui: federatedUser.externalId,
 				remote: !federatedUser.existsOnlyOnProxyServer,
 			},

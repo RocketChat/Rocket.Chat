@@ -26,6 +26,26 @@ export class FederationOnRoomCreationDto {
 	invitees: FederationInviteeDto[];
 }
 
+export class FederationOnDirectMessageRoomCreationDto {
+	internalInviterId: string;
+
+	internalRoomId: string;
+
+	invitees: FederationInviteeDto[];
+}
+
+export class FederationCreateDirectMessageDto {
+	internalInviterId: string;
+
+	invitees: string[];
+}
+
+export class FederationBeforeDirectMessageRoomCreationDto {
+	invitees: FederationInviteeDto[];
+}
+
+export type FederationOnUsersAddedToARoomDto = FederationOnRoomCreationDto;
+
 export class FederationSetupRoomDto {
 	internalInviterId: string;
 

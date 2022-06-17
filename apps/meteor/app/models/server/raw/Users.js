@@ -1015,4 +1015,17 @@ export class UsersRaw extends BaseRaw {
 		};
 		return this.find(query, options);
 	}
+
+	setAsFederated(uid) {
+		const query = {
+			_id: uid,
+		};
+
+		const update = {
+			$set: {
+				federated: true,
+			},
+		};
+		return this.updateOne(query, update);
+	}
 }

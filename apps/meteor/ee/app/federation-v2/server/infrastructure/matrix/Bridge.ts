@@ -17,12 +17,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		this.logInfo();
 	}
 
-	public async createRoom(
-		externalCreatorId: string,
-		roomType: RoomType,
-		roomName: string,
-		roomTopic?: string,
-	): Promise<string> {
+	public async createRoom(externalCreatorId: string, roomType: RoomType, roomName: string, roomTopic?: string): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
 		const visibility = roomType === 'p' || roomType === 'd' ? 'invite' : 'public';

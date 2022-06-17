@@ -44,8 +44,6 @@ export class MatrixBridge implements IFederationBridge {
 		} catch (e) {
 			bridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
 			bridgeLogger.error('Disabling Matrix Bridge.  Please resolve error and try again');
-
-			// await this.settingsAdapter.disableFederation();
 		}
 	}
 
@@ -84,7 +82,7 @@ export class MatrixBridge implements IFederationBridge {
 		return matrixUserId;
 	}
 
-	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeId: string): Promise<string> {
+	public async createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[]): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
 		const visibility = RoomJoinRules.INVITE;
@@ -97,7 +95,7 @@ export class MatrixBridge implements IFederationBridge {
 				preset,
 				// eslint-disable-next-line @typescript-eslint/camelcase
 				is_direct: true,
-				invite: [externalInviteeId],
+				invite: externalInviteeIds,
 				// eslint-disable-next-line @typescript-eslint/camelcase
 				creation_content: {
 					// eslint-disable-next-line @typescript-eslint/camelcase
