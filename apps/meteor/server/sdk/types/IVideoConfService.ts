@@ -38,5 +38,5 @@ export interface IVideoConfService {
 	setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void>;
 	addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void>;
 	listProviders(): Promise<{ key: string; label: string }[]>;
-	endLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
+	declineLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
 }
