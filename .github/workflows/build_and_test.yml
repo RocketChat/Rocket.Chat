@@ -802,10 +802,15 @@ jobs:
       - name: Get Docker image name
         id: gh-docker
         run: |
-          if [[ ${{ matrix.release }} == 'official' ]]; then
-            GH_IMAGE_NAME="${{ outputs.build-docker-image.outputs.image-name }}"
-          else
-            GH_IMAGE_NAME="${{ outputs.build-docker-image-${{ matrix.release }}.outputs.image-name }}"
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          IMAGE_NAME="rocket.chat"
+          if [[ '${{ matrix.release }}' = 'preview' ]]; then
+            IMAGE_NAME="${IMAGE_NAME}.preview"
+          fi;
+
+          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:${{ needs.release-versions.outputs.docker-tag }}"
+          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+            GH_IMAGE_NAME="${IMAGE_NAME}.${{ matrix.release }}"
           fi;
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
@@ -813,7 +818,7 @@ jobs:
           echo "::set-output name=gh-image-name::${GH_IMAGE_NAME}"
 
       - name: Pull Docker image
-        run: docker pull ${{ outputs.gh-docker.outputs.gh-image-name }}
+        run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
 
       - name: Publish Docker image
         run: |
