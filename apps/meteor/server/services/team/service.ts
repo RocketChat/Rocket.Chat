@@ -801,13 +801,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	}
 
 	async removeAllMembersFromTeam(teamId: string): Promise<void> {
-		const team = await this.TeamModel.findOneById(teamId);
-
-		if (!team) {
-			return;
+		if (!teamId) {
+			throw new Error('missing-teamId');
 		}
-
-		await this.TeamMembersModel.deleteByTeamId(team._id);
+		await this.TeamMembersModel.deleteByTeamId(teamId);
 	}
 
 	async addMember(inviter: Pick<IUser, '_id' | 'username'>, userId: string, teamId: string): Promise<boolean> {
