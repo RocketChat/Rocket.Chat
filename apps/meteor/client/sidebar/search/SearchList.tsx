@@ -1,11 +1,31 @@
+import { RoomType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue, useStableArray, useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import {
+	useMutableCallback,
+	useDebouncedValue,
+	useStableArray,
+	useAutoFocus,
+	useUniqueId,
+	useMergedRefs,
+} from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useUserPreference, useUserSubscriptions, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import React, {
+	forwardRef,
+	useState,
+	useMemo,
+	useEffect,
+	useRef,
+	ReactElement,
+	MutableRefObject,
+	SetStateAction,
+	Dispatch,
+	FormEventHandler,
+	Ref,
+} from 'react';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
@@ -15,8 +35,8 @@ import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from './Row';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
-const shortcut = (() => {
-	if (!Meteor.Device.isDesktop()) {
+const shortcut = ((): string => {
+	if (!(Meteor as any).Device.isDesktop()) {
 		return '';
 	}
 	if (window.navigator.platform.toLowerCase().includes('mac')) {
@@ -25,9 +45,9 @@ const shortcut = (() => {
 	return '(\u2303+K)';
 })();
 
-const useSpotlight = (filterText = '', usernames) => {
+const useSpotlight = (filterText: string, usernames: string[]) => {
 	const expression = /(@|#)?(.*)/i;
-	const [, mention, name] = filterText.match(expression);
+	const [, mention, name] = filterText.match(expression) || [];
 
 	const searchForChannels = mention === '#';
 	const searchForDMs = mention === '@';
@@ -41,9 +61,10 @@ const useSpotlight = (filterText = '', usernames) => {
 		}
 		return { users: true, rooms: true };
 	}, [searchForChannels, searchForDMs]);
+
 	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
 
-	const { value: data = { users: [], rooms: [] }, phase: status } = useMethodData('spotlight', args);
+	const { value: data, phase: status } = useMethodData('spotlight', args);
 
 	return useMemo(() => {
 		if (!data) {
@@ -60,11 +81,10 @@ const options = {
 	},
 };
 
-const useSearchItems = (filterText) => {
+const useSearchItems = (filterText: string): any => {
 	const expression = /(@|#)?(.*)/i;
-	const teste = filterText.match(expression);
+	const [, type, name] = filterText.match(expression) || [];
 
-	const [, type, name] = teste;
 	const query = useMemo(() => {
 		const filterRegex = new RegExp(escapeRegExp(name), 'i');
 
@@ -76,23 +96,36 @@ const useSearchItems = (filterText) => {
 		};
 	}, [name, type]);
 
-	const localRooms = useUserSubscriptions(query, options);
+	const localRooms: { rid: string; t: RoomType; _id: string; name: string; uids?: string }[] = useUserSubscriptions(query, options);
 
-	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean));
+	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean)) as string[];
 
 	const { data: spotlight, status } = useSpotlight(filterText, usernamesFromClient);
 
 	return useMemo(() => {
-		const resultsFromServer = [];
+		const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
+			index === arr.findIndex((user) => _id === user._id);
 
-		const filterUsersUnique = ({ _id }, index, arr) => index === arr.findIndex((user) => _id === user._id);
-		const roomFilter = (room) =>
+		const roomFilter = (room: { t: string; uids?: string[]; _id: string; name?: string }): boolean =>
 			!localRooms.find(
-				(item) => (room.t === 'd' && room.uids?.length > 1 && room.uids.includes(item._id)) || [item.rid, item._id].includes(room._id),
+				(item) =>
+					(room.t === 'd' && room.uids && room.uids.length > 1 && room.uids?.includes(item._id)) || [item.rid, item._id].includes(room._id),
 			);
-		const usersfilter = (user) => !localRooms.find((room) => room.t === 'd' && room.uids?.length === 2 && room.uids.includes(user._id));
+		const usersfilter = (user: { _id: string }): boolean =>
+			!localRooms.find((room) => room.t === 'd' && room.uids && room.uids?.length === 2 && room.uids.includes(user._id));
 
-		const userMap = (user) => ({
+		const userMap = (user: {
+			_id: string;
+			name: string;
+			username: string;
+			avatarETag?: string;
+		}): {
+			_id: string;
+			t: string;
+			name: string;
+			fname: string;
+			avatarETag?: string;
+		} => ({
 			_id: user._id,
 			t: 'd',
 			name: user.username,
@@ -100,17 +133,27 @@ const useSearchItems = (filterText) => {
 			avatarETag: user.avatarETag,
 		});
 
-		const exact = resultsFromServer.filter((item) => [item.usernamame, item.name, item.fname].includes(name));
+		type resultsFromServerType = {
+			_id: string;
+			t: string;
+			name: string;
+			fname?: string;
+			avatarETag?: string | undefined;
+			uids?: string[] | undefined;
+		}[];
 
+		const resultsFromServer: resultsFromServerType = [];
 		resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap));
 		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
+
+		const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
 
 		return { data: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])), status };
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [localRooms, name, spotlight]);
 };
 
-const useInput = (initial) => {
+const useInput = (initial: string): { value: string; onChange: FormEventHandler; setValue: Dispatch<SetStateAction<string>> } => {
 	const [value, setValue] = useState(initial);
 	const onChange = useMutableCallback((e) => {
 		setValue(e.currentTarget.value);
@@ -118,12 +161,12 @@ const useInput = (initial) => {
 	return { value, onChange, setValue };
 };
 
-const toggleSelectionState = (next, current, input) => {
-	input.setAttribute('aria-activedescendant', next.id);
-	next.setAttribute('aria-selected', true);
+const toggleSelectionState = (next: HTMLElement, current: HTMLElement | undefined, input: HTMLElement | undefined): void => {
+	input?.setAttribute('aria-activedescendant', next.id);
+	next.setAttribute('aria-selected', 'true');
 	next.classList.add('rcx-sidebar-item--selected');
 	if (current) {
-		current.setAttribute('aria-selected', false);
+		current.removeAttribute('aria-selected');
 		current.classList.remove('rcx-sidebar-item--selected');
 	}
 };
@@ -131,17 +174,23 @@ const toggleSelectionState = (next, current, input) => {
 /**
  * @type import('react').ForwardRefExoticComponent<{ onClose: unknown } & import('react').RefAttributes<HTMLElement>>
  */
-const SearchList = forwardRef(function SearchList({ onClose }, ref) {
+
+type SearchListProps = {
+	onClose: () => void;
+};
+
+const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, ref): ReactElement {
 	const listId = useUniqueId();
 	const t = useTranslation();
 	const { setValue: setFilterValue, ...filter } = useInput('');
 
-	const autofocus = useAutoFocus();
+	const cursorRef = useRef<HTMLInputElement>(null);
+	const autofocus: Ref<HTMLInputElement> = useMergedRefs(useAutoFocus<HTMLInputElement>(), cursorRef);
 
-	const listRef = useRef();
-	const boxRef = useRef();
+	const listRef = useRef<VirtuosoHandle>(null);
+	const boxRef = useRef<HTMLDivElement>(null);
 
-	const selectedElement = useRef();
+	const selectedElement: MutableRefObject<HTMLElement | null | undefined> = useRef(null);
 	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
@@ -175,13 +224,13 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 		let nextSelectedElement = null;
 
 		if (dir === 'up') {
-			nextSelectedElement = selectedElement.current.parentElement.previousSibling.querySelector('a');
+			nextSelectedElement = (selectedElement.current?.parentElement?.previousSibling as HTMLElement).querySelector('a');
 		} else {
-			nextSelectedElement = selectedElement.current.parentElement.nextSibling.querySelector('a');
+			nextSelectedElement = (selectedElement.current?.parentElement?.nextSibling as HTMLElement).querySelector('a');
 		}
 
 		if (nextSelectedElement) {
-			toggleSelectionState(nextSelectedElement, selectedElement.current, autofocus.current);
+			toggleSelectionState(nextSelectedElement, selectedElement.current || undefined, cursorRef?.current || undefined);
 			return nextSelectedElement;
 		}
 		return selectedElement.current;
@@ -189,12 +238,12 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 
 	const resetCursor = useMutableCallback(() => {
 		itemIndexRef.current = 0;
-		listRef.current.scrollToIndex({ index: itemIndexRef.current });
+		listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 
 		selectedElement.current = boxRef.current?.querySelector('a.rcx-sidebar-item');
 
 		if (selectedElement.current) {
-			toggleSelectionState(selectedElement.current, undefined, autofocus.current);
+			toggleSelectionState(selectedElement.current, undefined, cursorRef?.current || undefined);
 		}
 	});
 
@@ -207,10 +256,10 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 	}, [filterText, resetCursor]);
 
 	useEffect(() => {
-		if (!autofocus.current) {
+		if (!cursorRef?.current) {
 			return;
 		}
-		const unsubscribe = tinykeys(autofocus.current, {
+		const unsubscribe = tinykeys(cursorRef?.current, {
 			Escape: (event) => {
 				event.preventDefault();
 				setFilterValue((value) => {
@@ -225,13 +274,13 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 			ArrowUp: () => {
 				const currentElement = changeSelection('up');
 				itemIndexRef.current = Math.max(itemIndexRef.current - 1, 0);
-				listRef.current.scrollToIndex({ index: itemIndexRef.current });
+				listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 				selectedElement.current = currentElement;
 			},
 			ArrowDown: () => {
 				const currentElement = changeSelection('down');
 				itemIndexRef.current = Math.min(itemIndexRef.current + 1, items?.length + 1);
-				listRef.current.scrollToIndex({ index: itemIndexRef.current });
+				listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 				selectedElement.current = currentElement;
 			},
 			Enter: () => {
@@ -240,10 +289,10 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 				}
 			},
 		});
-		return () => {
+		return (): void => {
 			unsubscribe();
 		};
-	}, [autofocus, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
+	}, [cursorRef, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
 
 	return (
 		<Box
@@ -260,7 +309,7 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 			`}
 			ref={ref}
 		>
-			<Sidebar.TopBar.Section role='search' is='form'>
+			<Sidebar.TopBar.Section {...({ role: 'search' } as any)} is='form'>
 				<TextInput
 					aria-owns={listId}
 					data-qa='sidebar-search-input'
@@ -288,7 +337,7 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 					totalCount={items?.length}
 					data={items}
 					components={{ Scroller: ScrollerWithCustomProps }}
-					itemContent={(index, data) => <Row data={itemData} item={data} />}
+					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 					ref={listRef}
 				/>
 			</Box>
