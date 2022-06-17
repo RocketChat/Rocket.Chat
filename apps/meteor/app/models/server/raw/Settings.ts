@@ -61,6 +61,20 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.update(query, update);
 	}
 
+	async incrementValueById(_id: ISetting['_id'], value = 1): Promise<WriteOpResult> {
+		return this.update(
+			{
+				blocked: { $ne: true },
+				_id,
+			},
+			{
+				$inc: {
+					value,
+				},
+			} as unknown as UpdateQuery<ISetting>,
+		);
+	}
+
 	updateOptionsById<T extends ISetting = ISetting>(_id: ISetting['_id'], options: UpdateQuery<T>['$set']): Promise<WriteOpResult> {
 		const query = {
 			blocked: { $ne: true },
