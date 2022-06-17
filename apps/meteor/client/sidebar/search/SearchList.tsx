@@ -36,7 +36,7 @@ import Row from './Row';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
 const shortcut = ((): string => {
-	if ((!Meteor as any).Device.isDesktop()) {
+	if (!(Meteor as any).Device.isDesktop()) {
 		return '';
 	}
 	if (window.navigator.platform.toLowerCase().includes('mac')) {
@@ -68,15 +68,8 @@ const useSpotlight = (filterText: string, usernames: string[]) => {
 
 	return useMemo(() => {
 		if (!data) {
-			return {
-				data: {
-					rooms: [{ _id: '', name: '', t: '', uids: [''] }],
-					users: [{ _id: '', status: 'offline', name: '', username: '', outside: false, avatarETag: '' }],
-				},
-				status: 'loading',
-			};
+			return { data: { users: [], rooms: [] }, status: 'loading' };
 		}
-
 		return { data, status };
 	}, [data, status]);
 };
@@ -123,14 +116,12 @@ const useSearchItems = (filterText: string): any => {
 
 		const userMap = (user: {
 			_id: string;
-			status: 'offline' | 'online' | 'busy' | 'away';
 			name: string;
 			username: string;
-			outside: boolean;
 			avatarETag?: string;
 		}): {
 			_id: string;
-			t: 'd';
+			t: string;
 			name: string;
 			fname: string;
 			avatarETag?: string;
@@ -142,19 +133,18 @@ const useSearchItems = (filterText: string): any => {
 			avatarETag: user.avatarETag,
 		});
 
-		const filteredRooms = spotlight?.rooms.filter(roomFilter);
-		const filteredUsers = spotlight?.users.filter(filterUsersUnique).filter(usersfilter).map(userMap);
-
 		type resultsFromServerType = {
 			_id: string;
-			t: 'd';
+			t: string;
 			name: string;
 			fname?: string;
 			avatarETag?: string | undefined;
 			uids?: string[] | undefined;
 		}[];
 
-		const resultsFromServer = [...(filteredUsers as resultsFromServerType), ...(filteredRooms as resultsFromServerType)];
+		const resultsFromServer: resultsFromServerType = [];
+		resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap));
+		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
 
 		const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
 
@@ -347,7 +337,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 					totalCount={items?.length}
 					data={items}
 					components={{ Scroller: ScrollerWithCustomProps }}
-					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
+					itemContent={(index, data): ReactElement => <Row data={itemData} item={data} />}
 					ref={listRef}
 				/>
 			</Box>
