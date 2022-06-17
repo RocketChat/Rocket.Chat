@@ -3894,7 +3894,6 @@ __metadata:
     "@types/supertest": ^2.0.11
     "@types/ua-parser-js": ^0.7.36
     "@types/underscore.string": 0.0.38
-    "@types/use-subscription": ^1.0.0
     "@types/use-sync-external-store": ^0.0.3
     "@types/uuid": ^8.3.4
     "@types/xml-crypto": ^1.4.1
@@ -4072,7 +4071,7 @@ __metadata:
     underscore.string: ^3.3.6
     universal-perf-hooks: ^1.0.1
     url-polyfill: ^1.1.12
-    use-subscription: ~1.6.0
+    use-subscription: ^1.8.0
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
     vm2: ^3.9.9
@@ -4234,14 +4233,12 @@ __metadata:
     "@types/jest": ^27.4.1
     "@types/mongodb": ~3.6.10
     "@types/react": ^17
-    "@types/use-subscription": ^1
     "@types/use-sync-external-store": ^0.0.3
     eslint: ^8.12.0
     jest: ^27.5.1
     react: ~17.0.2
     ts-jest: ^27.1.4
     typescript: ~4.3.5
-    use-subscription: ~1.6.0
     use-sync-external-store: ^1.2.0
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -4249,7 +4246,6 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/rest-typings": "workspace:^"
     react: ~17.0.2
-    use-subscription: "*"
     use-sync-external-store: ^1.2.0
   languageName: unknown
   linkType: soft
@@ -6834,13 +6830,6 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
-  languageName: node
-  linkType: hard
-
-"@types/use-subscription@npm:^1, @types/use-subscription@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@types/use-subscription@npm:1.0.0"
-  checksum: 47fff868682692ecda7110bd04ba4c5b1324854c0bcccc765606a42d4bd9be475207413c8829a883b98e7edd801100df53876da0ff89ac21a8f964e440636ef2
   languageName: node
   linkType: hard
 
@@ -31215,12 +31204,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-subscription@npm:~1.6.0":
-  version: 1.6.0
-  resolution: "use-subscription@npm:1.6.0"
+"use-subscription@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "use-subscription@npm:1.8.0"
+  dependencies:
+    use-sync-external-store: ^1.2.0
   peerDependencies:
-    react: ^18.0.0
-  checksum: 0ce15a3ed1f66f78cb2d7a83ff4980e2ac93054b0bcbdc4e492e77fed599233372aaaf9c9fd9b370484c491c5aee0b980859db1108ad63ee4cdba0f468c4f5d1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: beac1f0ff14fe23fd6ae9c34681258936729f343bf6532bbce36caa8f4c1019ff380783e35b4aeb7f3faaec1a83af242d7833bf7e660816d24555dbdd2c934da
   languageName: node
   linkType: hard
 
