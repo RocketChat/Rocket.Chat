@@ -64,18 +64,18 @@ runs:
 
         echo "::set-output name=image-name::${IMAGE_NAME}"
 
-      - name: Login to GitHub Container Registry
-        if: github.event.pull_request.head.repo.full_name == github.repository
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ inputs.username }}
-          password: ${{ inputs.password }}
+    - name: Login to GitHub Container Registry
+      if: github.event.pull_request.head.repo.full_name == github.repository
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ inputs.username }}
+        password: ${{ inputs.password }}
 
-      - name: Publish image
-        shell: bash
-        if: github.event.pull_request.head.repo.full_name == github.repository
-        run: |
-          echo "Push Docker image: ${{ steps.build-image.outputs.image-name }}"
+    - name: Publish image
+      shell: bash
+      if: github.event.pull_request.head.repo.full_name == github.repository
+      run: |
+        echo "Push Docker image: ${{ steps.build-image.outputs.image-name }}"
 
-          docker push ${{ steps.build-image.outputs.image-name }}
+        docker push ${{ steps.build-image.outputs.image-name }}
