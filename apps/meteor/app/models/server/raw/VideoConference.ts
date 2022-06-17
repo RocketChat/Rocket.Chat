@@ -1,4 +1,4 @@
-import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
+import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult, FindOneOptions } from 'mongodb';
 import type { VideoConference, IGroupVideoConference, ILivechatVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 
@@ -7,7 +7,10 @@ import type { IndexSpecification, InsertionModel } from './BaseRaw';
 
 export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 	protected modelIndexes(): IndexSpecification[] {
-		return [{ key: { rid: 1, status: 1, createdAt: 1 }, unique: false }];
+		return [
+			{ key: { rid: 1, status: 1, createdAt: 1 }, unique: false },
+			{ key: { type: 1, status: 1 }, unique: false },
+		];
 	}
 
 	public async findRecentByRoomId(
@@ -144,5 +147,19 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 				[`messages.${messageType}`]: messageId,
 			},
 		});
+	}
+
+	public async countByTypeAndStatus(
+		type: VideoConference['type'],
+		status: VideoConferenceStatus,
+		options: FindOneOptions<VideoConference>,
+	): Promise<number> {
+		return this.find(
+			{
+				type: type as any,
+				status,
+			},
+			options,
+		).count();
 	}
 }

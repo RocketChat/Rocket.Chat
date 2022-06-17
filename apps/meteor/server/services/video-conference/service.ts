@@ -35,6 +35,7 @@ import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { getURL } from '../../../app/utils/server';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
+import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -119,6 +120,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const user = await this.Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(uid, { projection: { name: 1, username: 1 } });
 		if (!user) {
 			throw new Error('failed-to-load-own-data');
+		}
+
+		if (call.providerName === 'jitsi') {
+			updateCounter({ settingsId: 'Jitsi_Click_To_Join_Count' });
 		}
 
 		return this.joinCall(call, user, options);

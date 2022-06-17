@@ -53,7 +53,7 @@ settingsRegistry.addGroup('Video_Conference', function () {
 		public: true,
 	});
 
-	// Keeping those untouched until we decide how to handle stats
+	// #ToDo: Those should probably be handled by the apps themselves
 	this.add('Jitsi_Click_To_Join_Count', 0, {
 		type: 'int',
 		hidden: true,

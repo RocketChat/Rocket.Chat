@@ -164,4 +164,27 @@ export interface IStats {
 	totalEncryptedMessages: number;
 	totalLinkInvitationUses: number;
 	totalManuallyAddedUsers: number;
+	videoConf: {
+		videoConference: {
+			started: number;
+			ended: number;
+		};
+		direct: {
+			calling: number;
+			started: number;
+			ended: number;
+		};
+		livechat: {
+			started: number;
+			ended: number;
+		};
+		settings: {
+			enabled: boolean;
+			provider: string;
+			dms: boolean;
+			channels: boolean;
+			groups: boolean;
+			teams: boolean;
+		};
+	};
 }
