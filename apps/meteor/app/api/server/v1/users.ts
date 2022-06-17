@@ -433,7 +433,7 @@ API.v1.addRoute(
 
 			const result = Promise.await(
 				UsersRaw.col
-					.aggregate([
+					.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
 						{
 							$match: nonEmptyQuery,
 						},
