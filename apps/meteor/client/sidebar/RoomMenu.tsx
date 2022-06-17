@@ -10,6 +10,7 @@ import {
 	usePermission,
 	useMethod,
 	useTranslation,
+	TranslationKey,
 } from '@rocket.chat/ui-contexts';
 import { Fields } from '@rocket.chat/ui-contexts/dist/UserContext';
 import React, { memo, ReactElement, useMemo } from 'react';
@@ -75,7 +76,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	})();
 
 	const handleLeave = useMutableCallback(() => {
-		const leave = async () => {
+		const leave = async (): Promise<void> => {
 			try {
 				await leaveRoom(rid);
 				if (roomOpen) {
@@ -92,7 +93,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 		setModal(
 			<WarningModal
-				text={t(warnText, name)}
+				text={t(warnText as TranslationKey, name)}
 				confirmText={t('Leave_room')}
 				close={closeModal}
 				cancel={closeModal}
@@ -103,7 +104,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	});
 
 	const handleHide = useMutableCallback(async () => {
-		const hide = async () => {
+		const hide = async (): Promise<void> => {
 			try {
 				await hideRoom(rid);
 			} catch (error) {
@@ -131,7 +132,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 					label: t('Hide_room'),
 				}}
 			>
-				{t(warnText, name)}
+				{t(warnText as TranslationKey, name)}
 			</GenericModalDoNotAskAgain>,
 		);
 	});
@@ -172,15 +173,17 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 				action: handleToggleRead,
 			},
-			...(canFavorite && {
-				toggleFavorite: {
-					label: {
-						label: isFavorite ? t('Unfavorite') : t('Favorite'),
-						icon: isFavorite ? 'star-filled' : 'star',
-					},
-					action: handleToggleFavorite,
-				},
-			}),
+			...(canFavorite
+				? {
+						toggleFavorite: {
+							label: {
+								label: isFavorite ? t('Unfavorite') : t('Favorite'),
+								icon: isFavorite ? 'star-filled' : 'star',
+							},
+							action: handleToggleFavorite,
+						},
+				  }
+				: {}),
 			...(canLeave && {
 				leaveRoom: {
 					label: { label: t('Leave_room'), icon: 'sign-out' },
