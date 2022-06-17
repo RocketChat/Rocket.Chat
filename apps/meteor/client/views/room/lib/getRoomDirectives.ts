@@ -3,7 +3,17 @@ import { IRoom } from '@rocket.chat/core-typings';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
-export const getRoomDirectives = (room: IRoom): { [key: string]: boolean } => {
+type getRoomDirectiesType = {
+	roomCanSetOwner: boolean;
+	roomCanSetLeader: boolean;
+	roomCanSetModerator: boolean;
+	roomCanIgnore: boolean;
+	roomCanBlock: boolean;
+	roomCanMute: boolean;
+	roomCanRemove: boolean;
+};
+
+export const getRoomDirectives = (room: IRoom): getRoomDirectiesType => {
 	const roomDirectives = room?.t && roomCoordinator.getRoomDirectives(room.t);
 
 	const [roomCanSetOwner, roomCanSetLeader, roomCanSetModerator, roomCanIgnore, roomCanBlock, roomCanMute, roomCanRemove] = [
