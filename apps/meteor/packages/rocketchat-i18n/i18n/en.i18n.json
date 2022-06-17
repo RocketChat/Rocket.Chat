@@ -4410,6 +4410,7 @@
   "There_are_no_personal_access_tokens_created_yet": "There are no Personal Access Tokens created yet.",
   "There_are_no_users_in_this_role": "There are no users in this role.",
   "There_is_one_or_more_apps_in_an_invalid_state_Click_here_to_review": "There is one or more apps in an invalid state. Click here to review.",
+  "There_has_been_an_error_installing_the_app": "There has been an error installing the app",
   "These_notes_will_be_available_in_the_call_summary": "These notes will be available in the call summary",
   "This_agent_was_already_selected": "This agent was already selected",
   "this_app_is_included_with_subscription": "This app is included with __bundleName__ subscription",
