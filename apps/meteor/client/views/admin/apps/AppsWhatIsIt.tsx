@@ -1,9 +1,9 @@
 import { Button, Box, Throbber } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client';
-import ExternalLink from '../../../components/ExternalLink';
 import Page from '../../../components/Page';
 
 const readMeUrl = 'https://go.rocket.chat/i/developing-an-app';

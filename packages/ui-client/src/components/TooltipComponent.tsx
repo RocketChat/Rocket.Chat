@@ -15,5 +15,3 @@ export const TooltipComponent = ({ title, anchor }: TooltipComponentProps): Reac
 		</PositionAnimated>
 	);
 };
-
-export default TooltipComponent;
