@@ -1,5 +1,5 @@
 import { MongoInternals } from 'meteor/mongo';
-import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { VideoConferenceStatus, IStats } from '@rocket.chat/core-typings';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { settings } from '../../../settings/server';
@@ -7,7 +7,7 @@ import { VideoConference } from '../../../models/server/raw';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-export async function getVideoConferenceStatistics(): Promise<Record<string, unknown>> {
+export async function getVideoConferenceStatistics(): Promise<IStats['videoConf']> {
 	const options = {
 		readPreference: readSecondaryPreferred(db),
 	};

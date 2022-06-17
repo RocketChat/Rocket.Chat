@@ -203,6 +203,29 @@ export default {
 			totalEncryptedMessages: 0,
 			totalLinkInvitationUses: 0,
 			totalManuallyAddedUsers: 0,
+			videoConf: {
+				videoConference: {
+					started: 0,
+					ended: 0,
+				},
+				direct: {
+					calling: 0,
+					started: 0,
+					ended: 0,
+				},
+				livechat: {
+					started: 0,
+					ended: 0,
+				},
+				settings: {
+					enabled: false,
+					provider: '',
+					dms: false,
+					channels: false,
+					groups: false,
+					teams: false,
+				},
+			},
 		},
 	},
 } as ComponentMeta<typeof UsageCard>;
