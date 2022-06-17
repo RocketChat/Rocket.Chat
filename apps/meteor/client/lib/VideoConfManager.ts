@@ -149,6 +149,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				return this.callUser({ uid: data.callee, rid: roomId, callId: data.callId });
 			case 'videoconference':
 				return this.joinCall(data.callId);
+			case 'livechat':
+				return this.joinCall(data.callId);
 		}
 	}
 

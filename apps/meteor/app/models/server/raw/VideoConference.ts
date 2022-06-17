@@ -1,5 +1,5 @@
 import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
-import type { VideoConference, IGroupVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { VideoConference, IGroupVideoConference, ILivechatVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
@@ -61,6 +61,21 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		return (await this.insertOne(call)).insertedId;
 	}
 
+	public async createLivechat(
+		callDetails: Required<Pick<ILivechatVideoConference, 'rid' | 'createdBy' | 'providerName'>>,
+	): Promise<string> {
+		const call: InsertionModel<ILivechatVideoConference> = {
+			type: 'livechat',
+			users: [],
+			messages: {},
+			status: VideoConferenceStatus.STARTED,
+			createdAt: new Date(),
+			...callDetails,
+		};
+
+		return (await this.insertOne(call)).insertedId;
+	}
+
 	public updateOneById(
 		_id: string,
 		update: UpdateQuery<VideoConference> | Partial<VideoConference>,
@@ -69,11 +84,19 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		return this.updateOne({ _id }, update, options);
 	}
 
-	public async setEndedById(callId: string, endedBy: { _id: string; name: string; username: string }): Promise<void> {
+	public async setEndedById(callId: string, endedBy?: { _id: string; name: string; username: string }, endedAt?: Date): Promise<void> {
 		await this.updateOneById(callId, {
 			$set: {
 				endedBy,
-				endedAt: new Date(),
+				endedAt: endedAt || new Date(),
+			},
+		});
+	}
+
+	public async setStatusById(callId: string, status: VideoConference['status']): Promise<void> {
+		await this.updateOneById(callId, {
+			$set: {
+				status,
 			},
 		});
 	}
@@ -102,14 +125,14 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		});
 	}
 
-	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'>): Promise<void> {
+	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'> & { ts?: Date }): Promise<void> {
 		await this.updateOneById(callId, {
 			$addToSet: {
 				users: {
 					_id: user._id,
 					username: user.username,
 					name: user.name,
-					ts: new Date(),
+					ts: user.ts || new Date(),
 				},
 			},
 		});

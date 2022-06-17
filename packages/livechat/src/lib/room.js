@@ -34,19 +34,48 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 	route('/chat-finished');
 };
 
+const getVideoConfMessageData = (message) => message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
+
+const isVideoCallMessage = (message) => {
+	if (message.t === constants.webRTCCallStartedMessageType) {
+		return true;
+	}
+
+	if (getVideoConfMessageData(message)) {
+		return true;
+	}
+
+	return false;
+};
+
+const findCallData = (message) => {
+	const videoConfJoinBlock = getVideoConfMessageData(message);
+	if (videoConfJoinBlock) {
+		return {
+			callId: videoConfJoinBlock.blockId,
+			url: videoConfJoinBlock.url,
+			callProvider: 'video-conference',
+		};
+	}
+
+	return { callId: message._id, url: '', callProvider: message.t };
+};
+
 // TODO: use a separate event to listen to call start event. Listening on the message type isn't a good solution
 export const processIncomingCallMessage = async (message) => {
 	const { alerts } = store.state;
 	try {
+		const { callId, url, callProvider } = findCallData(message);
+
 		await store.setState({
 			incomingCallAlert: {
 				show: true,
-				callProvider: message.t,
+				callProvider,
 				callerUsername: message.u.username,
 				rid: message.rid,
 				time: message.ts,
-				callId: message._id,
-				url: message.t === constants.jitsiCallStartedMessageType ? message.customFields.jitsiCallUrl : '',
+				callId,
+				url,
 			},
 			ongoingCall: {
 				callStatus: CallStatus.RINGING,
@@ -67,7 +96,7 @@ const processMessage = async (message) => {
 		commands[message.msg] && commands[message.msg]();
 	} else if (message.webRtcCallEndTs) {
 		await store.setState({ ongoingCall: { callStatus: CallStatus.ENDED, time: message.ts }, incomingCallAlert: null });
-	} else if (message.t === constants.webRTCCallStartedMessageType || message.t === constants.jitsiCallStartedMessageType) {
+	} else if (isVideoCallMessage(message)) {
 		await processIncomingCallMessage(message);
 	}
 };
@@ -194,7 +223,7 @@ Livechat.onMessage(async (message) => {
 });
 
 export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger);
-export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => msg.t === constants.webRTCCallStartedMessageType || msg.t === constants.jitsiCallStartedMessageType).pop();
+export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
 	const { ongoingCall } = store.state;
@@ -225,7 +254,8 @@ export const loadMessages = async () => {
 	if (!latestCallMessage) {
 		return;
 	}
-	if (latestCallMessage.t === constants.jitsiCallStartedMessageType) {
+	const videoConfJoinBlock = getVideoConfMessageData(latestCallMessage);
+	if (videoConfJoinBlock) {
 		await store.setState({
 			ongoingCall: {
 				callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
@@ -235,7 +265,7 @@ export const loadMessages = async () => {
 				show: false,
 				callProvider:
 				latestCallMessage.t,
-				url: latestCallMessage.customFields.jitsiCallUrl,
+				url: videoConfJoinBlock.url,
 			},
 		});
 		return;
