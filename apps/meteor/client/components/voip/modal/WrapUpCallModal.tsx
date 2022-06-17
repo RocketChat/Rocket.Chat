@@ -12,7 +12,7 @@ type WrapUpCallPayload = {
 
 type WrapUpCallModalProps = {
 	closeRoom: () => void;
-}
+};
 
 export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactElement => {
 	const setModal = useSetModal();
