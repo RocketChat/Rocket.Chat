@@ -3895,6 +3895,7 @@ __metadata:
     "@types/ua-parser-js": ^0.7.36
     "@types/underscore.string": 0.0.38
     "@types/use-subscription": ^1.0.0
+    "@types/use-sync-external-store": ^0.0.3
     "@types/uuid": ^8.3.4
     "@types/xml-crypto": ^1.4.1
     "@types/xmldom": ^0.1.30
@@ -4072,6 +4073,7 @@ __metadata:
     universal-perf-hooks: ^1.0.1
     url-polyfill: ^1.1.12
     use-subscription: ~1.6.0
+    use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
     vm2: ^3.9.9
     webdav: ^4.9.0
@@ -4233,12 +4235,14 @@ __metadata:
     "@types/mongodb": ~3.6.10
     "@types/react": ^17
     "@types/use-subscription": ^1
+    "@types/use-sync-external-store": ^0.0.3
     eslint: ^8.12.0
     jest: ^27.5.1
     react: ~17.0.2
     ts-jest: ^27.1.4
     typescript: ~4.3.5
     use-subscription: ~1.6.0
+    use-sync-external-store: ^1.2.0
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "*"
@@ -4246,6 +4250,7 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     react: ~17.0.2
     use-subscription: "*"
+    use-sync-external-store: ^1.2.0
   languageName: unknown
   linkType: soft
 
@@ -6836,6 +6841,13 @@ __metadata:
   version: 1.0.0
   resolution: "@types/use-subscription@npm:1.0.0"
   checksum: 47fff868682692ecda7110bd04ba4c5b1324854c0bcccc765606a42d4bd9be475207413c8829a883b98e7edd801100df53876da0ff89ac21a8f964e440636ef2
+  languageName: node
+  linkType: hard
+
+"@types/use-sync-external-store@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "@types/use-sync-external-store@npm:0.0.3"
+  checksum: 161ddb8eec5dbe7279ac971531217e9af6b99f7783213566d2b502e2e2378ea19cf5e5ea4595039d730aa79d3d35c6567d48599f69773a02ffcff1776ec2a44e
   languageName: node
   linkType: hard
 
@@ -31209,6 +31221,15 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
   checksum: 0ce15a3ed1f66f78cb2d7a83ff4980e2ac93054b0bcbdc4e492e77fed599233372aaaf9c9fd9b370484c491c5aee0b980859db1108ad63ee4cdba0f468c4f5d1
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "use-sync-external-store@npm:1.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 5c639e0f8da3521d605f59ce5be9e094ca772bd44a4ce7322b055a6f58eeed8dda3c94cabd90c7a41fb6fa852210092008afe48f7038792fd47501f33299116a
   languageName: node
   linkType: hard
 
