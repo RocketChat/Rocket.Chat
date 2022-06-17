@@ -5,3 +5,4 @@ import './cssVars';
 import './customEventPolyfill';
 import './hoverTouchClick';
 import './objectFromEntries';
+import './buffer';

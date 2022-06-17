@@ -1,5 +1,6 @@
 import { Box, Button, TextInput, Margins, Avatar, IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import FileType from 'file-type/core';
 import React, { useState, useCallback } from 'react';
 
 import { useFileInput } from '../../../hooks/useFileInput';
@@ -23,12 +24,18 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
-			if (file.type.startsWith('image/')) {
-				setAvatarObj(avatarObj);
-				toDataURL(file, (dataurl) => {
-					setNewAvatarSource(dataurl);
-				});
-			} else dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+			const buffer = await file.arrayBuffer();
+			const type = await FileType.fromBuffer(buffer);
+
+			if (!file.type.startsWith('image/') || type?.ext === 'heic') {
+				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+				return;
+			}
+
+			setAvatarObj(avatarObj);
+			toDataURL(file, (dataurl) => {
+				setNewAvatarSource(dataurl);
+			});
 		},
 		[setAvatarObj, t, dispatchToastMessage],
 	);

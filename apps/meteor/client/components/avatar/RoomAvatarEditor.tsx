@@ -2,7 +2,8 @@ import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import FileType from 'file-type';
 import React, { useEffect, ReactElement } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
@@ -17,15 +18,25 @@ type RoomAvatarEditorProps = {
 
 const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar }: RoomAvatarEditorProps): ReactElement => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleChangeAvatar = useMutableCallback((file) => {
+	const handleChangeAvatar = useMutableCallback(async (file) => {
 		const reader = new FileReader();
-		reader.readAsDataURL(file);
+		const buffer = await file.arrayBuffer();
+		const type = await FileType.fromBuffer(buffer);
+
+		if (!file.type.startsWith('image/') || type?.ext === 'heic') {
+			dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+			return;
+		}
+
 		reader.onloadend = (): void => {
 			if (typeof reader.result === 'string') {
 				onChangeAvatar(reader.result);
 			}
 		};
+
+		reader.readAsDataURL(file);
 	});
 
 	const [clickUpload, reset] = useFileInput(handleChangeAvatar);
