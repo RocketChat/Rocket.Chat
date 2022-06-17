@@ -28,11 +28,16 @@ export const APIClient = new RestApiClient({
 	baseUrl: baseURI.replace(/\/$/, ''),
 });
 
-APIClient.use(function (request, next) {
+APIClient.use(async function (request, next) {
 	try {
-		return next(...request);
-	} catch (e) {
-		return new Promise((resolve, reject) => {
+		return await next(...request);
+	} catch (error) {
+		if (!(error instanceof Response) || error.status !== 400) {
+			throw error;
+		}
+
+		return new Promise(async (resolve, reject) => {
+			const e = await error.json();
 			process2faReturn({
 				error: e,
 				result: null,

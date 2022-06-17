@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { SideNav, MainContent, LoginPage } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
-test.describe('[Emoji]', function () {
+test.describe('[Emoji]', () => {
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
