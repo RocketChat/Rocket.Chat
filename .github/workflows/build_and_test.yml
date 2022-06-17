@@ -60,20 +60,20 @@ jobs:
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}-{{ github.run_number }}
           restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
+            turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}
+            turbo-${{ runner.OS }}-${{ github.ref_name }}
+            turbo-${{ runner.os }}
 
       # TODO change to use turbo cache
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
           path: ./apps/meteor/.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions') }}
+          key: meteor_cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
           restore-keys: |
-            ${{ runner.os }}-meteor_cache-
-            ${{ runner.os }}-
+            meteor_cache-${{ runner.os }}-
       - name: Cache meteor
         uses: actions/cache@v2
         with:
@@ -212,10 +212,11 @@ jobs:
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}-{{ github.run_number }}
           restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
+            turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}
+            turbo-${{ runner.OS }}-${{ github.ref_name }}
+            turbo-${{ runner.os }}
 
       - name: Yarn install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
@@ -311,10 +312,11 @@ jobs:
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}-{{ github.run_number }}
           restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
+            turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}
+            turbo-${{ runner.OS }}-${{ github.ref_name }}
+            turbo-${{ runner.os }}
 
       - name: Yarn install
         run: yarn
@@ -414,10 +416,11 @@ jobs:
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}-{{ github.run_number }}
           restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
+            turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}
+            turbo-${{ runner.OS }}-${{ github.ref_name }}
+            turbo-${{ runner.os }}
 
       - name: Cache meteor local
         uses: actions/cache@v2
@@ -537,10 +540,11 @@ jobs:
         with:
           path: |
             ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
+          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}-{{ github.run_number }}
           restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
+            turbo-${{ runner.OS }}-${{ github.ref_name }}-{{ github.run_id }}
+            turbo-${{ runner.OS }}-${{ github.ref_name }}
+            turbo-${{ runner.os }}
 
       - name: Build Docker images
         env:
