@@ -161,6 +161,11 @@ export class RestClient implements RestClientInterface {
 			...options,
 			headers: { ...this.getCredentialsAsHeaders(), ...this.headers, ...headers },
 			method,
+		}).then(function (response) {
+			if (!response.ok) {
+				return Promise.reject(response);
+			}
+			return response;
 		});
 	}
 
