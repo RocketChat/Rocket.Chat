@@ -259,6 +259,8 @@ jobs:
           root-dir: /tmp/build
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
           release: official
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
       - name: Build Alpine Docker image
         if: matrix.mongodb-version == '5.0'
@@ -267,6 +269,8 @@ jobs:
           root-dir: /tmp/build
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
           release: alpine
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
       # TODO move startup/restart to its own github action
       - name: Start up Rocket.Chat
@@ -410,30 +414,40 @@ jobs:
         with:
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
           service: account
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
       - name: "Build Docker image: authorization"
         uses: ./.github/actions/build-docker-image-service
         with:
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
           service: authorization
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
       - name: "Build Docker image: ddp-streamer"
         uses: ./.github/actions/build-docker-image-service
         with:
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
           service: ddp-streamer
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
       - name: "Build Docker image: presence"
         uses: ./.github/actions/build-docker-image-service
         with:
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
           service: presence
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
       - name: "Build Docker image: stream-hub"
         uses: ./.github/actions/build-docker-image-service
         with:
           docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
           service: stream-hub
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
       - name: Launch Traefik
         run: |
