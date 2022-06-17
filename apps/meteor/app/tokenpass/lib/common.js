@@ -9,7 +9,7 @@ const config = {
 	identityPath: '/oauth/user',
 	authorizePath: '/oauth/authorize',
 	tokenPath: '/oauth/access-token',
-	scope: 'user,tca,private-balances',
+	scope: 'user',
 	tokenSentVia: 'payload',
 	usernameField: 'username',
 	mergeUsers: true,

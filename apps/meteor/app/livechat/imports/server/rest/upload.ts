@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import filesize from 'filesize';
 
 import { FileUpload } from '../../../../file-upload/server/index.js';
@@ -16,6 +17,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
+		check(visitorToken, String);
 		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
 
 		if (!visitor) {
@@ -27,10 +29,12 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const { file, ...fields } = await getUploadFormData({
-			request: this.request,
-		});
-
+		const [file, fields] = await getUploadFormData(
+			{
+				request: this.request,
+			},
+			{ field: 'file' },
+		);
 		if (!fileUploadIsValidContentType(file.mimetype)) {
 			return API.v1.failure({
 				reason: 'error-type-not-allowed',
