@@ -11,7 +11,7 @@ type WrapUpCallPayload = {
 };
 
 type WrapUpCallModalProps = {
-	closeRoom: () => void;
+	closeRoom: (data?: { comment?: string; tags?: string[] }) => void;
 };
 
 export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactElement => {
