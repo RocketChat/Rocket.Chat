@@ -2,6 +2,7 @@ import type {
 	AtLeast,
 	IDirectVideoConference,
 	IGroupVideoConference,
+	ILivechatVideoConference,
 	IRoom,
 	IUser,
 	VideoConference,
@@ -14,10 +15,12 @@ export type VideoConferenceJoinOptions = {
 	cam?: boolean;
 };
 
+type GroupVideoConferenceCreateData = Omit<IGroupVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
+type DirectVideoConferenceCreateData = Omit<IDirectVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
+type LivechatVideoConferenceCreateData = Omit<ILivechatVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
+
 export type VideoConferenceCreateData = AtLeast<
-	Omit<IDirectVideoConference | IGroupVideoConference, 'createdBy'> & {
-		createdBy: IUser['_id'];
-	},
+	DirectVideoConferenceCreateData | GroupVideoConferenceCreateData | LivechatVideoConferenceCreateData,
 	'createdBy' | 'type' | 'rid' | 'providerName' | 'providerData'
 >;
 
@@ -35,4 +38,5 @@ export interface IVideoConfService {
 	setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void>;
 	addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void>;
 	listProviders(): Promise<{ key: string; label: string }[]>;
+	declineLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
 }

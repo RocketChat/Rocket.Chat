@@ -1,9 +1,15 @@
-import React, { memo } from 'react';
+import { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import React, { memo, ReactElement } from 'react';
 
 import SideBarItemTemplateWithData from '../RoomList/SideBarItemTemplateWithData';
 import UserItem from './UserItem';
 
-const Row = ({ item, data }) => {
+type RowProps = {
+	item: ISubscription & IRoom;
+	data: Record<string, any>;
+};
+
+const Row = ({ item, data }: RowProps): ReactElement => {
 	const { t, SideBarItemTemplate, avatarTemplate: AvatarTemplate, useRealName, extended } = data;
 
 	if (item.t === 'd' && !item.u) {
@@ -21,7 +27,6 @@ const Row = ({ item, data }) => {
 	return (
 		<SideBarItemTemplateWithData
 			id={`search-${item._id}`}
-			tabIndex={-1}
 			extended={extended}
 			t={t}
 			room={item}

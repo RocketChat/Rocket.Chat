@@ -73,11 +73,4 @@ Meteor.startup(() => {
 			};
 		},
 	});
-
-	// Deprecated
-	MessageTypes.registerType({
-		id: 'jitsi_call_started' as any,
-		system: true,
-		message: 'Started_a_video_call',
-	});
 });

@@ -82,7 +82,6 @@ import './sendMessageBySMS';
 import './api';
 import './api/rest';
 import './externalFrame';
-import './lib/messageTypes';
 import './methods/saveBusinessHour';
 
 export { Livechat } from './lib/Livechat';
