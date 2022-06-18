@@ -141,3 +141,15 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'video-conference.capabilities',
+	{ authRequired: true },
+	{
+		async get() {
+			const data = await VideoConf.listCapabilities();
+
+			return API.v1.success(data);
+		},
+	},
+);
