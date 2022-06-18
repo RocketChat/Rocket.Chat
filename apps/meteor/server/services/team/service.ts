@@ -73,10 +73,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		// TODO add validations to `data` and `members`
 
-		const membersResult = await this.Users.findActiveByIds(members, {
-			projection: { username: 1, _id: 0 },
+		const membersResult = await this.Users.findActiveByIdsOrUsernames(members, {
+			projection: { username: 1, _id: 1 },
 		}).toArray();
 		const memberUsernames = membersResult.map(({ username }) => username);
+		const memberIds = membersResult.map(({ _id }) => _id);
 
 		const teamData = {
 			...team,
@@ -96,7 +97,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			// filter empty strings and falsy values from members list
 			const membersList: Array<InsertionModel<ITeamMember>> =
-				members
+				memberIds
 					?.filter(Boolean)
 					.filter((memberId) => !excludeFromMembers.includes(memberId))
 					.map((memberId) => ({

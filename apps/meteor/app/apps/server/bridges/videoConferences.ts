@@ -41,8 +41,12 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 		const data = (this.orch.getConverters()?.get('videoConferences') as AppVideoConferencesConverter).convertAppVideoConference(call);
 		await VideoConf.setProviderData(call._id, data.providerData);
 
-		if (data.status > oldData.status) {
-			await VideoConf.setStatus(call._id, data.status);
+		for (const { _id, ts } of data.users) {
+			if (oldData.users.find((user) => user._id === _id)) {
+				continue;
+			}
+
+			VideoConf.addUser(call._id, _id, ts);
 		}
 
 		if (data.endedBy && data.endedBy._id !== oldData.endedBy?._id) {
@@ -51,17 +55,13 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 			await VideoConf.setEndedAt(call._id, data.endedAt);
 		}
 
-		for (const { _id, ts } of data.users) {
-			if (oldData.users.find((user) => user._id === _id)) {
-				continue;
-			}
-
-			VideoConf.addUser(call._id, _id, ts);
+		if (data.status > oldData.status) {
+			await VideoConf.setStatus(call._id, data.status);
 		}
 	}
 
 	protected async registerProvider(info: IVideoConfProvider): Promise<void> {
-		videoConfProviders.registerProvider(info.name);
+		videoConfProviders.registerProvider(info.name, info.capabilities || {});
 	}
 
 	protected async unRegisterProvider(info: IVideoConfProvider): Promise<void> {
