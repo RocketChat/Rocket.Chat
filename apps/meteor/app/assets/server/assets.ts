@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { ServerResponse, IncomingMessage } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
@@ -6,19 +7,20 @@ import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
+import { NextHandleFunction } from 'connect';
+import { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
 
 import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
-import { mime } from '../../utils/lib/mimeTypes';
-import { hasPermission } from '../../authorization';
+import { getExtension } from '../../utils/lib/mimeTypes';
+import { hasPermission } from '../../authorization/server';
 import { RocketChatFile } from '../../file';
 import { Settings } from '../../models/server';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
 });
-
-const assets = {
+const assets: IRocketChatAssets = {
 	logo: {
 		label: 'logo (svg, png, jpg)',
 		defaultUrl: 'images/logo/logo.svg',
@@ -38,6 +40,7 @@ const assets = {
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_ico: {
 		label: 'favicon (ico)',
 		defaultUrl: 'favicon.ico',
@@ -54,6 +57,7 @@ const assets = {
 			extensions: ['svg'],
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_16: {
 		label: 'favicon 16x16 (png)',
 		defaultUrl: 'images/logo/favicon-16x16.png',
@@ -64,6 +68,7 @@ const assets = {
 			height: 16,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_32: {
 		label: 'favicon 32x32 (png)',
 		defaultUrl: 'images/logo/favicon-32x32.png',
@@ -74,6 +79,7 @@ const assets = {
 			height: 32,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_192: {
 		label: 'android-chrome 192x192 (png)',
 		defaultUrl: 'images/logo/android-chrome-192x192.png',
@@ -84,6 +90,7 @@ const assets = {
 			height: 192,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	favicon_512: {
 		label: 'android-chrome 512x512 (png)',
 		defaultUrl: 'images/logo/android-chrome-512x512.png',
@@ -94,6 +101,7 @@ const assets = {
 			height: 512,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	touchicon_180: {
 		label: 'apple-touch-icon 180x180 (png)',
 		defaultUrl: 'images/logo/apple-touch-icon.png',
@@ -104,6 +112,7 @@ const assets = {
 			height: 180,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	touchicon_180_pre: {
 		label: 'apple-touch-icon-precomposed 180x180 (png)',
 		defaultUrl: 'images/logo/apple-touch-icon-precomposed.png',
@@ -114,6 +123,7 @@ const assets = {
 			height: 180,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_70: {
 		label: 'mstile 70x70 (png)',
 		defaultUrl: 'images/logo/mstile-70x70.png',
@@ -124,6 +134,7 @@ const assets = {
 			height: 70,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_144: {
 		label: 'mstile 144x144 (png)',
 		defaultUrl: 'images/logo/mstile-144x144.png',
@@ -134,6 +145,7 @@ const assets = {
 			height: 144,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_150: {
 		label: 'mstile 150x150 (png)',
 		defaultUrl: 'images/logo/mstile-150x150.png',
@@ -144,6 +156,7 @@ const assets = {
 			height: 150,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_310_square: {
 		label: 'mstile 310x310 (png)',
 		defaultUrl: 'images/logo/mstile-310x310.png',
@@ -154,6 +167,7 @@ const assets = {
 			height: 310,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	tile_310_wide: {
 		label: 'mstile 310x150 (png)',
 		defaultUrl: 'images/logo/mstile-310x150.png',
@@ -164,6 +178,7 @@ const assets = {
 			height: 150,
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	safari_pinned: {
 		label: 'safari pinned tab (svg)',
 		defaultUrl: 'images/logo/safari-pinned-tab.svg',
@@ -174,24 +189,25 @@ const assets = {
 	},
 };
 
-export const RocketChatAssets = new (class {
-	get mime() {
-		return mime;
-	}
+function getAssetByKey(key: string): IRocketChatAsset {
+	return assets[key as keyof IRocketChatAssets];
+}
 
-	get assets() {
+class RocketChatAssetsClass {
+	get assets(): IRocketChatAssets {
 		return assets;
 	}
 
-	setAsset(binaryContent, contentType, asset) {
-		if (!assets[asset]) {
+	public setAsset(binaryContent: BufferEncoding, contentType: string, asset: string): void {
+		const assetInstance = getAssetByKey(asset);
+		if (!assetInstance) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
 				function: 'RocketChat.Assets.setAsset',
 			});
 		}
 
-		const extension = mime.extension(contentType);
-		if (assets[asset].constraints.extensions.includes(extension) === false) {
+		const extension = getExtension(contentType);
+		if (assetInstance.constraints.extensions.includes(extension) === false) {
 			throw new Meteor.Error(contentType, `Invalid file type: ${contentType}`, {
 				function: 'RocketChat.Assets.setAsset',
 				errorTitle: 'error-invalid-file-type',
@@ -199,14 +215,14 @@ export const RocketChatAssets = new (class {
 		}
 
 		const file = Buffer.from(binaryContent, 'binary');
-		if (assets[asset].constraints.width || assets[asset].constraints.height) {
+		if (assetInstance.constraints.width || assetInstance.constraints.height) {
 			const dimensions = sizeOf(file);
-			if (assets[asset].constraints.width && assets[asset].constraints.width !== dimensions.width) {
+			if (assetInstance.constraints.width && assetInstance.constraints.width !== dimensions.width) {
 				throw new Meteor.Error('error-invalid-file-width', 'Invalid file width', {
 					function: 'Invalid file width',
 				});
 			}
-			if (assets[asset].constraints.height && assets[asset].constraints.height !== dimensions.height) {
+			if (assetInstance.constraints.height && assetInstance.constraints.height !== dimensions.height) {
 				throw new Meteor.Error('error-invalid-file-height');
 			}
 		}
@@ -222,10 +238,11 @@ export const RocketChatAssets = new (class {
 					const key = `Assets_${asset}`;
 					const value = {
 						url: `assets/${asset}.${extension}`,
-						defaultUrl: assets[asset].defaultUrl,
+						defaultUrl: assetInstance.defaultUrl,
 					};
 
 					Settings.updateValueById(key, value);
+					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					return RocketChatAssets.processAsset(key, value);
 				}, 200);
 			}),
@@ -234,8 +251,8 @@ export const RocketChatAssets = new (class {
 		rs.pipe(ws);
 	}
 
-	unsetAsset(asset) {
-		if (!assets[asset]) {
+	public unsetAsset(asset: string): void {
+		if (!getAssetByKey(asset)) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
 				function: 'RocketChat.Assets.unsetAsset',
 			});
@@ -244,26 +261,27 @@ export const RocketChatAssets = new (class {
 		RocketChatAssetsInstance.deleteFile(asset);
 		const key = `Assets_${asset}`;
 		const value = {
-			defaultUrl: assets[asset].defaultUrl,
+			defaultUrl: getAssetByKey(asset).defaultUrl,
 		};
 
 		Settings.updateValueById(key, value);
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		RocketChatAssets.processAsset(key, value);
 	}
 
-	refreshClients() {
-		return process.emit('message', {
+	public refreshClients(): boolean {
+		return (process.emit as Function)('message', {
 			refresh: 'client',
 		});
 	}
 
-	processAsset(settingKey, settingValue) {
+	public processAsset(settingKey: string, settingValue: any): Record<string, any> | undefined {
 		if (settingKey.indexOf('Assets_') !== 0) {
 			return;
 		}
 
 		const assetKey = settingKey.replace(/^Assets_/, '');
-		const assetValue = assets[assetKey];
+		const assetValue = getAssetByKey(assetKey);
 
 		if (!assetValue) {
 			return;
@@ -301,23 +319,25 @@ export const RocketChatAssets = new (class {
 		return assetValue.cache;
 	}
 
-	getURL(assetName, options = { cdn: false, full: true }) {
-		const asset = settings.get(assetName);
+	public getURL(assetName: string, options = { cdn: false, full: true }): string {
+		const asset = settings.get<IRocketChatAsset>(assetName);
 		const url = asset.url || asset.defaultUrl;
 
 		return getURL(url, options);
 	}
-})();
+}
 
-settingsRegistry.addGroup('Assets');
+export const RocketChatAssets = new RocketChatAssetsClass();
 
-settingsRegistry.add('Assets_SvgFavicon_Enable', true, {
-	type: 'boolean',
-	group: 'Assets',
-	i18nLabel: 'Enable_Svg_Favicon',
+settingsRegistry.addGroup('Assets', function () {
+	this.add('Assets_SvgFavicon_Enable', true, {
+		type: 'boolean',
+		group: 'Assets',
+		i18nLabel: 'Enable_Svg_Favicon',
+	});
 });
 
-function addAssetToSetting(asset, value) {
+function addAssetToSetting(asset: string, value: IRocketChatAsset): void {
 	const key = `Assets_${asset}`;
 
 	settingsRegistry.add(
@@ -336,16 +356,16 @@ function addAssetToSetting(asset, value) {
 		},
 	);
 
-	const currentValue = settings.get(key);
+	const currentValue = settings.get<IRocketChatAsset>(key);
 
-	if (typeof currentValue === 'object' && currentValue.defaultUrl !== assets[asset].defaultUrl) {
-		currentValue.defaultUrl = assets[asset].defaultUrl;
+	if (typeof currentValue === 'object' && currentValue.defaultUrl !== getAssetByKey(asset).defaultUrl) {
+		currentValue.defaultUrl = getAssetByKey(asset).defaultUrl;
 		Settings.updateValueById(key, currentValue);
 	}
 }
 
 for (const key of Object.keys(assets)) {
-	const value = assets[key];
+	const value = getAssetByKey(key);
 	addAssetToSetting(key, value);
 }
 
@@ -353,7 +373,7 @@ settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(
 
 Meteor.startup(function () {
 	return Meteor.setTimeout(function () {
-		return process.emit('message', {
+		return (process.emit as Function)('message', {
 			refresh: 'client',
 		});
 	}, 200);
@@ -361,9 +381,9 @@ Meteor.startup(function () {
 
 const { calculateClientHash } = WebAppHashing;
 
-WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeConfigOverride) {
+WebAppHashing.calculateClientHash = function (manifest: Record<string, any>, includeFilter: Function, runtimeConfigOverride: any): string {
 	for (const key of Object.keys(assets)) {
-		const value = assets[key];
+		const value = getAssetByKey(key);
 		if (!value.cache && !value.defaultUrl) {
 			continue;
 		}
@@ -381,7 +401,7 @@ WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeCo
 				hash: value.cache.hash,
 			};
 		} else {
-			const extension = value.defaultUrl.split('.').pop();
+			const extension = value.defaultUrl?.split('.').pop();
 			cache = {
 				path: `assets/${key}.${extension}`,
 				cacheable: false,
@@ -416,7 +436,7 @@ Meteor.methods({
 			});
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
+		const _hasPermission = hasPermission(Meteor.userId() as string, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'refreshClients',
@@ -434,7 +454,7 @@ Meteor.methods({
 			});
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
+		const _hasPermission = hasPermission(Meteor.userId() as string, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'unsetAsset',
@@ -452,7 +472,7 @@ Meteor.methods({
 			});
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
+		const _hasPermission = hasPermission(Meteor.userId() as string, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'setAsset',
@@ -464,62 +484,63 @@ Meteor.methods({
 	},
 });
 
-WebApp.connectHandlers.use(
-	'/assets/',
-	Meteor.bindEnvironment(function (req, res, next) {
-		const params = {
-			asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(/\.[^.]*$/, ''),
-		};
+const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {
+	if (!req.url) {
+		return;
+	}
+	const params = {
+		asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(/\.[^.]*$/, ''),
+	};
 
-		const file = assets[params.asset] && assets[params.asset].cache;
+	const asset = getAssetByKey(params.asset);
+	const file = asset?.cache;
 
-		const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
+	const format = req.url.split('.').pop() || '';
 
-		if (
-			assets[params.asset] &&
-			Array.isArray(assets[params.asset].constraints.extensions) &&
-			!assets[params.asset].constraints.extensions.includes(format)
-		) {
-			res.writeHead(403);
-			return res.end();
+	if (asset && Array.isArray(asset.constraints.extensions) && !asset.constraints.extensions.includes(format)) {
+		res.writeHead(403);
+		return res.end();
+	}
+	if (!file) {
+		const defaultUrl = asset?.defaultUrl;
+		if (defaultUrl) {
+			const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
+			req.url = `/${assetUrl}`;
+			WebAppInternals.staticFilesMiddleware((WebAppInternals as Record<string, any>).staticFilesByArch, req, res, next);
+		} else {
+			res.writeHead(404);
+			res.end();
 		}
-		if (!file) {
-			const defaultUrl = assets[params.asset] && assets[params.asset].defaultUrl;
-			if (defaultUrl) {
-				const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
-				req.url = `/${assetUrl}`;
-				WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFilesByArch, req, res, next);
-			} else {
-				res.writeHead(404);
-				res.end();
-			}
 
+		return;
+	}
+
+	const reqModifiedHeader = req.headers['if-modified-since'];
+	if (reqModifiedHeader) {
+		if (reqModifiedHeader === (file.uploadDate && file.uploadDate.toUTCString())) {
+			res.setHeader('Last-Modified', reqModifiedHeader);
+			res.writeHead(304);
+			res.end();
 			return;
 		}
+	}
 
-		const reqModifiedHeader = req.headers['if-modified-since'];
-		if (reqModifiedHeader) {
-			if (reqModifiedHeader === (file.uploadDate && file.uploadDate.toUTCString())) {
-				res.setHeader('Last-Modified', reqModifiedHeader);
-				res.writeHead(304);
-				res.end();
-				return;
-			}
-		}
+	res.setHeader('Cache-Control', 'public, max-age=0');
+	res.setHeader('Expires', '-1');
 
-		res.setHeader('Cache-Control', 'public, max-age=0');
-		res.setHeader('Expires', '-1');
+	if (format && format !== file.extension && ['png', 'jpg', 'jpeg'].includes(format)) {
+		res.setHeader('Content-Type', `image/${format}`);
+		sharp(file.content)
+			.toFormat(format as any)
+			.pipe(res);
+		return;
+	}
 
-		if (format && format !== file.extension && ['png', 'jpg', 'jpeg'].includes(format)) {
-			res.setHeader('Content-Type', `image/${format}`);
-			sharp(file.content).toFormat(format).pipe(res);
-			return;
-		}
+	res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
+	res.setHeader('Content-Type', file.contentType);
+	res.setHeader('Content-Length', file.size);
+	res.writeHead(200);
+	res.end(file.content);
+});
 
-		res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
-		res.setHeader('Content-Type', file.contentType);
-		res.setHeader('Content-Length', file.size);
-		res.writeHead(200);
-		res.end(file.content);
-	}),
-);
+WebApp.connectHandlers.use('/assets/', listener);

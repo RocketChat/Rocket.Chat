@@ -6,6 +6,7 @@ import type {
 	IRoom,
 	IUser,
 	VideoConference,
+	VideoConferenceCapabilities,
 	VideoConferenceInstructions,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -38,5 +39,6 @@ export interface IVideoConfService {
 	setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void>;
 	addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void>;
 	listProviders(): Promise<{ key: string; label: string }[]>;
+	listCapabilities(): Promise<{ providerName: string; capabilities: VideoConferenceCapabilities }>;
 	declineLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
 }

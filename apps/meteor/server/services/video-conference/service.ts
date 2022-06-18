@@ -12,6 +12,7 @@ import type {
 	IMessage,
 	IVideoConferenceMessage,
 	VideoConference,
+	VideoConferenceCapabilities,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -230,6 +231,28 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	public async listProviders(): Promise<{ key: string; label: string }[]> {
 		return videoConfProviders.getProviderList();
+	}
+
+	public async listCapabilities(): Promise<{ providerName: string; capabilities: VideoConferenceCapabilities }> {
+		if (!videoConfProviders.hasAnyProvider()) {
+			throw new Error('no-videoconf-provider-app');
+		}
+
+		const providerName = videoConfProviders.getActiveProvider();
+		if (!providerName) {
+			throw new Error('no-active-video-conf-provider');
+		}
+
+		const manager = await this.getProviderManager();
+		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
+		if (!configured) {
+			throw new Error('video-conf-provider-not-configured');
+		}
+
+		return {
+			providerName,
+			capabilities: videoConfProviders.getProviderCapabilities(providerName) || {},
+		};
 	}
 
 	public async declineLivechatCall(callId: VideoConference['_id']): Promise<boolean> {

@@ -1,10 +1,12 @@
+import { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
+
 import { settings } from '../../app/settings/server';
 
-const providers = new Set<string>();
+const providers = new Map<string, VideoConferenceCapabilities>();
 
 export const videoConfProviders = {
-	registerProvider(providerName: string): void {
-		providers.add(providerName);
+	registerProvider(providerName: string, capabilities: VideoConferenceCapabilities): void {
+		providers.set(providerName, capabilities);
 	},
 
 	unRegisterProvider(providerName: string): void {
@@ -19,19 +21,37 @@ export const videoConfProviders = {
 		}
 		const defaultProvider = settings.get<string>('VideoConf_Default_Provider');
 
-		if (providers.has(defaultProvider)) {
-			return defaultProvider;
+		if (defaultProvider) {
+			if (providers.has(defaultProvider)) {
+				return defaultProvider;
+			}
+
+			return;
 		}
 
-		const [name] = providers;
-		return name;
+		if (providers.size === 1) {
+			const [[name]] = [...providers];
+			return name;
+		}
+	},
+
+	hasAnyProvider(): boolean {
+		return providers.size > 0;
 	},
 
 	getProviderList(): { key: string; label: string }[] {
-		return [...providers].map((key) => ({ key, label: key }));
+		return [...providers.keys()].map((key) => ({ key, label: key }));
 	},
 
 	isProviderAvailable(name: string): boolean {
 		return providers.has(name);
+	},
+
+	getProviderCapabilities(name: string): VideoConferenceCapabilities | undefined {
+		if (!providers.has(name)) {
+			return;
+		}
+
+		return providers.get(name);
 	},
 };

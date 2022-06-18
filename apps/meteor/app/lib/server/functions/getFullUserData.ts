@@ -1,7 +1,9 @@
-import { Logger } from '../../../logger';
+import { IUser } from '@rocket.chat/core-typings';
+
+import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 
 const logger = new Logger('getFullUserData');
 
@@ -18,7 +20,7 @@ const defaultFields = {
 	statusText: 1,
 	avatarETag: 1,
 	extension: 1,
-};
+} as const;
 
 const fullFields = {
 	emails: 1,
@@ -31,12 +33,12 @@ const fullFields = {
 	requirePasswordChange: 1,
 	requirePasswordChangeReason: 1,
 	roles: 1,
-};
+} as const;
 
-let publicCustomFields = {};
-let customFields = {};
+let publicCustomFields: Record<string, 0 | 1> = {};
+let customFields: Record<string, 0 | 1> = {};
 
-settings.watch('Accounts_CustomFields', (value) => {
+settings.watch<string>('Accounts_CustomFields', (value) => {
 	publicCustomFields = {};
 	customFields = {};
 
@@ -58,29 +60,23 @@ settings.watch('Accounts_CustomFields', (value) => {
 	}
 });
 
-const getCustomFields = (canViewAllInfo) => (canViewAllInfo ? customFields : publicCustomFields);
+const getCustomFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => (canViewAllInfo ? customFields : publicCustomFields);
 
-const getFields = (canViewAllInfo) => ({
+const getFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => ({
 	...defaultFields,
 	...(canViewAllInfo && fullFields),
 	...getCustomFields(canViewAllInfo),
 });
 
-const removePasswordInfo = (user) => {
-	if (user && user.services) {
-		delete user.services.password;
-		delete user.services.email;
-		delete user.services.resume;
-		delete user.services.emailCode;
-		delete user.services.cloud;
-		delete user.services.email2fa;
-		delete user.services.totp;
-	}
-
-	return user;
+const removePasswordInfo = (user: IUser): Omit<IUser, 'services'> => {
+	const { services, ...result } = user;
+	return result;
 };
 
-export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername }) {
+export async function getFullUserDataByIdOrUsername(
+	userId: string,
+	{ filterId, filterUsername }: { filterId: string; filterUsername?: undefined } | { filterId?: undefined; filterUsername: string },
+): Promise<IUser | null> {
 	const caller = Users.findOneById(userId, { fields: { username: 1 } });
 	const targetUser = filterId || filterUsername;
 	const myself = (filterId && targetUser === userId) || (filterUsername && targetUser === caller.username);
