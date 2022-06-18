@@ -3,13 +3,12 @@ import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } fro
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
-import { useSubscription } from 'use-subscription';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import VerticalBar from '../../../components/VerticalBar';
 import { useForm } from '../../../hooks/useForm';
 import UserInfo from '../../room/contextualBar/UserInfo';
-import { formsSubscription } from '../additionalForms';
+import { useFormsSubscription } from '../additionalForms';
 
 // TODO: TYPE:
 // Department
@@ -46,7 +45,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 		() => (userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
 		[userDepartments],
 	);
-	const eeForms = useSubscription(formsSubscription);
+	const eeForms = useFormsSubscription();
 
 	const saveRef = useRef({
 		values: {},
