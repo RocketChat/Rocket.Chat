@@ -3503,7 +3503,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-hooks@npm:^0.31.11, @rocket.chat/fuselage-hooks@npm:^0.31.13, @rocket.chat/fuselage-hooks@npm:~0.31.12":
+"@rocket.chat/fuselage-hooks@npm:^0.31.13":
   version: 0.31.13
   resolution: "@rocket.chat/fuselage-hooks@npm:0.31.13"
   dependencies:
@@ -3526,6 +3526,18 @@ __metadata:
     react: ^17.0.2
     use-subscription: ^1.5.1
   checksum: 2c4fb22824400e3742a3c2fc0e2152db55d7125bb8653f6f467d6314217a83e58ed9cf3b59613348552fbe50de38a77169b7b8f4343b5903a935b8f090cd9521
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/fuselage-hooks@npm:~0.31.14-dev.7":
+  version: 0.31.14-dev.7
+  resolution: "@rocket.chat/fuselage-hooks@npm:0.31.14-dev.7"
+  dependencies:
+    use-sync-external-store: ~1.2.0
+  peerDependencies:
+    "@rocket.chat/fuselage-tokens": "*"
+    react: ^17.0.2
+  checksum: ad2a1a61189d694e5e70ab73dfc20a7bea7ad0686be97993b24c6053b5cfa027e6b70690b75b5e9c1e8712a2b41f7d031a416c5e6781e9c4b31b5c0a40529ea0
   languageName: node
   linkType: hard
 
@@ -3807,7 +3819,7 @@ __metadata:
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
     "@rocket.chat/fuselage": 0.32.0-dev.49
-    "@rocket.chat/fuselage-hooks": ~0.31.12
+    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.7
     "@rocket.chat/fuselage-polyfills": ~0.31.12
     "@rocket.chat/fuselage-toastbar": ^0.32.0-dev.22
     "@rocket.chat/fuselage-tokens": ~0.31.12
@@ -3894,7 +3906,7 @@ __metadata:
     "@types/supertest": ^2.0.11
     "@types/ua-parser-js": ^0.7.36
     "@types/underscore.string": 0.0.38
-    "@types/use-subscription": ^1.0.0
+    "@types/use-sync-external-store": ^0.0.3
     "@types/uuid": ^8.3.4
     "@types/xml-crypto": ^1.4.1
     "@types/xmldom": ^0.1.30
@@ -4071,7 +4083,7 @@ __metadata:
     underscore.string: ^3.3.6
     universal-perf-hooks: ^1.0.1
     url-polyfill: ^1.1.12
-    use-subscription: ~1.6.0
+    use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
     vm2: ^3.9.9
     webdav: ^4.9.0
@@ -4227,25 +4239,25 @@ __metadata:
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ^0.31.11
-    "@rocket.chat/fuselage-hooks": ^0.31.11
+    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.7
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/jest": ^27.4.1
     "@types/mongodb": ~3.6.10
     "@types/react": ^17
-    "@types/use-subscription": ^1
+    "@types/use-sync-external-store": ^0.0.3
     eslint: ^8.12.0
     jest: ^27.5.1
     react: ~17.0.2
     ts-jest: ^27.1.4
     typescript: ~4.3.5
-    use-subscription: ~1.6.0
+    use-sync-external-store: ^1.2.0
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/rest-typings": "workspace:^"
     react: ~17.0.2
-    use-subscription: "*"
+    use-sync-external-store: ^1.2.0
   languageName: unknown
   linkType: soft
 
@@ -6832,10 +6844,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/use-subscription@npm:^1, @types/use-subscription@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@types/use-subscription@npm:1.0.0"
-  checksum: 47fff868682692ecda7110bd04ba4c5b1324854c0bcccc765606a42d4bd9be475207413c8829a883b98e7edd801100df53876da0ff89ac21a8f964e440636ef2
+"@types/use-sync-external-store@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "@types/use-sync-external-store@npm:0.0.3"
+  checksum: 161ddb8eec5dbe7279ac971531217e9af6b99f7783213566d2b502e2e2378ea19cf5e5ea4595039d730aa79d3d35c6567d48599f69773a02ffcff1776ec2a44e
   languageName: node
   linkType: hard
 
@@ -10061,9 +10073,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001349":
-  version: 1.0.30001352
-  resolution: "caniuse-lite@npm:1.0.30001352"
-  checksum: 575ad031349e56224471859decd100d0f90c804325bf1b543789b212d6126f6e18925766b325b1d96f75e48df0036e68f92af26d1fb175803fd6ad935bc807ac
+  version: 1.0.30001356
+  resolution: "caniuse-lite@npm:1.0.30001356"
+  checksum: 2b1f377f503de8c3d585b85b648422d1a202528d04321aaff5e37054cf413e927db1cc37a3408b44646c6eab7b9e38cae4b44b3a81fbf2e2f8f676cf559518b5
   languageName: node
   linkType: hard
 
@@ -31203,12 +31215,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-subscription@npm:~1.6.0":
-  version: 1.6.0
-  resolution: "use-subscription@npm:1.6.0"
+"use-sync-external-store@npm:^1.2.0, use-sync-external-store@npm:~1.2.0":
+  version: 1.2.0
+  resolution: "use-sync-external-store@npm:1.2.0"
   peerDependencies:
-    react: ^18.0.0
-  checksum: 0ce15a3ed1f66f78cb2d7a83ff4980e2ac93054b0bcbdc4e492e77fed599233372aaaf9c9fd9b370484c491c5aee0b980859db1108ad63ee4cdba0f468c4f5d1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 5c639e0f8da3521d605f59ce5be9e094ca772bd44a4ce7322b055a6f58eeed8dda3c94cabd90c7a41fb6fa852210092008afe48f7038792fd47501f33299116a
   languageName: node
   linkType: hard
 

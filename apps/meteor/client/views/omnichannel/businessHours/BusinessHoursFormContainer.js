@@ -1,12 +1,11 @@
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useState } from 'react';
-import { useSubscription } from 'use-subscription';
 
 import { businessHourManager } from '../../../../app/livechat/client/views/app/business-hours/BusinessHours';
 import { useForm } from '../../../hooks/useForm';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { formsSubscription } from '../additionalForms';
+import { useFormsSubscription } from '../additionalForms';
 import BusinessHourForm from './BusinessHoursForm';
 
 const useChangeHandler = (name, ref) =>
@@ -25,7 +24,7 @@ const getInitalData = ({ workHours }) => ({
 const cleanFunc = () => {};
 
 const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
-	const forms = useSubscription(formsSubscription);
+	const forms = useFormsSubscription();
 
 	const [hasChangesMultiple, setHasChangesMultiple] = useState(false);
 	const [hasChangesTimeZone, setHasChangesTimeZone] = useState(false);
