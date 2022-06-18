@@ -140,4 +140,25 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 			},
 		});
 	}
+
+	public async expireOldVideoConferences(minDate: Date): Promise<void> {
+		await this.update(
+			{
+				createdAt: {
+					$lte: minDate,
+				},
+				endedAt: {
+					$exists: false,
+				},
+			},
+			{
+				$set: {
+					endedAt: new Date(),
+				},
+			},
+			{
+				multi: true,
+			},
+		);
+	}
 }
