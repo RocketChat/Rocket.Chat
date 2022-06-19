@@ -58,4 +58,14 @@ export class AppSettingBridge extends ServerSettingBridge {
 
 		Settings.updateValueById(setting.id, setting.value);
 	}
+
+	protected async incrementValue(id: string, value: number, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is incrementing the value of the setting ${id}.`);
+
+		if (!(await this.isReadableById(id, appId))) {
+			throw new Error(`The setting "${id}" is not readable.`);
+		}
+
+		Settings.incrementValueById(id, value);
+	}
 }
