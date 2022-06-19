@@ -56,7 +56,7 @@ export class AppSettingBridge extends ServerSettingBridge {
 			throw new Error(`The setting "${setting.id}" is not readable.`);
 		}
 
-		Settings.updateValueById(setting.id, setting.value);
+		await Settings.updateValueById(setting.id, setting.value);
 	}
 
 	protected async incrementValue(id: string, value: number, appId: string): Promise<void> {
@@ -66,6 +66,6 @@ export class AppSettingBridge extends ServerSettingBridge {
 			throw new Error(`The setting "${id}" is not readable.`);
 		}
 
-		Settings.incrementValueById(id, value);
+		await Settings.incrementValueById(id, value);
 	}
 }
