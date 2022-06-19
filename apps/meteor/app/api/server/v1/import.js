@@ -4,6 +4,7 @@ import { API } from '../api';
 import { hasPermission } from '../../../authorization/server';
 import { Imports } from '../../../models/server';
 import { Importers } from '../../../importer/server';
+import { executeUploadImportFile } from '../../../importer/server/methods/uploadImportFile';
 
 API.v1.addRoute(
 	'uploadImportFile',
@@ -12,7 +13,7 @@ API.v1.addRoute(
 		post() {
 			const { binaryContent, contentType, fileName, importerKey } = this.bodyParams;
 
-			return API.v1.success(Meteor.call('uploadImportFile', binaryContent, contentType, fileName, importerKey));
+			return API.v1.success(executeUploadImportFile(this.userId, binaryContent, contentType, fileName, importerKey));
 		},
 	},
 );
