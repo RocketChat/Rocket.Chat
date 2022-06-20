@@ -13,7 +13,6 @@
 		"resolveJsonModule": true,
 		"jsx": "react-jsx",
 		"importsNotUsedAsValues": "error",
-		"composite": true
 	},
 	"exclude": ["node_modules", "**/*.spec.ts"]
 }

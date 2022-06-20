@@ -7,7 +7,6 @@
 		"allowJs": true,
 		"checkJs": false,
 		"jsx": "react",
-		"composite": false,
 		// "incremental": true,
 		// "noEmit": true,
 
