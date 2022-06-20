@@ -117,7 +117,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-call');
 		}
 
-		const user = await this.Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(uid, { projection: { name: 1, username: 1 } });
+		const user = await this.Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>(uid, {
+			projection: { name: 1, username: 1, avatarETag: 1 },
+		});
 		if (!user) {
 			throw new Error('failed-to-load-own-data');
 		}
@@ -349,6 +351,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				{
 					type: 'actions',
 					appId: 'videoconf-core',
+					value: title,
 					elements: [
 						{
 							appId: 'videoconf-core',
@@ -560,7 +563,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async joinCall(
 		call: VideoConference,
-		user: AtLeast<IUser, '_id' | 'username' | 'name'>,
+		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
 		switch (call.type) {
@@ -702,12 +705,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async addUserToCall(
 		call: AtLeast<VideoConference, '_id' | 'users'>,
-		{ _id, username, name, ts }: AtLeast<IUser, '_id' | 'username' | 'name'> & { ts?: Date },
+		{ _id, username, name, avatarETag, ts }: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> & { ts?: Date },
 	): Promise<void> {
 		if (call.users.find((user) => user._id === _id)) {
 			return;
 		}
 
-		return this.VideoConference.addUserById(call._id, { _id, username, name, ts });
+		return this.VideoConference.addUserById(call._id, { _id, username, name, avatarETag, ts });
 	}
 }

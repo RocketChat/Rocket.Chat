@@ -3640,21 +3640,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-ui-kit@npm:~0.31.14-dev.1":
-  version: 0.31.14-dev.1
-  resolution: "@rocket.chat/fuselage-ui-kit@npm:0.31.14-dev.1"
+"@rocket.chat/fuselage-ui-kit@npm:~0.32.0-dev.1":
+  version: 0.32.0-dev.1
+  resolution: "@rocket.chat/fuselage-ui-kit@npm:0.32.0-dev.1"
   dependencies:
-    "@rocket.chat/ui-kit": ~0.31.14-dev.1
+    "@rocket.chat/ui-kit": ~0.31.14-dev.4
     tslib: ^2.3.1
   peerDependencies:
-    "@rocket.chat/fuselage": ~0.32.0-dev.48
-    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.1
+    "@rocket.chat/fuselage": ~0.32.0-dev.51
+    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.4
     "@rocket.chat/fuselage-polyfills": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/styled": ~0.31.14-dev.1
+    "@rocket.chat/styled": ~0.31.14-dev.4
     react: ^17.0.2
     react-dom: ^17.0.2
-  checksum: 3be924851a2ebe90a5ff61349fc9c02ebcb98035a9a33f42f6f16be282b1687a847845e59523789153ae5476f9b0640885c21827018c5e1d722460e81e15b058
+  checksum: 8052848a49a17b2983037a34ba66f623e8206ea01c67769feb85e533fe81d15d012155ac6e6403ba1fc46e3314e55c4ac96e90133571ecb323c2409c6fcba380
   languageName: node
   linkType: hard
 
@@ -3908,7 +3908,7 @@ __metadata:
     "@rocket.chat/fuselage-polyfills": ~0.31.12
     "@rocket.chat/fuselage-toastbar": ^0.32.0-dev.22
     "@rocket.chat/fuselage-tokens": ~0.31.12
-    "@rocket.chat/fuselage-ui-kit": ~0.31.14-dev.1
+    "@rocket.chat/fuselage-ui-kit": ~0.32.0-dev.1
     "@rocket.chat/icons": ~0.31.12
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": ~0.31.12
@@ -4394,10 +4394,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/ui-kit@npm:~0.31.14-dev.1":
-  version: 0.31.14-dev.1
-  resolution: "@rocket.chat/ui-kit@npm:0.31.14-dev.1"
-  checksum: 9f807601eb6b90a975e61c78fc1af2663fe42998b931f825e694e5843a0bc048f679dfe7c264e772819824a7b57e5c7f6df30048d88bbc797dceab8d6e766e2a
+"@rocket.chat/ui-kit@npm:~0.31.14-dev.4":
+  version: 0.31.14-dev.4
+  resolution: "@rocket.chat/ui-kit@npm:0.31.14-dev.4"
+  checksum: 9a66fd98e59b13569075af938b3819686d71d30ae671cf7c60b26fbf40a2ea09c119c09b14765e36520edcc5592fa90f117b431d540529de424a6b8ab7d23310
   languageName: node
   linkType: hard
 
