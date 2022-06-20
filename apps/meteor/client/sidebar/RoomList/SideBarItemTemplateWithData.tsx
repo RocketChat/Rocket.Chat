@@ -66,9 +66,9 @@ type RoomListRowProps = {
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
 
-	selected: boolean;
+	selected?: boolean;
 
-	sidebarViewMode: unknown;
+	sidebarViewMode?: unknown;
 };
 
 function SideBarItemTemplateWithData({
@@ -137,7 +137,6 @@ function SideBarItemTemplateWithData({
 			data-qa='sidebar-item'
 			aria-level={2}
 			unread={highlighted}
-			threadUnread={threadUnread}
 			selected={selected}
 			href={href}
 			onClick={(): void => !selected && sidebar.toggle()}
