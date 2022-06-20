@@ -128,7 +128,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 							<Throbber inheritColor />
 						) : (
 							<>
-								{button.icon && <Icon name={button.icon} />}
+								{button.icon && <Icon name={button.icon} mie='x8' />}
 								{t(button.label)}
 							</>
 						)}
