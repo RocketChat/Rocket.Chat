@@ -22,6 +22,7 @@ export type UsersUpdateParamsPOST = {
 		sendWelcomeEmail?: boolean;
 		verified?: boolean;
 		customFields?: {};
+		status?: string;
 	};
 	confirmRelinquish?: boolean;
 };
@@ -99,6 +100,10 @@ const UsersUpdateParamsPostSchema = {
 				},
 				customFields: {
 					type: 'object',
+					nullable: true,
+				},
+				status: {
+					type: 'string',
 					nullable: true,
 				},
 			},
