@@ -3552,7 +3552,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-hooks@npm:^0.31.13":
+"@rocket.chat/fuselage-hooks@npm:^0.31.11, @rocket.chat/fuselage-hooks@npm:^0.31.13":
   version: 0.31.13
   resolution: "@rocket.chat/fuselage-hooks@npm:0.31.13"
   dependencies:
