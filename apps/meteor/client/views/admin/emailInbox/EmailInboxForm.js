@@ -68,6 +68,7 @@ const getInitialValues = (data) => {
 		imapUsername: imap.username ?? '',
 		imapPassword: imap.password ?? '',
 		imapSecure: imap.secure ?? false,
+		imapRetries: imap.maxRetries ?? 10,
 	};
 };
 
@@ -96,6 +97,7 @@ function EmailInboxForm({ id, data }) {
 		handleImapPort,
 		handleImapUsername,
 		handleImapPassword,
+		handleImapRetries,
 		handleImapSecure,
 	} = handlers;
 	const {
@@ -116,6 +118,7 @@ function EmailInboxForm({ id, data }) {
 		imapPort,
 		imapUsername,
 		imapPassword,
+		imapRetries,
 		imapSecure,
 	} = values;
 
@@ -174,6 +177,7 @@ function EmailInboxForm({ id, data }) {
 			username: imapUsername,
 			password: imapPassword,
 			secure: imapSecure,
+			maxRetries: parseInt(imapRetries),
 		};
 
 		const payload = {
@@ -329,6 +333,12 @@ function EmailInboxForm({ id, data }) {
 								<Field.Label>{t('Password')}*</Field.Label>
 								<Field.Row>
 									<TextInput type='password' value={imapPassword} onChange={handleImapPassword} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label>{t('Max_Retry')}*</Field.Label>
+								<Field.Row>
+									<TextInput value={imapRetries} onChange={handleImapRetries} />
 								</Field.Row>
 							</Field>
 							<Field>

@@ -9,6 +9,7 @@ type IMAPOptions = {
 	filter: any[];
 	rejectBeforeTS?: Date;
 	markSeen: boolean;
+	maxRetries: number;
 };
 
 export declare interface IMAPInterceptor {
@@ -23,12 +24,15 @@ export class IMAPInterceptor extends EventEmitter {
 
 	private backoff: NodeJS.Timeout;
 
+	private retries = 0;
+
 	constructor(
 		imapConfig: IMAP.Config,
 		private options: IMAPOptions = {
 			deleteAfterRead: false,
 			filter: ['!SEEN'],
 			markSeen: true,
+			maxRetries: 10,
 		},
 	) {
 		super();
@@ -45,6 +49,7 @@ export class IMAPInterceptor extends EventEmitter {
 				clearTimeout(this.backoff);
 				this.openInbox((err) => {
 					if (err) {
+						this.log('Error occurred during imap inbox opening: ', err);
 						throw err;
 					}
 					// fetch new emails & wait [IDLE]
@@ -104,10 +109,15 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	reconnect(): void {
-		const loop = async (): Promise<void> => {
+		const loop = (): void => {
 			this.start();
-			this.initialBackoffDurationMS *= 2;
-			this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
+			if (this.retries < this.options.maxRetries) {
+				this.retries += 1;
+				this.initialBackoffDurationMS *= 2;
+				this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
+			} else {
+				this.log('IMAP reconnection failed.');
+			}
 		};
 		this.backoff = setTimeout(loop, this.initialBackoffDurationMS);
 	}

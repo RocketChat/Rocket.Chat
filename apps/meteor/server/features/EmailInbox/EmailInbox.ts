@@ -48,6 +48,7 @@ export async function configureEmailInboxes(): Promise<void> {
 				filter: [['UNSEEN'], ['SINCE', emailInboxRecord._updatedAt]],
 				rejectBeforeTS: emailInboxRecord._updatedAt,
 				markSeen: true,
+				maxRetries: emailInboxRecord.imap.maxRetries,
 			},
 		);
 

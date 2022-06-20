@@ -19,6 +19,7 @@ export interface IEmailInbox {
 		username: string;
 		password: string;
 		secure: boolean;
+		maxRetries: number;
 	};
 	_createdAt: Date;
 	_createdBy: {
