@@ -76,6 +76,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '14.18.3'
+          cache: 'yarn'
 
       - uses: actions/checkout@v3
 
@@ -87,25 +88,6 @@ jobs:
           docker rmi $(docker image ls -aq)
           df -h
 
-      # TODO is this required?
-      # - name: check package-lock
-      #   run: |
-      #     npx package-lock-check
-
-      - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules/.cache/turbo
-          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}
-            turbo-${{ runner.OS }}-${{ github.ref_name }}
-            turbo-${{ runner.OS }}
-
-      # TODO change to use turbo cache
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
@@ -153,6 +135,12 @@ jobs:
       - name: yarn install
         run: yarn
 
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+
       - run: yarn lint
 
       - run: yarn turbo run translation-check
@@ -199,6 +187,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
       - uses: actions/checkout@v3
 
@@ -243,6 +232,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
       - name: Setup Chrome
         run: |
@@ -254,20 +244,6 @@ jobs:
           docker exec mongo mongo --eval 'rs.status()'
 
       - uses: actions/checkout@v3
-
-      - uses: c-hive/gha-yarn-cache@v2
-
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules/.cache/turbo
-          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}
-            turbo-${{ runner.OS }}-${{ github.ref_name }}
-            turbo-${{ runner.OS }}
 
       - name: yarn install
         run: yarn
@@ -409,10 +385,12 @@ jobs:
       - name: Launch NATS
         run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
 
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
       - name: Setup Chrome
         run: |
@@ -423,26 +401,14 @@ jobs:
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
-      - uses: actions/checkout@v3
-
-      - uses: c-hive/gha-yarn-cache@v2
-
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v1
         with:
-          path: |
-            ./node_modules/.cache/turbo
-          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}
-            turbo-${{ runner.OS }}-${{ github.ref_name }}
-            turbo-${{ runner.OS }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
 
       - name: yarn install
         run: yarn
-
-      - run: yarn build
 
       - name: Unit Test
         run: yarn testunit
