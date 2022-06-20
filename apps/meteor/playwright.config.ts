@@ -21,7 +21,6 @@ const config: PlaywrightTestConfig = {
 		screenshot: 'only-on-failure',
 		trace: 'retain-on-failure',
 		baseURL,
-		browserName: 'chromium',
 	},
 	outputDir: 'tests/e2e/test-failures',
 	reporter: [['list']],
