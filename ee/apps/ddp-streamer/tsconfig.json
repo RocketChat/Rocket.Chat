@@ -6,6 +6,7 @@
 		"allowJs": true,
 		"checkJs": false,
 		"incremental": true,
+		"composite": false,
 
 		/* Strict Type-Checking Options */
 		"noImplicitAny": true,
