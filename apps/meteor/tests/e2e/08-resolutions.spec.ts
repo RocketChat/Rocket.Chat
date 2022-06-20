@@ -1,6 +1,5 @@
-import { Browser } from '@playwright/test';
+import { test, expect, Browser } from '@playwright/test';
 
-import { expect, test } from './utils/test';
 import { Global, MainContent, SideNav, LoginPage } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 

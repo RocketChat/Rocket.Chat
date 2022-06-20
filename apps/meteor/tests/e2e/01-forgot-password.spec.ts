@@ -1,4 +1,5 @@
-import { test, expect } from './utils/test';
+import { test, expect } from '@playwright/test';
+
 import { Global, LoginPage } from './pageobjects';
 import { VALID_EMAIL, INVALID_EMAIL, INVALID_EMAIL_WITHOUT_MAIL_PROVIDER } from './utils/mocks/userAndPasswordMock';
 
