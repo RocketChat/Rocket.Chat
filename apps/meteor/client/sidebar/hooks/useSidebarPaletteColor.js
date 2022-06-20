@@ -160,21 +160,21 @@ const getStyle = (
 			--rcx-color-primary-800: ${toVar(colors.b200)};
 			--rcx-color-primary-900: ${toVar(colors.b100)};
 
-			--rcx-button-colors-ghost-active-border-color: ${toVar(colors.n900)};
-			--rcx-button-colors-ghost-active-background-color: ${toVar(colors.n800)};
-			--rcx-button-colors-ghost-color: ${toVar(colors.n600)};
-			--rcx-button-colors-ghost-border-color: ${toVar(colors.sibebarSurface)};
-			--rcx-button-colors-ghost-background-color: ${toVar(colors.sibebarSurface)};
-			--rcx-button-colors-ghost-hover-background-color: ${toVar(colors.n900)};
-			--rcx-button-colors-ghost-hover-border-color: ${toVar(colors.n900)};
+			--rcx-button-colors-icon-active-border-color: ${toVar(colors.n900)};
+			--rcx-button-colors-icon-active-background-color: ${toVar(colors.n800)};
+			--rcx-button-colors-icon-color: ${toVar(colors.n600)};
+			--rcx-button-colors-icon-border-color: ${toVar(colors.sibebarSurface)};
+			--rcx-button-colors-icon-background-color: ${toVar(colors.sibebarSurface)};
+			--rcx-button-colors-icon-hover-background-color: ${toVar(colors.n900)};
+			--rcx-button-colors-icon-hover-border-color: ${toVar(colors.n900)};
 
-			--rcx-button-colors-ghost-success-active-border-color: ${toVar(colors.n900)};
-			--rcx-button-colors-ghost-success-active-background-color: ${toVar(colors.n800)};
-			--rcx-button-colors-ghost-success-color: ${toVar(colors.n600)};
-			--rcx-button-colors-ghost-success-border-color: ${toVar(colors.sibebarSurface)};
-			--rcx-button-colors-ghost-success-background-color: ${toVar(colors.sibebarSurface)};
-			--rcx-button-colors-ghost-success-hover-background-color: ${toVar(colors.n900)};
-			--rcx-button-colors-ghost-success-hover-border-color: ${toVar(colors.n900)};
+			--rcx-button-colors-icon-success-active-border-color: ${toVar(colors.n900)};
+			--rcx-button-colors-icon-success-active-background-color: ${toVar(colors.n800)};
+			--rcx-button-colors-icon-success-color: ${toVar(colors.n600)};
+			--rcx-button-colors-icon-success-border-color: ${toVar(colors.sibebarSurface)};
+			--rcx-button-colors-icon-success-background-color: ${toVar(colors.sibebarSurface)};
+			--rcx-button-colors-icon-success-hover-background-color: ${toVar(colors.n900)};
+			--rcx-button-colors-icon-success-hover-border-color: ${toVar(colors.n900)};
 
 
 			--rcx-sidebar-item-background-color-hover: ${toVar(colors.n900)};
