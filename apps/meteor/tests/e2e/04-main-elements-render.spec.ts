@@ -216,19 +216,19 @@ test.describe('[Main Elements Render]', function () {
 				});
 			});
 
-			test.describe('[Files Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('files', true);
-				});
+			// test.describe('[Files Tab]', () => {
+			// 	test.beforeAll(async () => {
+			// 		await flexTab.operateFlexTab('files', true);
+			// 	});
 
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('files', false);
-				});
+			// 	test.afterAll(async () => {
+			// 		await flexTab.operateFlexTab('files', false);
+			// 	});
 
-				test('expect show the files Tab content', async () => {
-					await expect(flexTab.filesTabContent).toBeVisible();
-				});
-			});
+			// 	test('expect show the files Tab content', async () => {
+			// 		await expect(flexTab.filesTabContent).toBeVisible();
+			// 	});
+			// });
 
 			test.describe('[Mentions Tab]', () => {
 				test.beforeAll(async () => {
