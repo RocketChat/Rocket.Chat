@@ -312,11 +312,11 @@ jobs:
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}"
-
           # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
           if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
-            IMAGE_TAG="${IMAGE_TAG}.alpine"
+            IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
+          else
+            IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
           fi;
 
           IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
@@ -530,7 +530,7 @@ jobs:
             -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
             -e SKIP_PROCESS_EVENT_REGISTRATION=true \
             --label 'traefik.http.routers.rocketchat.rule=PathPrefix(`/`)' \
-            ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}
+            ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.official
 
           # spin up all micro services
           docker run --name ddp-streamer -d \
