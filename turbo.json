@@ -30,6 +30,10 @@
 		"dev": {
 			"dependsOn": ["^dev"],
 			"cache": false
+		},
+		"dsv": {
+			"dependsOn": ["build"],
+			"cache": false
 		}
 	}
 }

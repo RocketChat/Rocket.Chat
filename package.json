@@ -12,10 +12,12 @@
 		"testunit": "turbo run testunit",
 		"dev:root": "tsc -b --watch --preserveWatchOutput",
 		"dev": "turbo run //#dev:root dev --parallel --filter=@rocket.chat/meteor...",
+		"dsv": "turbo run dsv --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
 	},
 	"devDependencies": {
+		"@types/chart.js": "^2.9.37",
 		"@types/js-yaml": "^4.0.5",
 		"husky": "^7.0.4",
 		"turbo": "^1.2.16",

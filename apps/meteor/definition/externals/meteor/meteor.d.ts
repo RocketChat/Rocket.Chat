@@ -12,6 +12,10 @@ declare module 'meteor/meteor' {
 			reason?: string;
 		}
 
+		interface Device {
+			isDesktop: () => boolean;
+		}
+
 		const server: any;
 
 		const runAsUser: (userId: string, scope: Function) => any;
