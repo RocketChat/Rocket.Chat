@@ -33,15 +33,15 @@ const MeteorProvider: FC = ({ children }) => (
 											<CustomSoundProvider>
 												<UserProvider>
 													<AuthorizationProvider>
-														<CallProvider>
-															<OmnichannelProvider>
-																<VideoConfProvider>
-																	<ModalProvider>
+														<VideoConfProvider>
+															<ModalProvider>
+																<CallProvider>
+																	<OmnichannelProvider>
 																		<AttachmentProvider>{children}</AttachmentProvider>
-																	</ModalProvider>
-																</VideoConfProvider>
-															</OmnichannelProvider>
-														</CallProvider>
+																	</OmnichannelProvider>
+																</CallProvider>
+															</ModalProvider>
+														</VideoConfProvider>
 													</AuthorizationProvider>
 												</UserProvider>
 											</CustomSoundProvider>

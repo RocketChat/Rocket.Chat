@@ -12,7 +12,7 @@ import {
 	isVoipEventCallAbandoned,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
+import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -21,8 +21,7 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
-import { CallContext, CallContextValue } from '../../contexts/CallContext';
-import { imperativeModal } from '../../lib/imperativeModal';
+import { CallContext, CallContextValue, useCallCloseRoom } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { useVoipClient } from './hooks/useVoipClient';
@@ -45,6 +44,7 @@ export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
 	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');
+	const setModal = useSetModal();
 
 	const result = useVoipClient();
 	const user = useUser();
@@ -56,8 +56,8 @@ export const CallProvider: FC = ({ children }) => {
 	const [queueName, setQueueName] = useState('');
 
 	const openWrapUpModal = useCallback((): void => {
-		imperativeModal.open({ component: WrapUpCallModal });
-	}, []);
+		setModal(() => <WrapUpCallModal closeRoom={useCallCloseRoom} />);
+	}, [setModal]);
 
 	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
 
