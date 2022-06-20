@@ -66,9 +66,7 @@ addAction('video-conf', ({ room }) => {
 						icon: 'phone',
 						action: handleOpenVideoConf,
 						full: true,
-						// TODO: issue with tests
-						// order: live ? -1 : 4,
-						order: live ? 99 : 99,
+						order: live ? -1 : 4,
 				  }
 				: null,
 		[handleOpenVideoConf, groups, enableOption, live],
