@@ -381,7 +381,7 @@ jobs:
           done
 
           cd ./apps/meteor
-          npm run test:playwright
+          npm run test:e2e
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v2
@@ -640,12 +640,12 @@ jobs:
           done;
           exit $s
 
-      - name: Install Playwright
+      - name: 🎭 Install Playwright
         run: |
           cd ./apps/meteor
           npx playwright install --with-deps
 
-      - name: E2E Test UI
+      - name: 🎭 E2E Test UI
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
@@ -685,13 +685,32 @@ jobs:
           docker logs presence --tail=50
 
           cd ./apps/meteor
-          npm run test:playwright
+          npm run test:e2e:ee
 
-      - name: Store playwright test trace
+      - name: 🎭 Extract e2e:coverage
+        run: |
+          NYC_OUTPUT=$(yarn test:e2e:nyc)
+          COVERAGE_REPORTS=$(grep -o '[^ ]*%' <<< "$NYC_OUTPUT")
+          echo "REPORT_STATEMENTS=$(sed -n 1p <<< "$COVERAGE_REPORTS")" >> $GITHUB_ENV
+
+      - name: 🎭 Publish e2e:coverage badge
+        uses: RocketChat/ghpages-dynamic-badges-action@v1.0.0
+        with:
+          label: "e2e:coverage"
+          message: "${{ env.REPORT_STATEMENTS }}"
+          target_folder: "./apps/meteor/tests/coverage-badges"
+
+      - name: 🎭 Store ee-playwright-coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: ee-playwright-coverage
+          path: ./apps/meteor/coverage
+
+      - name: 🎭 Store ee-playwright-test-trace
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: playwright-test-trace
+          name: ee-playwright-test-trace
           path: ./apps/meteor/tests/e2e/test-failures*
 
   deploy:
