@@ -6,5 +6,5 @@
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*", "./src/en.json"]
 }
