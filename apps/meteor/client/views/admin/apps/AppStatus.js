@@ -111,7 +111,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 		color: status.label === 'Disabled' ? colors.y800 : 'primary-500',
 	};
 
-	const shouldShowPriceDisplay = isAppDetailsPage && button.action !== 'update';
+	const shouldShowPriceDisplay = isAppDetailsPage && button && button.action !== 'update';
 
 	return (
 		<Box {...props}>
