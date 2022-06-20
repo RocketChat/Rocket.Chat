@@ -18,7 +18,7 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../../components/avatar/RoomAvatar';
-import { useSetPreferences } from '../../../../../../contexts/VideoConfContext';
+import { useVideoConfSetPreferences } from '../../../../../../contexts/VideoConfContext';
 
 type ReceivingPopupProps = {
 	id: string;
@@ -36,7 +36,7 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
-	const setPreferences = useSetPreferences();
+	const setPreferences = useVideoConfSetPreferences();
 
 	const handleJoinCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);
