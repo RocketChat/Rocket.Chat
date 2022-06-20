@@ -66,9 +66,9 @@ type RoomListRowProps = {
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
 
-	selected: boolean;
+	selected?: boolean;
 
-	sidebarViewMode: unknown;
+	sidebarViewMode?: unknown;
 };
 
 function SideBarItemTemplateWithData({

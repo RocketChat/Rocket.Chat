@@ -73,10 +73,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		// TODO add validations to `data` and `members`
 
-		const membersResult = await this.Users.findActiveByIds(members, {
-			projection: { username: 1, _id: 0 },
+		const membersResult = await this.Users.findActiveByIdsOrUsernames(members, {
+			projection: { username: 1, _id: 1 },
 		}).toArray();
 		const memberUsernames = membersResult.map(({ username }) => username);
+		const memberIds = membersResult.map(({ _id }) => _id);
 
 		const teamData = {
 			...team,
@@ -96,7 +97,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			// filter empty strings and falsy values from members list
 			const membersList: Array<InsertionModel<ITeamMember>> =
-				members
+				memberIds
 					?.filter(Boolean)
 					.filter((memberId) => !excludeFromMembers.includes(memberId))
 					.map((memberId) => ({
@@ -800,13 +801,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	}
 
 	async removeAllMembersFromTeam(teamId: string): Promise<void> {
-		const team = await this.TeamModel.findOneById(teamId);
-
-		if (!team) {
-			return;
+		if (!teamId) {
+			throw new Error('missing-teamId');
 		}
-
-		await this.TeamMembersModel.deleteByTeamId(team._id);
+		await this.TeamMembersModel.deleteByTeamId(teamId);
 	}
 
 	async addMember(inviter: Pick<IUser, '_id' | 'username'>, userId: string, teamId: string): Promise<boolean> {
