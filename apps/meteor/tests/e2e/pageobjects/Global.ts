@@ -42,7 +42,7 @@ export class Global extends BasePage {
 
 	get btnModalCancel(): Locator {
 		return this.page.locator(
-			'#modal-root div dialog div.rcx-modal__inner div.rcx-modal__footer div div button.rcx-button--ghost.rcx-button',
+			'#modal-root div dialog div.rcx-modal__inner div.rcx-modal__footer div div button.rcx-button--icon.rcx-button',
 		);
 	}
 
