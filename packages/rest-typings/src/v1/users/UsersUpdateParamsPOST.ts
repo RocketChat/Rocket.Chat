@@ -18,6 +18,7 @@ export type UsersUpdateParamsPOST = {
 		roles?: string[];
 		joinDefaultChannels?: boolean;
 		requirePasswordChange?: boolean;
+		setRandomPassword?: boolean;
 		sendWelcomeEmail?: boolean;
 		verified?: boolean;
 		customFields?: {};
@@ -81,6 +82,10 @@ const UsersUpdateParamsPostSchema = {
 					nullable: true,
 				},
 				requirePasswordChange: {
+					type: 'boolean',
+					nullable: true,
+				},
+				setRandomPassword: {
 					type: 'boolean',
 					nullable: true,
 				},
