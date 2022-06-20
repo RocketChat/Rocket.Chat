@@ -72,7 +72,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 								}}
 								colors={[
 									// TODO: Get it from theme
-									colors.b500,
+									colors.p500,
 								]}
 								enableLabel={false}
 								enableGridY={false}

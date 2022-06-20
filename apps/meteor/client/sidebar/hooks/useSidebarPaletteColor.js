@@ -150,15 +150,15 @@ const getStyle = (
 			--rcx-color-neutral-800: ${toVar(colors.n200)};
 			--rcx-color-neutral-900: ${toVar(colors.n100)};
 
-			--rcx-color-primary-100: ${toVar(colors.b900)};
-			--rcx-color-primary-200: ${toVar(colors.b800)};
-			--rcx-color-primary-300: ${toVar(colors.b700)};
-			--rcx-color-primary-400: ${toVar(colors.b600)};
-			--rcx-color-primary-500: ${toVar(colors.b500)};
-			--rcx-color-primary-600: ${toVar(colors.b400)};
-			--rcx-color-primary-700: ${toVar(colors.b300)};
-			--rcx-color-primary-800: ${toVar(colors.b200)};
-			--rcx-color-primary-900: ${toVar(colors.b100)};
+			--rcx-color-primary-100: ${toVar(colors.p900)};
+			--rcx-color-primary-200: ${toVar(colors.p800)};
+			--rcx-color-primary-300: ${toVar(colors.p700)};
+			--rcx-color-primary-400: ${toVar(colors.p600)};
+			--rcx-color-primary-500: ${toVar(colors.p500)};
+			--rcx-color-primary-600: ${toVar(colors.p400)};
+			--rcx-color-primary-700: ${toVar(colors.p300)};
+			--rcx-color-primary-800: ${toVar(colors.p200)};
+			--rcx-color-primary-900: ${toVar(colors.p100)};
 
 			--rcx-button-colors-icon-active-border-color: ${toVar(colors.n900)};
 			--rcx-button-colors-icon-active-background-color: ${toVar(colors.n800)};
