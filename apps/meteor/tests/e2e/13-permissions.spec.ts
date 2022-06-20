@@ -1,6 +1,7 @@
-import { Page, test, expect } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
+import { expect, test } from './utils/test';
 import { LoginPage, FlexTab, Administration, MainContent, SideNav } from './pageobjects';
 import { adminLogin, createRegisterUser } from './utils/mocks/userAndPasswordMock';
 import { BACKSPACE } from './utils/mocks/keyboardKeyMock';
