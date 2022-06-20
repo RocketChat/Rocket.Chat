@@ -74,6 +74,7 @@ jobs:
           cat $GITHUB_EVENT_PATH
 
       - uses: actions/checkout@v3
+
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
@@ -103,6 +104,7 @@ jobs:
           key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
           restore-keys: |
             meteor-cache-${{ runner.os }}-
+
       - name: Install Meteor
         run: |
           # Restore bin from cache
@@ -141,13 +143,14 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
 
-      - run: yarn lint --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo"
+      - name: Lint
+        run: yarn lint --api="http://127.0.0.1:9080"
 
-      - run: yarn turbo run translation-check --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo"
+      - name: Translation check
+        run: yarn turbo run translation-check --api="http://127.0.0.1:9080"
 
       - name: TS typecheck
-        run: |
-          yarn turbo run typecheck --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo"
+        run: yarn turbo run typecheck --api="http://127.0.0.1:9080"
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -159,13 +162,11 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: |
-          yarn build:ci --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo" -- --debug --directory /tmp/build
+        run: yarn build:ci --api="http://127.0.0.1:9080" -- --debug --directory /tmp/build
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
-        run: |
-          yarn build:ci --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo" -- --directory /tmp/build
+        run: yarn build:ci --api="http://127.0.0.1:9080" -- --directory /tmp/build
 
       - name: Prepare build
         run: |
@@ -184,6 +185,7 @@ jobs:
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -228,6 +230,7 @@ jobs:
           mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
       - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -235,8 +238,7 @@ jobs:
           cache: 'yarn'
 
       - name: Setup Chrome
-        run: |
-          npm i chromedriver
+        run: npm i chromedriver
 
       - name: Configure Replica Set
         run: |
@@ -253,7 +255,7 @@ jobs:
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
 
       - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo"
+        run: yarn testunit --api="http://127.0.0.1:9080"
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -390,6 +392,7 @@ jobs:
         run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
 
       - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -397,8 +400,7 @@ jobs:
           cache: 'yarn'
 
       - name: Setup Chrome
-        run: |
-          npm i chromedriver
+        run: npm i chromedriver
 
       - name: Configure Replica Set
         run: |
@@ -415,7 +417,7 @@ jobs:
         run: yarn
 
       - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo"
+        run: yarn testunit --api="http://127.0.0.1:9080"
 
       - name: Restore build
         uses: actions/download-artifact@v2
