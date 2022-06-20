@@ -98,9 +98,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ./node_modules/.turbo
-          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}
+            ./node_modules/.cache/turbo
+          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
+            turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}
             turbo-${{ runner.OS }}-${{ github.ref_name }}
             turbo-${{ runner.OS }}
 
@@ -261,9 +262,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ./node_modules/.turbo
-          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}
+            ./node_modules/.cache/turbo
+          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
+            turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}
             turbo-${{ runner.OS }}-${{ github.ref_name }}
             turbo-${{ runner.OS }}
 
@@ -430,9 +432,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ./node_modules/.turbo
-          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}
+            ./node_modules/.cache/turbo
+          key: turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
+            turbo-${{ runner.OS }}-${{ github.ref_name }}-${{ github.run_id }}
             turbo-${{ runner.OS }}-${{ github.ref_name }}
             turbo-${{ runner.OS }}
 
