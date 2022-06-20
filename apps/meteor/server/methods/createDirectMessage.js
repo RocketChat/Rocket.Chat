@@ -43,7 +43,9 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 				} catch {
 					// no-op
 				}
-				return username;
+				if (!to) {
+					return username;
+				}
 			}
 
 			if (!to) {
