@@ -2,19 +2,17 @@ import React, { useMemo } from 'react';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 
-import { VideoConfManager } from '../../../client/lib/VideoConfManager';
-import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
-import { useDispatchOutgoing, useDismissOutgoing, useStartCall } from '../../../client/contexts/VideoConfContext';
+import { useVideoConfDispatchOutgoing, useVideoConfStartCall } from '../../../client/contexts/VideoConfContext';
+import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 
 // TODO: fix mocked config
 addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
-	const startCall = useStartCall();
+	const startCall = useVideoConfStartCall();
 	const user = useUser();
 
-	const dispatchPopup = useDispatchOutgoing();
-	const dismissPopup = useDismissOutgoing();
+	const dispatchPopup = useVideoConfDispatchOutgoing();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 	const enabled = useSetting('VideoConf_Enabled');
@@ -45,10 +43,6 @@ addAction('video-conf', ({ room }) => {
 
 		if (room.t === 'd') {
 			dispatchPopup({ rid: room._id });
-			// TODO: remove VideoConfManager
-			VideoConfManager.once('direct/stopped', () => {
-				dismissPopup();
-			});
 		}
 	});
 
@@ -66,9 +60,7 @@ addAction('video-conf', ({ room }) => {
 						icon: 'phone',
 						action: handleOpenVideoConf,
 						full: true,
-						// TODO: issue with tests
-						// order: live ? -1 : 4,
-						order: live ? 99 : 99,
+						order: live ? -1 : 4,
 				  }
 				: null,
 		[handleOpenVideoConf, groups, enableOption, live],

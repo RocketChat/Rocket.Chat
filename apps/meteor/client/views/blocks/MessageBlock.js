@@ -6,7 +6,7 @@ import React from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 import { useBlockRendered } from '../../components/message/hooks/useBlockRendered';
-import { useJoinCall } from '../../contexts/VideoConfContext';
+import { useVideoConfJoinCall } from '../../contexts/VideoConfContext';
 import { renderMessageBody } from '../../lib/utils/renderMessageBody';
 import JoinVideoConfModal from '../room/contextualBar/VideoConference/JoinVideoConfModal';
 import './textParsers';
@@ -18,7 +18,7 @@ messageParser.mrkdwn = mrkdwn;
 function MessageBlock({ mid: _mid, rid, blocks, appId }) {
 	const { ref, className } = useBlockRendered();
 	const setModal = useSetModal();
-	const joinCall = useJoinCall();
+	const joinCall = useVideoConfJoinCall();
 	const room = useUserRoom(rid);
 
 	const handleCloseModal = useMutableCallback(() => setModal());
