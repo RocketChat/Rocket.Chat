@@ -825,7 +825,7 @@ jobs:
           echo "DOCKER_TAG: $DOCKER_TAG"
 
           # tag and push the specific tag version
-          docker tag $GH_IMAGE_NAME $IMAGE_NAME:$DOCKER_TAG
+          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
           docker push $IMAGE_NAME:$DOCKER_TAG
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -839,11 +839,11 @@ jobs:
 
             if [[ $RELEASE == 'latest' ]]; then
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
+                docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
                 docker push $IMAGE_NAME:$RELEASE
               fi
             else
-              docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
+              docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
               docker push $IMAGE_NAME:$RELEASE
             fi
           fi
