@@ -70,9 +70,13 @@ export function saveUserIdentity({
 			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 			const fileStore = FileUpload.getStore('Avatars');
-			const file = fileStore.model.findOneByName(previousUsername);
+			const previousFile = Promise.await(fileStore.model.findOneByName(previousUsername));
+			const file = Promise.await(fileStore.model.findOneByName(username));
 			if (file) {
-				fileStore.model.updateFileNameById(file._id, username);
+				fileStore.model.deleteFile(file._id);
+			}
+			if (previousFile) {
+				fileStore.model.updateFileNameById(previousFile._id, username);
 			}
 		}
 

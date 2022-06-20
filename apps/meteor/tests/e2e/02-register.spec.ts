@@ -1,7 +1,6 @@
-import { test } from '@playwright/test';
-
+import { test } from './utils/test';
 import { registerUser, WRONG_PASSWORD } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/LoginPage';
+import { LoginPage } from './pageobjects';
 
 test.describe('[Register]', () => {
 	let loginPage: LoginPage;

@@ -13,4 +13,4 @@ storiesOf('Messages/VideoAttachment', module)
 		<VideoAttachment
 			url={text('url', sampleVideo)}
 		/>
-	), { loki: { skip: true } });
+	));

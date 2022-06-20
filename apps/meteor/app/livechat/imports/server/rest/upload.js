@@ -36,10 +36,13 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const { file, ...fields } = Promise.await(
-			getUploadFormData({
-				request: this.request,
-			}),
+		const [file, fields] = Promise.await(
+			getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'file' },
+			),
 		);
 
 		if (!fileUploadIsValidContentType(file.mimetype)) {

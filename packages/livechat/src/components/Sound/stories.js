@@ -18,7 +18,7 @@ storiesOf('Components/Sound', module)
 			onStart={action('start')}
 			onStop={action('stop')}
 		/>
-	), { loki: { skip: true } })
+	))
 	.add('long', () => (
 		<Sound
 			src={text('src', sampleAudio)}
@@ -26,4 +26,4 @@ storiesOf('Components/Sound', module)
 			onStart={action('start')}
 			onStop={action('stop')}
 		/>
-	), { loki: { skip: true } });
+	));
