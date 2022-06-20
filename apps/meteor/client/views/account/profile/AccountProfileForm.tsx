@@ -1,3 +1,4 @@
+import { IUser, UserStatus } from '@rocket.chat/core-typings';
 import {
 	Field,
 	FieldGroup,
@@ -12,8 +13,8 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, useEffect, useState } from 'react';
+import { useToastMessageDispatch, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import React, { Dispatch, ReactElement, SetStateAction, useCallback, useMemo, useEffect, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
@@ -21,8 +22,17 @@ import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../components/UserStatus';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
+import { AccountFormValues } from './AccountProfilePage';
 
-function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
+type AccountProfileFormProps = {
+	values: Record<string, unknown>;
+	handlers: Record<string, (eventOrValue: unknown) => void>;
+	user: IUser | null;
+	settings: Record<string, unknown> & { namesRegex: RegExp };
+	onSaveStateChange: Dispatch<SetStateAction<boolean>>;
+};
+
+const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChange, ...props }: AccountProfileFormProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -30,7 +40,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 	const getAvatarSuggestions = useMethod('getAvatarSuggestion');
 	const sendConfirmationEmail = useMethod('sendConfirmationEmail');
 
-	const [usernameError, setUsernameError] = useState();
+	const [usernameError, setUsernameError] = useState<string | undefined>();
 	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
 
 	const {
@@ -44,7 +54,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		requireName,
 	} = settings;
 
-	const { realname, email, username, password, confirmationPassword, statusText, bio, statusType, customFields, nickname } = values;
+	const { realname, email, username, password, confirmationPassword, statusText, bio, statusType, customFields, nickname } =
+		values as AccountFormValues;
 
 	const {
 		handleRealname,
@@ -60,7 +71,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		handleNickname,
 	} = handlers;
 
-	const previousEmail = getUserEmailAddress(user);
+	const previousEmail = user ? getUserEmailAddress(user) : '';
 
 	const handleSendConfirmationEmail = useCallback(async () => {
 		if (email !== previousEmail) {
@@ -80,8 +91,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 	);
 	const emailError = useMemo(() => (validateEmail(email) ? undefined : 'error-invalid-email-address'), [email]);
 	const checkUsername = useDebouncedCallback(
-		async (username) => {
-			if (user.username === username) {
+		async (username: string) => {
+			if (user?.username === username) {
 				return setUsernameError(undefined);
 			}
 			if (!namesRegex.test(username)) {
@@ -94,11 +105,11 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 			setUsernameError(undefined);
 		},
 		400,
-		[namesRegex, t, user.username, checkUsernameAvailability, setUsernameError],
+		[namesRegex, t, user?.username, checkUsernameAvailability, setUsernameError],
 	);
 
 	useEffect(() => {
-		const getSuggestions = async () => {
+		const getSuggestions = async (): Promise<void> => {
 			const suggestions = await getAvatarSuggestions();
 			setAvatarSuggestions(suggestions);
 		};
@@ -116,13 +127,13 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 	}, [password, handleConfirmationPassword]);
 
 	const nameError = useMemo(() => {
-		if (user.name === realname) {
+		if (user?.name === realname) {
 			return undefined;
 		}
 		if (!realname && requireName) {
 			return t('Field_required');
 		}
-	}, [realname, requireName, t, user.name]);
+	}, [realname, requireName, t, user?.name]);
 
 	const statusTextError = useMemo(() => {
 		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
@@ -133,7 +144,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 	}, [statusText, t]);
 	const {
 		emails: [{ verified = false } = { verified: false }],
-	} = user;
+	} = user as any;
 
 	const canSave = !![!!passwordError, !!emailError, !!usernameError, !!nameError, !!statusTextError].filter(Boolean);
 
@@ -151,8 +162,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				() => (
 					<Field>
 						<UserAvatarEditor
-							etag={user.avatarETag}
-							currentUsername={user.username}
+							etag={user?.avatarETag}
+							currentUsername={user?.username}
 							username={username}
 							setAvatarObj={handleAvatar}
 							disabled={!allowUserAvatarChange}
@@ -160,7 +171,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 						/>
 					</Field>
 				),
-				[username, user.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag],
+				[username, user?.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user?.avatarETag],
 			)}
 			<Box display='flex' flexDirection='row' justifyContent='space-between'>
 				{useMemo(
@@ -209,7 +220,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 								value={statusText}
 								onChange={handleStatusText}
 								placeholder={t('StatusMessage_Placeholder')}
-								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType} />}
+								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType as UserStatus} />}
 							/>
 						</Field.Row>
 						{!allowUserStatusMessageChange && <Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
@@ -270,7 +281,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 											/>
 										</Field.Row>
 										{!allowEmailChange && <Field.Hint>{t('Email_Change_Disabled')}</Field.Hint>}
-										<Field.Error>{t(emailError)}</Field.Error>
+										<Field.Error>{t(emailError as TranslationKey)}</Field.Error>
 									</Field>
 								),
 								[t, email, handleEmail, verified, allowEmailChange, emailError],
@@ -340,6 +351,6 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 			<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 		</FieldGroup>
 	);
-}
+};
 
 export default AccountProfileForm;
