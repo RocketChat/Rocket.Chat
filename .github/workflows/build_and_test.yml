@@ -26,6 +26,7 @@ jobs:
       release: ${{ steps.by-tag.outputs.release }}
       latest-release: ${{ steps.latest.outputs.latest-release }}
       docker-tag: ${{ steps.docker.outputs.docker-tag }}
+      gh-docker-tag: ${{ steps.docker.outputs.gh-docker-tag }}
     steps:
       - id: by-tag
         run: |
@@ -50,13 +51,11 @@ jobs:
         run: |
           if [[ '${{ github.event_name }}' == 'pull_request' ]]; then
             DOCKER_TAG="pr-${{ github.event.number }}"
-          elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+' ; then
-            DOCKER_TAG="$GITHUB_REF_NAME"
-          elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-            DOCKER_TAG="develop"
+          else
+            DOCKER_TAG="gh-${{ github.run_id }}"
           fi
           echo "DOCKER_TAG: ${DOCKER_TAG}"
-          echo "::set-output name=docker-tag::${DOCKER_TAG}"
+          echo "::set-output name=gh-docker-tag::${DOCKER_TAG}"
 
   build:
     runs-on: ubuntu-20.04
@@ -219,7 +218,7 @@ jobs:
         uses: ./.github/actions/build-docker-image
         with:
           root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           release: preview
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
@@ -292,7 +291,7 @@ jobs:
         uses: ./.github/actions/build-docker-image
         with:
           root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           release: official
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
@@ -303,7 +302,7 @@ jobs:
         uses: ./.github/actions/build-docker-image
         with:
           root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           release: alpine
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
@@ -313,11 +312,11 @@ jobs:
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          IMAGE_TAG="${{ needs.release-versions.outputs.docker-tag }}"
-
           # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
           if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
-            IMAGE_TAG="${IMAGE_TAG}.alpine"
+            IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
+          else
+            IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
           fi;
 
           IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${IMAGE_TAG}"
@@ -445,10 +444,32 @@ jobs:
       - name: Unit Test
         run: yarn testunit
 
+      - name: Restore build
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: /tmp/build
+
+      - name: Unpack build
+        run: |
+          cd /tmp/build
+          tar xzf Rocket.Chat.tar.gz
+          rm Rocket.Chat.tar.gz
+
+      - name: Build Docker image
+        id: build-docker-image
+        uses: ./.github/actions/build-docker-image
+        with:
+          root-dir: /tmp/build
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          release: official
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
       - name: "Build Docker image: account"
         uses: ./.github/actions/build-docker-image-service
         with:
-          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           service: account
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
@@ -456,7 +477,7 @@ jobs:
       - name: "Build Docker image: authorization"
         uses: ./.github/actions/build-docker-image-service
         with:
-          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           service: authorization
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
@@ -464,7 +485,7 @@ jobs:
       - name: "Build Docker image: ddp-streamer"
         uses: ./.github/actions/build-docker-image-service
         with:
-          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           service: ddp-streamer
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
@@ -472,7 +493,7 @@ jobs:
       - name: "Build Docker image: presence"
         uses: ./.github/actions/build-docker-image-service
         with:
-          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           service: presence
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
@@ -480,7 +501,7 @@ jobs:
       - name: "Build Docker image: stream-hub"
         uses: ./.github/actions/build-docker-image-service
         with:
-          docker-tag: ${{ needs.release-versions.outputs.docker-tag }}
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           service: stream-hub
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
@@ -509,7 +530,7 @@ jobs:
             -e ENTERPRISE_LICENSE="${{ secrets.ENTERPRISE_LICENSE }}" \
             -e SKIP_PROCESS_EVENT_REGISTRATION=true \
             --label 'traefik.http.routers.rocketchat.rule=PathPrefix(`/`)' \
-            ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.docker-tag }}
+            ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.official
 
           # spin up all micro services
           docker run --name ddp-streamer -d \
@@ -522,7 +543,7 @@ jobs:
             -e MOLECULER_LOG_LEVEL=info \
             --label 'traefik.http.services.ddp-streamer.loadbalancer.server.port=4000' \
             --label 'traefik.http.routers.ddp-streamer.rule=PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)' \
-            ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${{ needs.release-versions.outputs.docker-tag }}
+            ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${{ needs.release-versions.outputs.gh-docker-tag }}
 
       - name: "Start service: stream-hub"
         run: |
@@ -535,7 +556,7 @@ jobs:
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
-            ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${{ needs.release-versions.outputs.docker-tag }}
+            ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${{ needs.release-versions.outputs.gh-docker-tag }}
 
           until echo "$(docker logs stream-hub)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'stream-hub' to start up"
@@ -554,7 +575,7 @@ jobs:
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
-            ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${{ needs.release-versions.outputs.docker-tag }}
+            ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${{ needs.release-versions.outputs.gh-docker-tag }}
 
           until echo "$(docker logs account)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'account' to start up"
@@ -573,7 +594,7 @@ jobs:
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
-            ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${{ needs.release-versions.outputs.docker-tag }}
+            ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${{ needs.release-versions.outputs.gh-docker-tag }}
 
           until echo "$(docker logs authorization)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'authorization' to start up"
@@ -592,7 +613,7 @@ jobs:
             -e MONGO_OPLOG_URL=mongodb://mongo:27017/local \
             -e TRANSPORTER=nats://nats:4222 \
             -e MOLECULER_LOG_LEVEL=info \
-            ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${{ needs.release-versions.outputs.docker-tag }}
+            ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${{ needs.release-versions.outputs.gh-docker-tag }}
 
           until echo "$(docker logs presence)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'presence' to start up"
@@ -803,15 +824,8 @@ jobs:
         id: gh-docker
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-          IMAGE_NAME="rocket.chat"
-          if [[ '${{ matrix.release }}' = 'preview' ]]; then
-            IMAGE_NAME="${IMAGE_NAME}.preview"
-          fi;
 
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${IMAGE_NAME}:${{ needs.release-versions.outputs.docker-tag }}"
-          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
-            GH_IMAGE_NAME="${IMAGE_NAME}.${{ matrix.release }}"
-          fi;
+          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
@@ -887,7 +901,7 @@ jobs:
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          IMAGE_TAG="${{ needs.release-versions.outputs.docker-tag }}"
+          IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}"
 
           GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${IMAGE_TAG}"
 
