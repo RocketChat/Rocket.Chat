@@ -8,6 +8,7 @@ import { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Ro
 import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
 import { FederationCreateDMAndInviteUserDto, FederationRoomSendExternalMessageDto } from './input/RoomSenderDto';
+import { callbacks } from '../../../../lib/callbacks';
 
 export class FederationRoomServiceSender {
 	constructor(
@@ -15,7 +16,9 @@ export class FederationRoomServiceSender {
 		protected rocketUserAdapter: RocketChatUserAdapter,
 		protected rocketSettingsAdapter: RocketChatSettingsAdapter,
 		protected bridge: IFederationBridge,
-	) {} // eslint-disable-line no-empty-function
+	) {
+		this.setupCallbacks();
+	} // eslint-disable-line no-empty-function
 
 	public async createDirectMessageRoomAndInviteUser(roomCreateDMAndInviteUserInput: FederationCreateDMAndInviteUserDto): Promise<void> {
 		const { normalizedInviteeId, rawInviteeId, internalInviterId, inviteeUsernameOnly } = roomCreateDMAndInviteUserInput;
@@ -80,6 +83,10 @@ export class FederationRoomServiceSender {
 		await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 	}
 
+	public async leaveRoom(rocketUser: any, rocketRoom: any): Promise<void> {
+		await this.bridge.leaveRoom(rocketRoom._id, rocketUser._id);
+	}
+
 	public async sendMessageFromRocketChat(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<IMessage> {
 		const { internalRoomId, internalSenderId, message } = roomSendExternalMessageInput;
 
@@ -105,5 +112,9 @@ export class FederationRoomServiceSender {
 		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
 		return Boolean(federatedRoom?.isFederated());
+	}
+
+	private async setupCallbacks(): Promise<void> {
+		callbacks.add('afterLeaveRoom', this.leaveRoom);
 	}
 }
