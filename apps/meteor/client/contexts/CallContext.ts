@@ -1,7 +1,7 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
-import { createContext, useContext, useMemo } from 'react';
-import { useSubscription } from 'use-subscription';
+import { createContext, useCallback, useContext } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
@@ -89,20 +89,17 @@ export const useCallerInfo = (): VoIpCallerInfo => {
 		throw new Error('useCallerInfo only if Calls are enabled and ready');
 	}
 	const { voipClient } = context;
-	const subscription = useMemo(
-		() => ({
-			getCurrentValue: (): VoIpCallerInfo => voipClient.callerInfo,
-			subscribe: (callback: () => void): (() => void) => {
-				voipClient.on('stateChanged', callback);
+	const subscribe = useCallback(
+		(callback: () => void): (() => void) => {
+			voipClient.on('stateChanged', callback);
 
-				return (): void => {
-					voipClient.off('stateChanged', callback);
-				};
-			},
-		}),
+			return (): void => {
+				voipClient.off('stateChanged', callback);
+			};
+		},
 		[voipClient],
 	);
-	return useSubscription(subscription);
+	return useSyncExternalStore(subscribe, (): VoIpCallerInfo => voipClient.callerInfo);
 };
 
 export const useCallCreateRoom = (): CallContextReady['createRoom'] => {
