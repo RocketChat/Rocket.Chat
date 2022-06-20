@@ -7015,6 +7015,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/chart.js@npm:^2.9.37":
+  version: 2.9.37
+  resolution: "@types/chart.js@npm:2.9.37"
+  dependencies:
+    moment: ^2.10.2
+  checksum: 5626a8cc3b410c9f2668ee7efd5b1b408f7de814608f83f9fdb349f59e3c7f5eb7199e73b41e6634c24b4ccb8d3846b290264df8d4224d184f63b095f82cfb94
+  languageName: node
+  linkType: hard
+
 "@types/clipboard@npm:^2.0.7":
   version: 2.0.7
   resolution: "@types/clipboard@npm:2.0.7"
@@ -23961,6 +23970,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"moment@npm:^2.10.2":
+  version: 2.29.3
+  resolution: "moment@npm:2.29.3"
+  checksum: 2e780e36d9a1823c08a1b6313cbb08bd01ecbb2a9062095820a34f42c878991ccba53abaa6abb103fd5c01e763724f295162a8c50b7e95b4f1c992ef0772d3f0
+  languageName: node
+  linkType: hard
+
 "mongodb-connection-string-url@npm:^2.5.2":
   version: 2.5.2
   resolution: "mongodb-connection-string-url@npm:2.5.2"
@@ -29620,6 +29636,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocket.chat@workspace:."
   dependencies:
+    "@types/chart.js": ^2.9.37
     "@types/js-yaml": ^4.0.5
     husky: ^7.0.4
     turbo: 1.2.5
