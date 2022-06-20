@@ -3992,6 +3992,7 @@ __metadata:
     "@types/supertest": ^2.0.11
     "@types/ua-parser-js": ^0.7.36
     "@types/underscore.string": 0.0.38
+    "@types/use-subscription": ^1.0.0
     "@types/use-sync-external-store": ^0.0.3
     "@types/uuid": ^8.3.4
     "@types/xml-crypto": ^1.4.1
@@ -4169,6 +4170,7 @@ __metadata:
     underscore.string: ^3.3.6
     universal-perf-hooks: ^1.0.1
     url-polyfill: ^1.1.12
+    use-subscription: ~1.6.0
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
     vm2: ^3.9.9
@@ -6991,6 +6993,13 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
+  languageName: node
+  linkType: hard
+
+"@types/use-subscription@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@types/use-subscription@npm:1.0.0"
+  checksum: 47fff868682692ecda7110bd04ba4c5b1324854c0bcccc765606a42d4bd9be475207413c8829a883b98e7edd801100df53876da0ff89ac21a8f964e440636ef2
   languageName: node
   linkType: hard
 
@@ -31370,6 +31379,15 @@ __metadata:
   version: 1.0.1
   resolution: "use-strict@npm:1.0.1"
   checksum: e2798c587b8dc95483ac376e1b9b13fbab179bbd498ed7bd55cba2ef72792569621ba25d9aa5df21f884a161d28624d39165070a690fc5f088bf903e097fc267
+  languageName: node
+  linkType: hard
+
+"use-subscription@npm:~1.6.0":
+  version: 1.6.0
+  resolution: "use-subscription@npm:1.6.0"
+  peerDependencies:
+    react: ^18.0.0
+  checksum: 0ce15a3ed1f66f78cb2d7a83ff4980e2ac93054b0bcbdc4e492e77fed599233372aaaf9c9fd9b370484c491c5aee0b980859db1108ad63ee4cdba0f468c4f5d1
   languageName: node
   linkType: hard
 
