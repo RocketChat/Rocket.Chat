@@ -26,7 +26,7 @@ const DeviceInfoWithData = ({ deviceId, ...props }: { deviceId: string; onReload
 		phase,
 		error,
 	} = useEndpointData(
-		'sessions/info.admin',
+		'/v1/sessions/info.admin',
 		useMemo(() => ({ sessionId: deviceId }), [deviceId]),
 	);
 

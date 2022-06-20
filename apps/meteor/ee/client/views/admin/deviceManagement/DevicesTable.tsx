@@ -43,7 +43,7 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 		500,
 	);
 
-	const { value: data, phase, error, reload } = useEndpointData('sessions/list.all', query);
+	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list.all', query);
 
 	useEffect(() => {
 		reloadRef.current = reload;
@@ -64,7 +64,7 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 			</GenericTableHeaderCell>,
 			mediaQuery && (
 				<GenericTableHeaderCell key={'loginAt'} direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort='loginAt'>
-					{t('Last_login')}
+					{t('Last_Login')}
 				</GenericTableHeaderCell>
 			),
 			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_Id')}</GenericTableHeaderCell>,
@@ -105,12 +105,12 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 							<DevicesRow
 								key={session._id}
 								_id={session._id}
-								username={session._user.username || ''}
+								username={session._user?.username || ''}
 								ip={session.ip}
-								deviceName={session.device?.name || ''}
-								deviceType={session.device?.type || ''}
-								deviceOSName={session.device?.os.name || ''}
-								deviceOSVersion={session.device?.os.version || ''}
+								deviceName={session?.device?.name || ''}
+								deviceType={session?.device?.type || ''}
+								deviceOSName={session?.device?.os?.name || ''}
+								deviceOSVersion={session?.device?.os?.version || ''}
 								loginAt={session.loginAt}
 								onReload={reload}
 							/>

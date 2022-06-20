@@ -38,7 +38,7 @@ const DeviceInfoContextualBar = ({
 
 	const logoutDevice = useEndpointAction(
 		'POST',
-		'sessions/logout',
+		'/v1/sessions/logout',
 		useMemo(() => ({ sessionId }), [sessionId]),
 	);
 

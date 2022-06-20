@@ -1,7 +1,7 @@
 import { TableRow, TableCell, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, useCallback } from 'react';
+import React, { KeyboardEvent, ReactElement, useMemo, useCallback } from 'react';
 
 import GenericModal from '../../../../../client/components/GenericModal';
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
@@ -38,16 +38,26 @@ const DevicesRow = ({
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const handleClick = (): void => {
+	const handleClick = useCallback((): void => {
 		deviceManagementRouter.push({
 			context: 'info',
 			id: _id,
 		});
-	};
+	}, [deviceManagementRouter, _id]);
+
+	const handleKeyDown = useCallback(
+		(e: KeyboardEvent<HTMLOrSVGElement>): void => {
+			if (!['Enter', 'Space'].includes(e.nativeEvent.code)) {
+				return;
+			}
+			handleClick();
+		},
+		[handleClick],
+	);
 
 	const logoutDevice = useEndpointAction(
 		'POST',
-		'sessions/logout',
+		'/v1/sessions/logout',
 		useMemo(() => ({ sessionId: _id }), [_id]),
 	);
 
@@ -82,7 +92,7 @@ const DevicesRow = ({
 	}, [t, onReload, logoutDevice, setModal, dispatchToastMessage]);
 
 	return (
-		<TableRow key={_id} onClick={handleClick} tabIndex={0}>
+		<TableRow key={_id} onKeyDown={handleKeyDown} onClick={handleClick} tabIndex={0}>
 			<TableCell>
 				<DeviceIcon deviceType={deviceType} />
 				{deviceName}
