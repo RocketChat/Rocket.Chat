@@ -16,7 +16,7 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../../components/avatar/RoomAvatar';
-import { useChangePreference } from '../../../../../../contexts/VideoConfContext';
+import { useVideoConfChangePreference } from '../../../../../../contexts/VideoConfContext';
 
 type CallingPopupProps = {
 	id: string;
@@ -29,7 +29,7 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
-	const changePreference = useChangePreference();
+	const changePreference = useVideoConfChangePreference();
 
 	const handleToggleMicPref = useMutableCallback(() => {
 		changePreference('mic', !controllersConfig.mic);

@@ -17,7 +17,7 @@ import React, { ReactElement, useMemo } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import { useSetPreferences } from '../../../../../contexts/VideoConfContext';
+import { useVideoConfSetPreferences } from '../../../../../contexts/VideoConfContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 
@@ -34,7 +34,7 @@ const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoCo
 	const t = useTranslation();
 	const rid = room._id;
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
-	const setPreferences = useSetPreferences();
+	const setPreferences = useVideoConfSetPreferences();
 
 	const handleJoinCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);
