@@ -72,13 +72,12 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
+      - uses: actions/checkout@v3
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
           node-version: '14.18.3'
           cache: 'yarn'
-
-      - uses: actions/checkout@v3
 
       - name: Free disk space
         run: |
@@ -183,13 +182,12 @@ jobs:
     needs: [build, release-versions]
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     steps:
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
-
-      - uses: actions/checkout@v3
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -228,6 +226,7 @@ jobs:
         with:
           mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -242,8 +241,6 @@ jobs:
         run: |
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
-
-      - uses: actions/checkout@v3
 
       - name: yarn install
         run: yarn
