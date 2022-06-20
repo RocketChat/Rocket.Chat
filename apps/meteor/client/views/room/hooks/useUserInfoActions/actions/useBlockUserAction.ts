@@ -1,22 +1,24 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useMethod, useToastMessageDispatch, useUserId, useUserSubscription, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useMethod } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUserId, useUserSubscription, useUserRoom } from '../../../../../contexts/UserContext';
 import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 
-export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action => {
+export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
-	const room = useUserRoom(rid);
-	const { _id: uid } = user;
 	const dispatchToastMessage = useToastMessageDispatch();
 	const currentSubscription = useUserSubscription(rid);
 	const ownUserId = useUserId();
-	const [roomCanBlock] = getRoomDirectives(room);
+	const { _id: uid } = user;
+	const room = useUserRoom(rid);
+
+	if (!room) {
+		throw Error('Room not provided');
+	}
+
+	const { roomCanBlock } = getRoomDirectives(room);
 
 	const isUserBlocked = currentSubscription?.blocker;
 	const toggleBlock = useMethod(isUserBlocked ? 'unblockUser' : 'blockUser');
@@ -35,12 +37,13 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 
 	const toggleBlockUserOption = useMemo(
 		() =>
-			roomCanBlock &&
-			uid !== ownUserId && {
-				label: t(isUserBlocked ? 'Unblock' : 'Block'),
-				icon: 'ban',
-				action: toggleBlockUserAction,
-			},
+			roomCanBlock && uid !== ownUserId
+				? {
+						label: t(isUserBlocked ? 'Unblock' : 'Block'),
+						icon: 'ban',
+						action: toggleBlockUserAction,
+				  }
+				: undefined,
 		[isUserBlocked, ownUserId, roomCanBlock, t, toggleBlockUserAction, uid],
 	);
 

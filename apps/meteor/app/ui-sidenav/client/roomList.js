@@ -26,7 +26,6 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'services.tokenpass': 1,
 				'messageViewMode': 1,
 			},
 		});
@@ -72,12 +71,6 @@ Template.roomList.helpers({
 
 			if (this.identifier === 'tokens') {
 				types = ['c', 'p'];
-			}
-
-			if (['c', 'p'].includes(this.identifier)) {
-				query.tokens = { $exists: false };
-			} else if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
-				query.tokens = { $exists: true };
 			}
 
 			if (getUserPreference(user, 'sidebarShowUnread')) {
@@ -129,7 +122,7 @@ const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
 	return {
-		lowerCaseName: String(name).toLowerCase(),
+		lowerCaseName: String(!room.prid ? name : fname).toLowerCase(),
 		lowerCaseFName: String(fname).toLowerCase(),
 	};
 };
@@ -172,7 +165,7 @@ const mergeSubRoom = (subscription) => {
 			departmentId: 1,
 			source: 1,
 			queuedAt: 1,
-			bridged: 1,
+			federated: 1,
 		},
 	};
 
@@ -214,7 +207,7 @@ const mergeSubRoom = (subscription) => {
 		ts,
 		source,
 		queuedAt,
-		bridged,
+		federated,
 	} = room;
 
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
@@ -253,7 +246,7 @@ const mergeSubRoom = (subscription) => {
 		ts,
 		source,
 		queuedAt,
-		bridged,
+		federated,
 	});
 };
 
@@ -297,7 +290,7 @@ const mergeRoomSub = (room) => {
 		ts,
 		source,
 		queuedAt,
-		bridged,
+		federated,
 	} = room;
 
 	Subscriptions.update(
@@ -338,7 +331,7 @@ const mergeRoomSub = (room) => {
 				ts,
 				source,
 				queuedAt,
-				bridged,
+				federated,
 				...getLowerCaseNames(room, sub.name, sub.fname),
 			},
 		},

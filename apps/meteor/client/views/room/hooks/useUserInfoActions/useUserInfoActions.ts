@@ -16,7 +16,7 @@ import { useVideoCallAction } from './actions/useVideoCallAction';
 export const useUserInfoActions = (
 	user: Pick<IUser, '_id' | 'username'>,
 	rid: IRoom['_id'],
-	reload: () => void,
+	reload?: () => void,
 ): {
 	[key: string]: Action;
 } => {

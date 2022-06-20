@@ -15,6 +15,15 @@ import {
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useSetModal,
+	useSetting,
+	usePermission,
+	useAtLeastOnePermission,
+	useRole,
+	useMethod,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useRef } from 'react';
 
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
@@ -24,11 +33,6 @@ import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
-import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
-import { useSetting } from '../../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
@@ -220,8 +224,8 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
-	const saveAction = useEndpointActionExperimental('POST', 'rooms.saveRoomSettings', t('Room_updated_successfully'));
-	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
+	const saveAction = useEndpointActionExperimental('POST', '/v1/rooms.saveRoomSettings', t('Room_updated_successfully'));
+	const archiveAction = useEndpointActionExperimental('POST', '/v1/rooms.changeArchivationState', t(archiveMessage));
 
 	const handleSave = useMutableCallback(async () => {
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;

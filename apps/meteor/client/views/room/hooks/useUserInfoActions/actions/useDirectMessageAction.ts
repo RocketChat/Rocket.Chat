@@ -1,11 +1,8 @@
 import { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, usePermission, useRoute, useUserSubscription, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { usePermission } from '../../../../../contexts/AuthorizationContext';
-import { useRoute } from '../../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUserSubscription, useUserSubscriptionByName } from '../../../../../contexts/UserContext';
 import { Action } from '../../../../hooks/useActionSpread';
 
 const getShouldOpenDirectMessage = (
@@ -16,10 +13,10 @@ const getShouldOpenDirectMessage = (
 ): boolean => {
 	const canOpenDm = canOpenDirectMessage || usernameSubscription;
 	const directMessageIsNotAlreadyOpen = currentSubscription && currentSubscription.name !== username;
-	return canOpenDm && directMessageIsNotAlreadyOpen;
+	return (canOpenDm && directMessageIsNotAlreadyOpen) ?? false;
 };
 
-export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action => {
+export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const currentSubscription = useUserSubscription(rid);
@@ -43,11 +40,13 @@ export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, ri
 
 	const openDirectMessageOption = useMemo(
 		() =>
-			shouldOpenDirectMessage && {
-				label: t('Direct_Message'),
-				icon: 'balloon',
-				action: openDirectMessage,
-			},
+			shouldOpenDirectMessage
+				? {
+						label: t('Direct_Message'),
+						icon: 'balloon',
+						action: openDirectMessage,
+				  }
+				: undefined,
 		[openDirectMessage, shouldOpenDirectMessage, t],
 	);
 

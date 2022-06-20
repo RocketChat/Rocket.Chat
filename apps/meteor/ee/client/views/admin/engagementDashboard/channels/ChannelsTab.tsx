@@ -1,13 +1,13 @@
 import { Box, Icon, Margins, Pagination, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement, useMemo, useState } from 'react';
 
-import Growth from '../../../../../../client/components/data/Growth';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import Growth from '../../../../../../client/components/dataView/Growth';
 import Section from '../Section';
-import DownloadDataButton from '../data/DownloadDataButton';
-import PeriodSelector from '../data/PeriodSelector';
-import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
+import DownloadDataButton from '../dataView/DownloadDataButton';
+import PeriodSelector from '../dataView/PeriodSelector';
+import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useChannelsList } from './useChannelsList';
 
 const ChannelsTab = (): ReactElement => {

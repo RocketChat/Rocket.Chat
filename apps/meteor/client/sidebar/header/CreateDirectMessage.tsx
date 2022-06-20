@@ -1,10 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, memo } from 'react';
 
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
@@ -18,9 +18,9 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	const t = useTranslation();
 	const [users, setUsers] = useState<Array<Username>>([]);
 
-	const createDirect = useEndpointActionExperimental('POST', 'dm.create');
+	const createDirect = useEndpointActionExperimental('POST', '/v1/dm.create');
 
-	const onChangeUsers = useMutableCallback((value: Username, action: string) => {
+	const onChangeUsers = useMutableCallback((value: Username | any, action: 'remove' | undefined) => {
 		if (!action) {
 			if (users.includes(value)) {
 				return;

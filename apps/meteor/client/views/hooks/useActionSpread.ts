@@ -1,17 +1,17 @@
 import { Icon } from '@rocket.chat/fuselage';
-import { useMemo, ComponentProps } from 'react';
+import { useMemo, ComponentProps, ReactNode } from 'react';
 
 export type Action = {
-	label: string;
-	icon: ComponentProps<typeof Icon>['name'];
+	label: ReactNode;
+	icon?: ComponentProps<typeof Icon>['name'];
 	action: () => void;
 	checkOption?: boolean;
 	isChecked?: boolean;
 };
 
 export type MenuOption = {
-	label: { label: string; icon: ComponentProps<typeof Icon>['name']; checkOption?: boolean; isChecked?: boolean };
-	action: Function;
+	label: { label: ReactNode; icon?: ComponentProps<typeof Icon>['name']; checkOption?: boolean; isChecked?: boolean };
+	action: () => void;
 };
 
 // TODO fuselage

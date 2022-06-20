@@ -1,12 +1,10 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { useMemo, useCallback, useState, FC } from 'react';
+import React, { useMemo, useCallback, useState, ReactElement } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import Chat from '../directory/chats/Chat';
@@ -24,7 +22,7 @@ type useQueryType = (
 		to: string;
 		tags: any[];
 		customFields: any;
-		itemsPerPage: number;
+		itemsPerPage: 25 | 50 | 100;
 		current: number;
 	},
 	debouncedSort: any[],
@@ -92,7 +90,7 @@ const useQuery: useQueryType = (
 		return query;
 	}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags, customFields]);
 
-const CurrentChatsRoute: FC = () => {
+const CurrentChatsRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
@@ -109,7 +107,7 @@ const CurrentChatsRoute: FC = () => {
 		to: '',
 		customFields: {},
 		current: 0,
-		itemsPerPage: 25,
+		itemsPerPage: 25 as 25 | 50 | 100,
 		tags: [] as string[],
 	});
 	const [sort, setSort] = useState<[string, 'asc' | 'desc' | undefined]>(['ts', 'desc']);
@@ -132,7 +130,7 @@ const CurrentChatsRoute: FC = () => {
 		directoryRoute.push({ id: _id });
 	});
 
-	const { value: data, reload } = useEndpointData('livechat/rooms', query);
+	const { value: data, reload } = useEndpointData('/v1/livechat/rooms', query);
 
 	const header = useMemo(
 		() =>
@@ -209,7 +207,6 @@ const CurrentChatsRoute: FC = () => {
 			setParams={setParams}
 			params={params}
 			data={data}
-			reload={reload}
 			header={header}
 			renderRow={renderRow}
 			title={t('Current_Chats')}

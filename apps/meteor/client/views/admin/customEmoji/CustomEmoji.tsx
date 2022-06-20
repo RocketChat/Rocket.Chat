@@ -1,5 +1,6 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, MutableRefObject, useEffect, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -14,7 +15,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 
@@ -45,7 +45,7 @@ const CustomEmoji: FC<CustomEmojiProps> = function CustomEmoji({ onClick, reload
 		500,
 	);
 
-	const { value: data, phase, reload: reloadEndPoint } = useEndpointData('emoji-custom.all', query);
+	const { value: data, phase, reload: reloadEndPoint } = useEndpointData('/v1/emoji-custom.all', query);
 
 	useEffect(() => {
 		reload.current = reloadEndPoint;

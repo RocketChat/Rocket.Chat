@@ -1,12 +1,11 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback, FC } from 'react';
 
 import GenericTable from '../../../../components/GenericTable';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 
 const useQuery = (
@@ -23,7 +22,7 @@ const useQuery = (
 	userIdLoggedIn: string | null,
 ): {
 	sort: string;
-	open: boolean;
+	open: 'false';
 	roomName: string;
 	agents: string[];
 	count?: number;
@@ -32,7 +31,7 @@ const useQuery = (
 	useMemo(
 		() => ({
 			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
-			open: false,
+			open: 'false',
 			roomName: text || '',
 			agents: userIdLoggedIn ? [userIdLoggedIn] : [],
 			...(itemsPerPage && { count: itemsPerPage }),
@@ -76,7 +75,7 @@ const CallTable: FC = () => {
 		);
 	});
 
-	const { value: data } = useEndpointData('voip/rooms', query);
+	const { value: data } = useEndpointData('/v1/voip/rooms', query);
 
 	const header = useMemo(
 		() =>

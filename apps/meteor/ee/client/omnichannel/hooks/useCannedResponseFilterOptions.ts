@@ -1,11 +1,9 @@
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useState } from 'react';
-
-import { useEndpoint } from '../../../../client/contexts/ServerContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 export const useCannedResponseFilterOptions = (): string[][] => {
 	const t = useTranslation();
-	const getDepartments = useEndpoint('GET', 'livechat/department');
+	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
 	const defaultOptions = useMemo(
 		() => [

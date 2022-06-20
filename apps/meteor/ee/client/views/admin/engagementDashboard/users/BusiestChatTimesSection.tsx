@@ -1,7 +1,7 @@
 import { Select } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo, useState } from 'react';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import Section from '../Section';
 import ContentForDays from './ContentForDays';
 import ContentForHours from './ContentForHours';

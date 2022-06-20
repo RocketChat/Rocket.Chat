@@ -2,14 +2,11 @@ import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, useContext, FC, MouseEventHandler } from 'react';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useUserRoom } from '../../../../contexts/UserContext';
 import { useForm } from '../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
@@ -97,7 +94,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		handleToUsers(toUsers.filter((current) => current !== value));
 	});
 
-	const roomsExport = useEndpoint('POST', 'rooms.export');
+	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 
 	const handleSubmit = async (): Promise<void> => {
 		if (toUsers.length === 0 && additionalEmails === '') {

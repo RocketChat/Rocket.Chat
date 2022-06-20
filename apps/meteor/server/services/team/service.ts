@@ -8,7 +8,6 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import type { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
-import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
@@ -43,8 +42,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	private TeamMembersModel: TeamMemberRaw;
 
-	private MessagesModel: MessagesRaw;
-
 	constructor(db: Db) {
 		super();
 
@@ -55,7 +52,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		});
 		this.TeamModel = new TeamRaw(db.collection('rocketchat_team'));
 		this.TeamMembersModel = new TeamMemberRaw(db.collection('rocketchat_team_member'));
-		this.MessagesModel = new MessagesRaw(db.collection('rocketchat_message'));
 	}
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
@@ -77,10 +73,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		// TODO add validations to `data` and `members`
 
-		const membersResult = await this.Users.findActiveByIds(members, {
-			projection: { username: 1, _id: 0 },
+		const membersResult = await this.Users.findActiveByIdsOrUsernames(members, {
+			projection: { username: 1, _id: 1 },
 		}).toArray();
 		const memberUsernames = membersResult.map(({ username }) => username);
+		const memberIds = membersResult.map(({ _id }) => _id);
 
 		const teamData = {
 			...team,
@@ -100,7 +97,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			// filter empty strings and falsy values from members list
 			const membersList: Array<InsertionModel<ITeamMember>> =
-				members
+				memberIds
 					?.filter(Boolean)
 					.filter((memberId) => !excludeFromMembers.includes(memberId))
 					.map((memberId) => ({
@@ -651,7 +648,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			};
 		}
 
-		const users = await this.Users.find({ ...query }).toArray();
+		const users = await this.Users.findActive({ ...query }).toArray();
 		const userIds = users.map((m) => m._id);
 		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset, {
 			userId: { $in: userIds },
@@ -804,13 +801,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	}
 
 	async removeAllMembersFromTeam(teamId: string): Promise<void> {
-		const team = await this.TeamModel.findOneById(teamId);
-
-		if (!team) {
-			return;
+		if (!teamId) {
+			throw new Error('missing-teamId');
 		}
-
-		await this.TeamMembersModel.deleteByTeamId(team._id);
+		await this.TeamMembersModel.deleteByTeamId(teamId);
 	}
 
 	async addMember(inviter: Pick<IUser, '_id' | 'username'>, userId: string, teamId: string): Promise<boolean> {
@@ -958,41 +952,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	}
 
 	async getStatistics(): Promise<ITeamStats> {
-		const stats = {} as ITeamStats;
-		const teams = this.TeamModel.find({});
-		const teamsArray = await teams.toArray();
-
-		stats.totalTeams = await teams.count();
-		stats.teamStats = [];
-
-		for await (const team of teamsArray) {
-			// exclude the main room from the stats
-			const teamRooms = await this.RoomsModel.find({
-				teamId: team._id,
-				teamMain: { $exists: false },
-			}).toArray();
-			const roomIds = teamRooms.map((r) => r._id);
-			const [totalMessagesInTeam, defaultRooms, totalMembers] = await Promise.all([
-				this.MessagesModel.find({ rid: { $in: roomIds } }).count(),
-				this.RoomsModel.findDefaultRoomsForTeam(team._id).count(),
-				this.TeamMembersModel.findByTeamId(team._id).count(),
-			]);
-
-			const teamData = {
-				teamId: team._id,
-				mainRoom: team.roomId,
-				totalRooms: teamRooms.length,
-				totalMessages: totalMessagesInTeam,
-				totalPublicRooms: teamRooms.filter((r) => r.t === 'c').length,
-				totalPrivateRooms: teamRooms.filter((r) => r.t !== 'c').length,
-				totalDefaultRooms: defaultRooms,
-				totalMembers,
-			};
-
-			stats.teamStats.push(teamData);
-		}
-
-		return stats;
+		return {
+			totalTeams: await this.TeamModel.find({}).count(),
+			totalRoomsInsideTeams: await this.RoomsModel.findRoomsInsideTeams().count(),
+			totalDefaultRoomsInsideTeams: await this.RoomsModel.findRoomsInsideTeams(true).count(),
+		};
 	}
 
 	async autocomplete(uid: string, name: string): Promise<ITeamAutocompleteResult[]> {

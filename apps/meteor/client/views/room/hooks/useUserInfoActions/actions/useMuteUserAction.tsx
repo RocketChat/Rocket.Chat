@@ -1,15 +1,18 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import {
+	useAllPermissions,
+	usePermission,
+	useSetModal,
+	useMethod,
+	useToastMessageDispatch,
+	useTranslation,
+	useUserRoom,
+} from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
-import { useAllPermissions, usePermission } from '../../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUserRoom } from '../../../../../contexts/UserContext';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
@@ -34,7 +37,7 @@ const getUserIsMuted = (
 	return room && Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') > -1;
 };
 
-export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action => {
+export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const userCanMute = usePermission('mute-user', rid);
@@ -48,7 +51,12 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 
 	const isMuted = getUserIsMuted(user, room, otherUserCanPostReadonly);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
-	const [roomCanMute] = getRoomDirectives(room);
+
+	if (!room) {
+		throw Error('Room not provided');
+	}
+
+	const { roomCanMute } = getRoomDirectives(room);
 
 	const mutedMessage = isMuted ? 'User__username__unmuted_in_room__roomName__' : 'User__username__muted_in_room__roomName__';
 
@@ -85,14 +93,13 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 			);
 		};
 
-		return (
-			roomCanMute &&
-			userCanMute && {
-				label: t(isMuted ? 'Unmute_user' : 'Mute_user'),
-				icon: isMuted ? 'mic' : 'mic-off',
-				action,
-			}
-		);
+		return roomCanMute && userCanMute
+			? {
+					label: t(isMuted ? 'Unmute_user' : 'Mute_user'),
+					icon: isMuted ? 'mic' : 'mic-off',
+					action,
+			  }
+			: undefined;
 	}, [
 		closeModal,
 		mutedMessage,

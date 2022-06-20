@@ -1,25 +1,28 @@
 import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { useTranslation, usePermission, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { usePermission } from '../../../../../contexts/AuthorizationContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
-export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action => {
+// TODO: Remove endpoint concatenation
+export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
 	const userCanSetLeader = usePermission('set-leader', rid);
-	const endpointPrefix = room?.t === 'p' ? 'groups' : 'channels';
 
-	const [roomCanSetLeader] = getRoomDirectives(room);
+	if (!room) {
+		throw Error('Room not provided');
+	}
+
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
+	const { roomCanSetLeader } = getRoomDirectives(room);
 	const isLeader = useUserHasRoomRole(uid, rid, 'leader');
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
@@ -36,14 +39,13 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 	const changeLeaderAction = useMutableCallback(() => changeLeader({ roomId: rid, userId: uid }));
 	const changeLeaderOption = useMemo(
 		() =>
-			roomCanSetLeader &&
-			userCanSetLeader && {
-				label: t(isLeader ? 'Remove_as_leader' : 'Set_as_leader'),
-				icon: 'shield-alt',
-				action: changeLeaderAction,
-				checkOption: true,
-				isChecked: isLeader,
-			},
+			roomCanSetLeader && userCanSetLeader
+				? {
+						label: t(isLeader ? 'Remove_as_leader' : 'Set_as_leader'),
+						icon: 'shield-alt',
+						action: changeLeaderAction,
+				  }
+				: undefined,
 		[isLeader, roomCanSetLeader, t, userCanSetLeader, changeLeaderAction],
 	);
 

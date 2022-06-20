@@ -1,3 +1,4 @@
+import { isLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
@@ -14,9 +15,9 @@ import {
 
 API.v1.addRoute(
 	'livechat/department',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isLivechatDepartmentProps },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
@@ -26,7 +27,7 @@ API.v1.addRoute(
 				findDepartments({
 					userId: this.userId,
 					text,
-					enabled,
+					enabled: enabled === 'true',
 					onlyMyDepartments: onlyMyDepartments === 'true',
 					excludeDepartmentId,
 					pagination: {
@@ -74,28 +75,25 @@ API.v1.addRoute(
 	'livechat/department/:_id',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				_id: String,
 			});
 
 			const { onlyMyDepartments } = this.queryParams;
 
-			const { department, agents } = Promise.await(
-				findDepartmentById({
-					userId: this.userId,
-					departmentId: this.urlParams._id,
-					includeAgents: this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
-					onlyMyDepartments: onlyMyDepartments === 'true',
-				}),
-			);
+			const { department, agents } = await findDepartmentById({
+				userId: this.userId,
+				departmentId: this.urlParams._id,
+				includeAgents: this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
+				onlyMyDepartments: onlyMyDepartments === 'true',
+			});
 
 			// TODO: return 404 when department is not found
 			// Currently, FE relies on the fact that this endpoint returns an empty payload
 			// to show the "new" view. Returning 404 breaks it
-			const result = { department, agents };
 
-			return API.v1.success(result);
+			return API.v1.success({ department, agents });
 		},
 		put() {
 			const permissionToSave = hasPermission(this.userId, 'manage-livechat-departments');

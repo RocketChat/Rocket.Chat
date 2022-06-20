@@ -1,11 +1,11 @@
 import { IRoom } from '@rocket.chat/core-typings';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { Action } from '../../../../hooks/useActionSpread';
 import { useWebRTC } from '../../useWebRTC';
 
-export const useAudioCallAction = (rid: IRoom['_id']): Action | false => {
+export const useAudioCallAction = (rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
 	const { shouldAllowCalls, callInProgress, joinCall, startCall } = useWebRTC(rid);
 
@@ -20,13 +20,13 @@ export const useAudioCallAction = (rid: IRoom['_id']): Action | false => {
 
 		const action = callInProgress ? handleJoinCall : handleStartCall;
 
-		return (
-			shouldAllowCalls && {
-				label: t(callInProgress ? 'Join_audio_call' : 'Start_audio_call'),
-				icon: 'mic',
-				action,
-			}
-		);
+		return shouldAllowCalls
+			? {
+					label: t(callInProgress ? 'Join_audio_call' : 'Start_audio_call'),
+					icon: 'mic',
+					action,
+			  }
+			: undefined;
 	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall]);
 
 	return audioCallOption;

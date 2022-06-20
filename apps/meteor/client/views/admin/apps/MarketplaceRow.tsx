@@ -1,9 +1,8 @@
 import { Box, Table, Tag } from '@rocket.chat/fuselage';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, memo, FC, KeyboardEvent, MouseEvent } from 'react';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
 import PriceDisplay from './PriceDisplay';
@@ -28,6 +27,7 @@ const MarketplaceRow: FC<MarketplaceRowProps> = ({ medium, large, ...props }) =>
 		marketplaceVersion,
 		iconFileContent,
 		installed,
+		isSubscribed,
 	} = props;
 	const t = useTranslation();
 
@@ -104,8 +104,8 @@ const MarketplaceRow: FC<MarketplaceRowProps> = ({ medium, large, ...props }) =>
 			)}
 			<Table.Cell withTruncatedText>
 				<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
-					<AppStatus app={props} showStatus={isStatusVisible} marginInline='x8' />
-					{installed && <AppMenu app={props} invisible={!isStatusVisible} marginInline='x8' />}
+					<AppStatus app={props} showStatus={isStatusVisible} isAppDetailsPage={false} mis='x4' />
+					{(installed || isSubscribed) && <AppMenu app={props} invisible={!isStatusVisible} mis='x4' />}
 				</Box>
 			</Table.Cell>
 		</Table.Row>

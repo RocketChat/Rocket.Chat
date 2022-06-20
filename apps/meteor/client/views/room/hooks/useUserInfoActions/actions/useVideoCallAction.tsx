@@ -1,12 +1,11 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { Icon } from '@rocket.chat/fuselage';
-import { useMemo, ComponentProps } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { Action } from '../../../../hooks/useActionSpread';
 import { useWebRTC } from '../../useWebRTC';
 
-export const useVideoCallAction = (rid: IRoom['_id']): Action | false => {
+export const useVideoCallAction = (rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
 	const { shouldAllowCalls, callInProgress, joinCall, startCall } = useWebRTC(rid);
 
@@ -21,13 +20,13 @@ export const useVideoCallAction = (rid: IRoom['_id']): Action | false => {
 
 		const action = callInProgress ? handleJoinCall : handleStartCall;
 
-		return (
-			shouldAllowCalls && {
-				label: t(callInProgress ? 'Join_video_call' : 'Start_video_call'),
-				icon: 'video' as ComponentProps<typeof Icon>,
-				action,
-			}
-		);
+		return shouldAllowCalls
+			? {
+					label: t(callInProgress ? 'Join_video_call' : 'Start_video_call'),
+					icon: 'video',
+					action,
+			  }
+			: undefined;
 	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall]);
 
 	return videoCallOption;

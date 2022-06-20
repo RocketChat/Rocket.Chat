@@ -1,14 +1,12 @@
 import { Box, Table, Flex } from '@rocket.chat/fuselage';
 import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import MarkdownText from '../../components/MarkdownText';
 import UserAvatar from '../../components/avatar/UserAvatar';
-import { usePermission } from '../../contexts/AuthorizationContext';
-import { useRoute } from '../../contexts/RouterContext';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import { useQuery } from './hooks';
@@ -86,7 +84,7 @@ function UserTable({ workspace = 'local' }) {
 
 	const directRoute = useRoute('direct');
 
-	const { value: data = {} } = useEndpointData('directory', query);
+	const { value: data = {} } = useEndpointData('/v1/directory', query);
 
 	const onClick = useCallback(
 		(username) => (e) => {
