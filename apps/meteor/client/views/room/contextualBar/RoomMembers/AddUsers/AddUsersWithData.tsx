@@ -24,7 +24,7 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 	const onClickClose = useTabBarClose();
 	const saveAction = useMethod('addUsersToRoom');
 
-	const { values, handlers } = useForm({ users: [] as IUser['username'][]});
+	const { values, handlers } = useForm({ users: [] as IUser['username'][] });
 	const { users } = values as AddUsersInitialProps;
 	const { handleUsers } = handlers;
 
