@@ -107,7 +107,7 @@ describe('[Teams]', () => {
 							expect(response.body).to.have.property('members');
 
 							// remove admin user from members because it's added automatically as owner
-							const members = response.body.members.filter((member) => member.username !== adminUsername);
+							const members = response.body.members.filter(({ user }) => user.username !== adminUsername);
 
 							const [member] = members;
 							expect(member.user.username).to.be.equal(testUser.username);
