@@ -8,7 +8,12 @@ const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
 
 export const test = baseTest.extend({
 	context: async ({ context }, use) => {
-		if (!process.env.E2E_COVERAGE) return;
+		if (!process.env.E2E_COVERAGE) {
+			await use(context);
+			await context.close();
+
+			return;
+		}
 
 		await context.addInitScript(() =>
 			window.addEventListener('beforeunload', () => (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__))),
