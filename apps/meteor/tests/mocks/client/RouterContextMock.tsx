@@ -1,5 +1,4 @@
 import React, { ContextType, ReactElement, ReactNode, useMemo } from 'react';
-import { Subscription } from 'use-subscription';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 
 type RouterContextMockProps = {
@@ -11,28 +10,28 @@ type RouterContextMockProps = {
 const RouterContextMock = ({ children, pushRoute, replaceRoute }: RouterContextMockProps): ReactElement => {
 	const value = useMemo<ContextType<typeof RouterContext>>(
 		() => ({
-			queryRoutePath: (): Subscription<undefined> => ({
-				getCurrentValue: (): undefined => undefined,
-				subscribe: () => (): void => undefined,
-			}),
-			queryRouteUrl: (): Subscription<undefined> => ({
-				getCurrentValue: (): undefined => undefined,
-				subscribe: () => (): void => undefined,
-			}),
+			queryRoutePath: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => undefined] => [
+				() => (): void => undefined,
+				(): undefined => undefined,
+			],
+			queryRouteUrl: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => undefined] => [
+				() => (): void => undefined,
+				(): undefined => undefined,
+			],
 			pushRoute: pushRoute ?? ((): void => undefined),
 			replaceRoute: replaceRoute ?? ((): void => undefined),
-			queryRouteParameter: (): Subscription<undefined> => ({
-				getCurrentValue: (): undefined => undefined,
-				subscribe: () => (): void => undefined,
-			}),
-			queryQueryStringParameter: (): Subscription<undefined> => ({
-				getCurrentValue: (): undefined => undefined,
-				subscribe: () => (): void => undefined,
-			}),
-			queryCurrentRoute: (): Subscription<[undefined, {}, {}, undefined]> => ({
-				getCurrentValue: (): [undefined, {}, {}, undefined] => [undefined, {}, {}, undefined],
-				subscribe: () => (): void => undefined,
-			}),
+			queryRouteParameter: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => undefined] => [
+				() => (): void => undefined,
+				(): undefined => undefined,
+			],
+			queryQueryStringParameter: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => undefined] => [
+				() => (): void => undefined,
+				(): undefined => undefined,
+			],
+			queryCurrentRoute: (): [
+				subscribe: (onStoreChange: () => void) => () => void,
+				getSnapshot: () => [undefined?, {}?, {}?, undefined?],
+			] => [() => (): void => undefined, (): [undefined, {}, {}, undefined] => [undefined, {}, {}, undefined]],
 		}),
 		[pushRoute, replaceRoute],
 	);
