@@ -111,6 +111,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 		color: status.label === 'Disabled' ? colors.y800 : 'primary-500',
 	};
 
+	const shouldShowPriceDisplay = isAppDetailsPage && button.action !== 'update';
+
 	return (
 		<Box {...props}>
 			{button && (
@@ -133,7 +135,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed = false
 							</>
 						)}
 					</Button>
-					{isAppDetailsPage && (
+					{shouldShowPriceDisplay && (
 						<Box pi='x14' color='primary-500'>
 							{!installed && (
 								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
