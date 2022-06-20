@@ -1,6 +1,5 @@
 import { FederationFactoryEE } from '../../../ee/app/federation-v2/server/infrastructure/Factory';
 import { FederationFactory } from './infrastructure/Factory';
-import './infrastructure/rocket-chat/slash-commands';
 
 export const FEDERATION_PROCESSING_CONCURRENCY = 1;
 
@@ -31,6 +30,7 @@ export const runFederation = async (): Promise<void> => {
 	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 	await federation.start();
 	await rocketSettingsAdapter.onFederationEnabledStatusChanged(federation.onFederationAvailabilityChanged.bind(federation));
+	require('./infrastructure/rocket-chat/slash-commands');
 };
 
 export const stopFederation = async (): Promise<void> => {

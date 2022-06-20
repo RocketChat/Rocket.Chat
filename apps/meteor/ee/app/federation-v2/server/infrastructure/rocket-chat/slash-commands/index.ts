@@ -8,7 +8,7 @@ import { FederationRoomSenderConverterEE } from '../converters/RoomSender';
 
 const EE_FEDERATION_COMMANDS = {
 	dm: async (currentUserId: string, _: string, invitees: string[]): Promise<void> =>
-		federationRoomServiceSenderEE.createLocalDirectMessageRoomAndInviteUser(
+		federationRoomServiceSenderEE.createLocalDirectMessageRoom(
 			FederationRoomSenderConverterEE.toCreateDirectMessageDto(currentUserId, invitees),
 		),
 };

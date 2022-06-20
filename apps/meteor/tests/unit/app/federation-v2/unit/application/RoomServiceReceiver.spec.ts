@@ -163,7 +163,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 			});
 			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
 			userAdapter.getFederatedUserByExternalId.onCall(0).resolves(undefined);
-			bridge.isUserIdFromTheSameHomeserver.onCall(0).resolves(false);
+			bridge.isUserIdFromTheSameHomeserver.onCall(0).returns(false);
 			await service.changeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				eventOrigin: EVENT_ORIGIN.LOCAL,
@@ -192,7 +192,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
 			userAdapter.getFederatedUserByExternalId.onCall(0).resolves({} as any);
 			userAdapter.getFederatedUserByExternalId.onCall(1).resolves(undefined);
-			bridge.isUserIdFromTheSameHomeserver.onCall(1).resolves(false);
+			bridge.isUserIdFromTheSameHomeserver.onCall(1).returns(false);
 			await service.changeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				eventOrigin: EVENT_ORIGIN.LOCAL,
@@ -211,7 +211,7 @@ describe('Federation - Application - FederationRoomServiceReceiver', () => {
 			});
 			const invitee = inviter;
 			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
-			bridge.isUserIdFromTheSameHomeserver.onCall(1).resolves(false);
+			bridge.isUserIdFromTheSameHomeserver.onCall(1).returns(false);
 			userAdapter.getFederatedUserByExternalId.onCall(0).resolves(undefined);
 			userAdapter.getFederatedUserByExternalId.onCall(1).resolves(undefined);
 			userAdapter.getFederatedUserByExternalId.onCall(2).resolves(inviter);

@@ -100,54 +100,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 		);
 	}
 
-	public async createExternalDirectMessageRoomAndInviteUsers(
-		dmRoomOnCreationInput: FederationOnDirectMessageRoomCreationDto,
-	): Promise<void> {
-		const { internalRoomId, internalInviterId, invitees } = dmRoomOnCreationInput;
-
-		if (!(await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId))) {
-			const internalUser = (await this.rocketUserAdapter.getInternalUserById(internalInviterId)) as IUser;
-			const externalInviterId = await this.bridge.createUser(
-				internalUser.username as string,
-				internalUser.name as string,
-				this.rocketSettingsAdapter.getHomeServerDomain(),
-			);
-			const federatedInviterUser = FederatedUser.createInstance(externalInviterId, {
-				name: internalUser.name as string,
-				username: internalUser.username as string,
-				existsOnlyOnProxyServer: true,
-			});
-			await this.rocketUserAdapter.createFederatedUser(federatedInviterUser);
-		}
-		const federatedInviterUser = (await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId)) as FederatedUser;
-
-		const externalRoomId = await this.bridge.createDirectMessageRoom(
-			federatedInviterUser.externalId,
-			invitees.map((invitee) => invitee.rawInviteeId),
-		);
-		const newFederatedRoom = FederatedRoomEE.createInstanceEE(
-			externalRoomId,
-			externalRoomId,
-			federatedInviterUser,
-			RoomType.DIRECT_MESSAGE,
-			'',
-		);
-		await this.rocketRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, newFederatedRoom);
-
-		await Promise.all(
-			invitees.map((member) =>
-				this.prepareUserForDirectMessage({
-					internalInviterId,
-					internalRoomId,
-					inviteeUsernameOnly: member.inviteeUsernameOnly,
-					normalizedInviteeId: member.normalizedInviteeId,
-					rawInviteeId: member.rawInviteeId,
-				}),
-			),
-		);
-	}
-
-	public async createLocalDirectMessageRoomAndInviteUser(dmRoomCreateInput: FederationCreateDirectMessageDto): Promise<void> {
+	public async createLocalDirectMessageRoom(dmRoomCreateInput: FederationCreateDirectMessageDto): Promise<void> {
 		const { internalInviterId, invitees } = dmRoomCreateInput;
 		await this.rocketRoomAdapter.createLocalDirectMessageRoom(invitees, internalInviterId);
 	}
@@ -192,7 +145,81 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 		}
 	}
 
-	public async inviteUserToAFederatedRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
+	private async createExternalDirectMessageRoomAndInviteUsers(
+		dmRoomOnCreationInput: FederationOnDirectMessageRoomCreationDto,
+	): Promise<void> {
+		const { internalRoomId, internalInviterId, invitees } = dmRoomOnCreationInput;
+
+		if (!(await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId))) {
+			const internalUser = (await this.rocketUserAdapter.getInternalUserById(internalInviterId)) as IUser;
+			const externalInviterId = await this.bridge.createUser(
+				internalUser.username as string,
+				internalUser.name as string,
+				this.rocketSettingsAdapter.getHomeServerDomain(),
+			);
+			const federatedInviterUser = FederatedUser.createInstance(externalInviterId, {
+				name: internalUser.name as string,
+				username: internalUser.username as string,
+				existsOnlyOnProxyServer: true,
+			});
+			await this.rocketUserAdapter.createFederatedUser(federatedInviterUser);
+		}
+		const federatedInviterUser = (await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId)) as FederatedUser;
+
+		const externalRoomId = await this.bridge.createDirectMessageRoom(
+			federatedInviterUser.externalId,
+			invitees.map((invitee) => invitee.rawInviteeId),
+		);
+		const newFederatedRoom = FederatedRoomEE.createInstanceEE(
+			externalRoomId,
+			externalRoomId,
+			federatedInviterUser,
+			RoomType.DIRECT_MESSAGE,
+			'',
+		);
+		await this.rocketRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, newFederatedRoom);
+
+		await Promise.all(
+			invitees.map((member) =>
+				this.createUserForDirectMessage({
+					internalInviterId,
+					internalRoomId,
+					inviteeUsernameOnly: member.inviteeUsernameOnly,
+					normalizedInviteeId: member.normalizedInviteeId,
+					rawInviteeId: member.rawInviteeId,
+				}),
+			),
+		);
+	}
+
+	private async createUserForDirectMessage(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
+		const { normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
+		const isInviteeFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
+			rawInviteeId,
+			this.rocketSettingsAdapter.getHomeServerDomain(),
+		);
+
+		if (isInviteeFromTheSameHomeServer) {
+			const existsOnlyOnProxyServer = true;
+
+			await this.createFederatedUserIfNecessary(inviteeUsernameOnly, rawInviteeId, existsOnlyOnProxyServer);
+
+			const federatedInviteeUser = (await this.rocketUserAdapter.getFederatedUserByInternalUsername(inviteeUsernameOnly)) as FederatedUser;
+
+			await this.bridge.createUser(
+				inviteeUsernameOnly,
+				federatedInviteeUser?.internalReference?.name as string,
+				this.rocketSettingsAdapter.getHomeServerDomain(),
+			);
+			return;
+		}
+
+		const existsOnlyOnProxyServer = false;
+
+		await this.createFederatedUserIfNecessary(normalizedInviteeId, rawInviteeId, existsOnlyOnProxyServer);
+	}
+
+	private async inviteUserToAFederatedRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
 		const { internalInviterId, internalRoomId, normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
 		const isInviteeFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
 			rawInviteeId,
@@ -213,7 +240,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 
 			await this.bridge.createUser(
 				inviteeUsernameOnly,
-				federatedInviteeUser?.internalReference.name as string,
+				federatedInviteeUser?.internalReference?.name as string,
 				this.rocketSettingsAdapter.getHomeServerDomain(),
 			);
 			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);
@@ -239,33 +266,6 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 				);
 			});
 		await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
-	}
-
-	public async prepareUserForDirectMessage(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
-		const { normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
-		const isInviteeFromTheSameHomeServer = this.bridge.isUserIdFromTheSameHomeserver(
-			rawInviteeId,
-			this.rocketSettingsAdapter.getHomeServerDomain(),
-		);
-
-		if (isInviteeFromTheSameHomeServer) {
-			const existsOnlyOnProxyServer = true;
-
-			await this.createFederatedUserIfNecessary(inviteeUsernameOnly, rawInviteeId, existsOnlyOnProxyServer);
-
-			const federatedInviteeUser = (await this.rocketUserAdapter.getFederatedUserByInternalUsername(inviteeUsernameOnly)) as FederatedUser;
-
-			await this.bridge.createUser(
-				inviteeUsernameOnly,
-				federatedInviteeUser?.internalReference.name as string,
-				this.rocketSettingsAdapter.getHomeServerDomain(),
-			);
-			return;
-		}
-
-		const existsOnlyOnProxyServer = false;
-
-		await this.createFederatedUserIfNecessary(normalizedInviteeId, rawInviteeId, existsOnlyOnProxyServer);
 	}
 
 	private async createFederatedUserIfNecessary(username: string, rawUsername: string, existsOnlyOnProxyServer = false): Promise<void> {
