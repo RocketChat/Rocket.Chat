@@ -52,7 +52,7 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED) {
+		if (state === AsyncStatePhase.RESOLVED && context.current) {
 			updateChartData(t('Offline'), [offline]);
 			updateChartData(t('Available'), [available]);
 			updateChartData(t('Away'), [away]);

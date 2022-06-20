@@ -75,7 +75,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		}
 
 		// removes user's avatar
-		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
+		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url' || user.avatarOrigin === 'rest') {
 			FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 

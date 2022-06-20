@@ -9,6 +9,7 @@ import { useUpdateChartData } from './useUpdateChartData';
 
 const initialData = {
 	agents: {},
+	success: true,
 };
 
 const init = (canvas, context, t) =>

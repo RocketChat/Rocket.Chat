@@ -2,7 +2,6 @@ import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
-import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
@@ -11,7 +10,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
-import { formsSubscription } from '../../../additionalForms';
+import { useFormsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../Skeleton';
 
 const initialValuesRoom = {
@@ -45,7 +44,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 	const { handleTopic, handleTags, handlePriorityId } = handlersRoom;
 	const { topic, tags, priorityId } = valuesRoom;
 
-	const forms = useSubscription(formsSubscription);
+	const forms = useFormsSubscription();
 
 	const { usePrioritiesSelect = () => {} } = forms;
 
