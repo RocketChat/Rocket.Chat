@@ -1,4 +1,4 @@
-import { IUser, UserStatus } from '@rocket.chat/core-typings';
+import { IUser } from '@rocket.chat/core-typings';
 import {
 	Field,
 	FieldGroup,
@@ -220,7 +220,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 								value={statusText}
 								onChange={handleStatusText}
 								placeholder={t('StatusMessage_Placeholder')}
-								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType as UserStatus} />}
+								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType as IUser['status']} />}
 							/>
 						</Field.Row>
 						{!allowUserStatusMessageChange && <Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
