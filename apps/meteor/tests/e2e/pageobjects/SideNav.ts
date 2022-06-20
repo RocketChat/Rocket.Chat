@@ -86,6 +86,12 @@ export class SideNav extends BasePage {
 		return this.page.locator('li.rcx-option >> text="Channel"');
 	}
 
+	get omnichannelGoBackButton(): Locator {
+		return this.page.locator(
+			'[data-qa="SideBarHeaderOmnichannel"] .rcx-button--small-square.rcx-button--square.rcx-button--small.rcx-button--ghost.rcx-button',
+		);
+	}
+
 	get general(): Locator {
 		return this.getChannelFromList('general');
 	}

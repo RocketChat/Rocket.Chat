@@ -29,6 +29,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 					'data-quick-actions': index,
 					action,
 					'key': id,
+					'data-qa': `VisibleActions-${title}`,
 				};
 
 				return <Header.ToolBoxAction {...props} />;

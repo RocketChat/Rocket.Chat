@@ -203,6 +203,10 @@ export class MainContent extends BasePage {
 		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//label');
 	}
 
+	get btnCloseLiveChat(): Locator {
+		return this.page.locator('[data-qa="VisibleActions-Close"]');
+	}
+
 	public async waitForLastMessageEqualsHtml(text: string): Promise<void> {
 		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}
@@ -267,6 +271,26 @@ export class MainContent extends BasePage {
 
 	get getFileDescription(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child div:nth-child(3) div:nth-child(2) div p');
+	}
+
+	get inputCommentCloseLiveChat(): Locator {
+		return this.page.locator('[name="comment"]');
+	}
+
+	get inputTag(): Locator {
+		return this.page.locator('[placeholder="Enter a tag"]');
+	}
+
+	get btnAddTag(): Locator {
+		return this.page.locator('.rcx-button >> text="Add"');
+	}
+
+	get btnConfirm(): Locator {
+		return this.page.locator('.rcx-button.rcx-button--primary >> text="Confirm"');
+	}
+
+	get btnTag(): Locator {
+		return this.page.locator('.rcx-chip >> text="any_tag"');
 	}
 
 	public async selectAction(action: string): Promise<void> {
@@ -341,5 +365,14 @@ export class MainContent extends BasePage {
 	public async doReload(): Promise<void> {
 		await this.page.reload({ waitUntil: 'load' });
 		await this.page.waitForSelector('.messages-box');
+	}
+
+	async closeLiveChatConversation(): Promise<void> {
+		await this.btnCloseLiveChat.click();
+		await this.inputCommentCloseLiveChat.type('any_reason');
+		await this.inputTag.type('any_tag');
+		await this.btnAddTag.click();
+		await expect(this.btnTag).toBeVisible();
+		await this.btnConfirm.click();
 	}
 }

@@ -81,6 +81,10 @@ export class Agents extends BasePage {
 		return this.page.locator(`[data-qa="AgentEditTextInput-${id}"]`);
 	}
 
+	clickOnLiveChatCall(liveChatUser: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"] >> text="${liveChatUser}"`);
+	}
+
 	public async doAddAgent(user: string): Promise<void> {
 		await this.textAgentsTitle.waitFor();
 		await this.inputAgentsUserName.type(user, { delay: 50 });
