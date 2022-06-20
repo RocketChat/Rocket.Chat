@@ -31,7 +31,10 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				data: await VideoConf.start(userId, roomId, title),
+				data: {
+					...(await VideoConf.start(userId, roomId, title)),
+					providerName,
+				},
 			});
 		},
 	},
@@ -59,6 +62,7 @@ API.v1.addRoute(
 					...(state?.cam !== undefined ? { cam: state.cam } : {}),
 					...(state?.mic !== undefined ? { mic: state.mic } : {}),
 				}),
+				providerName: call.providerName,
 			});
 		},
 	},
