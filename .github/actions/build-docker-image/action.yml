@@ -36,7 +36,9 @@ runs:
 
         LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-        IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ inputs.docker-tag }}.${{ inputs.release }}"
+        IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ inputs.docker-tag }}"
+
+        IMAGE_NAME="${IMAGE_NAME_BASE}.${{ inputs.release }}"
 
         echo "Build Docker image ${IMAGE_NAME}"
 
@@ -59,6 +61,7 @@ runs:
         echo "Build ${{ inputs.release }} Docker image"
         docker build -t $IMAGE_NAME .
 
+        echo "::set-output name=image-name-base::${IMAGE_NAME_BASE}"
         echo "::set-output name=image-name::${IMAGE_NAME}"
 
     - name: Login to GitHub Container Registry
@@ -76,3 +79,10 @@ runs:
         echo "Push Docker image: ${{ steps.build-image.outputs.image-name }}"
 
         docker push ${{ steps.build-image.outputs.image-name }}
+
+        if [[ '${{ inputs.release }}' == 'official' ]]; then
+          echo "Push Docker: ${{ steps.build-image.outputs.image-name }}-mongo"
+
+          docker tag ${{ steps.build-image.outputs.image-name }} ${{ steps.build-image.outputs.image-name-base }}
+          docker push ${{ steps.build-image.outputs.image-name-base }}
+        fi;

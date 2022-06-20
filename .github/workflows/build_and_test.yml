@@ -51,14 +51,11 @@ jobs:
         run: |
           if [[ '${{ github.event_name }}' == 'pull_request' ]]; then
             DOCKER_TAG="pr-${{ github.event.number }}"
-          elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+' ; then
-            DOCKER_TAG="$GITHUB_REF_NAME"
-          elif [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-            DOCKER_TAG="develop"
+          else
+            DOCKER_TAG="gh-${{ github.run_id }}"
           fi
           echo "DOCKER_TAG: ${DOCKER_TAG}"
-          echo "::set-output name=docker-tag::${DOCKER_TAG}"
-          echo "::set-output name=gh-docker-tag::gh-${{ github.run_id }}"
+          echo "::set-output name=gh-docker-tag::${DOCKER_TAG}"
 
   build:
     runs-on: ubuntu-20.04
@@ -828,7 +825,7 @@ jobs:
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.docker-tag }}.${{ matrix.release }}"
+          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
@@ -904,7 +901,7 @@ jobs:
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          IMAGE_TAG="${{ needs.release-versions.outputs.docker-tag }}"
+          IMAGE_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}"
 
           GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${IMAGE_TAG}"
 
