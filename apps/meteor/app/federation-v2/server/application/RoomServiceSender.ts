@@ -16,9 +16,7 @@ export class FederationRoomServiceSender {
 		protected rocketUserAdapter: RocketChatUserAdapter,
 		protected rocketSettingsAdapter: RocketChatSettingsAdapter,
 		protected bridge: IFederationBridge,
-	) {
-		this.setupCallbacks();
-	} // eslint-disable-line no-empty-function
+	) {} // eslint-disable-line no-empty-function
 
 	public async createDirectMessageRoomAndInviteUser(roomCreateDMAndInviteUserInput: FederationCreateDMAndInviteUserDto): Promise<void> {
 		const { normalizedInviteeId, rawInviteeId, internalInviterId, inviteeUsernameOnly } = roomCreateDMAndInviteUserInput;
@@ -114,7 +112,7 @@ export class FederationRoomServiceSender {
 		return Boolean(federatedRoom?.isFederated());
 	}
 
-	private async setupCallbacks(): Promise<void> {
+	public async setupCallbacks(): Promise<void> {
 		callbacks.add('afterLeaveRoom', this.leaveRoom);
 	}
 }

@@ -28,6 +28,8 @@ export const federationRoomServiceSender = FederationFactory.buildRoomServiceSen
 	federation,
 );
 
+federationRoomServiceSender.setupCallbacks();
+
 export const runFederation = async (): Promise<void> => {
 	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 
