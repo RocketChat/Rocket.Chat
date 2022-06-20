@@ -21,7 +21,7 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
-import { WrapUpCallModal } from '../../../ee/client/omnichannel/components/voip/WrapUpCallModal';
+import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
 import { CallContext, CallContextValue, useCallCloseRoom } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
