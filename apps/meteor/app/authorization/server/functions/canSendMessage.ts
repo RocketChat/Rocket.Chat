@@ -14,7 +14,7 @@ const subscriptionOptions = {
 };
 
 async function validateRoomMessagePermissionsAsync(
-	room: IRoom,
+	room: IRoom | null,
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
 	extraData: Record<string, any>,
 ): Promise<void> {
@@ -50,7 +50,11 @@ export async function canSendMessageAsync(
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
 	extraData: Record<string, any>,
 ): Promise<IRoom> {
-	const room = (await Rooms.findOneById(rid)) as IRoom;
+	const room = await Rooms.findOneById(rid);
+	if (!room) {
+		throw new Error('error-invalid-room');
+	}
+
 	await validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData);
 	return room;
 }
