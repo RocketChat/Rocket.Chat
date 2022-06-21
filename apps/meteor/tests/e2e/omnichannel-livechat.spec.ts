@@ -1,15 +1,36 @@
-import { test, Page, expect } from '@playwright/test';
+import { test, Page, expect, APIRequestContext } from '@playwright/test';
 
 import { updateMailToLiveChat } from './utils/helpers/updateMailToLiveChat';
 import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';
-import { LoginPage, SideNav, MainContent, Agents, LiveChat } from './pageobjects';
-import { createRegisterUser, adminLogin } from './utils/mocks/userAndPasswordMock';
+import { LoginPage, MainContent, Agents, LiveChat } from './pageobjects';
+import { createRegisterUser, validUserInserted, adminLogin } from './utils/mocks/userAndPasswordMock';
+import { BASE_API_URL } from './utils/mocks/urlMock';
+
+const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
+
+const makeLogin = async (request: APIRequestContext): Promise<void> => {
+	const response = await request.post(`${BASE_API_URL}/login`, { data: adminLogin });
+
+	const { userId, authToken } = (await response.json()).data;
+
+	apiSessionHeaders['X-Auth-Token'] = authToken;
+	apiSessionHeaders['X-User-Id'] = userId;
+};
+
+const addAgent = async (request: APIRequestContext): Promise<void> => {
+	await request.post(`${BASE_API_URL}/livechat/users/agent`, {
+		headers: apiSessionHeaders,
+		data: { username: 'user.name.test' },
+	});
+};
 
 test.describe('[Livechat]', () => {
 	let page: Page;
 	let liveChat: LiveChat;
 	const liveChatUser = createRegisterUser();
-
+	test.afterAll(async () => {
+		await page.close();
+	});
 	test.describe('[Offline message]', () => {
 		test.beforeAll(async ({ browser }) => {
 			const { isLocal } = verifyTestBaseUrl();
@@ -23,10 +44,6 @@ test.describe('[Livechat]', () => {
 
 			liveChat = new LiveChat(page);
 			await liveChat.btnOpenLiveChat('L').click();
-		});
-
-		test.afterAll(async () => {
-			await page.close();
 		});
 
 		test.describe('[Render]', () => {
@@ -44,26 +61,21 @@ test.describe('[Livechat]', () => {
 
 	test.describe('[Send message to online agent]', () => {
 		let loginPage: LoginPage;
-		let sideNav: SideNav;
 		let mainContent: MainContent;
 		let agent: Agents;
 		let otherContextPage: Page;
-		test.beforeAll(async ({ browser }) => {
+		test.beforeAll(async ({ browser, request }) => {
 			const context = await browser.newContext();
 			otherContextPage = await context.newPage();
 			await otherContextPage.goto('/');
-
+			await makeLogin(request);
+			await addAgent(request);
 			loginPage = new LoginPage(otherContextPage);
-			sideNav = new SideNav(otherContextPage);
 			mainContent = new MainContent(otherContextPage);
 			agent = new Agents(otherContextPage);
 
-			await loginPage.login(adminLogin);
-			await sideNav.sidebarUserMenu.click();
-			await sideNav.omnichannel.click();
-			await agent.agentsLink.click();
-			await agent.doAddAgent('RocketChat Internal Admin Test');
-			await sideNav.omnichannelGoBackButton.click();
+			await loginPage.login(validUserInserted);
+
 			await page.reload();
 			await liveChat.btnOpenLiveChat('R').click();
 			await liveChat.doSendMessage(liveChatUser, false);
