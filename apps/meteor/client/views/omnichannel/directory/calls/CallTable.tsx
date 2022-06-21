@@ -57,15 +57,11 @@ const CallTable: FC = () => {
 
 	const resolveDirectionLabel = useCallback(
 		(direction: IVoipRoom['direction']) => {
-			if (direction === 'inbound') {
-				return t('Incoming');
-			}
-
-			if (direction === 'outbound') {
-				return t('Outgoing');
-			}
-
-			return t('Not_Available');
+			const labels: { [key: string]: 'Incoming' | 'Outgoing' } = {
+				inbound: 'Incoming',
+				outbound: 'Outgoing',
+			};
+			return t(labels[direction] || 'Not_Available');
 		},
 		[t],
 	);
@@ -133,7 +129,7 @@ const CallTable: FC = () => {
 					{t('Talk_Time')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
-					key={'direction'}
+					key='direction'
 					direction={sort[1]}
 					active={sort[0] === 'direction'}
 					onClick={onHeaderClick}
