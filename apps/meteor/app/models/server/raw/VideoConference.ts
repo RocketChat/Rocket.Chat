@@ -32,22 +32,27 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		);
 	}
 
-	public async createDirect(callDetails: Pick<VideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string> {
+	public async createDirect({
+		providerName,
+		...callDetails
+	}: Pick<VideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string> {
 		const call: InsertionModel<VideoConference> = {
 			type: 'direct',
 			users: [],
 			messages: {},
 			status: VideoConferenceStatus.CALLING,
 			createdAt: new Date(),
+			providerName: providerName.toLowerCase(),
 			...callDetails,
 		};
 
 		return (await this.insertOne(call)).insertedId;
 	}
 
-	public async createGroup(
-		callDetails: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>,
-	): Promise<string> {
+	public async createGroup({
+		providerName,
+		...callDetails
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -55,21 +60,24 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 			status: VideoConferenceStatus.STARTED,
 			anonymousUsers: 0,
 			createdAt: new Date(),
+			providerName: providerName.toLowerCase(),
 			...callDetails,
 		};
 
 		return (await this.insertOne(call)).insertedId;
 	}
 
-	public async createLivechat(
-		callDetails: Required<Pick<ILivechatVideoConference, 'rid' | 'createdBy' | 'providerName'>>,
-	): Promise<string> {
+	public async createLivechat({
+		providerName,
+		...callDetails
+	}: Required<Pick<ILivechatVideoConference, 'rid' | 'createdBy' | 'providerName'>>): Promise<string> {
 		const call: InsertionModel<ILivechatVideoConference> = {
 			type: 'livechat',
 			users: [],
 			messages: {},
 			status: VideoConferenceStatus.STARTED,
 			createdAt: new Date(),
+			providerName: providerName.toLowerCase(),
 			...callDetails,
 		};
 
