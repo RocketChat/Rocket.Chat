@@ -180,45 +180,35 @@ export type MiscEndpoints = {
 			}[];
 		};
 	};
-	'me': {
-		GET: (params: { fields: { [k: string]: number }; user: IUser }) => IUser & {
-			email?: string;
-			settings: {
-				profile: {};
-				preferences: unknown;
-			};
-			avatarUrl: string;
-		};
-	};
 
-	'shield.svg': {
+	'/v1/shield.svg': {
 		GET: (params: ShieldSvg) => {
 			svg: string;
 		};
 	};
 
-	'spotlight': {
+	'/v1/spotlight': {
 		GET: (params: Spotlight) => {
 			users: Pick<IUser, 'username' | 'name' | 'status' | 'statusText' | 'avatarETag'>[];
 			rooms: IRoom[];
 		};
 	};
 
-	'directory': {
+	'/v1/directory': {
 		GET: (params: Directory) => PaginatedResult<{
 			result: (IUser | IRoom | ITeam)[];
 		}>;
 	};
 
-	'method.call': {
-		POST: (params: MethodCall) => {
-			result: unknown;
+	'/v1/method.call/:method': {
+		POST: (params: { message: string }) => {
+			message: unknown;
 		};
 	};
 
-	'method.callAnon': {
-		POST: (params: MethodCallAnon) => {
-			result: unknown;
+	'/v1/method.callAnon/:method': {
+		POST: (params: { message: string }) => {
+			message: unknown;
 		};
 	};
 };
