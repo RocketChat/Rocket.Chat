@@ -1,9 +1,9 @@
 import { CallStates } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, SidebarFooter as Footer } from '@rocket.chat/fuselage';
+import { Box, Divider, SidebarFooter as Footer } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 
 import { settings } from '../../../app/settings/client';
 import { useCallerStatus, useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
@@ -24,7 +24,7 @@ const SidebarFooter = (): ReactElement => {
 		}
 	`;
 
-	const { value, phase } = useEndpointData('licenses.get');
+	const { value, phase } = useEndpointData('/v1/licenses.get');
 	const endpointLoading = phase === AsyncStatePhase.LOADING;
 
 	const t = useTranslation();
@@ -32,10 +32,6 @@ const SidebarFooter = (): ReactElement => {
 	const isCallEnabled = useIsCallEnabled();
 	const ready = useIsCallReady();
 	const callerStatus = useCallerStatus();
-
-	useEffect(() => {
-		console.log('callerStatus', callerStatus);
-	}, [callerStatus]);
 
 	const activeCallStatus: CallStates[] = ['OFFER_RECEIVED', 'IN_CALL', 'ON_HOLD', 'ANSWER_SENT'];
 
@@ -47,6 +43,7 @@ const SidebarFooter = (): ReactElement => {
 
 	return (
 		<Footer>
+			<Divider mbs={-2} mbe={0} borderColor={`${colors.n900}40`} />
 			<Box
 				is='footer'
 				pb='x12'
@@ -58,11 +55,18 @@ const SidebarFooter = (): ReactElement => {
 			/>
 			{isCommunityEdition && (
 				<Box pi='x16' pbe='x8'>
-					<Box fontSize='x10' fontWeight={700} color='neutral-100' pbe='x4'>
-						{t('Community_Edition')}
+					<Box fontSize='x10' fontWeight={700} color={colors.n100} pbe='x4'>
+						{t('Free_Edition')}
 					</Box>
-					<Box fontSize='x10' fontWeight={700} color='neutral-600'>
-						{t('Security_Communication_Free')}
+					<Box fontSize='x10' fontWeight={700} color={colors.n600}>
+						<a
+							href='https://go.rocket.chat/'
+							target='_blank'
+							rel='noopener noreferrer'
+							style={{ textDecoration: 'none', color: 'inherit' }}
+						>
+							{t('Powered_by_RocketChat')}
+						</a>
 					</Box>
 				</Box>
 			)}
