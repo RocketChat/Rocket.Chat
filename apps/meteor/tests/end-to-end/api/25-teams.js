@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper.js';
 import { createUser, login } from '../../data/users.helper';
-import { password } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 
 describe('[Teams]', () => {
 	before((done) => getCredentials(done));
@@ -105,7 +105,11 @@ describe('[Teams]', () => {
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-							const member = response.body.members[0];
+
+							// remove admin user from members because it's added automatically as owner
+							const members = response.body.members.filter(({ user }) => user.username !== adminUsername);
+
+							const [member] = members;
 							expect(member.user.username).to.be.equal(testUser.username);
 						});
 				})
