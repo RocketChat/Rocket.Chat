@@ -171,13 +171,13 @@ jobs:
       - name: Prepare build
         run: |
           cd apps/meteor/dist
-          tar czf /tmp/build/Rocket.Chat.tar.gz bundle
+          tar czf /tmp/Rocket.Chat.tar.gz bundle
 
       - name: Store build
         uses: actions/upload-artifact@v2
         with:
           name: build
-          path: /tmp/build/Rocket.Chat.tar.gz
+          path: /tmp/Rocket.Chat.tar.gz
 
   build-docker-preview:
     runs-on: ubuntu-20.04
