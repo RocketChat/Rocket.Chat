@@ -18,6 +18,8 @@ env:
   MONGO_URL: mongodb://localhost:27017/rocketchat
   MONGO_OPLOG_URL: mongodb://mongo:27017/local
   TOOL_NODE_FLAGS: --max_old_space_size=4096
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   release-versions:
@@ -71,12 +73,13 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
+      - uses: actions/checkout@v3
+
       - name: Use Node.js 14.18.3
         uses: actions/setup-node@v3
         with:
           node-version: '14.18.3'
-
-      - uses: actions/checkout@v3
+          cache: 'yarn'
 
       - name: Free disk space
         run: |
@@ -86,40 +89,22 @@ jobs:
           docker rmi $(docker image ls -aq)
           df -h
 
-      # TODO is this required?
-      # - name: check package-lock
-      #   run: |
-      #     npx package-lock-check
-
-      - uses: c-hive/gha-yarn-cache@v2
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
-
-      # TODO change to use turbo cache
       - name: Cache meteor local
         uses: actions/cache@v2
         with:
           path: ./apps/meteor/.meteor/local
-          key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('apps/meteor/.meteor/versions') }}
+          key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
           restore-keys: |
-            ${{ runner.os }}-meteor_cache-
-            ${{ runner.os }}-
+            meteor-local-cache-${{ runner.os }}-
+
       - name: Cache meteor
         uses: actions/cache@v2
         with:
           path: ~/.meteor
-          key: ${{ runner.OS }}-meteor-${{ hashFiles('apps/meteor/.meteor/release') }}
+          key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
           restore-keys: |
-            ${{ runner.os }}-meteor-
-            ${{ runner.os }}-
+            meteor-cache-${{ runner.os }}-
+
       - name: Install Meteor
         run: |
           # Restore bin from cache
@@ -152,13 +137,20 @@ jobs:
       - name: yarn install
         run: yarn
 
-      - run: yarn lint
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
 
-      - run: yarn turbo run translation-check
+      - name: Lint
+        run: yarn lint --api="http://127.0.0.1:9080"
+
+      - name: Translation check
+        run: yarn turbo run translation-check --api="http://127.0.0.1:9080"
 
       - name: TS typecheck
-        run: |
-          yarn turbo run typecheck
+        run: yarn turbo run typecheck --api="http://127.0.0.1:9080"
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -170,36 +162,35 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: |
-          yarn build:ci -- --debug --directory /tmp/build
+        run: yarn build:ci --api="http://127.0.0.1:9080" -- --debug --directory dist
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
-        run: |
-          yarn build:ci -- --directory /tmp/build
+        run: yarn build:ci --api="http://127.0.0.1:9080" -- --directory dist
 
       - name: Prepare build
         run: |
-          cd /tmp/build
-          tar czf /tmp/build/Rocket.Chat.tar.gz bundle
+          cd apps/meteor/dist
+          tar czf /tmp/Rocket.Chat.tar.gz bundle
 
       - name: Store build
         uses: actions/upload-artifact@v2
         with:
           name: build
-          path: /tmp/build/Rocket.Chat.tar.gz
+          path: /tmp/Rocket.Chat.tar.gz
 
   build-docker-preview:
     runs-on: ubuntu-20.04
     needs: [build, release-versions]
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     steps:
+      - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-
-      - uses: actions/checkout@v3
+          cache: 'yarn'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -238,40 +229,33 @@ jobs:
         with:
           mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
+      - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
       - name: Setup Chrome
-        run: |
-          npm i chromedriver
+        run: npm i chromedriver
 
       - name: Configure Replica Set
         run: |
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
-      - uses: actions/checkout@v3
-
-      - uses: c-hive/gha-yarn-cache@v2
-
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
-
       - name: yarn install
         run: yarn
 
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+
       - name: Unit Test
-        run: yarn testunit
+        run: yarn testunit --api="http://127.0.0.1:9080"
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -407,42 +391,33 @@ jobs:
       - name: Launch NATS
         run: sudo docker run --name nats -d -p 4222:4222 nats:2.4
 
+      - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
       - name: Setup Chrome
-        run: |
-          npm i chromedriver
+        run: npm i chromedriver
 
       - name: Configure Replica Set
         run: |
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
-      - uses: actions/checkout@v3
-
-      - uses: c-hive/gha-yarn-cache@v2
-
-      - name: Cache turbo
-        id: cache-turbo
-        uses: actions/cache@v2
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v1
         with:
-          path: |
-            ./node_modules/.turbo
-          key: ${{ runner.OS }}-turbo-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-            ${{ runner.os }}-
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
 
       - name: yarn install
         run: yarn
 
-      - run: yarn build
-
       - name: Unit Test
-        run: yarn testunit
+        run: yarn testunit --api="http://127.0.0.1:9080"
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -466,7 +441,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: "Build Docker image: account"
+      - name: 'Build Docker image: account'
         uses: ./.github/actions/build-docker-image-service
         with:
           docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -474,7 +449,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: "Build Docker image: authorization"
+      - name: 'Build Docker image: authorization'
         uses: ./.github/actions/build-docker-image-service
         with:
           docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -482,7 +457,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: "Build Docker image: ddp-streamer"
+      - name: 'Build Docker image: ddp-streamer'
         uses: ./.github/actions/build-docker-image-service
         with:
           docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -490,7 +465,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: "Build Docker image: presence"
+      - name: 'Build Docker image: presence'
         uses: ./.github/actions/build-docker-image-service
         with:
           docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -498,7 +473,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: "Build Docker image: stream-hub"
+      - name: 'Build Docker image: stream-hub'
         uses: ./.github/actions/build-docker-image-service
         with:
           docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -545,7 +520,7 @@ jobs:
             --label 'traefik.http.routers.ddp-streamer.rule=PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)' \
             ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${{ needs.release-versions.outputs.gh-docker-tag }}
 
-      - name: "Start service: stream-hub"
+      - name: 'Start service: stream-hub'
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -564,7 +539,7 @@ jobs:
             sleep 10
           done
 
-      - name: "Start service: account"
+      - name: 'Start service: account'
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -583,7 +558,7 @@ jobs:
             sleep 10
           done
 
-      - name: "Start service: authorization"
+      - name: 'Start service: authorization'
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
@@ -602,7 +577,7 @@ jobs:
             sleep 10
           done
 
-      - name: "Start service: presence"
+      - name: 'Start service: presence'
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
