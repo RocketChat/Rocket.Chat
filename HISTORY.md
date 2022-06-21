@@ -4110,33 +4110,6 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
-# 4.1.6
-`2022-06-02  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-### Engine versions
-- Node: `12.22.1`
-- NPM: `6.14.12`
-- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
-- Apps-Engine: `1.28.1`
-
-### 🐛 Bug fixes
-
-
-- Omnichannel managers can't join chats in progress ([#24553](https://github.com/RocketChat/Rocket.Chat/pull/24553))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix in-correct room status shown to agents ([#24592](https://github.com/RocketChat/Rocket.Chat/pull/24592))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@murtaza98](https://github.com/murtaza98)
-- [@renatobecker](https://github.com/renatobecker)
-
 # 4.1.2
 `2021-11-08  ·  3 🐛  ·  3 👩‍💻👨‍💻`
 
@@ -10700,7 +10673,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.8.0
-`2020-11-13  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
+`2020-11-14  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`
