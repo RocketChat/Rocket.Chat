@@ -4,10 +4,6 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { Streamer } from '../../../../server/modules/streamer/streamer.module';
 import { api } from '../../../../server/sdk/api';
-import '../../../../server/models/Subscriptions';
-import '../../../../server/models/Rooms';
-import '../../../../server/models/Users';
-import '../../../../server/models/Settings';
 import './Presence';
 
 export class Stream extends Streamer {
