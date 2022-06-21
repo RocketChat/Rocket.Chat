@@ -32,6 +32,9 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	ip?: string;
 	host?: string;
 	visitorEmails?: IVisitorEmail[];
+	contactManager?: {
+		username: string;
+	};
 }
 
 export interface ILivechatVisitorDTO {

@@ -2,7 +2,7 @@ import { MessageGenericPreview, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ReactNode } from 'react';
 
-import { useCollapse } from '../../../../../components/Message/Attachments/hooks/useCollapse';
+import { useCollapse } from '../../../../../components/message/Attachments/hooks/useCollapse';
 import OEmbedPreviewContent from './OEmbedPreviewContent';
 import type { PreviewMetadata } from './PreviewList';
 
