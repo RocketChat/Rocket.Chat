@@ -71,7 +71,7 @@ API.v1.addRoute(
 				});
 			} catch (e) {
 				await VideoConf.diagnoseProvider(userId, call.rid, call.providerName);
-				throw e;
+				return API.v1.failure(e);
 			}
 		},
 	},
