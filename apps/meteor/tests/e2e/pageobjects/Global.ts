@@ -41,7 +41,7 @@ export class Global extends BasePage {
 	}
 
 	get btnModalCancel(): Locator {
-		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--secondary');
+		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--secondaryDanger');
 	}
 
 	get btnModalRemove(): Locator {
