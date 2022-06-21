@@ -121,4 +121,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findActiveUsersTOTPEnable(options: any): any;
 
 	findActiveUsersEmail2faEnable(options: any): any;
+
+	findActiveByIdsOrUsernames(userIds: string[], options?: any): Cursor<IUser>;
 }

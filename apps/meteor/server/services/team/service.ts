@@ -47,9 +47,12 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		// TODO add validations to `data` and `members`
 
-		const membersResult = await Users.findActiveByIdsOrUsernames(members, {
-			projection: { username: 1 },
-		}).toArray();
+		const membersResult =
+			!members || !Array.isArray(members) || members.length === 0
+				? []
+				: await Users.findActiveByIdsOrUsernames(members, {
+						projection: { username: 1 },
+				  }).toArray();
 		const memberUsernames = membersResult.map(({ username }) => username);
 		const memberIds = membersResult.map(({ _id }) => _id);
 
@@ -636,9 +639,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			userId: { $in: userIds },
 		});
 
-		const records = await cursor.toArray();
 		const results: ITeamMemberInfo[] = [];
-		for await (const record of records) {
+		for await (const record of cursor) {
 			const user = users.find((u) => u._id === record.userId);
 			if (!user) {
 				continue;
