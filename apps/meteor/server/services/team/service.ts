@@ -647,8 +647,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				user: {
 					_id: user._id,
 					username: user.username,
-					name: user.name as string,
-					status: user.status as string,
+					name: user.name,
+					status: user.status,
 					settings: user.settings,
 				},
 				roles: record.roles,
