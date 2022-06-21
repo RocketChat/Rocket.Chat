@@ -103,6 +103,9 @@ settingsRegistry.addGroup('Email', function () {
 	.social {
 		font-size: 12px
 	}
+	.rc-color {
+		color: #F5455C;
+	}
 			`,
 			{
 				type: 'code',
