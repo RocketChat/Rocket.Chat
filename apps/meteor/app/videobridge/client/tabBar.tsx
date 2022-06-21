@@ -15,14 +15,15 @@ addAction('video-conf', ({ room }) => {
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
-	const enabled = !useSetting('VideoConf_Disabled');
-	const enabledDMs = !useSetting('VideoConf_Disable_DMs');
-	const enabledChannel = !useSetting('VideoConf_Disable_Channels');
-	const enabledTeams = !useSetting('VideoConf_Disable_Teams');
-	const enabledGroups = !useSetting('VideoConf_Disable_Groups');
+	// Only disable video conf if the settings are explicitly FALSE - any falsy value counts as true
+	const enabledDMs = useSetting('VideoConf_Enable_DMs') !== false;
+	const enabledChannel = useSetting('VideoConf_Enable_Channels') !== false;
+	const enabledTeams = useSetting('VideoConf_Enable_Teams') !== false;
+	const enabledGroups = useSetting('VideoConf_Enable_Groups') !== false;
 	const enabledLiveChat = useSetting('Omnichannel_call_provider') === 'Jitsi';
 
 	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
+	const enabled = enabledDMs || enabledChannel || enabledTeams || enabledGroups || enabledLiveChat;
 
 	const enableOption = enabled && (!user?.username || !room.muted?.includes(user.username));
 

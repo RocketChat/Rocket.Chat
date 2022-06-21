@@ -8,28 +8,28 @@ export function addSettings(): void {
 				modules: ['videoconference-enterprise'],
 			},
 			function () {
-				this.add('VideoConf_Disable_DMs', false, {
+				this.add('VideoConf_Enable_DMs', true, {
 					type: 'boolean',
 					public: true,
-					invalidValue: false,
+					invalidValue: true,
 				});
 
-				this.add('VideoConf_Disable_Channels', false, {
+				this.add('VideoConf_Enable_Channels', true, {
 					type: 'boolean',
 					public: true,
-					invalidValue: false,
+					invalidValue: true,
 				});
 
-				this.add('VideoConf_Disable_Groups', false, {
+				this.add('VideoConf_Enable_Groups', true, {
 					type: 'boolean',
 					public: true,
-					invalidValue: false,
+					invalidValue: true,
 				});
 
-				this.add('VideoConf_Disable_Teams', false, {
+				this.add('VideoConf_Enable_Teams', true, {
 					type: 'boolean',
 					public: true,
-					invalidValue: false,
+					invalidValue: true,
 				});
 			},
 		);
