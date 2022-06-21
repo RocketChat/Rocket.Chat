@@ -1,4 +1,3 @@
-import { VideoConference } from '@rocket.chat/core-typings';
 import {
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
