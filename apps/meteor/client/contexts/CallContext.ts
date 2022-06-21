@@ -71,7 +71,7 @@ export const useIsCallReady = (): boolean => {
 		callerInfo = context.voipClient.callerInfo;
 	}
 
-	return Boolean(context.ready);
+	return !!context.ready;
 };
 
 export const useIsCallError = (): boolean => {
