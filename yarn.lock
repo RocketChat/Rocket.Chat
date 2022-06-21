@@ -3846,6 +3846,7 @@ __metadata:
     "@types/xmldom": ^0.1.31
     "@typescript-eslint/eslint-plugin": ^2.34.0
     "@typescript-eslint/parser": ^3.10.1
+    "@xmldom/xmldom": ^0.8.2
     adm-zip: 0.5.9
     agenda: "https://github.com/RocketChat/agenda#c2cfcc532b8409561104dca980e6adbbcbdf5442"
     ajv: ^8.11.0
@@ -7453,6 +7454,13 @@ __metadata:
   version: 0.7.5
   resolution: "@xmldom/xmldom@npm:0.7.5"
   checksum: 8d7ec35c1ef6183b4f621df08e01d7e61f244fb964a4719025e65fe6ac06fac418919be64fb40fe5908e69158ef728f2d936daa082db326fe04603012b5f2a84
+  languageName: node
+  linkType: hard
+
+"@xmldom/xmldom@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@xmldom/xmldom@npm:0.8.2"
+  checksum: aeea8f670bfa52b3a1b2d355dab3bf4d58ef4969b1fd146a1ab91bf8acbb9d02953022e66e85279015a4e4027205620dfc001ed5d169b1711a09a0a079951e08
   languageName: node
   linkType: hard
 
