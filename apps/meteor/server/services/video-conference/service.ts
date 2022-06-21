@@ -228,6 +228,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return videoConfProviders.getProviderList();
 	}
 
+	public async listProviderCapabilities(providerName: string): Promise<VideoConferenceCapabilities> {
+		return videoConfProviders.getProviderCapabilities(providerName) || {};
+	}
+
 	public async listCapabilities(): Promise<{ providerName: string; capabilities: VideoConferenceCapabilities }> {
 		if (!videoConfProviders.hasAnyProvider()) {
 			throw new Error('no-videoconf-provider-app');

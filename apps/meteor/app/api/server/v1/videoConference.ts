@@ -108,7 +108,12 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-params');
 			}
 
-			return API.v1.success(call as VideoConference);
+			const capabilities = await VideoConf.listProviderCapabilities(call.providerName);
+
+			return API.v1.success({
+				...call,
+				capabilities,
+			});
 		},
 	},
 );

@@ -24,9 +24,11 @@ type StartDirectVideoConfModalProps = {
 	uid: IUser['_id'];
 	onClose: () => void;
 	onConfirm: () => void;
+	showMic: boolean;
+	showCam: boolean;
 };
 
-const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm }: StartDirectVideoConfModalProps): ReactElement => {
+const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm, showMic, showCam }: StartDirectVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
@@ -46,20 +48,24 @@ const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm }: StartDirec
 					<Box mis='x8'>{room.fname}</Box>
 				</VideoConfModalInfo>
 				<VideoConfModalControllers>
-					<VideoConfController
-						primary={controllersConfig.mic}
-						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMic}
-					/>
-					<VideoConfController
-						primary={controllersConfig.cam}
-						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCam}
-					/>
+					{showMic && (
+						<VideoConfController
+							primary={controllersConfig.mic}
+							text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+							title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+							icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+							onClick={handleToggleMic}
+						/>
+					)}
+					{showCam && (
+						<VideoConfController
+							primary={controllersConfig.cam}
+							text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+							title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+							icon={controllersConfig.cam ? 'video' : 'video-off'}
+							onClick={handleToggleCam}
+						/>
+					)}
 				</VideoConfModalControllers>
 			</VideoConfModalContent>
 			<VideoConfModalFooter>

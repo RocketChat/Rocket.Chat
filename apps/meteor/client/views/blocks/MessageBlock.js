@@ -27,7 +27,13 @@ function MessageBlock({ mid: _mid, rid, blocks, appId }) {
 		action: ({ actionId, value, blockId, mid = _mid, appId }) => {
 			if (appId === 'videoconf-core' && actionId === 'join') {
 				return setModal(
-					<JoinVideoConfModal confTitle={value} onClose={handleCloseModal} room={room} onConfirm={() => joinCall(blockId)} />,
+					<JoinVideoConfModal
+						callId={blockId}
+						confTitle={value}
+						onClose={handleCloseModal}
+						room={room}
+						onConfirm={() => joinCall(blockId)}
+					/>,
 				);
 			}
 

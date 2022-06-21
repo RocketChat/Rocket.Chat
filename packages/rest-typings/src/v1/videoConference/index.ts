@@ -27,18 +27,18 @@ export type VideoConferenceEndpoints = {
 	};
 
 	'/v1/video-conference.info': {
-		GET: (params: VideoConfInfoProps) => VideoConference;
+		GET: (params: VideoConfInfoProps) => VideoConference & { capabilities: VideoConferenceCapabilities };
 	};
 
 	'/v1/video-conference.list': {
 		GET: (params: VideoConfListProps) => PaginatedResult<{ data: VideoConference[] }>;
 	};
 
-	'video-conference.capabilities': {
+	'/v1/video-conference.capabilities': {
 		GET: () => { providerName: string; capabilities: VideoConferenceCapabilities };
 	};
 
-	'video-conference.providers': {
+	'/v1/video-conference.providers': {
 		GET: () => { data: { key: string; label: string }[] };
 	};
 };

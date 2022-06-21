@@ -22,6 +22,7 @@ import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 
 type JoinVideoConfModalProps = {
+	callId: string;
 	room: IRoom;
 	confTitle?: string;
 	onClose: () => void;
@@ -30,7 +31,7 @@ type JoinVideoConfModalProps = {
 
 const MAX_USERS = 6;
 
-const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoConfModalProps): ReactElement => {
+const JoinVideoConfModal = ({ callId, room, confTitle, onClose, onConfirm }: JoinVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const rid = room._id;
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
@@ -42,9 +43,14 @@ const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoCo
 	});
 
 	const params = useMemo(() => ({ roomId: rid }), [rid]);
+	const infoParams = useMemo(() => ({ callId }), [callId]);
 
 	// TODO: Experimental only, this data will come from the new collection
 	const { phase, value } = useEndpointData(`${room.t === 'c' ? '/v1/channels.members' : '/v1/groups.members'}`, params);
+	const { phase: phaseInfo, value: data } = useEndpointData('/v1/video-conference.info', infoParams);
+
+	const showMic = Boolean(data?.capabilities?.mic);
+	const showCam = Boolean(data?.capabilities?.cam);
 
 	return (
 		<VideoConfModal>
@@ -52,7 +58,7 @@ const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoCo
 				<RoomAvatar room={room} size='x124' />
 				<VideoConfModalTitle>{t('Join_conference__name__', { name: confTitle })}</VideoConfModalTitle>
 				<VideoConfModalInfo>
-					{phase === AsyncStatePhase.LOADING && <Skeleton />}
+					{(phase === AsyncStatePhase.LOADING || phaseInfo === AsyncStatePhase.LOADING) && <Skeleton />}
 					<Box display='flex' flexDirection='column' alignItems='center'>
 						{value?.members && value.members.length > 0 && (
 							<Avatar.Stack>
@@ -70,20 +76,24 @@ const JoinVideoConfModal = ({ room, confTitle, onClose, onConfirm }: JoinVideoCo
 					</Box>
 				</VideoConfModalInfo>
 				<VideoConfModalControllers>
-					<VideoConfController
-						primary={controllersConfig.mic}
-						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMic}
-					/>
-					<VideoConfController
-						primary={controllersConfig.cam}
-						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCam}
-					/>
+					{showMic && (
+						<VideoConfController
+							primary={controllersConfig.mic}
+							text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+							title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+							icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+							onClick={handleToggleMic}
+						/>
+					)}
+					{showCam && (
+						<VideoConfController
+							primary={controllersConfig.cam}
+							text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+							title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+							icon={controllersConfig.cam ? 'video' : 'video-off'}
+							onClick={handleToggleCam}
+						/>
+					)}
 				</VideoConfModalControllers>
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
