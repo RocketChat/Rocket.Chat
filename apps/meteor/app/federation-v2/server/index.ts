@@ -28,14 +28,14 @@ export const federationRoomServiceSender = FederationFactory.buildRoomServiceSen
 	federation,
 );
 
-federationRoomServiceSender.setupCallbacks();
-
 export const runFederation = async (): Promise<void> => {
 	queueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 
 	await federation.start();
 
 	await rocketSettingsAdapter.onFederationEnabledStatusChanged(federation.onFederationAvailabilityChanged.bind(federation));
+
+	FederationFactory.setupListeners(federationRoomServiceSender);
 };
 
 export const stopFederation = async (): Promise<void> => {

@@ -1,3 +1,5 @@
+import { IRoom, IUser } from '@rocket.chat/core-typings';
+
 import { FederationRoomServiceReceiver } from '../application/RoomServiceReceiver';
 import { FederationRoomServiceSender } from '../application/RoomServiceSender';
 import { MatrixBridge } from './matrix/Bridge';
@@ -9,6 +11,8 @@ import { RocketChatRoomAdapter } from './rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from './rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from './rocket-chat/adapters/User';
 import { IFederationBridge } from '../domain/IFederationBridge';
+import { FederationHooks } from './rocket-chat/hooks';
+import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSender';
 
 export class FederationFactory {
 	public static buildRocketSettingsAdapter(): RocketChatSettingsAdapter {
@@ -73,4 +77,16 @@ export class FederationFactory {
 			new MatrixRoomMessageSentHandler(roomServiceReceive),
 		];
 	}
+
+	public static setupListeners(roomServiceSender: FederationRoomServiceSender): void {
+		FederationHooks.afterLeaveRoom(async (user: IUser, room: IRoom) =>
+			roomServiceSender.leaveRoom(
+				FederationRoomSenderConverter.toAfterLeaveRoom(
+					user._id,
+					room._id,
+				),
+			),
+		);
+	}
+
 }

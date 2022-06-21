@@ -9,7 +9,7 @@ export interface IFederationBridge {
 	sendMessage(externalRoomId: string, externaSenderId: string, text: string): Promise<void>;
 	createUser(username: string, name: string, domain: string): Promise<string>;
 	isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean;
-	leaveRoom(externalRoomId: string, userId: string): Promise<void>;
+	leaveRoom(externalRoomId: string, externalUserId: string): Promise<void>;
 }
 
 export enum EVENT_ORIGIN {

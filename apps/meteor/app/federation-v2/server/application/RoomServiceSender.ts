@@ -7,7 +7,7 @@ import { IFederationBridge } from '../domain/IFederationBridge';
 import { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
-import { FederationCreateDMAndInviteUserDto, FederationRoomSendExternalMessageDto } from './input/RoomSenderDto';
+import { FederationAfterLeaveRoomDto, FederationCreateDMAndInviteUserDto, FederationRoomSendExternalMessageDto } from './input/RoomSenderDto';
 import { callbacks } from '../../../../lib/callbacks';
 
 export class FederationRoomServiceSender {
@@ -81,8 +81,20 @@ export class FederationRoomServiceSender {
 		await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 	}
 
-	public async leaveRoom(rocketUser: any, rocketRoom: any): Promise<void> {
-		await this.bridge.leaveRoom(rocketRoom._id, rocketUser._id);
+	public async leaveRoom(afterLeaveRoomInput: FederationAfterLeaveRoomDto): Promise<void> {
+		const { internalRoomId, internalUserId } = afterLeaveRoomInput;
+
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByInternalId(internalUserId);
+		if (!federatedUser) {
+			return;
+		}
+
+		await this.bridge.leaveRoom(federatedRoom.externalId, federatedUser.externalId);
 	}
 
 	public async sendMessageFromRocketChat(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<IMessage> {
