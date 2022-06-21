@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 
 import { registerUser, WRONG_PASSWORD } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/LoginPage';
+import { LoginPage } from './pageobjects';
 
 test.describe('[Register]', () => {
 	let loginPage: LoginPage;

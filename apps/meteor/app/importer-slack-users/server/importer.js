@@ -11,7 +11,9 @@ export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {
 		super(info, importRecord);
 
-		this.csvParser = require('csv-parse/lib/sync');
+		const { parse } = require('csv-parse/lib/sync');
+
+		this.csvParser = parse;
 		this.userMap = new Map();
 		this.admins = []; // Array of ids of the users which are admins
 	}
