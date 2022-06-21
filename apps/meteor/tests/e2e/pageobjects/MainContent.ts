@@ -178,7 +178,7 @@ export class MainContent extends BasePage {
 	}
 
 	get modalCancelButton(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--icon');
+		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
 
 	get modalDeleteMessageButton(): Locator {

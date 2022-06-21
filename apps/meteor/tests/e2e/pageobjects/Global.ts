@@ -41,14 +41,10 @@ export class Global extends BasePage {
 	}
 
 	get btnModalCancel(): Locator {
-		return this.page.locator(
-			'#modal-root div dialog div.rcx-modal__inner div.rcx-modal__footer div div button.rcx-button--icon.rcx-button',
-		);
+		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--secondary');
 	}
 
 	get btnModalRemove(): Locator {
-		return this.page.locator(
-			'#modal-root div dialog div.rcx-modal__inner div.rcx-modal__footer div div button.rcx-button--primary-danger.rcx-button',
-		);
+		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--primary-danger');
 	}
 }
