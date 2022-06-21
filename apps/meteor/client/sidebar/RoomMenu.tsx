@@ -1,3 +1,4 @@
+import { RoomType } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -9,8 +10,10 @@ import {
 	usePermission,
 	useMethod,
 	useTranslation,
+	TranslationKey,
 } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo } from 'react';
+import { Fields } from '@rocket.chat/ui-contexts/dist/UserContext';
+import React, { memo, ReactElement, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
@@ -19,13 +22,24 @@ import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import WarningModal from '../views/admin/apps/WarningModal';
 
-const fields = {
-	f: 1,
-	t: 1,
-	name: 1,
+const fields: Fields = {
+	f: true,
+	t: true,
+	name: true,
 };
 
-const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }) => {
+type RoomMenuProps = {
+	rid: string;
+	unread?: boolean;
+	threadUnread?: boolean;
+	alert?: boolean;
+	roomOpen?: boolean;
+	type: RoomType;
+	cl?: boolean;
+	name?: string;
+};
+
+const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }: RoomMenuProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -36,7 +50,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	const subscription = useUserSubscription(rid, fields);
 	const canFavorite = useSetting('Favorite_Rooms');
-	const isFavorite = (subscription != null ? subscription.f : undefined) != null && subscription.f;
+	const isFavorite = Boolean(subscription?.f);
 
 	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
@@ -51,7 +65,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
 
-	const canLeave = (() => {
+	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
 			return false;
 		}
@@ -62,7 +76,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	})();
 
 	const handleLeave = useMutableCallback(() => {
-		const leave = async () => {
+		const leave = async (): Promise<void> => {
 			try {
 				await leaveRoom(rid);
 				if (roomOpen) {
@@ -70,7 +84,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				}
 				RoomManager.close(rid);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 			}
 			closeModal();
 		};
@@ -79,7 +93,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 		setModal(
 			<WarningModal
-				text={t(warnText, name)}
+				text={t(warnText as TranslationKey, name)}
 				confirmText={t('Leave_room')}
 				close={closeModal}
 				cancel={closeModal}
@@ -90,11 +104,11 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	});
 
 	const handleHide = useMutableCallback(async () => {
-		const hide = async () => {
+		const hide = async (): Promise<void> => {
 			try {
 				await hideRoom(rid);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 			}
 			closeModal();
 		};
@@ -118,7 +132,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 					label: t('Hide_room'),
 				}}
 			>
-				{t(warnText, name)}
+				{t(warnText as TranslationKey, name)}
 			</GenericModalDoNotAskAgain>,
 		);
 	});
@@ -137,7 +151,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 			router.push({});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	});
 
@@ -145,7 +159,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		try {
 			await toggleFavorite(rid, !isFavorite);
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
 	});
 
@@ -159,15 +173,17 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 				action: handleToggleRead,
 			},
-			...(canFavorite && {
-				toggleFavorite: {
-					label: {
-						label: isFavorite ? t('Unfavorite') : t('Favorite'),
-						icon: isFavorite ? 'star-filled' : 'star',
-					},
-					action: handleToggleFavorite,
-				},
-			}),
+			...(canFavorite
+				? {
+						toggleFavorite: {
+							label: {
+								label: isFavorite ? t('Unfavorite') : t('Favorite'),
+								icon: isFavorite ? 'star-filled' : 'star',
+							},
+							action: handleToggleFavorite,
+						},
+				  }
+				: {}),
 			...(canLeave && {
 				leaveRoom: {
 					label: { label: t('Leave_room'), icon: 'sign-out' },
