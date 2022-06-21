@@ -305,11 +305,13 @@ describe('[Channels]', function () {
 		before(() => updateSetting('VoIP_Enabled', true));
 		const createVoipRoom = async () => {
 			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
+			const testUserCredentials = await login(testUser.username, password);
 			const visitor = await createVisitor();
 			const roomResponse = await createRoom({
 				token: visitor.token,
 				type: 'v',
 				agentId: testUser._id,
+				credentials: testUserCredentials,
 			});
 			return roomResponse.body.room;
 		};
