@@ -29,9 +29,9 @@ const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => {
 	switch (variant) {
 		case 'danger':
-			return { secondaryDanger: true }; // TODO: secondary danger
+			return { danger: true };
 		case 'warning':
-			return { secondaryWarning: true };
+			return { warning: true };
 		default:
 			return {};
 	}
@@ -82,7 +82,7 @@ const GenericModal: FC<GenericModalProps> = ({
 					{dontAskAgain}
 					<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
 						{onCancel && (
-							<Button danger onClick={onCancel}>
+							<Button secondary onClick={onCancel}>
 								{cancelText ?? t('Cancel')}
 							</Button>
 						)}
