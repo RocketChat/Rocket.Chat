@@ -12,6 +12,7 @@ import { Uploads } from '../../../app/models/server/raw';
 import { Inbox, inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
+import { logger } from './logger';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
@@ -48,10 +49,10 @@ function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): void {
 			...mail,
 		})
 		.then((info) => {
-			console.log('Message sent: %s', info.messageId);
+			logger.info('Message sent: %s', info.messageId);
 		})
 		.catch((error) => {
-			console.log('Error sending Email reply: %s', error.message);
+			logger.error('Error sending Email reply: %s', error.message);
 
 			if (!options?.msgId) {
 				return;
@@ -272,7 +273,7 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	console.log(`Sending testing email to ${address}`);
+	logger.info(`Sending testing email to ${address}`);
 	sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
