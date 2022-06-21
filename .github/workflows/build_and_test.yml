@@ -715,7 +715,7 @@ jobs:
           echo "REPORT_STATEMENTS=$(sed -n 1p <<< "$COVERAGE_REPORTS")" >> $GITHUB_ENV
 
       - name: Publish e2e:ee:coverage badge to gh-pages
-        uses: RocketChat/ghpages-dynamic-badges-action@v1.0.0
+        uses: RocketChat/ghpages-dynamic-badges-action@v2.0.0
         with:
           label: "e2e:coverage"
           message: "${{ env.REPORT_STATEMENTS }}"
