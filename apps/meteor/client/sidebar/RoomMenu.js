@@ -136,9 +136,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				return;
 			}
 
-			if (threadUnread) {
-				await handleThreadsToBeRead();
-			}
+			await handleThreadsToBeRead();
 
 			RoomManager.close(subscription.t + subscription.name);
 
