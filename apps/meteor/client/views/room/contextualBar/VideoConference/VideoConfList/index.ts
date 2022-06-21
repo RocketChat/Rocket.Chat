@@ -1,1 +1,1 @@
-export { default } from './VideoConfList';
+export { default } from './VideoConfListWithData';
