@@ -128,6 +128,7 @@ export class RocketChatSettingsAdapter {
 					i18nLabel: 'Federation_Matrix_enabled',
 					i18nDescription: 'Federation_Matrix_enabled_desc',
 					alert: 'Federation_Matrix_Enabled_Alert',
+					public: true,
 				});
 
 				const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
