@@ -47,6 +47,7 @@ export class IMAPInterceptor extends EventEmitter {
 		this.imap.on('ready', () => {
 			if (this.imap.state !== 'disconnected') {
 				clearTimeout(this.backoff);
+				this.retries = 0;
 				this.openInbox((err) => {
 					if (err) {
 						this.log('Error occurred during imap inbox opening: ', err);
