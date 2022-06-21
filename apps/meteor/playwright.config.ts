@@ -6,8 +6,8 @@ const { isLocal, baseURL } = verifyTestBaseUrl();
 
 const localInserts = isLocal
 	? {
-			globalSetup: require.resolve('./tests/e2e/utils/configs/setup.ts'),
-			globalTeardown: require.resolve('./tests/e2e/utils/configs/teardown.ts'),
+			globalSetup: require.resolve('./tests/e2e/config/setup.ts'),
+			globalTeardown: require.resolve('./tests/e2e/config/teardown.ts'),
 	  }
 	: { testIgnore: '00-wizard.spec.ts' };
 

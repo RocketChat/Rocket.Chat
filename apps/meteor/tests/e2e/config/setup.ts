@@ -1,5 +1,5 @@
-import { MongoHelper } from '../helpers/MongoHelper';
-import { roomMock, subscriptionMock, userMock } from '../mocks/initialData';
+import { MongoHelper } from '../utils/helpers/MongoHelper';
+import { roomMock, subscriptionMock, userMock } from '../utils/mocks/initialData';
 
 const mongoBaseUrl = process.env.MONGO_URL
 	? `${process.env.MONGO_URL}?retryWrites=false`
