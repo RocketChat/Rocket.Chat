@@ -342,13 +342,6 @@ export class FlexTab extends BasePage {
 
 			await locator[tab].click();
 
-			// The button "more" keeps the focus when popover is closed from a click
-			// on an item, need to click again to change the status to unselected and
-			// allow the next click to open the popover again
-			if (more) {
-				await this.headerMoreActions.click();
-			}
-
 			if (desiredState) {
 				await expect(locator[panel]).toBeVisible();
 			} else {
