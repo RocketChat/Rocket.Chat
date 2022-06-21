@@ -8,9 +8,23 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
 import { fetch } from '../../../../server/lib/http/fetch';
 
-export const setUserAvatar = function (
+export function setUserAvatar(
+	user: Pick<IUser, '_id' | 'username'>,
+	dataURI: Buffer,
+	contentType: string,
+	service: 'rest',
+	etag?: string,
+): void;
+export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
 	dataURI: string,
+	contentType: string,
+	service: 'initials' | 'url' | 'rest' | string,
+	etag?: string,
+): void;
+export function setUserAvatar(
+	user: Pick<IUser, '_id' | 'username'>,
+	dataURI: string | Buffer,
 	contentType: string,
 	service: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
@@ -22,7 +36,7 @@ export const setUserAvatar = function (
 
 	const { buffer, type } = Promise.await(
 		(async (): Promise<{ buffer: Buffer; type: string }> => {
-			if (service === 'url') {
+			if (service === 'url' && typeof dataURI === 'string') {
 				let response: Response;
 				try {
 					response = await fetch(dataURI);
@@ -69,7 +83,7 @@ export const setUserAvatar = function (
 
 			if (service === 'rest') {
 				return {
-					buffer: Buffer.from(dataURI, 'binary'),
+					buffer: dataURI instanceof Buffer ? dataURI : Buffer.from(dataURI, 'binary'),
 					type: contentType,
 				};
 			}
@@ -103,4 +117,4 @@ export const setUserAvatar = function (
 			avatarETag,
 		});
 	}, 500);
-};
+}
