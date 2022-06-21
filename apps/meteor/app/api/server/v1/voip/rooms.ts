@@ -1,7 +1,7 @@
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
-import { VoipRooms, LivechatVisitors, Users } from '@rocket.chat/models';
+import { VoipRoom, LivechatVisitors, Users } from '@rocket.chat/models';
 import { isVoipRoomCloseProps } from '@rocket.chat/rest-typings/dist/v1/voip';
 
 import { API } from '../../api';
@@ -104,7 +104,7 @@ API.v1.addRoute(
 			}
 
 			if (!rid) {
-				const room = await VoipRooms.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
+				const room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
 				}
@@ -126,7 +126,7 @@ API.v1.addRoute(
 				return API.v1.success(await LivechatVoip.getNewRoom(guest, agent, rid, { projection: API.v1.defaultFieldsToExclude }));
 			}
 
-			const room = await VoipRooms.findOneByIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
+			const room = await VoipRoom.findOneByIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
 			if (!room) {
 				return API.v1.failure('invalid-room');
 			}

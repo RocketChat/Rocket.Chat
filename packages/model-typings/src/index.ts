@@ -57,5 +57,5 @@ export * from './IUploadsModel';
 export * from './IUserDataFilesModel';
 export * from './IUsersModel';
 export * from './IUsersSessionsModel';
-export * from './IVoipRoomsModel';
+export * from './IVoipRoomModel';
 export * from './IWebdavAccountsModel';

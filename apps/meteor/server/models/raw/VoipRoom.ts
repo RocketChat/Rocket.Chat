@@ -1,11 +1,11 @@
 import type { FilterQuery, WithoutProjection, FindOneOptions, WriteOpResult, Cursor } from 'mongodb';
 import type { IVoipRoom, IRoomClosingInfo } from '@rocket.chat/core-typings';
-import type { IVoipRoomsModel } from '@rocket.chat/model-typings';
+import type { IVoipRoomModel } from '@rocket.chat/model-typings';
 
 import { BaseRaw } from './BaseRaw';
 import { Logger } from '../../lib/logger/Logger';
 
-export class VoipRoomsRaw extends BaseRaw<IVoipRoom> implements IVoipRoomsModel {
+export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 	logger = new Logger('VoipRoomsRaw');
 
 	async findOneOpenByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {

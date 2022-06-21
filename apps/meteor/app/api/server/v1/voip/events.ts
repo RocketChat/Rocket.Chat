@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
-import { VoipRooms } from '@rocket.chat/models';
+import { VoipRoom } from '@rocket.chat/models';
 
 import { API } from '../../api';
 import { LivechatVoip } from '../../../../../server/sdk';
@@ -21,7 +21,7 @@ API.v1.addRoute(
 
 			const { rid, event, comment } = this.requestParams();
 
-			const room = await VoipRooms.findOneVoipRoomById(rid);
+			const room = await VoipRoom.findOneVoipRoomById(rid);
 			if (!room) {
 				return API.v1.notFound();
 			}

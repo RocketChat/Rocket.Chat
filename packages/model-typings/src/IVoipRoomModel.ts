@@ -3,7 +3,7 @@ import type { IVoipRoom, IRoomClosingInfo } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
-export interface IVoipRoomsModel extends IBaseModel<IVoipRoom> {
+export interface IVoipRoomModel extends IBaseModel<IVoipRoom> {
 	findOneOpenByVisitorToken(visitorToken: string, options?: FindOneOptions<IVoipRoom>): Promise<IVoipRoom | null>;
 	findOpenByAgentId(agentId: string): Cursor<IVoipRoom>;
 	findOneByAgentId(agentId: string): Promise<IVoipRoom | null>;
