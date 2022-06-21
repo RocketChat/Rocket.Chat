@@ -84,13 +84,13 @@ export const VoipFooter = ({
 						{title}
 					</Box>
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
-						<ButtonGroup medium className='sidebar--custom-colors'>
+						<ButtonGroup medium>
 							<Button
 								disabled={paused}
 								title={tooltips.mute}
 								small
 								square
-								ghost
+								nude
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
@@ -103,7 +103,7 @@ export const VoipFooter = ({
 								disabled={!isEnterprise}
 								small
 								square
-								ghost
+								nude
 								onClick={handleHold}
 							>
 								{paused ? (
