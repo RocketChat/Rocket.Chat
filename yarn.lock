@@ -3803,12 +3803,12 @@ __metadata:
     "@types/lodash.get": ^4.4.7
     "@types/mailparser": ^3.4.0
     "@types/marked": ^1.2.2
-    "@types/meteor": 2.7.1
+    "@types/meteor": 2.0.4
     "@types/mkdirp": ^1.0.2
     "@types/mocha": ^8.2.3
     "@types/mock-require": ^2.0.1
     "@types/moment-timezone": ^0.5.30
-    "@types/mongodb": ^3.6.20
+    "@types/mongodb": ^3.6.10
     "@types/node": ^14.18.21
     "@types/node-rsa": ^1.1.1
     "@types/nodemailer": ^6.4.4
@@ -6202,16 +6202,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/meteor@npm:2.7.1":
-  version: 2.7.1
-  resolution: "@types/meteor@npm:2.7.1"
+"@types/meteor@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@types/meteor@npm:2.0.4"
   dependencies:
     "@types/connect": "*"
     "@types/jquery": "*"
+    "@types/mongodb": ^3.6.20
     "@types/react": "*"
     "@types/underscore": "*"
-    mongodb: ^4.3.1
-  checksum: a363cbcdec41e233997f3e05fd616e9ba1840bf7648b265144102769c0afdbeb614bf6d17e969343ed70883396a341ea876149d3f23fd2ea60a07c99f067f91e
+  checksum: 24f3adc0b7c0518779e9f6c408cf8895108205797b63b61539adf14946026fb8807c23a9797dbc367e437704301e397e1a158c34f55a1a10092b42f23d60ec8c
   languageName: node
   linkType: hard
 
@@ -6279,7 +6279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mongodb@npm:^3.6.20, @types/mongodb@npm:~3.6.20":
+"@types/mongodb@npm:^3.6.10, @types/mongodb@npm:^3.6.20, @types/mongodb@npm:~3.6.20":
   version: 3.6.20
   resolution: "@types/mongodb@npm:3.6.20"
   dependencies:
@@ -9544,7 +9544,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:*, bson@npm:^4.6.2, bson@npm:^4.6.3":
+"bson@npm:*, bson@npm:^4.6.2":
   version: 4.6.3
   resolution: "bson@npm:4.6.3"
   dependencies:
@@ -21918,22 +21918,6 @@ __metadata:
     snappy:
       optional: true
   checksum: ef7690fe6ee7d1752f121b14e59b3fabfddc60ff0536babce6c945703ad0010de9e6fa7de4c91b99275c256876a72a06899ce27893aba0838c2b542088bd1044
-  languageName: node
-  linkType: hard
-
-"mongodb@npm:^4.3.1":
-  version: 4.7.0
-  resolution: "mongodb@npm:4.7.0"
-  dependencies:
-    bson: ^4.6.3
-    denque: ^2.0.1
-    mongodb-connection-string-url: ^2.5.2
-    saslprep: ^1.0.3
-    socks: ^2.6.2
-  dependenciesMeta:
-    saslprep:
-      optional: true
-  checksum: 6c8ddf1d14a4392d83702aa532e5a1e6deaa501cfd66e352a1226358422716e340465ca4b0f2c5d8f660bf15c06456059953fb99482f714c1dab408ecfe3aeea
   languageName: node
   linkType: hard
 
