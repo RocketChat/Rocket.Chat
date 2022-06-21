@@ -11,9 +11,9 @@ import { useTabBarOpen } from '../../../client/views/room/providers/ToolboxProvi
 addAction('video-conf-list', {
 	groups: ['channel', 'group', 'team'],
 	id: 'video-conf-list',
+	icon: 'video',
 	title: 'Video_Conferences',
 	template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
-	renderOption: undefined,
 	order: 9999,
 });
 
@@ -26,8 +26,8 @@ addAction('video-conf', ({ room }) => {
 	const { isMobile } = useLayout();
 
 	const dispatchPopup = useVideoConfDispatchOutgoing();
-
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
+
 	const enabled = !useSetting('VideoConf_Disabled');
 	const enabledDMs = !useSetting('VideoConf_Disable_DMs');
 	const enabledChannel = !useSetting('VideoConf_Disable_Channels');
@@ -63,23 +63,24 @@ addAction('video-conf', ({ room }) => {
 		setModal(<StartVideoConfModal onConfirm={handleStartConference} room={room} onClose={handleCloseVideoConf} />),
 	);
 
-	// TODO: use translation
 	const menuOptions: ComponentProps<typeof Menu>['options'] = useMemo(
 		() => ({
 			header: {
 				type: 'heading',
-				label: 'Video Conferencing',
+				label: t('Video_Conference'),
 			},
 			start: {
-				label: 'Start a call',
+				label: t('Call'),
 				action: (): void => handleOpenVideoConf(),
 			},
-			list: {
-				label: 'See history',
-				action: (): void => openTabBar('video-conf-list'),
-			},
+			...(['c', 'p'].includes(room.t) && {
+				list: {
+					label: t('See_history'),
+					action: (): void => openTabBar('video-conf-list'),
+				},
+			}),
 		}),
-		[handleOpenVideoConf, openTabBar],
+		[handleOpenVideoConf, openTabBar, room.t, t],
 	);
 
 	return useMemo(
@@ -88,7 +89,7 @@ addAction('video-conf', ({ room }) => {
 				? {
 						groups,
 						id: 'video-conference',
-						title: 'Video Conference',
+						title: 'Video_Conference',
 						icon: 'phone',
 						renderAction: (): ReactElement => <Menu tiny={!isMobile} title={t('Video_Conference')} icon='phone' options={menuOptions} />,
 						full: true,
