@@ -1,3 +1,4 @@
+import type { VideoConference } from '@rocket.chat/core-typings';
 import {
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
@@ -110,7 +111,7 @@ API.v1.addRoute(
 			const capabilities = await VideoConf.listProviderCapabilities(call.providerName);
 
 			return API.v1.success({
-				...call,
+				...(call as VideoConference),
 				capabilities,
 			});
 		},
