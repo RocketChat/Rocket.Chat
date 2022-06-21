@@ -74,7 +74,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 						fn({
 							action: 'insert',
 							clientAction: 'inserted',
-							id: event.documentKey._id as string,
+							id: event.documentKey._id,
 							data: event.fullDocument,
 						});
 
@@ -103,7 +103,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 						fn({
 							action: 'update',
 							clientAction: 'updated',
-							id: event.documentKey._id as string,
+							id: event.documentKey._id,
 							diff,
 							unset,
 						});
@@ -113,7 +113,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 						fn({
 							action: 'remove',
 							clientAction: 'removed',
-							id: event.documentKey._id as string,
+							id: event.documentKey._id,
 						});
 						break;
 				}
