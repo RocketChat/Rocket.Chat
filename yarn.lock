@@ -3443,6 +3443,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/favicon@workspace:^, @rocket.chat/favicon@workspace:packages/favicon":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/favicon@workspace:packages/favicon"
+  dependencies:
+    eslint: ^8.12.0
+    typescript: ~4.3.4
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/forked-matrix-appservice-bridge@npm:^4.0.1":
   version: 4.0.1
   resolution: "@rocket.chat/forked-matrix-appservice-bridge@npm:4.0.1"
@@ -3529,15 +3538,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-hooks@npm:~0.31.14-dev.7":
-  version: 0.31.14-dev.7
-  resolution: "@rocket.chat/fuselage-hooks@npm:0.31.14-dev.7"
+"@rocket.chat/fuselage-hooks@npm:~0.31.14-dev.9":
+  version: 0.31.14-dev.9
+  resolution: "@rocket.chat/fuselage-hooks@npm:0.31.14-dev.9"
   dependencies:
     use-sync-external-store: ~1.2.0
   peerDependencies:
     "@rocket.chat/fuselage-tokens": "*"
     react: ^17.0.2
-  checksum: ad2a1a61189d694e5e70ab73dfc20a7bea7ad0686be97993b24c6053b5cfa027e6b70690b75b5e9c1e8712a2b41f7d031a416c5e6781e9c4b31b5c0a40529ea0
+  checksum: fa79c8c8a5b56d0c5ccd2118735a6eef5aaf99f1392161d90e72da4dc0cd1dc9007387df71ab428545f72a3c5c8c1648c086078724cb4698ec05044a0462e0b6
   languageName: node
   linkType: hard
 
@@ -3657,7 +3666,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/gazzodown@workspace:packages/gazzodown"
   dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage": ^0.31.13
+    "@rocket.chat/message-parser": ^0.31.13
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@types/jest": ^27.4.1
     "@types/react": ^17
     "@typescript-eslint/eslint-plugin": ^5.29.0
@@ -3673,6 +3685,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/message-parser": "*"
+    "@rocket.chat/ui-contexts": "workspace:^"
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -3800,17 +3813,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/message-parser@npm:^0.31.13, @rocket.chat/message-parser@npm:~0.31.12":
+  version: 0.31.13
+  resolution: "@rocket.chat/message-parser@npm:0.31.13"
+  checksum: f670170464c148eaff2218749b76423c17ffe02d325ca99fab39abe8dae5edb7ba1f36871b4a045e589d2af5fc607681bf45d4a544cb958136c13e83f18dc193
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/message-parser@npm:next":
   version: 0.31.14-dev.1
   resolution: "@rocket.chat/message-parser@npm:0.31.14-dev.1"
   checksum: c3b7e7da0881e39d980725a3b64f0ab16c01a522d2be82688abc8bf7011900b4dc01e778e0ead4beb5b84abe4e08acf073c97fab5d57cfe6b4eed38cfbf99b01
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/message-parser@npm:~0.31.12":
-  version: 0.31.13
-  resolution: "@rocket.chat/message-parser@npm:0.31.13"
-  checksum: f670170464c148eaff2218749b76423c17ffe02d325ca99fab39abe8dae5edb7ba1f36871b4a045e589d2af5fc607681bf45d4a544cb958136c13e83f18dc193
   languageName: node
   linkType: hard
 
@@ -3840,10 +3853,11 @@ __metadata:
     "@rocket.chat/css-in-js": ~0.31.12
     "@rocket.chat/emitter": ~0.31.12
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
     "@rocket.chat/fuselage": 0.32.0-dev.49
-    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.7
+    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.9
     "@rocket.chat/fuselage-polyfills": ~0.31.12
     "@rocket.chat/fuselage-toastbar": ^0.32.0-dev.22
     "@rocket.chat/fuselage-tokens": ~0.31.12
@@ -4264,7 +4278,7 @@ __metadata:
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ^0.31.11
-    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.7
+    "@rocket.chat/fuselage-hooks": ~0.31.14-dev.9
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/jest": ^27.4.1
     "@types/mongodb": ~3.6.10
@@ -7839,7 +7853,7 @@ __metadata:
     human-interval: ~1.0.0
     moment-timezone: ~0.5.27
     mongodb: ~3.5.0
-  checksum: cc8c1bbba7545628d9d039c58e701ff65cf07f241f035b731716eec0d5ef906ce09d60c3b321bbfb9e6c641994d1afd23aaeb92d645b33bf7be9942f13574173
+  checksum: acb4ebb7e7356f6e53e810d821eb6aa3d88bbfb9e85183e707517bee6d1eea1f189f38bdf0dd2b91360492ab7643134d510c320d2523d86596498ab98e59735b
   languageName: node
   linkType: hard
 

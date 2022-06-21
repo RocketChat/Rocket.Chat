@@ -3,7 +3,10 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage": "^0.31.13",
+		"@rocket.chat/message-parser": "^0.31.13",
+		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/jest": "^27.4.1",
 		"@types/react": "^17",
 		"@typescript-eslint/eslint-plugin": "^5.29.0",
@@ -33,6 +36,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/message-parser": "*",
+		"@rocket.chat/ui-contexts": "workspace:^",
 		"react": "~17.0.2"
 	}
 }
