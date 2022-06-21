@@ -29,9 +29,9 @@ const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => {
 	switch (variant) {
 		case 'danger':
-			return { primary: true, danger: true };
+			return { secondaryDanger: true }; // TODO: secondary danger
 		case 'warning':
-			return { primary: true };
+			return { secondaryWarning: true };
 		default:
 			return {};
 	}
