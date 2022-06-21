@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import s from 'underscore.string';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Settings from './Settings';
@@ -11,6 +10,10 @@ export class LivechatVisitors extends Base {
 
 		this.tryEnsureIndex({ token: 1 });
 		this.tryEnsureIndex({ 'phone.phoneNumber': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'visitorEmails.address': 1 }, { sparse: true });
+		this.tryEnsureIndex({ name: 1 }, { sparse: true });
+		this.tryEnsureIndex({ username: 1 });
+		this.tryEnsureIndex({ 'contactManager.username': 1 }, { sparse: true });
 	}
 
 	/**
@@ -200,7 +203,7 @@ export class LivechatVisitors extends Base {
 
 	findOneGuestByEmailAddress(emailAddress) {
 		const query = {
-			'visitorEmails.address': new RegExp(`^${escapeRegExp(emailAddress)}$`, 'i'),
+			'visitorEmails.address': String(emailAddress).toLowerCase(),
 		};
 
 		return this.findOne(query);

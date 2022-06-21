@@ -1,12 +1,11 @@
 import { Box, Chip, Table, Button } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../../components/GenericTable';
 import Page from '../../../../../components/Page';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import AssignAgentButton from './AssignAgentButton';
 import AssignAgentModal from './AssignAgentModal';
@@ -30,7 +29,7 @@ const VoipExtensionsPage: FC = () => {
 		[itemsPerPage, current],
 	);
 
-	const { value: data, reload } = useEndpointData('omnichannel/extensions', query);
+	const { value: data, reload } = useEndpointData('/v1/omnichannel/extensions', query);
 
 	const header = useMemo(
 		() =>

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
 import GenericModal from './GenericModal';
 import RawText from './RawText';
 

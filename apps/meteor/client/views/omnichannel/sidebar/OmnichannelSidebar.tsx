@@ -1,10 +1,10 @@
+import { useRoutePath, useCurrentRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, FC, memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { menu, SideNav } from '../../../../app/ui-utils/client';
 import Sidebar from '../../../components/Sidebar';
-import { useRoutePath, useCurrentRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import SidebarItemsAssemblerProps from '../../../components/Sidebar/SidebarItemsAssembler';
 import { isLayoutEmbedded } from '../../../lib/utils/isLayoutEmbedded';
 import SettingsProvider from '../../../providers/SettingsProvider';
 import { itemsSubscription } from '../sidebarItems';
@@ -37,7 +37,7 @@ const OmnichannelSidebar: FC = () => {
 			<Sidebar>
 				<Sidebar.Header onClose={closeOmnichannelFlex} title={<>{t('Omnichannel')}</>} />
 				<Sidebar.Content>
-					<Sidebar.ItemsAssembler items={items} currentPath={currentPath} />
+					<SidebarItemsAssemblerProps items={items} currentPath={currentPath} />
 				</Sidebar.Content>
 			</Sidebar>
 		</SettingsProvider>

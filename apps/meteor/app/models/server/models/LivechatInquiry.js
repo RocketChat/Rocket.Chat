@@ -11,6 +11,7 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
 		this.tryEnsureIndex({ queueOrder: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
+		this.tryEnsureIndex({ 'v.token': 1, 'status': 1 }); // visitor token and status
 	}
 
 	findOneById(inquiryId) {

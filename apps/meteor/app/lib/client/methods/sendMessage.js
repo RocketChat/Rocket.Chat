@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import s from 'underscore.string';
 
-import { ChatMessage } from '../../../models';
+import { ChatMessage, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/client';
@@ -31,6 +31,13 @@ Meteor.methods({
 		if (settings.get('Message_Read_Receipt_Enabled')) {
 			message.unread = true;
 		}
+
+		// If the room is federated, send the message to matrix only
+		const { federated } = Rooms.findOne({ _id: message.rid }, { fields: { federated: 1 } });
+		if (federated) {
+			return;
+		}
+
 		message = callbacks.run('beforeSaveMessage', message);
 		onClientMessageReceived(message).then(function (message) {
 			ChatMessage.insert(message);

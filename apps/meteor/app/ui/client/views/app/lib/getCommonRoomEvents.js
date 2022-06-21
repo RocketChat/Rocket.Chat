@@ -6,9 +6,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { popover, MessageAction } from '../../../../../ui-utils/client';
 import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageAction';
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
-import { isURL } from '../../../../../utils/lib/isURL';
+import { isURL } from '../../../../../../lib/utils/isURL';
 import { openUserCard } from '../../../lib/UserCard';
-import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
 import { ChatMessage, Rooms, Messages } from '../../../../../models';
 import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
@@ -354,6 +354,7 @@ export const getCommonRoomEvents = () => ({
 			instance: template,
 			rid: template.data.rid,
 			data: this,
+			type: 'message-action-menu-options',
 			currentTarget: e.currentTarget,
 			activeElement: $(e.currentTarget).parents('.message')[0],
 			onRendered: () => new Clipboard('.rc-popover__item'),

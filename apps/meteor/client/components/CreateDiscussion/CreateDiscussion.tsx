@@ -1,9 +1,9 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
@@ -43,7 +43,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 
 	const canCreate = (parentRoom || defaultParentRoom) && name;
 
-	const createDiscussion = useEndpointActionExperimental('POST', 'rooms.createDiscussion');
+	const createDiscussion = useEndpointActionExperimental('POST', '/v1/rooms.createDiscussion');
 
 	const create = useMutableCallback(async (): Promise<void> => {
 		try {
@@ -94,7 +94,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									value={parentRoom}
 									onChange={handleParentRoom}
 									placeholder={t('Discussion_target_channel_description')}
-									disabled={defaultParentRoom}
+									disabled={Boolean(defaultParentRoom)}
 								/>
 							)}
 						</Field.Row>

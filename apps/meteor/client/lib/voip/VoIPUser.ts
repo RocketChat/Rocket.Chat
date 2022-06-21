@@ -4,14 +4,16 @@
  * This class encapsulates all the details of sip.js and exposes
  * a very simple functions and callback handlers to the outside world.
  * This class thus abstracts user from Browser specific media details as well as
- * SIP specific protol details.
+ * SIP specific protocol details.
  */
-
-import type { IQueueMembershipSubscription } from '@rocket.chat/core-typings';
 import {
 	CallStates,
+	ConnectionState,
 	ICallerInfo,
+	IQueueMembershipSubscription,
 	Operation,
+	SignalingSocketEvents,
+	SocketEventKeys,
 	UserState,
 	IMediaStreamRenderer,
 	VoIPUserConfiguration,
@@ -24,7 +26,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import {
 	UserAgent,
 	UserAgentOptions,
-	// UserAgentDelegate,
 	Invitation,
 	InvitationAcceptOptions,
 	Session,
@@ -40,7 +41,7 @@ import { toggleMediaStreamTracks } from './Helper';
 import { QueueAggregator } from './QueueAggregator';
 import Stream from './Stream';
 
-export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDelegate {
+export class VoIPUser extends Emitter<VoipEvents> {
 	state: IState = {
 		isReady: false,
 		enableVideo: false,
@@ -58,11 +59,13 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 	mediaStreamRendered?: IMediaStreamRenderer;
 
-	private _callState: CallStates = 'IDLE';
+	private _callState: CallStates = 'INITIAL';
 
 	private _callerInfo: ICallerInfo | undefined;
 
 	private _userState: UserState = UserState.IDLE;
+
+	private _connectionState: ConnectionState = 'INITIAL';
 
 	private _held = false;
 
@@ -70,8 +73,156 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 	private queueInfo: QueueAggregator;
 
+	private connectionRetryCount;
+
+	private stop;
+
+	private networkEmitter: Emitter<SignalingSocketEvents>;
+
+	private offlineNetworkHandler: () => void;
+
+	private onlineNetworkHandler: () => void;
+
+	private optionsKeepaliveInterval = 5;
+
+	private optionsKeepAliveDebounceTimeInSec = 5;
+
+	private attemptRegistration = false;
+
+	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
+		super();
+		this.mediaStreamRendered = mediaRenderer;
+		this.networkEmitter = new Emitter<SignalingSocketEvents>();
+		this.connectionRetryCount = this.config.connectionRetryCount;
+		this.stop = false;
+
+		this.onlineNetworkHandler = this.onNetworkRestored.bind(this);
+		this.offlineNetworkHandler = this.onNetworkLost.bind(this);
+	}
+
+	/**
+	 * Configures and initializes sip.js UserAgent
+	 * call gets established.
+	 * @remarks
+	 * This class configures transport properties such as websocket url, passed down in config,
+	 * sets up ICE servers,
+	 * SIP UserAgent options such as userName, Password, URI.
+	 * Once initialized, it starts the userAgent.
+	 */
+
+	async init(): Promise<void> {
+		const sipUri = `sip:${this.config.authUserName}@${this.config.sipRegistrarHostnameOrIP}`;
+		const transportOptions = {
+			server: this.config.webSocketURI,
+			connectionTimeout: 100, // Replace this with config
+			keepAliveInterval: 20,
+			// traceSip: true
+		};
+		const sdpFactoryOptions = {
+			iceGatheringTimeout: 10,
+			peerConnectionConfiguration: {
+				iceServers: this.config.iceServers,
+			},
+		};
+		this.userAgentOptions = {
+			delegate: {
+				onInvite: async (invitation: Invitation): Promise<void> => {
+					await this.handleIncomingCall(invitation);
+				},
+			},
+			authorizationPassword: this.config.authPassword,
+			authorizationUsername: this.config.authUserName,
+			uri: UserAgent.makeURI(sipUri),
+			transportOptions,
+			sessionDescriptionHandlerFactoryOptions: sdpFactoryOptions,
+			logConfiguration: false,
+			logLevel: 'error',
+		};
+
+		this.userAgent = new UserAgent(this.userAgentOptions);
+		this.userAgent.transport.isConnected();
+		this._opInProgress = Operation.OP_CONNECT;
+		try {
+			this.registerer = new Registerer(this.userAgent);
+
+			this.userAgent.transport.onConnect = this.onConnected.bind(this);
+			this.userAgent.transport.onDisconnect = this.onDisconnected.bind(this);
+			window.addEventListener('online', this.onlineNetworkHandler);
+			window.addEventListener('offline', this.offlineNetworkHandler);
+			await this.userAgent.start();
+			if (this.config.enableKeepAliveUsingOptionsForUnstableNetworks) {
+				this.startOptionsPingForUnstableNetworks();
+			}
+		} catch (error) {
+			this._connectionState = 'ERROR';
+			throw error;
+		}
+	}
+
+	async onConnected(): Promise<void> {
+		this._connectionState = 'SERVER_CONNECTED';
+		this.state.isReady = true;
+		this.sendOptions();
+		this.networkEmitter.emit('connected');
+		/**
+		 * Re-registration post network recovery should be attempted
+		 * if it was previously registered or incall/onhold
+		 */
+
+		if (this.registerer && this.callState !== 'INITIAL') {
+			this.attemptRegistration = true;
+		}
+	}
+
+	onDisconnected(error: any): void {
+		this._connectionState = 'SERVER_DISCONNECTED';
+		this._opInProgress = Operation.OP_NONE;
+		this.networkEmitter.emit('disconnected');
+		if (error) {
+			this.networkEmitter.emit('connectionerror', error);
+			this.state.isReady = false;
+			/**
+			 * Signalling socket reconnection should be attempted assuming
+			 * that the disconnect happened from the remote side or due to sleep
+			 * In case of remote side disconnection, if config.connectionRetryCount is -1,
+			 * attemptReconnection attempts continuously. Else stops after |config.connectionRetryCount|
+			 *
+			 */
+			// this.attemptReconnection();
+			this.attemptReconnection(0, false);
+		}
+	}
+
+	onNetworkRestored(): void {
+		this.networkEmitter.emit('localnetworkonline');
+		if (this._connectionState === 'WAITING_FOR_NETWORK') {
+			/**
+			 * Signalling socket reconnection should be attempted when online event handler
+			 * gets notified.
+			 * Important thing to note is that the second parameter |checkRegistration| = true passed here
+			 * because after the network recovery and after reconnecting to the server,
+			 * the transport layer of SIPUA does not call onConnected. So by passing |checkRegistration = true |
+			 * the code will check if the endpoint was previously registered before the disconnection.
+			 * If such is the case, it will first unregister and then re-register.
+			 * */
+			this.attemptReconnection();
+			if (this.registerer && this.callState !== 'INITIAL') {
+				this.attemptRegistration = true;
+			}
+		}
+	}
+
+	onNetworkLost(): void {
+		this.networkEmitter.emit('localnetworkoffline');
+		this._connectionState = 'WAITING_FOR_NETWORK';
+	}
+
 	get callState(): CallStates {
 		return this._callState;
+	}
+
+	get connectionState(): ConnectionState {
+		return this._connectionState;
 	}
 
 	get callerInfo(): VoIpCallerInfo {
@@ -115,21 +266,8 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	}
 
 	/* Media Stream functions end */
-	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
-		super();
-		this.mediaStreamRendered = mediaRenderer;
-		this.on('connected', () => {
-			this.state.isReady = true;
-		});
-
-		this.on('connectionerror', () => {
-			this.state.isReady = false;
-		});
-	}
-
-	/* UserAgentDelegate methods end */
 	/* OutgoingRequestDelegate methods begin */
-	onAccept(): void {
+	onRegistrationRequestAccept(): void {
 		if (this._opInProgress === Operation.OP_REGISTER) {
 			this._callState = 'REGISTERED';
 			this.emit('registered');
@@ -142,7 +280,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		}
 	}
 
-	onReject(error: any): void {
+	onRegistrationRequestReject(error: any): void {
 		if (this._opInProgress === Operation.OP_REGISTER) {
 			this.emit('registrationerror', error);
 		}
@@ -247,7 +385,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 		const remoteStream = sdh.remoteMediaStream;
 		if (!remoteStream) {
-			throw new Error('Remote media stream undefiend.');
+			throw new Error('Remote media stream is undefined.');
 		}
 
 		this.remoteStream = new Stream(remoteStream);
@@ -382,90 +520,36 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			});
 	}
 
-	/**
-	 * Configures and initializes sip.js UserAgent
-	 * call gets established.
-	 * @remarks
-	 * This class configures transport properties such as websocket url, passed down in config,
-	 * sets up ICE servers,
-	 * SIP UserAgent options such as userName, Password, URI.
-	 * Once initialized, it starts the userAgent.
-	 */
-
-	async init(): Promise<void> {
-		const sipUri = `sip:${this.config.authUserName}@${this.config.sipRegistrarHostnameOrIP}`;
-		const transportOptions = {
-			server: this.config.webSocketURI,
-			connectionTimeout: 100, // Replace this with config
-			keepAliveInterval: 20,
-			// traceSip: true
-		};
-		const sdpFactoryOptions = {
-			iceGatheringTimeout: 10,
-			peerConnectionConfiguration: {
-				iceServers: this.config.iceServers,
-			},
-		};
-		this.userAgentOptions = {
-			delegate: {
-				/* UserAgentDelegate methods begin */
-				onConnect: (): void => {
-					this._callState = 'SERVER_CONNECTED';
-
-					this.emit('connected');
-					/**
-					 * There is an interesting problem that happens with Asterisk.
-					 * After websocket connection succeeds and if there is no SIP
-					 * message goes in 30 seconds, asterisk disconnects the socket.
-					 *
-					 * If any SIP message goes before 30 seconds, asterisk holds the connection.
-					 * This problem could be solved in multiple ways. One is that
-					 * whenever disconnect happens make sure that the socket is connected back using
-					 * this.userAgent.reconnect() method. But this is expensive as it does connect-disconnect
-					 * every 30 seconds till we send register message.
-					 *
-					 * Another approach is to send SIP OPTIONS just to tell server that
-					 * there is a UA using this socket. This is implemented below
-					 **/
-
-					const uri = new URI('sip', this.config.authUserName, this.config.sipRegistrarHostnameOrIP);
-					const outgoingMessage = this.userAgent?.userAgentCore.makeOutgoingRequestMessage('OPTIONS', uri, uri, uri, {});
-					if (outgoingMessage) {
-						this.userAgent?.userAgentCore.request(outgoingMessage);
-					}
-					if (this.userAgent) {
-						this.registerer = new Registerer(this.userAgent);
-					}
-				},
-				onDisconnect: (error: any): void => {
-					if (error) {
-						this.emit('connectionerror', error);
-					}
-				},
-				onInvite: async (invitation: Invitation): Promise<void> => {
-					await this.handleIncomingCall(invitation);
-				},
-			},
-			authorizationPassword: this.config.authPassword,
-			authorizationUsername: this.config.authUserName,
-			uri: UserAgent.makeURI(sipUri),
-			transportOptions,
-			sessionDescriptionHandlerFactoryOptions: sdpFactoryOptions,
-			logConfiguration: false,
-			logLevel: 'error',
-		};
-
-		this.userAgent = new UserAgent(this.userAgentOptions);
-		this._opInProgress = Operation.OP_CONNECT;
-		await this.userAgent.start();
-	}
-
 	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoIPUser> {
 		const voip = new VoIPUser(config, mediaRenderer);
 		await voip.init();
 		return voip;
 	}
 
+	/**
+	 * Sends SIP OPTIONS message to asterisk
+	 *
+	 * There is an interesting problem that happens with Asterisk.
+	 * After websocket connection succeeds and if there is no SIP
+	 * message goes in 30 seconds, asterisk disconnects the socket.
+	 *
+	 * If any SIP message goes before 30 seconds, asterisk holds the connection.
+	 * This problem could be solved in multiple ways. One is that
+	 * whenever disconnect happens make sure that the socket is connected back using
+	 * this.userAgent.reconnect() method. But this is expensive as it does connect-disconnect
+	 * every 30 seconds till we send register message.
+	 *
+	 * Another approach is to send SIP OPTIONS just to tell server that
+	 * there is a UA using this socket. This is implemented below
+	 */
+
+	sendOptions(outgoingRequestDelegate?: OutgoingRequestDelegate): void {
+		const uri = new URI('sip', this.config.authUserName, this.config.sipRegistrarHostnameOrIP);
+		const outgoingMessage = this.userAgent?.userAgentCore.makeOutgoingRequestMessage('OPTIONS', uri, uri, uri, {});
+		if (outgoingMessage) {
+			this.userAgent?.userAgentCore.request(outgoingMessage, outgoingRequestDelegate);
+		}
+	}
 	/**
 	 * Public method called from outside to register the SIP UA with call server.
 	 * @remarks
@@ -474,7 +558,10 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	register(): void {
 		this._opInProgress = Operation.OP_REGISTER;
 		this.registerer?.register({
-			requestDelegate: this,
+			requestDelegate: {
+				onAccept: this.onRegistrationRequestAccept.bind(this),
+				onReject: this.onRegistrationRequestReject.bind(this),
+			},
 		});
 	}
 
@@ -487,7 +574,10 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		this._opInProgress = Operation.OP_UNREGISTER;
 		this.registerer?.unregister({
 			all: true,
-			requestDelegate: this,
+			requestDelegate: {
+				onAccept: this.onRegistrationRequestAccept.bind(this),
+				onReject: this.onRegistrationRequestReject.bind(this),
+			},
 		});
 	}
 	/**
@@ -502,7 +592,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		// Call state must be in offer_received.
 		if (this._callState === 'OFFER_RECEIVED' && this._opInProgress === Operation.OP_PROCESS_INVITE) {
 			this._callState = 'ANSWER_SENT';
-			// Somethingis wrong, this session is not an instance of INVITE
+			// Something is wrong, this session is not an instance of INVITE
 			if (!(this.session instanceof Invitation)) {
 				throw new Error('Session not instance of Invitation.');
 			}
@@ -540,7 +630,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 			return this.session.accept(invitationAcceptOptions);
 		}
-		throw new Error('Something went wront');
+		throw new Error('Something went wrong');
 	}
 
 	/**
@@ -665,6 +755,215 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	}
 
 	clear(): void {
+		this._opInProgress = Operation.OP_CLEANUP;
+		/** Socket reconnection is attempted when the socket is disconnected with some error.
+		 * While disconnecting, if there is any socket error, there should be no reconnection attempt.
+		 * So when userAgent.stop() is called which closes the sockets, it should be made sure that
+		 * if the socket is disconnected with error, connection attempts are not started or
+		 * if there are any previously ongoing attempts, they should be terminated.
+		 * flag attemptReconnect is used for ensuring this.
+		 */
+		this.stop = true;
 		this.userAgent?.stop();
+		this.registerer?.dispose();
+		this._connectionState = 'STOP';
+
+		if (this.userAgent) {
+			this.userAgent.transport.onConnect = undefined;
+			this.userAgent.transport.onDisconnect = undefined;
+			window.removeEventListener('online', this.onlineNetworkHandler);
+			window.removeEventListener('offline', this.offlineNetworkHandler);
+		}
+	}
+
+	onNetworkEvent(event: SocketEventKeys, handler: () => void): void {
+		this.networkEmitter.on(event, handler);
+	}
+
+	offNetworkEvent(event: SocketEventKeys, handler: () => void): void {
+		this.networkEmitter.off(event, handler);
+	}
+
+	/**
+	 * Connection is lost in 3 ways
+	 * 1. When local network is lost (Router is disconnected, switching networks, devtools->network->offline)
+	 * In this case, the SIP.js's transport layer does not detect the disconnection. Hence, it does not
+	 * call |onDisconnect|. To detect this kind of disconnection, window event listeners have been added.
+	 * These event listeners would be get called when the browser detects that network is offline or online.
+	 * When the network is restored, the code tries to reconnect. The useragent.transport "does not" generate the
+	 * onconnected event in this case as well. so onlineNetworkHandler calls attemptReconnection.
+	 * Which calls attemptRegistrationPostRecovery based on correct state. attemptRegistrationPostRecovery first tries to
+	 * unregister and then re-register.
+	 * Important note : We use the event listeners using bind function object offlineNetworkHandler and onlineNetworkHandler
+	 * It is done so because the same event handlers need to be used for removeEventListener, which becomes impossible
+	 * if done inline.
+	 *
+	 * 2. Computer goes to sleep. In this case onDisconnect is triggered. The code tries to reconnect but cant go ahead
+	 * as it goes to sleep. On waking up, The attemptReconnection gets executed, connection is completed.
+	 * In this case, it generates onConnected event. In this onConnected event it calls attemptRegistrationPostRecovery
+	 *
+	 * 3. When Asterisk disconnects all the endpoints either because it crashes or restarted,
+	 * As soon as the agent successfully connects to asterisk, it should re-register
+	 *
+	 * Retry count :
+	 * connectionRetryCount is the parameter called |Retry Count| in
+	 * Administration -> Call Center -> Server configuration -> Retry count.
+	 * The retry is implemented with backoff, maxbackoff = 8 seconds.
+	 * For continuous retries (In case Asterisk restart happens) Set this parameter to -1.
+	 *
+	 * Important to note is how attemptRegistrationPostRecovery is called. In case of
+	 * the router connection loss or while switching the networks,
+	 * there is no disconnect and connect event from the transport layer of the userAgent.
+	 * So in this case, when the connection is successful after reconnect, the code should try to re-register by calling
+	 * attemptRegistrationPostRecovery.
+	 * In case of computer waking from sleep or asterisk getting restored, connect and disconnect events are generated.
+	 * In this case, re-registration should be triggered (by calling) only when onConnected gets called and not otherwise.
+	 */
+
+	async attemptReconnection(reconnectionAttempt = 0, checkRegistration = false): Promise<void> {
+		const reconnectionAttempts = this.connectionRetryCount;
+		this._connectionState = 'SERVER_RECONNECTING';
+		if (!this.userAgent) {
+			return;
+		}
+		if (this.stop) {
+			return;
+		}
+		// reconnectionAttempts == -1 then keep continuously trying
+		if (reconnectionAttempts !== -1 && reconnectionAttempt > reconnectionAttempts) {
+			this._connectionState = 'ERROR';
+			return;
+		}
+
+		const reconnectionDelay = Math.pow(2, reconnectionAttempt % 4);
+
+		console.error(`Attempting to reconnect with backoff due to network loss. Backoff time [${reconnectionDelay}]`);
+		setTimeout(() => {
+			if (this.stop) {
+				return;
+			}
+			if (this._connectionState === 'SERVER_CONNECTED') {
+				return;
+			}
+			this.userAgent
+				?.reconnect()
+				.then(() => {
+					this._connectionState = 'SERVER_CONNECTED';
+				})
+				.catch(() => {
+					this.attemptReconnection(++reconnectionAttempt, checkRegistration);
+				});
+		}, reconnectionDelay * 1000);
+	}
+
+	async attemptPostRecoveryRoutine(): Promise<void> {
+		/**
+		 * It might happen that the whole network loss can happen
+		 * while there is ongoing call. In that case, we want to maintain
+		 * the call.
+		 *
+		 * So after re-registration, it should remain in the same state.
+		 * */
+		this.sendOptions({
+			onAccept: (): void => {
+				this.attemptPostRecoveryRegistrationRoutine();
+			},
+			onReject: (error: unknown): void => {
+				console.error(`[${error}] Failed to do options in attemptPostRecoveryRoutine()`);
+			},
+		});
+	}
+
+	async sendKeepAliveAndWaitForResponse(withDebounce = false): Promise<boolean> {
+		const promise = new Promise<boolean>((resolve, reject) => {
+			let keepAliveAccepted = false;
+			let responseWaitTime = this.optionsKeepaliveInterval / 2;
+			if (withDebounce) {
+				responseWaitTime += this.optionsKeepAliveDebounceTimeInSec;
+			}
+
+			this.sendOptions({
+				onAccept: (): void => {
+					keepAliveAccepted = true;
+				},
+				onReject: (_error: unknown): void => {
+					console.error('Failed to do options.');
+				},
+			});
+			setTimeout(async () => {
+				if (!keepAliveAccepted) {
+					reject(false);
+				} else {
+					if (this.attemptRegistration) {
+						this.attemptPostRecoveryRoutine();
+						this.attemptRegistration = false;
+					}
+					resolve(true);
+				}
+			}, responseWaitTime * 1000);
+		});
+		return promise;
+	}
+
+	async startOptionsPingForUnstableNetworks(): Promise<void> {
+		setTimeout(async () => {
+			if (!this.userAgent || this.stop) {
+				return;
+			}
+			if (this._connectionState !== 'SERVER_RECONNECTING') {
+				let isConnected = false;
+				try {
+					await this.sendKeepAliveAndWaitForResponse();
+					isConnected = true;
+				} catch (e) {
+					console.error(`[${e}] Failed to do options ping.`);
+				} finally {
+					// Send event only if it's a "change" on the status (avoid unnecessary event flooding)
+					!isConnected && this.networkEmitter.emit('disconnected');
+					isConnected && this.networkEmitter.emit('connected');
+				}
+			}
+			// Each seconds check if the network can reach asterisk. If not, try to reconnect
+			this.startOptionsPingForUnstableNetworks();
+		}, this.optionsKeepaliveInterval * 1000);
+	}
+
+	async attemptPostRecoveryRegistrationRoutine(): Promise<void> {
+		/**
+		 * It might happen that the whole network loss can happen
+		 * while there is ongoing call. In that case, we want to maintain
+		 * the call.
+		 *
+		 * So after re-registration, it should remain in the same state.
+		 * */
+		const promise = new Promise<void>((_resolve, _reject) => {
+			this.registerer?.unregister({
+				all: true,
+				requestDelegate: {
+					onAccept: (): void => {
+						_resolve();
+					},
+					onReject: (error): void => {
+						console.error(`[${error}] While unregistering after recovery`);
+						this.emit('unregistrationerror', error);
+						_reject('Error in Unregistering');
+					},
+				},
+			});
+		});
+		try {
+			await promise;
+		} catch (error) {
+			console.error(`[${error}] While waiting for unregister promise`);
+		}
+		this.registerer?.register({
+			requestDelegate: {
+				onReject: (error): void => {
+					this._callState = 'UNREGISTERED';
+					this.emit('registrationerror', error);
+					this.emit('stateChanged');
+				},
+			},
+		});
 	}
 }

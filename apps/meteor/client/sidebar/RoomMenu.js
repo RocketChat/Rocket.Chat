@@ -1,18 +1,20 @@
 import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useRoute,
+	useUserSubscription,
+	useSetting,
+	usePermission,
+	useMethod,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
-import { usePermission } from '../contexts/AuthorizationContext';
-import { useSetModal } from '../contexts/ModalContext';
-import { useRoute } from '../contexts/RouterContext';
-import { useMethod, useEndpoint } from '../contexts/ServerContext';
-import { useSetting } from '../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
-import { useTranslation } from '../contexts/TranslationContext';
-import { useUserSubscription } from '../contexts/UserContext';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import WarningModal from '../views/admin/apps/WarningModal';
@@ -133,6 +135,11 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			if (subscription == null) {
 				return;
 			}
+
+			if (threadUnread) {
+				await handleThreadsToBeRead();
+			}
+
 			RoomManager.close(subscription.t + subscription.name);
 
 			router.push({});
@@ -174,15 +181,6 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 				action: handleToggleRead,
 			},
-			...(threadUnread && {
-				threadsToRead: {
-					label: {
-						label: t('Mark_threads_read'),
-						icon: 'thread',
-					},
-					action: handleThreadsToBeRead,
-				},
-			}),
 			...(canFavorite && {
 				toggleFavorite: {
 					label: {

@@ -1,6 +1,6 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import Field from '../../../components/Field';
@@ -10,7 +10,7 @@ import { FormSkeleton } from '../../Skeleton';
 
 const DepartmentField = ({ departmentId }) => {
 	const t = useTranslation();
-	const { value: data, phase: state } = useEndpointData(`livechat/department/${departmentId}`);
+	const { value: data, phase: state } = useEndpointData(`/v1/livechat/department/${departmentId}`);
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
