@@ -1,20 +1,31 @@
+import { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import AddUsers from './AddUsers';
 
-const AddUsersWithData = ({ rid, onClickBack, reload }) => {
+type AddUsersWithDataProps = {
+	rid: IRoom['_id'];
+	onClickBack: () => void;
+	reload: () => void;
+};
+
+type AddUsersInitialProps = {
+	users: IUser['username'][];
+};
+
+const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const onClickClose = useTabBarClose();
 	const saveAction = useMethod('addUsersToRoom');
 
-	const { values, handlers } = useForm({ users: [] });
-	const { users } = values;
+	const { values, handlers } = useForm({ users: [] as IUser['username'][] });
+	const { users } = values as AddUsersInitialProps;
 	const { handleUsers } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
@@ -38,7 +49,7 @@ const AddUsersWithData = ({ rid, onClickBack, reload }) => {
 		}
 	});
 
-	return <AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} value={users} onChange={onChangeUsers} />;
+	return <AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} users={users} onChange={onChangeUsers} />;
 };
 
 export default AddUsersWithData;
