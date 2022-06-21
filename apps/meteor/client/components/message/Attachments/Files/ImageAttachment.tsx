@@ -4,6 +4,12 @@ import React, { FC } from 'react';
 
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
+import AttachmentContent from '../Attachment/AttachmentContent';
+import AttachmentDescription from '../Attachment/AttachmentDescription';
+import AttachmentDownload from '../Attachment/AttachmentDownload';
+import AttachmentRow from '../Attachment/AttachmentRow';
+import AttachmentSize from '../Attachment/AttachmentSize';
+import AttachmentTitle from '../Attachment/AttachmentTitle';
 import Image from '../components/Image';
 import { useCollapse } from '../hooks/useCollapse';
 import { useLoadImage } from '../hooks/useLoadImage';
@@ -27,15 +33,19 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	const getURL = useMediaUrl();
 	return (
 		<Attachment>
-			{description && <MarkdownText parseEmoji variant='inline' content={description} />}
-			<Attachment.Row>
-				<Attachment.Title>{title}</Attachment.Title>
-				{size && <Attachment.Size size={size} />}
+			{description && (
+				<AttachmentDescription>
+					<MarkdownText parseEmoji variant='inline' content={description} />
+				</AttachmentDescription>
+			)}
+			<AttachmentRow>
+				<AttachmentTitle>{title}</AttachmentTitle>
+				{size && <AttachmentSize size={size} />}
 				{collapse}
-				{hasDownload && link && <Attachment.Download title={title} href={getURL(link)} />}
-			</Attachment.Row>
+				{hasDownload && link && <AttachmentDownload title={title} href={getURL(link)} />}
+			</AttachmentRow>
 			{!collapsed && (
-				<Attachment.Content>
+				<AttachmentContent>
 					<Image
 						{...imageDimensions}
 						loadImage={loadImage}
@@ -44,7 +54,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 						src={getURL(url)}
 						previewUrl={`data:image/png;base64,${imagePreview}`}
 					/>
-				</Attachment.Content>
+				</AttachmentContent>
 			)}
 		</Attachment>
 	);
