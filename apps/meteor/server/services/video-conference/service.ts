@@ -254,7 +254,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return true;
 	}
 
-	public async diagnoseProvider(uid: string, rid: string, providerName?: string): Promise<void> {
+	public async diagnoseProvider(uid: string, rid: string, providerName?: string): Promise<string | undefined> {
 		try {
 			if (providerName) {
 				await this.validateProvider(providerName);
@@ -264,6 +264,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				this.createEphemeralMessage(uid, rid, error.message);
+				return error.message;
 			}
 		}
 	}

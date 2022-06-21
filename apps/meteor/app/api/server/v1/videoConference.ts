@@ -37,8 +37,7 @@ API.v1.addRoute(
 					},
 				});
 			} catch (e) {
-				await VideoConf.diagnoseProvider(userId, roomId);
-				return API.v1.failure(e);
+				return API.v1.failure(await VideoConf.diagnoseProvider(userId, roomId));
 			}
 		},
 	},
@@ -70,8 +69,7 @@ API.v1.addRoute(
 					providerName: call.providerName,
 				});
 			} catch (e) {
-				await VideoConf.diagnoseProvider(userId, call.rid, call.providerName);
-				return API.v1.failure(e);
+				return API.v1.failure(await VideoConf.diagnoseProvider(userId, call.rid, call.providerName));
 			}
 		},
 	},
