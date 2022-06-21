@@ -21,7 +21,7 @@ export function videoConferencesCron(syncedCron: typeof SyncedCron): void {
 		syncedCron.add({
 			name: 'VideoConferences',
 			schedule(parser: any) {
-				return parser.cron('* */3 * * *');
+				return parser.cron('0 */3 * * *');
 			},
 			job: runVideoConferences,
 		});
