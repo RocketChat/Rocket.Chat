@@ -708,12 +708,30 @@ jobs:
           cd ./apps/meteor
           E2E_COVERAGE=true npm run test:e2e
 
+      - name: Extract e2e:ee:coverage
+        run: |
+          NYC_OUTPUT=$(yarn test:e2e:nyc)
+          COVERAGE_REPORTS=$(grep -o '[^ ]*%' <<< "$NYC_OUTPUT")
+          echo "REPORT_STATEMENTS=$(sed -n 1p <<< "$COVERAGE_REPORTS")" >> $GITHUB_ENV
 
-      - name: Store playwright test trace
+      - name: Publish e2e:ee:coverage badge to gh-pages
+        uses: RocketChat/ghpages-dynamic-badges-action@v1.0.0
+        with:
+          label: "e2e:coverage"
+          message: "${{ env.REPORT_STATEMENTS }}"
+          target_folder: "./apps/meteor/tests/coverage-badges"
+
+      - name: Store ee-e2e-coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: ee-e2e-coverage
+          path: ./apps/meteor/coverage
+
+      - name: Store e2e-ee-testtrace
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: playwright-test-trace
+          name: e2e-ee-testtrace
           path: ./apps/meteor/tests/e2e/test-failures*
 
   deploy:
