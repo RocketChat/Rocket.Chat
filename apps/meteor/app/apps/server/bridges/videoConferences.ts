@@ -1,10 +1,11 @@
 import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
-import { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
 import { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 
 import { VideoConf } from '../../../../server/sdk';
 import { AppServerOrchestrator } from '../orchestrator';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
+import type { AppVideoConferencesConverter } from '../converters/videoConferences';
 
 export class AppVideoConferenceBridge extends VideoConferenceBridge {
 	// eslint-disable-next-line no-empty-function
@@ -18,19 +19,49 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 		return this.orch.getConverters()?.get('videoConferences').convertById(callId);
 	}
 
+	protected async create(call: AppVideoConference, appId: string): Promise<string> {
+		this.orch.debugLog(`The App ${appId} is creating a video conference.`);
+
+		return (
+			await VideoConf.create({
+				type: 'videoconference',
+				...call,
+			})
+		).callId;
+	}
+
 	protected async update(call: VideoConference, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a video conference.`);
 
-		if (!call._id || !(await VideoConf.get(call._id))) {
+		const oldData = call._id && (await VideoConf.getUnfiltered(call._id));
+		if (!oldData) {
 			throw new Error('A video conference must exist to update.');
 		}
 
-		const data = this.orch.getConverters()?.get('videoConferences').convertAppVideoConference(call) as VideoConference;
-		VideoConf.setProviderData(call._id, data.providerData);
+		const data = (this.orch.getConverters()?.get('videoConferences') as AppVideoConferencesConverter).convertAppVideoConference(call);
+		await VideoConf.setProviderData(call._id, data.providerData);
+
+		for (const { _id, ts } of data.users) {
+			if (oldData.users.find((user) => user._id === _id)) {
+				continue;
+			}
+
+			VideoConf.addUser(call._id, _id, ts);
+		}
+
+		if (data.endedBy && data.endedBy._id !== oldData.endedBy?._id) {
+			await VideoConf.setEndedBy(call._id, data.endedBy._id);
+		} else if (data.endedAt) {
+			await VideoConf.setEndedAt(call._id, data.endedAt);
+		}
+
+		if (data.status > oldData.status) {
+			await VideoConf.setStatus(call._id, data.status);
+		}
 	}
 
 	protected async registerProvider(info: IVideoConfProvider): Promise<void> {
-		videoConfProviders.registerProvider(info.name);
+		videoConfProviders.registerProvider(info.name, info.capabilities || {});
 	}
 
 	protected async unRegisterProvider(info: IVideoConfProvider): Promise<void> {

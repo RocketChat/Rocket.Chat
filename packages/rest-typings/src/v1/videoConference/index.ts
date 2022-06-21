@@ -1,4 +1,4 @@
-import type { VideoConferenceInstructions, VideoConference } from '@rocket.chat/core-typings';
+import type { VideoConferenceInstructions, VideoConference, VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 
 import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfListProps } from './VideoConfListProps';
@@ -15,11 +15,11 @@ export * from './VideoConfCancelProps';
 
 export type VideoConferenceEndpoints = {
 	'/v1/video-conference.start': {
-		POST: (params: VideoConfStartProps) => { data: VideoConferenceInstructions };
+		POST: (params: VideoConfStartProps) => { data: VideoConferenceInstructions & { providerName: string } };
 	};
 
 	'/v1/video-conference.join': {
-		POST: (params: VideoConfJoinProps) => { url: string };
+		POST: (params: VideoConfJoinProps) => { url: string; providerName: string };
 	};
 
 	'/v1/video-conference.cancel': {
@@ -32,6 +32,10 @@ export type VideoConferenceEndpoints = {
 
 	'/v1/video-conference.list': {
 		GET: (params: VideoConfListProps) => PaginatedResult<{ data: VideoConference[] }>;
+	};
+
+	'video-conference.capabilities': {
+		GET: () => { providerName: string; capabilities: VideoConferenceCapabilities };
 	};
 
 	'video-conference.providers': {
