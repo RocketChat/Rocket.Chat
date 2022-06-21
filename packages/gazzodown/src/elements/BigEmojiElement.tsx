@@ -21,7 +21,7 @@ const BigEmojiElement = ({ handle }: BigEmojiElementProps): ReactElement => {
 	}, [getEmojiClassNameAndDataTitle, handle]);
 
 	if (!emojiProps) {
-		return <>:${handle}:</>;
+		return <>:{handle}:</>;
 	}
 
 	return (

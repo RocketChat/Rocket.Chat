@@ -3722,6 +3722,7 @@ __metadata:
     "@rocket.chat/message-parser": ^0.32.0-dev.5
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/jest": ^27.4.1
+    "@types/katex": ~0
     "@types/react": ^17
     "@typescript-eslint/eslint-plugin": ^5.29.0
     "@typescript-eslint/parser": ^5.29.0
@@ -3730,6 +3731,7 @@ __metadata:
     eslint-plugin-react: ^7.30.0
     eslint-plugin-react-hooks: ^4.6.0
     jest: ^27.5.1
+    katex: ~0.16.0
     ts-jest: ^27.1.4
     typescript: ~4.3.4
   peerDependencies:
@@ -3737,6 +3739,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/message-parser": "*"
     "@rocket.chat/ui-contexts": "workspace:^"
+    katex: "*"
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -6327,7 +6330,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/katex@npm:^0.14.0":
+"@types/katex@npm:^0.14.0, @types/katex@npm:~0":
   version: 0.14.0
   resolution: "@types/katex@npm:0.14.0"
   checksum: 330e0d0337ba48c87f5b793965fbad673653789bf6e50dfe8d726a7b0cbefd37195055e31503aae629814aa79447e4f23a4b87ad1ac565c0d9a9d9978836f39b
@@ -11130,6 +11133,13 @@ __metadata:
   version: 6.2.1
   resolution: "commander@npm:6.2.1"
   checksum: d7090410c0de6bc5c67d3ca41c41760d6d268f3c799e530aafb73b7437d1826bbf0d2a3edac33f8b57cc9887b4a986dce307fa5557e109be40eadb7c43b21742
+  languageName: node
+  linkType: hard
+
+"commander@npm:^8.0.0":
+  version: 8.3.0
+  resolution: "commander@npm:8.3.0"
+  checksum: 0f82321821fc27b83bd409510bb9deeebcfa799ff0bf5d102128b500b7af22872c0c92cb6a0ebc5a4cf19c6b550fba9cedfa7329d18c6442a625f851377bacf0
   languageName: node
   linkType: hard
 
@@ -20035,6 +20045,17 @@ __metadata:
   bin:
     katex: cli.js
   checksum: b26017d12bc06b085ee0b3d62825b473bc74987c2309008a13cca80b9922ed8b88f1f02b264d75f53dd604c318416bdb74a3035e761265417152f11c440e623d
+  languageName: node
+  linkType: hard
+
+"katex@npm:~0.16.0":
+  version: 0.16.0
+  resolution: "katex@npm:0.16.0"
+  dependencies:
+    commander: ^8.0.0
+  bin:
+    katex: cli.js
+  checksum: 0e094523544b3c921e55da8cf1a9ea2718213c621af508af9fc03859b97dc73280f478fbfede5a8b32948210c3596c5a637dd64e0e28e31d6c617b5d50c29762
   languageName: node
   linkType: hard
 

@@ -10,7 +10,7 @@ type PreviewBigEmojiBlockProps = {
 const PreviewBigEmojiBlock = ({ emojis }: PreviewBigEmojiBlockProps): ReactElement => (
 	<>
 		{emojis.map((emoji, index) => (
-			<PreviewEmojiElement key={index} handle={emoji.value.value} />
+			<PreviewEmojiElement key={index} handle={emoji.value?.value ?? ''} />
 		))}
 	</>
 );

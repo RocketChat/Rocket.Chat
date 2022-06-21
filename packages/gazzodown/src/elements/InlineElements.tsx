@@ -1,5 +1,5 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
+import { lazy, ReactElement } from 'react';
 
 import BoldSpan from './BoldSpan';
 import ChannelMentionElement from './ChannelMentionElement';
@@ -12,6 +12,8 @@ import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
 import UserMentionElement from './UserMentionElement';
+
+const KatexElement = lazy(() => import('../katex/KatexElement'));
 
 type InlineElementsProps = {
 	children: MessageParser.Inlines[];
@@ -49,10 +51,13 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 					return <CodeElement key={index} code={child.value.value} />;
 
 				case 'EMOJI':
-					return <EmojiElement key={index} handle={child.value.value} />;
+					return <EmojiElement key={index} handle={child.value?.value ?? ''} />;
 
 				case 'COLOR':
 					return <ColorElement key={index} {...child.value} />;
+
+				case 'INLINE_KATEX':
+					return <KatexElement key={index} code={child.value} />;
 
 				default:
 					return null;

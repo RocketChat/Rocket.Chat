@@ -10,7 +10,7 @@ type BigEmojiBlockProps = {
 const BigEmojiBlock = ({ emojis }: BigEmojiBlockProps): ReactElement => (
 	<>
 		{emojis.map((emoji, index) => (
-			<BigEmojiElement key={index} handle={emoji.value.value} />
+			<BigEmojiElement key={index} handle={emoji.value?.value ?? ''} />
 		))}
 	</>
 );

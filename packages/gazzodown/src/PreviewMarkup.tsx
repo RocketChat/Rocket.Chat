@@ -3,6 +3,7 @@ import { memo, ReactElement } from 'react';
 
 import PreviewBigEmojiBlock from './blocks/PreviewBigEmojiBlock';
 import PreviewInlineElements from './elements/PreviewInlineElements';
+import PreviewKatexBlock from './katex/PreviewKatexBlock';
 
 const isOnlyBigEmojiBlock = (tokens: MessageParser.Root): tokens is [MessageParser.BigEmoji] =>
 	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
@@ -64,6 +65,10 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 			const firstLine = firstBlock.value.find((line) => line.value.value.trim());
 
 			return firstLine ? <>{firstLine.value.value.trim()}</> : null;
+		}
+
+		case 'KATEX': {
+			return <PreviewKatexBlock code={firstBlock.value} />;
 		}
 
 		default:

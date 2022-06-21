@@ -1,5 +1,5 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { memo, ReactElement } from 'react';
+import { lazy, memo, ReactElement } from 'react';
 
 import BigEmojiBlock from './blocks/BigEmojiBlock';
 import CodeBlock from './blocks/CodeBlock';
@@ -9,6 +9,8 @@ import ParagraphBlock from './blocks/ParagraphBlock';
 import QuoteBlock from './blocks/QuoteBlock';
 import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
+
+const KatexBlock = lazy(() => import('./katex/KatexBlock'));
 
 type MarkupProps = {
 	tokens: MessageParser.Root;
@@ -41,6 +43,9 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 
 				case 'CODE':
 					return <CodeBlock key={index} language={block.language} lines={block.value} />;
+
+				case 'KATEX':
+					return <KatexBlock key={index} code={block.value} />;
 
 				case 'LINE_BREAK':
 					return <br key={index} />;

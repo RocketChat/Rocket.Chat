@@ -3,8 +3,6 @@ import { ReactElement, useMemo, useContext } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
-// import { getEmojiClassNameAndDataTitle } from '../../../lib/utils/renderEmoji';
-
 type EmojiElementProps = {
 	handle: string;
 };
@@ -23,7 +21,7 @@ const EmojiElement = ({ handle }: EmojiElementProps): ReactElement => {
 	}, [getEmojiClassNameAndDataTitle, handle]);
 
 	if (!emojiProps) {
-		return <>:${handle}:</>;
+		return <>:{handle}:</>;
 	}
 
 	return <MessageEmoji {...emojiProps}>:{handle}:</MessageEmoji>;

@@ -11,10 +11,6 @@ type MarkupInteractionContextValue = {
 				regex: RegExp;
 				urlRegex: RegExp;
 		  }[];
-	katex?: {
-		dollarSyntaxEnabled: boolean;
-		parenthesisSyntaxEnabled: boolean;
-	};
 	baseURI?: string;
 	getEmojiClassNameAndDataTitle?: (emoji: string) => {
 		'className'?: string;
@@ -40,13 +36,6 @@ type MarkupInteractionContextValue = {
 		};
 	};
 	highlightWords?: (msg: any, highlights: any) => any;
-	createKatexMessageRendering?: (
-		options: {
-			dollarSyntax: boolean;
-			parenthesisSyntax: boolean;
-		},
-		_isMessage: false,
-	) => (message: string) => string;
 	mentions?: UserMention[];
 	channels?: ChannelMention[];
 	onUserMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
