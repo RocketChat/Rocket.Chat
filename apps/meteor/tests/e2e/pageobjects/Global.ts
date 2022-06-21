@@ -4,7 +4,7 @@ import { BasePage } from './BasePage';
 
 export class Global extends BasePage {
 	get modalConfirm(): Locator {
-		return this.page.locator('.rcx-modal .rcx-button--primary-danger');
+		return this.page.locator('.rcx-modal .rcx-button--danger');
 	}
 
 	get modalFilePreview(): Locator {
@@ -45,6 +45,6 @@ export class Global extends BasePage {
 	}
 
 	get btnModalRemove(): Locator {
-		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--primary-danger');
+		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger');
 	}
 }

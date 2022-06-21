@@ -182,7 +182,7 @@ export class MainContent extends BasePage {
 	}
 
 	get modalDeleteMessageButton(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary-danger');
+		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger');
 	}
 
 	get buttonSend(): Locator {
