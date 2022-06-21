@@ -5,6 +5,7 @@ import './infrastructure/rocket-chat/slash-commands';
 export const FEDERATION_PROCESSING_CONCURRENCY = 1;
 
 const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
+rocketSettingsAdapter.initialize();
 const queueInstance = FederationFactory.buildQueue();
 const federation = FederationFactoryEE.buildBridge(rocketSettingsAdapter, queueInstance);
 const rocketRoomAdapter = FederationFactoryEE.buildRocketRoomAdapter();
