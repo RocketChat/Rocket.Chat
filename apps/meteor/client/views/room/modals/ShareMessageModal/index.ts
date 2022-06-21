@@ -1,1 +1,1 @@
-export {default} from './ShareMessageModal';
+export { default } from './ShareMessageModal';

@@ -1,32 +1,31 @@
-import { Modal, Box, Field, FieldGroup, ButtonGroup, Button, TextAreaInput, Message } from '@rocket.chat/fuselage';
-import React, { ReactElement, memo } from 'react';
+import { Modal, Box, Field, FieldGroup, ButtonGroup, Button, Message } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement, memo, useState, ChangeEvent } from 'react';
 
+import MarkdownTextEditor from '../../../../../ee/client/omnichannel/components/CannedResponse/MarkdownTextEditor';
+import PreviewText from '../../../../../ee/client/omnichannel/components/CannedResponse/modals/CreateCannedResponse/PreviewText';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import { useForm } from '../../../../hooks/useForm';
 import { formatTime } from '../../../../lib/utils/formatTime';
 
 type ShareMessageProps = {
 	onClose: () => void;
-	onSubmit: (name: string, description?: string) => void;
+	onSubmit?: (name: string, description?: string) => void;
 	message: string;
 	username: string;
-	time: Date;
-	invalidContentType: boolean;
+	time?: Date;
+	invalidContentType?: boolean;
 };
 
 const ShareMessageModal = ({ onClose, message, username, time }: ShareMessageProps): ReactElement => {
-	// const [name, setName] = useState<string>(fileName);
-	// const [description, setDescription] = useState<string>(fileDescription || '');
+	const [value, setValue] = useState('');
+	const [preview, setPreview] = useState(false);
 	const t = useTranslation();
-	const { handlers } = useForm({
-		description: 'fj',
-		usernames: [],
-	});
 
-	const { handleDescription } = handlers;
-
+	const changeEditView = (e: ChangeEvent<HTMLInputElement> | string) => {
+		if (typeof e === 'string') setValue(e);
+		else setValue(e.target.value);
+	};
 	return (
 		<Modal>
 			<Box is='form' display='flex' flexDirection='column' height='100%'>
@@ -40,17 +39,23 @@ const ShareMessageModal = ({ onClose, message, username, time }: ShareMessagePro
 							<Field.Label>{t('Person_Or_Channel')}</Field.Label>
 
 							<Field.Row>
-								<UserAutoCompleteMultiple />
+								<UserAutoCompleteMultiple value='' onChange={() => null} />
 							</Field.Row>
 							{/* {!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>} */}
 						</Field>
-						<Field>
-							<Field.Label>{t('Add_Message')}</Field.Label>
-							<Field.Row>
-								<TextAreaInput onChange={handleDescription} rows={5} />
-							</Field.Row>
-							{/* {!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>} */}
+
+						<Field mbe='x24'>
+							<Field.Label w='full'>
+								<Box w='full' display='flex' flexDirection='row' justifyContent='space-between'>
+									{t('Add_Message')}
+									<Box color='link' onClick={() => setPreview(!preview)}>
+										{preview ? t('Editor') : t('Preview')}
+									</Box>
+								</Box>
+							</Field.Label>
+							{preview ? <PreviewText text={value} /> : <MarkdownTextEditor value={value} onChange={changeEditView} />}
 						</Field>
+
 						<Field>
 							<Box>
 								<Message className='customclass' clickable>
