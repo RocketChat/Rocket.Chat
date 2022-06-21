@@ -3,7 +3,7 @@ import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
-import { secondsToHHMMSS } from '../../../../app/utils/lib/timeConverter';
+import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
 import Chart from '../realTimeMonitoring/charts/Chart';
 
 const getChartTooltips = (chartName) => {
@@ -15,11 +15,13 @@ const getChartTooltips = (chartName) => {
 		case 'Avg_reaction_time':
 			return {
 				callbacks: {
-					title(tooltipItem, data) {
-						return data.labels[tooltipItem[0].index];
+					title([ctx]) {
+						const { dataset } = ctx;
+						return dataset.label;
 					},
-					label(tooltipItem, data) {
-						return secondsToHHMMSS(data.datasets[0].data[tooltipItem.index]);
+					label(ctx) {
+						const { dataset, dataIndex } = ctx;
+						return secondsToHHMMSS(dataset.data[dataIndex]);
 					},
 				},
 			};
@@ -53,7 +55,7 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 				tooltipCallbacks,
 			});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error.message });
 		}
 	});
 

@@ -12,7 +12,7 @@ type useQueryType = (
 	debouncedSort: [string, 'asc' | 'desc'],
 ) => {
 	agentId?: ILivechatAgent['_id'];
-	includeOfflineAgents?: boolean;
+	includeOfflineAgents?: 'true' | 'false';
 	departmentId?: ILivechatAgent['_id'];
 	offset: number;
 	count: number;
@@ -25,7 +25,7 @@ export const useQuery: useQueryType = ({ servedBy, status, departmentId, itemsPe
 	useMemo(() => {
 		const query: {
 			agentId?: string;
-			includeOflineAgents?: boolean;
+			includeOflineAgents?: 'true' | 'false';
 			departmentId?: string;
 			sort: string;
 			count: number;
@@ -39,7 +39,7 @@ export const useQuery: useQueryType = ({ servedBy, status, departmentId, itemsPe
 		};
 
 		if (status !== 'online') {
-			query.includeOflineAgents = true;
+			query.includeOflineAgents = 'true';
 		}
 		if (servedBy) {
 			query.agentId = servedBy;
