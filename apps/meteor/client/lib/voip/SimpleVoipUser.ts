@@ -1,5 +1,7 @@
 import { IMediaStreamRenderer } from '@rocket.chat/core-typings';
 
+import { hasLicense } from '../../../ee/app/license/client';
+import { EEVoipClient } from '../../../ee/client/lib/voip/EEVoipClient';
 import { VoIPUser } from './VoIPUser';
 
 export class SimpleVoipUser {
@@ -24,7 +26,9 @@ export class SimpleVoipUser {
 			connectionRetryCount: voipRetryCount,
 			enableKeepAliveUsingOptionsForUnstableNetworks: enableKeepAliveForUnstableNetworks,
 		};
-
+		if (await hasLicense('livechat-enterprise')) {
+			return EEVoipClient.create(config, mediaStreamRendered);
+		}
 		return VoIPUser.create(config, mediaStreamRendered);
 	}
 }
