@@ -18,24 +18,28 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { roomId, title } = this.bodyParams;
-
-			const providerName = videoConfProviders.getActiveProvider();
-			if (!providerName) {
-				return API.v1.failure('no-active-video-conf-provider');
-			}
-
 			const { userId } = this;
-
 			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
 				return API.v1.failure('invalid-params');
 			}
 
-			return API.v1.success({
-				data: {
-					...(await VideoConf.start(userId, roomId, title)),
-					providerName,
-				},
-			});
+			try {
+				const providerName = videoConfProviders.getActiveProvider();
+
+				if (!providerName) {
+					throw new Error('no-active-video-conf-provider');
+				}
+
+				return API.v1.success({
+					data: {
+						...(await VideoConf.start(userId, roomId, title)),
+						providerName,
+					},
+				});
+			} catch (e) {
+				await VideoConf.diagnoseProvider(userId, roomId);
+				return API.v1.failure(e);
+			}
 		},
 	},
 );
@@ -57,13 +61,18 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-params');
 			}
 
-			return API.v1.success({
-				url: await VideoConf.join(userId, callId, {
-					...(state?.cam !== undefined ? { cam: state.cam } : {}),
-					...(state?.mic !== undefined ? { mic: state.mic } : {}),
-				}),
-				providerName: call.providerName,
-			});
+			try {
+				return API.v1.success({
+					url: await VideoConf.join(userId, callId, {
+						...(state?.cam !== undefined ? { cam: state.cam } : {}),
+						...(state?.mic !== undefined ? { mic: state.mic } : {}),
+					}),
+					providerName: call.providerName,
+				});
+			} catch (e) {
+				await VideoConf.diagnoseProvider(userId, call.rid, call.providerName);
+				return API.v1.failure(e);
+			}
 		},
 	},
 );
