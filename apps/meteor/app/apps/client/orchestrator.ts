@@ -134,7 +134,7 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	public async getAppFromMarketplace(appId: string, version: string): Promise<App> {
+	public async getAppFromMarketplace(appId: string, version: string): Promise<{ app: App; success: boolean }> {
 		const result = await APIClient.get(
 			`/apps/${appId}` as any,
 			{
