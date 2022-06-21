@@ -54,6 +54,7 @@ export interface IUserServices {
 	resume?: {
 		loginTokens?: LoginToken[];
 	};
+	cloud?: unknown;
 	google?: any;
 	facebook?: any;
 	github?: any;
@@ -109,12 +110,14 @@ export interface IUser extends IRocketChatRecord {
 	type: string;
 	active: boolean;
 	username?: string;
+	nickname?: string;
 	name?: string;
 	services?: IUserServices;
 	emails?: IUserEmail[];
 	status?: UserStatus;
 	statusConnection?: string;
 	lastLogin?: Date;
+	bio?: string;
 	avatarOrigin?: string;
 	avatarETag?: string;
 	utcOffset?: number;

@@ -147,9 +147,24 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findActive(query, options = {}) {
+		Object.assign(query, { active: true });
+
+		return this.find(query, options);
+	}
+
 	findActiveByIds(userIds, options = {}) {
 		const query = {
 			_id: { $in: userIds },
+			active: true,
+		};
+
+		return this.find(query, options);
+	}
+
+	findActiveByIdsOrUsernames(userIds, options = {}) {
+		const query = {
+			$or: [{ _id: { $in: userIds } }, { username: { $in: userIds } }],
 			active: true,
 		};
 
@@ -988,7 +1003,7 @@ export class UsersRaw extends BaseRaw {
 
 	getAvailableAgentsIncludingExt(includeExt, text, options) {
 		const query = {
-			roles: { $in: ['livechat-agent', 'livechat-manager', 'livechat-monitor'] },
+			roles: { $in: ['livechat-agent'] },
 			$and: [
 				...(text && text.trim()
 					? [{ $or: [{ username: new RegExp(escapeRegExp(text), 'i') }, { name: new RegExp(escapeRegExp(text), 'i') }] }]
@@ -997,6 +1012,22 @@ export class UsersRaw extends BaseRaw {
 			],
 		};
 
+		return this.find(query, options);
+	}
+
+	findActiveUsersTOTPEnable(options) {
+		const query = {
+			'active': true,
+			'services.totp.enabled': true,
+		};
+		return this.find(query, options);
+	}
+
+	findActiveUsersEmail2faEnable(options) {
+		const query = {
+			'active': true,
+			'services.email2fa.enabled': true,
+		};
 		return this.find(query, options);
 	}
 }

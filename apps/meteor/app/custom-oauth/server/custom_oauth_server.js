@@ -9,7 +9,7 @@ import _ from 'underscore';
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
-import { isURL } from '../../utils/lib/isURL';
+import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { callbacks } from '../../../lib/callbacks';
 

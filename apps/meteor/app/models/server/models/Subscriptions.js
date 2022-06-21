@@ -227,6 +227,27 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
+	updateHideMentionStatusById(_id, hideMentionStatus) {
+		const query = {
+			_id,
+		};
+
+		const update =
+			hideMentionStatus === true
+				? {
+						$set: {
+							hideMentionStatus,
+						},
+				  }
+				: {
+						$unset: {
+							hideMentionStatus: 1,
+						},
+				  };
+
+		return this.update(query, update);
+	}
+
 	updateMuteGroupMentions(_id, muteGroupMentions) {
 		const query = {
 			_id,

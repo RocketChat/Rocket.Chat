@@ -23,7 +23,7 @@ function TagEditWithDepartmentData({ data, title, ...props }: TagEditWithDepartm
 		phase: currentDepartmentsState,
 		error: currentDepartmentsError,
 	} = useEndpointData(
-		'livechat/department.listByIds',
+		'/v1/livechat/department.listByIds',
 		useMemo(() => ({ ids: data?.departments ? data.departments : [] }), [data]),
 	);
 

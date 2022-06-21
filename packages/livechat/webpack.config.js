@@ -6,15 +6,11 @@ const webpack = require('webpack');
 
 module.exports = (env, argv) => [
 	{
+		stats: 'errors-warnings',
 		mode: argv.mode,
 		devtool: argv.mode === 'production' ? 'source-map' : 'eval',
 		resolve: {
-			extensions: [
-				'.js',
-				'.jsx',
-				'.ts',
-				'.tsx',
-			],
+			extensions: ['.js', '.jsx', '.ts', '.tsx'],
 			alias: {
 				react: 'preact/compat',
 				'react-dom': 'preact/compat',
@@ -29,11 +25,7 @@ module.exports = (env, argv) => [
 			setImmediate: false,
 		},
 		entry: {
-			bundle: [
-				'core-js',
-				'regenerator-runtime/runtime',
-				path.resolve(__dirname, './src/entry'),
-			],
+			bundle: ['core-js', 'regenerator-runtime/runtime', path.resolve(__dirname, './src/entry')],
 			polyfills: path.resolve(__dirname, './src/polyfills'),
 		},
 		output: {
@@ -46,35 +38,22 @@ module.exports = (env, argv) => [
 			rules: [
 				{
 					test: /\.jsx?$/,
-					exclude: [
-						/\/node_modules\/core-js\//,
-					],
+					exclude: [/\/node_modules\/core-js\//],
 					type: 'javascript/auto',
-					use: [
-						'babel-loader',
-					],
+					use: ['babel-loader'],
 				},
 				{
 					test: /\.tsx?$/,
 					use: 'ts-loader',
-					exclude: [
-						'/node_modules/',
-					],
+					exclude: ['/node_modules/'],
 				},
 				{
 					test: /\.svg$/,
-					use: [
-						require.resolve('./svg-component-loader'),
-						'svg-loader',
-						'image-webpack-loader',
-					],
+					use: [require.resolve('./svg-component-loader'), 'svg-loader', 'image-webpack-loader'],
 				},
 				{
 					test: /\.s?css$/,
-					exclude: [
-						path.resolve(__dirname, './src/components'),
-						path.resolve(__dirname, './src/routes'),
-					],
+					exclude: [path.resolve(__dirname, './src/components'), path.resolve(__dirname, './src/routes')],
 					use: [
 						argv.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
 						{
@@ -95,10 +74,7 @@ module.exports = (env, argv) => [
 				},
 				{
 					test: /\.s?css$/,
-					include: [
-						path.resolve(__dirname, './src/components'),
-						path.resolve(__dirname, './src/routes'),
-					],
+					include: [path.resolve(__dirname, './src/components'), path.resolve(__dirname, './src/routes')],
 					use: [
 						argv.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
 						{
@@ -123,9 +99,7 @@ module.exports = (env, argv) => [
 				{
 					enforce: 'pre',
 					test: /\.scss$/,
-					use: [
-						'sass-loader',
-					],
+					use: ['sass-loader'],
 				},
 				{
 					test: /\.(woff2?|ttf|eot|jpe?g|png|webp|gif|mp4|mov|ogg|webm)(\?.*)?$/i,
@@ -136,23 +110,15 @@ module.exports = (env, argv) => [
 		plugins: [
 			new MiniCssExtractPlugin({
 				filename: argv.mode === 'production' ? '[name].[contenthash:5].css' : '[name].css',
-				chunkFilename: argv.mode === 'production'
-					? '[name].chunk.[contenthash:5].css'
-					: '[name].chunk.css',
+				chunkFilename: argv.mode === 'production' ? '[name].chunk.[contenthash:5].css' : '[name].chunk.css',
 			}),
 			new webpack.NoEmitOnErrorsPlugin(),
 			new webpack.DefinePlugin({
-				'process.env.NODE_ENV': JSON.stringify(
-					argv.mode === 'production' ? 'production' : 'development',
-				),
+				'process.env.NODE_ENV': JSON.stringify(argv.mode === 'production' ? 'production' : 'development'),
 			}),
 			new HtmlWebpackPlugin({
 				title: 'Rocket.Chat.Livechat',
-				chunks: [
-					'polyfills',
-					'vendor',
-					'bundle',
-				],
+				chunks: ['polyfills', 'vendor', 'bundle'],
 				chunksSortMode: 'manual',
 			}),
 		],
@@ -167,34 +133,34 @@ module.exports = (env, argv) => [
 				minSize: 20000,
 				enforceSizeThreshold: 500000,
 				maxSize: 0,
-			// cacheGroups: {
-			// 	sdk: {
-			// 		name: 'sdk',
-			// 		chunks: 'all',
-			// 		test: /node_modules\/@rocket\.chat\/sdk/,
-			// 		priority: 40,
-			// 	},
-			// 	components: {
-			// 		name: 'components',
-			// 		test: /components|icons|\.scss$/,
-			// 		chunks: 'all',
-			// 		priority: 50,
-			// 	},
-			// 	vendor: {
-			// 		name: 'vendor',
-			// 		chunks: 'all',
-			// 		test: /node_modules/,
-			// 		priority: 30,
-			// 	},
-			// 	common: {
-			// 		name: 'common',
-			// 		minChunks: 2,
-			// 		chunks: 'async',
-			// 		priority: 10,
-			// 		reuseExistingChunk: true,
-			// 		enforce: true,
-			// 	},
-			// },
+				// cacheGroups: {
+				// 	sdk: {
+				// 		name: 'sdk',
+				// 		chunks: 'all',
+				// 		test: /node_modules\/@rocket\.chat\/sdk/,
+				// 		priority: 40,
+				// 	},
+				// 	components: {
+				// 		name: 'components',
+				// 		test: /components|icons|\.scss$/,
+				// 		chunks: 'all',
+				// 		priority: 50,
+				// 	},
+				// 	vendor: {
+				// 		name: 'vendor',
+				// 		chunks: 'all',
+				// 		test: /node_modules/,
+				// 		priority: 30,
+				// 	},
+				// 	common: {
+				// 		name: 'common',
+				// 		minChunks: 2,
+				// 		chunks: 'async',
+				// 		priority: 10,
+				// 		reuseExistingChunk: true,
+				// 		enforce: true,
+				// 	},
+				// },
 			},
 		},
 		devServer: {
@@ -212,23 +178,16 @@ module.exports = (env, argv) => [
 			overlay: true,
 			stats: 'normal',
 			watchOptions: {
-				ignored: [
-					path.resolve(__dirname, './dist'),
-					path.resolve(__dirname, './node_modules'),
-				],
+				ignored: [path.resolve(__dirname, './dist'), path.resolve(__dirname, './node_modules')],
 			},
 		},
 	},
 	{
+		stats: 'errors-warnings',
 		mode: argv.mode,
 		devtool: argv.mode === 'production' ? 'source-map' : 'eval',
 		resolve: {
-			extensions: [
-				'.js',
-				'.jsx',
-				'.ts',
-				'.tsx',
-			],
+			extensions: ['.js', '.jsx', '.ts', '.tsx'],
 			alias: {
 				react: 'preact/compat',
 				'react-dom': 'preact/compat',
@@ -261,10 +220,13 @@ module.exports = (env, argv) => [
 							options: {
 								babelrc: false,
 								presets: [
-									['@babel/preset-env', {
-										useBuiltIns: 'entry',
-										corejs: 3,
-									}],
+									[
+										'@babel/preset-env',
+										{
+											useBuiltIns: 'entry',
+											corejs: 3,
+										},
+									],
 								],
 							},
 						},
@@ -273,9 +235,7 @@ module.exports = (env, argv) => [
 				{
 					test: /\.tsx?$/,
 					use: 'ts-loader',
-					exclude: [
-						'/node_modules/',
-					],
+					exclude: ['/node_modules/'],
 				},
 			],
 		},

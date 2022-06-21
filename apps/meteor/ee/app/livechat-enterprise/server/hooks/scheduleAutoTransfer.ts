@@ -1,3 +1,5 @@
+import { IMessage, IRoom } from '@rocket.chat/core-typings';
+
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
@@ -30,7 +32,7 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 	return inquiry;
 };
 
-const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promise<any> => {
+const handleAfterSaveMessage = (message: any = {}, room: any = {}): IMessage => {
 	const { _id: rid, t, autoTransferredAt, autoTransferOngoing } = room;
 	const { token } = message;
 
@@ -50,11 +52,11 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 		return message;
 	}
 
-	await AutoTransferChatScheduler.unscheduleRoom(rid);
+	Promise.await(AutoTransferChatScheduler.unscheduleRoom(rid));
 	return message;
 };
 
-const handleAfterCloseRoom = async (room: any = {}): Promise<any> => {
+const handleAfterCloseRoom = (room: any = {}): IRoom => {
 	const { _id: rid, autoTransferredAt, autoTransferOngoing } = room;
 
 	if (!autoTransferTimeout || autoTransferTimeout <= 0) {
@@ -69,7 +71,7 @@ const handleAfterCloseRoom = async (room: any = {}): Promise<any> => {
 		return room;
 	}
 
-	await AutoTransferChatScheduler.unscheduleRoom(rid);
+	Promise.await(AutoTransferChatScheduler.unscheduleRoom(rid));
 	return room;
 };
 

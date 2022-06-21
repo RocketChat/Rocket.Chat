@@ -516,7 +516,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			if (findResult.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list')) {
+			if (findResult.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list', findResult._id)) {
 				return API.v1.unauthorized();
 			}
 

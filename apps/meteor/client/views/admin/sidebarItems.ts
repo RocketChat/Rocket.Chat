@@ -4,7 +4,8 @@ import { createSidebarItems } from '../../lib/createSidebarItems';
 export const {
 	registerSidebarItem: registerAdminSidebarItem,
 	unregisterSidebarItem,
-	itemsSubscription,
+	getSidebarItems: getAdminSidebarItems,
+	subscribeToSidebarItems: subscribeToAdminSidebarItems,
 } = createSidebarItems([
 	{
 		href: 'admin-info',
@@ -114,5 +115,12 @@ export const {
 		href: 'admin-permissions',
 		i18nLabel: 'Permissions',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
+	},
+	{
+		icon: 'customize',
+		href: 'admin-settings',
+		i18nLabel: 'Settings',
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
 ]);

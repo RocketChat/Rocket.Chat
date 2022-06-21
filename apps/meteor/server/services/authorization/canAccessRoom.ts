@@ -4,9 +4,9 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Authorization } from '../../sdk';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
-import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
 import { canAccessRoomVoip } from './canAccessRoomVoip';
 import { Rooms, Settings, Subscriptions, Team, TeamMembers } from './service';
+
 
 async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
@@ -97,7 +97,6 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	canAccessRoomLivechat,
-	canAccessRoomTokenpass,
 	canAccessRoomVoip,
 ];
 

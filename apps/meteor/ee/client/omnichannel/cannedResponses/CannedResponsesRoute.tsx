@@ -103,8 +103,8 @@ const CannedResponsesRoute: FC = () => {
 		[t],
 	);
 
-	const { value: data, reload } = useEndpointData('canned-responses', query);
-	const { value: totalData, phase: totalDataPhase, reload: totalDataReload } = useEndpointData('canned-responses');
+	const { value: data, reload } = useEndpointData('/v1/canned-responses', query);
+	const { value: totalData, phase: totalDataPhase, reload: totalDataReload } = useEndpointData('/v1/canned-responses');
 
 	const getTime = useFormatDateAndTime();
 
