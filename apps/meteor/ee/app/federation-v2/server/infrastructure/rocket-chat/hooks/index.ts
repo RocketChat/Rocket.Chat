@@ -49,4 +49,11 @@ export class FederationHooksEE {
 			'federation-v2-before-create-direct-message-room',
 		);
 	}
+
+	public static removeAll(): void {
+		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
+		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');
+		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-users-to-a-room');
+		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
+	}
 }

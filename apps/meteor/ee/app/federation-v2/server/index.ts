@@ -49,5 +49,6 @@ onToggledFeature('federation', {
 		Meteor.startup(async () => {
 			await federationEE.stop();
 			await runFederation();
+			FederationFactoryEE.removeListeners();
 		}),
 });
