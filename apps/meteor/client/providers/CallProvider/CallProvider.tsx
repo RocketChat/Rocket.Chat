@@ -55,9 +55,11 @@ export const CallProvider: FC = ({ children }) => {
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
 
+	const closeRoom = useCallCloseRoom();
+
 	const openWrapUpModal = useCallback((): void => {
-		setModal(() => <WrapUpCallModal closeRoom={useCallCloseRoom} />);
-	}, [setModal]);
+		setModal(() => <WrapUpCallModal closeRoom={closeRoom} />);
+	}, [closeRoom, setModal]);
 
 	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
 
