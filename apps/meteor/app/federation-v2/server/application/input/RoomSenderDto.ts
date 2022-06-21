@@ -23,5 +23,5 @@ export class FederationRoomSendExternalMessageDto {
 export class FederationAfterLeaveRoomDto {
 	internalRoomId: string;
 
-	internalUserId: string
+	internalUserId: string;
 }

@@ -30,15 +30,9 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public getBridgePort(): number {
-		const defaultPort = 3334;
-		const bridgeUrl = this.getBridgeUrl();
+		const [, , port] = this.getBridgeUrl().split(':');
 
-		if (bridgeUrl) {
-			const [, , port] = bridgeUrl.split(':');
-			return parseInt(port);
-		}
-
-		return defaultPort;
+		return parseInt(port);
 	}
 
 	public getHomeServerUrl(): string {

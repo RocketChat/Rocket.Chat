@@ -1,6 +1,10 @@
 import { IMessage } from '@rocket.chat/core-typings';
 
-import { FederationAfterLeaveRoomDto, FederationCreateDMAndInviteUserDto, FederationRoomSendExternalMessageDto } from '../../../application/input/RoomSenderDto';
+import {
+	FederationAfterLeaveRoomDto,
+	FederationCreateDMAndInviteUserDto,
+	FederationRoomSendExternalMessageDto,
+} from '../../../application/input/RoomSenderDto';
 
 export class FederationRoomSenderConverter {
 	public static toCreateDirectMessageRoomDto(
@@ -32,10 +36,7 @@ export class FederationRoomSenderConverter {
 		});
 	}
 
-	public static toAfterLeaveRoom(
-		internalUserId: string,
-		internalRoomId: string,
-	): FederationAfterLeaveRoomDto {
+	public static toAfterLeaveRoom(internalUserId: string, internalRoomId: string): FederationAfterLeaveRoomDto {
 		return Object.assign(new FederationAfterLeaveRoomDto(), {
 			internalRoomId,
 			internalUserId,

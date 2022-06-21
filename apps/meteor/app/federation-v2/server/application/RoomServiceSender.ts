@@ -7,7 +7,11 @@ import { IFederationBridge } from '../domain/IFederationBridge';
 import { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
-import { FederationAfterLeaveRoomDto, FederationCreateDMAndInviteUserDto, FederationRoomSendExternalMessageDto } from './input/RoomSenderDto';
+import {
+	FederationAfterLeaveRoomDto,
+	FederationCreateDMAndInviteUserDto,
+	FederationRoomSendExternalMessageDto,
+} from './input/RoomSenderDto';
 import { callbacks } from '../../../../lib/callbacks';
 
 export class FederationRoomServiceSender {

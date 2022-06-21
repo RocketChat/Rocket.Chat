@@ -80,13 +80,7 @@ export class FederationFactory {
 
 	public static setupListeners(roomServiceSender: FederationRoomServiceSender): void {
 		FederationHooks.afterLeaveRoom(async (user: IUser, room: IRoom) =>
-			roomServiceSender.leaveRoom(
-				FederationRoomSenderConverter.toAfterLeaveRoom(
-					user._id,
-					room._id,
-				),
-			),
+			roomServiceSender.leaveRoom(FederationRoomSenderConverter.toAfterLeaveRoom(user._id, room._id)),
 		);
 	}
-
 }

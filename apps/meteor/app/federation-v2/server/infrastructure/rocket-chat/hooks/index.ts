@@ -6,8 +6,8 @@ export class FederationHooks {
 	public static afterLeaveRoom(callback: Function): void {
 		callbacks.add(
 			'afterLeaveRoom',
-			(user: IUser, room: IRoom): void => {
-				if (!room.federated) {
+			(user: IUser, room: IRoom | undefined): void => {
+				if (!room?.federated) {
 					return;
 				}
 				Promise.await(callback(user, room));
