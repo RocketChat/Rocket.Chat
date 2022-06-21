@@ -83,7 +83,7 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	trashFind<P extends RocketChatRecordDeleted<T>>(
 		query: FilterQuery<RocketChatRecordDeleted<T>>,
 		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<P>> | undefined;
+	): Cursor<RocketChatRecordDeleted<T>> | undefined;
 	trashFindOneById(_id: string): Promise<RocketChatRecordDeleted<T> | null>;
 	trashFindOneById(
 		_id: string,

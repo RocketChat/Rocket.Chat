@@ -1,5 +1,4 @@
 import { registerModel } from '@rocket.chat/models';
-import type { IInstanceStatusModel } from '@rocket.chat/model-typings';
 
 import { trashCollection } from '../database/trash';
 import { db } from '../database/utils';
@@ -10,4 +9,4 @@ export const InstanceStatus = new InstanceStatusRaw(col, trashCollection, {
 	preventSetUpdatedAt: true,
 });
 
-registerModel('IInstanceStatusModel', InstanceStatus as IInstanceStatusModel);
+registerModel('IInstanceStatusModel', InstanceStatus);

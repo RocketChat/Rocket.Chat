@@ -1,5 +1,4 @@
 import { registerModel } from '@rocket.chat/models';
-import type { ISessionsModel } from '@rocket.chat/model-typings';
 
 import { trashCollection } from '../database/trash';
 import { db, prefix } from '../database/utils';
@@ -8,4 +7,4 @@ import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 const col = db.collection(`${prefix}sessions`);
 const colSecondary = db.collection(`${prefix}sessions`, { readPreference: readSecondaryPreferred(db) });
-registerModel('ISessionsModel', new SessionsRaw(col, colSecondary, trashCollection) as ISessionsModel);
+registerModel('ISessionsModel', new SessionsRaw(col, colSecondary, trashCollection));

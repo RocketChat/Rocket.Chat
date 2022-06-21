@@ -276,7 +276,7 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 	trashFind<P extends RocketChatRecordDeleted<T>>(
 		query: FilterQuery<RocketChatRecordDeleted<T>>,
 		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<P>> | undefined {
+	): Cursor<RocketChatRecordDeleted<T>> | undefined {
 		if (!this.trash) {
 			return undefined;
 		}
