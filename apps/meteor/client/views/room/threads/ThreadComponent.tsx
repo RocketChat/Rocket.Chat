@@ -1,5 +1,4 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
@@ -10,7 +9,7 @@ import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
-import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
+import { useTabBarExpanded, useTabBarSetExpand, useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 
@@ -68,7 +67,8 @@ const ThreadComponent: FC<{
 	const uid = useUserId();
 
 	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
-	const [expanded, setExpand] = useLocalStorage('expand-threads', false);
+	const expanded = useTabBarExpanded();
+	const setExpand = useTabBarSetExpand();
 	const following = !uid ? false : threadMessage?.replies?.includes(uid) ?? false;
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -87,7 +87,7 @@ const ThreadComponent: FC<{
 			} catch (error) {
 				dispatchToastMessage({
 					type: 'error',
-					message: error,
+					message: String(error),
 				});
 			}
 		},

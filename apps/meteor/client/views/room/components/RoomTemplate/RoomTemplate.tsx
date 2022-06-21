@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 import VerticalBar from '../../../../components/VerticalBar/VerticalBar';
+import { useTabBarExpanded } from '../../providers/ToolboxProvider';
 import { Aside } from './slots/Aside';
 import { Body } from './slots/Body';
 import { Footer } from './slots/Footer';
@@ -19,12 +20,13 @@ export const RoomTemplate: FC & {
 	const body = c.filter((child) => (child as any).type === RoomTemplate.Body);
 	const footer = c.filter((child) => (child as any).type === RoomTemplate.Footer);
 	const aside = c.filter((child) => (child as any).type === RoomTemplate.Aside);
+	const isTabExpanded = useTabBarExpanded();
 
 	return (
 		<Box is='main' h='full' display='flex' flexDirection='column' {...props}>
 			{header.length > 0 && header}
 			<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
-				<Box display='flex' flexDirection='column' flexGrow={1} zIndex={6}>
+				<Box display='flex' flexDirection='column' flexGrow={1} zIndex={!isTabExpanded ? 6 : undefined}>
 					<Box is='div' display='flex' flexDirection='column' flexGrow={1}>
 						{body}
 					</Box>

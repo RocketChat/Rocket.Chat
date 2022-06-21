@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedState, useLocalStorage, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSession, useCurrentRoute, useRoute, useUserId, useSetting } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect, useEffect } from 'react';
 
@@ -27,6 +27,8 @@ const useToolboxActions = (room: IRoom): { listen: ToolboxEventHandler; actions:
 const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const uid = useUserId();
+
+	const [expanded, setExpand] = useLocalStorage('expand-tab', false);
 	const [activeTabBar, setActiveTabBar] = useState<[ToolboxActionConfig | undefined, string?]>([undefined]);
 	const [list, setList] = useSafely(useDebouncedState<Store<ToolboxAction>>(new Map(), 5));
 	const handleChange = useMutableCallback((fn) => {
@@ -93,8 +95,10 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 			open,
 			close,
 			openUserInfo,
+			expanded,
+			setExpand,
 		}),
-		[listen, list, activeTabBar, open, close, openUserInfo],
+		[listen, list, activeTabBar, open, close, expanded, setExpand, openUserInfo],
 	);
 
 	// TODO: remove this when the messages are running on react diretly, not wrapped by blaze
@@ -121,6 +125,8 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 
 export const useTabContext = (): unknown | undefined => useContext(ToolboxContext).context;
 export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).activeTabBar;
+export const useTabBarSetExpand = (): Function => useContext(ToolboxContext).setExpand;
+export const useTabBarExpanded = (): boolean => useContext(ToolboxContext).expanded;
 export const useTabBarOpen = (): Function => useContext(ToolboxContext).open;
 export const useTabBarClose = (): (() => void) => useContext(ToolboxContext).close;
 export const useTabBarOpenUserInfo = (): Function => useContext(ToolboxContext).openUserInfo;
