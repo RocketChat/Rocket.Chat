@@ -2,11 +2,16 @@ import { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
+import { MarkupInteractionContext, Markup } from '@rocket.chat/gazzodown';
 import React, { ReactElement } from 'react';
 
-import Markup from '../../../../components/gazzodown/Markup';
-import { MarkupInteractionContext } from '../../../../components/gazzodown/MarkupInteractionContext';
+import { highlightWords } from '../../../../../app/highlight-words/client/helper';
+import { createKatexMessageRendering } from '../../../../../app/katex/client';
+import hljs, { register } from '../../../../../app/markdown/lib/hljs';
+import { baseURI } from '../../../../lib/baseURI';
+import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { useMessageActions } from '../../contexts/MessageContext';
+import { useMessageListHighlights, useMessageListKatex } from '../contexts/MessageListContext';
 import { useParsedMessage } from '../hooks/useParsedMessage';
 
 type MessageContentBodyProps = {
@@ -57,6 +62,13 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 		>
 			<MarkupInteractionContext.Provider
 				value={{
+					baseURI,
+					getEmojiClassNameAndDataTitle,
+					highlights: useMessageListHighlights(),
+					highlightWords,
+					katex: useMessageListKatex(),
+					createKatexMessageRendering,
+					hljs: Object.assign(hljs, register),
 					mentions: message?.mentions ?? [],
 					channels: message?.channels ?? [],
 					onUserMentionClick: openUserCard,
