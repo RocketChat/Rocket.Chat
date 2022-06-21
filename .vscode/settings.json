@@ -1,0 +1,14 @@
+{
+	"eslint.workingDirectories": [
+		{
+			"directory": "packages/*",
+			"changeProcessCWD": true
+		},
+		{
+			"directory": "apps/meteor",
+			"changeProcessCWD": true
+		}
+	],
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"cSpell.words": ["photoswipe", "tmid"]
+}
