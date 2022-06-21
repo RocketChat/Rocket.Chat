@@ -7,8 +7,18 @@ const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 };
 
 const DeviceIcon = ({ deviceType }: { deviceType: string }): ReactElement => (
-	<Box is='span' p='x4' bg='neutral-500-50' borderRadius='x32' mie='x4'>
-		<Icon name={iconMap[deviceType]} size='x20' color='info' />
+	<Box
+		is='span'
+		display='inline-flex'
+		alignItems='center'
+		justifyContent='center'
+		p='x4'
+		bg='neutral-500-50'
+		size='x24'
+		borderRadius='full'
+		mie='x8'
+	>
+		<Icon name={iconMap[deviceType]} size='x14' color='info' />
 	</Box>
 );
 

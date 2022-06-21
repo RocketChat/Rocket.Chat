@@ -69,9 +69,7 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 			),
 			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_Id')}</GenericTableHeaderCell>,
 			mediaQuery && <GenericTableHeaderCell key={'ip'}>{t('IP_Address')}</GenericTableHeaderCell>,
-			<GenericTableHeaderCell width={'5%'} key='menu'>
-				{' '}
-			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell width={'5%'} key='menu' />,
 		],
 		[t, mediaQuery, setSort, sortDirection, sortBy],
 	);

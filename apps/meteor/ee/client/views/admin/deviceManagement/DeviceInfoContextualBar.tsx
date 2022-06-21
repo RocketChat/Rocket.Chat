@@ -1,5 +1,5 @@
 import { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
-import { Box, Button, StatusBullet } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation, useToastMessageDispatch, useSetModal } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo } from 'react';
 
@@ -79,7 +79,7 @@ const DeviceInfoContextualBar = ({
 				{t('Device_Info')}
 				<VerticalBar.Close onClick={closeContextualBar} />
 			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent height={'100%'}>
+			<VerticalBar.ScrollableContent>
 				<InfoPanel>
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Client')}</InfoPanel.Label>
@@ -121,13 +121,14 @@ const DeviceInfoContextualBar = ({
 						<InfoPanel.Text>{ip}</InfoPanel.Text>
 					</InfoPanel.Field>
 				</InfoPanel>
-
-				<VerticalBar.Footer>
+			</VerticalBar.ScrollableContent>
+			<VerticalBar.Footer>
+				<ButtonGroup stretch>
 					<Button primary width={'100%'} onClick={handleLogoutDeviceModal}>
 						{t('Logout_Device')}
 					</Button>
-				</VerticalBar.Footer>
-			</VerticalBar.ScrollableContent>
+				</ButtonGroup>
+			</VerticalBar.Footer>
 		</VerticalBar>
 	);
 };
