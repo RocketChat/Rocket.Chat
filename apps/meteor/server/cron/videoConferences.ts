@@ -7,7 +7,6 @@ import { VideoConference } from '../../app/models/server/raw';
 const VIDEO_CONFERENCE_TTL = 24 * 60 * 60 * 1000;
 
 async function runVideoConferences(): Promise<void> {
-	console.log('Hewwo');
 	const minimum = new Date(new Date().valueOf() - VIDEO_CONFERENCE_TTL);
 
 	return VideoConference.expireOldVideoConferences(minimum);
