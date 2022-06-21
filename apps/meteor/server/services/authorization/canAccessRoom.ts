@@ -7,7 +7,6 @@ import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomVoip } from './canAccessRoomVoip';
 import { Rooms, Settings, Subscriptions, Team, TeamMembers } from './service';
 
-
 async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
 		// TODO: it was using cached version from /app/settings/server/raw.js
