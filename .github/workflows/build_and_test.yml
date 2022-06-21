@@ -162,15 +162,15 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: yarn build:ci --api="http://127.0.0.1:9080" -- --debug --directory /tmp/build
+        run: yarn build:ci --api="http://127.0.0.1:9080" -- --debug --directory dist
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
-        run: yarn build:ci --api="http://127.0.0.1:9080" -- --directory /tmp/build
+        run: yarn build:ci --api="http://127.0.0.1:9080" -- --directory dist
 
       - name: Prepare build
         run: |
-          cd /tmp/build
+          cd apps/meteor/dist
           tar czf /tmp/build/Rocket.Chat.tar.gz bundle
 
       - name: Store build
