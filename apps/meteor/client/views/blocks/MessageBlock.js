@@ -24,16 +24,17 @@ function MessageBlock({ mid: _mid, rid, blocks, appId }) {
 	const handleCloseModal = useMutableCallback(() => setModal());
 
 	const context = {
-		action: ({ actionId, value, blockId, mid = _mid, appId }) => {
+		action: ({ actionId, value, blockId, mid = _mid, appId }, event) => {
 			if (appId === 'videoconf-core' && actionId === 'join') {
+				event.preventDefault();
+
+				const handleJoin = () => {
+					joinCall(blockId);
+					return setModal(null);
+				};
+
 				return setModal(
-					<JoinVideoConfModal
-						callId={blockId}
-						confTitle={value}
-						onClose={handleCloseModal}
-						room={room}
-						onConfirm={() => joinCall(blockId)}
-					/>,
+					<JoinVideoConfModal callId={blockId} confTitle={value} onClose={handleCloseModal} room={room} onConfirm={handleJoin} />,
 				);
 			}
 
