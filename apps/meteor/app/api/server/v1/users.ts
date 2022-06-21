@@ -390,7 +390,7 @@ API.v1.addRoute(
 		queryOperations: ['$or', '$and'],
 	},
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-d-room')) {
 				return API.v1.unauthorized();
 			}
@@ -431,39 +431,37 @@ API.v1.addRoute(
 					  ]
 					: [];
 
-			const result = Promise.await(
-				UsersRaw.col
-					.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
-						{
-							$match: nonEmptyQuery,
+			const result = await UsersRaw.col
+				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
+					{
+						$match: nonEmptyQuery,
+					},
+					{
+						$project: inclusiveFields,
+					},
+					{
+						$addFields: {
+							nameInsensitive: {
+								$toLower: '$name',
+							},
 						},
-						{
-							$project: inclusiveFields,
-						},
-						{
-							$addFields: {
-								nameInsensitive: {
-									$toLower: '$name',
+					},
+					{
+						$facet: {
+							sortedResults: [
+								{
+									$sort: actualSort,
 								},
-							},
+								{
+									$skip: offset,
+								},
+								...limit,
+							],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 						},
-						{
-							$facet: {
-								sortedResults: [
-									{
-										$sort: actualSort,
-									},
-									{
-										$skip: offset,
-									},
-									...limit,
-								],
-								totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-							},
-						},
-					])
-					.toArray(),
-			);
+					},
+				])
+				.toArray();
 
 			const {
 				sortedResults: users,
