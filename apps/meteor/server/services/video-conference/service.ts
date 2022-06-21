@@ -333,13 +333,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	private async createGroupCallMessage(
-		rid: IRoom['_id'],
-		user: IUser,
-		callId: string,
-		title: string,
-		url: string,
-	): Promise<IMessage['_id']> {
+	private async createGroupCallMessage(rid: IRoom['_id'], user: IUser, callId: string, title: string): Promise<IMessage['_id']> {
 		const text = TAPi18n.__('video_conference_started', {
 			conference: title,
 			username: user.username || '',
@@ -364,7 +358,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 								text: TAPi18n.__('Join_call'),
 								emoji: true,
 							},
-							url,
 						},
 					],
 				},
@@ -525,8 +518,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		call.url = url;
 
-		const joinUrl = await this.getUrl(call);
-		const messageId = await this.createGroupCallMessage(rid, user, callId, title, joinUrl);
+		const messageId = await this.createGroupCallMessage(rid, user, callId, title);
 		this.VideoConference.setMessageById(callId, 'started', messageId);
 
 		return {
