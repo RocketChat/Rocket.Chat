@@ -156,9 +156,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 					endedAt: new Date(),
 				},
 			},
-			{
-				multi: true,
-			},
 		);
 	}
 }
