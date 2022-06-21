@@ -22,6 +22,7 @@ type UseFormValues = {
 	readOnly: boolean;
 	encrypted: boolean;
 	broadcast: boolean;
+	federated: boolean;
 };
 
 const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWithDataProps): ReactElement => {
@@ -48,11 +49,12 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 		readOnly: false,
 		encrypted: e2eEnabledForPrivateByDefault ?? false,
 		broadcast: false,
+		federated: false,
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
-	const { users, name, description, type, readOnly, broadcast, encrypted } = values as UseFormValues;
-	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;
+	const { users, name, description, type, readOnly, broadcast, encrypted, federated } = values as UseFormValues;
+	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly, handleFederated } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
@@ -75,6 +77,20 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 		return handleBroadcast(value);
 	});
 
+	const onChangeFederated = useMutableCallback((value) => {
+		// if room is federated, it cannot be encrypted
+		if (encrypted && value) {
+			handleEncrypted(false);
+		}
+
+		// if room is federated, it cannot be broadcast
+		if (broadcast && value) {
+			handleBroadcast(false);
+		}
+
+		return handleFederated(value);
+	});
+
 	const onCreate = useCallback(async () => {
 		const goToRoom = (rid: string): void => {
 			goToRoomById(rid);
@@ -88,6 +104,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 				description,
 				broadcast,
 				encrypted,
+				federated,
 				...(teamId && { teamId }),
 			},
 		};
@@ -104,7 +121,21 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 
 		onClose();
 		reload();
-	}, [broadcast, createChannel, createPrivateChannel, description, encrypted, name, onClose, readOnly, teamId, type, users, reload]);
+	}, [
+		name,
+		users,
+		readOnly,
+		description,
+		broadcast,
+		encrypted,
+		federated,
+		teamId,
+		type,
+		onClose,
+		reload,
+		createPrivateChannel,
+		createChannel,
+	]);
 
 	return (
 		<CreateChannel
@@ -113,6 +144,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }: CreateChannelWi
 			hasUnsavedChanges={hasUnsavedChanges}
 			onChangeUsers={onChangeUsers}
 			onChangeType={onChangeType}
+			onChangeFederated={onChangeFederated}
 			onChangeBroadcast={onChangeBroadcast}
 			canOnlyCreateOneType={canOnlyCreateOneType}
 			e2eEnabledForPrivateByDefault={Boolean(e2eEnabledForPrivateByDefault)}

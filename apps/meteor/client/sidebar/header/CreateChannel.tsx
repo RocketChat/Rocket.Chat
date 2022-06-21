@@ -3,12 +3,14 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
+import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 
 export type CreateChannelProps = {
 	values: {
 		name: string;
 		type: boolean;
+		federated?: boolean;
 		readOnly?: boolean;
 		encrypted?: boolean;
 		broadcast?: boolean;
@@ -25,6 +27,7 @@ export type CreateChannelProps = {
 	onChangeUsers: (value: string, action: 'remove' | undefined) => void;
 	onChangeType: React.FormEventHandler<HTMLElement>;
 	onChangeBroadcast: React.FormEventHandler<HTMLElement>;
+	onChangeFederated: React.FormEventHandler<HTMLElement>;
 	canOnlyCreateOneType?: false | 'p' | 'c';
 	e2eEnabledForPrivateByDefault?: boolean;
 	onCreate: () => void;
@@ -38,6 +41,7 @@ const CreateChannel = ({
 	onChangeType,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
+	onChangeFederated,
 	e2eEnabledForPrivateByDefault,
 	onCreate,
 	onClose,
@@ -46,11 +50,16 @@ const CreateChannel = ({
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
+	const federationEnabled = useSetting('Federation_Matrix_enabled');
 	const channelNameExists = useMethod('roomNameExists');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
 	const [nameError, setNameError] = useState<string>();
+
+	const federatedModule = useHasLicense('federation');
+
+	const canUseFederation = federatedModule !== 'loading' && federatedModule && federationEnabled;
 
 	const checkName = useDebouncedCallback(
 		async (name: string) => {
@@ -126,6 +135,19 @@ const CreateChannel = ({
 							<ToggleSwitch checked={!!values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType} />
 						</Box>
 					</Field>
+					{canUseFederation && (
+						<Field>
+							<Box display='flex' justifyContent='space-between' alignItems='start'>
+								<Box display='flex' flexDirection='column' width='full'>
+									<Field.Label>{t('Federation_Matrix_Federated')}</Field.Label>
+									<Field.Description>
+										{t("By creating a federated room you'll not be able to enable encryption nor broadcast")}
+									</Field.Description>
+								</Box>
+								<ToggleSwitch checked={values.federated} onChange={onChangeFederated} />
+							</Box>
+						</Field>
+					)}
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
@@ -145,7 +167,7 @@ const CreateChannel = ({
 								<Field.Label>{t('Encrypted')}</Field.Label>
 								<Field.Description>{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
 							</Box>
-							<ToggleSwitch checked={values.encrypted} disabled={e2edisabled} onChange={handlers.handleEncrypted} />
+							<ToggleSwitch checked={values.encrypted} disabled={e2edisabled || values.federated} onChange={handlers.handleEncrypted} />
 						</Box>
 					</Field>
 					<Field>
@@ -154,7 +176,7 @@ const CreateChannel = ({
 								<Field.Label>{t('Broadcast')}</Field.Label>
 								<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
 							</Box>
-							<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
+							<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} disabled={!!values.federated} />
 						</Box>
 					</Field>
 					<Field>
