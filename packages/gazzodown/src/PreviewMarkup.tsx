@@ -4,11 +4,11 @@ import { memo, ReactElement } from 'react';
 import PreviewBigEmojiBlock from './blocks/PreviewBigEmojiBlock';
 import PreviewInlineElements from './elements/PreviewInlineElements';
 
-const isOnlyBigEmojiBlock = (tokens: MessageParser.MarkdownAST): tokens is [MessageParser.BigEmoji] =>
+const isOnlyBigEmojiBlock = (tokens: MessageParser.Root): tokens is [MessageParser.BigEmoji] =>
 	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
 type PreviewMarkupProps = {
-	tokens: MessageParser.MarkdownAST;
+	tokens: MessageParser.Root;
 };
 
 const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {

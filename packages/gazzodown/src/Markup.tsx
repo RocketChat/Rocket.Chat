@@ -11,7 +11,7 @@ import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
 
 type MarkupProps = {
-	tokens: MessageParser.MarkdownAST;
+	tokens: MessageParser.Root;
 };
 
 const Markup = ({ tokens }: MarkupProps): ReactElement => (
