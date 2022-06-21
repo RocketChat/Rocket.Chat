@@ -18,7 +18,7 @@ import { AsyncStatePhase } from '../../../../../client/lib/asyncState';
 import DevicesRow from './DevicesRow';
 
 const sortMapping = {
-	clients: 'device.name',
+	client: 'device.name',
 	username: '_user.username',
 	os: 'device.os.name',
 	loginAt: 'loginAt',
@@ -28,7 +28,7 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 	const t = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'clients' | 'os' | 'username' | 'loginAt'>('username');
+	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'username' | 'loginAt'>('username');
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -36,7 +36,7 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 				filter: text,
 				sort: JSON.stringify({ [sortMapping[sortBy]]: sortDirection === 'asc' ? 1 : -1 }),
 				count: itemsPerPage,
-				offset: current,
+				offset: text ? undefined : current,
 			}),
 			[text, itemsPerPage, current, sortBy, sortDirection],
 		),
@@ -53,8 +53,8 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key={'clients'} direction={sortDirection} active={sortBy === 'clients'} onClick={setSort} sort='clients'>
-				{t('Clients')}
+			<GenericTableHeaderCell key={'client'} direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort='client'>
+				{t('Client')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'os'} direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort='os'>
 				{t('OS')}
@@ -67,7 +67,7 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 					{t('Last_Login')}
 				</GenericTableHeaderCell>
 			),
-			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_Id')}</GenericTableHeaderCell>,
+			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_ID')}</GenericTableHeaderCell>,
 			mediaQuery && <GenericTableHeaderCell key={'ip'}>{t('IP_Address')}</GenericTableHeaderCell>,
 			<GenericTableHeaderCell width={'5%'} key='menu' />,
 		],
@@ -92,38 +92,49 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setText(text)} />
-			<GenericTable>
-				<GenericTableHeader>{headers}</GenericTableHeader>
-				<GenericTableBody>
-					{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={6} />}
-					{phase === AsyncStatePhase.RESOLVED &&
-						data?.sessions &&
-						data.sessions.map((session) => (
-							<DevicesRow
-								key={session._id}
-								_id={session._id}
-								username={session._user?.username || ''}
-								ip={session.ip}
-								deviceName={session?.device?.name || ''}
-								deviceType={session?.device?.type || ''}
-								deviceOSName={session?.device?.os?.name || ''}
-								deviceOSVersion={session?.device?.os?.version || ''}
-								loginAt={session.loginAt}
-								onReload={reload}
-							/>
-						))}
-				</GenericTableBody>
-			</GenericTable>
-			{phase === AsyncStatePhase.RESOLVED && (
-				<Pagination
-					current={current}
-					itemsPerPage={itemsPerPage}
-					count={data?.total || 0}
-					onSetCurrent={setCurrent}
-					onSetItemsPerPage={setItemsPerPage}
-					{...paginationProps}
-				/>
+			<FilterByText placeholder={t('Search_Devices_Users')} onChange={({ text }): void => setText(text)} />
+			{data?.sessions.length === 0 && (
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
+			)}
+			{data?.sessions && data.sessions.length > 0 && (
+				<>
+					<GenericTable>
+						<GenericTableHeader>{headers}</GenericTableHeader>
+						<GenericTableBody>
+							{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={6} />}
+							{phase === AsyncStatePhase.RESOLVED &&
+								data?.sessions &&
+								data.sessions.map((session) => (
+									<DevicesRow
+										key={session._id}
+										_id={session._id}
+										username={session._user?.username}
+										ip={session.ip}
+										deviceName={session?.device?.name}
+										deviceType={session?.device?.type}
+										deviceOSName={session?.device?.os?.name}
+										deviceOSVersion={session?.device?.os?.version}
+										loginAt={session.loginAt}
+										onReload={reload}
+									/>
+								))}
+						</GenericTableBody>
+					</GenericTable>
+					{phase === AsyncStatePhase.RESOLVED && (
+						<Pagination
+							divider={true}
+							current={current}
+							itemsPerPage={itemsPerPage}
+							count={data?.total || 0}
+							onSetCurrent={setCurrent}
+							onSetItemsPerPage={setItemsPerPage}
+							{...paginationProps}
+						/>
+					)}
+				</>
 			)}
 		</>
 	);

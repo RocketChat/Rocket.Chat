@@ -16,7 +16,7 @@ onToggledFeature('device-management', {
 		Meteor.startup(() => {
 			registerAdminSidebarItem({
 				href: '/admin/device-management',
-				i18nLabel: 'Device Management',
+				i18nLabel: 'Device_Management',
 				icon: 'mobile',
 				permissionGranted: () => hasAllPermission('view-device-management'),
 			});
@@ -24,7 +24,7 @@ onToggledFeature('device-management', {
 		}),
 	down: () =>
 		Meteor.startup(() => {
-			unregisterAdminSidebarItem('Device Management');
+			unregisterAdminSidebarItem('Device_Management');
 			unregisterRoute();
 		}),
 });

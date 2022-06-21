@@ -10,12 +10,12 @@ import DeviceIcon from './DeviceIcon';
 
 type DeviceRowProps = {
 	_id: string;
-	username: string;
+	username?: string;
 	ip: string;
-	deviceName: string;
-	deviceType: string;
-	deviceOSName: string;
-	deviceOSVersion: string;
+	deviceName?: string;
+	deviceType?: string;
+	deviceOSName?: string;
+	deviceOSVersion?: string;
 	loginAt: string;
 	onReload: () => void;
 };
@@ -25,9 +25,9 @@ const DevicesRow = ({
 	username,
 	ip,
 	deviceName,
-	deviceType,
-	deviceOSName,
-	deviceOSVersion,
+	deviceType = 'browser',
+	deviceOSName = '',
+	deviceOSVersion = '',
 	loginAt,
 	onReload,
 }: DeviceRowProps): ReactElement => {
@@ -92,11 +92,11 @@ const DevicesRow = ({
 	}, [t, onReload, logoutDevice, setModal, dispatchToastMessage]);
 
 	return (
-		<TableRow key={_id} onKeyDown={handleKeyDown} onClick={handleClick} tabIndex={0}>
+		<TableRow key={_id} onKeyDown={handleKeyDown} onClick={handleClick} tabIndex={0} action>
 			<TableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />
-					<Box withTruncatedText>{deviceName}</Box>
+					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
 				</Box>
 			</TableCell>
 			<TableCell>{`${deviceOSName} ${deviceOSVersion}`}</TableCell>

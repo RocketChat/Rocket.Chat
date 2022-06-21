@@ -31,10 +31,10 @@ const DeviceInfoContextualBar = ({
 	const setModal = useSetModal();
 
 	const { name: clientName, os } = device || {};
-	const { username, name } = _user;
+	const { username, name } = _user || {};
 	const userPresence = usePresence(userId);
 
-	const closeContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
+	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
 	const logoutDevice = useEndpointAction(
 		'POST',
@@ -49,7 +49,7 @@ const DeviceInfoContextualBar = ({
 			try {
 				await logoutDevice();
 				onReload();
-				closeContextualBar();
+				handleCloseContextualBar();
 				dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: String(error) });
@@ -71,13 +71,13 @@ const DeviceInfoContextualBar = ({
 				{t('Device_Logout_Text')}
 			</GenericModal>,
 		);
-	}, [t, onReload, logoutDevice, setModal, dispatchToastMessage, closeContextualBar]);
+	}, [t, onReload, logoutDevice, setModal, dispatchToastMessage, handleCloseContextualBar]);
 
 	return (
 		<VerticalBar>
 			<VerticalBar.Header>
 				{t('Device_Info')}
-				<VerticalBar.Close onClick={closeContextualBar} />
+				<VerticalBar.Close onClick={handleCloseContextualBar} />
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
 				<InfoPanel>
@@ -112,7 +112,7 @@ const DeviceInfoContextualBar = ({
 					</InfoPanel.Field>
 
 					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Device_Id')}</InfoPanel.Label>
+						<InfoPanel.Label>{t('Device_ID')}</InfoPanel.Label>
 						<InfoPanel.Text>{sessionId}</InfoPanel.Text>
 					</InfoPanel.Field>
 

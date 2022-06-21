@@ -1,5 +1,5 @@
 import { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
-import { Box, Skeleton, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
@@ -32,14 +32,9 @@ const DeviceInfoWithData = ({ deviceId, ...props }: { deviceId: string; onReload
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (
-			<Box w='full' pb='x24'>
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-			</Box>
+			<VerticalBar>
+				<VerticalBar.Skeleton />
+			</VerticalBar>
 		);
 	}
 
