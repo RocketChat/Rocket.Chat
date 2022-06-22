@@ -108,7 +108,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 				<ButtonGroup>
 					{!isSingleBH && <Button onClick={handleReturn}>{t('Back')}</Button>}
 					{type === 'custom' && (
-						<Button primary danger onClick={handleDelete}>
+						<Button danger onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}
