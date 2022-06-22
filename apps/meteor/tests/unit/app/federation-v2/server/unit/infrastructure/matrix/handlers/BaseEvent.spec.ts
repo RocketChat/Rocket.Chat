@@ -1,6 +1,6 @@
 import { expect, spy } from 'chai';
 
-import { MatrixBaseEventHandler } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/handlers/BaseEvent';
+import { MatrixBaseEventHandler } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/handlers/BaseEvent';
 
 describe('Federation - Infrastructure - Matrix - MatrixBaseEventHandler', () => {
 	describe('#equals()', () => {

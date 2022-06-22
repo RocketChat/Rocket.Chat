@@ -16,7 +16,7 @@ Meteor.startup(function () {
 		id: 'star-message',
 		icon: 'star',
 		label: 'Star',
-		context: ['starred', 'message', 'message-mobile', 'threads'],
+		context: ['starred', 'message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			Meteor.call('starMessage', { ...message, starred: true }, function (error: any) {
@@ -44,7 +44,7 @@ Meteor.startup(function () {
 		id: 'unstar-message',
 		icon: 'star',
 		label: 'Unstar_Message',
-		context: ['starred', 'message', 'message-mobile', 'threads'],
+		context: ['starred', 'message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 

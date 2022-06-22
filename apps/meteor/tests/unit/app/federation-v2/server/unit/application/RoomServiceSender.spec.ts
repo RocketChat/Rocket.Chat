@@ -2,9 +2,9 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { FederationRoomServiceSender } from '../../../../../../app/federation-v2/server/application/RoomServiceSender';
-import { FederatedRoom } from '../../../../../../app/federation-v2/server/domain/FederatedRoom';
-import { FederatedUser } from '../../../../../../app/federation-v2/server/domain/FederatedUser';
+import { FederationRoomServiceSender } from '../../../../../../../app/federation-v2/server/application/RoomServiceSender';
+import { FederatedUser } from '../../../../../../../app/federation-v2/server/domain/FederatedUser';
+import { FederatedRoom } from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 
 describe('Federation - Application - FederationRoomServiceSender', () => {
 	let service: FederationRoomServiceSender;
