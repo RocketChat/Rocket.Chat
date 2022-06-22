@@ -1,6 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { Fragment, ReactElement } from 'react';
 
+import PreviewCodeElement from '../code/PreviewCodeElement';
 import PreviewKatexElement from '../katex/PreviewKatexElement';
 import PreviewColorElement from './PreviewColorElement';
 import PreviewEmojiElement from './PreviewEmojiElement';
@@ -34,7 +35,7 @@ const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactE
 					return <Fragment key={index}>#{child.value.value}</Fragment>;
 
 				case 'INLINE_CODE':
-					return <Fragment key={index} children={child.value.value} />;
+					return <PreviewCodeElement key={index} code={child.value.value} />;
 
 				case 'EMOJI':
 					return <PreviewEmojiElement key={index} handle={child.value?.value ?? ''} />;

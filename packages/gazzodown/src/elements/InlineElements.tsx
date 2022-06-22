@@ -3,7 +3,6 @@ import { lazy, ReactElement } from 'react';
 
 import BoldSpan from './BoldSpan';
 import ChannelMentionElement from './ChannelMentionElement';
-import CodeElement from './CodeElement';
 import ColorElement from './ColorElement';
 import EmojiElement from './EmojiElement';
 import ImageElement from './ImageElement';
@@ -13,6 +12,7 @@ import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
 import UserMentionElement from './UserMentionElement';
 
+const CodeElement = lazy(() => import('../code/CodeElement'));
 const KatexElement = lazy(() => import('../katex/KatexElement'));
 
 type InlineElementsProps = {

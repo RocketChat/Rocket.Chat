@@ -6,7 +6,6 @@ import { MarkupInteractionContext, Markup } from '@rocket.chat/gazzodown';
 import React, { ReactElement } from 'react';
 
 import { highlightWords } from '../../../../../app/highlight-words/client/helper';
-import hljs, { register } from '../../../../../app/markdown/lib/hljs';
 import { baseURI } from '../../../../lib/baseURI';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { useMessageActions } from '../../contexts/MessageContext';
@@ -65,7 +64,6 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 					getEmojiClassNameAndDataTitle,
 					highlights: useMessageListHighlights(),
 					highlightWords,
-					hljs: Object.assign(hljs, register),
 					mentions: message?.mentions ?? [],
 					channels: message?.channels ?? [],
 					onUserMentionClick: openUserCard,

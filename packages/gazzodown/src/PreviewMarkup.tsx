@@ -2,6 +2,7 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import { memo, ReactElement } from 'react';
 
 import PreviewBigEmojiBlock from './blocks/PreviewBigEmojiBlock';
+import PreviewCodeBlock from './code/PreviewCodeBlock';
 import PreviewInlineElements from './elements/PreviewInlineElements';
 import PreviewKatexBlock from './katex/PreviewKatexBlock';
 
@@ -62,14 +63,11 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 		}
 
 		case 'CODE': {
-			const firstLine = firstBlock.value.find((line) => line.value.value.trim());
-
-			return firstLine ? <>{firstLine.value.value.trim()}</> : null;
+			return <PreviewCodeBlock language={firstBlock.language} lines={firstBlock.value} />;
 		}
 
-		case 'KATEX': {
+		case 'KATEX':
 			return <PreviewKatexBlock code={firstBlock.value} />;
-		}
 
 		default:
 			return null;

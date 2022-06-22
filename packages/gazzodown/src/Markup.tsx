@@ -2,7 +2,6 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy, memo, ReactElement } from 'react';
 
 import BigEmojiBlock from './blocks/BigEmojiBlock';
-import CodeBlock from './blocks/CodeBlock';
 import HeadingBlock from './blocks/HeadingBlock';
 import OrderedListBlock from './blocks/OrderedListBlock';
 import ParagraphBlock from './blocks/ParagraphBlock';
@@ -10,6 +9,7 @@ import QuoteBlock from './blocks/QuoteBlock';
 import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
 
+const CodeBlock = lazy(() => import('./code/CodeBlock'));
 const KatexBlock = lazy(() => import('./katex/KatexBlock'));
 
 type MarkupProps = {

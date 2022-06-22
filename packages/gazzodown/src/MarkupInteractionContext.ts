@@ -19,22 +19,6 @@ type MarkupInteractionContextValue = {
 		'children'?: string;
 		'image'?: string;
 	};
-	hljs?: {
-		register: (language: string) => Promise<void>;
-		highlight: (
-			language: string,
-			code: string,
-		) => {
-			language: string;
-			code: string;
-			value: string;
-		};
-		highlightAuto: (code: string) => {
-			language: string;
-			code: string;
-			value: string;
-		};
-	};
 	highlightWords?: (msg: any, highlights: any) => any;
 	mentions?: UserMention[];
 	channels?: ChannelMention[];

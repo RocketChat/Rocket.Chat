@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import PlainSpan from './PlainSpan';
+import PlainSpan from '../elements/PlainSpan';
 
 type CodeElementProps = {
 	code: string;
