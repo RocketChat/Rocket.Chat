@@ -11,6 +11,7 @@ import APIsDisplay from './APIsDisplay';
 import AppDetailsHeader from './AppDetailsHeader';
 import AppDetailsPageContent from './AppDetailsPageContent';
 import AppLogsPage from './AppLogsPage';
+import AppSecurityPage from './AppSecurityPage';
 import LoadingDetails from './LoadingDetails';
 import SettingsDisplay from './SettingsDisplay';
 import { handleAPIError } from './helpers';
@@ -37,7 +38,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
-	const { installed, settings, apis } = appData || {};
+	const { installed, settings, apis, privacyPolicySummary, permissions, tosLink, privacyLink } = appData || {};
 	const showApis = apis?.length;
 
 	const saveAppSettings = useCallback(async () => {
@@ -57,7 +58,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 		setIsSaving(false);
 	}, [id, settings]);
 
-	const handleTabClick = (tab: 'details' | 'logs' | 'settings'): void => {
+	const handleTabClick = (tab: 'details' | 'security' | 'logs' | 'settings'): void => {
 		appsRoute.replace({ ...urlParams, tab });
 	};
 
@@ -83,6 +84,11 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 									{t('Details')}
 								</Tabs.Item>
 								{Boolean(installed) && (
+									<Tabs.Item onClick={(): void => handleTabClick('security')} selected={tab === 'security'}>
+										{t('Security')}
+									</Tabs.Item>
+								)}
+								{Boolean(installed) && (
 									<Tabs.Item onClick={(): void => handleTabClick('logs')} selected={tab === 'logs'}>
 										{t('Logs')}
 									</Tabs.Item>
@@ -96,6 +102,14 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 							{Boolean(!tab || tab === 'details') && <AppDetailsPageContent app={appData} />}
 							{Boolean((!tab || tab === 'details') && !!showApis) && <APIsDisplay apis={apis || []} />}
+							{tab === 'security' && (
+								<AppSecurityPage
+									privacyPolicySummary={privacyPolicySummary}
+									appPermissions={permissions}
+									tosLink={tosLink}
+									privacyLink={privacyLink}
+								/>
+							)}
 							{tab === 'logs' && <AppLogsPage id={id} />}
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay
