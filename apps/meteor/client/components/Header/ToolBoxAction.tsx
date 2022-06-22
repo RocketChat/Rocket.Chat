@@ -1,7 +1,6 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-
 const ToolBoxAction: FC<any> = ({ id, icon, color, action, className, index, title, 'data-tooltip': tooltip, ...props }) => (
 	<IconButton
 		className={className}
