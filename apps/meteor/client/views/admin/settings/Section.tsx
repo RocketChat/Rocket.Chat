@@ -91,7 +91,7 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, he
 			{hasReset && canReset && (
 				<Button
 					children={t('Reset_section_settings')}
-					danger
+					secondaryDanger
 					marginBlockStart={'x16'}
 					data-section={sectionName}
 					onClick={handleResetSectionClick}
