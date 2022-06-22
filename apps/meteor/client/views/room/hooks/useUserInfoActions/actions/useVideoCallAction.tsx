@@ -21,7 +21,7 @@ export const useVideoCallAction = (rid: IRoom['_id']): Action | undefined => {
 
 		const action = callInProgress ? handleJoinCall : handleStartCall;
 
-		return !isIRoomFederated(room) && shouldAllowCalls
+		return room && !isIRoomFederated(room) && shouldAllowCalls
 			? {
 					label: t(callInProgress ? 'Join_video_call' : 'Start_video_call'),
 					icon: 'video',
