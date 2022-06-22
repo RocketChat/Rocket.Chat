@@ -62,7 +62,7 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button ghost onClick={onCancel}>
+					<Button secondary onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
 					<Button type='submit' primary>

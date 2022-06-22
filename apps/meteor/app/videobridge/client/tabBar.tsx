@@ -2,6 +2,7 @@ import React, { useMemo, lazy, ReactNode } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
 import { useUser, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { isIRoomFederated } from '@rocket.chat/core-typings';
 
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import Header from '../../../client/components/Header';
@@ -11,6 +12,7 @@ const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/
 addAction('bbb_video', ({ room }) => {
 	const enabled = useSetting('bigbluebutton_Enabled');
 	const t = useTranslation();
+	const federated = isIRoomFederated(room);
 
 	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
 
@@ -33,12 +35,14 @@ addAction('bbb_video', ({ room }) => {
 			enableOption
 				? {
 						groups,
-						id: 'bbb_video',
-						title: 'BBB_Video_Call',
-						icon: 'phone',
-						template: templateBBB,
-						order: live ? -1 : 4,
-						renderAction: (props): ReactNode => (
+						'id': 'bbb_video',
+						'title': 'BBB_Video_Call',
+						'icon': 'phone',
+						'template': templateBBB,
+						'disabled': federated,
+						'data-tooltip': 'BBB_Video_Call_unavailable_for_federation',
+						'order': live ? -1 : 4,
+						'renderAction': (props): ReactNode => (
 							<Header.ToolBoxAction {...props}>
 								{live ? (
 									<Header.Badge title={t('Started_a_video_call')} variant='primary'>
@@ -47,7 +51,7 @@ addAction('bbb_video', ({ room }) => {
 								) : null}
 							</Header.ToolBoxAction>
 						),
-						renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => (
+						'renderOption': ({ label: { title, icon }, ...props }: any): ReactNode => (
 							<Option label={title} title={title} icon={icon} {...props}>
 								<Badge title={t('Started_a_video_call')} variant='primary'>
 									!
@@ -56,7 +60,7 @@ addAction('bbb_video', ({ room }) => {
 						),
 				  }
 				: null,
-		[enableOption, groups, live, t],
+		[enableOption, groups, live, t, federated],
 	);
 });
 
@@ -65,6 +69,7 @@ const templateJitsi = lazy(() => import('../../../client/views/room/contextualBa
 addAction('video', ({ room }) => {
 	const enabled = useSetting('Jitsi_Enabled');
 	const t = useTranslation();
+	const federated = isIRoomFederated(room);
 
 	const enabledChannel = useSetting('Jitsi_Enable_Channels');
 	const enabledTeams = useSetting('Jitsi_Enable_Teams');
@@ -88,13 +93,15 @@ addAction('video', ({ room }) => {
 			enableOption
 				? {
 						groups,
-						id: 'video',
-						title: 'Call',
-						icon: 'phone',
-						template: templateJitsi,
-						full: true,
-						order: live ? -1 : 4,
-						renderAction: (props): ReactNode => (
+						'id': 'video',
+						'title': 'Call',
+						'icon': 'phone',
+						'template': templateJitsi,
+						'disabled': federated,
+						'data-tooltip': 'Call_unavailable_for_federation',
+						'full': true,
+						'order': live ? -1 : 4,
+						'renderAction': (props): ReactNode => (
 							<Header.ToolBoxAction {...props}>
 								{live && (
 									<Header.Badge title={t('Started_a_video_call')} variant='primary'>
@@ -103,7 +110,7 @@ addAction('video', ({ room }) => {
 								)}
 							</Header.ToolBoxAction>
 						),
-						renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => (
+						'renderOption': ({ label: { title, icon }, ...props }: any): ReactNode => (
 							<Option label={title} title={title} icon={icon} {...props}>
 								{live && (
 									<Badge title={t('Started_a_video_call')} variant='primary'>
@@ -114,6 +121,6 @@ addAction('video', ({ room }) => {
 						),
 				  }
 				: null,
-		[enableOption, groups, live, t],
+		[enableOption, groups, live, t, federated],
 	);
 });
