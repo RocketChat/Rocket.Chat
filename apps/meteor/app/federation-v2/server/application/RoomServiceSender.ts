@@ -126,5 +126,4 @@ export class FederationRoomServiceSender {
 
 		return Boolean(federatedRoom?.isFederated());
 	}
-
 }
