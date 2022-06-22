@@ -1,4 +1,15 @@
 import { Meteor } from 'meteor/meteor';
+import {
+	isUploadImportFileParamsPOST,
+	isDownloadPublicImportFileParamsPOST,
+	isStartImportParamsPOST,
+	isGetImportFileDataParamsGET,
+	isGetImportProgressParamsGET,
+	isGetLatestImportOperationsParamsGET,
+	isDownloadPendingFilesParamsPOST,
+	isDownloadPendingAvatarsParamsPOST,
+	isGetCurrentImportOperationParamsGET,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { hasPermission } from '../../../authorization/server';
@@ -7,7 +18,10 @@ import { Importers } from '../../../importer/server';
 
 API.v1.addRoute(
 	'uploadImportFile',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isUploadImportFileParamsPOST,
+	},
 	{
 		post() {
 			const { binaryContent, contentType, fileName, importerKey } = this.bodyParams;
@@ -19,7 +33,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'downloadPublicImportFile',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isDownloadPublicImportFileParamsPOST,
+	},
 	{
 		post() {
 			const { fileUrl, importerKey } = this.bodyParams;
@@ -35,7 +52,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'startImport',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isStartImportParamsPOST,
+	},
 	{
 		post() {
 			const { input } = this.bodyParams;
@@ -51,7 +71,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'getImportFileData',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isGetImportFileDataParamsGET,
+	},
 	{
 		get() {
 			let result;
@@ -66,7 +89,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'getImportProgress',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isGetImportProgressParamsGET,
+	},
 	{
 		get() {
 			let result;
@@ -81,7 +107,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'getLatestImportOperations',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isGetLatestImportOperationsParamsGET,
+	},
 	{
 		get() {
 			let result;
@@ -96,7 +125,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'downloadPendingFiles',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isDownloadPendingFilesParamsPOST,
+	},
 	{
 		post() {
 			if (!this.userId) {
@@ -129,7 +161,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'downloadPendingAvatars',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isDownloadPendingAvatarsParamsPOST,
+	},
 	{
 		post() {
 			if (!this.userId) {
@@ -162,7 +197,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'getCurrentImportOperation',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isGetCurrentImportOperationParamsGET,
+	},
 	{
 		get() {
 			if (!this.userId) {

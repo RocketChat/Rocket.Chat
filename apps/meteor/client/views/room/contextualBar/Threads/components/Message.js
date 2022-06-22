@@ -1,4 +1,4 @@
-import { Button, Icon, Message, Box } from '@rocket.chat/fuselage';
+import { Message, Box, IconButton } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import RawText from '../../../../../components/RawText';
@@ -67,20 +67,18 @@ export default React.memo(function MessageThread({
 					</Message.Block>
 				</Message.Container>
 				<Message.ContainerFixed>
-					<Button
+					<IconButton
 						className={anchor}
 						small
+						icon={button}
 						square
 						flexShrink={0}
-						ghost
 						data-following={following}
 						data-id={_id}
 						onClick={handleFollowButton}
 						title={actionLabel}
 						aria-label={actionLabel}
-					>
-						<Icon name={button} size='x20' />
-					</Button>
+					/>
 					{(mention && <NotificationStatus.Me mb='x24' />) ||
 						(all && <NotificationStatus.All mb='x24' />) ||
 						(unread && <NotificationStatus.Unread mb='x24' />)}
