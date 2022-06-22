@@ -35,22 +35,24 @@ type ModalInstance = ModalConfiguration & {
 };
 
 export type ModalContextValue = {
-	open(
-		config?: ModalConfiguration,
-		fn?: (instance: ModalInstance, value: unknown) => void,
-		onCancel?: (instance: ModalInstance) => void,
-	): void;
-	push(
-		config?: ModalConfiguration,
-		fn?: (instance: ModalInstance, value: unknown) => void,
-		onCancel?: (instance: ModalInstance) => void,
-	): ModalInstance;
-	cancel(): void;
-	close(): void;
-	confirm(value: unknown): void;
-	showInputError(text: string): void;
-	onKeyDown(event: KeyboardEvent): void;
-	setModal(modal: ReactNode): void;
+	modal: {
+		open(
+			config?: ModalConfiguration,
+			fn?: (instance: ModalInstance, value: unknown) => void,
+			onCancel?: (instance: ModalInstance) => void,
+		): void;
+		push(
+			config?: ModalConfiguration,
+			fn?: (instance: ModalInstance, value: unknown) => void,
+			onCancel?: (instance: ModalInstance) => void,
+		): ModalInstance;
+		cancel(): void;
+		close(): void;
+		confirm(value: unknown): void;
+		showInputError(text: string): void;
+		onKeyDown(event: KeyboardEvent): void;
+		setModal(modal: ReactNode): void;
+	};
 	currentModal: ReactNode;
 };
 

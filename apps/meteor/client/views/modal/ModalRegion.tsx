@@ -1,11 +1,12 @@
-import { useModal } from '@rocket.chat/ui-contexts';
+import { useModal, useCurrentModal } from '@rocket.chat/ui-contexts';
 import React, { useCallback, ReactElement } from 'react';
 
 import ModalBackdrop from '../../components/modal/ModalBackdrop';
 import ModalPortal from '../../components/modal/ModalPortal';
 
 const ModalRegion = (): ReactElement | null => {
-	const { currentModal, setModal } = useModal();
+	const currentModal = useCurrentModal();
+	const { setModal } = useModal();
 	const handleDismiss = useCallback(() => setModal(null), [setModal]);
 
 	if (!currentModal) {

@@ -12,11 +12,12 @@ const ModalProvider = ({ children }: ModalProviderProps): ReactElement => {
 	const [currentModal, setCurrentModal] = useState<ReactNode>(null);
 
 	const contextValue = useMemo(
-		() =>
-			Object.assign(modal, {
-				currentModal,
+		() => ({
+			modal: Object.assign(modal, {
 				setModal: setCurrentModal,
 			}),
+			currentModal,
+		}),
 		[currentModal],
 	);
 
