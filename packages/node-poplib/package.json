@@ -16,9 +16,6 @@
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p --watch --preserveWatchOutput tsconfig.json"
 	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	]
+	"main": "./src/index.js",
+	"typings": "./dist/index.d.ts"
 }
