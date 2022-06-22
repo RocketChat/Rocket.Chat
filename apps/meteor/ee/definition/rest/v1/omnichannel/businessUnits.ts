@@ -9,9 +9,6 @@ declare module '@rocket.chat/rest-typings' {
 				units: IOmnichannelBusinessUnit[];
 			};
 		};
-		'/v1/livechat/units.getOne': {
-			GET: (params: { unitId: string }) => IOmnichannelBusinessUnit;
-		};
 		'/v1/livechat/units/:unitId/monitors': {
 			GET: (params: { unitId: string }) => { monitors: ILivechatMonitor[] };
 		};
