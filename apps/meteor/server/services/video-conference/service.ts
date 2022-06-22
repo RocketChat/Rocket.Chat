@@ -11,6 +11,7 @@ import type {
 	AtLeast,
 	IGroupVideoConference,
 	IMessage,
+	IStats,
 	IVideoConferenceMessage,
 	VideoConference,
 	VideoConferenceCapabilities,
