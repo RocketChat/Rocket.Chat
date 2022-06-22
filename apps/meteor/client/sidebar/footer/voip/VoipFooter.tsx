@@ -90,7 +90,7 @@ export const VoipFooter = ({
 								title={tooltips.mute}
 								small
 								square
-								nude
+								secondary
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
@@ -103,7 +103,7 @@ export const VoipFooter = ({
 								disabled={!isEnterprise}
 								small
 								square
-								nude
+								secondary
 								onClick={handleHold}
 							>
 								{paused ? (
@@ -145,7 +145,7 @@ export const VoipFooter = ({
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
-							<Button title={tooltips.endCall} small square danger primary onClick={callActions.reject}>
+							<Button title={tooltips.endCall} small square danger onClick={callActions.reject}>
 								<Icon name='phone-off' size='x16' />
 							</Button>
 						)}
