@@ -10,17 +10,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		return [{ key: { rid: 1, status: 1, createdAt: 1 }, unique: false }];
 	}
 
-	public async findRecentByRoomId(
+	public async findAllByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
 	): Promise<Cursor<VideoConference>> {
 		return this.find(
-			{
-				rid,
-				createdAt: {
-					$gte: new Date(new Date().valueOf() - 24 * 60 * 60 * 1000),
-				},
-			},
+			{ rid },
 			{
 				sort: { status: 1, createdAt: -1 },
 				skip: offset,
@@ -153,5 +148,23 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 				[`messages.${messageType}`]: messageId,
 			},
 		});
+	}
+
+	public async expireOldVideoConferences(minDate: Date): Promise<void> {
+		await this.updateMany(
+			{
+				createdAt: {
+					$lte: minDate,
+				},
+				endedAt: {
+					$exists: false,
+				},
+			},
+			{
+				$set: {
+					endedAt: new Date(),
+				},
+			},
+		);
 	}
 }
