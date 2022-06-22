@@ -2,13 +2,12 @@ import { CallStates } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Divider, SidebarFooter as Footer } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
+import { useQuery } from 'react-query';
 
 import { settings } from '../../../app/settings/client';
 import { useCallerStatus, useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
-import { useEndpointData } from '../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../lib/asyncState';
 import { VoipFooter } from './voip';
 
 const SidebarFooter = (): ReactElement => {
@@ -24,8 +23,8 @@ const SidebarFooter = (): ReactElement => {
 		}
 	`;
 
-	const { value, phase } = useEndpointData('/v1/licenses.get');
-	const endpointLoading = phase === AsyncStatePhase.LOADING;
+	const getLicenses = useEndpoint('GET', '/v1/licenses.get');
+	const { data, isSuccess } = useQuery(['licences'], () => getLicenses());
 
 	const t = useTranslation();
 
@@ -39,7 +38,7 @@ const SidebarFooter = (): ReactElement => {
 		return <VoipFooter />;
 	}
 
-	const isCommunityEdition = endpointLoading ? false : value?.licenses?.length === 0;
+	const isCommunityEdition = isSuccess ? data?.licenses?.length === 0 : false;
 
 	return (
 		<Footer>
