@@ -30,9 +30,8 @@ import { readSecondaryPreferred } from '../../../../server/database/readSecondar
 import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
-import { getVideoConferenceStatistics } from './getVideoConferenceStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Analytics, Team } from '../../../../server/sdk';
+import { Analytics, Team, VideoConf } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
@@ -399,7 +398,7 @@ export const statistics = {
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 		statistics.importer = getImporterStatistics();
-		statistics.videoConf = await getVideoConferenceStatistics();
+		statistics.videoConf = await VideoConf.getStatistics();
 
 		// If getSettingsStatistics() returns an error, save as empty object.
 		statsPms.push(

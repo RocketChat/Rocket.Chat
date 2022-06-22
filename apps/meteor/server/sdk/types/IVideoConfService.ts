@@ -4,6 +4,7 @@ import type {
 	IGroupVideoConference,
 	ILivechatVideoConference,
 	IRoom,
+	IStats,
 	IUser,
 	VideoConference,
 	VideoConferenceCapabilities,
@@ -42,4 +43,5 @@ export interface IVideoConfService {
 	listCapabilities(): Promise<{ providerName: string; capabilities: VideoConferenceCapabilities }>;
 	declineLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
 	diagnoseProvider(uid: string, rid: string, providerName?: string): Promise<string | undefined>;
+	getStatistics(): Promise<IStats['videoConf']>;
 }
