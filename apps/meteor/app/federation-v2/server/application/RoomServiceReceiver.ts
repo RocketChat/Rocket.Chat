@@ -11,18 +11,15 @@ import {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
 	FederationRoomSendInternalMessageDto,
-	FederationRoomChangeJoinRulesDto,
-	FederationRoomChangeNameDto,
-	FederationRoomChangeTopicDto,
 } from './input/RoomReceiverDto';
 
 export class FederationRoomServiceReceiver {
 	constructor(
-		private rocketRoomAdapter: RocketChatRoomAdapter,
-		private rocketUserAdapter: RocketChatUserAdapter,
-		private rocketMessageAdapter: RocketChatMessageAdapter,
-		private rocketSettingsAdapter: RocketChatSettingsAdapter,
-		private bridge: IFederationBridge,
+		protected rocketRoomAdapter: RocketChatRoomAdapter,
+		protected rocketUserAdapter: RocketChatUserAdapter,
+		protected rocketMessageAdapter: RocketChatMessageAdapter,
+		protected rocketSettingsAdapter: RocketChatSettingsAdapter,
+		protected bridge: IFederationBridge,
 	) {} // eslint-disable-line no-empty-function
 
 	public async createRoom(roomCreateInput: FederationRoomCreateInputDto): Promise<void> {
@@ -78,6 +75,7 @@ export class FederationRoomServiceReceiver {
 			leave,
 		} = roomChangeMembershipInput;
 		const affectedFederatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+
 		if (!affectedFederatedRoom && eventOrigin === EVENT_ORIGIN.LOCAL) {
 			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
 		}
@@ -120,7 +118,7 @@ export class FederationRoomServiceReceiver {
 		const federatedInviterUser = await this.rocketUserAdapter.getFederatedUserByExternalId(externalInviterId);
 
 		if (!affectedFederatedRoom && eventOrigin === EVENT_ORIGIN.REMOTE) {
-			const members = [federatedInviterUser, federatedInviteeUser] as any[];
+			const members = [federatedInviterUser, federatedInviteeUser] as FederatedUser[];
 			const newFederatedRoom = FederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,
@@ -163,55 +161,5 @@ export class FederationRoomServiceReceiver {
 		}
 
 		await this.rocketMessageAdapter.sendMessage(senderUser, text, federatedRoom);
-	}
-
-	public async changeJoinRules(roomJoinRulesChangeInput: FederationRoomChangeJoinRulesDto): Promise<void> {
-		const { externalRoomId, roomType } = roomJoinRulesChangeInput;
-
-		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
-		if (!federatedRoom) {
-			return;
-		}
-
-		if (federatedRoom.isDirectMessage()) {
-			return;
-		}
-
-		federatedRoom.setRoomType(roomType);
-		await this.rocketRoomAdapter.updateRoomType(federatedRoom);
-	}
-
-	public async changeRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
-		const { externalRoomId, normalizedRoomName } = roomChangeNameInput;
-
-		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
-		if (!federatedRoom) {
-			return;
-		}
-
-		if (federatedRoom.isDirectMessage()) {
-			return;
-		}
-
-		federatedRoom.changeRoomName(normalizedRoomName);
-
-		await this.rocketRoomAdapter.updateRoomName(federatedRoom);
-	}
-
-	public async changeRoomTopic(roomChangeTopicInput: FederationRoomChangeTopicDto): Promise<void> {
-		const { externalRoomId, roomTopic } = roomChangeTopicInput;
-
-		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
-		if (!federatedRoom) {
-			return;
-		}
-
-		if (federatedRoom.isDirectMessage()) {
-			return;
-		}
-
-		federatedRoom.changeRoomTopic(roomTopic);
-
-		await this.rocketRoomAdapter.updateRoomTopic(federatedRoom);
 	}
 }

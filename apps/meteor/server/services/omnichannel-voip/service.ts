@@ -27,7 +27,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { FindVoipRoomsParams } from './internalTypes';
+import { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
 import { api } from '../../sdk/api';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
@@ -99,7 +99,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		// and multiple rooms are left opened for one single agent. Best case this will iterate once
 		for await (const room of openRooms) {
 			await this.handleEvent(VoipClientEvents['VOIP-CALL-ENDED'], room, agent, 'Agent disconnected abruptly');
-			await this.closeRoom(agent, room, agent, 'Agent disconnected abruptly', undefined, 'voip-call-ended-unexpectedly');
+			await this.closeRoom(agent, room, agent, 'voip-call-ended-unexpectedly', { comment: 'Agent disconnected abruptly' });
 		}
 	}
 
@@ -266,87 +266,75 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return this.voipRoom.findOneByIdAndVisitorToken(rid, token, { projection });
 	}
 
-	private async calculateOnHoldTimeForRoom(room: IVoipRoom, closedAt: Date): Promise<number> {
-		if (!room || !room.callUniqueId) {
-			return 0;
-		}
-
-		const events = await this.pbxEvents.findByEvents(room.callUniqueId, ['Hold', 'Unhold']).toArray();
-		if (!events.length) {
-			// if there's no events, that means no hold time
-			return 0;
-		}
-
-		if (events.length === 1 && events[0].event === 'Unhold') {
-			// if the only event is an unhold event, something bad happened
-			return 0;
-		}
-
-		if (events.length === 1 && events[0].event === 'Hold') {
-			// if the only event is a hold event, the call was ended while on hold
-			// hold time = room.closedAt - event.ts
-			return closedAt.getTime() - events[0].ts.getTime();
-		}
-
-		let currentOnHoldTime = 0;
-
-		for (let i = 0; i < events.length; i += 2) {
-			const onHold = events[i].ts;
-			const unHold = events[i + 1]?.ts || closedAt;
-
-			currentOnHoldTime += unHold.getTime() - onHold.getTime();
-		}
-
-		return currentOnHoldTime;
-	}
-
-	// Comment can be used to store wrapup call data
 	async closeRoom(
 		closerParam: ILivechatVisitor | ILivechatAgent,
 		room: IVoipRoom,
 		user: IUser,
-		comment?: string,
-		tags?: string[],
 		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly' = 'voip-call-wrapup',
+		options?: { comment?: string; tags?: string[] },
 	): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
 		}
 
-		const now = new Date();
-		const { _id: rid } = room;
-		const closer = isILivechatVisitor(closerParam) ? 'visitor' : 'user';
-		const callTotalHoldTime = await this.calculateOnHoldTimeForRoom(room, now);
-		const closeData: IRoomClosingInfo = {
-			closedAt: now,
-			callDuration: now.getTime() - room.ts.getTime(),
-			closer,
-			callTotalHoldTime,
-			tags,
-		};
-		this.logger.debug(`Closing room ${room._id} by ${closer} ${closerParam._id}`);
-		closeData.closedBy = {
-			_id: closerParam._id,
-			username: closerParam.username,
-		};
+		let { closeInfo, closeSystemMsgData } = await this.getBaseRoomClosingData(closerParam, room, sysMessageId, options);
+		const finalClosingData = this.getRoomClosingData(closeInfo, closeSystemMsgData, room, sysMessageId, options);
+		closeInfo = finalClosingData.closeInfo;
+		closeSystemMsgData = finalClosingData.closeSystemMsgData;
 
-		const message = {
-			t: sysMessageId,
-			msg: comment,
-			groupable: false,
-		};
+		await sendMessage(user, closeSystemMsgData, room);
 
-		await sendMessage(user, message, room);
 		// There's a race condition between receiving the call and receiving the event
 		// Sometimes it happens before the connection on client, sometimes it happens after
 		// For now, this data will be appended as a metric on room closing
 		await this.setCallWaitingQueueTimers(room);
 
 		this.logger.debug(`Room ${room._id} closed and timers set`);
-		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
-		this.voipRoom.closeByRoomId(rid, closeData);
+		this.logger.debug(`Room ${room._id} was closed at ${closeInfo.closedAt} (duration ${closeInfo.callDuration})`);
+		this.voipRoom.closeByRoomId(room._id, closeInfo);
+
 		return true;
+	}
+
+	getRoomClosingData(
+		closeInfo: IRoomClosingInfo,
+		closeSystemMsgData: IOmniRoomClosingMessage,
+		_room: IVoipRoom,
+		_sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
+		_options?: { comment?: string; tags?: string[] },
+	): { closeInfo: IRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage } {
+		return { closeInfo, closeSystemMsgData };
+	}
+
+	async getBaseRoomClosingData(
+		closerParam: ILivechatVisitor | ILivechatAgent,
+		room: IVoipRoom,
+		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
+		_options?: { comment?: string; tags?: string[] },
+	): Promise<{ closeInfo: IRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage }> {
+		const now = new Date();
+		const closer = isILivechatVisitor(closerParam) ? 'visitor' : 'user';
+
+		const closeData: IRoomClosingInfo = {
+			closedAt: now,
+			callDuration: now.getTime() - room.ts.getTime(),
+			closer,
+			closedBy: {
+				_id: closerParam._id,
+				username: closerParam.username,
+			},
+		};
+
+		const message: IOmniRoomClosingMessage = {
+			t: sysMessageId,
+			groupable: false,
+		};
+
+		return {
+			closeInfo: closeData,
+			closeSystemMsgData: message,
+		};
 	}
 
 	private getQueuesForExt(

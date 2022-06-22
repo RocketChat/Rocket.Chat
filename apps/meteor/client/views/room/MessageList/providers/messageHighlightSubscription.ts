@@ -1,30 +1,28 @@
 import { IMessage } from '@rocket.chat/core-typings';
-import { Subscription, Unsubscribe } from 'use-subscription';
 
 type SetHighlightFn = (_id: IMessage['_id']) => void;
 type ClearHighlightFn = (_id: IMessage['_id']) => void;
 
 type MessageHighlightSubscription = {
-	subscription: Subscription<IMessage['_id'] | undefined>;
+	subscribe: (callback: () => void) => () => void;
+	getSnapshot: () => IMessage['_id'] | undefined;
 	setHighlight: SetHighlightFn;
 	clearHighlight: ClearHighlightFn;
 };
 
 const createMessageHighlightSubscription = (): MessageHighlightSubscription => {
-	let updateCb: Unsubscribe = () => undefined;
+	let updateCb: () => void = () => undefined;
 
 	let highlightMessageId: IMessage['_id'] | undefined;
 
-	const subscription: Subscription<typeof highlightMessageId> = {
-		subscribe: (cb) => {
-			updateCb = cb;
-			return (): void => {
-				updateCb = (): void => undefined;
-			};
-		},
-
-		getCurrentValue: (): typeof highlightMessageId => highlightMessageId,
+	const subscribe = (cb: () => void): (() => void) => {
+		updateCb = cb;
+		return (): void => {
+			updateCb = (): void => undefined;
+		};
 	};
+
+	const getSnapshot = (): typeof highlightMessageId => highlightMessageId;
 
 	const setHighlight = (_id: IMessage['_id']): void => {
 		highlightMessageId = _id;
@@ -36,11 +34,12 @@ const createMessageHighlightSubscription = (): MessageHighlightSubscription => {
 		updateCb();
 	};
 
-	return { subscription, setHighlight, clearHighlight };
+	return { subscribe, getSnapshot, setHighlight, clearHighlight };
 };
 
 export const {
-	subscription: messageHighlightSubscription,
+	getSnapshot,
+	subscribe,
 	setHighlight: setHighlightMessage,
 	clearHighlight: clearHighlightMessage,
 } = createMessageHighlightSubscription();

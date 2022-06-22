@@ -81,10 +81,35 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 		}
 	});
 
-	const userData = await APIClient.get('/v1/me');
+	const { ldap, lastLogin, services, ...userData } = await APIClient.get('/v1/me');
+
+	// email?: {
+	// 	verificationTokens?: IUserEmailVerificationToken[];
+	// };
+	// export interface IUserEmailVerificationToken {
+	// 	token: string;
+	// 	address: string;
+	// 	when: Date;
+	// }
+
 	if (userData) {
 		updateUser({
 			...userData,
+			...(services && {
+				...services,
+				...(services.email?.verificationTokens && {
+					email: {
+						verificationTokens: services.email.verificationTokens.map((token) => ({
+							...token,
+							when: new Date(token.when),
+						})),
+					},
+				}),
+			}),
+			...(lastLogin && {
+				lastLogin: new Date(lastLogin),
+			}),
+			ldap: Boolean(ldap),
 			createdAt: new Date(userData.createdAt),
 			_updatedAt: new Date(userData._updatedAt),
 		});

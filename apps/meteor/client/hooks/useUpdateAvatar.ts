@@ -19,10 +19,11 @@ type AvatarServiceObject = {
 
 type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
 
-const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => typeof avatarObj === 'string';
-const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObject => !isAvatarReset(avatarObj) && 'service' in avatarObj;
+const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => avatarObj === 'reset';
+const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObject =>
+	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' in avatarObj;
 const isAvatarUrl = (avatarObj: AvatarObject): avatarObj is AvatarUrlObj =>
-	!isAvatarReset(avatarObj) && 'service' && 'avatarUrl' in avatarObj;
+	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' && 'avatarUrl' in avatarObj;
 
 export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']): (() => void) => {
 	const t = useTranslation();
