@@ -32,7 +32,7 @@ describe('LIVECHAT - departments', function () {
 						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body.error).to.be.equal('error-not-authorized');
+							expect(res.body.error).to.be.equal('unauthorized');
 						})
 						.end(done);
 				});
@@ -90,7 +90,7 @@ describe('LIVECHAT - departments', function () {
 						.get(api(`livechat/department/${department._id}`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
-						.expect(400)
+						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body.error).to.be.equal('error-not-authorized');

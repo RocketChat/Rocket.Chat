@@ -80,6 +80,10 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			if (!hasAtLeastOnePermission(this.userId, ['view-livechat-departments', 'view-l-room'])) {
+				return API.v1.unauthorized();
+			}
+
 			check(this.urlParams, {
 				_id: String,
 			});
