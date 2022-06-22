@@ -9,8 +9,8 @@ export type BundleFeature =
 	| 'scalability'
 	| 'teams-mention'
 	| 'saml-enterprise'
-	| 'oauth-enterprise'
-	| 'device-management';
+	| 'device-management'
+	| 'oauth-enterprise';
 
 interface IBundle {
 	[key: string]: BundleFeature[];
