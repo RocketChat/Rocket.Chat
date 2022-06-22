@@ -32,7 +32,6 @@
 		"cron": "~1.8.0",
 		"date.js": "~0.3.3",
 		"debug": "~4.1.1",
-		"human-interval": "~1.0.0",
 		"moment-timezone": "~0.5.27"
 	}
 }
