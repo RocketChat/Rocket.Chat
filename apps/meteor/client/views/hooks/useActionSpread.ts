@@ -1,14 +1,14 @@
-import { useMemo } from 'react';
+import { useMemo, ReactNode } from 'react';
 
-type Action = {
-	label: string;
-	icon: string;
-	action: () => any;
+export type Action = {
+	label: ReactNode;
+	icon?: string;
+	action: () => void;
 };
 
 type MenuOption = {
-	label: { label: string; icon: string };
-	action: Function;
+	label: { label: ReactNode; icon?: string };
+	action: () => void;
 };
 
 const mapOptions = ([key, { action, label, icon }]: [string, Action]): [string, MenuOption] => [

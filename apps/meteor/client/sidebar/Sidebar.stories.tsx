@@ -31,14 +31,8 @@ const settings: Record<string, ISetting> = {
 const settingContextValue: ContextType<typeof SettingsContext> = {
 	hasPrivateAccess: true,
 	isLoading: false,
-	querySetting: (_id) => ({
-		getCurrentValue: () => settings[_id],
-		subscribe: () => () => undefined,
-	}),
-	querySettings: () => ({
-		getCurrentValue: () => [],
-		subscribe: () => () => undefined,
-	}),
+	querySetting: (_id) => [() => () => undefined, () => settings[_id]],
+	querySettings: () => [() => () => undefined, () => []],
 	dispatch: async () => undefined,
 };
 
@@ -87,24 +81,15 @@ const userContextValue: ContextType<typeof UserContext> = {
 		roles: ['admin'],
 		type: 'user',
 	},
-	queryPreference: <T,>(pref: string | ObjectId, defaultValue: T) => ({
-		getCurrentValue: () => (typeof pref === 'string' ? (userPreferences[pref] as T) : defaultValue),
-		subscribe: () => () => undefined,
-	}),
-	querySubscriptions: () => ({
-		getCurrentValue: () => subscriptions,
-		subscribe: () => () => undefined,
-	}),
-	querySubscription: () => ({
-		getCurrentValue: () => undefined,
-		subscribe: () => () => undefined,
-	}),
+	queryPreference: <T,>(pref: string | ObjectId, defaultValue: T) => [
+		() => () => undefined,
+		() => (typeof pref === 'string' ? (userPreferences[pref] as T) : defaultValue),
+	],
+	querySubscriptions: () => [() => () => undefined, () => subscriptions],
+	querySubscription: () => [() => () => undefined, () => undefined],
 	loginWithPassword: () => Promise.resolve(undefined),
 	logout: () => Promise.resolve(undefined),
-	queryRoom: () => ({
-		getCurrentValue: () => undefined,
-		subscribe: () => () => undefined,
-	}),
+	queryRoom: () => [() => () => undefined, () => undefined],
 };
 
 export const Sidebar: Story = () => (

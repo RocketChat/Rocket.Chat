@@ -118,7 +118,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				<Field>
 					<Field.Row>
 						<ButtonGroup stretch w='full'>
-							<Button primary danger onClick={handleDeleteStatus}>
+							<Button danger onClick={handleDeleteStatus}>
 								<Icon name='trash' mie='x4' />
 								{t('Delete')}
 							</Button>
