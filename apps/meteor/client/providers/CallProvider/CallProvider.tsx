@@ -69,7 +69,7 @@ export const CallProvider: FC = ({ children }) => {
 				}));
 			homeRoute.push({});
 
-			const queueAggregator = result?.voipClient?.getAggregator();
+			const queueAggregator = result.voipClient?.getAggregator();
 			if (queueAggregator) {
 				queueAggregator.callEnded();
 			}
