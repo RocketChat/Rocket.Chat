@@ -1,8 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect } from 'react';
 
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import EditInvite from '../EditInvite';
@@ -18,7 +17,7 @@ const WrappedInviteUsers = ({ rid, tabBar, onClickBack }) => {
 	const handleEdit = useMutableCallback(() => setEditing(true));
 	const onClickBackEditing = useMutableCallback(() => setEditing(false));
 
-	const findOrCreateInvite = useEndpoint('POST', 'findOrCreateInvite');
+	const findOrCreateInvite = useEndpoint('POST', '/v1/findOrCreateInvite');
 
 	const [{ days = 1, maxUses = 0 }, setDayAndMaxUses] = useState({});
 

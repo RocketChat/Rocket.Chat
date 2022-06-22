@@ -1,8 +1,8 @@
 import { Field, TextInput, ToggleSwitch, Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import AutoCompleteDepartmentMultiple from '../../../../client/components/AutoCompleteDepartmentMultiple';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 const BusinessHoursMultiple = ({ values = {}, handlers = {}, className }) => {
 	const t = useTranslation();

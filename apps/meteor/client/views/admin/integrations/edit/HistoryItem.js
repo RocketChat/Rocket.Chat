@@ -1,10 +1,9 @@
 import { Button, Icon, Box, Accordion, Field, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { integrations as eventList } from '../../../../../app/integrations/lib/rocketchat';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
+import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 
@@ -57,7 +56,7 @@ function HistoryItem({ data, ...props }) {
 						<Icon name='info-circled' size='x16' mie='x4' />
 						{formatDateAndTime(_createdAt)}
 					</Box>
-					<Button ghost onClick={handleClickReplay}>
+					<Button secondary onClick={handleClickReplay}>
 						{t('Replay')}
 					</Button>
 				</Box>
@@ -93,7 +92,7 @@ function HistoryItem({ data, ...props }) {
 					<Field.Label>{t('Event_Trigger')}</Field.Label>
 					<Field.Row>
 						<Box withRichContent w='full'>
-							<code>{t(eventList.outgoingEvents[event].label)}</code>
+							<code>{t(outgoingEvents[event].label)}</code>
 						</Box>
 					</Field.Row>
 				</Field>

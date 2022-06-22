@@ -1,8 +1,7 @@
+import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { useRouteParameter } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import MemoizedSetting from '../settings/MemoizedSetting';
 
 const useAppTranslation = (appId) => {

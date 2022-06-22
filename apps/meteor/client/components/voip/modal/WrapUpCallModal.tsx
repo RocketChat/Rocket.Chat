@@ -1,10 +1,8 @@
 import { Button, ButtonGroup, Field, Modal, TextAreaInput } from '@rocket.chat/fuselage';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { useCallCloseRoom } from '../../../contexts/CallContext';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import Tags from '../../Omnichannel/Tags';
 
 type WrapUpCallPayload = {
@@ -12,9 +10,12 @@ type WrapUpCallPayload = {
 	tags?: string[];
 };
 
-export const WrapUpCallModal = (): ReactElement => {
+type WrapUpCallModalProps = {
+	closeRoom: (data?: { comment?: string; tags?: string[] }) => void;
+};
+
+export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactElement => {
 	const setModal = useSetModal();
-	const closeRoom = useCallCloseRoom();
 
 	const closeModal = (): void => setModal(null);
 	const t = useTranslation();
@@ -61,7 +62,7 @@ export const WrapUpCallModal = (): ReactElement => {
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button ghost onClick={onCancel}>
+					<Button secondary onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
 					<Button type='submit' primary>

@@ -10,7 +10,7 @@ import { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
 import { Users } from '../../../app/models/server/raw/index';
 import { Livechat } from '../../../app/livechat/server';
-import { settings } from '../../../app/settings/server/functions/settings';
+import { settings } from '../../../app/settings/server';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';

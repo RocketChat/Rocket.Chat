@@ -4,8 +4,6 @@
 	},
 	"globals": {
 		"browser": false,
-		"Cypress": false,
-		"cy": false,
 		"expect": false
 	}
 }

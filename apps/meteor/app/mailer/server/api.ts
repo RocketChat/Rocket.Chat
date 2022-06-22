@@ -205,7 +205,9 @@ export const send = ({
 		headers,
 	});
 
-export const checkAddressFormatAndThrow = (from: string, func: Function): asserts from => {
+// Needed because of https://github.com/microsoft/TypeScript/issues/36931
+type Assert = (input: string, func: string) => asserts input;
+export const checkAddressFormatAndThrow: Assert = (from: string, func: string): asserts from => {
 	if (checkAddressFormat(from)) {
 		return;
 	}

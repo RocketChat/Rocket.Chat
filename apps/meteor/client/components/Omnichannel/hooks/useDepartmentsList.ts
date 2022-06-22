@@ -1,8 +1,7 @@
 import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
@@ -28,9 +27,8 @@ export const useDepartmentsList = (
 	const t = useTranslation();
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
-	const endpoint = 'livechat/department';
 
-	const getDepartments = useEndpoint('GET', endpoint);
+	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -45,7 +43,7 @@ export const useDepartmentsList = (
 				count: end + start,
 				sort: `{ "name": 1 }`,
 				excludeDepartmentId: options.excludeDepartmentId,
-				enabled: options.enabled,
+				enabled: options.enabled ? 'true' : 'false',
 			});
 
 			const items = departments

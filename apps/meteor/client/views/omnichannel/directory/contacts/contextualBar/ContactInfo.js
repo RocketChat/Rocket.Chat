@@ -1,6 +1,7 @@
 import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useState } from 'react';
+import { useToastMessageDispatch, useCurrentRoute, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
@@ -8,9 +9,6 @@ import UserCard from '../../../../../components/UserCard/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import { useCurrentRoute, useRoute } from '../../../../../contexts/RouterContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -24,7 +22,7 @@ const ContactInfo = ({ id, rid, route }) => {
 	const t = useTranslation();
 	const routePath = useRoute(route || 'omnichannel-directory');
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');
 
 	const [customFields, setCustomFields] = useState([]);
 
@@ -61,7 +59,14 @@ const ContactInfo = ({ id, rid, route }) => {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const { value: data, phase: state, error } = useEndpointData(`omnichannel/contact?contactId=${id}`);
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(
+		'/v1/omnichannel/contact',
+		useMemo(() => ({ contactId: id }), [id]),
+	);
 
 	const [currentRouteName] = useCurrentRoute();
 	const liveRoute = useRoute('live');

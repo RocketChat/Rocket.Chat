@@ -1,9 +1,7 @@
-import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuselage';
+import { Box, Button, TextInput, Margins, Avatar, IconButton } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback } from 'react';
 
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
@@ -77,12 +75,8 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 							<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4' title={t('Accounts_SetDefaultAvatar')}>
 								<Avatar url={`/avatar/%40${username}`} />
 							</Button>
-							<Button square onClick={clickUpload} disabled={disabled} title={t('Upload')}>
-								<Icon name='upload' size='x20' />
-							</Button>
-							<Button square mie='none' onClick={clickUrl} disabled={disabled || urlEmpty} title={t('Add URL')}>
-								<Icon name='permalink' size='x20' />
-							</Button>
+							<IconButton icon='upload' square secondary onClick={clickUpload} disabled={disabled} title={t('Upload')} />
+							<IconButton icon='permalink' square secondary onClick={clickUrl} disabled={disabled || urlEmpty} title={t('Add URL')} />
 							{suggestions && (
 								<UserAvatarSuggestions
 									suggestions={suggestions}

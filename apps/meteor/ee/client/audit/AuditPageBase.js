@@ -1,9 +1,9 @@
 import { Box, Field, TextInput, ButtonGroup, Button, Margins, Tabs, Flex } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Page from '../../../client/components/Page';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useEndpointAction } from '../../../client/hooks/useEndpointAction';
 import DateRangePicker from './DateRangePicker';
 import Result from './Result';
@@ -43,7 +43,7 @@ export const AuditPageBase = ({
 			handleType(type);
 		});
 
-	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry', {
 		params: [{ eventName: 'updateCounter', settingsId: 'Message_Auditing_Apply_Count', timestamp: Date.now() }],
 	});
 

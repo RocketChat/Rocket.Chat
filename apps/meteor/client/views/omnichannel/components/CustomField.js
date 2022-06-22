@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { FormSkeleton } from '../directory/Skeleton';
@@ -11,7 +11,7 @@ import Label from './Label';
 
 const CustomField = ({ id, value }) => {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${id}`);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/custom-fields/${id}`);
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}

@@ -1,8 +1,7 @@
 import { Accordion, Field, FieldGroup, TextAreaInput } from '@rocket.chat/fuselage';
+import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
 const PreferencesHighlightsSection = ({ onChange, commitRef, ...props }) => {

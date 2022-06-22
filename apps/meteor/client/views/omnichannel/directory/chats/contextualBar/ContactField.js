@@ -1,9 +1,9 @@
 import { Avatar, Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useMemo } from 'react';
 
 import UserCard from '../../../../../components/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
@@ -18,7 +18,14 @@ const ContactField = ({ contact, room }) => {
 	const { fname, t: type } = room;
 	const avatarUrl = roomCoordinator.getRoomDirectives(type)?.getAvatarPath(room);
 
-	const { value: data, phase: state, error } = useEndpointData(`livechat/visitors.info?visitorId=${contact._id}`);
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(
+		'/v1/livechat/visitors.info',
+		useMemo(() => ({ visitorId: contact._id }), [contact._id]),
+	);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;

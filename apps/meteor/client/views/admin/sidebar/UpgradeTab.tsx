@@ -1,12 +1,11 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
+import { useRoutePath, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
 import type { UpgradeTabVariant } from '../../../../lib/getUpgradeTabType';
 import Emoji from '../../../components/Emoji';
 import Sidebar from '../../../components/Sidebar';
-import { useRoutePath } from '../../../contexts/RouterContext';
-import { useTranslation, TranslationKey } from '../../../contexts/TranslationContext';
 
 const getUpgradeTabLabel = (type: UpgradeTabVariant): TranslationKey => {
 	switch (type) {
@@ -22,9 +21,9 @@ const getUpgradeTabLabel = (type: UpgradeTabVariant): TranslationKey => {
 };
 
 const customColors = {
-	default: colors.p700,
-	hover: colors.p800,
-	active: colors.p900,
+	default: colors['s2-700'],
+	hover: colors['s2-800'],
+	active: colors['s2-900'],
 };
 
 type UpgradeTabProps = { type: UpgradeTabVariant; currentPath: string; trialEndDate: string | undefined };
