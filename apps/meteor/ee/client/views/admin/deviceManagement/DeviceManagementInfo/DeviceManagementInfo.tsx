@@ -79,7 +79,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					<Button primary onClick={() => handleDeviceLogout(onReload, true)}>
+					<Button primary onClick={() => handleDeviceLogout(onReload)}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>
