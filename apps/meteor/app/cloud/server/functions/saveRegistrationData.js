@@ -1,4 +1,5 @@
-import { Settings } from '../../../models/server/raw';
+import { Settings } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../lib/callbacks';
 
 export function saveRegistrationData({

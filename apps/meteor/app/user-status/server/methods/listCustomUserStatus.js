@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-
-import { CustomUserStatus } from '../../../models/server/raw';
+import { CustomUserStatus } from '@rocket.chat/models';
 
 Meteor.methods({
 	async listCustomUserStatus() {

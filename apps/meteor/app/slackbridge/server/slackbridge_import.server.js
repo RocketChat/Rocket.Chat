@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SlackBridge } from './slackbridge';
-import { Rooms } from '../../models';
+import { Rooms } from '../../models/server';
 import { msgStream } from '../../lib';
 import { slashCommands } from '../../utils';
 

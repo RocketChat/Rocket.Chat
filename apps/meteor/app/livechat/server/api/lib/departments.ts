@@ -2,9 +2,9 @@ import { FilterQuery, SortOptionObject } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ILivechatDepartmentRecord, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
 import { callbacks } from '../../../../../lib/callbacks';
 
 type Pagination<T> = { pagination: { offset: number; count: number; sort: SortOptionObject<T> } };

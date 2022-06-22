@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import type { ISetting } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { SettingsEvents } from '../../../app/settings/server';
-import { Settings } from '../../../app/models/server/raw';
 
 Meteor.methods({
 	async 'public-settings/get'(updatedAt) {
