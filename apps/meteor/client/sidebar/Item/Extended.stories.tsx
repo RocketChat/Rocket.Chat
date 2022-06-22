@@ -1,4 +1,4 @@
-import { Box, ActionButton, Badge } from '@rocket.chat/fuselage';
+import { Box, IconButton, Badge } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
@@ -85,10 +85,10 @@ export const Actions = Template.bind({});
 Actions.args = {
 	actions: (
 		<>
-			<ActionButton primary success icon='phone' />
-			<ActionButton primary danger icon='circle-cross' />
-			<ActionButton primary icon='trash' />
-			<ActionButton icon='phone' />
+			<IconButton secondarySuccess icon='phone' />
+			<IconButton secondaryDanger icon='circle-cross' />
+			<IconButton secondaryInfo icon='trash' />
+			<IconButton secondary icon='phone' />
 		</>
 	),
 };

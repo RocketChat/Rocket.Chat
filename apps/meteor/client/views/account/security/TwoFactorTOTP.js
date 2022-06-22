@@ -136,7 +136,7 @@ const TwoFactorTOTP = (props) => {
 				)}
 				{totpEnabled && (
 					<>
-						<Button primary danger onClick={handleDisableTotp}>
+						<Button danger onClick={handleDisableTotp}>
 							{t('Disable_two-factor_authentication')}
 						</Button>
 						<Box fontScale='p2m' mbs='x8'>
