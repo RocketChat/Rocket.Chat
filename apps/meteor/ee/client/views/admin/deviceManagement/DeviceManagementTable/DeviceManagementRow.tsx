@@ -4,7 +4,7 @@ import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { KeyboardEvent, ReactElement, useCallback } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
-import useDeviceLogout from '../../../../hooks/useDeviceLogout';
+import { useDeviceLogout } from '../useDeviceLogout';
 import DeviceIcon from './DeviceIcon';
 
 type DeviceRowProps = {

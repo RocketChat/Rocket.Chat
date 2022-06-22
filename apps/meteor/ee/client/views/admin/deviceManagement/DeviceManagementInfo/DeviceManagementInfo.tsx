@@ -8,7 +8,7 @@ import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../../../client/hooks/usePresence';
 import InfoPanel from '../../../../../../client/views/InfoPanel';
-import useDeviceLogout from '../../../../hooks/useDeviceLogout';
+import { useDeviceLogout } from '../useDeviceLogout';
 
 type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
 	onReload: () => void;
@@ -79,7 +79,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					<Button primary onClick={() => handleDeviceLogout(onReload)}>
+					<Button primary onClick={(): void => handleDeviceLogout(onReload)}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>
