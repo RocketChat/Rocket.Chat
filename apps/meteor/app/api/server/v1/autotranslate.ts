@@ -1,5 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { isAutotranslateSaveSettingsParamsPOST, isAutotranslateTranslateMessageParamsPOST, isAutotranslateGetSupportedLanguagesParamsGET } from '@rocket.chat/rest-typings';
+import {
+	isAutotranslateSaveSettingsParamsPOST,
+	isAutotranslateTranslateMessageParamsPOST,
+	isAutotranslateGetSupportedLanguagesParamsGET,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { settings } from '../../../settings/server';
