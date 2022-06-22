@@ -40,6 +40,7 @@ export const runFederation = async (): Promise<void> => {
 };
 
 export const stopFederation = async (): Promise<void> => {
+	FederationFactory.removeListeners();
 	await federation.stop();
 };
 

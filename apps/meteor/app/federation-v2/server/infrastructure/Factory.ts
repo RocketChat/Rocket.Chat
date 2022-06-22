@@ -82,5 +82,11 @@ export class FederationFactory {
 		FederationHooks.afterLeaveRoom(async (user: IUser, room: IRoom) =>
 			roomServiceSender.leaveRoom(FederationRoomSenderConverter.toAfterLeaveRoom(user._id, room._id)),
 		);
+		FederationHooks.canAddTheUserToTheRoom((user: IUser, room: IRoom) => roomServiceSender.canAddThisUserToTheRoom(user, room));
+		FederationHooks.canAddUsersToTheRoom((user: IUser, room: IRoom) => roomServiceSender.canAddUsersToTheRoom(user, room));
+	}
+
+	public static removeListeners(): void {
+		FederationHooks.removeCEValidation();
 	}
 }

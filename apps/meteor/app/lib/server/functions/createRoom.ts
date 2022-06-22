@@ -129,9 +129,9 @@ export const createRoom = function <T extends RoomType>(
 	} else {
 		for (const username of [...new Set(members as string[])]) {
 			const member = Users.findOneByUsername(username, {
-				fields: { 'username': 1, 'settings.preferences': 1 },
+				fields: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
 			});
-			if (!member) {
+			if (!member || member?.federated) {
 				continue;
 			}
 

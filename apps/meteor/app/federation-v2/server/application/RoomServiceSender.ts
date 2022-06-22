@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IMessage, IUser } from '@rocket.chat/core-typings';
+import { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
@@ -124,5 +124,17 @@ export class FederationRoomServiceSender {
 		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
 		return Boolean(federatedRoom?.isFederated());
+	}
+
+	public canAddThisUserToTheRoom(internalUser: IUser, internalRoom: IRoom): void {
+		if (internalUser.federated && !internalRoom.federated) {
+			throw new Error('error-cant-add-federated-users');
+		}
+	}
+
+	public canAddUsersToTheRoom(internalUser: IUser, internalRoom: IRoom): void {
+		if (internalUser.federated && internalRoom.federated && internalRoom.t !== RoomType.DIRECT_MESSAGE) {
+			throw new Error('error-this-is-an-ee-feature');
+		}
 	}
 }
