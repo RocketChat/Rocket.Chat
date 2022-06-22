@@ -66,7 +66,7 @@ type VideoConfEvents = {
 	// The list of ringing incoming calls may have changed
 	'ringing/changed': void;
 
-	// The value os `isCalling` may have changed
+	// The value of `isCalling` may have changed
 	'calling/changed': void;
 	// When join call
 	'call/join': CurrentCallParams;
