@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { isAutotranslateSaveSettingsParamsPOST, isAutotranslateTranslateMessageParamsPOST, isAutotranslateGetSupportedLanguagesParamsGET } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 import { settings } from '../../../settings/server';
@@ -6,7 +7,10 @@ import { Messages } from '../../../models/server';
 
 API.v1.addRoute(
 	'autotranslate.getSupportedLanguages',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isAutotranslateGetSupportedLanguagesParamsGET,
+	},
 	{
 		get() {
 			if (!settings.get('AutoTranslate_Enabled')) {
@@ -22,7 +26,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'autotranslate.saveSettings',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isAutotranslateSaveSettingsParamsPOST,
+	},
 	{
 		post() {
 			const { roomId, field, value, defaultLanguage } = this.bodyParams;
@@ -57,7 +64,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'autotranslate.translateMessage',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isAutotranslateTranslateMessageParamsPOST,
+	},
 	{
 		post() {
 			const { messageId, targetLanguage } = this.bodyParams;

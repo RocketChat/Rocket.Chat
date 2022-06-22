@@ -1,47 +1,41 @@
+import type { ISupportedLanguage } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type UserRegisterParamsPOST = {
-	username: string;
-	name?: string;
-	email: string;
-	pass: string;
-	secret?: string;
-	reason?: string;
+export type AutotranslateGetSupportedLanguagesParamsGET = {
+	targetLanguage: string;
+	languages: ISupportedLanguage[];
 };
 
-const UserRegisterParamsPostSchema = {
+const AutotranslateGetSupportedLanguagesParamsGETSchema = {
 	type: 'object',
 	properties: {
-		username: {
-			type: 'string',
-			minLength: 3,
-		},
-
-		name: {
-			type: 'string',
-			nullable: true,
-		},
-		email: {
+		targetLanguage: {
 			type: 'string',
 		},
-		pass: {
-			type: 'string',
-		},
-		secret: {
-			type: 'string',
-			nullable: true,
-		},
-		reason: {
-			type: 'string',
-			nullable: true,
+		languages: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					language: {
+						type: 'string',
+					},
+					name: {
+						type: 'string',
+					},
+				},
+				required: ['language', 'name'],
+			},
 		},
 	},
-	required: ['username', 'email', 'pass'],
+	required: ['targetLanguage', 'languages'],
 	additionalProperties: false,
 };
 
-export const isUserRegisterParamsPOST = ajv.compile<UserRegisterParamsPOST>(UserRegisterParamsPostSchema);
+export const isAutotranslateGetSupportedLanguagesParamsGET = ajv.compile<AutotranslateGetSupportedLanguagesParamsGET>(
+	AutotranslateGetSupportedLanguagesParamsGETSchema,
+);
