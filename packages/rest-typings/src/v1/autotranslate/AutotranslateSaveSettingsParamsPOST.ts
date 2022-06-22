@@ -28,7 +28,7 @@ const AutotranslateSaveSettingsParamsPostSchema = {
 			nullable: true,
 		},
 	},
-	required: ['roomId', 'field', 'value', 'defaultLanguage'],
+	required: ['roomId', 'field', 'value'],
 	additionalProperties: false,
 };
 
