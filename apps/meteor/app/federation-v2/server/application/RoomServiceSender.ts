@@ -12,7 +12,6 @@ import {
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
 } from './input/RoomSenderDto';
-import { callbacks } from '../../../../lib/callbacks';
 
 export class FederationRoomServiceSender {
 	constructor(
@@ -128,7 +127,4 @@ export class FederationRoomServiceSender {
 		return Boolean(federatedRoom?.isFederated());
 	}
 
-	public async setupCallbacks(): Promise<void> {
-		callbacks.add('afterLeaveRoom', this.leaveRoom);
-	}
 }
