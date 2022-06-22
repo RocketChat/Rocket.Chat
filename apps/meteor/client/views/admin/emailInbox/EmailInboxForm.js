@@ -338,7 +338,7 @@ function EmailInboxForm({ id, data }) {
 							<Field>
 								<Field.Label>{t('Max_Retry')}*</Field.Label>
 								<Field.Row>
-									<TextInput value={imapRetries} onChange={handleImapRetries} />
+									<TextInput type='number' value={imapRetries} onChange={handleImapRetries} />
 								</Field.Row>
 							</Field>
 							<Field>
