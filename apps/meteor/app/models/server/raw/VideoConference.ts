@@ -8,24 +8,19 @@ import type { IndexSpecification, InsertionModel } from './BaseRaw';
 export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 	protected modelIndexes(): IndexSpecification[] {
 		return [
-			{ key: { rid: 1, status: 1, createdAt: 1 }, unique: false },
+			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },
 		];
 	}
 
-	public async findRecentByRoomId(
+	public async findAllByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
 	): Promise<Cursor<VideoConference>> {
 		return this.find(
+			{ rid },
 			{
-				rid,
-				createdAt: {
-					$gte: new Date(new Date().valueOf() - 24 * 60 * 60 * 1000),
-				},
-			},
-			{
-				sort: { status: 1, createdAt: -1 },
+				sort: { createdAt: -1 },
 				skip: offset,
 				limit: count,
 				projection: {
@@ -170,5 +165,24 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 			} as FilterQuery<VideoConference>,
 			options,
 		).count();
+	}
+
+	public async expireOldVideoConferences(minDate: Date): Promise<void> {
+		await this.updateMany(
+			{
+				createdAt: {
+					$lte: minDate,
+				},
+				endedAt: {
+					$exists: false,
+				},
+			},
+			{
+				$set: {
+					endedAt: new Date(),
+					status: VideoConferenceStatus.EXPIRED,
+				},
+			},
+		);
 	}
 }

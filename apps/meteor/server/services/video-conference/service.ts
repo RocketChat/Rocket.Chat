@@ -155,11 +155,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
 		}
 
+		await this.VideoConference.setStatusById(call._id, VideoConferenceStatus.DECLINED);
 		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
 	}
 
 	public async get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null> {
-		return this.VideoConference.findOneById(callId, { projection: { providerData: 0 } });
+		return this.VideoConference.findOneById<Omit<VideoConference, 'providerData'>>(callId, { projection: { providerData: 0 } });
 	}
 
 	public async getUnfiltered(callId: VideoConference['_id']): Promise<VideoConference | null> {
@@ -170,7 +171,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		roomId: IRoom['_id'],
 		pagination: { offset?: number; count?: number } = {},
 	): Promise<PaginatedResult<{ data: VideoConference[] }>> {
-		const cursor = await this.VideoConference.findRecentByRoomId(roomId, pagination);
+		const cursor = await this.VideoConference.findAllByRoomId(roomId, pagination);
 
 		const data = (await cursor.toArray()) as VideoConference[];
 		const total = await cursor.count();
@@ -259,6 +260,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
 		}
 
+		await this.VideoConference.setStatusById(call._id, VideoConferenceStatus.DECLINED);
 		await this.VideoConference.setEndedById(call._id);
 
 		return true;
