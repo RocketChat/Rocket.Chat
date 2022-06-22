@@ -5,12 +5,13 @@ import { getCollectionName } from '@rocket.chat/models';
 import { Random } from 'meteor/random';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel {
 	constructor(db: Db) {
-		super(db, getCollectionName('analytics'));
-
-		// TODO add: { readPreference: readSecondaryPreferred(db) }
+		super(db, getCollectionName('analytics'), undefined, {
+			collection: { readPreference: readSecondaryPreferred(db) },
+		});
 	}
 
 	protected modelIndexes(): IndexSpecification[] {

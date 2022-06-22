@@ -5,6 +5,7 @@ import {
 	CommonOptions,
 	Cursor,
 	Db,
+	DbCollectionOptions,
 	DeleteWriteOpResultObject,
 	FilterQuery,
 	FindAndModifyWriteOpResultObject,
@@ -35,6 +36,11 @@ const warnFields =
 		  }
 		: new Function();
 
+type ModelOptions = {
+	preventSetUpdatedAt?: boolean;
+	collection?: DbCollectionOptions;
+};
+
 export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseModel<T, C> {
 	public readonly defaultFields: C;
 
@@ -42,13 +48,8 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	private preventSetUpdatedAt: boolean;
 
-	constructor(
-		private db: Db,
-		protected name: string,
-		protected trash?: Collection<RocketChatRecordDeleted<T>>,
-		options?: { preventSetUpdatedAt?: boolean },
-	) {
-		this.col = this.db.collection(name);
+	constructor(private db: Db, protected name: string, protected trash?: Collection<RocketChatRecordDeleted<T>>, options?: ModelOptions) {
+		this.col = this.db.collection(name, options?.collection || {});
 
 		const indexes = this.modelIndexes();
 		if (indexes?.length) {
