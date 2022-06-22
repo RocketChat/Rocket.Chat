@@ -7,7 +7,7 @@ import type { IndexSpecification, InsertionModel } from './BaseRaw';
 
 export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 	protected modelIndexes(): IndexSpecification[] {
-		return [{ key: { rid: 1, status: 1, createdAt: 1 }, unique: false }];
+		return [{ key: { rid: 1, createdAt: 1 }, unique: false }];
 	}
 
 	public async findAllByRoomId(
@@ -17,7 +17,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		return this.find(
 			{ rid },
 			{
-				sort: { status: 1, createdAt: -1 },
+				sort: { createdAt: -1 },
 				skip: offset,
 				limit: count,
 				projection: {
