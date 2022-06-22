@@ -12,7 +12,7 @@ export const ToolboxDropdownDesktop = forwardRef<
 	const { style: s } = usePosition(reference, ref as RefObject<HTMLElement>, {
 		watch: true,
 		placement: 'bottom-end',
-		container: document.querySelector('.messages-box') || document.body,
+		container: document.querySelector('.messages-container') || document.body,
 	});
 
 	return (
