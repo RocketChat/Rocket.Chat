@@ -1,11 +1,10 @@
 import { Box, TableRow, TableCell, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { KeyboardEvent, ReactElement, useMemo, useCallback } from 'react';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { KeyboardEvent, ReactElement, useCallback } from 'react';
 
-import GenericModal from '../../../../../../client/components/GenericModal';
-import { useEndpointAction } from '../../../../../../client/hooks/useEndpointAction';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
+import useDeviceLogout from '../../../../hooks/useDeviceLogout';
 import DeviceIcon from './DeviceIcon';
 
 type DeviceRowProps = {
@@ -32,11 +31,11 @@ const DevicesRow = ({
 	onReload,
 }: DeviceRowProps): ReactElement => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const setModal = useSetModal();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+
+	const handleDeviceLogout = useDeviceLogout(_id);
 
 	const handleClick = useMutableCallback((): void => {
 		deviceManagementRouter.push({
@@ -55,46 +54,10 @@ const DevicesRow = ({
 		[handleClick],
 	);
 
-	const logoutDevice = useEndpointAction(
-		'POST',
-		'/v1/sessions/logout',
-		useMemo(() => ({ sessionId: _id }), [_id]),
-	);
-
-	const handleLogoutDeviceModal = useCallback(() => {
-		const closeModal = (): void => setModal(null);
-
-		const handleLogoutDevice = async (): Promise<void> => {
-			try {
-				await logoutDevice();
-				onReload();
-				dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
-			} finally {
-				closeModal();
-			}
-		};
-
-		setModal(
-			<GenericModal
-				title={t('Logout_Device')}
-				variant='danger'
-				confirmText={t('Logout_Device')}
-				cancelText={t('Cancel')}
-				onConfirm={handleLogoutDevice}
-				onCancel={closeModal}
-				onClose={closeModal}
-			>
-				{t('Device_Logout_Text')}
-			</GenericModal>,
-		);
-	}, [t, onReload, logoutDevice, setModal, dispatchToastMessage]);
-
 	const menuOptions = {
 		logout: {
 			label: { label: t('Logout_Device'), icon: 'sign-out' },
-			action: (): void => handleLogoutDeviceModal(),
+			action: (): void => handleDeviceLogout(onReload),
 		},
 	};
 

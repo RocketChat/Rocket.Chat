@@ -1,15 +1,14 @@
 import { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation, useToastMessageDispatch, useSetModal } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement, useCallback } from 'react';
 
-import GenericModal from '../../../../../../client/components/GenericModal';
 import VerticalBar from '../../../../../../client/components/VerticalBar';
 import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
-import { useEndpointAction } from '../../../../../../client/hooks/useEndpointAction';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../../../client/hooks/usePresence';
 import InfoPanel from '../../../../../../client/views/InfoPanel';
+import useDeviceLogout from '../../../../hooks/useDeviceLogout';
 
 type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
 	onReload: () => void;
@@ -19,51 +18,14 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 	const t = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const setModal = useSetModal();
+
+	const handleDeviceLogout = useDeviceLogout(sessionId);
 
 	const { name: clientName, os } = device || {};
 	const { username, name } = _user || {};
 	const userPresence = usePresence(userId);
 
 	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
-
-	const logoutDevice = useEndpointAction(
-		'POST',
-		'/v1/sessions/logout',
-		useMemo(() => ({ sessionId }), [sessionId]),
-	);
-
-	const handleLogoutDeviceModal = useCallback(() => {
-		const closeModal = (): void => setModal(null);
-
-		const handleLogoutDevice = async (): Promise<void> => {
-			try {
-				await logoutDevice();
-				onReload();
-				handleCloseContextualBar();
-				dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
-			} finally {
-				closeModal();
-			}
-		};
-
-		setModal(
-			<GenericModal
-				title={t('Logout_Device')}
-				variant='danger'
-				confirmText={t('Logout_Device')}
-				cancelText={t('Cancel')}
-				onConfirm={handleLogoutDevice}
-				onCancel={closeModal}
-				onClose={closeModal}
-			>
-				{t('Device_Logout_Text')}
-			</GenericModal>,
-		);
-	}, [t, onReload, logoutDevice, setModal, dispatchToastMessage, handleCloseContextualBar]);
 
 	return (
 		<VerticalBar>
@@ -117,7 +79,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					<Button primary onClick={handleLogoutDeviceModal}>
+					<Button primary onClick={() => handleDeviceLogout(onReload, true)}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>
