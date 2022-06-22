@@ -21,7 +21,7 @@ export const useAudioCallAction = (rid: IRoom['_id']): Action | undefined => {
 
 		const action = callInProgress ? handleJoinCall : handleStartCall;
 
-		return !isIRoomFederated(room) && shouldAllowCalls
+		return room && !isIRoomFederated(room) && shouldAllowCalls
 			? {
 					label: t(callInProgress ? 'Join_audio_call' : 'Start_audio_call'),
 					icon: 'mic',
