@@ -12,7 +12,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		Notifications.onUser(`force_logout`, () => {
+		Notifications.onUser('force_logout', () => {
 			Session.set('force_logout', true);
 		});
 	});
