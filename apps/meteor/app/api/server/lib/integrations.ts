@@ -1,6 +1,6 @@
 import type { IIntegration, IUser } from '@rocket.chat/core-typings';
+import { Integrations } from '@rocket.chat/models';
 
-import { Integrations } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 const hasIntegrationsPermission = async (userId: string, integration: IIntegration): Promise<boolean> => {

@@ -4,7 +4,7 @@ import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization';
-import { Users, LivechatDepartment, LivechatInquiry } from '../../../../models';
+import { Users, LivechatDepartment, LivechatInquiry } from '../../../../models/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 
 API.v1.addRoute(

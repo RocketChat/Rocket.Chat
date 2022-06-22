@@ -1,4 +1,3 @@
-import './actionButton';
 import './messageType';
 import './snippetMessage';
 import './page/snippetPage.html';

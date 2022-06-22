@@ -18,18 +18,18 @@ import { isRunningMs } from '../lib/isRunningMs';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-api.registerService(new AnalyticsService(db));
+api.registerService(new AnalyticsService());
 api.registerService(new AuthorizationLivechat());
-api.registerService(new BannerService(db));
+api.registerService(new BannerService());
 api.registerService(new LDAPService());
 api.registerService(new MediaService());
 api.registerService(new MeteorService());
-api.registerService(new NPSService(db));
-api.registerService(new RoomService(db));
+api.registerService(new NPSService());
+api.registerService(new RoomService());
 api.registerService(new SAUMonitorService());
 api.registerService(new VoipService(db));
-api.registerService(new OmnichannelVoipService(db));
-api.registerService(new TeamService(db));
+api.registerService(new OmnichannelVoipService());
+api.registerService(new TeamService());
 api.registerService(new UiKitCoreApp());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
