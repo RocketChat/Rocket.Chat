@@ -14,7 +14,6 @@ import '../app/drupal/client';
 import '../app/emoji/client';
 import '../app/emoji-emojione/client';
 import '../app/emoji-custom/client';
-import '../app/favico';
 import '../app/file-upload';
 import '../app/github-enterprise/client';
 import '../app/gitlab/client';
