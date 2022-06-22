@@ -98,7 +98,7 @@ import '../app/discussion/server';
 import '../app/mail-messages/server';
 import '../app/user-status';
 import '../app/utils';
-import '../app/models';
+import '../app/models/server';
 import '../app/metrics';
 import '../app/notifications';
 import '../app/ui-utils';

@@ -3,12 +3,12 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { AutoUpdateRecord, IMeteor } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
-import { Users } from '../../../app/models/server/raw/index';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server';
 import { setValue, updateValue } from '../../../app/settings/server/raw';

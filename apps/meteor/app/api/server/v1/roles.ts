@@ -8,13 +8,13 @@ import {
 	isRoleUpdateProps,
 } from '@rocket.chat/rest-typings';
 import type { IRole } from '@rocket.chat/core-typings';
+import { Roles } from '@rocket.chat/models';
 
 import { Users } from '../../../models/server';
 import { API } from '../api';
 import { getUsersInRole, hasRole } from '../../../authorization/server';
 import { settings } from '../../../settings/server/index';
 import { api } from '../../../../server/sdk/api';
-import { Roles } from '../../../models/server/raw';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

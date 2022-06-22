@@ -1,9 +1,9 @@
 import { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { BulkWriteOperation, Cursor } from 'mongodb';
+import { LivechatVisitors as VisitorsRaw } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 import { LivechatVisitors, Users } from '../../../app/models/server';
-import { LivechatVisitors as VisitorsRaw } from '../../../app/models/server/raw';
 
 const getNextPageCursor = (skip: number, limit: number): Cursor<ILivechatVisitor> => {
 	return LivechatVisitors.find({ 'visitorEmails.address': /[A-Z]/ }, { skip, limit, sort: { _id: 1 } });

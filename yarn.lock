@@ -3386,6 +3386,8 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.9
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.9
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -3836,6 +3838,8 @@ __metadata:
     "@rocket.chat/logo": ~0.31.12
     "@rocket.chat/memo": ~0.31.12
     "@rocket.chat/message-parser": ~0.31.12
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": ^0.24.0
     "@rocket.chat/onboarding-ui": ~0.31.12
     "@rocket.chat/rest-typings": "workspace:^"
@@ -4103,6 +4107,34 @@ __metadata:
     xml2js: 0.4.23
     xmldom: ^0.6.0
     yaqrcode: ^0.2.1
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/model-typings@workspace:^, @rocket.chat/model-typings@workspace:packages/model-typings":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/model-typings@workspace:packages/model-typings"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@types/jest": ^27.4.1
+    "@types/mongodb": ^3.6.10
+    "@types/node-rsa": ^1.1.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.3.4
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/models@workspace:^, @rocket.chat/models@workspace:packages/models":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/models@workspace:packages/models"
+  dependencies:
+    "@rocket.chat/model-typings": "workspace:^"
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.3.4
   languageName: unknown
   linkType: soft
 
@@ -7738,7 +7770,7 @@ __metadata:
     human-interval: ~1.0.0
     moment-timezone: ~0.5.27
     mongodb: ~3.5.0
-  checksum: cc8c1bbba7545628d9d039c58e701ff65cf07f241f035b731716eec0d5ef906ce09d60c3b321bbfb9e6c641994d1afd23aaeb92d645b33bf7be9942f13574173
+  checksum: acb4ebb7e7356f6e53e810d821eb6aa3d88bbfb9e85183e707517bee6d1eea1f189f38bdf0dd2b91360492ab7643134d510c320d2523d86596498ab98e59735b
   languageName: node
   linkType: hard
 
@@ -27318,6 +27350,8 @@ __metadata:
     "@rocket.chat/emitter": ~0.31.9
     "@rocket.chat/icons": ^0.31.0
     "@rocket.chat/message-parser": next
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.9
     "@rocket.chat/ui-kit": ~0.31.9

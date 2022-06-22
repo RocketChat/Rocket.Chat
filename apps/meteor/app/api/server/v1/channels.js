@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
+import { Integrations, Uploads } from '@rocket.chat/models';
 
 import { Rooms, Subscriptions, Messages, Users } from '../../../models/server';
-import { Integrations, Uploads } from '../../../models/server/raw';
 import { canAccessRoom, hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
