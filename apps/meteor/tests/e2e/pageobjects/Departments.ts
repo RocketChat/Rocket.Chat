@@ -73,11 +73,11 @@ export class Departments extends BasePage {
 	}
 
 	get btnModalCancelDeleteDepartment(): Locator {
-		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--ghost');
+		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--secondary');
 	}
 
 	get btnModalDeleteDepartment(): Locator {
-		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--primary-danger');
+		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--danger');
 	}
 
 	get modalDepartment(): Locator {
