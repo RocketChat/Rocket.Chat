@@ -1,8 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { validUser } from './utils/mocks/userAndPasswordMock';
-import LoginPage from './utils/pageobjects/LoginPage';
-import Global from './utils/pageobjects/Global';
+import { Global, LoginPage } from './pageobjects';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
 
 test.describe('[Login]', () => {
@@ -22,7 +21,7 @@ test.describe('[Login]', () => {
 			password: 'any_password1',
 		};
 		await loginPage.login(invalidUserPassword);
-		await expect(global.getToastBarError()).toBeVisible();
+		await expect(global.getToastBarError).toBeVisible();
 	});
 
 	test('expect user make login', async () => {

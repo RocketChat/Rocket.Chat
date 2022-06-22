@@ -1,16 +1,16 @@
 import { useRoutePath, useCurrentRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, FC, memo } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { menu, SideNav } from '../../../../app/ui-utils/client';
 import Sidebar from '../../../components/Sidebar';
 import SidebarItemsAssemblerProps from '../../../components/Sidebar/SidebarItemsAssembler';
 import { isLayoutEmbedded } from '../../../lib/utils/isLayoutEmbedded';
 import SettingsProvider from '../../../providers/SettingsProvider';
-import { itemsSubscription } from '../sidebarItems';
+import { getOmnichannelSidebarItems, subscribeToOmnichannelSidebarItems } from '../sidebarItems';
 
 const OmnichannelSidebar: FC = () => {
-	const items = useSubscription(itemsSubscription);
+	const items = useSyncExternalStore(subscribeToOmnichannelSidebarItems, getOmnichannelSidebarItems);
 	const t = useTranslation();
 
 	const closeOmnichannelFlex = useCallback(() => {

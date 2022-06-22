@@ -362,7 +362,7 @@ function EmailInboxForm({ id, data }) {
 							<Margins blockStart='x16'>
 								<ButtonGroup stretch w='full'>
 									{id && (
-										<Button primary danger onClick={handleDelete}>
+										<Button danger onClick={handleDelete}>
 											{t('Delete')}
 										</Button>
 									)}

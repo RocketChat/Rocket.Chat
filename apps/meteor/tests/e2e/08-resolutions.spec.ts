@@ -1,9 +1,6 @@
 import { test, expect, Browser } from '@playwright/test';
 
-import MainContent from './utils/pageobjects/MainContent';
-import SideNav from './utils/pageobjects/SideNav';
-import LoginPage from './utils/pageobjects/LoginPage';
-import Global from './utils/pageobjects/Global';
+import { Global, MainContent, SideNav, LoginPage } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 let loginPage: LoginPage;
@@ -38,11 +35,11 @@ test.describe('[Resolution]', function () {
 		test.afterAll(async ({ browser, baseURL }) => {
 			await initConfig(browser, baseURL, { viewport: { width: 1600, height: 1600 } });
 
-			await expect(sideNav.spotlightSearchIcon()).toBeVisible();
+			await expect(sideNav.spotlightSearchIcon).toBeVisible();
 		});
 
 		test('expect close the sidenav', async () => {
-			const position = await mainContent.mainContent().boundingBox();
+			const position = await mainContent.mainContent.boundingBox();
 			await expect(position?.x).toEqual(0);
 			await expect(await sideNav.isSideBarOpen()).toBeFalsy;
 		});
@@ -50,25 +47,25 @@ test.describe('[Resolution]', function () {
 		test.describe('moving elements:', async () => {
 			test.beforeEach(async () => {
 				if (!(await sideNav.isSideBarOpen())) {
-					await sideNav.burgerBtn().click({ force: true });
+					await sideNav.burgerBtn.click({ force: true });
 				}
 			});
 
 			test('expect open the sidenav', async () => {
-				const position = await mainContent.mainContent().boundingBox();
+				const position = await mainContent.mainContent.boundingBox();
 				await expect(position?.x).toEqual(0);
 				await expect(await sideNav.isSideBarOpen()).toBeTruthy;
 			});
 
 			test('expect not close sidebar on pressing the sidebar item menu', async () => {
-				await sideNav.firstSidebarItemMenu().click();
+				await sideNav.firstSidebarItemMenu.click();
 
-				const position = await mainContent.mainContent().boundingBox();
+				const position = await mainContent.mainContent.boundingBox();
 				await expect(position?.x).toEqual(0);
 
 				await expect(await sideNav.isSideBarOpen()).toBeTruthy;
 
-				await sideNav.firstSidebarItemMenu().click();
+				await sideNav.firstSidebarItemMenu.click();
 			});
 
 			test('expect close the sidenav when open general channel', async () => {
@@ -79,33 +76,33 @@ test.describe('[Resolution]', function () {
 			test.describe('Preferences', async () => {
 				test.beforeAll(async () => {
 					if (!(await sideNav.isSideBarOpen())) {
-						await sideNav.burgerBtn().click({ force: true });
+						await sideNav.burgerBtn.click({ force: true });
 					}
 
-					await sideNav.sidebarUserMenu().click();
-					await sideNav.account().click();
+					await sideNav.sidebarUserMenu.click();
+					await sideNav.account.click();
 				});
 
 				test.afterEach(async () => {
-					await sideNav.returnToMenuInLowResolution().click();
+					await sideNav.returnToMenuInLowResolution.click();
 				});
 
 				test('expect close the sidenav when press the preferences link', async () => {
-					await sideNav.preferences().click();
-					await sideNav.getPage().mouse.click(640, 30);
-					await expect(await global.flexNav().isVisible()).toBeFalsy;
+					await sideNav.preferences.click();
+					await sideNav.page.mouse.click(640, 30);
+					await expect(await global.flexNav.isVisible()).toBeFalsy;
 				});
 
 				test('expect close the sidenav when press the profile link', async () => {
-					await sideNav.profile().click();
-					await sideNav.getPage().mouse.click(640, 30);
-					await expect(await sideNav.flexNav().isVisible()).toBeFalsy;
+					await sideNav.profile.click();
+					await sideNav.page.mouse.click(640, 30);
+					await expect(await sideNav.flexNav.isVisible()).toBeFalsy;
 				});
 
 				test('expect close the preferences nav', async () => {
-					await sideNav.preferencesClose().click();
-					await sideNav.getPage().mouse.click(640, 30);
-					await expect(await sideNav.flexNav().isVisible()).toBeTruthy;
+					await sideNav.preferencesClose.click();
+					await sideNav.page.mouse.click(640, 30);
+					await expect(await sideNav.flexNav.isVisible()).toBeTruthy;
 				});
 			});
 		});
