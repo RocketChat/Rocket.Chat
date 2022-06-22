@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
-import { Messages } from '../../../models';
-import { settings } from '../../../settings';
+import { Messages } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
