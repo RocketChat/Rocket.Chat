@@ -1,4 +1,4 @@
-import type { ISupportedLanguage } from '@rocket.chat/core-typings';
+import type { IMessage, ISupportedLanguage } from '@rocket.chat/core-typings';
 
 export type AutoTranslateEndpoints = {
 	'/v1/autotranslate.getSupportedLanguages': {
@@ -8,6 +8,8 @@ export type AutoTranslateEndpoints = {
 		POST: (params: { roomId: string; field: string; value: boolean; defaultLanguage?: string }) => void;
 	};
 	'/v1/autotranslate.translateMessage': {
-		POST: (params: { messageId: string; targetLanguage?: string }) => void;
+		POST: (params: { messageId: string; targetLanguage?: string }) => {
+			message: IMessage;
+		};
 	};
 };
