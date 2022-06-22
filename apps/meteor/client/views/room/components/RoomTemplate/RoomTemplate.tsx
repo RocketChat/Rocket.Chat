@@ -24,7 +24,7 @@ export const RoomTemplate: FC & {
 		<Box is='main' h='full' display='flex' flexDirection='column' {...props}>
 			{header.length > 0 && header}
 			<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
-				<Box display='flex' flexDirection='column' flexGrow={1} zIndex={6}>
+				<Box display='flex' flexDirection='column' flexGrow={1}>
 					<Box is='div' display='flex' flexDirection='column' flexGrow={1}>
 						{body}
 					</Box>
