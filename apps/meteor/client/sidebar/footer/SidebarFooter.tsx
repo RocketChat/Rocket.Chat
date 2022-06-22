@@ -55,18 +55,13 @@ const SidebarFooter = (): ReactElement => {
 			/>
 			{isCommunityEdition && (
 				<Box pi='x16' pbe='x8'>
-					<Box fontSize='x10' fontWeight={700} color={colors.n100} pbe='x4'>
-						{t('Free_Edition')}
-					</Box>
-					<Box fontSize='x10' fontWeight={700} color={colors.n600}>
-						<a
-							href='https://go.rocket.chat/'
-							target='_blank'
-							rel='noopener noreferrer'
-							style={{ textDecoration: 'none', color: 'inherit' }}
-						>
+					<Box fontSize='x10' fontWeight={700} color={colors.n600} pbe='x4'>
+						<a href='https://rocket.chat/' target='_blank' rel='noopener noreferrer' style={{ textDecoration: 'none', color: 'inherit' }}>
 							{t('Powered_by_RocketChat')}
 						</a>
+					</Box>
+					<Box fontSize='x10' fontWeight={700} color={colors.n100} pbe='x4'>
+						{t('Free_Edition')}
 					</Box>
 				</Box>
 			)}
