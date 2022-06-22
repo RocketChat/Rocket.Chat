@@ -145,6 +145,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
 		}
 
+		await this.VideoConference.setStatusById(call._id, VideoConferenceStatus.DECLINED);
 		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
 	}
 
@@ -249,6 +250,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
 		}
 
+		await this.VideoConference.setStatusById(call._id, VideoConferenceStatus.DECLINED);
 		await this.VideoConference.setEndedById(call._id);
 
 		return true;

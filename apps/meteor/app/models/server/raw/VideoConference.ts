@@ -163,6 +163,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 			{
 				$set: {
 					endedAt: new Date(),
+					status: VideoConferenceStatus.EXPIRED,
 				},
 			},
 		);
