@@ -3,11 +3,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import FileType from 'file-type';
 import React, { useEffect, ReactElement } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
 import { useFileInput } from '../../hooks/useFileInput';
+import { isValidImage } from '../../lib/utils/isValidImage';
 import RoomAvatar from './RoomAvatar';
 
 type RoomAvatarEditorProps = {
@@ -22,21 +22,23 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar }: RoomAvatarEditor
 
 	const handleChangeAvatar = useMutableCallback(async (file) => {
 		const reader = new FileReader();
-		const buffer = await file.arrayBuffer();
-		const type = await FileType.fromBuffer(buffer);
+		reader.readAsDataURL(file);
+		const dataurl = await new Promise<string>((resolve) => {
+			reader.onloadend = (): void => {
+				if (typeof reader.result === 'string') {
+					return resolve(reader.result);
+				}
+			};
+		});
 
-		if (!file.type.startsWith('image/') || type?.ext === 'heic') {
-			dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+		const isValid = await isValidImage(dataurl);
+
+		if (isValid) {
+			onChangeAvatar(dataurl);
 			return;
 		}
 
-		reader.onloadend = (): void => {
-			if (typeof reader.result === 'string') {
-				onChangeAvatar(reader.result);
-			}
-		};
-
-		reader.readAsDataURL(file);
+		dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
 	});
 
 	const [clickUpload, reset] = useFileInput(handleChangeAvatar);
