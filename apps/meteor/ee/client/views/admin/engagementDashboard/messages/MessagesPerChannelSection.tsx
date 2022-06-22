@@ -83,23 +83,23 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			id: 'd',
 																			label: t('Direct_Messages'),
 																			value: pie.d,
-																			color: colors.y500,
+																			color: colors.w500,
 																		},
 																		{
 																			id: 'c',
 																			label: t('Private_Channels'),
 																			value: pie.c,
-																			color: colors.g500,
+																			color: colors.s500,
 																		},
 																		{
 																			id: 'p',
 																			label: t('Public_Channels'),
 																			value: pie.p,
-																			color: colors.b500,
+																			color: colors.p500,
 																		},
 																	]}
 																	innerRadius={0.6}
-																	colors={[colors.y500, colors.g500, colors.b500]}
+																	colors={[colors.w500, colors.s500, colors.p500]}
 																	// @ts-ignore
 																	enableRadialLabels={false}
 																	enableSlicesLabels={false}
@@ -146,15 +146,15 @@ const MessagesPerChannelSection = (): ReactElement => {
 														<Box>
 															<Margins block='x4'>
 																<Box color='info' fontScale='p1'>
-																	<LegendSymbol color={colors.y500} />
+																	<LegendSymbol color={colors.w500} />
 																	{t('Private_Chats')}
 																</Box>
 																<Box color='info' fontScale='p1'>
-																	<LegendSymbol color={colors.g500} />
+																	<LegendSymbol color={colors.s500} />
 																	{t('Private_Channels')}
 																</Box>
 																<Box color='info' fontScale='p1'>
-																	<LegendSymbol color={colors.b500} />
+																	<LegendSymbol color={colors.p500} />
 																	{t('Public_Channels')}
 																</Box>
 															</Margins>

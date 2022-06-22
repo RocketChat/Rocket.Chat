@@ -1,5 +1,5 @@
 import type { IInvite } from '@rocket.chat/core-typings';
-import { Button, Icon, Box } from '@rocket.chat/fuselage';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, MouseEvent } from 'react';
@@ -77,9 +77,7 @@ const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteR
 				</>
 			)}
 			<GenericTableCell>
-				<Button ghost danger small square onClick={handleRemoveButtonClick}>
-					<Icon name='cross' size='x20' />
-				</Button>
+				<IconButton icon='cross' danger small onClick={handleRemoveButtonClick} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);
