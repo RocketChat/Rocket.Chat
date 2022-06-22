@@ -35,22 +35,27 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		);
 	}
 
-	public async createDirect(callDetails: Pick<VideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string> {
+	public async createDirect({
+		providerName,
+		...callDetails
+	}: Pick<VideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string> {
 		const call: InsertionModel<VideoConference> = {
 			type: 'direct',
 			users: [],
 			messages: {},
 			status: VideoConferenceStatus.CALLING,
 			createdAt: new Date(),
+			providerName: providerName.toLowerCase(),
 			...callDetails,
 		};
 
 		return (await this.insertOne(call)).insertedId;
 	}
 
-	public async createGroup(
-		callDetails: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>,
-	): Promise<string> {
+	public async createGroup({
+		providerName,
+		...callDetails
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -58,21 +63,24 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 			status: VideoConferenceStatus.STARTED,
 			anonymousUsers: 0,
 			createdAt: new Date(),
+			providerName: providerName.toLowerCase(),
 			...callDetails,
 		};
 
 		return (await this.insertOne(call)).insertedId;
 	}
 
-	public async createLivechat(
-		callDetails: Required<Pick<ILivechatVideoConference, 'rid' | 'createdBy' | 'providerName'>>,
-	): Promise<string> {
+	public async createLivechat({
+		providerName,
+		...callDetails
+	}: Required<Pick<ILivechatVideoConference, 'rid' | 'createdBy' | 'providerName'>>): Promise<string> {
 		const call: InsertionModel<ILivechatVideoConference> = {
 			type: 'livechat',
 			users: [],
 			messages: {},
 			status: VideoConferenceStatus.STARTED,
 			createdAt: new Date(),
+			providerName: providerName.toLowerCase(),
 			...callDetails,
 		};
 
@@ -128,13 +136,14 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 		});
 	}
 
-	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username'> & { ts?: Date }): Promise<void> {
+	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'> & { ts?: Date }): Promise<void> {
 		await this.updateOneById(callId, {
 			$addToSet: {
 				users: {
 					_id: user._id,
 					username: user.username,
 					name: user.name,
+					avatarETag: user.avatarETag,
 					ts: user.ts || new Date(),
 				},
 			},

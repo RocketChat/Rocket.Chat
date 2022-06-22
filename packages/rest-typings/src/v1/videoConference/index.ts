@@ -15,11 +15,11 @@ export * from './VideoConfCancelProps';
 
 export type VideoConferenceEndpoints = {
 	'/v1/video-conference.start': {
-		POST: (params: VideoConfStartProps) => { data: VideoConferenceInstructions };
+		POST: (params: VideoConfStartProps) => { data: VideoConferenceInstructions & { providerName: string } };
 	};
 
 	'/v1/video-conference.join': {
-		POST: (params: VideoConfJoinProps) => { url: string };
+		POST: (params: VideoConfJoinProps) => { url: string; providerName: string };
 	};
 
 	'/v1/video-conference.cancel': {

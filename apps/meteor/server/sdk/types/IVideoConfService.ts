@@ -41,4 +41,5 @@ export interface IVideoConfService {
 	listProviders(): Promise<{ key: string; label: string }[]>;
 	listCapabilities(): Promise<{ providerName: string; capabilities: VideoConferenceCapabilities }>;
 	declineLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
+	diagnoseProvider(uid: string, rid: string, providerName?: string): Promise<string | undefined>;
 }
