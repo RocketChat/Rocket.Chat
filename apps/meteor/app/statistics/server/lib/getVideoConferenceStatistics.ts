@@ -28,10 +28,10 @@ export async function getVideoConferenceStatistics(): Promise<IStats['videoConf'
 		},
 		settings: {
 			provider: settings.get<string>('VideoConf_Default_Provider'),
-			dms: !settings.get<boolean>('VideoConf_Disable_DMs'),
-			channels: !settings.get<boolean>('VideoConf_Disable_Channels'),
-			groups: !settings.get<boolean>('VideoConf_Disable_Groups'),
-			teams: !settings.get<boolean>('VideoConf_Disable_Teams'),
+			dms: settings.get<boolean>('VideoConf_Enable_DMs'),
+			channels: settings.get<boolean>('VideoConf_Enable_Channels'),
+			groups: settings.get<boolean>('VideoConf_Enable_Groups'),
+			teams: settings.get<boolean>('VideoConf_Enable_Teams'),
 		},
 	};
 }

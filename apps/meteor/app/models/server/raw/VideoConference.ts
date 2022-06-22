@@ -1,4 +1,4 @@
-import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult, FindOneOptions } from 'mongodb';
+import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult, FindOneOptions, FilterQuery } from 'mongodb';
 import type { VideoConference, IGroupVideoConference, ILivechatVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 
@@ -156,9 +156,9 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> {
 	): Promise<number> {
 		return this.find(
 			{
-				type: type as any,
+				type,
 				status,
-			},
+			} as FilterQuery<VideoConference>,
 			options,
 		).count();
 	}

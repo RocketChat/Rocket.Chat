@@ -270,7 +270,6 @@ export default {
 					ended: 0,
 				},
 				settings: {
-					enabled: false,
 					provider: '',
 					dms: false,
 					channels: false,

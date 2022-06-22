@@ -179,7 +179,6 @@ export interface IStats {
 			ended: number;
 		};
 		settings: {
-			enabled: boolean;
 			provider: string;
 			dms: boolean;
 			channels: boolean;
