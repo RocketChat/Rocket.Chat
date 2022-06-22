@@ -1,4 +1,5 @@
-import { test, expect } from './utils/test';
+import { test, expect } from '@playwright/test';
+
 import { SideNav, MainContent, LoginPage } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 

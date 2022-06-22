@@ -79,7 +79,6 @@
 		"webpack-dev-server": "^3.11.0"
 	},
 	"dependencies": {
-		"@kossnocorp/desvg": "^0.2.0",
 		"@rocket.chat/fuselage-tokens": "~0.31.11",
 		"@rocket.chat/logo": "^0.31.11",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
@@ -87,18 +86,16 @@
 		"crypto-js": "^4.1.1",
 		"css-vars-ponyfill": "^2.3.2",
 		"date-fns": "^2.15.0",
-		"desvg": "^1.0.2",
 		"emoji-mart": "^3.0.0",
-		"history": "^5.0.0",
-		"i18next": "^21.3.3",
+		"i18next": "^21.8.4",
 		"markdown-it": "^11.0.0",
 		"mem": "^6.1.0",
 		"mitt": "^2.1.0",
 		"preact": "^10.4.6",
 		"preact-router": "^3.2.1",
-		"query-string": "^6.13.1",
-		"react-i18next": "^11.13.0",
-		"whatwg-fetch": "^3.4.0"
+		"query-string": "^7.1.1",
+		"react-i18next": "^11.16.9",
+		"whatwg-fetch": "^3.6.2"
 	},
 	"browserslist": [
 		"> 1%",

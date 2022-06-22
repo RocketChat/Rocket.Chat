@@ -1,8 +1,7 @@
-import { Page } from '@playwright/test';
+import { test, Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 
-import { test } from './utils/test';
 import { MainContent, Discussion, LoginPage, SideNav } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 

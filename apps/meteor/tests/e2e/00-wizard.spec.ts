@@ -1,4 +1,5 @@
-import { test, expect } from './utils/test';
+import { test, expect } from '@playwright/test';
+
 import { VALID_EMAIL, adminLogin } from './utils/mocks/userAndPasswordMock';
 import { setupWizardStepRegex } from './utils/mocks/urlMock';
 import { HOME_SELECTOR } from './utils/mocks/waitSelectorsMock';
