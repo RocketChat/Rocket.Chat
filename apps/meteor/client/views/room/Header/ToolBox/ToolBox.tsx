@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Menu, Option, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import { TranslationKey, useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactNode, useRef, ComponentProps, ReactElement } from 'react';
 
 // used to open the menu option by keyboard
@@ -32,22 +32,24 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 
 	const hiddenActions: Record<string, ToolboxActionConfig> = Object.fromEntries(
-		(isMobile ? actions : actions.slice(6)).map((item) => {
-			hiddenActionRenderers.current = {
-				...hiddenActionRenderers.current,
-				[item.id]: item.renderOption || renderMenuOption,
-			};
-			return [
-				item.id,
-				{
-					label: { title: t(item.title), icon: item.icon },
-					action: (): void => {
-						openTabBar(item.id);
+		(isMobile ? actions : actions.slice(6))
+			.filter((item) => !item.disabled)
+			.map((item) => {
+				hiddenActionRenderers.current = {
+					...hiddenActionRenderers.current,
+					[item.id]: item.renderOption || renderMenuOption,
+				};
+				return [
+					item.id,
+					{
+						label: { title: t(item.title), icon: item.icon },
+						action: (): void => {
+							openTabBar(item.id);
+						},
+						...item,
 					},
-					...item,
-				},
-			];
-		}),
+				];
+			}),
 	);
 
 	const actionDefault = useMutableCallback((e) => {
@@ -72,7 +74,7 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 
 	return (
 		<>
-			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault }, index) => {
+			{visibleActions.map(({ renderAction, id, icon, title, action = actionDefault, disabled, 'data-tooltip': tooltip }, index) => {
 				const props = {
 					id,
 					icon,
@@ -83,6 +85,8 @@ const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 					'data-toolbox': index,
 					action,
 					'key': id,
+					disabled,
+					...(tooltip ? { 'data-tooltip': t(tooltip as TranslationKey) } : {}),
 				};
 				if (renderAction) {
 					return renderAction(props);

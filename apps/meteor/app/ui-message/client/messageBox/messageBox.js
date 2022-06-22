@@ -5,6 +5,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
+import { isIRoomFederated } from '@rocket.chat/core-typings';
 
 import { setupAutogrow } from './messageBoxAutogrow';
 import { formattingButtons, applyFormatting } from './messageBoxFormatting';
@@ -26,6 +27,7 @@ import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { ChatRoom } from '../../../models/client';
 
 Template.messageBox.onCreated(function () {
 	this.state = new ReactiveDict();
@@ -256,6 +258,11 @@ Template.messageBox.helpers({
 	isSubscribed() {
 		const { subscription } = Template.currentData();
 		return !!subscription;
+	},
+	isFederatedRoom() {
+		const { rid } = Template.currentData();
+
+		return isIRoomFederated(ChatRoom.findOne(rid));
 	},
 });
 
