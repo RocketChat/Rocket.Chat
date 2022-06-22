@@ -1,9 +1,7 @@
 import { ModalContext } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo, memo, ReactNode, useCallback, ReactElement } from 'react';
+import React, { useState, useMemo, memo, ReactNode, ReactElement } from 'react';
 
 import { modal } from '../../app/ui-utils/client/lib/modal';
-import ModalBackdrop from '../components/modal/ModalBackdrop';
-import ModalPortal from '../components/modal/ModalPortal';
 import { useImperativeModal } from '../views/hooks/useImperativeModal';
 
 type ModalProviderProps = {
@@ -16,25 +14,15 @@ const ModalProvider = ({ children }: ModalProviderProps): ReactElement => {
 	const contextValue = useMemo(
 		() =>
 			Object.assign(modal, {
+				currentModal,
 				setModal: setCurrentModal,
 			}),
-		[],
+		[currentModal],
 	);
 
 	useImperativeModal(setCurrentModal);
 
-	const handleDismiss = useCallback(() => setCurrentModal(null), [setCurrentModal]);
-
-	return (
-		<ModalContext.Provider value={contextValue}>
-			{children}
-			{currentModal && (
-				<ModalPortal>
-					<ModalBackdrop onDismiss={handleDismiss}>{currentModal}</ModalBackdrop>
-				</ModalPortal>
-			)}
-		</ModalContext.Provider>
-	);
+	return <ModalContext.Provider value={contextValue} children={children} />;
 };
 
 export default memo<typeof ModalProvider>(ModalProvider);

@@ -51,23 +51,7 @@ export type ModalContextValue = {
 	showInputError(text: string): void;
 	onKeyDown(event: KeyboardEvent): void;
 	setModal(modal: ReactNode): void;
+	currentModal: ReactNode;
 };
 
-export const ModalContext = createContext<ModalContextValue>({
-	open: () => undefined,
-	push: () => ({
-		render: (): void => undefined,
-		hide: (): void => undefined,
-		destroy: (): void => undefined,
-		close: (): void => undefined,
-		confirm: (): void => undefined,
-		cancel: (): void => undefined,
-		showInputError: (): void => undefined,
-	}),
-	cancel: () => undefined,
-	close: () => undefined,
-	confirm: () => undefined,
-	showInputError: () => undefined,
-	onKeyDown: () => undefined,
-	setModal: () => undefined,
-});
+export const ModalContext = createContext<ModalContextValue | undefined>(undefined);
