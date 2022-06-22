@@ -4,6 +4,8 @@ import { lazy } from 'react';
 import { hasAllPermission } from '../../../app/authorization/client';
 import { registerAdminRoute, registerAdminSidebarItem, unregisterAdminSidebarItem } from '../../../client/views/admin';
 import { onToggledFeature } from '../lib/onToggledFeature';
+import DeviceManagementFeatureModal from '../deviceManagement/components/featureModal/DeviceManagementFeatureModal';
+import { imperativeModal } from '/client/lib/imperativeModal';
 
 const [registerRoute, unregisterRoute] = registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
@@ -21,6 +23,14 @@ onToggledFeature('device-management', {
 				permissionGranted: () => hasAllPermission('view-device-management'),
 			});
 			registerRoute();
+
+			imperativeModal.open({
+				component: DeviceManagementFeatureModal,
+				props: {
+					close: imperativeModal.close,
+				}
+			});
+
 		}),
 	down: () =>
 		Meteor.startup(() => {
