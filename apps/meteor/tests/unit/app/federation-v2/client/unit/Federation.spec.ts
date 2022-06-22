@@ -5,7 +5,7 @@ import { RoomMemberActions } from '../../../../../../definition/IRoomTypeConfig'
 
 describe('Federation[Client] - Federation', () => {
 	describe('#federationActionAllowed()', () => {
-		const allowedActions = [RoomMemberActions.REMOVE_USER];
+		const allowedActions = [RoomMemberActions.REMOVE_USER, RoomMemberActions.INVITE, RoomMemberActions.JOIN, RoomMemberActions.LEAVE];
 
 		Object.values(RoomMemberActions)
 			.filter((action) => !allowedActions.includes(action as any))
