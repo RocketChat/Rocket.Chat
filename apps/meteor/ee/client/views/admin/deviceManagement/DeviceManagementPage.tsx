@@ -2,8 +2,8 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useRef } from 'react';
 
 import Page from '../../../../../client/components/Page';
-import DeviceInfoWithData from './DeviceInfoWithData';
-import DevicesTable from './DevicesTable';
+import DeviceManagementInfo from './DeviceManagementInfo';
+import DeviceManagementTable from './DeviceManagementTable';
 
 const DeviceManagementPage = (): ReactElement => {
 	const t = useTranslation();
@@ -17,10 +17,10 @@ const DeviceManagementPage = (): ReactElement => {
 			<Page>
 				<Page.Header title={t('Device_Management')} />
 				<Page.Content>
-					<DevicesTable reloadRef={reloadRef} />
+					<DeviceManagementTable reloadRef={reloadRef} />
 				</Page.Content>
 			</Page>
-			{context === 'info' && deviceId && <DeviceInfoWithData deviceId={deviceId} onReload={reloadRef.current} />}
+			{context === 'info' && deviceId && <DeviceManagementInfo deviceId={deviceId} onReload={reloadRef.current} />}
 		</Page>
 	);
 };

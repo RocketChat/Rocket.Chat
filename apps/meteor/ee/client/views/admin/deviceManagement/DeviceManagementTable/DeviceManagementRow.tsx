@@ -1,11 +1,11 @@
 import { Box, TableRow, TableCell, Menu, Option } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { KeyboardEvent, ReactElement, useMemo, useCallback } from 'react';
 
-import GenericModal from '../../../../../client/components/GenericModal';
-import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
-import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
+import GenericModal from '../../../../../../client/components/GenericModal';
+import { useEndpointAction } from '../../../../../../client/hooks/useEndpointAction';
+import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import DeviceIcon from './DeviceIcon';
 
 type DeviceRowProps = {
@@ -38,12 +38,12 @@ const DevicesRow = ({
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const handleClick = useCallback((): void => {
+	const handleClick = useMutableCallback((): void => {
 		deviceManagementRouter.push({
 			context: 'info',
 			id: _id,
 		});
-	}, [deviceManagementRouter, _id]);
+	});
 
 	const handleKeyDown = useCallback(
 		(e: KeyboardEvent<HTMLOrSVGElement>): void => {
@@ -78,9 +78,9 @@ const DevicesRow = ({
 
 		setModal(
 			<GenericModal
-				title={'Logout Device'}
+				title={t('Logout_Device')}
 				variant='danger'
-				confirmText={'Logout Device'}
+				confirmText={t('Logout_Device')}
 				cancelText={t('Cancel')}
 				onConfirm={handleLogoutDevice}
 				onCancel={closeModal}
@@ -90,6 +90,13 @@ const DevicesRow = ({
 			</GenericModal>,
 		);
 	}, [t, onReload, logoutDevice, setModal, dispatchToastMessage]);
+
+	const menuOptions = {
+		logout: {
+			label: { label: t('Logout_Device'), icon: 'sign-out' },
+			action: (): void => handleLogoutDeviceModal(),
+		},
+	};
 
 	return (
 		<TableRow key={_id} onKeyDown={handleKeyDown} onClick={handleClick} tabIndex={0} action>
@@ -107,12 +114,7 @@ const DevicesRow = ({
 			<TableCell onClick={(e): void => e.stopPropagation()}>
 				<Menu
 					title={t('Options')}
-					options={{
-						logout: {
-							label: { label: t('Logout_Device'), icon: 'sign-out' },
-							action: (): void => handleLogoutDeviceModal(),
-						},
-					}}
+					options={menuOptions}
 					renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} icon={icon} {...props} />}
 				/>
 			</TableCell>

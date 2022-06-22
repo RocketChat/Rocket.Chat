@@ -3,19 +3,19 @@ import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, useMemo, useEffect, MutableRefObject } from 'react';
 
-import FilterByText from '../../../../../client/components/FilterByText';
+import FilterByText from '../../../../../../client/components/FilterByText';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
 	GenericTableHeader,
 	GenericTableBody,
 	GenericTableLoadingTable,
-} from '../../../../../client/components/GenericTable';
-import { usePagination } from '../../../../../client/components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../../client/components/GenericTable/hooks/useSort';
-import { useEndpointData } from '../../../../../client/hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../client/lib/asyncState';
-import DevicesRow from './DevicesRow';
+} from '../../../../../../client/components/GenericTable';
+import { usePagination } from '../../../../../../client/components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../../../../client/components/GenericTable/hooks/useSort';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
+import DeviceManagementRow from './DeviceManagementRow';
 
 const sortMapping = {
 	client: 'device.name',
@@ -108,7 +108,7 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 							{phase === AsyncStatePhase.RESOLVED &&
 								data?.sessions &&
 								data.sessions.map((session) => (
-									<DevicesRow
+									<DeviceManagementRow
 										key={session._id}
 										_id={session._id}
 										username={session._user?.username}
@@ -125,7 +125,7 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 					</GenericTable>
 					{phase === AsyncStatePhase.RESOLVED && (
 						<Pagination
-							divider={true}
+							divider
 							current={current}
 							itemsPerPage={itemsPerPage}
 							count={data?.total || 0}

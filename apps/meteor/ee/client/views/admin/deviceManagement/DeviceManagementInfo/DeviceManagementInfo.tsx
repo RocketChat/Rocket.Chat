@@ -3,27 +3,19 @@ import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation, useToastMessageDispatch, useSetModal } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo } from 'react';
 
-import GenericModal from '../../../../../client/components/GenericModal';
-import VerticalBar from '../../../../../client/components/VerticalBar';
-import UserAvatar from '../../../../../client/components/avatar/UserAvatar';
-import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
-import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
-import { usePresence } from '../../../../../client/hooks/usePresence';
-import InfoPanel from '../../../../../client/views/InfoPanel';
+import GenericModal from '../../../../../../client/components/GenericModal';
+import VerticalBar from '../../../../../../client/components/VerticalBar';
+import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
+import { useEndpointAction } from '../../../../../../client/hooks/useEndpointAction';
+import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
+import { usePresence } from '../../../../../../client/hooks/usePresence';
+import InfoPanel from '../../../../../../client/views/InfoPanel';
 
-type DeviceInfoContextualBarProps = DeviceManagementPopulatedSession & {
+type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
 	onReload: () => void;
 };
 
-const DeviceInfoContextualBar = ({
-	device,
-	sessionId,
-	loginAt,
-	ip,
-	userId,
-	_user,
-	onReload,
-}: DeviceInfoContextualBarProps): ReactElement => {
+const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, onReload }: DeviceManagementInfoProps): ReactElement => {
 	const t = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
@@ -60,9 +52,9 @@ const DeviceInfoContextualBar = ({
 
 		setModal(
 			<GenericModal
-				title={'Logout Device'}
+				title={t('Logout_Device')}
 				variant='danger'
-				confirmText={'Logout Device'}
+				confirmText={t('Logout_Device')}
 				cancelText={t('Cancel')}
 				onConfirm={handleLogoutDevice}
 				onCancel={closeModal}
@@ -91,20 +83,21 @@ const DeviceInfoContextualBar = ({
 						<InfoPanel.Text>{`${os?.name || ''} ${os?.version || ''}`}</InfoPanel.Text>
 					</InfoPanel.Field>
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('User')}</InfoPanel.Label>
-						<Box>
-							<UserAvatar username={username || ''} etag={userPresence?.avatarETag} />
-							<Box is='span' pi='x8'>
-								<StatusBullet status={userPresence?.status} />
+					{username && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('User')}</InfoPanel.Label>
+							<Box>
+								<UserAvatar username={username || ''} etag={userPresence?.avatarETag} />
+								<Box is='span' pi='x8'>
+									<StatusBullet status={userPresence?.status} />
+								</Box>
+								{name && <Box is='span'>{name}</Box>}
+								<Box is='span' color='gray'>
+									{`(${username})`}
+								</Box>
 							</Box>
-							{name && <Box is='span'>{name}</Box>}
-							<Box is='span' color='gray'>
-								{' '}
-								{username && `(${username})`}
-							</Box>
-						</Box>
-					</InfoPanel.Field>
+						</InfoPanel.Field>
+					)}
 
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Last_Login')}</InfoPanel.Label>
@@ -124,7 +117,7 @@ const DeviceInfoContextualBar = ({
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					<Button primary width={'100%'} onClick={handleLogoutDeviceModal}>
+					<Button primary onClick={handleLogoutDeviceModal}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>
@@ -133,4 +126,4 @@ const DeviceInfoContextualBar = ({
 	);
 };
 
-export default DeviceInfoContextualBar;
+export default DeviceManagementInfo;

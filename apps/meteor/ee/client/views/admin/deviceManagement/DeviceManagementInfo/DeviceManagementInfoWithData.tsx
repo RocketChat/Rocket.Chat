@@ -3,10 +3,10 @@ import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.ch
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
-import VerticalBar from '../../../../../client/components/VerticalBar';
-import { useEndpointData } from '../../../../../client/hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../client/lib/asyncState';
-import DeviceInfoContextualBar from './DeviceInfoContextualBar';
+import VerticalBar from '../../../../../../client/components/VerticalBar';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
+import DeviceManagementInfo from './DeviceManagementInfo';
 
 const convertSessionFromAPI = ({
 	loginAt,
@@ -18,7 +18,7 @@ const convertSessionFromAPI = ({
 	...rest,
 });
 
-const DeviceInfoWithData = ({ deviceId, ...props }: { deviceId: string; onReload: () => void }): ReactElement => {
+const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload: () => void }): ReactElement => {
 	const t = useTranslation();
 
 	const {
@@ -59,7 +59,7 @@ const DeviceInfoWithData = ({ deviceId, ...props }: { deviceId: string; onReload
 		);
 	}
 
-	return <DeviceInfoContextualBar {...convertSessionFromAPI(data)} {...props} />;
+	return <DeviceManagementInfo {...convertSessionFromAPI(data)} onReload={onReload} />;
 };
 
 export default DeviceInfoWithData;

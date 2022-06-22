@@ -74,7 +74,7 @@ const GenericModal: FC<GenericModalProps> = ({
 			<Modal.Header>
 				{renderIcon(icon, variant)}
 				<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
+				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer>
