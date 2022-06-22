@@ -1,16 +1,25 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
+import {
+	ise2eGetUsersOfRoomWithoutKeyParamsGET,ise2eSetRoomKeyIDParamsPOST,
+	ise2eSetUserPublicAndPrivateKeysParamsPOST,
+	ise2eUpdateGroupKeyParamsPOST,
+} from '@rocket.chat/rest-typings';
+import { IUser } from '@rocket.chat/core-typings';
 
 import { API } from '../api';
 
 API.v1.addRoute(
 	'e2e.fetchMyKeys',
-	{ authRequired: true },
+	{
+		authRequired: true,
+	},
 	{
 		get() {
-			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('e2e.fetchMyKeys');
-			});
+			const result: {
+				public_key: string;
+				private_key: string;
+			} = Meteor.call('e2e.fetchMyKeys');
 
 			return API.v1.success(result);
 		},
@@ -19,15 +28,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'e2e.getUsersOfRoomWithoutKey',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
+	},
 	{
 		get() {
 			const { rid } = this.queryParams;
 
-			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('e2e.getUsersOfRoomWithoutKey', rid);
-			});
+			const result: {
+				users: IUser[];
+			} = Meteor.call('e2e.getUsersOfRoomWithoutKey', rid);
 
 			return API.v1.success(result);
 		},
@@ -65,18 +76,21 @@ API.v1.addRoute(
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
+
+// ------------------------------------ TO-DO
 API.v1.addRoute(
 	'e2e.setRoomKeyID',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: ise2eSetRoomKeyIDParamsPOST,
+	},
 	{
 		post() {
 			const { rid, keyID } = this.bodyParams;
 
-			Meteor.runAsUser(this.userId, () => {
-				API.v1.success(Meteor.call('e2e.setRoomKeyID', rid, keyID));
-			});
+			const result = API.v1.success(Meteor.call('e2e.setRoomKeyID', rid, keyID));
 
-			return API.v1.success();
+			return API.v1.success(result);
 		},
 	},
 );
@@ -114,19 +128,21 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'e2e.setUserPublicAndPrivateKeys',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: ise2eSetUserPublicAndPrivateKeysParamsPOST,
+	},
 	{
 		post() {
-			const { public_key, private_key } = this.bodyParams;
+			const { public_key, private_key } = Meteor.call('e2e.fetchMyKeys');
+			// this.bodyParams is unknown type
 
-			Meteor.runAsUser(this.userId, () => {
-				API.v1.success(
-					Meteor.call('e2e.setUserPublicAndPrivateKeys', {
-						public_key,
-						private_key,
-					}),
-				);
-			});
+			API.v1.success(
+				Meteor.call('e2e.setUserPublicAndPrivateKeys', {
+					public_key,
+					private_key,
+				}),
+			);
 
 			return API.v1.success();
 		},
@@ -168,16 +184,17 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'e2e.updateGroupKey',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: ise2eUpdateGroupKeyParamsPOST,
+	},
 	{
 		post() {
 			const { uid, rid, key } = this.bodyParams;
 
-			Meteor.runAsUser(this.userId, () => {
-				API.v1.success(Meteor.call('e2e.updateGroupKey', rid, uid, key));
-			});
+			const result = API.v1.success(Meteor.call('e2e.updateGroupKey', rid, uid, key));
 
-			return API.v1.success();
+			return API.v1.success(result);
 		},
 	},
 );

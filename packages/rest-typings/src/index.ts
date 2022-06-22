@@ -185,3 +185,7 @@ export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
 export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
+export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
+export * from './v1/e2e/e2eSetRoomKeyIDParamsPOST';
+export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
+export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
