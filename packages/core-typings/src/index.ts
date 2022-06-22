@@ -25,8 +25,10 @@ export * from './ICustomSound';
 export * from './ICloud';
 export * from './IServerEvent';
 export * from './ICronJobs';
+export * from './IRocketChatAssets';
 export * from './IPushToken';
 export * from './IPushNotificationConfig';
+export * from './SlashCommands';
 
 export * from './IUserDataFile';
 export * from './IUserSession';

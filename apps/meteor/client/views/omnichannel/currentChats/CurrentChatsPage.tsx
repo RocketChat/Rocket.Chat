@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Serialized } from '@rocket.chat/core-typings';
-import React, { Dispatch, FC, Key, memo, ReactElement, ReactNode, SetStateAction } from 'react';
+import React, { Key, memo, ReactElement, ReactNode } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import Page from '../../../components/Page';
@@ -23,19 +23,25 @@ type CurrentChatsPageDataParams = {
 	to: string;
 	customFields: any;
 	current: number;
-	itemsPerPage: number;
+	itemsPerPage: 25 | 50 | 100;
 	tags: string[];
 };
 
-const CurrentChatsPage: FC<{
+const CurrentChatsPage = ({
+	data,
+	header,
+	setParams,
+	params,
+	title,
+	renderRow,
+}: {
 	data?: CurrentChatsPageData;
 	header: ReactNode;
-	setParams: Dispatch<SetStateAction<CurrentChatsPageDataParams>>;
+	setParams: (params: any) => void; // TODO: Change to GenericTable V2
 	params: CurrentChatsPageDataParams;
 	title: string;
 	renderRow: (props: { _id?: Key }) => ReactElement;
-	reload: () => void;
-}> = ({ data, header, setParams, params, title, renderRow, reload }) => (
+}): ReactElement => (
 	<Page>
 		<Page.Header title={title} />
 		<Page.Content>
@@ -46,8 +52,7 @@ const CurrentChatsPage: FC<{
 				total={data?.total}
 				params={params}
 				setParams={setParams}
-				reload={reload}
-				renderFilter={({ onChange, ...props }: any): any => <FilterByText setFilter={onChange} {...props} />}
+				renderFilter={({ onChange, ...props }: any): ReactElement => <FilterByText setFilter={onChange} {...props} />}
 			/>
 		</Page.Content>
 	</Page>

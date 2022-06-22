@@ -17,7 +17,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	const isSingleBH = useIsSingleBusinessHours();
 
 	const { value: data, phase: state } = useEndpointData(
-		'livechat/business-hour',
+		'/v1/livechat/business-hour',
 		useMemo(() => ({ _id: id, type }), [id, type]),
 	);
 
@@ -108,7 +108,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 				<ButtonGroup>
 					{!isSingleBH && <Button onClick={handleReturn}>{t('Back')}</Button>}
 					{type === 'custom' && (
-						<Button primary danger onClick={handleDelete}>
+						<Button danger onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}
