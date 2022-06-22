@@ -20,7 +20,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { Rooms, Subscriptions, Messages } from '../../../models/server';
-import { hasPermission, hasAllPermission } from '../../../authorization/server';
+import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -454,7 +454,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
+			if (!hasPermission(this.userId, 'create-team')) {
 				return API.v1.unauthorized();
 			}
 
@@ -471,6 +471,12 @@ API.v1.addRoute(
 				},
 				userId: this.userId,
 			});
+
+			const userIsOwnerOfTeam = room.u._id === this.userId;
+
+			if (!hasPermission(this.userId, 'edit-room') && !userIsOwnerOfTeam) {
+				return API.v1.unauthorized();
+			}
 
 			if (!room) {
 				return API.v1.failure('Channel not found');
