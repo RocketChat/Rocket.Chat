@@ -13,8 +13,6 @@ export type ToolboxContextValue = {
 	listen: ToolboxEventHandler;
 	tabBar?: any;
 	context?: any;
-	expanded: boolean;
-	setExpand: Function;
 	open: Function;
 	openUserInfo: (username: string) => void;
 	close: () => void;
@@ -24,8 +22,6 @@ export type ToolboxContextValue = {
 export const ToolboxContext = createContext<ToolboxContextValue>({
 	actions,
 	listen,
-	expanded: false,
-	setExpand: () => null,
 	open: () => null,
 	openUserInfo: () => null,
 	close: () => null,
