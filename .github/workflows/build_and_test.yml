@@ -722,11 +722,11 @@ jobs:
           message: "${{ env.REPORT_STATEMENTS }}"
           target_folder: "./apps/meteor/tests/coverage-badges"
 
-      - name: Store ee-e2e-coverage
+      - name: Store e2e-ee-coverage
         uses: actions/upload-artifact@v2
         with:
-          name: ee-e2e-coverage
-          path: ./apps/meteor/coverage
+          name: e2e-ee-coverage
+          path: ./apps/meteor/coverage*
 
       - name: Store e2e-ee-testtrace
         uses: actions/upload-artifact@v2
