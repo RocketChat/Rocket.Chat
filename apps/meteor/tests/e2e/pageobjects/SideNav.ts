@@ -43,7 +43,7 @@ export class SideNav extends BasePage {
 	}
 
 	get admin(): Locator {
-		return this.page.locator('//li[@class="rcx-option"]//div[contains(text(), "Administration")]');
+		return this.page.locator('li.rcx-option >> text="Administration"');
 	}
 
 	get omnichannel(): Locator {
@@ -102,6 +102,10 @@ export class SideNav extends BasePage {
 
 	get profile(): Locator {
 		return this.page.locator('[href="/account/profile"]');
+	}
+
+	get linkSettings(): Locator {
+		return this.page.locator('[href="/admin/settings"]');
 	}
 
 	get preferencesClose(): Locator {

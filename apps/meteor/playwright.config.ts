@@ -14,7 +14,7 @@ const localInserts = isLocal
 const config: PlaywrightTestConfig = {
 	...localInserts,
 	use: {
-		headless: true,
+		headless: false,
 		viewport: { width: 1368, height: 768 },
 		ignoreHTTPSErrors: true,
 		video: 'retain-on-failure',
@@ -25,7 +25,7 @@ const config: PlaywrightTestConfig = {
 	outputDir: 'tests/e2e/test-failures',
 	reporter: [['list']],
 	testDir: 'tests/e2e',
-	retries: 3,
+	// retries: 3,
 	workers: 1,
 	timeout: 42 * 1000,
 };

@@ -207,6 +207,26 @@ export class MainContent extends BasePage {
 		return this.page.locator('[data-qa="VisibleActions-Close"]');
 	}
 
+	get inputSearchSettings(): Locator {
+		return this.page.locator('.rcx-input-box');
+	}
+
+	get btnOpenOmnichannelConfig(): Locator {
+		return this.page.locator('[data-qa-id="Omnichannel"] .rcx-button--small.rcx-button.rcx-button-group__item');
+	}
+
+	get session(): Locator {
+		return this.page.locator('[data-qa-section="Sessions"]');
+	}
+
+	get setToHold(): Locator {
+		return this.page.locator('[data-qa-setting-id="Livechat_allow_manual_on_hold"]');
+	}
+
+	get btnSaveChanges(): Locator {
+		return this.page.locator('.rcx-button--primary.rcx-button.save.rcx-button-group__item >> text="Save changes"');
+	}
+
 	public async waitForLastMessageEqualsHtml(text: string): Promise<void> {
 		await expect(this.page.locator('(//*[contains(@class, "message") and contains(@class, "body")])[last()]')).toContainText(text);
 	}

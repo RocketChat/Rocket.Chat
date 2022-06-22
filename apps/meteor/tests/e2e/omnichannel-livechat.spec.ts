@@ -2,9 +2,10 @@ import { test, Page, expect, APIRequestContext } from '@playwright/test';
 
 import { updateMailToLiveChat } from './utils/helpers/updateMailToLiveChat';
 import { verifyTestBaseUrl } from './utils/configs/verifyTestBaseUrl';
-import { LoginPage, MainContent, Agents, LiveChat } from './pageobjects';
+import { LoginPage, MainContent, Agents, LiveChat, SideNav } from './pageobjects';
 import { createRegisterUser, validUserInserted, adminLogin } from './utils/mocks/userAndPasswordMock';
 import { BASE_API_URL } from './utils/mocks/urlMock';
+import { IS_EE } from './utils/constants';
 
 const apiSessionHeaders = { 'X-Auth-Token': '', 'X-User-Id': '' };
 
@@ -24,7 +25,7 @@ const addAgent = async (request: APIRequestContext): Promise<void> => {
 	});
 };
 
-test.describe('[Livechat]', () => {
+test.describe.skip('[Livechat]', () => {
 	let page: Page;
 	let liveChat: LiveChat;
 	const liveChatUser = createRegisterUser();
@@ -106,7 +107,33 @@ test.describe('[Livechat]', () => {
 			await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
 		});
 
-		// test('verify agent is not allowed to close chat', async () => {});
+		test.describe('[Not allow close]', () => {
+			test.skip(!IS_EE, 'verify agent is not allowed to close chat');
+
+			test.beforeAll(async () => {
+				await loginPage.logout();
+				await loginPage.login(adminLogin);
+
+				const sideNav = new SideNav(otherContextPage);
+				await sideNav.sidebarUserMenu.click();
+				await sideNav.admin.click();
+				await sideNav.linkSettings.click();
+				await mainContent.inputSearchSettings.type('Omnichannel');
+
+				await mainContent.btnOpenOmnichannelConfig.click();
+				await mainContent.session.click();
+				await mainContent.setToHold.click();
+				await mainContent.btnSaveChanges.click();
+				await otherContextPage.goto('/');
+
+				await loginPage.logout();
+
+				await loginPage.login(validUserInserted);
+				await agent.clickOnLiveChatCall(liveChatUser.name).click();
+			});
+
+			test('verify that agent is not allows to close a chat', async () => {});
+		});
 
 		test('verify that agent is allowed to close a chat', async () => {
 			await mainContent.closeLiveChatConversation();
