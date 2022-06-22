@@ -28,7 +28,6 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
 		this.tryEnsureIndex({ encrypted: 1 }, { sparse: true }); // used on statistics
 		this.tryEnsureIndex({ broadcast: 1 }, { sparse: true }); // used on statistics
-		this.tryEnsureIndex({ broadcast: 1 }, { sparse: true }); // used on statistics
 		this.tryEnsureIndex({ 'streamingOptions.type': 1 }, { sparse: true }); // used on statistics
 
 		this.tryEnsureIndex(
