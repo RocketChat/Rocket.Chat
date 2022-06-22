@@ -1,11 +1,16 @@
-import type { Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, IndexSpecification } from 'mongodb';
-import { ObjectId } from 'mongodb';
-import { INpsVote, INpsVoteStatus } from '@rocket.chat/core-typings';
+import { INpsVote, INpsVoteStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { INpsVoteModel } from '@rocket.chat/model-typings';
+import type { Collection, Cursor, Db, FindOneOptions, IndexSpecification, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
+import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INpsVote>>) {
+		super(db, getCollectionName('nps_vote'), trash);
+	}
+
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 }, unique: true }];
 	}

@@ -1,10 +1,16 @@
-import type { IOmnichannelQueueStatus } from '@rocket.chat/core-typings';
+import type { IOmnichannelQueueStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IOmnichannelQueueModel } from '@rocket.chat/model-typings';
+import type { Collection, Db } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 const UNIQUE_QUEUE_ID = 'queue';
 export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> implements IOmnichannelQueueModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelQueueStatus>>) {
+		super(db, getCollectionName('omnichannel_queue'), trash);
+	}
+
 	initQueue(): any {
 		return this.col.updateOne(
 			{

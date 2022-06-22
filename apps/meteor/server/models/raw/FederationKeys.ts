@@ -1,10 +1,16 @@
-import NodeRSA from 'node-rsa';
+import type { FederationKey, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IFederationKeysModel } from '@rocket.chat/model-typings';
-import type { FederationKey } from '@rocket.chat/core-typings';
+import type { Db, Collection } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
+import NodeRSA from 'node-rsa';
 
 import { BaseRaw } from './BaseRaw';
 
 export class FederationKeysRaw extends BaseRaw<FederationKey> implements IFederationKeysModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<FederationKey>>) {
+		super(db, getCollectionName('federation_keys'), trash);
+	}
+
 	async getKey(type: FederationKey['type']): Promise<string | null> {
 		const keyResource = await this.findOne({ type });
 

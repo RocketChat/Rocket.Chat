@@ -1,11 +1,16 @@
-import type { UpdateWriteOpResult, IndexSpecification } from 'mongodb';
-import type { INps } from '@rocket.chat/core-typings';
-import { NPSStatus } from '@rocket.chat/core-typings';
+import type { INps, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { INpsModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
+import { NPSStatus } from '@rocket.chat/core-typings';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class NpsRaw extends BaseRaw<INps> implements INpsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INps>>) {
+		super(db, getCollectionName('nps'), trash);
+	}
+
 	modelIndexes(): IndexSpecification[] {
 		return [{ key: { status: 1, expireAt: 1 } }];
 	}

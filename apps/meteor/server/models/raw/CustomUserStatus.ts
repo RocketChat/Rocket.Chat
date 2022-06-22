@@ -1,11 +1,25 @@
-import { IndexSpecification } from 'mongodb';
-import type { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
-import { ICustomUserStatus } from '@rocket.chat/core-typings';
+import type { ICustomUserStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICustomUserStatusModel } from '@rocket.chat/model-typings';
+import { getCollectionName } from '@rocket.chat/models';
+import type {
+	Collection,
+	Cursor,
+	Db,
+	FindOneOptions,
+	IndexSpecification,
+	InsertOneWriteOpResult,
+	UpdateWriteOpResult,
+	WithId,
+	WithoutProjection,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements ICustomUserStatusModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICustomUserStatus>>) {
+		super(db, getCollectionName('custom_user_status'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 } }];
 	}

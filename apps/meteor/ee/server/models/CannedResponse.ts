@@ -1,7 +1,6 @@
 import { registerModel } from '@rocket.chat/models';
 
-import MeteorModel from '../../app/models/server/models/CannedResponse';
+import { db } from '../../../server/database/utils';
 import { CannedResponseRaw } from './raw/CannedResponse';
 
-const col = MeteorModel.model.rawCollection();
-registerModel('ICannedResponseModel', new CannedResponseRaw(col));
+registerModel('ICannedResponseModel', new CannedResponseRaw(db));

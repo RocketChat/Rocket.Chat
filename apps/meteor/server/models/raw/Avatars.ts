@@ -1,11 +1,15 @@
-import type { DeleteWriteOpResultObject, UpdateWriteOpResult } from 'mongodb';
-import { IndexSpecification } from 'mongodb';
-import { IAvatar } from '@rocket.chat/core-typings';
+import type { IAvatar, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IAvatarsModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, DeleteWriteOpResultObject, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class AvatarsRaw extends BaseRaw<IAvatar> implements IAvatarsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IAvatar>>) {
+		super(db, getCollectionName('avatars'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{ key: { name: 1 }, sparse: true },

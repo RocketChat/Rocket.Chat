@@ -1,4 +1,5 @@
 import type {
+	ChangeStream,
 	Collection,
 	CollectionInsertOneOptions,
 	CommonOptions,
@@ -119,4 +120,6 @@ export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 			| WithoutProjection<RocketChatRecordDeleted<T>>
 			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
 	): Cursor<RocketChatRecordDeleted<T>>;
+
+	watch(pipeline?: object[]): ChangeStream<T>;
 }

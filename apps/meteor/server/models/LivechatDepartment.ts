@@ -1,8 +1,7 @@
 import { registerModel } from '@rocket.chat/models';
 
 import { trashCollection } from '../database/trash';
-import MeteorModel from '../../app/models/server/models/LivechatDepartment';
+import { db } from '../database/utils';
 import { LivechatDepartmentRaw } from './raw/LivechatDepartment';
 
-const col = MeteorModel.model.rawCollection();
-registerModel('ILivechatDepartmentModel', new LivechatDepartmentRaw(col, trashCollection));
+registerModel('ILivechatDepartmentModel', new LivechatDepartmentRaw(db, trashCollection));

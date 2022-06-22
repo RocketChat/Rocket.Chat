@@ -1,14 +1,14 @@
-import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, Collection, WithoutProjection } from 'mongodb';
-import { compact } from 'lodash';
-import type { ISubscription, IRole, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import { Users } from '@rocket.chat/models';
+import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, UpdateQuery, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
+import { getCollectionName, Users } from '@rocket.chat/models';
+import { compact } from 'lodash';
 
 import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
-	constructor(public readonly col: Collection<ISubscription>, trash?: Collection<ISubscription>) {
-		super(col, trash);
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
+		super(db, getCollectionName('subscription'), trash);
 	}
 
 	async getBadgeCount(uid: string): Promise<number> {

@@ -1,10 +1,15 @@
-import { Cursor, FilterQuery, WithoutProjection, FindOneOptions } from 'mongodb';
-import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentAgents, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
+import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> implements ILivechatDepartmentAgentsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>) {
+		super(db, getCollectionName('livechat_department_agents'), trash);
+	}
+
 	findUsersInQueue(usersList: string[]): Cursor<ILivechatDepartmentAgents>;
 
 	findUsersInQueue(

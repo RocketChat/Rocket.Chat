@@ -1,8 +1,10 @@
 import {
+	ChangeStream,
 	Collection,
 	CollectionInsertOneOptions,
 	CommonOptions,
 	Cursor,
+	Db,
 	DeleteWriteOpResultObject,
 	FilterQuery,
 	FindAndModifyWriteOpResultObject,
@@ -26,8 +28,6 @@ import type { IBaseModel, DefaultFields, ResultFields, InsertionModel } from '@r
 
 import { setUpdatedAt } from '../../../app/models/server/lib/setUpdatedAt';
 
-const baseName = 'rocketchat_';
-
 const warnFields =
 	process.env.NODE_ENV !== 'production'
 		? (...rest: any): void => {
@@ -38,15 +38,17 @@ const warnFields =
 export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseModel<T, C> {
 	public readonly defaultFields: C;
 
-	protected name: string;
+	public readonly col: Collection<T>;
 
 	private preventSetUpdatedAt: boolean;
 
-	public readonly trash?: Collection<RocketChatRecordDeleted<T>>;
-
-	constructor(public readonly col: Collection<T>, trash?: Collection<T>, options?: { preventSetUpdatedAt?: boolean }) {
-		this.name = this.col.collectionName.replace(baseName, '');
-		this.trash = trash as unknown as Collection<RocketChatRecordDeleted<T>>;
+	constructor(
+		private db: Db,
+		protected name: string,
+		protected trash?: Collection<RocketChatRecordDeleted<T>>,
+		options?: { preventSetUpdatedAt?: boolean },
+	) {
+		this.col = this.db.collection(name);
 
 		const indexes = this.modelIndexes();
 		if (indexes?.length) {
@@ -366,5 +368,9 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 		}
 
 		return trash.find(q, options as any);
+	}
+
+	watch(pipeline?: object[]): ChangeStream<T> {
+		return this.col.watch(pipeline);
 	}
 }

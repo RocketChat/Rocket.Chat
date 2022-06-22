@@ -1,9 +1,14 @@
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
+	constructor(db, trash) {
+		super(db, getCollectionName('room'), trash);
+	}
+
 	findOneByRoomIdAndUserId(rid, uid, options = {}) {
 		const query = {
 			'_id': rid,

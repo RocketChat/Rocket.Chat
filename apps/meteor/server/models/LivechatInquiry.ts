@@ -1,9 +1,7 @@
 import { registerModel } from '@rocket.chat/models';
 
 import { trashCollection } from '../database/trash';
-import MeteorModel from '../../app/models/server/models/LivechatInquiry';
+import { db } from '../database/utils';
 import { LivechatInquiryRaw } from './raw/LivechatInquiry';
 
-const col = MeteorModel.model.rawCollection();
-export const LivechatInquiry = new LivechatInquiryRaw(col, trashCollection);
-registerModel('ILivechatInquiryModel', LivechatInquiry);
+registerModel('ILivechatInquiryModel', new LivechatInquiryRaw(db, trashCollection));

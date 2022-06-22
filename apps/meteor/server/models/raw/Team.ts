@@ -1,18 +1,25 @@
+import type { ITeam, RocketChatRecordDeleted, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { ITeamModel } from '@rocket.chat/model-typings';
+import { getCollectionName } from '@rocket.chat/models';
 import type {
-	WithoutProjection,
-	FindOneOptions,
+	Collection,
 	Cursor,
-	UpdateWriteOpResult,
+	Db,
 	DeleteWriteOpResultObject,
 	FilterQuery,
+	FindOneOptions,
 	IndexSpecification,
+	UpdateWriteOpResult,
+	WithoutProjection,
 } from 'mongodb';
-import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
-import type { ITeamModel } from '@rocket.chat/model-typings';
 
 import { BaseRaw } from './BaseRaw';
 
 export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ITeam>>) {
+		super(db, getCollectionName('team'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { name: 1 }, unique: true }];
 	}

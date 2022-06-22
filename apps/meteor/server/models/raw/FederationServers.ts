@@ -1,12 +1,15 @@
-import { IndexSpecification } from 'mongodb';
-import type { UpdateWriteOpResult } from 'mongodb';
-import type { IFederationServer } from '@rocket.chat/core-typings';
+import type { IFederationServer, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IFederationServersModel } from '@rocket.chat/model-typings';
-import { Users } from '@rocket.chat/models';
+import type { Collection, Db, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
+import { getCollectionName, Users } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class FederationServersRaw extends BaseRaw<IFederationServer> implements IFederationServersModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IFederationServer>>) {
+		super(db, getCollectionName('federation_servers'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { domain: 1 } }];
 	}

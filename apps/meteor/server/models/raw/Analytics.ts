@@ -1,12 +1,18 @@
-import { Random } from 'meteor/random';
-import type { AggregationCursor, Cursor, SortOptionObject, UpdateWriteOpResult } from 'mongodb';
-import { IndexSpecification } from 'mongodb';
 import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
 import type { IAnalyticsModel } from '@rocket.chat/model-typings';
+import type { AggregationCursor, Cursor, Db, IndexSpecification, SortOptionObject, UpdateWriteOpResult } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
+import { Random } from 'meteor/random';
 
 import { BaseRaw } from './BaseRaw';
 
 export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel {
+	constructor(db: Db) {
+		super(db, getCollectionName('analytics'));
+
+		// TODO add: { readPreference: readSecondaryPreferred(db) }
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
 	}

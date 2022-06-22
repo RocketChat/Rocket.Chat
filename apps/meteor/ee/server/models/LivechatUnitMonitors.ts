@@ -1,7 +1,6 @@
 import { registerModel } from '@rocket.chat/models';
 
-import MeteorModel from '../../app/models/server/models/LivechatUnitMonitors';
+import { db } from '../../../server/database/utils';
 import { LivechatUnitMonitorsRaw } from './raw/LivechatUnitMonitors';
 
-const col = MeteorModel.model.rawCollection();
-registerModel('ILivechatUnitMonitorsModel', new LivechatUnitMonitorsRaw(col));
+registerModel('ILivechatUnitMonitorsModel', new LivechatUnitMonitorsRaw(db));

@@ -3,8 +3,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
-	constructor(...args) {
-		super(...args);
+	constructor(db, trash) {
+		super(db, 'users', trash);
 
 		this.defaultFields = {
 			__rooms: 0,

@@ -1,13 +1,4 @@
 import type { Db } from 'mongodb';
-import type {
-	IRolesModel,
-	IRoomsModel,
-	ISettingsModel,
-	ISubscriptionsModel,
-	ITeamModel,
-	ITeamMemberModel,
-	IUsersModel,
-} from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 
 import { RolesRaw } from '../../../server/models/raw/Roles';
@@ -18,12 +9,13 @@ import { TeamMemberRaw } from '../../../server/models/raw/TeamMember';
 import { SubscriptionsRaw } from '../../../server/models/raw/Subscriptions';
 import { UsersRaw } from '../../../server/models/raw/Users';
 
+// TODO add trash param to model instances
 export const registerServiceModels = (db: Db): void => {
-	registerModel('IRolesModel', () => new RolesRaw(db.collection('rocketchat_roles')) as IRolesModel);
-	registerModel('IRoomsModel', () => new RoomsRaw(db.collection('rocketchat_room')) as IRoomsModel);
-	registerModel('ISettingsModel', () => new SettingsRaw(db.collection('rocketchat_settings')) as ISettingsModel);
-	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db.collection('rocketchat_subscription')) as ISubscriptionsModel);
-	registerModel('ITeamModel', () => new TeamRaw(db.collection('rocketchat_team')) as ITeamModel);
-	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db.collection('rocketchat_team_member')) as ITeamMemberModel);
-	registerModel('IUsersModel', () => new UsersRaw(db.collection('users')) as IUsersModel);
+	registerModel('IRolesModel', () => new RolesRaw(db));
+	registerModel('IRoomsModel', () => new RoomsRaw(db));
+	registerModel('ISettingsModel', () => new SettingsRaw(db));
+	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db));
+	registerModel('ITeamModel', () => new TeamRaw(db));
+	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
+	registerModel('IUsersModel', () => new UsersRaw(db));
 };

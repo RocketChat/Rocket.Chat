@@ -18,45 +18,47 @@ import type {
 	IPbxEvent,
 } from '@rocket.chat/core-typings';
 import { ISetting, SettingValue } from '@rocket.chat/core-typings';
-import { IBaseModel } from '@rocket.chat/model-typings';
+import {
+	IBaseModel,
+	IEmailInboxModel,
+	IInstanceStatusModel,
+	IIntegrationHistoryModel,
+	IIntegrationsModel,
+	ILivechatDepartmentAgentsModel,
+	ILivechatInquiryModel,
+	ILoginServiceConfigurationModel,
+	IMessagesModel,
+	IPbxEventsModel,
+	IPermissionsModel,
+	IRolesModel,
+	IRoomsModel,
+	ISettingsModel,
+	ISubscriptionsModel,
+	IUsersModel,
+	IUsersSessionsModel,
+} from '@rocket.chat/model-typings';
 
-import { SubscriptionsRaw } from '../../models/raw/Subscriptions';
-import { UsersRaw } from '../../models/raw/Users';
-import { SettingsRaw } from '../../models/raw/Settings';
-import { PermissionsRaw } from '../../models/raw/Permissions';
-import { MessagesRaw } from '../../models/raw/Messages';
-import { RolesRaw } from '../../models/raw/Roles';
-import { RoomsRaw } from '../../models/raw/Rooms';
-import { LivechatInquiryRaw } from '../../models/raw/LivechatInquiry';
-import { UsersSessionsRaw } from '../../models/raw/UsersSessions';
-import { LoginServiceConfigurationRaw } from '../../models/raw/LoginServiceConfiguration';
-import { InstanceStatusRaw } from '../../models/raw/InstanceStatus';
-import { IntegrationHistoryRaw } from '../../models/raw/IntegrationHistory';
-import { LivechatDepartmentAgentsRaw } from '../../models/raw/LivechatDepartmentAgents';
-import { IntegrationsRaw } from '../../models/raw/Integrations';
-import { EmailInboxRaw } from '../../models/raw/EmailInbox';
-import { PbxEventsRaw } from '../../models/raw/PbxEvents';
 import { subscriptionFields, roomFields } from './publishFields';
 import { EventSignatures } from '../../sdk/lib/Events';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 
 interface IModelsParam {
-	Subscriptions: SubscriptionsRaw;
-	Permissions: PermissionsRaw;
-	Users: UsersRaw;
-	Settings: SettingsRaw;
-	Messages: MessagesRaw;
-	LivechatInquiry: LivechatInquiryRaw;
-	LivechatDepartmentAgents: LivechatDepartmentAgentsRaw;
-	UsersSessions: UsersSessionsRaw;
-	Roles: RolesRaw;
-	Rooms: RoomsRaw;
-	LoginServiceConfiguration: LoginServiceConfigurationRaw;
-	InstanceStatus: InstanceStatusRaw;
-	IntegrationHistory: IntegrationHistoryRaw;
-	Integrations: IntegrationsRaw;
-	EmailInbox: EmailInboxRaw;
-	PbxEvents: PbxEventsRaw;
+	Subscriptions: ISubscriptionsModel;
+	Permissions: IPermissionsModel;
+	Users: IUsersModel;
+	Settings: ISettingsModel;
+	Messages: IMessagesModel;
+	LivechatInquiry: ILivechatInquiryModel;
+	LivechatDepartmentAgents: ILivechatDepartmentAgentsModel;
+	UsersSessions: IUsersSessionsModel;
+	Roles: IRolesModel;
+	Rooms: IRoomsModel;
+	LoginServiceConfiguration: ILoginServiceConfigurationModel;
+	InstanceStatus: IInstanceStatusModel;
+	IntegrationHistory: IIntegrationHistoryModel;
+	Integrations: IIntegrationsModel;
+	EmailInbox: IEmailInboxModel;
+	PbxEvents: IPbxEventsModel;
 }
 
 interface IChange<T> {

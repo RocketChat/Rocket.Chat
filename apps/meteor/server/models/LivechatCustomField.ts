@@ -1,8 +1,7 @@
 import { registerModel } from '@rocket.chat/models';
 
 import { trashCollection } from '../database/trash';
-import MeteorModel from '../../app/models/server/models/LivechatCustomField';
+import { db } from '../database/utils';
 import { LivechatCustomFieldRaw } from './raw/LivechatCustomField';
 
-const col = MeteorModel.model.rawCollection();
-registerModel('ILivechatCustomFieldModel', new LivechatCustomFieldRaw(col, trashCollection));
+registerModel('ILivechatCustomFieldModel', new LivechatCustomFieldRaw(db, trashCollection));

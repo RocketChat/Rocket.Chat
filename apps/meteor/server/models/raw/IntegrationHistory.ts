@@ -1,10 +1,15 @@
-import { IndexSpecification } from 'mongodb';
 import type { IIntegrationHistory } from '@rocket.chat/core-typings';
 import type { IIntegrationHistoryModel } from '@rocket.chat/model-typings';
+import type { Db, IndexSpecification } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> implements IIntegrationHistoryModel {
+	constructor(db: Db) {
+		super(db, getCollectionName('integration_history'));
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{ key: { 'integration._id': 1, 'integration._createdBy._id': 1 } },

@@ -1,20 +1,26 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { IMessage, IRoom, IUser, MessageTypesValues, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IMessage, IRoom, IUser, MessageTypesValues, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IMessagesModel } from '@rocket.chat/model-typings';
+import { getCollectionName } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
+	Collection,
+	CollectionAggregationOptions,
 	Cursor,
+	Db,
 	FilterQuery,
 	FindOneOptions,
 	WithoutProjection,
-	Collection,
-	CollectionAggregationOptions,
 } from 'mongodb';
-import type { IMessagesModel } from '@rocket.chat/model-typings';
 
 import { BaseRaw } from './BaseRaw';
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
+		super(db, getCollectionName('message'), trash);
+	}
+
 	findVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],

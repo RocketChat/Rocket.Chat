@@ -1,6 +1,7 @@
-import { FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
+import { getCollectionName } from '@rocket.chat/models';
+import { Collection, Db, FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -15,6 +16,10 @@ export interface IWorkHoursCronJobsWrapper {
 }
 
 export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> implements ILivechatBusinessHoursModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatBusinessHour>>) {
+		super(db, getCollectionName('livechat_business_hours'), trash);
+	}
+
 	async findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
 
 	async findOneDefaultBusinessHour(

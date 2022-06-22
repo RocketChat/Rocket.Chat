@@ -1,11 +1,25 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { AggregationCursor, Cursor, FilterQuery, FindOneOptions, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatVisitorsModel } from '@rocket.chat/model-typings';
+import type {
+	AggregationCursor,
+	Collection,
+	Cursor,
+	Db,
+	FilterQuery,
+	FindOneOptions,
+	UpdateWriteOpResult,
+	WithoutProjection,
+} from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
+		super(db, getCollectionName('livechat_visitor'), trash);
+	}
+
 	findOneById(_id: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null> {
 		const query = {
 			_id,

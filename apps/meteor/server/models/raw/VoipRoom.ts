@@ -1,11 +1,16 @@
-import type { FilterQuery, WithoutProjection, FindOneOptions, WriteOpResult, Cursor } from 'mongodb';
-import type { IVoipRoom, IRoomClosingInfo } from '@rocket.chat/core-typings';
+import type { IRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IVoipRoomModel } from '@rocket.chat/model-typings';
+import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, WithoutProjection, WriteOpResult } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
-import { BaseRaw } from './BaseRaw';
 import { Logger } from '../../lib/logger/Logger';
+import { BaseRaw } from './BaseRaw';
 
 export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IVoipRoom>>) {
+		super(db, getCollectionName('room'), trash);
+	}
+
 	logger = new Logger('VoipRoomsRaw');
 
 	async findOneOpenByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {

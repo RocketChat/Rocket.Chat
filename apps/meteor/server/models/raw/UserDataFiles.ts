@@ -1,10 +1,15 @@
-import type { FindOneOptions, InsertOneWriteOpResult, WithId, WithoutProjection, IndexSpecification } from 'mongodb';
-import type { IUserDataFile } from '@rocket.chat/core-typings';
+import type { IUserDataFile, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IUserDataFilesModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, FindOneOptions, IndexSpecification, InsertOneWriteOpResult, WithId, WithoutProjection } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class UserDataFilesRaw extends BaseRaw<IUserDataFile> implements IUserDataFilesModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserDataFile>>) {
+		super(db, getCollectionName('user_data_files'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1 } }];
 	}

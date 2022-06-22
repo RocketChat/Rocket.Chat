@@ -1,10 +1,15 @@
-import type { IndexSpecification } from 'mongodb';
-import type { IIntegration, IUser } from '@rocket.chat/core-typings';
+import type { IIntegration, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, IIntegrationsModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, IndexSpecification } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrationsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IIntegration>>) {
+		super(db, getCollectionName('integrations'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { type: 1 } }];
 	}

@@ -1,6 +1,10 @@
+import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IRolesModel } from '@rocket.chat/model-typings';
+import { getCollectionName, Subscriptions, Users } from '@rocket.chat/models';
 import type {
 	Collection,
 	Cursor,
+	Db,
 	FilterQuery,
 	FindOneOptions,
 	InsertOneWriteOpResult,
@@ -8,15 +12,12 @@ import type {
 	WithId,
 	WithoutProjection,
 } from 'mongodb';
-import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import type { IRolesModel } from '@rocket.chat/model-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
-	constructor(public readonly col: Collection<IRole>, trash?: Collection<IRole>) {
-		super(col, trash);
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRole>>) {
+		super(db, getCollectionName('roles'), trash);
 	}
 
 	findByUpdatedDate(updatedAfterDate: Date, options?: FindOneOptions<IRole>): Cursor<IRole> {

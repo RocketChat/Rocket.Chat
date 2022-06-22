@@ -1,7 +1,7 @@
 import { registerModel } from '@rocket.chat/models';
 
 import { trashCollection } from '../database/trash';
-import ImportDataModel from '../../app/models/server/models/ImportData';
+import { db } from '../database/utils';
 import { ImportDataRaw } from './raw/ImportData';
 
-registerModel('IImportDataModel', new ImportDataRaw(ImportDataModel.model.rawCollection(), trashCollection));
+registerModel('IImportDataModel', new ImportDataRaw(db, trashCollection));

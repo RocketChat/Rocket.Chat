@@ -1,11 +1,24 @@
-import type { Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, InsertOneWriteOpResult } from 'mongodb';
-import { IndexSpecification } from 'mongodb';
-import { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
+import { BannerPlatform, IBanner, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBannersModel } from '@rocket.chat/model-typings';
+import type {
+	Collection,
+	Cursor,
+	Db,
+	FindOneOptions,
+	IndexSpecification,
+	InsertOneWriteOpResult,
+	UpdateWriteOpResult,
+	WithoutProjection,
+} from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IBanner>>) {
+		super(db, getCollectionName('banner'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { platform: 1, startAt: 1, expireAt: 1 } }, { key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }];
 	}

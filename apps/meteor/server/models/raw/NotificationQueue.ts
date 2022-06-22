@@ -1,10 +1,15 @@
-import type { UpdateWriteOpResult, IndexSpecification } from 'mongodb';
-import type { INotification } from '@rocket.chat/core-typings';
+import type { INotification, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { INotificationQueueModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, IndexSpecification, UpdateWriteOpResult } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class NotificationQueueRaw extends BaseRaw<INotification> implements INotificationQueueModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INotification>>) {
+		super(db, getCollectionName('notification_queue'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [
 			{ key: { uid: 1 } },

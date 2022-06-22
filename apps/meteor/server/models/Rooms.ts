@@ -1,9 +1,7 @@
 import { registerModel } from '@rocket.chat/models';
 
 import { trashCollection } from '../database/trash';
-import MeteorModel from '../../app/models/server/models/Rooms';
+import { db } from '../database/utils';
 import { RoomsRaw } from './raw/Rooms';
 
-const col = MeteorModel.model.rawCollection();
-export const Rooms = new RoomsRaw(col, trashCollection);
-registerModel('IRoomsModel', Rooms);
+registerModel('IRoomsModel', new RoomsRaw(db, trashCollection));

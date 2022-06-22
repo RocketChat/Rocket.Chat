@@ -1,26 +1,30 @@
 import type {
+	DeviceSessionAggregation,
+	DeviceSessionAggregationResult,
+	ISession,
+	IUser,
+	OSSessionAggregation,
+	OSSessionAggregationResult,
+	RocketChatRecordDeleted,
+	UserSessionAggregation,
+	UserSessionAggregationResult,
+} from '@rocket.chat/core-typings';
+import type { ISessionsModel, ModelOptionalId } from '@rocket.chat/model-typings';
+import type {
 	AggregationCursor,
 	BulkWriteOperation,
 	BulkWriteOpResultObject,
 	Collection,
-	UpdateWriteOpResult,
-	FilterQuery,
 	Cursor,
+	Db,
+	FilterQuery,
 	IndexSpecification,
+	UpdateWriteOpResult,
 } from 'mongodb';
-import type {
-	ISession,
-	UserSessionAggregation,
-	DeviceSessionAggregation,
-	OSSessionAggregation,
-	UserSessionAggregationResult,
-	DeviceSessionAggregationResult,
-	OSSessionAggregationResult,
-	IUser,
-} from '@rocket.chat/core-typings';
-import type { ISessionsModel, ModelOptionalId } from '@rocket.chat/model-typings';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {
@@ -741,10 +745,10 @@ export const aggregates = {
 export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	private secondaryCollection: Collection<ISession>;
 
-	constructor(public readonly col: Collection<ISession>, public readonly colSecondary: Collection<ISession>, trash?: Collection<ISession>) {
-		super(col, trash);
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISession>>) {
+		super(db, getCollectionName('sessions'), trash);
 
-		this.secondaryCollection = colSecondary;
+		this.secondaryCollection = db.collection(getCollectionName('sessions'), { readPreference: readSecondaryPreferred(db) });
 	}
 
 	protected modelIndexes(): IndexSpecification[] {

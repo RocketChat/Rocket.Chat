@@ -1,11 +1,16 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { FindOneOptions, Cursor, FilterQuery, WriteOpResult } from 'mongodb';
-import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
+import type { Collection, Cursor, Db, FilterQuery, FindOneOptions, WriteOpResult } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> implements ILivechatDepartmentModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartmentRecord>>) {
+		super(db, getCollectionName('livechat_department'), trash);
+	}
+
 	findInIds(departmentsIds: string[], options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
 		const query = { _id: { $in: departmentsIds } };
 		return this.find(query, options);

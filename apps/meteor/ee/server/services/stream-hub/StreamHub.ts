@@ -27,26 +27,22 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 
 		const Trash = db.collection('rocketchat__trash');
 
-		const UsersCol = db.collection('users');
-
-		const Rooms = new RoomsRaw(db.collection('rocketchat_room'), Trash);
-		const Settings = new SettingsRaw(db.collection('rocketchat_settings'), Trash);
-		const Users = new UsersRaw(UsersCol, Trash);
-		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash, {
-			preventSetUpdatedAt: true,
-		});
-		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), Trash);
-		const LivechatInquiry = new LivechatInquiryRaw(db.collection('rocketchat_livechat_inquiry'), Trash);
-		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(db.collection('rocketchat_livechat_department_agents'), Trash);
-		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
-		const Permissions = new PermissionsRaw(db.collection('rocketchat_permissions'), Trash);
-		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash);
-		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db.collection('meteor_accounts_loginServiceConfiguration'), Trash);
-		const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), Trash);
-		const IntegrationHistory = new IntegrationHistoryRaw(db.collection('rocketchat_integration_history'), Trash);
-		const Integrations = new IntegrationsRaw(db.collection('rocketchat_integrations'), Trash);
-		const EmailInbox = new EmailInboxRaw(db.collection('rocketchat_email_inbox'), Trash);
-		const PbxEvents = new PbxEventsRaw(db.collection('pbx_events'), Trash);
+		const Rooms = new RoomsRaw(db, Trash);
+		const Settings = new SettingsRaw(db, Trash);
+		const Users = new UsersRaw(db, Trash);
+		const UsersSessions = new UsersSessionsRaw(db, Trash);
+		const Subscriptions = new SubscriptionsRaw(db, Trash);
+		const LivechatInquiry = new LivechatInquiryRaw(db, Trash);
+		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(db, Trash);
+		const Messages = new MessagesRaw(db, Trash);
+		const Permissions = new PermissionsRaw(db, Trash);
+		const Roles = new RolesRaw(db, Trash);
+		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db, Trash);
+		const InstanceStatus = new InstanceStatusRaw(db);
+		const IntegrationHistory = new IntegrationHistoryRaw(db);
+		const Integrations = new IntegrationsRaw(db, Trash);
+		const EmailInbox = new EmailInboxRaw(db, Trash);
+		const PbxEvents = new PbxEventsRaw(db, Trash);
 
 		const models = {
 			Messages,
@@ -68,7 +64,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		};
 
 		initWatchers(models, api.broadcast.bind(api), (model, fn) => {
-			model.col.watch([]).on('change', (event) => {
+			model.watch([]).on('change', (event) => {
 				switch (event.operationType) {
 					case 'insert':
 						fn({

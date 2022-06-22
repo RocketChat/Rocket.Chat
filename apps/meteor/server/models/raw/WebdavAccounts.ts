@@ -1,10 +1,15 @@
-import type { FindOneOptions, Cursor, DeleteWriteOpResultObject, IndexSpecification } from 'mongodb';
-import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import type { IWebdavAccount, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IWebdavAccountsModel } from '@rocket.chat/model-typings';
+import type { Collection, Cursor, Db, DeleteWriteOpResultObject, FindOneOptions, IndexSpecification } from 'mongodb';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
 export class WebdavAccountsRaw extends BaseRaw<IWebdavAccount> implements IWebdavAccountsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IWebdavAccount>>) {
+		super(db, getCollectionName('webdav_accounts'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { userId: 1 } }];
 	}
