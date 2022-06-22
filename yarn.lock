@@ -3831,6 +3831,7 @@ __metadata:
     "@rocket.chat/message-parser": ~0.31.12
     "@rocket.chat/mp3-encoder": ^0.24.0
     "@rocket.chat/onboarding-ui": ~0.31.12
+    "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.12
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -4030,7 +4031,6 @@ __metadata:
     photoswipe: ^4.1.3
     pino: ^7.10.0
     pino-pretty: ^7.6.1
-    poplib: ^0.1.7
     postcss: ~8.4.12
     postcss-custom-properties: ^11.0.0
     postcss-easy-import: ^3.0.0
@@ -4125,6 +4125,18 @@ __metadata:
   checksum: 55fa3a754683fc0b267cdeb30eef113d927d7bb2a91d19a11a06f9161de371171a9ad4d3b416cdcf2b22807b7d4bfe78caf8911d8003ac9cf23c6901eac60f79
   languageName: node
   linkType: hard
+
+"@rocket.chat/poplib@workspace:^, @rocket.chat/poplib@workspace:packages/node-poplib":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/poplib@workspace:packages/node-poplib"
+  dependencies:
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.3.4
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/rest-typings@workspace:^, @rocket.chat/rest-typings@workspace:packages/rest-typings":
   version: 0.0.0-use.local
@@ -23099,16 +23111,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optimist@npm:*":
-  version: 0.6.1
-  resolution: "optimist@npm:0.6.1"
-  dependencies:
-    minimist: ~0.0.1
-    wordwrap: ~0.0.2
-  checksum: 191ab2b119b2908a229065119349d9cbd295217a8777febd2812fc7b95c5f31f5f6ecb4fd0222351466cb33af8410299373229e78dd96713ed5348fcebfb96f4
-  languageName: node
-  linkType: hard
-
 "optional-require@npm:^1.1.8":
   version: 1.1.8
   resolution: "optional-require@npm:1.1.8"
@@ -24345,15 +24347,6 @@ __metadata:
   version: 1.0.1
   resolution: "pop-iterate@npm:1.0.1"
   checksum: 3147476c57bee79a0f07d111d7c8564bf7153cb15614ad49421497f1976825b89746af7a2581a136e8284001a4d5b9cbf2b1d4ac1ca540b089f9bf582ecddb14
-  languageName: node
-  linkType: hard
-
-"poplib@npm:^0.1.7":
-  version: 0.1.7
-  resolution: "poplib@npm:0.1.7"
-  dependencies:
-    optimist: "*"
-  checksum: fc70583b4dbb297a2ede0a22d8d2b9ace73aada2ceb7ee9f18135e89861c349823ba0f10e1f4db564e4ebff6fd8effa36a2f2634baca6e06e5728e58cbcbbc70
   languageName: node
   linkType: hard
 
@@ -32116,13 +32109,6 @@ __metadata:
   version: 1.0.0
   resolution: "wordwrap@npm:1.0.0"
   checksum: 2a44b2788165d0a3de71fd517d4880a8e20ea3a82c080ce46e294f0b68b69a2e49cff5f99c600e275c698a90d12c5ea32aff06c311f0db2eb3f1201f3e7b2a04
-  languageName: node
-  linkType: hard
-
-"wordwrap@npm:~0.0.2":
-  version: 0.0.3
-  resolution: "wordwrap@npm:0.0.3"
-  checksum: dfc2d3512e857ae4b3bc2e8d4e5d2c285c28a4b87cd1d81c977ce9a1a99152d355807e046851a3d61148f39d877fbb889352e07b65a9cbdd2256aa928e159026
   languageName: node
   linkType: hard
 
