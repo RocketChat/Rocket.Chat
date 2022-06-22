@@ -7,11 +7,10 @@ import React, { useState, useCallback, useRef, FC } from 'react';
 import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
-import APIsDisplay from './APIsDisplay';
+import AppDetails from './AppDetails';
 import AppDetailsHeader from './AppDetailsHeader';
-import AppDetailsPageContent from './AppDetailsPageContent';
-import AppLogsPage from './AppLogsPage';
-import AppSecurityPage from './AppSecurityPage';
+import AppLogs from './AppLogs';
+import AppSecurity from './AppSecurity';
 import LoadingDetails from './LoadingDetails';
 import SettingsDisplay from './SettingsDisplay';
 import { handleAPIError } from './helpers';
@@ -38,8 +37,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
-	const { installed, settings, apis, privacyPolicySummary, permissions, tosLink, privacyLink } = appData || {};
-	const showApis = apis?.length;
+	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink } = appData || {};
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
@@ -58,7 +56,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 		setIsSaving(false);
 	}, [id, settings]);
 
-	const handleTabClick = (tab: 'details' | 'security' | 'logs' | 'settings'): void => {
+	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs'): void => {
 		appsRoute.replace({ ...urlParams, tab });
 	};
 
@@ -89,8 +87,8 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 									</Tabs.Item>
 								)}
 								{Boolean(installed) && (
-									<Tabs.Item onClick={(): void => handleTabClick('logs')} selected={tab === 'logs'}>
-										{t('Logs')}
+									<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
+										{t('Releases')}
 									</Tabs.Item>
 								)}
 								{Boolean(installed && settings && Object.values(settings).length) && (
@@ -98,19 +96,26 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 										{t('Settings')}
 									</Tabs.Item>
 								)}
+								{Boolean(installed) && (
+									<Tabs.Item onClick={(): void => handleTabClick('logs')} selected={tab === 'logs'}>
+										{t('Logs')}
+									</Tabs.Item>
+								)}
 							</Tabs>
 
-							{Boolean(!tab || tab === 'details') && <AppDetailsPageContent app={appData} />}
-							{Boolean((!tab || tab === 'details') && !!showApis) && <APIsDisplay apis={apis || []} />}
+							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
+
 							{tab === 'security' && (
-								<AppSecurityPage
+								<AppSecurity
 									privacyPolicySummary={privacyPolicySummary}
 									appPermissions={permissions}
 									tosLink={tosLink}
 									privacyLink={privacyLink}
 								/>
 							)}
-							{tab === 'logs' && <AppLogsPage id={id} />}
+
+							{tab === 'logs' && <AppLogs id={id} />}
+
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay
 									settings={settings || ({} as ISettings)}

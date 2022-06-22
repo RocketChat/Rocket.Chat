@@ -3,7 +3,6 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect } from 'react';
 
-import Page from '../../../components/Page';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import LogItem from './LogItem';
 import LogsLoading from './LogsLoading';
@@ -32,7 +31,7 @@ const useAppWithLogs = ({ id }) => {
 	return [filteredData, total, fetchData];
 };
 
-function AppLogsPage({ id, ...props }) {
+function AppLogs({ id }) {
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const [app] = useAppWithLogs({ id });
@@ -41,32 +40,30 @@ function AppLogsPage({ id, ...props }) {
 	const showData = !loading && !app.error;
 
 	return (
-		<Page flexDirection='column' {...props}>
-			<Page.ScrollableContent>
-				{loading && <LogsLoading />}
-				{app.error && (
-					<Box maxWidth='x600' alignSelf='center' fontScale='hh21'>
-						{app.error.message}
-					</Box>
-				)}
-				{showData && (
-					<>
-						<Accordion width='100%' alignSelf='center'>
-							{app.logs &&
-								app.logs.map((log) => (
-									<LogItem
-										key={log._createdAt}
-										title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
-										instanceId={log.instanceId}
-										entries={log.entries}
-									/>
-								))}
-						</Accordion>
-					</>
-				)}
-			</Page.ScrollableContent>
-		</Page>
+		<>
+			{loading && <LogsLoading />}
+			{app.error && (
+				<Box maxWidth='x600' alignSelf='center' fontScale='hh21'>
+					{app.error.message}
+				</Box>
+			)}
+			{showData && (
+				<>
+					<Accordion width='100%' alignSelf='center'>
+						{app.logs &&
+							app.logs.map((log) => (
+								<LogItem
+									key={log._createdAt}
+									title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
+									instanceId={log.instanceId}
+									entries={log.entries}
+								/>
+							))}
+					</Accordion>
+				</>
+			)}
+		</>
 	);
 }
 
-export default AppLogsPage;
+export default AppLogs;
