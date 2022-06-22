@@ -79,7 +79,7 @@ Meteor.methods({
 		info.offlineUnavailableMessage = initSettings.Livechat_offline_form_unavailable;
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 		info.language = initSettings.Language;
-		info.videoCall = false;
+		info.videoCall = initSettings.Omnichannel_call_provider === 'Jitsi';
 		info.fileUpload = initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;

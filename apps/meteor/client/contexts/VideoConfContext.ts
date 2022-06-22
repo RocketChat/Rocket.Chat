@@ -1,6 +1,6 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
-import { Subscription, Unsubscribe, useSubscription } from 'use-subscription';
+import { Subscription, useSubscription } from 'use-subscription';
 
 import { DirectCallParams } from '../lib/VideoConfManager';
 
@@ -18,13 +18,12 @@ export type VideoConfIncomingCall = {
 
 type VideoConfContextValue = {
 	dispatchOutgoing: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
-	dismissOutgoing: () => void;
 	startCall: (rid: IRoom['_id'], title?: string) => void;
 	acceptCall: (callId: string) => void;
 	joinCall: (callId: string) => void;
 	dismissCall: (callId: string) => void;
-	abortCall: () => void;
 	rejectIncomingCall: (callId: string) => void;
+	abortCall: () => void;
 	setPreferences: (prefs: { mic?: boolean; cam?: boolean }) => void;
 	changePreference: (key: 'cam' | 'mic', value: boolean) => void;
 	queryIncomingCalls: Subscription<DirectCallParams[]>;
@@ -32,50 +31,34 @@ type VideoConfContextValue = {
 	queryCalling: Subscription<boolean>;
 };
 
-export const VideoConfContext = createContext<VideoConfContextValue>({
-	dispatchOutgoing: () => undefined,
-	dismissOutgoing: () => undefined,
-	startCall: () => undefined,
-	acceptCall: () => undefined,
-	joinCall: () => undefined,
-	dismissCall: () => undefined,
-	abortCall: () => undefined,
-	rejectIncomingCall: () => undefined,
-	setPreferences: () => undefined,
-	changePreference: () => undefined,
-	queryIncomingCalls: {
-		getCurrentValue: (): [] => [],
-		subscribe: (): Unsubscribe => (): void => undefined,
-	},
-	queryRinging: {
-		getCurrentValue: (): boolean => false,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	},
-	queryCalling: {
-		getCurrentValue: (): boolean => false,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	},
-});
+export const VideoConfContext = createContext<VideoConfContextValue | undefined>(undefined);
+const useVideoConfContext = (): VideoConfContextValue => {
+	const context = useContext(VideoConfContext);
+	if (!context) {
+		throw new Error('Must be running in VideoConf Context');
+	}
 
-export const useDispatchOutgoing = (): VideoConfContextValue['dispatchOutgoing'] => useContext(VideoConfContext).dispatchOutgoing;
-export const useDismissOutgoing = (): VideoConfContextValue['dismissOutgoing'] => useContext(VideoConfContext).dismissOutgoing;
-export const useStartCall = (): VideoConfContextValue['startCall'] => useContext(VideoConfContext).startCall;
-export const useAcceptCall = (): VideoConfContextValue['acceptCall'] => useContext(VideoConfContext).acceptCall;
-export const useJoinCall = (): VideoConfContextValue['joinCall'] => useContext(VideoConfContext).joinCall;
-export const useDismissCall = (): VideoConfContextValue['dismissCall'] => useContext(VideoConfContext).dismissCall;
-export const useAbortCall = (): VideoConfContextValue['abortCall'] => useContext(VideoConfContext).abortCall;
-export const useRejectIncomingCall = (): VideoConfContextValue['rejectIncomingCall'] => useContext(VideoConfContext).rejectIncomingCall;
-export const useSetPreferences = (): VideoConfContextValue['setPreferences'] => useContext(VideoConfContext).setPreferences;
-export const useChangePreference = (): VideoConfContextValue['changePreference'] => useContext(VideoConfContext).changePreference;
-export const useIncomingCalls = (): DirectCallParams[] => {
-	const { queryIncomingCalls } = useContext(VideoConfContext);
+	return context;
+};
+
+export const useVideoConfDispatchOutgoing = (): VideoConfContextValue['dispatchOutgoing'] => useVideoConfContext().dispatchOutgoing;
+export const useVideoConfStartCall = (): VideoConfContextValue['startCall'] => useVideoConfContext().startCall;
+export const useVideoConfAcceptCall = (): VideoConfContextValue['acceptCall'] => useVideoConfContext().acceptCall;
+export const useVideoConfJoinCall = (): VideoConfContextValue['joinCall'] => useVideoConfContext().joinCall;
+export const useVideoConfDismissCall = (): VideoConfContextValue['dismissCall'] => useVideoConfContext().dismissCall;
+export const useVideoConfAbortCall = (): VideoConfContextValue['abortCall'] => useVideoConfContext().abortCall;
+export const useVideoConfRejectIncomingCall = (): VideoConfContextValue['rejectIncomingCall'] => useVideoConfContext().rejectIncomingCall;
+export const useVideoConfIncomingCalls = (): DirectCallParams[] => {
+	const { queryIncomingCalls } = useVideoConfContext();
 	return useSubscription(queryIncomingCalls);
 };
-export const useIsRinging = (): boolean => {
-	const { queryRinging } = useContext(VideoConfContext);
+export const useVideoConfSetPreferences = (): VideoConfContextValue['setPreferences'] => useVideoConfContext().setPreferences;
+export const useVideoConfChangePreference = (): VideoConfContextValue['changePreference'] => useVideoConfContext().changePreference;
+export const useVideoConfIsRinging = (): boolean => {
+	const { queryRinging } = useVideoConfContext();
 	return useSubscription(queryRinging);
 };
-export const useIsCalling = (): boolean => {
-	const { queryCalling } = useContext(VideoConfContext);
+export const useVideoConfIsCalling = (): boolean => {
+	const { queryCalling } = useVideoConfContext();
 	return useSubscription(queryCalling);
 };

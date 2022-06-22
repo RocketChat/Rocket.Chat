@@ -6,6 +6,7 @@ import type {
 	IRoom,
 	IUser,
 	VideoConference,
+	VideoConferenceCapabilities,
 	VideoConferenceInstructions,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -15,9 +16,9 @@ export type VideoConferenceJoinOptions = {
 	cam?: boolean;
 };
 
-type GroupVideoConferenceCreateData = IGroupVideoConference & { createdBy: IUser['_id'] };
-type DirectVideoConferenceCreateData = IDirectVideoConference & { createdBy: IUser['_id'] };
-type LivechatVideoConferenceCreateData = ILivechatVideoConference & { createdBy: IUser['_id'] };
+type GroupVideoConferenceCreateData = Omit<IGroupVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
+type DirectVideoConferenceCreateData = Omit<IDirectVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
+type LivechatVideoConferenceCreateData = Omit<ILivechatVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
 
 export type VideoConferenceCreateData = AtLeast<
 	DirectVideoConferenceCreateData | GroupVideoConferenceCreateData | LivechatVideoConferenceCreateData,
@@ -38,5 +39,7 @@ export interface IVideoConfService {
 	setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void>;
 	addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void>;
 	listProviders(): Promise<{ key: string; label: string }[]>;
-	endLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
+	listCapabilities(): Promise<{ providerName: string; capabilities: VideoConferenceCapabilities }>;
+	declineLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
+	diagnoseProvider(uid: string, rid: string, providerName?: string): Promise<string | undefined>;
 }

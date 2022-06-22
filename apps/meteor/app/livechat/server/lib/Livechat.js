@@ -569,7 +569,6 @@ export const Livechat = {
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
 			'Livechat_clear_local_storage_when_chat_ended',
-			'VideoConf_Enabled',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
@@ -1414,7 +1413,7 @@ export const Livechat = {
 	updateCallStatus(callId, rid, status, user) {
 		Rooms.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
-			if (Promise.await(VideoConf.endLivechatCall(callId))) {
+			if (Promise.await(VideoConf.declineLivechatCall(callId))) {
 				return;
 			}
 

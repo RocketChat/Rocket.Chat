@@ -2,15 +2,20 @@ import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement, useEffect, useMemo } from 'react';
 
-import { useIncomingCalls, useIsCalling, useIsRinging, VideoConfPopupPayload } from '../../../../../contexts/VideoConfContext';
+import {
+	VideoConfPopupPayload,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+	useVideoConfIncomingCalls,
+} from '../../../../../contexts/VideoConfContext';
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 import VideoConfPopup from './VideoConfPopup';
 
 const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): ReactElement => {
-	const incomingCalls = useIncomingCalls();
+	const incomingCalls = useVideoConfIncomingCalls();
 	const customSound = useCustomSound();
-	const isRinging = useIsRinging();
-	const isCalling = useIsCalling();
+	const isRinging = useVideoConfIsRinging();
+	const isCalling = useVideoConfIsCalling();
 
 	const popups = useMemo(
 		() =>

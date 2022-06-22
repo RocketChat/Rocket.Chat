@@ -3,7 +3,7 @@ import { SidebarSection } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentType, memo, useMemo, ReactElement } from 'react';
 
-import { useAcceptCall, useRejectIncomingCall, useIncomingCalls } from '../../contexts/VideoConfContext';
+import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import OmnichannelSection from '../sections/OmnichannelSection';
@@ -28,16 +28,17 @@ type RoomListRowProps = {
 const Row = ({ data, item }: { data: RoomListRowProps; item: ISubscription & IRoom }): ReactElement => {
 	const { extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
 
-	const acceptCall = useAcceptCall();
-	const rejectCall = useRejectIncomingCall();
-	const incomingCalls = useIncomingCalls();
+	const acceptCall = useVideoConfAcceptCall();
+	const rejectCall = useVideoConfRejectIncomingCall();
+	const incomingCalls = useVideoConfIncomingCalls();
 	const currentCall = incomingCalls.find((call) => call.rid === item.rid);
 
 	const videoConfActions = useMemo(
-		() => ({
-			acceptCall: (): void => acceptCall(currentCall?.callId as string),
-			rejectCall: (): void => rejectCall(currentCall?.callId as string),
-		}),
+		() =>
+			currentCall && {
+				acceptCall: (): void => acceptCall(currentCall.callId),
+				rejectCall: (): void => rejectCall(currentCall.callId),
+			},
 		[acceptCall, rejectCall, currentCall],
 	);
 

@@ -19,14 +19,16 @@ export type LivechatInstructions = {
 };
 
 export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'];
-export interface IVideoConferenceUser extends Pick<IUser, '_id' | 'username' | 'name'> {
+export interface IVideoConferenceUser extends Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'> {
 	ts: Date;
 }
 
 export enum VideoConferenceStatus {
 	CALLING = 0,
 	STARTED = 1,
-	ENDED = 2,
+	EXPIRED = 2,
+	ENDED = 3,
+	DECLINED = 4,
 }
 
 export interface IVideoConference extends IRocketChatRecord {

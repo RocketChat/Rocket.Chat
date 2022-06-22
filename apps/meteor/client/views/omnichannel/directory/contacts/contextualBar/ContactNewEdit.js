@@ -2,7 +2,6 @@ import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
-import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
@@ -13,7 +12,7 @@ import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdat
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
 import { createToken } from '../../../../../lib/utils/createToken';
-import { formsSubscription } from '../../../additionalForms';
+import { useFormsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../Skeleton';
 
 const initialValues = {
@@ -50,7 +49,7 @@ function ContactNewEdit({ id, data, close }) {
 
 	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(getInitialValues(data));
 
-	const eeForms = useSubscription(formsSubscription);
+	const eeForms = useFormsSubscription();
 
 	const { useContactManager = () => {} } = eeForms;
 
