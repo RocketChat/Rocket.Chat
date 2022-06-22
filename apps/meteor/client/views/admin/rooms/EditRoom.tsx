@@ -322,7 +322,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 			</Field>
 			<Field>
 				<Field.Row>
-					<Button primary flexGrow={1} danger disabled={deleting || !canDelete} onClick={handleDelete}>
+					<Button flexGrow={1} danger disabled={deleting || !canDelete} onClick={handleDelete}>
 						<Icon name='trash' size='x16' />
 						{t('Delete')}
 					</Button>

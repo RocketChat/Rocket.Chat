@@ -21,9 +21,9 @@ const getUpgradeTabLabel = (type: UpgradeTabVariant): TranslationKey => {
 };
 
 const customColors = {
-	default: colors.p700,
-	hover: colors.p800,
-	active: colors.p900,
+	default: colors['s2-700'],
+	hover: colors['s2-800'],
+	active: colors['s2-900'],
 };
 
 type UpgradeTabProps = { type: UpgradeTabVariant; currentPath: string; trialEndDate: string | undefined };
