@@ -62,10 +62,16 @@ export const useIsCallEnabled = (): boolean => {
 	return enabled;
 };
 
-export const useIsCallReady = (): boolean => {
-	const { ready } = useContext(CallContext);
+let callerInfo: VoIpCallerInfo;
 
-	return Boolean(ready);
+export const useIsCallReady = (): boolean => {
+	const context = useContext(CallContext);
+
+	if (isCallContextReady(context)) {
+		callerInfo = context.voipClient.callerInfo;
+	}
+
+	return !!context.ready;
 };
 
 export const useIsCallError = (): boolean => {
@@ -99,7 +105,10 @@ export const useCallerInfo = (): VoIpCallerInfo => {
 		},
 		[voipClient],
 	);
-	return useSyncExternalStore(subscribe, (): VoIpCallerInfo => voipClient.callerInfo);
+
+	const getSnapshot = (): VoIpCallerInfo => callerInfo;
+
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
 export const useCallCreateRoom = (): CallContextReady['createRoom'] => {

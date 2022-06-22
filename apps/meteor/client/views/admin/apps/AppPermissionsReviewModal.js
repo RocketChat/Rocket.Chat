@@ -42,7 +42,7 @@ const AppPermissionsReviewModal = ({ appPermissions, cancel, confirm, modalProps
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button ghost onClick={handleCancelButtonClick}>
+					<Button secondary onClick={handleCancelButtonClick}>
 						{t('Cancel')}
 					</Button>
 					<Button primary onClick={handleConfirmButtonClick}>

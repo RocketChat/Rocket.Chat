@@ -33,9 +33,11 @@ import type { IVideoConfService, VideoConferenceCreateData, VideoConferenceJoinO
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Apps } from '../../../app/apps/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { settings } from '../../../app/settings/server';
 import { getURL } from '../../../app/utils/server';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
+import { api } from '../../sdk/api';
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -90,11 +92,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	// VideoConference.start: Detect the desired type and provider then start a video conference using them
 	public async start(caller: IUser['_id'], rid: string, title?: string): Promise<VideoConferenceInstructions> {
-		const providerName = videoConfProviders.getActiveProvider();
-		if (!providerName) {
-			throw new Error('no-active-video-conf-provider');
-		}
-
+		const providerName = await this.getValidatedProvider();
 		const type = await this.getTypeForNewVideoConference(rid);
 
 		const data = {
@@ -147,11 +145,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
 		}
 
+		await this.VideoConference.setStatusById(call._id, VideoConferenceStatus.DECLINED);
 		await this.VideoConference.setEndedById(call._id, { _id: user._id, name: user.name, username: user.username });
 	}
 
 	public async get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null> {
-		return this.VideoConference.findOneById(callId, { projection: { providerData: 0 } });
+		return this.VideoConference.findOneById<Omit<VideoConference, 'providerData'>>(callId, { projection: { providerData: 0 } });
 	}
 
 	public async getUnfiltered(callId: VideoConference['_id']): Promise<VideoConference | null> {
@@ -162,7 +161,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		roomId: IRoom['_id'],
 		pagination: { offset?: number; count?: number } = {},
 	): Promise<PaginatedResult<{ data: VideoConference[] }>> {
-		const cursor = await this.VideoConference.findRecentByRoomId(roomId, pagination);
+		const cursor = await this.VideoConference.findAllByRoomId(roomId, pagination);
 
 		const data = (await cursor.toArray()) as VideoConference[];
 		const total = await cursor.count();
@@ -231,20 +230,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async listCapabilities(): Promise<{ providerName: string; capabilities: VideoConferenceCapabilities }> {
-		if (!videoConfProviders.hasAnyProvider()) {
-			throw new Error('no-videoconf-provider-app');
-		}
-
-		const providerName = videoConfProviders.getActiveProvider();
-		if (!providerName) {
-			throw new Error('no-active-video-conf-provider');
-		}
-
-		const manager = await this.getProviderManager();
-		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
-		if (!configured) {
-			throw new Error('video-conf-provider-not-configured');
-		}
+		const providerName = await this.getValidatedProvider();
 
 		return {
 			providerName,
@@ -264,9 +250,25 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.Messages.setBlocksById(call.messages.started, [await this.buildMessageBlock(text)]);
 		}
 
+		await this.VideoConference.setStatusById(call._id, VideoConferenceStatus.DECLINED);
 		await this.VideoConference.setEndedById(call._id);
 
 		return true;
+	}
+
+	public async diagnoseProvider(uid: string, rid: string, providerName?: string): Promise<string | undefined> {
+		try {
+			if (providerName) {
+				await this.validateProvider(providerName);
+			} else {
+				await this.getValidatedProvider();
+			}
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				this.createEphemeralMessage(uid, rid, error.message);
+				return error.message;
+			}
+		}
 	}
 
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
@@ -367,6 +369,42 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				},
 			],
 		} as Partial<IVideoConferenceMessage>);
+	}
+
+	private async validateProvider(providerName: string): Promise<void> {
+		const manager = await this.getProviderManager();
+		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
+		if (!configured) {
+			throw new Error('video-conf-provider-not-configured');
+		}
+	}
+
+	private async getValidatedProvider(): Promise<string> {
+		if (!videoConfProviders.hasAnyProvider()) {
+			throw new Error('no-videoconf-provider-app');
+		}
+
+		const providerName = videoConfProviders.getActiveProvider();
+		if (!providerName) {
+			throw new Error('no-active-video-conf-provider');
+		}
+
+		await this.validateProvider(providerName);
+
+		return providerName;
+	}
+
+	private async createEphemeralMessage(uid: string, rid: string, i18nKey: string): Promise<void> {
+		const user = await this.Users.findOneById<Pick<IUser, 'language' | 'roles'>>(uid, { projection: { language: 1, roles: 1 } });
+		const language = user?.language || settings.get<string>('Language') || 'en';
+		const key = user?.roles.includes('admin') ? `admin-${i18nKey}` : i18nKey;
+		const msg = TAPi18n.__(key, {
+			lng: language,
+		});
+
+		api.broadcast('notify.ephemeralMessage', uid, rid, {
+			msg,
+		});
 	}
 
 	private async createDirectCallEndedMessage(call: IDirectVideoConference): Promise<IMessage['_id'] | undefined> {
