@@ -1,5 +1,6 @@
 import yaml from 'js-yaml';
 import { SHA256 } from 'meteor/sha';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Settings } from '../../../../../models/server/raw';
 import { settings, settingsRegistry } from '../../../../../settings/server';
@@ -129,7 +130,7 @@ export class RocketChatSettingsAdapter {
 					alert: 'Federation_Matrix_Enabled_Alert',
 				});
 
-				const uniqueId = settings.get('uniqueID');
+				const uniqueId = settings.get('uniqueID') || uuidv4().slice(0, 15).replace(new RegExp('-', 'g'), '_');
 				const hsToken = SHA256(`hs_${uniqueId}`);
 				const asToken = SHA256(`as_${uniqueId}`);
 

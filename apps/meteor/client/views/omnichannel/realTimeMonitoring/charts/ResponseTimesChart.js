@@ -13,13 +13,13 @@ import { useUpdateChartData } from './useUpdateChartData';
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {
 	callbacks: {
-		title(tooltipItem, data) {
-			return data.labels[tooltipItem[0].index];
+		title([ctx]) {
+			const { dataset } = ctx;
+			return dataset.label;
 		},
-		label(tooltipItem, data) {
-			const { datasetIndex, index } = tooltipItem;
-			const { data: datasetData, label } = data.datasets[datasetIndex];
-			return `${label}: ${secondsToHHMMSS(datasetData[index])}`;
+		label(ctx) {
+			const { dataset, dataIndex } = ctx;
+			return `${dataset.label}: ${secondsToHHMMSS(dataset.data[dataIndex])}`;
 		},
 	},
 };
