@@ -12,27 +12,25 @@ test.describe('[Discussion]', () => {
 	let sideNav: SideNav;
 	let mainContent: MainContent;
 
-	let discussionName: string;
 	let message: string;
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		await page.goto('/');
-		await page.waitForLoadState('load');
 		loginPage = new LoginPage(page);
 		discussion = new Discussion(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
+		await page.goto('/');
 		await loginPage.doLogin(adminLogin);
 	});
 
 	test.describe('[Create discussion from screen]', () => {
 		test('expect discussion is created', async () => {
-			discussionName = faker.animal.type();
+			const discussionName = faker.animal.type() + Date.now();
 			message = faker.animal.type();
 			await sideNav.newChannelBtnToolbar.click();
-			await discussion.createDiscussion('public channel', discussionName, message);
+			await discussion.doCreateDiscussion('public channel', discussionName, message);
 		});
 	});
 
