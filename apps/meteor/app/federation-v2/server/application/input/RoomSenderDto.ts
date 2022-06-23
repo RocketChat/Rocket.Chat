@@ -19,3 +19,9 @@ export class FederationRoomSendExternalMessageDto {
 
 	message: IMessage;
 }
+
+export class FederationAfterLeaveRoomDto {
+	internalRoomId: string;
+
+	internalUserId: string;
+}

@@ -77,11 +77,18 @@ export interface IRoom extends IRocketChatRecord {
 	description?: string;
 	createdOTR?: boolean;
 	e2eKeyId?: string;
+
+	/* @deprecated */
 	federated?: boolean;
 
 	channel?: { _id: string };
 }
 
+export interface IRoomFederated extends IRoom {
+	federated: true;
+}
+
+export const isIRoomFederated = (room: IRoom): room is IRoomFederated => 'federated' in room && (room as any).federated === true;
 export interface ICreatedRoom extends IRoom {
 	rid: string;
 }

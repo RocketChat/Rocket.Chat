@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { IMessage, IUser } from '@rocket.chat/core-typings';
+import { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
@@ -7,7 +7,11 @@ import { IFederationBridge } from '../domain/IFederationBridge';
 import { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
 import { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
 import { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
-import { FederationCreateDMAndInviteUserDto, FederationRoomSendExternalMessageDto } from './input/RoomSenderDto';
+import {
+	FederationAfterLeaveRoomDto,
+	FederationCreateDMAndInviteUserDto,
+	FederationRoomSendExternalMessageDto,
+} from './input/RoomSenderDto';
 
 export class FederationRoomServiceSender {
 	constructor(
@@ -80,6 +84,22 @@ export class FederationRoomServiceSender {
 		await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 	}
 
+	public async leaveRoom(afterLeaveRoomInput: FederationAfterLeaveRoomDto): Promise<void> {
+		const { internalRoomId, internalUserId } = afterLeaveRoomInput;
+
+		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser = await this.rocketUserAdapter.getFederatedUserByInternalId(internalUserId);
+		if (!federatedUser) {
+			return;
+		}
+
+		await this.bridge.leaveRoom(federatedRoom.externalId, federatedUser.externalId);
+	}
+
 	public async sendMessageFromRocketChat(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<IMessage> {
 		const { internalRoomId, internalSenderId, message } = roomSendExternalMessageInput;
 
@@ -104,5 +124,17 @@ export class FederationRoomServiceSender {
 		const federatedRoom = await this.rocketRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
 		return Boolean(federatedRoom?.isFederated());
+	}
+
+	public canAddThisUserToTheRoom(internalUser: IUser, internalRoom: IRoom): void {
+		if (internalUser.federated && !internalRoom.federated) {
+			throw new Error('error-cant-add-federated-users');
+		}
+	}
+
+	public canAddUsersToTheRoom(internalUser: IUser, internalRoom: IRoom): void {
+		if (internalUser.federated && internalRoom.federated && internalRoom.t !== RoomType.DIRECT_MESSAGE) {
+			throw new Error('error-this-is-an-ee-feature');
+		}
 	}
 }

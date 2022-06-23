@@ -110,4 +110,8 @@ export class FederationFactoryEE {
 			),
 		);
 	}
+
+	public static removeListeners(): void {
+		FederationHooksEE.removeAll();
+	}
 }

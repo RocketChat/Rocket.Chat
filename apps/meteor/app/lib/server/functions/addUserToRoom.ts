@@ -42,6 +42,12 @@ export const addUserToRoom = function (
 		throw error;
 	}
 
+	try {
+		callbacks.run('federation.beforeAddUserAToRoom', { user, inviter }, room);
+	} catch (error) {
+		throw new Meteor.Error((error as any)?.message);
+	}
+
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
 		callbacks.run('beforeAddedToRoom', { user, inviter }, room);

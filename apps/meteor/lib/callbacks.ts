@@ -58,6 +58,7 @@ type EventLikeCallbackSignatures = {
 	'onValidateLogin': (login: ILoginAttempt) => void;
 	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
+	'federation.beforeAddUserAToRoom': (params: { user: IUser; inviter: IUser }, room: IRoom) => void;
 };
 
 /**
