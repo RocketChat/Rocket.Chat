@@ -18,10 +18,6 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
-			if (!hasPermission(this.userId, 'view-privileged-setting')) {
-				return API.v1.unauthorized();
-			}
-
 			const licenses = getLicenses()
 				.filter(({ valid }) => valid)
 				.map(({ license }) => licenseTransform(license));
