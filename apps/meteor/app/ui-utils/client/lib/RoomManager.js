@@ -11,10 +11,9 @@ import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { callbacks } from '../../../../lib/callbacks';
 import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -44,7 +43,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 export const RoomManager = new (function () {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
-	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
+	const roomStream = new Meteor.Streamer('room-data');
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
 

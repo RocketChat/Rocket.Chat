@@ -14,7 +14,7 @@ const getInitialValue = (data) => {
 		username: data.username ?? '',
 		name: data.name ?? '',
 		alias: data.alias ?? '',
-		avatarUrl: data.avatarUrl ?? '',
+		avatar: data.avatar ?? '',
 		emoji: data.emoji ?? '',
 		scriptEnabled: data.scriptEnabled,
 		script: data.script,
@@ -85,7 +85,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 							</Button>
 						</Margins>
 					</Box>
-					<Button mbs='x4' primary danger w='full' onClick={handleDeleteIntegration}>
+					<Button mbs='x4' danger w='full' onClick={handleDeleteIntegration}>
 						{t('Delete')}
 					</Button>
 				</Field.Row>

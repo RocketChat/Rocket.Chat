@@ -2,11 +2,11 @@ import _ from 'underscore';
 import type ldapjs from 'ldapjs';
 import { ILDAPEntry } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
+import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
 import { Rooms } from '../../../../app/models/server';
-import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '../../../../app/models/server/raw';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
@@ -15,6 +15,7 @@ import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
 import { syncUserRoles } from '../syncUserRoles';
 import { Team } from '../../../../server/sdk';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -221,13 +222,16 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			const userField = fieldMap[ldapField];
-			const [roleId] = userField.split(/\.(.+)/);
-			allowedRoles.push(roleId);
+			const userFields = ensureArray<string>(fieldMap[ldapField]);
 
-			if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-				roleList.push(roleId);
-				continue;
+			for await (const userField of userFields) {
+				const [roleId] = userField.split(/\.(.+)/);
+				allowedRoles.push(roleId);
+
+				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
+					roleList.push(roleId);
+					continue;
+				}
 			}
 		}
 

@@ -2,20 +2,22 @@
 import type { KeyOfEach } from '@rocket.chat/core-typings';
 
 import type { AppsEndpoints } from './apps';
+import type { AutoTranslateEndpoints } from './v1/autoTranslate';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
+import type { AssetsEndpoints } from './v1/assets';
 import type { BannersEndpoints } from './v1/banners';
 import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
-import type { DmEndpoints } from './v1/dm';
 import type { DnsEndpoints } from './v1/dns';
 import type { E2eEndpoints } from './v1/e2e';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { GroupsEndpoints } from './v1/groups';
-import type { ImEndpoints } from './v1/im';
+import type { ImEndpoints, DmEndpoints } from './v1/dm';
 import type { InstancesEndpoints } from './v1/instances';
+import type { IntegrationsEndpoints } from './v1/integrations';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
@@ -34,13 +36,19 @@ import type { VoipEndpoints } from './v1/voip';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
+import type { CommandsEndpoints } from './v1/commands';
+import type { MeEndpoints } from './v1/me';
+import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
 export interface Endpoints
 	extends ChannelsEndpoints,
+		MeEndpoints,
 		BannersEndpoints,
 		ChatEndpoints,
+		CommandsEndpoints,
 		CloudEndpoints,
+		CommandsEndpoints,
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DnsEndpoints,
@@ -61,14 +69,18 @@ export interface Endpoints
 		MiscEndpoints,
 		PermissionsEndpoints,
 		InstancesEndpoints,
+		IntegrationsEndpoints,
 		VoipEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
+		AssetsEndpoints,
 		CustomSoundEndpoint,
 		EmailInboxEndpoints,
 		WebdavEndpoints,
-		OAuthAppsEndpoint {}
+		OAuthAppsEndpoint,
+		SubscriptionsEndpoints,
+		AutoTranslateEndpoints {}
 
 type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
 	? OperationsByPathPatternAndMethod<TPathPattern>
@@ -128,7 +140,7 @@ export type UrlParams<T extends string> = string extends T
 	? { [k in Param | keyof UrlParams<Rest>]: string }
 	: T extends `${infer _Start}:${infer Param}`
 	? { [k in Param]: string }
-	: {};
+	: undefined | {};
 
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
@@ -136,6 +148,7 @@ export * from './v1/permissions';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
+export * from './v1/assets';
 export * from './v1/channels/ChannelsAddAllProps';
 export * from './v1/channels/ChannelsArchiveProps';
 export * from './v1/channels/ChannelsUnarchiveProps';
@@ -152,7 +165,32 @@ export * from './v1/channels/ChannelsModeratorsProps';
 export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
+
+export * from './v1/subscriptionsEndpoints';
+export * from './v1/misc';
+export * from './v1/invites';
+
+export * from './v1/dm';
+export * from './v1/dm/DmHistoryProps';
+export * from './v1/integrations';
+export * from './v1/omnichannel';
 export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
+export * from './v1/emojiCustom';
+
+export * from './v1/users';
+export * from './v1/users/UsersSetAvatarParamsPOST';
+export * from './v1/users/UsersSetPreferenceParamsPOST';
+export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
+export * from './v1/users/UsersUpdateParamsPOST';
+export * from './v1/import/UploadImportFileParamsPOST';
+export * from './v1/import/DownloadPublicImportFileParamsPOST';
+export * from './v1/import/StartImportParamsPOST';
+export * from './v1/import/GetImportFileDataParamsGET';
+export * from './v1/import/GetImportProgressParamsGET';
+export * from './v1/import/GetLatestImportOperationsParamsGET';
+export * from './v1/import/DownloadPendingFilesParamsPOST';
+export * from './v1/import/DownloadPendingAvatarsParamsPOST';
+export * from './v1/import/GetCurrentImportOperationParamsGET';

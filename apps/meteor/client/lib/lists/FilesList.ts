@@ -1,18 +1,18 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IUpload } from '@rocket.chat/core-typings';
 
-import { MessageList } from './MessageList';
+import { RecordList } from './RecordList';
 
-type FilesMessage = Omit<IMessage, 'rid'> & Required<Pick<IMessage, 'rid'>>;
+type FilesMessage = Omit<IUpload, 'rid'> & Required<Pick<IUpload, 'rid'>>;
 
 export type FilesListOptions = {
-	rid: IMessage['rid'];
+	rid: Required<IUpload>['rid'];
 	type: string;
 	text: string;
 };
 
-const isFileMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is FilesMessage => message.rid === rid && 'rid' in message;
+const isFileMessageInRoom = (upload: IUpload, rid: IUpload['rid']): upload is FilesMessage => upload.rid === rid && 'rid' in upload;
 
-export class FilesList extends MessageList {
+export class FilesList extends RecordList<IUpload> {
 	public constructor(private _options: FilesListOptions) {
 		super();
 	}
@@ -26,7 +26,7 @@ export class FilesList extends MessageList {
 		this.clear();
 	}
 
-	protected filter(message: IMessage): boolean {
+	protected filter(message: IUpload): boolean {
 		const { rid } = this._options;
 
 		if (!isFileMessageInRoom(message, rid)) {
@@ -34,9 +34,5 @@ export class FilesList extends MessageList {
 		}
 
 		return true;
-	}
-
-	protected compare(a: IMessage, b: IMessage): number {
-		return (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
 	}
 }

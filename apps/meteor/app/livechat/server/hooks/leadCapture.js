@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
-import { LivechatVisitors } from '../../../models';
+import { settings } from '../../../settings/server';
+import { LivechatVisitors } from '../../../models/server';
 
 function validateMessage(message, room) {
 	// skips this callback if the message was edited

@@ -11,8 +11,8 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: IRoom[] = [];
 
-export const useRoomList = (): Array<ISubscription> => {
-	const [roomList, setRoomList] = useDebouncedState<ISubscription[]>([], 150);
+export const useRoomList = (): Array<ISubscription & IRoom> => {
+	const [roomList, setRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
 
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');

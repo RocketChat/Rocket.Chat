@@ -51,13 +51,6 @@ export interface IRoom extends IRocketChatRecord {
 
 	prid?: string;
 	avatarETag?: string;
-	tokenpass?: {
-		require: string;
-		tokens: {
-			token: string;
-			balance: number;
-		}[];
-	};
 
 	teamMain?: boolean;
 	teamId?: string;
@@ -69,6 +62,7 @@ export interface IRoom extends IRocketChatRecord {
 	unread?: number;
 	alert?: boolean;
 	hideUnreadStatus?: boolean;
+	hideMentionStatus?: boolean;
 
 	muted?: string[];
 	unmuted?: string[];
@@ -83,6 +77,9 @@ export interface IRoom extends IRocketChatRecord {
 	description?: string;
 	createdOTR?: boolean;
 	e2eKeyId?: string;
+	federated?: boolean;
+
+	channel?: { _id: string };
 }
 
 export interface ICreatedRoom extends IRoom {
@@ -169,6 +166,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	priorityId: any;
 	livechatData: any;
 	queuedAt?: Date;
+	status?: 'queued'; // TODO: missing types for this
 
 	ts: Date;
 	label?: string;
@@ -254,7 +252,6 @@ export type RoomAdminFieldsType =
 	| 'topic'
 	| 'msgs'
 	| 'archived'
-	| 'tokenpass'
 	| 'teamId'
 	| 'teamMain'
 	| 'announcement'
@@ -262,3 +259,12 @@ export type RoomAdminFieldsType =
 	| 'broadcast'
 	| 'uids'
 	| 'avatarETag';
+
+export interface IRoomWithRetentionPolicy extends IRoom {
+	retention: {
+		maxAge: number;
+		filesOnly: boolean;
+		excludePinned: boolean;
+		ignoreThreads: boolean;
+	};
+}

@@ -6,7 +6,8 @@ import { callbacks } from '../../../lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../authorization/server';
-import { Subscriptions, Messages, Users, Rooms } from '../../models';
+import { Subscriptions, Messages, Users, Rooms } from '../../models/server';
+import { Apps, AppEvents } from '../../apps/server/orchestrator';
 
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {
@@ -101,6 +102,9 @@ Meteor.methods({
 			});
 		}
 
+		// App IPostMessagePinned event hook
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, Meteor.user(), originalMessage.pinned));
+
 		return Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {
 			attachments: [
 				{
@@ -172,6 +176,9 @@ Meteor.methods({
 		if (isTheLastMessage(room, message)) {
 			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
+
+		// App IPostMessagePinned event hook
+		Promise.await(Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, Meteor.user(), originalMessage.pinned));
 
 		return Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 	},

@@ -9,7 +9,6 @@ import {
 	useOpenedRoomInfo,
 	useQueueCounter,
 	useQueueName,
-	useWrapUpModal,
 } from '../../../contexts/CallContext';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
@@ -17,13 +16,12 @@ export const VoipFooter = (): ReactElement | null => {
 	const t = useTranslation();
 	const callerInfo = useCallerInfo();
 	const callActions = useCallActions();
-	const dispatchEvent = useEndpoint('POST', 'voip/events');
+	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');
 
 	const createRoom = useCallCreateRoom();
 	const openRoom = useCallOpenRoom();
 	const queueCounter = useQueueCounter();
 	const queueName = useQueueName();
-	const openWrapUpCallModal = useWrapUpModal();
 	const openedRoomInfo = useOpenedRoomInfo();
 
 	const [muted, setMuted] = useState(false);
@@ -97,7 +95,6 @@ export const VoipFooter = (): ReactElement | null => {
 			createRoom={createRoom}
 			openRoom={openRoom}
 			callsInQueue={getCallsInQueueText}
-			openWrapUpCallModal={openWrapUpCallModal}
 			dispatchEvent={dispatchEvent}
 			openedRoomInfo={openedRoomInfo}
 			anonymousText={t('Anonymous')}

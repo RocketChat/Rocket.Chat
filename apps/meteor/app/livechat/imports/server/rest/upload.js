@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
 
 import { settings } from '../../../../settings/server';
-import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
+import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
 import { FileUpload } from '../../../../file-upload';
 import { API } from '../../../../api/server';
@@ -36,10 +36,13 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const { file, ...fields } = Promise.await(
-			getUploadFormData({
-				request: this.request,
-			}),
+		const [file, fields] = Promise.await(
+			getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'file' },
+			),
 		);
 
 		if (!fileUploadIsValidContentType(file.mimetype)) {
