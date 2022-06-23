@@ -1,7 +1,8 @@
 import { MultiSelectFiltered, Icon, Box, Chip } from '@rocket.chat/fuselage';
+import type { Options } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useState } from 'react';
+import React, { memo, ReactElement, useState, ComponentProps } from 'react';
 import { useQuery } from 'react-query';
 
 import UserAvatar from '../avatar/UserAvatar';
@@ -52,7 +53,7 @@ const UserAutoCompleteMultipleFederated = ({
 
 	const options = data || [];
 
-	const onAddSelected = ([value]: [string]): void => {
+	const onAddSelected: ComponentProps<typeof Options>['onSelect'] = ([value]) => {
 		const cachedOption = options.find(([curVal]) => curVal === value)?.[1];
 		if (!cachedOption) {
 			throw new Error('UserAutoCompleteMultiple - onAddSelected - failed to cache option');
@@ -80,7 +81,7 @@ const UserAutoCompleteMultipleFederated = ({
 				);
 			}}
 			renderOptions={renderOptions(options, onAddSelected)}
-			options={options.map(([, item]) => [item.username, item.name || item.username])}
+			options={options.concat(Object.entries(selectedCache)).map(([, item]) => [item.username, item.name || item.username])}
 		/>
 	);
 };

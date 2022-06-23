@@ -8,7 +8,7 @@ import UserAutoCompleteMultipleFederated from '../../components/UserAutoComplete
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
-type Username = IUser['username'];
+type Username = Exclude<IUser['username'], undefined>;
 
 type CreateDirectMessageProps = {
 	onClose: () => void;

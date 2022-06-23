@@ -14,7 +14,7 @@ type AddUsersWithDataProps = {
 };
 
 type AddUsersInitialProps = {
-	users: IUser['username'][];
+	users: Exclude<IUser['username'], undefined>[];
 };
 
 const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): ReactElement => {

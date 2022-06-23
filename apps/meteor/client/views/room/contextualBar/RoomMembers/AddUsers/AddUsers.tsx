@@ -10,7 +10,7 @@ type AddUsersProps = {
 	onClickClose?: () => void;
 	onClickBack?: () => void;
 	onClickSave: () => Promise<void>;
-	users: IUser['username'][];
+	users: Exclude<IUser['username'], undefined>[];
 	onChange: (value: IUser['username'][]) => void;
 };
 
