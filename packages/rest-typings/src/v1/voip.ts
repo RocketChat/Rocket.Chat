@@ -515,12 +515,12 @@ export type VoipEndpoints = {
 			extensions: string[];
 		};
 	};
-	'/v1/omnichannel/agent/extension': {
-		POST: (params: OmnichannelAgentExtensionPOST) => void;
-	};
 	'/v1/omnichannel/agent/extension/:username': {
 		GET: () => { extension: Pick<IUser, '_id' | 'username' | 'extension'> };
 		DELETE: () => void;
+	};
+	'/v1/omnichannel/agent/extension': {
+		POST: (params: OmnichannelAgentExtensionPOST) => void;
 	};
 	'/v1/omnichannel/agents/available': {
 		GET: (params: OmnichannelAgentsAvailable) => PaginatedResult<{ agents: ILivechatAgent[] }>;
