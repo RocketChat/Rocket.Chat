@@ -48,19 +48,17 @@ function AppLogs({ id }) {
 				</Box>
 			)}
 			{showData && (
-				<>
-					<Accordion width='100%' alignSelf='center'>
-						{app.logs &&
-							app.logs.map((log) => (
-								<LogItem
-									key={log._createdAt}
-									title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
-									instanceId={log.instanceId}
-									entries={log.entries}
-								/>
-							))}
-					</Accordion>
-				</>
+				<Accordion width='100%' alignSelf='center'>
+					{app.logs &&
+						app.logs.map((log) => (
+							<LogItem
+								key={log._createdAt}
+								title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
+								instanceId={log.instanceId}
+								entries={log.entries}
+							/>
+						))}
+				</Accordion>
 			)}
 		</>
 	);

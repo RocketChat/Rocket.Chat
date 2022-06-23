@@ -10,6 +10,7 @@ import Page from '../../../components/Page';
 import AppDetails from './AppDetails';
 import AppDetailsHeader from './AppDetailsHeader';
 import AppLogs from './AppLogs';
+import AppReleases from './AppReleases';
 import AppSecurity from './AppSecurity';
 import LoadingDetails from './LoadingDetails';
 import SettingsDisplay from './SettingsDisplay';
@@ -114,7 +115,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 								/>
 							)}
 
-							{tab === 'logs' && <AppLogs id={id} />}
+							{tab === 'releases' && <AppReleases />}
 
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay
@@ -123,6 +124,8 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 									settingsRef={settingsRef}
 								/>
 							)}
+
+							{tab === 'logs' && <AppLogs id={id} />}
 						</>
 					)}
 				</Box>
