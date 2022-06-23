@@ -29,7 +29,7 @@ export type DirectCallParams = {
 
 type IncomingDirectCall = DirectCallParams & { timeout: number };
 
-type CallPreferences = {
+export type CallPreferences = {
 	mic?: boolean;
 	cam?: boolean;
 };

@@ -5,7 +5,7 @@ import { Unsubscribe } from 'use-subscription';
 
 import GenericModal from '../components/GenericModal';
 import { VideoConfContext, VideoConfPopupPayload } from '../contexts/VideoConfContext';
-import { VideoConfManager, DirectCallParams, ProviderCapabilities } from '../lib/VideoConfManager';
+import { VideoConfManager, DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
@@ -69,6 +69,10 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			queryCapabilities: {
 				getCurrentValue: (): ProviderCapabilities => VideoConfManager.capabilities,
 				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('capabilities/changed', cb),
+			},
+			queryPreferences: {
+				getCurrentValue: (): CallPreferences => VideoConfManager.preferences,
+				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('preference/changed', cb),
 			},
 		}),
 		[],
