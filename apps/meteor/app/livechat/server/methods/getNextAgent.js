@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { LivechatRooms, Users } from '../../../models';
+import { LivechatRooms, Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({

@@ -3,7 +3,7 @@ import twilio from 'twilio';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { api } from '../../../../server/sdk/api';

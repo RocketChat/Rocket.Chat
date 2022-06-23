@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { getURL } from '../../../utils';
-import { Subscriptions } from '../../../models';
+import { Subscriptions } from '../../../models/client';
 import { getUserAvatarURL as getAvatarUrl } from '../../../utils/lib/getUserAvatarURL';
 import { formatTime } from '../../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../../client/lib/utils/formatDate';
