@@ -1,19 +1,31 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, lazy, ReactElement, ComponentProps } from 'react';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useSetModal, useUser } from '@rocket.chat/ui-contexts';
+import { Menu } from '@rocket.chat/fuselage';
+import { useSetting, useSetModal, useUser, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
 
 import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoConference/StartVideoConfModal';
 import { useVideoConfDispatchOutgoing, useVideoConfStartCall } from '../../../client/contexts/VideoConfContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
+import { useTabBarOpen } from '../../../client/views/room/providers/ToolboxProvider';
 
-// TODO: fix mocked config
+addAction('video-conf-list', {
+	groups: ['channel', 'group', 'team'],
+	id: 'video-conf-list',
+	icon: 'video',
+	title: 'Video_Conferences',
+	template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
+	order: 9999,
+});
+
 addAction('video-conf', ({ room }) => {
+	const t = useTranslation();
 	const setModal = useSetModal();
 	const startCall = useVideoConfStartCall();
 	const user = useUser();
+	const openTabBar = useTabBarOpen();
+	const { isMobile } = useLayout();
 
 	const dispatchPopup = useVideoConfDispatchOutgoing();
-
 	const handleCloseVideoConf = useMutableCallback(() => setModal());
 	// Only disable video conf if the settings are explicitly FALSE - any falsy value counts as true
 	const enabledDMs = useSetting('VideoConf_Enable_DMs') !== false;
@@ -51,19 +63,39 @@ addAction('video-conf', ({ room }) => {
 		setModal(<StartVideoConfModal onConfirm={handleStartConference} room={room} onClose={handleCloseVideoConf} />),
 	);
 
+	const menuOptions: ComponentProps<typeof Menu>['options'] = useMemo(
+		() => ({
+			header: {
+				type: 'heading',
+				label: t('Video_Conference'),
+			},
+			start: {
+				label: t('Call'),
+				action: (): void => handleOpenVideoConf(),
+			},
+			...(['c', 'p'].includes(room.t) && {
+				list: {
+					label: t('See_history'),
+					action: (): void => openTabBar('video-conf-list'),
+				},
+			}),
+		}),
+		[handleOpenVideoConf, openTabBar, room.t, t],
+	);
+
 	return useMemo(
 		() =>
 			enableOption
 				? {
 						groups,
 						id: 'video-conference',
-						title: 'Video Conference',
+						title: 'Video_Conference',
 						icon: 'phone',
-						action: handleOpenVideoConf,
+						renderAction: (): ReactElement => <Menu tiny={!isMobile} title={t('Video_Conference')} icon='phone' options={menuOptions} />,
 						full: true,
 						order: live ? -1 : 4,
 				  }
 				: null,
-		[handleOpenVideoConf, groups, enableOption, live],
+		[t, groups, enableOption, live, isMobile, menuOptions],
 	);
 });
