@@ -2,7 +2,7 @@ import { IRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 import { Subscription, useSubscription } from 'use-subscription';
 
-import { DirectCallParams } from '../lib/VideoConfManager';
+import { DirectCallParams, ProviderCapabilities } from '../lib/VideoConfManager';
 
 export type VideoConfPopupPayload = {
 	id: string;
@@ -29,6 +29,7 @@ type VideoConfContextValue = {
 	queryIncomingCalls: Subscription<DirectCallParams[]>;
 	queryRinging: Subscription<boolean>;
 	queryCalling: Subscription<boolean>;
+	queryCapabilities: Subscription<ProviderCapabilities>;
 };
 
 export const VideoConfContext = createContext<VideoConfContextValue | undefined>(undefined);
@@ -61,4 +62,8 @@ export const useVideoConfIsRinging = (): boolean => {
 export const useVideoConfIsCalling = (): boolean => {
 	const { queryCalling } = useVideoConfContext();
 	return useSubscription(queryCalling);
+};
+export const useVideoConfCapabilities = (): { mic?: boolean; cam?: boolean; title?: boolean } => {
+	const { queryCapabilities } = useVideoConfContext();
+	return useSubscription(queryCapabilities);
 };

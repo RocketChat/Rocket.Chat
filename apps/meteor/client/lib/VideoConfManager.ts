@@ -34,6 +34,12 @@ type CallPreferences = {
 	cam?: boolean;
 };
 
+export type ProviderCapabilities = {
+	mic?: boolean;
+	cam?: boolean;
+	title?: boolean;
+};
+
 export type CurrentCallParams = {
 	callId: string;
 	url: string;
@@ -74,6 +80,8 @@ type VideoConfEvents = {
 	'join/error': { error: string };
 
 	'start/error': { error: string };
+
+	'capabilities/changed': void;
 };
 export const VideoConfManager = new (class VideoConfManager extends Emitter<VideoConfEvents> {
 	private userId: string | undefined;
@@ -94,8 +102,14 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private _preferences: CallPreferences;
 
+	private _capabilities: ProviderCapabilities;
+
 	public get preferences(): CallPreferences {
 		return this._preferences;
+	}
+
+	public get capabilities(): ProviderCapabilities {
+		return this._capabilities;
 	}
 
 	constructor() {
@@ -103,6 +117,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
 		// this.mutedCalls = new Set<string>();
 		this._preferences = {};
+		this._capabilities = {};
 	}
 
 	public isBusy(): boolean {
@@ -215,6 +230,17 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			this.emit('ringing/changed');
 			this.emit('incoming/changed');
 		}
+	}
+
+	public async loadCapabilities(): Promise<void> {
+		const { capabilities } = await APIClient.get('/v1/video-conference.capabilities').catch((e: any) => {
+			debug && console.error(`[VideoConf] Failed to load video conference capabilities`);
+
+			return Promise.reject(e);
+		});
+
+		this._capabilities = capabilities || {};
+		this.emit('capabilities/changed');
 	}
 
 	private dismissedIncomingCallHelper(callId: string): boolean {

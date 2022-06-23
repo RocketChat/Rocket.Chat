@@ -17,21 +17,23 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useVideoConfSetPreferences } from '../../../../../contexts/VideoConfContext';
+import { useVideoConfSetPreferences, useVideoConfCapabilities } from '../../../../../contexts/VideoConfContext';
 
 type StartDirectVideoConfModalProps = {
 	room: IDirectMessageRoom;
 	uid: IUser['_id'];
 	onClose: () => void;
 	onConfirm: () => void;
-	showMic: boolean;
-	showCam: boolean;
 };
 
-const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm, showMic, showCam }: StartDirectVideoConfModalProps): ReactElement => {
+const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm }: StartDirectVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
+	const capabilities = useVideoConfCapabilities();
+
+	const showCam = !!capabilities.cam;
+	const showMic = !!capabilities.mic;
 
 	const handleStartCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);

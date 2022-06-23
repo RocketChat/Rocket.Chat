@@ -2,7 +2,7 @@ import { IRoom, isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelR
 import { useUserId } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import { VideoConfManager } from '../../../../../lib/VideoConfManager';
 import StartDirectVideoConfModal from './StartDirectVideoConfModal';
 import StartGroupVideoConfModal from './StartGroupVideoConfModal';
 import StartOmnichannelVideoConfModal from './StartOmnichannelVideoConfModal';
@@ -17,29 +17,17 @@ const StartVideoConfModal = ({ room, onClose, onConfirm }: StartVideoConfModalPr
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 
-	const { value: data } = useEndpointData('/v1/video-conference.capabilities');
-
-	const showMic = Boolean(data?.capabilities?.mic);
-	const showCam = Boolean(data?.capabilities?.cam);
+	VideoConfManager.loadCapabilities();
 
 	if (isDirectMessageRoom(room) && !isMultipleDirectMessageRoom(room) && directUserId) {
-		return (
-			<StartDirectVideoConfModal
-				room={room}
-				uid={directUserId}
-				onClose={onClose}
-				onConfirm={onConfirm}
-				showMic={showMic}
-				showCam={showCam}
-			/>
-		);
+		return <StartDirectVideoConfModal room={room} uid={directUserId} onClose={onClose} onConfirm={onConfirm} />;
 	}
 
 	if (isOmnichannelRoom(room)) {
 		return <StartOmnichannelVideoConfModal room={room} onClose={onClose} onConfirm={onConfirm} />;
 	}
 
-	return <StartGroupVideoConfModal room={room} onClose={onClose} onConfirm={onConfirm} showMic={showMic} showCam={showCam} />;
+	return <StartGroupVideoConfModal room={room} onClose={onClose} onConfirm={onConfirm} />;
 };
 
 export default StartVideoConfModal;

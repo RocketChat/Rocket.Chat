@@ -17,21 +17,23 @@ import {
 import React, { ReactElement, useState, ChangeEvent } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useVideoConfSetPreferences } from '../../../../../contexts/VideoConfContext';
+import { useVideoConfSetPreferences, useVideoConfCapabilities } from '../../../../../contexts/VideoConfContext';
 
 type StartGroupVideoConfModalProps = {
 	room: IRoom;
 	onClose: () => void;
 	onConfirm: (title?: string) => void;
-	showMic: boolean;
-	showCam: boolean;
 };
 
-const StartGroupVideoConfModal = ({ room, onClose, onConfirm, showCam, showMic }: StartGroupVideoConfModalProps): ReactElement => {
+const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const [confTitle, setConfTitle] = useState<string | undefined>(undefined);
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
+	const capabilities = useVideoConfCapabilities();
+
+	const showCam = !!capabilities.cam;
+	const showMic = !!capabilities.mic;
 
 	const handleStartCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);

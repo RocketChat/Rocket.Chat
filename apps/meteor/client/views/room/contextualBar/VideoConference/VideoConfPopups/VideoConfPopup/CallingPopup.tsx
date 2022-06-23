@@ -16,7 +16,7 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../../components/avatar/RoomAvatar';
-import { useVideoConfChangePreference } from '../../../../../../contexts/VideoConfContext';
+import { useVideoConfChangePreference, useVideoConfCapabilities } from '../../../../../../contexts/VideoConfContext';
 
 type CallingPopupProps = {
 	id: string;
@@ -30,6 +30,10 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const changePreference = useVideoConfChangePreference();
+	const capabilities = useVideoConfCapabilities();
+
+	const showCam = !!capabilities.cam;
+	const showMic = !!capabilities.mic;
 
 	const handleToggleMicPref = useMutableCallback(() => {
 		changePreference('mic', !controllersConfig.mic);
@@ -59,20 +63,24 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 					</Box>
 				)}
 				<VideoConfPopupControllers>
-					<VideoConfController
-						primary={controllersConfig.mic}
-						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMicPref}
-					/>
-					<VideoConfController
-						primary={controllersConfig.cam}
-						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCamPref}
-					/>
+					{showMic && (
+						<VideoConfController
+							primary={controllersConfig.mic}
+							text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+							title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+							icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+							onClick={handleToggleMicPref}
+						/>
+					)}
+					{showCam && (
+						<VideoConfController
+							primary={controllersConfig.cam}
+							text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+							title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+							icon={controllersConfig.cam ? 'video' : 'video-off'}
+							onClick={handleToggleCamPref}
+						/>
+					)}
 				</VideoConfPopupControllers>
 				<VideoConfPopupFooter>
 					{onClose && (
