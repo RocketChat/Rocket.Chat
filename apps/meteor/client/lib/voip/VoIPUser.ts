@@ -38,8 +38,9 @@ import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/cor
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
 import { toggleMediaStreamTracks } from './Helper';
+import LocalStream from './LocalStream';
 import { QueueAggregator } from './QueueAggregator';
-import Stream from './Stream';
+import RemoteStream from './RemoteStream';
 
 export class VoIPUser extends Emitter<VoipEvents> {
 	state: IState = {
@@ -47,7 +48,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		enableVideo: false,
 	};
 
-	private remoteStream: Stream | undefined;
+	private remoteStream: RemoteStream | undefined;
 
 	userAgentOptions: UserAgentOptions = {};
 
@@ -408,7 +409,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			throw new Error('Remote media stream is undefined.');
 		}
 
-		this.remoteStream = new Stream(remoteStream);
+		this.remoteStream = new RemoteStream(remoteStream);
 		const mediaElement = this.mediaStreamRendered?.remoteMediaElement;
 		if (mediaElement) {
 			this.remoteStream.init(mediaElement);

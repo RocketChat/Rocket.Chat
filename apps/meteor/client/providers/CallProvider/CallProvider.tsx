@@ -24,6 +24,7 @@ import {
 	useSetInputMediaDevice,
 	useDeviceConstraints,
 	Device,
+	useSetModal,
 } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
 import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
