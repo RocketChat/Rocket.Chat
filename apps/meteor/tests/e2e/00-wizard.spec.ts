@@ -18,7 +18,7 @@ test.describe('[Wizard]', () => {
 		test.beforeEach(async ({ baseURL }) => {
 			const baseUrl = baseURL;
 			await setupWizard.goto(baseUrl as string);
-			await loginPage.doLogin(adminLogin);
+			await loginPage.doLogin(adminLogin, false);
 		});
 
 		test('expect required field alert showed when user dont inform data', async () => {
