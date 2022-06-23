@@ -464,6 +464,10 @@ API.v1.addRoute(
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
 			}
 
+			if (!hasPermission(this.userId, 'edit-room', channelId)) {
+				return API.v1.unauthorized();
+			}
+
 			const room = findChannelByIdOrName({
 				params: {
 					roomId: channelId,
@@ -471,12 +475,6 @@ API.v1.addRoute(
 				},
 				userId: this.userId,
 			});
-
-			const userIsOwnerOfTeam = room.u._id === this.userId;
-
-			if (!hasPermission(this.userId, 'edit-room') && !userIsOwnerOfTeam) {
-				return API.v1.unauthorized();
-			}
 
 			if (!room) {
 				return API.v1.failure('Channel not found');
