@@ -1,10 +1,10 @@
 import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { ISubscription } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { AppServerOrchestrator } from '../orchestrator';
 import { Subscriptions } from '../../../models/server';
-import { Settings } from '../../../models/server/raw';
 
 export class AppInternalBridge extends InternalBridge {
 	// eslint-disable-next-line no-empty-function

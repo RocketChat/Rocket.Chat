@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ILivechatVisitorDTO, IRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors as VisitorsRaw } from '@rocket.chat/models';
 
 import { LivechatRooms, LivechatVisitors, LivechatCustomField } from '../../../../models/server';
-import { LivechatVisitors as VisitorsRaw } from '../../../../models/server/raw';
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';

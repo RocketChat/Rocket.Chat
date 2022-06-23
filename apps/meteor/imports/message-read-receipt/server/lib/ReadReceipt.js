@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { ReadReceipts } from '@rocket.chat/models';
 
 import { Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models/server';
-import { ReadReceipts } from '../../../../app/models/server/raw';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';

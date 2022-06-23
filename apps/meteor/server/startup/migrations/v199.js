@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
+import { Users, Subscriptions } from '@rocket.chat/models';
 
-import { Users, Subscriptions } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
 const batchSize = 5000;
