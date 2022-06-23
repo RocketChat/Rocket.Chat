@@ -20,7 +20,7 @@ export class FederationHooks {
 	public static canAddTheUserToTheRoom(callback: Function): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
-			(params: { user: IUser }, room: IRoom): void => {
+			(params: { user: IUser | string }, room: IRoom): void => {
 				Promise.await(callback(params.user, room));
 			},
 			callbacks.priority.HIGH,
@@ -31,7 +31,7 @@ export class FederationHooks {
 	public static canAddUsersToTheRoom(callback: Function): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
-			(params: { user: IUser }, room: IRoom): void => {
+			(params: { user: IUser | string }, room: IRoom): void => {
 				Promise.await(callback(params.user, room));
 			},
 			callbacks.priority.HIGH,

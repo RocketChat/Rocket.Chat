@@ -44,6 +44,8 @@ export class FederationBeforeDirectMessageRoomCreationDto {
 	invitees: FederationInviteeDto[];
 }
 
+export type FederationBeforeAddUserToARoomDto = FederationBeforeDirectMessageRoomCreationDto;
+
 export type FederationOnUsersAddedToARoomDto = FederationOnRoomCreationDto;
 
 export class FederationSetupRoomDto {

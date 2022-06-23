@@ -1,6 +1,7 @@
 import { IUser } from '@rocket.chat/core-typings';
 
 import {
+	FederationBeforeAddUserToARoomDto,
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationCreateDirectMessageDto,
 	FederationOnDirectMessageRoomCreationDto,
@@ -111,6 +112,16 @@ export class FederationRoomSenderConverterEE {
 		return Object.assign(new FederationBeforeDirectMessageRoomCreationDto(), {
 			invitees: users,
 		});
+	}
+
+	public static toBeforeAddUserToARoomDto(
+		members: (IUser | string)[],
+		homeServerDomainName: string,
+	): FederationBeforeAddUserToARoomDto {
+		return FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(
+			members,
+			homeServerDomainName,
+		) as FederationBeforeAddUserToARoomDto;
 	}
 
 	public static toCreateDirectMessageDto(internalInviterId: string, invitees: string[]): FederationCreateDirectMessageDto {
