@@ -3,9 +3,9 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
-import React, { ReactElement, useCallback } from 'react';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 
-import { highlightWords } from '../../../../../app/highlight-words/client/helper';
 import { baseURI } from '../../../../lib/baseURI';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { useMessageActions } from '../../contexts/MessageContext';
@@ -18,6 +18,18 @@ type MessageContentBodyProps = {
 
 const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement => {
 	const tokens = useParsedMessage(message);
+
+	const highlights = useMessageListHighlights();
+	const highlightRegex = useMemo(() => {
+		if (!highlights || !highlights.length) {
+			return;
+		}
+
+		const alternatives = highlights.map(({ highlight }) => escapeRegExp(highlight)).join('|');
+		const expression = `(?=^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${alternatives})(?=$|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])`;
+
+		return (): RegExp => new RegExp(expression, 'gmi');
+	}, [highlights]);
 
 	const {
 		actions: { openRoom, openUserCard },
@@ -91,8 +103,7 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 				value={{
 					baseURI,
 					getEmojiClassNameAndDataTitle,
-					highlights: useMessageListHighlights(),
-					highlightWords,
+					highlightRegex,
 					resolveUserMention,
 					onUserMentionClick,
 					resolveChannelMention,

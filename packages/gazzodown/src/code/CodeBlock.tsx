@@ -1,6 +1,8 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import hljs from 'highlight.js';
-import { ReactElement, useMemo, useRef } from 'react';
+import { Fragment, ReactElement, useContext, useLayoutEffect, useMemo, useRef } from 'react';
+
+import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
 type CodeBlockProps = {
 	language?: string;
@@ -8,29 +10,56 @@ type CodeBlockProps = {
 };
 
 const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
-	const code = useMemo(() => lines.map((line) => line.value.value).join('\n'), [lines]);
 	const ref = useRef<HTMLElement>(null);
 
-	const html = useMemo(() => {
-		if (!language || language === 'auto') {
-			return hljs.highlightAuto(code).value;
+	const { highlightRegex } = useContext(MarkupInteractionContext);
+
+	const code = useMemo(() => lines.map((line) => line.value.value).join('\n'), [lines]);
+
+	const content = useMemo(() => {
+		const regex = highlightRegex?.();
+
+		if (regex) {
+			const chunks = code.split(regex);
+			const head = chunks.shift() ?? '';
+
+			return (
+				<>
+					<>{head}</>
+					{chunks.map((chunk, i) => {
+						if (i % 2 === 0) {
+							return (
+								<mark key={i} className='highlight-text'>
+									{chunk}
+								</mark>
+							);
+						}
+
+						return <Fragment key={i}>{chunk}</Fragment>;
+					})}
+				</>
+			);
 		}
 
-		if (!hljs.getLanguage(language) || language === 'none') {
-			return hljs.highlight(code, { language: 'plaintext' }).value;
+		return code;
+	}, [code, highlightRegex]);
+
+	useLayoutEffect(() => {
+		const element = ref.current;
+
+		if (!element) {
+			return;
 		}
 
-		try {
-			return hljs.highlight(code, { language }).value;
-		} catch (e) {
-			return hljs.highlight(code, { language: 'plaintext' }).value;
-		}
-	}, [code, language]);
+		hljs.highlightElement(element);
+	}, [language, content]);
 
 	return (
 		<pre>
 			<span className='copyonly'>```</span>
-			<code ref={ref} className='code-colors hljs' dangerouslySetInnerHTML={{ __html: html }} />
+			<code key={language + code} ref={ref} className={language ? `code-colors language-${language}` : 'code-colors'}>
+				{content}
+			</code>
 			<span className='copyonly'>```</span>
 		</pre>
 	);

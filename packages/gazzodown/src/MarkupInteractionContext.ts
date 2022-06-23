@@ -5,12 +5,6 @@ export type UserMention = Pick<IUser, '_id' | 'username' | 'name'>;
 export type ChannelMention = Pick<IRoom, '_id' | 'name'>;
 
 type MarkupInteractionContextValue = {
-	highlights?:
-		| {
-				highlight: string;
-				regex: RegExp;
-				urlRegex: RegExp;
-		  }[];
 	baseURI?: string;
 	getEmojiClassNameAndDataTitle?: (emoji: string) => {
 		'className'?: string;
@@ -19,7 +13,7 @@ type MarkupInteractionContextValue = {
 		'children'?: string;
 		'image'?: string;
 	};
-	highlightWords?: (msg: any, highlights: any) => any;
+	highlightRegex?: () => RegExp;
 	resolveUserMention?: (mention: string) => UserMention | undefined;
 	onUserMentionClick?: (mentionedUser: UserMention) => ((e: UIEvent) => void) | undefined;
 	resolveChannelMention?: (mention: string) => ChannelMention | undefined;

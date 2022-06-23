@@ -1,4 +1,4 @@
-import { memo, ReactElement, useContext } from 'react';
+import { Fragment, memo, ReactElement, useContext, useMemo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -7,15 +7,37 @@ type PlainSpanProps = {
 };
 
 const PlainSpan = ({ text }: PlainSpanProps): ReactElement => {
-	const { highlights, highlightWords } = useContext(MarkupInteractionContext);
+	const { highlightRegex } = useContext(MarkupInteractionContext);
 
-	if (highlights) {
-		const html = highlights?.length ? highlightWords?.(text, highlights) : text;
+	const content = useMemo(() => {
+		const regex = highlightRegex?.();
 
-		return <span dangerouslySetInnerHTML={{ __html: html }} />;
-	}
+		if (regex) {
+			const chunks = text.split(regex);
+			const head = chunks.shift() ?? '';
 
-	return <>{text}</>;
+			return (
+				<>
+					<>{head}</>
+					{chunks.map((chunk, i) => {
+						if (i % 2 === 0) {
+							return (
+								<mark key={i} className='highlight-text'>
+									{chunk}
+								</mark>
+							);
+						}
+
+						return <Fragment key={i}>{chunk}</Fragment>;
+					})}
+				</>
+			);
+		}
+
+		return text;
+	}, [text, highlightRegex]);
+
+	return <>{content}</>;
 };
 
 export default memo(PlainSpan);
