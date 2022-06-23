@@ -32,4 +32,10 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	removeContactManagerByUsername(manager: string): Promise<UpdateWriteOpResult>;
 
 	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<WriteOpResult | boolean>;
+
+	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;
+
+	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null>;
+
+	removeDepartmentById(_id: string): Promise<WriteOpResult>;
 }
