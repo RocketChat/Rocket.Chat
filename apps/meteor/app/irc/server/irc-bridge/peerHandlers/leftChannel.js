@@ -1,4 +1,4 @@
-import { Users, Rooms } from '../../../../models';
+import { Users, Rooms } from '../../../../models/server';
 import { removeUserFromRoom } from '../../../../lib';
 
 export default function handleLeftChannel(args) {

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
-import { LivechatVisitors } from '../../../models';
+import { LivechatVisitors } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 

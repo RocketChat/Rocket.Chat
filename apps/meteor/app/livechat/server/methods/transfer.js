@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatRooms, Subscriptions, LivechatVisitors, Users } from '../../../models';
+import { LivechatRooms, Subscriptions, LivechatVisitors, Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 
