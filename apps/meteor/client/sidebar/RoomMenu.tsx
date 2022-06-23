@@ -54,7 +54,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const isFavorite = (subscription != null ? subscription.f : undefined) != null && subscription?.f;
 
 	const getThreadsList = useEndpoint('GET', '/v1/chat.getThreadsList');
-	
+
 	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
 	const hideRoom = useMethod('hideRoom');
@@ -141,6 +141,21 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		);
 	});
 
+	const handleThreadsToBeRead = useMutableCallback(async () => {
+		try {
+			if (threadUnread) {
+				const { threads } = await getThreadsList({
+					rid,
+					type: 'unread',
+				});
+				const promises = threads.map((thread) => readThreads(thread?._id));
+				await Promise.all(promises);
+			}
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: String(error) });
+		}
+	});
+
 	const handleToggleRead = useMutableCallback(async () => {
 		try {
 			if (isUnread) {
@@ -155,21 +170,6 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			RoomManager.close(subscription.t + subscription.name);
 
 			router.push({});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
-		}
-	});
-
-	const handleThreadsToBeRead = useMutableCallback(async () => {
-		try {
-			if (threadUnread) {
-				const { threads } = await getThreadsList({
-					rid,
-					type: 'unread',
-				});
-				const promises = threads.map((thread) => readThreads(thread?._id));
-				await Promise.all(promises);
-			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: String(error) });
 		}
@@ -211,19 +211,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				},
 			}),
 		}),
-		[
-			t,
-			handleHide,
-			isUnread,
-			handleToggleRead,
-			threadUnread,
-			handleThreadsToBeRead,
-			canFavorite,
-			isFavorite,
-			handleToggleFavorite,
-			canLeave,
-			handleLeave,
-		],
+		[t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
 	);
 
 	return (
