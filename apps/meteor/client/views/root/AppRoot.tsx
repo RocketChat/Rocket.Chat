@@ -13,16 +13,16 @@ const PortalsWrapper = lazy(() => import('./PortalsWrapper'));
 
 const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
-		<MeteorProvider>
-			<QueryClientProvider client={queryClient}>
+		<QueryClientProvider client={queryClient}>
+			<MeteorProvider>
 				<OmnichannelRoomIconProvider>
 					<ConnectionStatusBar />
 					<BannerRegion />
 					<AppLayout />
 					<PortalsWrapper />
 				</OmnichannelRoomIconProvider>
-			</QueryClientProvider>
-		</MeteorProvider>
+			</MeteorProvider>
+		</QueryClientProvider>
 	</Suspense>
 );
 

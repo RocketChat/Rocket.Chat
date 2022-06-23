@@ -4,7 +4,7 @@ import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts'
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
-import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
+import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 
 export type CreateChannelProps = {
 	values: {
@@ -14,7 +14,7 @@ export type CreateChannelProps = {
 		readOnly?: boolean;
 		encrypted?: boolean;
 		broadcast?: boolean;
-		users?: string[];
+		users: string[];
 		description?: string;
 	};
 	handlers: {
@@ -22,9 +22,9 @@ export type CreateChannelProps = {
 		handleDescription?: () => void;
 		handleEncrypted?: () => void;
 		handleReadOnly?: () => void;
+		handleUsers: (users: Array<string>) => void;
 	};
 	hasUnsavedChanges: boolean;
-	onChangeUsers: (value: string, action: 'remove' | undefined) => void;
 	onChangeType: React.FormEventHandler<HTMLElement>;
 	onChangeBroadcast: React.FormEventHandler<HTMLElement>;
 	onChangeFederated: React.FormEventHandler<HTMLElement>;
@@ -37,7 +37,6 @@ const CreateChannel = ({
 	values,
 	handlers,
 	hasUnsavedChanges,
-	onChangeUsers,
 	onChangeType,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
@@ -181,7 +180,7 @@ const CreateChannel = ({
 					</Field>
 					<Field>
 						<Field.Label>{`${t('Add_members')} (${t('optional')})`}</Field.Label>
-						<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers} />
+						<UserAutoCompleteMultipleFederated value={values.users} onChange={handlers.handleUsers} />
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

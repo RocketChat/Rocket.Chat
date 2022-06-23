@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, memo } from 'react';
 
-import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
+import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
@@ -52,7 +52,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 			<Modal.Content>
 				<Box>{t('Direct_message_creation_description')}</Box>
 				<Box mbs='x16' display='flex' flexDirection='column' width='full'>
-					<UserAutoCompleteMultiple value={users} onChange={onChangeUsers} />
+					<UserAutoCompleteMultipleFederated value={users} onChange={onChangeUsers} />
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>

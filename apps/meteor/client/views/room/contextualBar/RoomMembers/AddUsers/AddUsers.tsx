@@ -3,7 +3,7 @@ import { Field, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
+import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import VerticalBar from '../../../../../components/VerticalBar';
 
 type AddUsersProps = {
@@ -27,7 +27,7 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: A
 			<VerticalBar.ScrollableContent>
 				<Field>
 					<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-					<UserAutoCompleteMultiple value={users} onChange={onChange} placeholder={t('Choose_users')} />
+					<UserAutoCompleteMultipleFederated value={users} onChange={onChange} placeholder={t('Choose_users')} />
 				</Field>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
