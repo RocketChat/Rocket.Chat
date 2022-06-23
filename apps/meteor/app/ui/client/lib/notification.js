@@ -2,14 +2,12 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
-import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import _ from 'underscore';
 import s from 'underscore.string';
 
 import { e2e } from '../../../e2e/client';
-import { Users, ChatSubscription } from '../../../models/client';
+import { Users, ChatSubscription } from '../../../models';
 import { getUserPreference } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
@@ -18,8 +16,6 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar(),
-
-	// notificacoes HTML5
 	getDesktopPermission() {
 		if (window.Notification && Notification.permission !== 'granted') {
 			return Notification.requestPermission(function (status) {
@@ -137,65 +133,33 @@ export const KonchatNotification = {
 		});
 	},
 
-	newMessage(rid) {
+	newMessageSound(rid) {
 		if (Session.equals(`user_${Meteor.user().username}_status`, 'busy')) {
 			return;
 		}
 
 		const userId = Meteor.userId();
 		const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
-		const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
 
-		const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
+		const volume = Number((getUserPreference(userId, 'notificationsSoundVolume') / 100).toPrecision(2));
 
-		if (!sub || sub.audioNotificationValue === 'none') {
+		if (!volume) {
 			return;
 		}
 
-		try {
-			if (sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-				CustomSounds.play(sub.audioNotificationValue, {
-					volume: Number((audioVolume / 100).toPrecision(2)),
-				});
-				return;
-			}
+		const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
-			if (newMessageNotification !== 'none') {
-				CustomSounds.play(newMessageNotification, {
-					volume: Number((audioVolume / 100).toPrecision(2)),
-				});
-			}
-		} catch (e) {
-			// do nothing
+		const sound = sub?.audioNotificationValue || newMessageNotification;
+
+		if (newMessageNotification === 'none') {
+			return;
 		}
-	},
-
-	newRoom(rid /* , withSound = true*/) {
-		Tracker.nonreactive(function () {
-			let newRoomSound = Session.get('newRoomSound');
-			if (newRoomSound != null) {
-				newRoomSound = _.union(newRoomSound, [rid]);
-			} else {
-				newRoomSound = [rid];
-			}
-
-			return Session.set('newRoomSound', newRoomSound);
+		return CustomSounds.play(sound, {
+			volume,
 		});
 	},
 
-	// $('.link-room-' + rid).addClass('new-room-highlight')
-
-	removeRoomNotification(rid) {
-		let newRoomSound = Session.get('newRoomSound');
-		newRoomSound = _.without(newRoomSound, rid);
-		Tracker.nonreactive(() => Session.set('newRoomSound', newRoomSound));
-
-		return $(`.link-room-${rid}`).removeClass('new-room-highlight');
-	},
-};
-
-Meteor.startup(() => {
-	Tracker.autorun(function () {
+	newRoomSound(loop = false) {
 		const user = Users.findOne(Meteor.userId(), {
 			fields: {
 				'settings.preferences.newRoomNotification': 1,
@@ -203,18 +167,20 @@ Meteor.startup(() => {
 			},
 		});
 		const newRoomNotification = getUserPreference(user, 'newRoomNotification');
-		const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
 
-		if ((Session.get('newRoomSound') || []).length > 0) {
-			Meteor.defer(function () {
-				if (newRoomNotification !== 'none') {
-					CustomSounds.play(newRoomNotification, {
-						volume: Number((audioVolume / 100).toPrecision(2)),
-					});
-				}
-			});
-		} else {
-			CustomSounds.pause(newRoomNotification);
+		if (newRoomNotification === 'none') {
+			return;
 		}
-	});
-});
+
+		const volume = Number((getUserPreference(user, 'notificationsSoundVolume') / 100).toPrecision(2));
+
+		if (!volume) {
+			return;
+		}
+
+		return CustomSounds.play(newRoomNotification, {
+			loop,
+			volume,
+		});
+	},
+};
