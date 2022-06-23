@@ -45,7 +45,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 						{error && (
 							<States>
 								<StatesIcon name='circle-exclamation' variation='danger' />
-								<StatesTitle>Something went wrong</StatesTitle>
+								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 								<StatesSubtitle>{handleError(error, false)}</StatesSubtitle>
 							</States>
 						)}

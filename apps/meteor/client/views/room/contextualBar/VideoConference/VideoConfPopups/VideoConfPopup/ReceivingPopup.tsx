@@ -33,6 +33,7 @@ type ReceivingPopupProps = {
 	onConfirm: () => void;
 };
 
+// TODO: Replace RoomAvatar to UserAvatar and avoid using subscription???
 const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, onConfirm }: ReceivingPopupProps): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
@@ -53,7 +54,6 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 	return (
 		<VideoConfPopup position={position}>
 			<VideoConfPopupContent>
-				{/* Design Team has planned x48 */}
 				<VideoConfPopupClose title={t('Close')} onClick={(): void => onMute(id)} />
 				<RoomAvatar room={room} size='x40' />
 				{current && total ? <VideoConfPopupIndicators current={current} total={total} /> : null}
@@ -64,32 +64,34 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 						<Box mis='x8' display='flex'>
 							<Box>{room.fname}</Box>
 							<Box mis='x4' color='neutral-600'>
-								(object Object)
+								{`${room.name}`}
 							</Box>
 						</Box>
 					</Box>
 				)}
-				<VideoConfPopupControllers>
-					{phase === AsyncStatePhase.LOADING && <Skeleton />}
-					{showMic && (
-						<VideoConfController
-							primary={controllersConfig.mic}
-							text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-							title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-							icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-							onClick={handleToggleMic}
-						/>
-					)}
-					{showCam && (
-						<VideoConfController
-							primary={controllersConfig.cam}
-							text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-							title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-							icon={controllersConfig.cam ? 'video' : 'video-off'}
-							onClick={handleToggleCam}
-						/>
-					)}
-				</VideoConfPopupControllers>
+				{phase === AsyncStatePhase.LOADING && <Skeleton />}
+				{phase === AsyncStatePhase.RESOLVED && (showMic || showCam) && (
+					<VideoConfPopupControllers>
+						{showMic && (
+							<VideoConfController
+								primary={controllersConfig.mic}
+								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+								onClick={handleToggleMic}
+							/>
+						)}
+						{showCam && (
+							<VideoConfController
+								primary={controllersConfig.cam}
+								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								icon={controllersConfig.cam ? 'video' : 'video-off'}
+								onClick={handleToggleCam}
+							/>
+						)}
+					</VideoConfPopupControllers>
+				)}
 				<VideoConfPopupFooter>
 					<VideoConfButton primary onClick={handleJoinCall}>
 						{t('Accept')}

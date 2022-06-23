@@ -25,7 +25,6 @@ type VideoConfContextValue = {
 	rejectIncomingCall: (callId: string) => void;
 	abortCall: () => void;
 	setPreferences: (prefs: { mic?: boolean; cam?: boolean }) => void;
-	changePreference: (key: 'cam' | 'mic', value: boolean) => void;
 	queryIncomingCalls: Subscription<DirectCallParams[]>;
 	queryRinging: Subscription<boolean>;
 	queryCalling: Subscription<boolean>;
@@ -55,7 +54,6 @@ export const useVideoConfIncomingCalls = (): DirectCallParams[] => {
 	return useSubscription(queryIncomingCalls);
 };
 export const useVideoConfSetPreferences = (): VideoConfContextValue['setPreferences'] => useVideoConfContext().setPreferences;
-export const useVideoConfChangePreference = (): VideoConfContextValue['changePreference'] => useVideoConfContext().changePreference;
 export const useVideoConfIsRinging = (): boolean => {
 	const { queryRinging } = useVideoConfContext();
 	return useSubscription(queryRinging);

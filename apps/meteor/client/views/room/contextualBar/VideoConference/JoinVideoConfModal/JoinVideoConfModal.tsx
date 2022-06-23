@@ -72,26 +72,28 @@ const JoinVideoConfModal = ({ room, confTitle, callId, onClose, onConfirm }: Joi
 						</Box>
 					)}
 				</VideoConfModalInfo>
-				<VideoConfModalControllers>
-					{showMic && (
-						<VideoConfController
-							primary={controllersConfig.mic}
-							text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-							title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-							icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-							onClick={handleToggleMic}
-						/>
-					)}
-					{showCam && (
-						<VideoConfController
-							primary={controllersConfig.cam}
-							text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-							title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-							icon={controllersConfig.cam ? 'video' : 'video-off'}
-							onClick={handleToggleCam}
-						/>
-					)}
-				</VideoConfModalControllers>
+				{(showMic || showCam) && (
+					<VideoConfModalControllers>
+						{showMic && (
+							<VideoConfController
+								primary={controllersConfig.mic}
+								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+								onClick={handleToggleMic}
+							/>
+						)}
+						{showCam && (
+							<VideoConfController
+								primary={controllersConfig.cam}
+								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								icon={controllersConfig.cam ? 'video' : 'video-off'}
+								onClick={handleToggleCam}
+							/>
+						)}
+					</VideoConfModalControllers>
+				)}
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
 				<VideoConfButton onClick={handleJoinCall} primary>
