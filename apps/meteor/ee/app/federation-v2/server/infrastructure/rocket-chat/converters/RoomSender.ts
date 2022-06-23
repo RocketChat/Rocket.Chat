@@ -60,6 +60,7 @@ export class FederationRoomSenderConverterEE {
 		externalInvitees: IUser[] | string[],
 		homeServerDomainName: string,
 	): FederationOnUsersAddedToARoomDto {
+		const externalInviterId = internalInviterId.includes('@') && internalInviterId.includes(':') ? internalInviterId : undefined;
 		const externalInviteesUsername: string[] = FederationRoomSenderConverterEE.getInviteesUsername(externalInvitees);
 
 		return FederationRoomSenderConverterEE.toOnRoomCreationDto(
@@ -77,12 +78,19 @@ export class FederationRoomSenderConverterEE {
 		externalInvitees: (IUser | string)[],
 		homeServerDomainName: string,
 	): FederationOnDirectMessageRoomCreationDto {
+		console.log({
+			internalInviterId,
+			internalRoomId,
+			externalInvitees,
+			homeServerDomainName
+		})
 		const withoutOwner = externalInvitees.filter(Boolean).filter((invitee) => {
 			if (typeof invitee === 'string') {
 				return invitee;
 			}
 			return invitee._id !== internalInviterId;
 		});
+		const externalInviterId = internalInviterId.includes('@') && internalInviterId.includes(':') ? internalInviterId : undefined;
 		const externalUsersToBeInvited = FederationRoomSenderConverterEE.getExternalUsersToBeInvited(withoutOwner);
 		let allUsernamesToBeInvited = FederationRoomSenderConverterEE.getInviteesUsername(externalUsersToBeInvited);
 		if (allUsernamesToBeInvited.length > 0) {
@@ -98,6 +106,7 @@ export class FederationRoomSenderConverterEE {
 			internalInviterId,
 			internalRoomId,
 			invitees: users,
+			...(externalInviterId ? { externalInviterId }: {}),
 		});
 	}
 
