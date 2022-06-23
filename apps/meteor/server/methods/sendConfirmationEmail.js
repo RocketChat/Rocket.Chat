@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
-import { Users } from '../../app/models';
+import { Users } from '../../app/models/server';
 
 Meteor.methods({
 	sendConfirmationEmail(to) {

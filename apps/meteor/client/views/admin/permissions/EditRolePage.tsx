@@ -103,7 +103,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 						{t('Save')}
 					</Button>
 					{!role?.protected && role?._id && (
-						<Button secondaryDanger onClick={handleDelete}>
+						<Button secondary danger onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}

@@ -1,5 +1,6 @@
+import { Avatars } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { Avatars } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 203,
