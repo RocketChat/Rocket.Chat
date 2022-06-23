@@ -7,6 +7,9 @@ import {
 	isChatGetMessageParamsGET,
 	isChatPinMessageParamsPOST,
 	isChatSearchParamsGET,
+	isChatSendMessageParamsPOST,
+	isChatStarMessageParamsPOST,
+	isChatUnPinMessageParamsPOST,
 } from '@rocket.chat/rest-typings';
 
 import { Messages } from '../../../models/server';
@@ -200,15 +203,17 @@ API.v1.addRoute(
 // one channel whereas the other one allows for sending to more than one channel at a time.
 API.v1.addRoute(
 	'chat.sendMessage',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatSendMessageParamsPOST,
+	},
 	{
 		post() {
-			if (!this.bodyParams.message) {
-				throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
-			}
+			const msg = this.bodyParams.message;
+			const uid = this.userId;
 
-			const sent = executeSendMessage(this.userId, this.bodyParams.message);
-			const [message] = normalizeMessagesForUser([sent], this.userId);
+			const sent = executeSendMessage(uid, msg);
+			const [message] = normalizeMessagesForUser([sent], uid);
 
 			return API.v1.success({
 				message,
@@ -219,26 +224,25 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.starMessage',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatStarMessageParamsPOST,
+	},
 	{
 		post() {
-			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
-			}
+			const { messageId } = this.bodyParams;
 
-			const msg = Messages.findOneById(this.bodyParams.messageId);
+			const msg = Messages.findOneById(messageId);
 
 			if (!msg) {
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			Meteor.runAsUser(this.userId, () =>
-				Meteor.call('starMessage', {
-					_id: msg._id,
-					rid: msg.rid,
-					starred: true,
-				}),
-			);
+			Meteor.call('starMessage', {
+				_id: msg._id,
+				rid: msg.rid,
+				starred: true,
+			});
 
 			return API.v1.success();
 		},
@@ -247,20 +251,21 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.unPinMessage',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatUnPinMessageParamsPOST,
+	},
 	{
 		post() {
-			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
-			}
+			const { messageId } = this.bodyParams;
 
-			const msg = Messages.findOneById(this.bodyParams.messageId);
+			const msg = Messages.findOneById(messageId);
 
 			if (!msg) {
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			Meteor.runAsUser(this.userId, () => Meteor.call('unpinMessage', msg));
+			Meteor.call('unpinMessage', msg);
 
 			return API.v1.success();
 		},

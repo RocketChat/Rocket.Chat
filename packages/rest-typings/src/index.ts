@@ -199,3 +199,6 @@ export * from './v1/chat/ChatSyncMessagesParamsGET';
 export * from './v1/chat/ChatGetMessageParamsGET';
 export * from './v1/chat/ChatPinMessageParamsPOST';
 export * from './v1/chat/ChatSearchParamsGET';
+export * from './v1/chat/ChatSendMessageParamsPOST';
+export * from './v1/chat/ChatStarMessageParamsPOST';
+export * from './v1/chat/ChatUnPinMessageParamsPOST';
