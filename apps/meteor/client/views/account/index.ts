@@ -1,2 +1,2 @@
 export { registerAccountRoute } from './routes';
-export { registerAccountSidebarItem, unregisterSidebarItem, itemsSubscription } from './sidebarItems';
+export { registerAccountSidebarItem, unregisterSidebarItem } from './sidebarItems';

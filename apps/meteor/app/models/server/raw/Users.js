@@ -162,6 +162,15 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findActiveByIdsOrUsernames(userIds, options = {}) {
+		const query = {
+			$or: [{ _id: { $in: userIds } }, { username: { $in: userIds } }],
+			active: true,
+		};
+
+		return this.find(query, options);
+	}
+
 	findByIds(userIds, options = {}) {
 		const query = {
 			_id: { $in: userIds },

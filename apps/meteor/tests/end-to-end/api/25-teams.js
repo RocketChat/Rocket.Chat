@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper.js';
 import { createUser, login } from '../../data/users.helper';
-import { password } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 
 describe('[Teams]', () => {
 	before((done) => getCredentials(done));
@@ -76,6 +76,45 @@ describe('[Teams]', () => {
 					publicTeam = res.body.team;
 				})
 				.end(done);
+		});
+
+		it('should create a public team with a member', (done) => {
+			request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: `test-team-${Date.now()}`,
+					type: 0,
+					members: [testUser.username],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('team');
+					expect(res.body).to.have.nested.property('team._id');
+					publicTeam = res.body.team;
+				})
+				.then((response) => {
+					const teamId = response.body.team._id;
+					return request
+						.get(api('teams.members'))
+						.set(credentials)
+						.query({ teamId })
+						.expect(200)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', true);
+							expect(response.body).to.have.property('members');
+
+							// remove admin user from members because it's added automatically as owner
+							const members = response.body.members.filter(({ user }) => user.username !== adminUsername);
+
+							const [member] = members;
+							expect(member.user.username).to.be.equal(testUser.username);
+						});
+				})
+				.then(() => done())
+				.catch(done);
 		});
 
 		it('should create private team with a defined owner', (done) => {

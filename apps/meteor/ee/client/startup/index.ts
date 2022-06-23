@@ -1,3 +1,3 @@
 import './engagementDashboard';
-import './routes';
 import './deviceManagement';
+import './routes';

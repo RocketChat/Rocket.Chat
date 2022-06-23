@@ -16,7 +16,7 @@ export async function findUsersToAutocomplete({
 		term: string;
 	};
 }): Promise<{
-	items: IUser[];
+	items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
 }> {
 	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
 		return { items: [] };
@@ -69,16 +69,7 @@ export function getInclusiveFields(query: { [k: string]: 1 }): {} {
  * get the default fields if **fields** are empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} fields the fields from parsed jsonQuery
  */
-export function getNonEmptyFields(fields: {}): {
-	name: number;
-	username: number;
-	emails: number;
-	roles: number;
-	status: number;
-	active: number;
-	avatarETag: number;
-	lastLogin: number;
-} {
+export function getNonEmptyFields(fields: { [k: string]: 1 | 0 }): { [k: string]: 1 } {
 	const defaultFields = {
 		name: 1,
 		username: 1,
@@ -88,7 +79,7 @@ export function getNonEmptyFields(fields: {}): {
 		active: 1,
 		avatarETag: 1,
 		lastLogin: 1,
-	};
+	} as const;
 
 	if (!fields || Object.keys(fields).length === 0) {
 		return defaultFields;

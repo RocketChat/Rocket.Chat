@@ -7,22 +7,22 @@ import type { SessionsProps } from './SessionsProps';
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface Endpoints {
-		'sessions/list': {
+		'/v1/sessions/list': {
 			GET: (params: SessionsPaginateProps) => PaginatedResult<{ sessions: DeviceManagementSession[] }>;
 		};
-		'sessions/info': {
+		'/v1/sessions/info': {
 			GET: (params: SessionsProps) => DeviceManagementSession;
 		};
-		'sessions/logout.me': {
+		'/v1/sessions/logout.me': {
 			POST: (params: SessionsProps) => Pick<ISession, 'sessionId'>;
 		};
-		'sessions/list.all': {
+		'/v1/sessions/list.all': {
 			GET: (params: SessionsPaginateProps) => PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>;
 		};
-		'sessions/info.admin': {
+		'/v1/sessions/info.admin': {
 			GET: (params: SessionsProps) => DeviceManagementPopulatedSession;
 		};
-		'sessions/logout': {
+		'/v1/sessions/logout': {
 			POST: (params: SessionsProps) => Pick<ISession, 'sessionId'>;
 		};
 	}
