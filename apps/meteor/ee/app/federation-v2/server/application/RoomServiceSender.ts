@@ -53,9 +53,9 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	}
 
 	public async onDirectMessageRoomCreation(dmRoomOnCreationInput: FederationOnDirectMessageRoomCreationDto): Promise<void> {
-		const { internalRoomId, internalInviterId, invitees } = dmRoomOnCreationInput;
-
-		if (invitees.length === 0) {
+		const { internalRoomId, internalInviterId, invitees, externalInviterId } = dmRoomOnCreationInput;
+		console.log({ dmRoomOnCreationInput })
+		if (invitees.length === 0 || externalInviterId) {
 			return;
 		}
 		await this.createExternalDirectMessageRoomAndInviteUsers({ internalInviterId, internalRoomId, invitees });
@@ -90,7 +90,11 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	}
 
 	public async onUsersAddedToARoom(roomOnUsersAddedToARoomInput: FederationOnUsersAddedToARoomDto): Promise<void> {
-		const { internalInviterId, internalRoomId, invitees } = roomOnUsersAddedToARoomInput;
+		const { internalInviterId, internalRoomId, invitees, externalInviterId } = roomOnUsersAddedToARoomInput;
+
+		if (!externalInviterId) {
+			return;
+		}
 
 		await Promise.all(
 			invitees.map((member) =>
@@ -157,14 +161,16 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 
 		if (!(await this.rocketUserAdapter.getFederatedUserByInternalId(internalInviterId))) {
 			const internalUser = (await this.rocketUserAdapter.getInternalUserById(internalInviterId)) as IUser;
+			const username = internalUser?.username || internalInviterId;
+			const name = internalUser?.name || internalInviterId;
 			const externalInviterId = await this.bridge.createUser(
-				internalUser.username as string,
-				internalUser.name as string,
+				username,
+				name,
 				this.rocketSettingsAdapter.getHomeServerDomain(),
 			);
 			const federatedInviterUser = FederatedUser.createInstance(externalInviterId, {
-				name: internalUser.name as string,
-				username: internalUser.username as string,
+				name,
+				username,
 				existsOnlyOnProxyServer: true,
 			});
 			await this.rocketUserAdapter.createFederatedUser(federatedInviterUser);
