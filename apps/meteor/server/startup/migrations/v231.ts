@@ -1,12 +1,12 @@
 import { ISectionBlock, BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
 import { BannerPlatform } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 import { Banner } from '../../sdk';
 import { settings } from '../../../app/settings/server';
 import { isEnterprise } from '../../../ee/app/license/server';
-import { Settings } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 231,

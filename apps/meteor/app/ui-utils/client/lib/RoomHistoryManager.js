@@ -11,7 +11,7 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { getUserPreference } from '../../../utils/client';

@@ -1,4 +1,5 @@
-import { CustomSounds } from '../../../models/server/raw';
+import { CustomSounds } from '@rocket.chat/models';
+
 import { API } from '../api';
 
 API.v1.addRoute(

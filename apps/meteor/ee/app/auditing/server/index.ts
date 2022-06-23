@@ -1,8 +1,8 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
+import { Permissions } from '@rocket.chat/models';
 
 import { onLicense } from '../../license/server';
-import { Permissions } from '../../../../app/models/server/raw';
 import { createOrUpdateProtectedRole } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 onLicense('auditing', () => {

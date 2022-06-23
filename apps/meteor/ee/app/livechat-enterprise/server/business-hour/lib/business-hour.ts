@@ -1,8 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import { LivechatBusinessHours } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import { LivechatBusinessHours } from '../../../../../../app/models/server/raw';
 import { IPaginatedResponse, IPagination } from '../../api/lib/definition';
 
 interface IResponse extends IPaginatedResponse {

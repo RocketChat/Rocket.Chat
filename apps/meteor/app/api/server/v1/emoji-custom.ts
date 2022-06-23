@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { EmojiCustom } from '@rocket.chat/models';
 
-import { EmojiCustom } from '../../../models/server/raw';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { findEmojisCustom } from '../lib/emoji-custom';
