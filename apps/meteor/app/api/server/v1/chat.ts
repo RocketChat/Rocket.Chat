@@ -1,6 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { isChatDeleteParamsPOST } from '@rocket.chat/rest-typings';
+import { IMessage } from '@rocket.chat/core-typings';
 
 import { Messages } from '../../../models/server';
 import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
@@ -23,41 +25,36 @@ import {
 
 API.v1.addRoute(
 	'chat.delete',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatDeleteParamsPOST,
+	},
 	{
 		post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					msgId: String,
-					roomId: String,
-					asUser: Match.Maybe(Boolean),
-				}),
-			);
+			const { msgId, roomId, asUser } = this.bodyParams;
 
-			const msg = Messages.findOneById(this.bodyParams.msgId, { fields: { u: 1, rid: 1 } });
+			const msg = Messages.findOneById(msgId, { fields: { u: 1, rid: 1 } });
 
 			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+				return API.v1.failure(`No message found with the id of "${msgId}".`);
 			}
 
-			if (this.bodyParams.roomId !== msg.rid) {
+			if (roomId !== msg.rid) {
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			if (this.bodyParams.asUser && msg.u._id !== this.userId && !hasPermission(this.userId, 'force-delete-message', msg.rid)) {
+			if (asUser && msg.u._id !== this.userId && !hasPermission(this.userId, 'force-delete-message', msg.rid)) {
 				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 			}
 
-			Meteor.runAsUser(this.bodyParams.asUser ? msg.u._id : this.userId, () => {
-				Meteor.call('deleteMessage', { _id: msg._id });
-			});
+			const result = Meteor.call('deleteMessage', { _id: msg._id });
 
-			return API.v1.success({
-				_id: msg._id,
-				ts: Date.now(),
-				message: msg,
-			});
+			return API.v1.success(result);
+			// return API.v1.success({
+			// 	_id: msg._id,
+			// 	ts: Date.now(),
+			// 	message: msg,
+			// });
 		},
 	},
 );
