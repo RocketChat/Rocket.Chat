@@ -172,4 +172,5 @@ export interface IStats {
 	totalManuallyAddedUsers: number;
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
+	totalWebRTCCalls: number;
 }

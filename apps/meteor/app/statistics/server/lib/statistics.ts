@@ -486,6 +486,7 @@ export const statistics = {
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
 		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
 		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
+		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 
 		const defaultHomeTitle = Settings.findOneById('Layout_Home_Title').packageValue;
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;

@@ -233,6 +233,7 @@ export default {
 			totalManuallyAddedUsers: 0,
 			totalSubscriptionRoles: 0,
 			totalUserRoles: 0,
+			totalWebRTCCalls: 0,
 		},
 		instances: [],
 	},
