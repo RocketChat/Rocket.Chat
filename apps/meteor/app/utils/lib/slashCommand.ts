@@ -18,6 +18,7 @@ export const slashCommands = {
 		providesPreview = false,
 		previewer?: SlashCommand['previewer'],
 		previewCallback?: SlashCommand['previewCallback'],
+		appId?: string,
 	): void {
 		this.commands[command] = {
 			command,
@@ -30,6 +31,7 @@ export const slashCommands = {
 			providesPreview: Boolean(providesPreview),
 			previewer,
 			previewCallback,
+			appId,
 		} as SlashCommand;
 	},
 	run(command: string, params: string, message: RequiredField<Partial<IMessage>, 'rid'>, triggerId?: string | undefined): void {
