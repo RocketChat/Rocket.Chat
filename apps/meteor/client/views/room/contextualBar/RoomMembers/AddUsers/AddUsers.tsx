@@ -11,7 +11,7 @@ type AddUsersProps = {
 	onClickBack?: () => void;
 	onClickSave: () => Promise<void>;
 	users: IUser['username'][];
-	onChange: (value: IUser['username'][], action?: string) => void;
+	onChange: (value: IUser['username'][]) => void;
 };
 
 const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: AddUsersProps): ReactElement => {

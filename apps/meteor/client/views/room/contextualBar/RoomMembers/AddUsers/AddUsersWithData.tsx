@@ -28,16 +28,6 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 	const { users } = values as AddUsersInitialProps;
 	const { handleUsers } = handlers;
 
-	const onChangeUsers = useMutableCallback((value, action) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return handleUsers([...users, value]);
-		}
-		handleUsers(users.filter((current) => current !== value));
-	});
-
 	const handleSave = useMutableCallback(async () => {
 		try {
 			await saveAction({ rid, users });
@@ -49,7 +39,7 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 		}
 	});
 
-	return <AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} users={users} onChange={onChangeUsers} />;
+	return <AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} users={users} onChange={handleUsers} />;
 };
 
 export default AddUsersWithData;

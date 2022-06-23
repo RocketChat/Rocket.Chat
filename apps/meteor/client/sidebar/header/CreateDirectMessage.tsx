@@ -20,16 +20,6 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 
 	const createDirect = useEndpointActionExperimental('POST', '/v1/dm.create');
 
-	const onChangeUsers = useMutableCallback((value: Username | any, action: 'remove' | undefined) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return setUsers([...users, value]);
-		}
-		setUsers(users.filter((current) => current !== value));
-	});
-
 	const onCreate = useMutableCallback(async () => {
 		try {
 			const {
@@ -52,7 +42,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 			<Modal.Content>
 				<Box>{t('Direct_message_creation_description')}</Box>
 				<Box mbs='x16' display='flex' flexDirection='column' width='full'>
-					<UserAutoCompleteMultipleFederated value={users} onChange={onChangeUsers} />
+					<UserAutoCompleteMultipleFederated value={users} onChange={setUsers} />
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>
