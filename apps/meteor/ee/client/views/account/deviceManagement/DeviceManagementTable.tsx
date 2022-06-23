@@ -14,7 +14,7 @@ import { usePagination } from '../../../../../client/components/GenericTable/hoo
 import { useSort } from '../../../../../client/components/GenericTable/hooks/useSort';
 import { useEndpointData } from '../../../../../client/hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../client/lib/asyncState';
-import DevicesRow from './DevicesRow';
+import DeviceManagementRow from './DeviceManagementRow';
 
 const sortMapping = {
 	client: 'device.name',
@@ -36,7 +36,7 @@ const DeviceManagementTable = (): ReactElement => {
 		[itemsPerPage, current, sortBy, sortDirection],
 	);
 
-	const { value: data, phase, error, reload } = useEndpointData('sessions/list', query);
+	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list', query);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -58,53 +58,70 @@ const DeviceManagementTable = (): ReactElement => {
 
 	return (
 		<>
-			<GenericTable>
-				<GenericTableHeader>
-					<GenericTableHeaderCell key={'client'} direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort={'client'}>
-						{t('Client')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key={'os'} direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort={'os'}>
-						{t('OS')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key={'loginAt'}
-						direction={sortDirection}
-						active={sortBy === 'loginAt'}
-						onClick={setSort}
-						sort={'loginAt'}
-					>
-						{t('Last_login')}
-					</GenericTableHeaderCell>
-					{mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_Id')}</GenericTableHeaderCell>}
-					<GenericTableHeaderCell key={'logout'}> </GenericTableHeaderCell>
-				</GenericTableHeader>
-				<GenericTableBody>
-					{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
-					{phase === AsyncStatePhase.RESOLVED &&
-						data?.sessions &&
-						data.sessions.map((session) => (
-							<DevicesRow
-								key={session._id}
-								_id={session._id}
-								deviceName={session.device?.name || ''}
-								deviceType={session.device?.type || ''}
-								deviceOSName={session.device?.os.name || ''}
-								deviceOSVersion={session.device?.os.version || ''}
-								loginAt={session.loginAt}
-								onReload={reload}
-							/>
-						))}
-				</GenericTableBody>
-			</GenericTable>
-			{phase === AsyncStatePhase.RESOLVED && (
-				<Pagination
-					current={current}
-					itemsPerPage={itemsPerPage}
-					count={data?.total || 0}
-					onSetCurrent={setCurrent}
-					onSetItemsPerPage={setItemsPerPage}
-					{...paginationProps}
-				/>
+			{data?.sessions.length === 0 && (
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
+			)}
+			{data?.sessions && data.sessions.length > 0 && (
+				<>
+					<GenericTable>
+						<GenericTableHeader>
+							<GenericTableHeaderCell
+								key={'client'}
+								direction={sortDirection}
+								active={sortBy === 'client'}
+								onClick={setSort}
+								sort={'client'}
+							>
+								{t('Client')}
+							</GenericTableHeaderCell>
+							<GenericTableHeaderCell key={'os'} direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort={'os'}>
+								{t('OS')}
+							</GenericTableHeaderCell>
+							<GenericTableHeaderCell
+								key={'loginAt'}
+								direction={sortDirection}
+								active={sortBy === 'loginAt'}
+								onClick={setSort}
+								sort={'loginAt'}
+							>
+								{t('Last_Login')}
+							</GenericTableHeaderCell>
+							{mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_ID')}</GenericTableHeaderCell>}
+							<GenericTableHeaderCell key={'logout'} />
+						</GenericTableHeader>
+						<GenericTableBody>
+							{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
+							{phase === AsyncStatePhase.RESOLVED &&
+								data?.sessions &&
+								data.sessions.map((session) => (
+									<DeviceManagementRow
+										key={session._id}
+										_id={session._id}
+										deviceName={session.device?.name}
+										deviceType={session.device?.type}
+										deviceOSName={session.device?.os.name}
+										deviceOSVersion={session.device?.os.version}
+										loginAt={session.loginAt}
+										onReload={reload}
+									/>
+								))}
+						</GenericTableBody>
+					</GenericTable>
+					{phase === AsyncStatePhase.RESOLVED && (
+						<Pagination
+							divider
+							current={current}
+							itemsPerPage={itemsPerPage}
+							count={data?.total || 0}
+							onSetCurrent={setCurrent}
+							onSetItemsPerPage={setItemsPerPage}
+							{...paginationProps}
+						/>
+					)}
+				</>
 			)}
 		</>
 	);

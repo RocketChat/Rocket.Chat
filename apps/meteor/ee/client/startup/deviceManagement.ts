@@ -13,7 +13,7 @@ const [registerAdminRouter, unregisterAdminRoute] = registerAdminRoute('/device-
 });
 
 const [registerAccountRouter, unregisterAccountRoute] = registerAccountRoute('/device-management/', {
-	name: 'device-management',
+	name: 'my-devices',
 	component: lazy(() => import('../views/account/deviceManagement/DeviceManagementRoute')),
 });
 

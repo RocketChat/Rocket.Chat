@@ -19,7 +19,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const handleDeviceLogout = useDeviceLogout(sessionId);
+	const handleDeviceLogout = useDeviceLogout(sessionId, '/v1/sessions/logout');
 
 	const { name: clientName, os } = device || {};
 	const { username, name } = _user || {};

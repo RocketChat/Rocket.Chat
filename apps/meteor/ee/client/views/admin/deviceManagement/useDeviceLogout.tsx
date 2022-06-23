@@ -4,7 +4,7 @@ import React, { useCallback, useMemo } from 'react';
 import GenericModal from '../../../../../client/components/GenericModal';
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 
-export const useDeviceLogout = (sessionId: string): ((onReload: () => void) => void) => {
+export const useDeviceLogout = (sessionId: string, endpoint: '/v1/sessions/logout' | '/v1/sessions/logout.me'): ((onReload: () => void) => void) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -13,7 +13,7 @@ export const useDeviceLogout = (sessionId: string): ((onReload: () => void) => v
 
 	const logoutDevice = useEndpointAction(
 		'POST',
-		'/v1/sessions/logout',
+		endpoint,
 		useMemo(() => ({ sessionId }), [sessionId]),
 	);
 

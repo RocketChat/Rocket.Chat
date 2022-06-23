@@ -35,7 +35,7 @@ const DevicesRow = ({
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const handleDeviceLogout = useDeviceLogout(_id);
+	const handleDeviceLogout = useDeviceLogout(_id, '/v1/sessions/logout');
 
 	const handleClick = useMutableCallback((): void => {
 		deviceManagementRouter.push({
