@@ -62,7 +62,7 @@ OTR.Room = class {
 	}
 
 	acknowledge() {
-		APIClient.v1.post('statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this.roomId }] });
+		APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this.roomId }] });
 
 		Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {
 			roomId: this.roomId,

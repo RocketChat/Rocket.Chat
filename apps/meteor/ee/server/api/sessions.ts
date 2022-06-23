@@ -158,7 +158,7 @@ API.v1.addRoute(
 
 			Promise.all([
 				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),
-				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId }),
+				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId, logoutBy: this.userId }),
 			]);
 
 			return API.v1.success({ sessionId });

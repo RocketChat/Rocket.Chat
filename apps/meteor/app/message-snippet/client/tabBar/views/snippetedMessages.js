@@ -56,7 +56,10 @@ Template.snippetedMessages.onCreated(function () {
 
 	this.autorun(async () => {
 		const limit = this.limit.get();
-		const { messages, total } = await APIClient.v1.get(`chat.getSnippetedMessages?roomId=${this.rid}&count=${limit}`);
+		const { messages, total } = await APIClient.get('/v1/chat.getSnippetedMessages', {
+			roomId: this.rid,
+			count: limit,
+		});
 
 		upsertMessageBulk({ msgs: messages }, this.messages);
 

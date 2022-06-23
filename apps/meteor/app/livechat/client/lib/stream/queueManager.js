@@ -45,7 +45,7 @@ const updateCollection = (inquiry) => {
 };
 
 const getInquiriesFromAPI = async () => {
-	const { inquiries } = await APIClient.v1.get('livechat/inquiries.queuedForUser?sort={"ts": 1}');
+	const { inquiries } = await APIClient.get('/v1/livechat/inquiries.queuedForUser?sort={"ts": 1}');
 	return inquiries;
 };
 
@@ -68,7 +68,7 @@ const updateInquiries = async (inquiries = []) =>
 	inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
 
 const getAgentsDepartments = async (userId) => {
-	const { departments } = await APIClient.v1.get(`livechat/agents/${userId}/departments?enabledDepartmentsOnly=true`);
+	const { departments } = await APIClient.get(`/v1/livechat/agents/${userId}/departments`, { enabledDepartmentsOnly: true });
 	return departments;
 };
 

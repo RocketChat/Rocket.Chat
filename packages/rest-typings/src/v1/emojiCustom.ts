@@ -1,4 +1,4 @@
-import type { ICustomEmojiDescriptor } from '@rocket.chat/core-typings';
+import type { ICustomEmojiDescriptor, IEmojiCustom } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -27,6 +27,7 @@ export const isEmojiCustomDelete = ajv.compile<emojiCustomDeleteProps>(emojiCust
 
 type emojiCustomList = {
 	query: string;
+	updatedSince?: string;
 };
 
 const emojiCustomListSchema = {
@@ -35,27 +36,38 @@ const emojiCustomListSchema = {
 		query: {
 			type: 'string',
 		},
+		updatedSince: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['query'],
 	additionalProperties: false,
 };
 
-export const isemojiCustomList = ajv.compile<emojiCustomList>(emojiCustomListSchema);
+export const isEmojiCustomList = ajv.compile<emojiCustomList>(emojiCustomListSchema);
 
 export type EmojiCustomEndpoints = {
-	'emoji-custom.all': {
-		GET: (params: PaginatedRequest<{ query: string }, 'name'>) => {
-			emojis: ICustomEmojiDescriptor[];
-		} & PaginatedResult;
+	'/v1/emoji-custom.all': {
+		GET: (params: PaginatedRequest<{ query: string }, 'name'>) => PaginatedResult<{
+			emojis: IEmojiCustom[];
+		}>;
 	};
-	'emoji-custom.list': {
+	'/v1/emoji-custom.list': {
 		GET: (params: emojiCustomList) => {
-			emojis?: {
-				update: ICustomEmojiDescriptor[];
+			emojis: {
+				update: IEmojiCustom[];
+				remove: IEmojiCustom[];
 			};
 		};
 	};
-	'emoji-custom.delete': {
+	'/v1/emoji-custom.delete': {
 		POST: (params: emojiCustomDeleteProps) => void;
+	};
+	'/v1/emoji-custom.create': {
+		POST: (params: { emoji: ICustomEmojiDescriptor }) => void;
+	};
+	'/v1/emoji-custom.update': {
+		POST: (params: { emoji: ICustomEmojiDescriptor }) => void;
 	};
 };

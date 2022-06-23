@@ -8,7 +8,6 @@ export const roomAccessAttributes = {
 	t: 1,
 	teamId: 1,
 	prid: 1,
-	tokenpass: 1,
 };
 
 export const canAccessRoom = (...args: Parameters<IAuthorization['canAccessRoom']>): boolean => Promise.await(canAccessRoomAsync(...args));

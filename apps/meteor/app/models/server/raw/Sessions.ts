@@ -1558,15 +1558,17 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	async logoutByloginTokenAndUserId({
 		loginToken,
 		userId,
+		logoutBy,
 	}: {
 		loginToken: ISession['loginToken'];
 		userId: IUser['_id'];
+		logoutBy?: IUser['_id'];
 	}): Promise<UpdateWriteOpResult> {
 		const logoutAt = new Date();
 		const updateObj = {
 			$set: {
 				logoutAt,
-				logoutBy: userId,
+				logoutBy: logoutBy || userId,
 			},
 		};
 
