@@ -206,6 +206,8 @@
 		"@rocket.chat/logo": "~0.31.12",
 		"@rocket.chat/memo": "~0.31.12",
 		"@rocket.chat/message-parser": "~0.31.13",
+		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/mp3-encoder": "^0.31.13",
 		"@rocket.chat/onboarding-ui": "~0.31.13",
 		"@rocket.chat/rest-typings": "workspace:^",

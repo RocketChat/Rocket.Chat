@@ -3400,6 +3400,8 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.13
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.13
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -3790,6 +3792,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/message-parser@npm:next":
+  version: 0.32.0-dev.7
+  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.7"
+  checksum: a48907ea5db3ce93d77fe3631a657f13b2ddda6dfe9a3376639514ef6ec2938f36d257376789aa67b210b5389b52ee4f04a4b0fda9e4541c2bd16a94c1fa527c
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/meteor@workspace:apps/meteor":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/meteor@workspace:apps/meteor"
@@ -3830,6 +3839,8 @@ __metadata:
     "@rocket.chat/logo": ~0.31.12
     "@rocket.chat/memo": ~0.31.12
     "@rocket.chat/message-parser": ~0.31.13
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": ^0.31.13
     "@rocket.chat/onboarding-ui": ~0.31.13
     "@rocket.chat/rest-typings": "workspace:^"
@@ -4093,6 +4104,34 @@ __metadata:
     xml-encryption: 2.0.0
     xml2js: 0.4.23
     yaqrcode: ^0.2.1
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/model-typings@workspace:^, @rocket.chat/model-typings@workspace:packages/model-typings":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/model-typings@workspace:packages/model-typings"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@types/jest": ^27.4.1
+    "@types/mongodb": ^3.6.10
+    "@types/node-rsa": ^1.1.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.3.4
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/models@workspace:^, @rocket.chat/models@workspace:packages/models":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/models@workspace:packages/models"
+  dependencies:
+    "@rocket.chat/model-typings": "workspace:^"
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.3.4
   languageName: unknown
   linkType: soft
 
@@ -13945,7 +13984,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.18.0":
+"eslint@npm:^8.12.0, eslint@npm:^8.18.0":
   version: 8.18.0
   resolution: "eslint@npm:8.18.0"
   dependencies:
@@ -27346,7 +27385,9 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.13
     "@rocket.chat/icons": ^0.31.13
-    "@rocket.chat/message-parser": ^0.31.13
+    "@rocket.chat/message-parser": next
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.13
     "@rocket.chat/ui-kit": ~0.31.13
