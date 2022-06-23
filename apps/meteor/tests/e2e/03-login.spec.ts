@@ -20,7 +20,7 @@ test.describe('[Login]', () => {
 			email: validUser.email,
 			password: 'any_password1',
 		};
-		await loginPage.doLogin(invalidUserPassword);
+		await loginPage.doLogin(invalidUserPassword, false);
 		await expect(global.getToastBarError).toBeVisible();
 	});
 

@@ -34,7 +34,7 @@ test.describe('[Wizard]', () => {
 	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
 			await setupWizard.goto('');
-			await loginPage.doLogin(adminLogin);
+			await loginPage.doLogin(adminLogin, false);
 			await setupWizard.stepTwoSuccess();
 		});
 
@@ -64,7 +64,7 @@ test.describe('[Wizard]', () => {
 	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
 			await setupWizard.goto('');
-			await loginPage.doLogin(adminLogin);
+			await loginPage.doLogin(adminLogin, false);
 			await setupWizard.stepTwoSuccess();
 			await setupWizard.stepThreeSuccess();
 		});
