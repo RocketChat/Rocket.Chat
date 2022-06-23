@@ -185,7 +185,9 @@ test.describe('[Administration]', () => {
 
 			test.describe('[General]', () => {
 				test('expect change site url reset button is showed', async () => {
+					await admin.generalSiteUrl.type('something');
 					await expect(admin.generalSiteUrlReset).toBeVisible();
+					await admin.generalSiteUrlReset.click();
 				});
 
 				test('expect change site name reset button is showed', async () => {
