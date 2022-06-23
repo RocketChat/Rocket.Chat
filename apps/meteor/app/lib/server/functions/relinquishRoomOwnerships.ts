@@ -1,6 +1,7 @@
+import { Roles } from '@rocket.chat/models';
+
 import { FileUpload } from '../../../file-upload/server';
 import { Subscriptions, Messages, Rooms } from '../../../models/server';
-import { Roles } from '../../../models/server/raw';
 import { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
 const bulkRoomCleanUp = (rids: string[]): unknown => {

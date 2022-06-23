@@ -1,5 +1,7 @@
 import type { FilterQuery } from 'mongodb';
 
+import type { IRocketChatAssetConstraint } from './IRocketChatAssets';
+
 export type SettingId = string;
 export type GroupId = SettingId;
 export type TabId = SettingId;
@@ -19,7 +21,7 @@ export interface ISettingSelectOption {
 	i18nLabel: string;
 }
 
-export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction;
+export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset;
 
 export interface ISettingBase {
 	_id: SettingId;
@@ -119,6 +121,8 @@ export interface ISettingAction extends ISettingBase {
 export interface ISettingAsset extends ISettingBase {
 	type: 'asset';
 	value: AssetValue;
+	fileConstraints: IRocketChatAssetConstraint;
+	asset: string;
 }
 
 export interface ISettingDate extends ISettingBase {

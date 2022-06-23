@@ -1,8 +1,8 @@
 import { Match, check } from 'meteor/check';
 import { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { API } from '../../api';
-import { Users } from '../../../../models/server/raw/index';
 import { hasPermission } from '../../../../authorization/server/index';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { logger } from './logger';
