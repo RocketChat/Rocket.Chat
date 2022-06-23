@@ -1,4 +1,5 @@
-import { VoipRoom } from '../../../app/models/server/raw';
+import { VoipRoom } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
