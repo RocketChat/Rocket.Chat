@@ -3,6 +3,8 @@ import { Fragment, ReactElement } from 'react';
 
 import PreviewCodeElement from '../code/PreviewCodeElement';
 import PreviewKatexElement from '../katex/PreviewKatexElement';
+import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement';
+import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement';
 import PreviewColorElement from './PreviewColorElement';
 import PreviewEmojiElement from './PreviewEmojiElement';
 
@@ -29,10 +31,10 @@ const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactE
 					return <PreviewInlineElements key={index} children={[child.value.label]} />;
 
 				case 'MENTION_USER':
-					return <Fragment key={index}>@{child.value.value}</Fragment>;
+					return <PreviewUserMentionElement key={index} mention={child.value.value} />;
 
 				case 'MENTION_CHANNEL':
-					return <Fragment key={index}>#{child.value.value}</Fragment>;
+					return <PreviewChannelMentionElement key={index} mention={child.value.value} />;
 
 				case 'INLINE_CODE':
 					return <PreviewCodeElement key={index} code={child.value.value} />;

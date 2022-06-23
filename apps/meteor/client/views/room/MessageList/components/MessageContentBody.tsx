@@ -2,8 +2,8 @@ import { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { MarkupInteractionContext, Markup } from '@rocket.chat/gazzodown';
-import React, { ReactElement } from 'react';
+import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
+import React, { ReactElement, useCallback } from 'react';
 
 import { highlightWords } from '../../../../../app/highlight-words/client/helper';
 import { baseURI } from '../../../../lib/baseURI';
@@ -22,6 +22,35 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 	const {
 		actions: { openRoom, openUserCard },
 	} = useMessageActions();
+
+	const resolveUserMention = useCallback(
+		(mention: string) => {
+			if (mention === 'all' || mention === 'here') {
+				return undefined;
+			}
+
+			return message.mentions?.find(({ username }) => username === mention);
+		},
+		[message.mentions],
+	);
+
+	const onUserMentionClick = useCallback(
+		({ username }: UserMention) => {
+			if (!username) {
+				return;
+			}
+
+			return openUserCard(username);
+		},
+		[openUserCard],
+	);
+
+	const resolveChannelMention = useCallback(
+		(mention: string) => message.channels?.find(({ name }) => name === mention),
+		[message.channels],
+	);
+
+	const onChannelMentionClick = useCallback(({ _id: rid }: ChannelMention) => openRoom(rid), [openRoom]);
 
 	return (
 		<Box
@@ -64,10 +93,10 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 					getEmojiClassNameAndDataTitle,
 					highlights: useMessageListHighlights(),
 					highlightWords,
-					mentions: message?.mentions ?? [],
-					channels: message?.channels ?? [],
-					onUserMentionClick: openUserCard,
-					onChannelMentionClick: openRoom,
+					resolveUserMention,
+					onUserMentionClick,
+					resolveChannelMention,
+					onChannelMentionClick,
 				}}
 			>
 				<Markup tokens={tokens} />
