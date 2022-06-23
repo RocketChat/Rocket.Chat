@@ -195,3 +195,4 @@ export * from './v1/import/DownloadPendingFilesParamsPOST';
 export * from './v1/import/DownloadPendingAvatarsParamsPOST';
 export * from './v1/import/GetCurrentImportOperationParamsGET';
 export * from './v1/chat/ChatDeleteParamsPOST';
+export * from './v1/chat/ChatSyncMessagesParamsGET';

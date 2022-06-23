@@ -1,16 +1,16 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type ChatDeleteParamsPOST = {
+export type ChatDeleteParamsGET = {
 	msgId: string;
 	roomId: string;
 	asUser?: boolean;
 };
 
-const ChatDeleteParamsPostSchema: JSONSchemaType<ChatDeleteParamsPOST> = {
+const ChatDeleteParamsGETSchema = {
 	type: 'object',
 	properties: {
 		msgId: {
@@ -28,4 +28,4 @@ const ChatDeleteParamsPostSchema: JSONSchemaType<ChatDeleteParamsPOST> = {
 	required: ['msgId', 'roomId'],
 };
 
-export const isChatDeleteParamsPOST = ajv.compile<ChatDeleteParamsPOST>(ChatDeleteParamsPostSchema);
+export const isChatDeleteParamsGET = ajv.compile<ChatDeleteParamsGET>(ChatDeleteParamsGETSchema);

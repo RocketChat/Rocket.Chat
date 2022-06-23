@@ -1,8 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { isChatDeleteParamsPOST } from '@rocket.chat/rest-typings';
-import { IMessage } from '@rocket.chat/core-typings';
+import { isChatDeleteParamsPOST, isChatSyncMessagesParamsPOST } from '@rocket.chat/rest-typings';
 
 import { Messages } from '../../../models/server';
 import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
@@ -61,14 +60,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncMessages',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatSyncMessagesParamsPOST,
+	},
 	{
 		get() {
 			const { roomId, lastUpdate } = this.queryParams;
-
-			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-			}
 
 			if (!lastUpdate) {
 				throw new Meteor.Error('error-lastUpdate-param-not-provided', 'The required "lastUpdate" query param is missing.');
@@ -76,10 +74,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
 			}
 
-			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('messages/get', roomId, { lastUpdate: new Date(lastUpdate) });
-			});
+			const result = Meteor.call('messages/get', roomId, { lastUpdate: new Date(lastUpdate) });
 
 			if (!result) {
 				return API.v1.failure();
