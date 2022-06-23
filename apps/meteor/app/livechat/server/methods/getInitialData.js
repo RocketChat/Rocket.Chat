@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
+import { LivechatTrigger } from '@rocket.chat/models';
 
 import { LivechatRooms, Users, LivechatDepartment, LivechatVisitors } from '../../../models/server';
-import { LivechatTrigger } from '../../../models/server/raw';
 import { Livechat } from '../lib/Livechat';
 import { deprecationWarning } from '../../../api/server/helpers/deprecationWarning';
 

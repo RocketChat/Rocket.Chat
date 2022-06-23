@@ -1,4 +1,4 @@
-import { LivechatRoomsRaw } from '../../../../../app/models/server/raw/LivechatRooms';
+import { LivechatRoomsRaw } from '../../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../livechat-enterprise/server/lib/query.helper';
 import { overwriteClassOnLicense } from '../../../license/server';

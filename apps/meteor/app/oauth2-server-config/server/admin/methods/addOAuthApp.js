@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
+import { OAuthApps } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../../authorization';
 import { Users } from '../../../../models/server';
-import { OAuthApps } from '../../../../models/server/raw';
 import { parseUriList } from '../functions/parseUriList';
 
 Meteor.methods({

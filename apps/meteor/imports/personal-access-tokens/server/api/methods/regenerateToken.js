@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../../../app/authorization';
-import { Users } from '../../../../../app/models';
+import { Users } from '../../../../../app/models/server';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
 Meteor.methods({
