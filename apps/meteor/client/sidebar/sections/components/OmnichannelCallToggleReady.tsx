@@ -55,10 +55,12 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 
 	useEffect(() => {
 		if (!agentEnabled) {
-			voipClient.register();
-		} else {
-			voipClient.unregister();
+			return;
 		}
+
+		voipClient.register();
+
+		return (): void => voipClient.unregister();
 	}, [agentEnabled, voipClient]);
 
 	useEffect(() => {
