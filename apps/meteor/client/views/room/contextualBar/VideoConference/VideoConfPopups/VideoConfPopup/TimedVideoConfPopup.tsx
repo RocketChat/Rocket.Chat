@@ -15,13 +15,22 @@ export type TimedVideoConfPopupProps = {
 	id: string;
 	rid: IRoom['_id'];
 	isReceiving?: boolean;
+	isCalling?: boolean;
 	position: number;
 	current: number;
 	total: number;
 	onClose?: (id: string) => void;
 };
 
-const TimedVideoConfPopup = ({ id, rid, isReceiving = false, position, current, total }: TimedVideoConfPopupProps): ReactElement | null => {
+const TimedVideoConfPopup = ({
+	id,
+	rid,
+	isReceiving = false,
+	isCalling = false,
+	position,
+	current,
+	total,
+}: TimedVideoConfPopupProps): ReactElement | null => {
 	const acceptCall = useVideoConfAcceptCall();
 	const abortCall = useVideoConfAbortCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -64,7 +73,11 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, position, current, 
 		);
 	}
 
-	return <CallingPopup room={room} id={id} onClose={handleClose} />;
+	if (isCalling) {
+		return <CallingPopup room={room} id={id} onClose={handleClose} />;
+	}
+
+	return null;
 };
 
 export default TimedVideoConfPopup;
