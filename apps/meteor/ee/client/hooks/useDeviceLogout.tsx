@@ -1,10 +1,13 @@
 import { useSetModal, useTranslation, useToastMessageDispatch, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo } from 'react';
 
-import GenericModal from '../../../../../client/components/GenericModal';
-import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
+import GenericModal from '../../../client/components/GenericModal';
+import { useEndpointAction } from '../../../client/hooks/useEndpointAction';
 
-export const useDeviceLogout = (sessionId: string, endpoint: '/v1/sessions/logout' | '/v1/sessions/logout.me'): ((onReload: () => void) => void) => {
+export const useDeviceLogout = (
+	sessionId: string,
+	endpoint: '/v1/sessions/logout' | '/v1/sessions/logout.me',
+): ((onReload: () => void) => void) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();

@@ -8,7 +8,7 @@ import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../../../client/hooks/usePresence';
 import InfoPanel from '../../../../../../client/views/InfoPanel';
-import { useDeviceLogout } from '../useDeviceLogout';
+import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 
 type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
 	onReload: () => void;

@@ -1,10 +1,11 @@
-import { Button, TableRow, TableCell } from '@rocket.chat/fuselage';
+import { Box, Button, TableRow, TableCell } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
-import { useDeviceLogout } from '../../admin/deviceManagement/useDeviceLogout';
+import { useDeviceLogout } from '../../../hooks/useDeviceLogout';
+import DeviceIcon from '../../../deviceManagement/components/DeviceIcon';
 
 type DevicesRowProps = {
 	_id: string;
@@ -16,7 +17,7 @@ type DevicesRowProps = {
 	onReload: () => void;
 };
 
-const DeviceManagementRow = ({ _id, deviceName, deviceOSName, deviceOSVersion, loginAt, onReload }: DevicesRowProps): ReactElement => {
+const DeviceManagementRow = ({ _id, deviceName, deviceType = 'browser', deviceOSName, deviceOSVersion, loginAt, onReload }: DevicesRowProps): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -25,7 +26,12 @@ const DeviceManagementRow = ({ _id, deviceName, deviceOSName, deviceOSVersion, l
 
 	return (
 		<TableRow key={_id} action>
-			<TableCell>{deviceName}</TableCell>
+			<TableCell>
+				<Box display='flex' alignItems='center'>
+					<DeviceIcon deviceType={deviceType} />
+					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
+				</Box>
+			</TableCell>
 			<TableCell>{`${deviceOSName || ''} ${deviceOSVersion || ''}`}</TableCell>
 			<TableCell>{formatDateAndTime(loginAt)}</TableCell>
 			{mediaQuery && <TableCell>{_id}</TableCell>}
