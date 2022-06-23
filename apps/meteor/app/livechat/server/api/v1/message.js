@@ -14,7 +14,7 @@ import { normalizeMessageFileUpload } from '../../../../utils/server/functions/n
 import { settings } from '../../../../settings/server';
 
 API.v1.addRoute('livechat/message', {
-	post() {
+	async post() {
 		try {
 			check(this.bodyParams, {
 				_id: Match.Maybe(String),
@@ -29,7 +29,7 @@ API.v1.addRoute('livechat/message', {
 
 			const { token, rid, agent, msg } = this.bodyParams;
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -82,7 +82,7 @@ API.v1.addRoute('livechat/message', {
 });
 
 API.v1.addRoute('livechat/message/:_id', {
-	get() {
+	async get() {
 		try {
 			check(this.urlParams, {
 				_id: String,
@@ -96,7 +96,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			const { token, rid } = this.queryParams;
 			const { _id } = this.urlParams;
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -121,7 +121,7 @@ API.v1.addRoute('livechat/message/:_id', {
 		}
 	},
 
-	put() {
+	async put() {
 		try {
 			check(this.urlParams, {
 				_id: String,
@@ -136,7 +136,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			const { token, rid } = this.bodyParams;
 			const { _id } = this.urlParams;
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -169,7 +169,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			return API.v1.failure(e);
 		}
 	},
-	delete() {
+	async delete() {
 		try {
 			check(this.urlParams, {
 				_id: String,
@@ -183,7 +183,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			const { token, rid } = this.bodyParams;
 			const { _id } = this.urlParams;
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -216,7 +216,7 @@ API.v1.addRoute('livechat/message/:_id', {
 });
 
 API.v1.addRoute('livechat/messages.history/:rid', {
-	get() {
+	async get() {
 		try {
 			check(this.urlParams, {
 				rid: String,
@@ -231,7 +231,7 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
 			}
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}

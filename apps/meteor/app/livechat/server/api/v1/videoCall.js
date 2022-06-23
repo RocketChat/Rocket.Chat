@@ -27,7 +27,7 @@ API.v1.addRoute('livechat/video.call/:token', {
 
 			const { token } = this.urlParams;
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}

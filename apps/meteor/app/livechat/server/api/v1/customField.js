@@ -18,7 +18,7 @@ API.v1.addRoute('livechat/custom.field', {
 
 			const { token, key, value, overwrite } = this.bodyParams;
 
-			const guest = findGuest(token);
+			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -48,7 +48,7 @@ API.v1.addRoute('livechat/custom.fields', {
 		});
 
 		const { token } = this.bodyParams;
-		const guest = findGuest(token);
+		const guest = await findGuest(token);
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}

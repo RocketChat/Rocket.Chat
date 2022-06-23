@@ -39,17 +39,15 @@ export function findDepartments(businessUnit) {
 }
 
 export function findGuest(token) {
-	return Promise.await(
-		LivechatVisitors.getVisitorByToken(token, {
-			projection: {
-				name: 1,
-				username: 1,
-				token: 1,
-				visitorEmails: 1,
-				department: 1,
-			},
-		}),
-	);
+	return LivechatVisitors.getVisitorByToken(token, {
+		projection: {
+			name: 1,
+			username: 1,
+			token: 1,
+			visitorEmails: 1,
+			department: 1,
+		},
+	});
 }
 
 export function findRoom(token, rid) {

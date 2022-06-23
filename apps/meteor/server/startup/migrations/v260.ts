@@ -32,7 +32,8 @@ addMigration({
 			});
 
 			if (updates.length) {
-				Promise.await(LivechatVisitors.col.bulkWrite(updates));
+				// eslint-disable-next-line no-await-in-loop
+				await LivechatVisitors.col.bulkWrite(updates);
 			}
 
 			incrementSkip(limit);

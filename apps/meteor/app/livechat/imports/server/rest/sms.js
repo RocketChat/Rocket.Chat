@@ -35,7 +35,7 @@ const defineDepartment = (idOrName) => {
 	return department && department._id;
 };
 
-const defineVisitor = (smsNumber, targetDepartment) => {
+const defineVisitor = async (smsNumber, targetDepartment) => {
 	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber);
 	let data = {
 		token: (visitor && visitor.token) || Random.id(),
@@ -54,8 +54,8 @@ const defineVisitor = (smsNumber, targetDepartment) => {
 		data.department = targetDepartment;
 	}
 
-	const id = Promise.await(Livechat.registerGuest(data));
-	return Promise.await(LivechatVisitors.findOneById(id));
+	const id = await Livechat.registerGuest(data);
+	return LivechatVisitors.findOneById(id);
 };
 
 const normalizeLocationSharing = (payload) => {
@@ -80,7 +80,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			targetDepartment = defineDepartment(SMS.department);
 		}
 
-		const visitor = defineVisitor(sms.from, targetDepartment);
+		const visitor = await defineVisitor(sms.from, targetDepartment);
 		const { token } = visitor;
 		const room = LivechatRooms.findOneOpenByVisitorTokenAndDepartmentId(token, targetDepartment);
 		const roomExists = !!room;

@@ -157,7 +157,7 @@ API.v1.addRoute('livechat/visitor.callStatus', {
 		});
 
 		const { token, callStatus, rid, callId } = this.bodyParams;
-		const guest = findGuest(token);
+		const guest = await findGuest(token);
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
@@ -175,7 +175,7 @@ API.v1.addRoute('livechat/visitor.status', {
 
 		const { token, status } = this.bodyParams;
 
-		const guest = findGuest(token);
+		const guest = await findGuest(token);
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
