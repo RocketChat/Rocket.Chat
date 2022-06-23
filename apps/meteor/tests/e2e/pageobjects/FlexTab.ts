@@ -24,7 +24,7 @@ export class FlexTab extends BasePage {
 	}
 
 	get headerMoreActions(): Locator {
-		return this.page.locator('//main/header//*[contains(@class, "rcx-icon--name-kebab")]/..');
+		return this.page.locator('[data-qa-id=ToolBox-Menu]');
 	}
 
 	get messageInput(): Locator {
@@ -70,7 +70,7 @@ export class FlexTab extends BasePage {
 	}
 
 	get membersTab(): Locator {
-		return this.page.locator('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-members');
+		return this.page.locator('[data-qa-id=ToolBoxAction-Members]');
 	}
 
 	get membersTabContent(): Locator {
@@ -326,6 +326,7 @@ export class FlexTab extends BasePage {
 			mentionsTab: this.mentionsTab,
 			starredTab: this.starredTab,
 			pinnedTab: this.pinnedTab,
+			membersTabContent: this.membersTabContent,
 		};
 
 		const operate = async (tab: string, panel: string, more: boolean): Promise<void> => {
@@ -359,7 +360,7 @@ export class FlexTab extends BasePage {
 			},
 
 			members: async (): Promise<void> => {
-				await operate('membersTab', 'avatarImage', false);
+				await operate('membersTab', 'membersTabContent', false);
 			},
 
 			notifications: async (): Promise<void> => {
