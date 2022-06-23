@@ -11,7 +11,7 @@ type ItalicSpanProps = {
 };
 
 const ItalicSpan = ({ children }: ItalicSpanProps): ReactElement => (
-	<i>
+	<em>
 		{children.map((block, index) => {
 			switch (block.type) {
 				case 'LINK':
@@ -30,7 +30,7 @@ const ItalicSpan = ({ children }: ItalicSpanProps): ReactElement => (
 					return null;
 			}
 		})}
-	</i>
+	</em>
 );
 
 export default ItalicSpan;

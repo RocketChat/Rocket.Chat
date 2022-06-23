@@ -25,12 +25,7 @@ const getBaseURI = (): string => {
 	return document.URL;
 };
 
-let _baseURI: string | undefined;
-const isExternal = (href: string): boolean => {
-	_baseURI = _baseURI ?? getBaseURI();
-
-	return href.indexOf(_baseURI) !== 0;
-};
+const isExternal = (href: string): boolean => href.indexOf(getBaseURI()) !== 0;
 
 type LinkSpanProps = {
 	href: string;
