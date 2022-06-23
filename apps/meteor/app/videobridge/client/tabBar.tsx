@@ -7,6 +7,7 @@ import StartVideoConfModal from '../../../client/views/room/contextualBar/VideoC
 import { useVideoConfDispatchOutgoing, useVideoConfStartCall } from '../../../client/contexts/VideoConfContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import { useTabBarOpen } from '../../../client/views/room/providers/ToolboxProvider';
+import { VideoConfManager } from '../../../client/lib/VideoConfManager';
 
 addAction('video-conf-list', {
 	groups: ['channel', 'group', 'team'],
@@ -59,9 +60,12 @@ addAction('video-conf', ({ room }) => {
 		}
 	});
 
-	const handleOpenVideoConf = useMutableCallback((): void =>
-		setModal(<StartVideoConfModal onConfirm={handleStartConference} room={room} onClose={handleCloseVideoConf} />),
-	);
+	const handleOpenVideoConf = useMutableCallback(async (): Promise<void> => {
+		await VideoConfManager.loadCapabilities();
+		if (VideoConfManager.available) {
+			setModal(<StartVideoConfModal onConfirm={handleStartConference} room={room} onClose={handleCloseVideoConf} />);
+		}
+	});
 
 	const menuOptions: ComponentProps<typeof Menu>['options'] = useMemo(
 		() => ({
@@ -71,7 +75,7 @@ addAction('video-conf', ({ room }) => {
 			},
 			start: {
 				label: t('Call'),
-				action: (): void => handleOpenVideoConf(),
+				action: (): Promise<void> => handleOpenVideoConf(),
 			},
 			...(['c', 'p'].includes(room.t) && {
 				list: {

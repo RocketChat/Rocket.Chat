@@ -30,6 +30,7 @@ type VideoConfContextValue = {
 	queryCalling: Subscription<boolean>;
 	queryCapabilities: Subscription<ProviderCapabilities>;
 	queryPreferences: Subscription<CallPreferences>;
+	queryAvailable: Subscription<boolean>;
 };
 
 export const VideoConfContext = createContext<VideoConfContextValue | undefined>(undefined);
@@ -69,4 +70,8 @@ export const useVideoConfCapabilities = (): ProviderCapabilities => {
 export const useVideoConfPreferences = (): CallPreferences => {
 	const { queryPreferences } = useVideoConfContext();
 	return useSubscription(queryPreferences);
+};
+export const useVideoConfAvailable = (): boolean => {
+	const { queryAvailable } = useVideoConfContext();
+	return useSubscription(queryAvailable);
 };

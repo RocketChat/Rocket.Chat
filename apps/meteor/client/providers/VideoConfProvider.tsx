@@ -73,6 +73,10 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 				getCurrentValue: (): CallPreferences => VideoConfManager.preferences,
 				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('preference/changed', cb),
 			},
+			queryAvailable: {
+				getCurrentValue: (): boolean => VideoConfManager.available,
+				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('availability/changed', cb),
+			},
 		}),
 		[],
 	);
