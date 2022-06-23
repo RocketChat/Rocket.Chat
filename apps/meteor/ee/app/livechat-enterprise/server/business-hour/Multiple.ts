@@ -179,7 +179,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 				// check if this agent has any departments that is connected to any non-default business hour
 				// if no such departments found then check default BH and if it is active, then allow the agent to change service status
-				const hasAtLeastOneDepartmentWithNonDefaultBH = departments.some(({ businessHourId }) => !!businessHourId);
+				const hasAtLeastOneDepartmentWithNonDefaultBH = departmentsWithActiveBH.some(({ businessHourId }) => !!businessHourId);
 				if (!hasAtLeastOneDepartmentWithNonDefaultBH) {
 					const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
 					if (isDefaultBHActive?._id) {
