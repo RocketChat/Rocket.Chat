@@ -189,12 +189,8 @@ test.describe('[Main Elements Render]', function () {
 					await flexTab.operateFlexTab('members', false);
 				});
 
-				test('expect show the members tab button', () => {
-					expect(flexTab.membersTab.isVisible()).toBeTruthy();
-				});
-
 				test('expect show the members content', async () => {
-					expect(flexTab.membersTabContent.isVisible()).toBeTruthy();
+					await expect(flexTab.membersTabContent).toBeVisible();
 				});
 			});
 

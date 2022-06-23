@@ -74,7 +74,7 @@ export class FlexTab extends BasePage {
 	}
 
 	get membersTabContent(): Locator {
-		return this.page.locator('aside > h3 > div > i.rcx-box--full.rcx-icon--name-members');
+		return this.page.locator('[data-qa-id=RoomHeader-Members]');
 	}
 
 	get setOwnerBtn(): Locator {
@@ -337,7 +337,7 @@ export class FlexTab extends BasePage {
 			}
 
 			if (more) {
-				await this.headerMoreActions.click();
+				await this.headerMoreActions.click({ force: true, clickCount: 3 });
 			}
 
 			await locator[tab].click();
