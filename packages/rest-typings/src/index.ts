@@ -196,3 +196,6 @@ export * from './v1/import/DownloadPendingAvatarsParamsPOST';
 export * from './v1/import/GetCurrentImportOperationParamsGET';
 export * from './v1/chat/ChatDeleteParamsPOST';
 export * from './v1/chat/ChatSyncMessagesParamsGET';
+export * from './v1/chat/ChatGetMessageParamsGET';
+export * from './v1/chat/ChatPinMessageParamsPOST';
+export * from './v1/chat/ChatSearchParamsGET';

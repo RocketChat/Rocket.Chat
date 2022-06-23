@@ -1,7 +1,13 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { isChatDeleteParamsPOST, isChatSyncMessagesParamsPOST } from '@rocket.chat/rest-typings';
+import {
+	isChatDeleteParamsPOST,
+	isChatSyncMessagesParamsGET,
+	isChatGetMessageParamsGET,
+	isChatPinMessageParamsPOST,
+	isChatSearchParamsGET,
+} from '@rocket.chat/rest-typings';
 
 import { Messages } from '../../../models/server';
 import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
@@ -62,7 +68,7 @@ API.v1.addRoute(
 	'chat.syncMessages',
 	{
 		authRequired: true,
-		validateParams: isChatSyncMessagesParamsPOST,
+		validateParams: isChatSyncMessagesParamsGET,
 	},
 	{
 		get() {
@@ -92,17 +98,19 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getMessage',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatGetMessageParamsGET,
+	},
 	{
 		get() {
-			if (!this.queryParams.msgId) {
+			const { msgId } = this.queryParams;
+
+			if (!msgId) {
 				return API.v1.failure('The "msgId" query parameter must be provided.');
 			}
 
-			let msg;
-			Meteor.runAsUser(this.userId, () => {
-				msg = Meteor.call('getSingleMessage', this.queryParams.msgId);
-			});
+			const msg = Meteor.call('getSingleMessage', msgId);
 
 			if (!msg) {
 				return API.v1.failure();
@@ -119,36 +127,35 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.pinMessage',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatPinMessageParamsPOST,
+	},
 	{
 		post() {
-			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
-			}
-
-			const msg = Messages.findOneById(this.bodyParams.messageId);
+			const { messageId } = this.bodyParams;
+			const msg = Messages.findOneById(messageId);
 
 			if (!msg) {
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			let pinnedMessage;
-			Meteor.runAsUser(this.userId, () => {
-				pinnedMessage = Meteor.call('pinMessage', msg);
-			});
+			const pinnedMessage = Meteor.call('pinMessage', msg);
 
 			const [message] = normalizeMessagesForUser([pinnedMessage], this.userId);
 
 			return API.v1.success({
 				message,
-			});
+			} as any);
 		},
 	},
 );
 
 API.v1.addRoute(
 	'chat.postMessage',
-	{ authRequired: true },
+	{
+		authRequired: true,
+	},
 	{
 		post() {
 			const messageReturn = processWebhookMessage(this.bodyParams, this.user)[0];
@@ -170,24 +177,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.search',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isChatSearchParamsGET,
+	},
 	{
 		get() {
 			const { roomId, searchText } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 
-			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-			}
-
-			if (!searchText) {
-				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
-			}
-
-			let result;
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('messageSearch', searchText, roomId, count, offset).message.docs;
-			});
+			const result = Meteor.call('messageSearch', searchText, roomId, count, offset).message.docs;
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(result, this.userId),

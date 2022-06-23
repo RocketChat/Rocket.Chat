@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -9,7 +9,7 @@ export type ChatSyncMessagesParamsPOST = {
 	lastUpdate: string;
 };
 
-const ChatSyncMessagesParamsPostSchema: JSONSchemaType<ChatSyncMessagesParamsPOST> = {
+const ChatSyncMessagesParamsPostSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
