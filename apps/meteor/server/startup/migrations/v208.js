@@ -1,5 +1,6 @@
+import { Users, Sessions } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { Users, Sessions } from '../../../app/models/server/raw';
 
 async function migrateSessions() {
 	const cursor = Users.find({ roles: 'anonymous' }, { projection: { _id: 1 } });

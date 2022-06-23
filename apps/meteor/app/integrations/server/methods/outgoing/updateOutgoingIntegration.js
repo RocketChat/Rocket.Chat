@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { Integrations } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../../authorization/server';
 import { Users } from '../../../../models/server';
-import { Integrations } from '../../../../models/server/raw';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
 Meteor.methods({

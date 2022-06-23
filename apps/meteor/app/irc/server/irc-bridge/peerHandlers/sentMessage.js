@@ -1,4 +1,4 @@
-import { Users, Rooms } from '../../../../models';
+import { Users, Rooms } from '../../../../models/server';
 import { sendMessage, createDirectRoom } from '../../../../lib';
 /*
  *

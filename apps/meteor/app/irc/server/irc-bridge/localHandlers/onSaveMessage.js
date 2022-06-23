@@ -1,5 +1,5 @@
 import { SystemLogger } from '../../../../../server/lib/logger/system';
-import { Subscriptions, Users } from '../../../../models';
+import { Subscriptions, Users } from '../../../../models/server';
 
 export default function handleOnSaveMessage(message, to) {
 	let toIdentification = '';

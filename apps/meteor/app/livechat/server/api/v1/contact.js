@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
-import { LivechatVisitors } from '../../../../models';
+import { LivechatVisitors } from '../../../../models/server';
 
 API.v1.addRoute(
 	'omnichannel/contact',

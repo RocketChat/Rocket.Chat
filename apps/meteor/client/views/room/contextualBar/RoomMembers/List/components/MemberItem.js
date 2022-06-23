@@ -1,4 +1,4 @@
-import { Option, OptionContent, ActionButton } from '@rocket.chat/fuselage';
+import { Option, OptionContent, IconButton } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
@@ -29,7 +29,7 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 				{name} <Option.Description>({username})</Option.Description>
 			</OptionContent>
 			<Option.Menu onClick={onClick}>
-				{showButton ? <UserActions username={username} rid={rid} _id={_id} reload={reload} /> : <ActionButton ghost tiny icon='kebab' />}
+				{showButton ? <UserActions username={username} rid={rid} _id={_id} reload={reload} /> : <IconButton tiny icon='kebab' />}
 			</Option.Menu>
 		</Option>
 	);

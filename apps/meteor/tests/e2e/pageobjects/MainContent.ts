@@ -178,11 +178,11 @@ export class MainContent extends BasePage {
 	}
 
 	get modalCancelButton(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--ghost');
+		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
 
 	get modalDeleteMessageButton(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary-danger');
+		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger');
 	}
 
 	get buttonSend(): Locator {

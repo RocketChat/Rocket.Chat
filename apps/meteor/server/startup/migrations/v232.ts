@@ -1,9 +1,9 @@
 import { BannerPlatform } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users, Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 import { isEnterprise } from '../../../ee/app/license/server';
-import { Users, Settings } from '../../../app/models/server/raw';
 import { Banner } from '../../sdk';
 import { settings } from '../../../app/settings/server';
 
