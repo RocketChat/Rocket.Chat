@@ -11,6 +11,7 @@ import { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/ada
 import { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adapters/Room';
 import { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
 import {
+	FederationBeforeAddUserToARoomDto,
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationCreateDirectMessageDto,
 	FederationOnDirectMessageRoomCreationDto,
@@ -19,7 +20,7 @@ import {
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
 } from './input/RoomSenderDto';
-
+require('util').inspect.defaultOptions.depth = null;
 export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	constructor(
 		protected rocketRoomAdapter: RocketChatRoomAdapterEE,
@@ -82,6 +83,10 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 				),
 			),
 		);
+	}
+
+	public async beforeAddUserToARoom(dmBeforeAddUserToARoomInput: FederationBeforeAddUserToARoomDto): Promise<void> {
+		return this.beforeDirectMessageRoomCreation(dmBeforeAddUserToARoomInput);
 	}
 
 	public async onUsersAddedToARoom(roomOnUsersAddedToARoomInput: FederationOnUsersAddedToARoomDto): Promise<void> {

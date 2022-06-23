@@ -29,6 +29,8 @@ export const createRoom = function <T extends RoomType>(
 ): unknown {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
+	console.log({ members });
+	console.log( { type, name, owner: ownerUsername, readOnly, extraData, options });
 
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
@@ -164,7 +166,7 @@ export const createRoom = function <T extends RoomType>(
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
 	if (shouldBeHandledByFederation) {
-		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
+		callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
 	}
 
 	Apps.triggerEvent('IPostRoomCreate', room);

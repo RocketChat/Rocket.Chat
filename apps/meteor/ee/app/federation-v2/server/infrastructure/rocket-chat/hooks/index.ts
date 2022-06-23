@@ -50,10 +50,25 @@ export class FederationHooksEE {
 		);
 	}
 
+	public static beforeAddUserToARoom(callback: Function): void {
+		callbacks.add(
+			'federation.beforeAddUserAToRoom',
+			(params: { user: IUser | string }, room: IRoom): void => {
+				if (!room.federated) {
+					return;
+				}
+				Promise.await(callback(params.user));
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-before-add-user-to-the-room',
+		);
+	}
+
 	public static removeAll(): void {
 		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
 		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');
 		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-users-to-a-room');
 		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
+		callbacks.remove('federation.beforeAddUserAToRoom', 'federation-v2-before-add-user-to-the-room');
 	}
 }

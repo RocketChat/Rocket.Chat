@@ -109,6 +109,11 @@ export class FederationFactoryEE {
 				FederationRoomSenderConverterEE.toOnDirectMessageCreatedDto(ownerId, room._id, members, homeServerDomain),
 			),
 		);
+		FederationHooksEE.beforeAddUserToARoom(async (user: IUser | string) =>
+			roomServiceSender.beforeAddUserToARoom(
+				FederationRoomSenderConverterEE.toBeforeAddUserToARoomDto([user], homeServerDomain),
+			),
+		);
 	}
 
 	public static removeListeners(): void {

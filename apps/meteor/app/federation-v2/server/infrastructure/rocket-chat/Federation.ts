@@ -17,4 +17,8 @@ export class Federation {
 	public static federationActionAllowed(action: ValueOf<typeof RoomMemberActions>): boolean {
 		return allowedActionsInFederatedRooms.includes(action);
 	}
+
+	public static isAFederatedUsername(username: string): boolean {
+		return username.includes('@') && username.includes(':');
+	}
 }
