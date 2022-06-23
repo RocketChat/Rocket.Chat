@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 import {
-	ise2eGetUsersOfRoomWithoutKeyParamsGET,ise2eSetRoomKeyIDParamsPOST,
+	ise2eGetUsersOfRoomWithoutKeyParamsGET,
+	ise2eSetRoomKeyIDParamsPOST,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
 } from '@rocket.chat/rest-typings';
