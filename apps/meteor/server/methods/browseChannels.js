@@ -78,7 +78,10 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 			teamId: 1,
 		},
 	});
-	const total = cursor.count(); // count ignores the `skip` and `limit` options
+
+	const totalCursor = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms);
+	const total = totalCursor.count();
+
 	const result = cursor.fetch();
 
 	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
@@ -146,14 +149,8 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 	};
 };
 
-const getUsers = async (user, text, workspace, sort, pagination) => {
-	if (!user || !hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
-		return;
-	}
-
+function findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo }) {
 	const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
-
-	const viewFullOtherUserInfo = hasPermission(user._id, 'view-full-other-user-info');
 
 	const options = {
 		...pagination,
@@ -170,17 +167,40 @@ const getUsers = async (user, text, workspace, sort, pagination) => {
 		},
 	};
 
-	let result;
 	if (workspace === 'all') {
-		result = Users.findByActiveUsersExcept(text, [], options, forcedSearchFields);
-	} else if (workspace === 'external') {
-		result = Users.findByActiveExternalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
-	} else {
-		result = Users.findByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
+		const cursor = Users.findByActiveUsersExcept(text, [], options, forcedSearchFields);
+		const cursorTotal = Users.findByActiveUsersExcept(text, [], null, forcedSearchFields);
+		return {
+			total: cursorTotal.count(),
+			results: cursor.fetch(),
+		};
 	}
 
-	const total = result.count(); // count ignores the `skip` and `limit` options
-	const results = result.fetch();
+	if (workspace === 'external') {
+		const cursor = Users.findByActiveExternalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
+		const cursorTotal = Users.findByActiveExternalUsersExcept(text, [], null, forcedSearchFields, getFederationDomain());
+		return {
+			total: cursorTotal.count(),
+			results: cursor.fetch(),
+		};
+	}
+
+	const cursor = Users.findByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
+	const cursorTotal = Users.findByActiveLocalUsersExcept(text, [], null, forcedSearchFields, getFederationDomain());
+	return {
+		total: cursorTotal.count(),
+		results: cursor.fetch(),
+	};
+}
+
+const getUsers = async (user, text, workspace, sort, pagination) => {
+	if (!user || !hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
+		return;
+	}
+
+	const viewFullOtherUserInfo = hasPermission(user._id, 'view-full-other-user-info');
+
+	const { total, results } = findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo });
 
 	// Try to find federated users, when applicable
 	if (isFederationEnabled() && workspace === 'external' && text.indexOf('@') !== -1) {
