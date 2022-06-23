@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { memo, ReactElement } from 'react';
 
 const toHexByte = (value: number): string => value.toString(16).padStart(2, '0');
 
@@ -30,4 +30,4 @@ const PreviewColorElement = ({ r, g, b, a }: PreviewColorElementProps): ReactEle
 	);
 };
 
-export default PreviewColorElement;
+export default memo(PreviewColorElement);

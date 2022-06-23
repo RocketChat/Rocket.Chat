@@ -1,10 +1,10 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy, ReactElement } from 'react';
 
+import ColorElement from '../colors/ColorElement';
 import ChannelMentionElement from '../mentions/ChannelMentionElement';
 import UserMentionElement from '../mentions/UserMentionElement';
 import BoldSpan from './BoldSpan';
-import ColorElement from './ColorElement';
 import EmojiElement from './EmojiElement';
 import ImageElement from './ImageElement';
 import ItalicSpan from './ItalicSpan';

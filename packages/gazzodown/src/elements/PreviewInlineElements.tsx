@@ -2,10 +2,10 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import { Fragment, ReactElement } from 'react';
 
 import PreviewCodeElement from '../code/PreviewCodeElement';
+import PreviewColorElement from '../colors/PreviewColorElement';
 import PreviewKatexElement from '../katex/PreviewKatexElement';
 import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement';
 import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement';
-import PreviewColorElement from './PreviewColorElement';
 import PreviewEmojiElement from './PreviewEmojiElement';
 
 type PreviewInlineElementsProps = {

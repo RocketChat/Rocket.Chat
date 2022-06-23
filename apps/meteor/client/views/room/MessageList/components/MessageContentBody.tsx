@@ -6,7 +6,6 @@ import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import React, { ReactElement, useCallback, useMemo } from 'react';
 
-import { baseURI } from '../../../../lib/baseURI';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageListHighlights } from '../contexts/MessageListContext';
@@ -101,7 +100,6 @@ const MessageContentBody = ({ message }: MessageContentBodyProps): ReactElement 
 		>
 			<MarkupInteractionContext.Provider
 				value={{
-					baseURI,
 					getEmojiClassNameAndDataTitle,
 					highlightRegex,
 					resolveUserMention,

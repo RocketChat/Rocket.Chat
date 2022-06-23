@@ -1,11 +1,36 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { useContext, ReactElement } from 'react';
+import { ReactElement, useMemo } from 'react';
 
-import { MarkupInteractionContext } from '../MarkupInteractionContext';
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
+
+const getBaseURI = (): string => {
+	if (document.baseURI) {
+		return document.baseURI;
+	}
+
+	// Should be exactly one tag:
+	//   https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+	const base = document.getElementsByTagName('base');
+
+	// Return location from BASE tag.
+	if (base.length > 0) {
+		return base[0].href;
+	}
+
+	// Else use implementation of documentURI:
+	//   http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-baseURI
+	return document.URL;
+};
+
+let _baseURI: string | undefined;
+const isExternal = (href: string): boolean => {
+	_baseURI = _baseURI ?? getBaseURI();
+
+	return href.indexOf(_baseURI) !== 0;
+};
 
 type LinkSpanProps = {
 	href: string;
@@ -13,29 +38,36 @@ type LinkSpanProps = {
 };
 
 const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
-	const { baseURI } = useContext(MarkupInteractionContext);
-	const attrs = href.indexOf(baseURI ?? '') !== 0 ? { rel: 'noopener noreferrer', target: '_blank' } : {};
+	const children = useMemo(() => {
+		switch (label.type) {
+			case 'PLAIN_TEXT':
+				return <PlainSpan text={label.value} />;
+
+			case 'STRIKE':
+				return <StrikeSpan children={label.value} />;
+
+			case 'ITALIC':
+				return <ItalicSpan children={label.value} />;
+
+			case 'BOLD':
+				return <BoldSpan children={label.value} />;
+
+			default:
+				return null;
+		}
+	}, [label.type, label.value]);
+
+	if (isExternal(href)) {
+		return (
+			<a href={href} title={href} rel='noopener noreferrer' target='_blank'>
+				{children}
+			</a>
+		);
+	}
 
 	return (
-		<a href={href} data-title={href} {...attrs}>
-			{((block: MessageParser.Markup): JSX.Element | string | null => {
-				switch (block.type) {
-					case 'PLAIN_TEXT':
-						return <PlainSpan text={block.value} />;
-
-					case 'STRIKE':
-						return <StrikeSpan children={block.value} />;
-
-					case 'ITALIC':
-						return <ItalicSpan children={block.value} />;
-
-					case 'BOLD':
-						return <BoldSpan children={block.value} />;
-
-					default:
-						return null;
-				}
-			})(label)}
+		<a href={href} title={href}>
+			{children}
 		</a>
 	);
 };

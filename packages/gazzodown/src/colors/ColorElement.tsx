@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { memo, ReactElement } from 'react';
 
 type ColorElementProps = {
 	r: number;
@@ -23,4 +23,4 @@ const ColorElement = ({ r, g, b, a }: ColorElementProps): ReactElement => (
 	</span>
 );
 
-export default ColorElement;
+export default memo(ColorElement);

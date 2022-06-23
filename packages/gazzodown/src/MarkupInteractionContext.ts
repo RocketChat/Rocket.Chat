@@ -5,7 +5,6 @@ export type UserMention = Pick<IUser, '_id' | 'username' | 'name'>;
 export type ChannelMention = Pick<IRoom, '_id' | 'name'>;
 
 type MarkupInteractionContextValue = {
-	baseURI?: string;
 	getEmojiClassNameAndDataTitle?: (emoji: string) => {
 		'className'?: string;
 		'name': string;

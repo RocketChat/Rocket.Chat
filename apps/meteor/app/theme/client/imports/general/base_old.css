@@ -2936,6 +2936,8 @@
 
 	border-radius: 15px;
 	background-color: var(--selection-background);
+
+	color: inherit;
 }
 
 .rc-old .avatar-suggestions {
