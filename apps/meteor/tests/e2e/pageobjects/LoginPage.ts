@@ -85,6 +85,7 @@ export class LoginPage extends BasePage {
 		await this.emailOrUsernameField.type(email);
 		await this.passwordField.type(password);
 		await this.submitButton.click();
+		await this.waitForSelector('.main-content');
 	}
 
 	public async submit(): Promise<void> {
