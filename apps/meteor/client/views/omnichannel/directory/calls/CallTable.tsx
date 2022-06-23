@@ -57,10 +57,10 @@ const CallTable: FC = () => {
 
 	const resolveDirectionLabel = useCallback(
 		(direction: IVoipRoom['direction']) => {
-			const labels: { [key: string]: 'Incoming' | 'Outgoing' } = {
+			const labels = {
 				inbound: 'Incoming',
 				outbound: 'Outgoing',
-			};
+			} as const;
 			return t(labels[direction] || 'Not_Available');
 		},
 		[t],
