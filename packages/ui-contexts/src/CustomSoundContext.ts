@@ -6,7 +6,4 @@ export type CustomSoundContextValue = {
 	getList: () => ICustomSound[] | undefined;
 };
 
-export const CustomSoundContext = createContext<CustomSoundContextValue>({
-	play: () => undefined,
-	getList: () => undefined,
-});
+export const CustomSoundContext = createContext<CustomSoundContextValue | undefined>(undefined);

@@ -5,8 +5,7 @@ import React, { useMemo, useCallback } from 'react';
 import { CustomSounds } from '../../../../app/custom-sounds/client';
 import { useForm } from '../../../hooks/useForm';
 
-const useCustomSoundsOptions = () =>
-	useMemo(() => CustomSounds && CustomSounds.getList && CustomSounds.getList().map(({ _id, name }) => [_id, name]), []);
+const useCustomSoundsOptions = () => useMemo(() => CustomSounds.getList().map(({ _id, name }) => [_id, name]), []);
 
 const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();

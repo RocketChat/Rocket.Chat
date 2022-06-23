@@ -1,3 +1,3 @@
-import './konchatNotifications';
+import './soundAndDesktopNotifications';
 import './updateAvatar';
 import './usersNameChanged';

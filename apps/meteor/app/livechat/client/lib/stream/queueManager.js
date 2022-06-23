@@ -1,31 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-
 import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { inquiryDataStream } from './inquiry';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
-import { getUserPreference } from '../../../../utils';
-import { CustomSounds } from '../../../../custom-sounds/client/lib/CustomSounds';
+import { KonchatNotification } from '../../../../ui';
 
 const departments = new Set();
-
-const newInquirySound = () => {
-	const userId = Meteor.userId();
-	const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
-	const newRoomNotification = getUserPreference(userId, 'newRoomNotification');
-
-	if (newRoomNotification !== 'none') {
-		CustomSounds.play(newRoomNotification, {
-			volume: Number((audioVolume / 100).toPrecision(2)),
-		});
-	}
-};
 
 const events = {
 	added: (inquiry) => {
 		delete inquiry.type;
 		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
-		newInquirySound();
+		KonchatNotification.newRoomSound();
 	},
 	changed: (inquiry) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
@@ -34,7 +19,7 @@ const events = {
 		delete inquiry.type;
 		const saveResult = LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 		if (saveResult?.insertedId) {
-			newInquirySound();
+			KonchatNotification.newRoomSound();
 		}
 	},
 	removed: (inquiry) => LivechatInquiry.remove(inquiry._id),

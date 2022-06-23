@@ -1,15 +1,24 @@
 import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { CachedCollectionManager } from '../../../ui-cached-collection';
-import { getURL } from '../../../utils/client';
+import { getURL, t } from '../../../utils/client';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-const getCustomSoundId = (sound) => `custom-sound-${sound}`;
+const getCustomSoundId = <T extends string>(sound: T): `custom-sound-${T}` => `custom-sound-${sound}`;
+
+type CustomSound = {
+	_id: string;
+	name: string;
+	extension: string;
+	src: string;
+	random?: string;
+};
 
 class CustomSoundsClass {
+	public list: Map<string, CustomSound> = new Map();
+
 	constructor() {
-		this.list = new ReactiveVar({});
 		this.add({ _id: 'chime', name: 'Chime', extension: 'mp3', src: getURL('sounds/chime.mp3') });
 		this.add({ _id: 'door', name: 'Door', extension: 'mp3', src: getURL('sounds/door.mp3') });
 		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: getURL('sounds/beep.mp3') });
@@ -41,64 +50,67 @@ class CustomSoundsClass {
 		});
 	}
 
-	add(sound) {
+	add(sound: CustomSound): void {
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
 		const audio = $('<audio />', { id: getCustomSoundId(sound._id), preload: true }).append($('<source />', { src: sound.src }));
-		const list = this.list.get();
-		list[sound._id] = sound;
-		this.list.set(list);
+		this.list.set(sound._id, sound);
 		$('body').append(audio);
 	}
 
-	remove(sound) {
-		const list = this.list.get();
-		delete list[sound._id];
-		this.list.set(list);
+	remove(sound: CustomSound): void {
+		this.list.delete(sound._id);
 		$(`#${sound._id}`).remove();
 	}
 
-	update(sound) {
-		const audio = $(`#${sound._id}`);
-		if (audio && audio[0]) {
-			const list = this.list.get();
-			if (!sound.src) {
-				sound.src = this.getURL(sound);
-			}
-			list[sound._id] = sound;
-			this.list.set(list);
-			$('source', audio).attr('src', sound.src);
-			audio[0].load();
-		} else {
-			this.add(sound);
+	update(sound: CustomSound): void {
+		const audio = $(`#${sound._id}`).get(0) as HTMLAudioElement;
+		if (!audio) {
+			return this.add(sound);
 		}
+		if (!sound.src) {
+			sound.src = this.getURL(sound);
+		}
+		this.list.set(sound._id, sound);
+		$('source', audio).attr('src', sound.src);
+		audio.load();
 	}
 
-	getURL(sound) {
+	getURL(sound: CustomSound): string {
 		return getURL(`/custom-sounds/${sound._id}.${sound.extension}?_dc=${sound.random || 0}`);
 	}
 
-	getList() {
-		const list = Object.values(this.list.get());
-		return _.sortBy(list, 'name');
+	getList(): CustomSound[] {
+		return _.sortBy([...this.list.values()], 'name');
 	}
 
-	play = (sound, { volume = 1, loop = false } = {}) => {
-		const audio = document.querySelector(`#${getCustomSoundId(sound)}`);
+	play(sound: string, { volume = 1, loop = false }: { volume?: number; loop?: boolean } = {}): HTMLAudioElement | undefined {
+		const audio = document.querySelector(`#${getCustomSoundId(sound)}`) as HTMLAudioElement;
 		if (!audio || !audio.play) {
 			return;
 		}
 
 		audio.volume = volume;
 		audio.loop = loop;
-		audio.play();
+
+		audio.play().catch(() =>
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Audio_Notification_Interaction_Error'),
+				options: {
+					closeButton: true,
+					timeOut: 0,
+					extendedTimeOut: 0,
+				},
+			}),
+		);
 
 		return audio;
-	};
+	}
 
-	pause = (sound) => {
-		const audio = document.querySelector(`#${getCustomSoundId(sound)}`);
+	pause(sound: string): void {
+		const audio = document.querySelector(`#${getCustomSoundId(sound)}`) as HTMLAudioElement;
 		if (!audio || !audio.pause) {
 			return;
 		}
@@ -107,14 +119,14 @@ class CustomSoundsClass {
 		if (audio.currentTime !== 0) {
 			audio.currentTime = 0;
 		}
-	};
+	}
 }
 
 export const CustomSounds = new CustomSoundsClass();
 
 Meteor.startup(() =>
 	CachedCollectionManager.onLogin(() => {
-		Meteor.call('listCustomSounds', (error, result) => {
+		Meteor.call('listCustomSounds', (_: Error, result: CustomSound[]) => {
 			for (const sound of result) {
 				CustomSounds.add(sound);
 			}

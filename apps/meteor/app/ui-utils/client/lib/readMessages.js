@@ -97,7 +97,8 @@ export const readMessage = new (class extends Emitter {
 	}
 
 	isEnable() {
-		return this.enabled === true;
+		this.enable();
+		return this.enabled;
 	}
 
 	refreshUnreadMark(rid) {

@@ -36,7 +36,6 @@ const startRingback = (user: IUser): void => {
 
 const stopRingback = (): void => {
 	CustomSounds.pause('telephone');
-	CustomSounds.remove('telephone');
 };
 
 type NetworkState = 'online' | 'offline';

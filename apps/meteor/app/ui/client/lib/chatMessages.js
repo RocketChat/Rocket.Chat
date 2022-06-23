@@ -7,7 +7,6 @@ import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { KonchatNotification } from './notification';
 import { UserAction, USER_ACTIVITIES } from '../index';
 import { fileUpload } from './fileUpload';
 import { t, slashCommands, APIClient } from '../../../utils/client';
@@ -333,8 +332,6 @@ export class ChatMessages {
 		if (await this.processMessageEditing({ ...message, _id: this.editing.id })) {
 			return;
 		}
-
-		KonchatNotification.removeRoomNotification(message.rid);
 
 		if (await this.processSlashCommand(message)) {
 			return;
