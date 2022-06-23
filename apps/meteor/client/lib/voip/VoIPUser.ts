@@ -4,7 +4,7 @@
  * This class encapsulates all the details of sip.js and exposes
  * a very simple functions and callback handlers to the outside world.
  * This class thus abstracts user from Browser specific media details as well as
- * SIP specific protol details.
+ * SIP specific protocol details.
  */
 import {
 	CallStates,
@@ -87,8 +87,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private optionsKeepAliveDebounceTimeInSec = 5;
 
-	private optionsKeepAliveDebounceCount = 3;
-
 	private attemptRegistration = false;
 
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
@@ -97,6 +95,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 		this.connectionRetryCount = this.config.connectionRetryCount;
 		this.stop = false;
+
 		this.onlineNetworkHandler = this.onNetworkRestored.bind(this);
 		this.offlineNetworkHandler = this.onNetworkLost.bind(this);
 	}
@@ -144,7 +143,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this.userAgent.transport.isConnected();
 		this._opInProgress = Operation.OP_CONNECT;
 		try {
-			this.registerer = new Registerer(this.userAgent /* , { expires: 60 }*/);
+			this.registerer = new Registerer(this.userAgent);
 
 			this.userAgent.transport.onConnect = this.onConnected.bind(this);
 			this.userAgent.transport.onDisconnect = this.onDisconnected.bind(this);
@@ -204,7 +203,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * because after the network recovery and after reconnecting to the server,
 			 * the transport layer of SIPUA does not call onConnected. So by passing |checkRegistration = true |
 			 * the code will check if the endpoint was previously registered before the disconnection.
-			 * If such is the case, it will first unregister and then reregister.
+			 * If such is the case, it will first unregister and then re-register.
 			 * */
 			this.attemptReconnection();
 			if (this.registerer && this.callState !== 'INITIAL') {
@@ -386,7 +385,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 		const remoteStream = sdh.remoteMediaStream;
 		if (!remoteStream) {
-			throw new Error('Remote media stream undefiend.');
+			throw new Error('Remote media stream is undefined.');
 		}
 
 		this.remoteStream = new Stream(remoteStream);
@@ -593,7 +592,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		// Call state must be in offer_received.
 		if (this._callState === 'OFFER_RECEIVED' && this._opInProgress === Operation.OP_PROCESS_INVITE) {
 			this._callState = 'ANSWER_SENT';
-			// Somethingis wrong, this session is not an instance of INVITE
+			// Something is wrong, this session is not an instance of INVITE
 			if (!(this.session instanceof Invitation)) {
 				throw new Error('Session not instance of Invitation.');
 			}
@@ -631,7 +630,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 			return this.session.accept(invitationAcceptOptions);
 		}
-		throw new Error('Something went wront');
+		throw new Error('Something went wrong');
 	}
 
 	/**
@@ -787,19 +786,19 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	/**
 	 * Connection is lost in 3 ways
-	 * 1. When local network is lost (Router is disconeected, switching networks, devtools->network->offline)
+	 * 1. When local network is lost (Router is disconnected, switching networks, devtools->network->offline)
 	 * In this case, the SIP.js's transport layer does not detect the disconnection. Hence, it does not
 	 * call |onDisconnect|. To detect this kind of disconnection, window event listeners have been added.
 	 * These event listeners would be get called when the browser detects that network is offline or online.
 	 * When the network is restored, the code tries to reconnect. The useragent.transport "does not" generate the
 	 * onconnected event in this case as well. so onlineNetworkHandler calls attemptReconnection.
-	 * Which calls attemptRegistrationPostRecovery based on correct state. attemptRegistrationPostRecovery firts tries to
-	 * unregister and then reregister.
+	 * Which calls attemptRegistrationPostRecovery based on correct state. attemptRegistrationPostRecovery first tries to
+	 * unregister and then re-register.
 	 * Important note : We use the event listeners using bind function object offlineNetworkHandler and onlineNetworkHandler
 	 * It is done so because the same event handlers need to be used for removeEventListener, which becomes impossible
 	 * if done inline.
 	 *
-	 * 2. Computer goes to sleep. In this case onDisconnect is triggerred. The code tries to reconnect but cant go ahead
+	 * 2. Computer goes to sleep. In this case onDisconnect is triggered. The code tries to reconnect but cant go ahead
 	 * as it goes to sleep. On waking up, The attemptReconnection gets executed, connection is completed.
 	 * In this case, it generates onConnected event. In this onConnected event it calls attemptRegistrationPostRecovery
 	 *
@@ -808,7 +807,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 *
 	 * Retry count :
 	 * connectionRetryCount is the parameter called |Retry Count| in
-	 * Adminstration -> Call Center -> Server configuration -> Retry count.
+	 * Administration -> Call Center -> Server configuration -> Retry count.
 	 * The retry is implemented with backoff, maxbackoff = 8 seconds.
 	 * For continuous retries (In case Asterisk restart happens) Set this parameter to -1.
 	 *
@@ -876,7 +875,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	async sendKeepAliveAndWaitForResponse(withDebounce = false): Promise<boolean> {
-		const promise = new Promise<boolean>((resolve) => {
+		const promise = new Promise<boolean>((resolve, reject) => {
 			let keepAliveAccepted = false;
 			let responseWaitTime = this.optionsKeepaliveInterval / 2;
 			if (withDebounce) {
@@ -893,7 +892,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			});
 			setTimeout(async () => {
 				if (!keepAliveAccepted) {
-					resolve(false);
+					reject(false);
 				} else {
 					if (this.attemptRegistration) {
 						this.attemptPostRecoveryRoutine();
@@ -912,32 +911,19 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				return;
 			}
 			if (this._connectionState !== 'SERVER_RECONNECTING') {
-				let keepAliveResponse = await this.sendKeepAliveAndWaitForResponse();
-				if (!keepAliveResponse) {
-					const connectivityArray = [];
-					for (let i = 0; i < this.optionsKeepAliveDebounceCount; i++) {
-						connectivityArray.push(this.sendKeepAliveAndWaitForResponse(true));
-					}
-					const values = await Promise.all(connectivityArray);
-					for (const i in values) {
-						if (values[i]) {
-							keepAliveResponse = values[i];
-							break;
-						}
-					}
-					if (!keepAliveResponse) {
-						this.networkEmitter.emit('disconnected');
-					}
-				}
-				/**
-				 * Either we got connected and managed to send keep-alive
-				 * or while attempting keepAlive with debounce, we got connected at moment,
-				 * |keepAliveResponse| will be turned on.
-				 */
-				if (keepAliveResponse) {
-					this.networkEmitter.emit('connected');
+				let isConnected = false;
+				try {
+					await this.sendKeepAliveAndWaitForResponse();
+					isConnected = true;
+				} catch (e) {
+					console.error(`[${e}] Failed to do options ping.`);
+				} finally {
+					// Send event only if it's a "change" on the status (avoid unnecessary event flooding)
+					!isConnected && this.networkEmitter.emit('disconnected');
+					isConnected && this.networkEmitter.emit('connected');
 				}
 			}
+			// Each seconds check if the network can reach asterisk. If not, try to reconnect
 			this.startOptionsPingForUnstableNetworks();
 		}, this.optionsKeepaliveInterval * 1000);
 	}

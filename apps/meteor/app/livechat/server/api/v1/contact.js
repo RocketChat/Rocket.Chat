@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
-import { LivechatVisitors } from '../../../../models';
+import { LivechatVisitors } from '../../../../models/server';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -18,7 +18,9 @@ API.v1.addRoute(
 					email: Match.Maybe(String),
 					phone: Match.Maybe(String),
 					customFields: Match.Maybe(Object),
-					contactManager: Match.Maybe(Object),
+					contactManager: Match.Maybe({
+						username: String,
+					}),
 				});
 
 				const contact = Contacts.registerContact(this.bodyParams);

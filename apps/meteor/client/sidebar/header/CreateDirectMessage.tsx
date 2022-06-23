@@ -18,9 +18,9 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	const t = useTranslation();
 	const [users, setUsers] = useState<Array<Username>>([]);
 
-	const createDirect = useEndpointActionExperimental('POST', 'dm.create');
+	const createDirect = useEndpointActionExperimental('POST', '/v1/dm.create');
 
-	const onChangeUsers = useMutableCallback((value: Username, action: string) => {
+	const onChangeUsers = useMutableCallback((value: Username | any, action: 'remove' | undefined) => {
 		if (!action) {
 			if (users.includes(value)) {
 				return;

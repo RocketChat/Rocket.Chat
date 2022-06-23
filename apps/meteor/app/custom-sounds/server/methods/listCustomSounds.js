@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-
-import { CustomSounds } from '../../../models/server/raw';
+import { CustomSounds } from '@rocket.chat/models';
 
 Meteor.methods({
 	async listCustomSounds() {

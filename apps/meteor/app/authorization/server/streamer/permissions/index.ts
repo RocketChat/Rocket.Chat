@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
-
-import { Permissions } from '../../../../models/server/raw';
+import { Permissions } from '@rocket.chat/models';
 
 Meteor.methods({
 	async 'permissions/get'(updatedAt: Date) {

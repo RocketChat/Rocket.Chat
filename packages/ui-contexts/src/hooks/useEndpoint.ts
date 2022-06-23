@@ -4,7 +4,7 @@ import { useCallback, useContext } from 'react';
 
 import { ServerContext } from '../ServerContext';
 
-type EndpointFunction<TMethod extends Method, TPathPattern extends PathPattern> = (
+export type EndpointFunction<TMethod extends Method, TPathPattern extends PathPattern> = (
 	params: void extends OperationParams<TMethod, TPathPattern> ? void : Serialized<OperationParams<TMethod, TPathPattern>>,
 ) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 

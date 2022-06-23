@@ -35,7 +35,7 @@ function OutgoingWebhookHistoryPage(props) {
 		[id, itemsPerPage, current],
 	);
 
-	const { value: data, phase: state, reload } = useEndpointData('integrations.history', query);
+	const { value: data, phase: state, reload } = useEndpointData('/v1/integrations.history', query);
 
 	const handleClearHistory = async () => {
 		try {
@@ -101,7 +101,7 @@ function OutgoingWebhookHistoryPage(props) {
 					<Button onClick={handleClickReturn}>
 						<Icon name='back' size='x16' /> {t('Back')}
 					</Button>
-					<Button primary danger onClick={handleClearHistory} disabled={total === 0}>
+					<Button danger onClick={handleClearHistory} disabled={total === 0}>
 						<Icon name='trash' /> {t('clear_history')}
 					</Button>
 				</ButtonGroup>

@@ -15,10 +15,10 @@ function ImportHistoryPage() {
 	const [currentOperation, setCurrentOperation] = useSafely(useState());
 	const [latestOperations, setLatestOperations] = useSafely(useState([]));
 
-	const getCurrentImportOperation = useEndpoint('GET', 'getCurrentImportOperation');
-	const getLatestImportOperations = useEndpoint('GET', 'getLatestImportOperations');
-	const downloadPendingFiles = useEndpoint('POST', 'downloadPendingFiles');
-	const downloadPendingAvatars = useEndpoint('POST', 'downloadPendingAvatars');
+	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
+	const getLatestImportOperations = useEndpoint('GET', '/v1/getLatestImportOperations');
+	const downloadPendingFiles = useEndpoint('POST', '/v1/downloadPendingFiles');
+	const downloadPendingAvatars = useEndpoint('POST', '/v1/downloadPendingAvatars');
 
 	const newImportRoute = useRoute('admin-import-new');
 	const importProgressRoute = useRoute('admin-import-progress');

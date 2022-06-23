@@ -8,8 +8,8 @@ import {
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
 } from '@rocket.chat/rest-typings';
+import { Settings } from '@rocket.chat/models';
 
-import { Settings } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { API, ResultFor } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
@@ -154,7 +154,7 @@ API.v1.addRoute(
 		},
 		post: {
 			twoFactorRequired: true,
-			async action(): Promise<ResultFor<'POST', 'settings/:_id'>> {
+			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
 				if (!hasPermission(this.userId, 'edit-privileged-setting')) {
 					return API.v1.unauthorized();
 				}

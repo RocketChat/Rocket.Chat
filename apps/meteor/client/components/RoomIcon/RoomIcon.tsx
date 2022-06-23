@@ -1,16 +1,19 @@
 import { IRoom, isDirectMessageRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC } from 'react';
+import React, { ComponentProps, ReactElement } from 'react';
 
 import { ReactiveUserStatus } from '../UserStatus';
 import { OmnichannelRoomIcon } from './OmnichannelRoomIcon';
 
-export const RoomIcon: FC<{
+export const RoomIcon = ({
+	room,
+	size = 'x16',
+	placement,
+}: {
 	room: IRoom;
-	size: ComponentProps<typeof Icon>['size'];
-	highlighted?: boolean;
+	size?: ComponentProps<typeof Icon>['size'];
 	placement: 'sidebar' | 'default';
-}> = ({ room, size = 'x16', placement }) => {
+}): ReactElement | null => {
 	if (room.prid) {
 		return <Icon name='baloons' size={size} />;
 	}

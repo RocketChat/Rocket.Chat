@@ -1,13 +1,13 @@
+import type { AppPricingPlan } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
-import { PricingPlan } from './definitions/PricingPlan';
 import { formatPricingPlan, formatPrice } from './helpers';
 
 type PriceDisplayProps = {
 	purchaseType: string;
-	pricingPlans: PricingPlan[];
+	pricingPlans: AppPricingPlan[];
 	price: number;
 	showType?: boolean;
 	marginInline?: string;
@@ -20,12 +20,13 @@ type FormattedPriceAndPlan = {
 	price: string;
 };
 
-const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: PricingPlan[], price: number): FormattedPriceAndPlan => {
+const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: AppPricingPlan[], price: number): FormattedPriceAndPlan => {
 	if (purchaseType === 'subscription') {
 		const type = 'Subscription';
 		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
 			return { type, price: '-' };
 		}
+
 		return { type, price: formatPricingPlan(pricingPlans[0]) };
 	}
 
@@ -51,9 +52,7 @@ const PriceDisplay: FC<PriceDisplayProps> = ({ purchaseType, pricingPlans, price
 					{t(type as TranslationKey)}
 				</Box>
 			)}
-			<Box color='hint' withTruncatedText>
-				{!showType && type === 'Free' ? t(type) : formattedPrice}
-			</Box>
+			<Box withTruncatedText>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
 		</Box>
 	);
 };

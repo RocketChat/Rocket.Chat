@@ -116,8 +116,8 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
 
-	const saveAction = useEndpointActionExperimental('POST', 'rooms.saveRoomSettings', t('Room_updated_successfully'));
-	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
+	const saveAction = useEndpointActionExperimental('POST', '/v1/rooms.saveRoomSettings', t('Room_updated_successfully'));
+	const archiveAction = useEndpointActionExperimental('POST', '/v1/rooms.changeArchivationState', t(archiveMessage));
 
 	const handleSave = useMutableCallback(async () => {
 		const save = (): Promise<{ success: boolean; rid: string }> =>
@@ -149,7 +149,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	});
 
 	const eraseRoom = useMethod('eraseRoom');
-	const deleteTeam = useEndpoint('POST', 'teams.delete');
+	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
 
 	const handleDelete = useMutableCallback(() => {
 		if (room.teamMain) {
@@ -322,7 +322,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 			</Field>
 			<Field>
 				<Field.Row>
-					<Button primary flexGrow={1} danger disabled={deleting || !canDelete} onClick={handleDelete}>
+					<Button flexGrow={1} danger disabled={deleting || !canDelete} onClick={handleDelete}>
 						<Icon name='trash' size='x16' />
 						{t('Delete')}
 					</Button>

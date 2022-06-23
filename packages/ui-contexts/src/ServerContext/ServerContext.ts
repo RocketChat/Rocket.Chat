@@ -1,5 +1,5 @@
 import type { IServerInfo, Serialized } from '@rocket.chat/core-typings';
-import type { Method, PathFor, OperationParams, MatchPathPattern, OperationResult } from '@rocket.chat/rest-typings';
+import type { Method, OperationParams, MatchPathPattern, OperationResult, PathFor } from '@rocket.chat/rest-typings';
 import { createContext } from 'react';
 
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './methods';
@@ -23,8 +23,7 @@ export type ServerContextValue = {
 		params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
 	) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>;
 	uploadToEndpoint: (
-		endpoint: string,
-		params: any,
+		endpoint: PathFor<'POST'>,
 		formData: any,
 	) =>
 		| Promise<UploadResult>

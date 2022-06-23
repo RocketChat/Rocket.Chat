@@ -7,11 +7,11 @@ import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
 import fiber from 'fibers';
 import CAS from 'cas';
+import { CredentialTokens } from '@rocket.chat/models';
 
 import { logger } from './cas_rocketchat';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
-import { CredentialTokens } from '../../models/server/raw';
 import { _setRealName } from '../../lib';
 import { createRoom } from '../../lib/server/functions/createRoom';
 

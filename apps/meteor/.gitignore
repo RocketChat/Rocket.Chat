@@ -78,11 +78,10 @@ tests/end-to-end/temporary_staged_test
 .screenshots
 /private/livechat
 /storybook-static
-/tests/cypress/screenshots
-/tests/cypress/videos
 /tests/e2e/test-failures
 coverage
 .nyc_output
 /data
 tests/e2e/test-failures/
 out.txt
+dist

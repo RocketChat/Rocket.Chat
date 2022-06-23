@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
+import { EmojiCustom } from '@rocket.chat/models';
 
 import { Messages, Rooms } from '../../models/server';
-import { EmojiCustom } from '../../models/server/raw';
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
@@ -94,7 +94,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		isReacted = true;
 	}
 
-	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, Meteor.user(), reaction, isReacted));
+	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted));
 
 	msgStream.emit(message.rid, message);
 }
