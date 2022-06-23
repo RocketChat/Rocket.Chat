@@ -3579,14 +3579,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:^0.32.0-dev.5":
-  version: 0.32.0-dev.5
-  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.5"
-  checksum: b5a9ce0c90c2b41483b35704d6b80e92e184459d5ee3d7018dd6242dde2c2aeda6b5d2866a8038def3c54eeb91124d3d9aa06293f256ef0f8f6cfb72c8eaf476
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.9":
+"@rocket.chat/fuselage-tokens@npm:^0.32.0-dev.9, @rocket.chat/fuselage-tokens@npm:~0.32.0-dev.9":
   version: 0.32.0-dev.9
   resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.9"
   checksum: 32aea70894d7dcfdddbf5e4897bdd028ed03ff2d4ea648246da72a7eb96b5f5dc9e6066a3e0042af67d7f5616b50d2f8b139950273dc1316429b77ea13160cac
@@ -3822,7 +3815,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": ~0.31.14-dev.9
     "@rocket.chat/fuselage-polyfills": ~0.31.12
     "@rocket.chat/fuselage-toastbar": ^0.32.0-dev.22
-    "@rocket.chat/fuselage-tokens": ^0.32.0-dev.5
+    "@rocket.chat/fuselage-tokens": ^0.32.0-dev.9
     "@rocket.chat/fuselage-ui-kit": ~0.31.14-dev.1
     "@rocket.chat/icons": ~0.31.12
     "@rocket.chat/livechat": "workspace:^"
