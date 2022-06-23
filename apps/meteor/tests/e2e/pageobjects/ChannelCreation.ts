@@ -20,10 +20,6 @@ export class ChannelCreation extends BasePage {
 		return this.page.locator('//ul[@class="rc-popover__list"]//li[@class="rcx-option"][1]');
 	}
 
-	private get channelName(): Locator {
-		return this.page.locator('//header//div//div//div//div[2]');
-	}
-
 	private get buttonConfirmCreation(): Locator {
 		return this.page.locator('//button[contains(text(), "Create" )]');
 	}
