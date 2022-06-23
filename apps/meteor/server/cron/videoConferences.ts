@@ -1,7 +1,7 @@
 import type { SyncedCron } from 'meteor/littledata:synced-cron';
+import { VideoConference } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
-import { VideoConference } from '../../app/models/server/raw';
 
 // 24 hours
 const VIDEO_CONFERENCE_TTL = 24 * 60 * 60 * 1000;

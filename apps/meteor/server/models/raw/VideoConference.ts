@@ -1,11 +1,23 @@
-import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
-import type { VideoConference, IGroupVideoConference, ILivechatVideoConference, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { Cursor, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult, IndexSpecification, Collection, Db } from 'mongodb';
+import type {
+	VideoConference,
+	IGroupVideoConference,
+	ILivechatVideoConference,
+	IUser,
+	IRoom,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
+import type { InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
-import type { IndexSpecification, InsertionModel } from './BaseRaw';
 
-export class VideoConferenceRaw extends BaseRaw<VideoConference> {
+export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVideoConferenceModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<VideoConference>>) {
+		super(db, getCollectionName('video_conference'), trash);
+	}
+
 	protected modelIndexes(): IndexSpecification[] {
 		return [{ key: { rid: 1, createdAt: 1 }, unique: false }];
 	}

@@ -240,8 +240,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): void {
-		this.updateOne(
+	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
+		await this.updateOne(
 			{ _id },
 			{
 				$set: {
