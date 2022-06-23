@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import express, { Response, Request, IRouter, RequestHandler, NextFunction } from 'express';
+import express, { Response, Request, IRouter, RequestHandler } from 'express';
 import { WebApp } from 'meteor/webapp';
 import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
 import { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
@@ -74,7 +74,7 @@ export class AppApisBridge extends ApiBridge {
 		}
 
 		if (router[method] instanceof Function) {
-			router[method](routePath, this._authMiddlewares(endpoint, appId), Meteor.bindEnvironment(this._appApiExecutor(endpoint, appId)));
+			router[method](routePath, this._authMiddleware(endpoint, appId), Meteor.bindEnvironment(this._appApiExecutor(endpoint, appId)));
 		}
 	}
 
@@ -86,13 +86,9 @@ export class AppApisBridge extends ApiBridge {
 		}
 	}
 
-	private _authMiddlewares(endpoint: IApiEndpoint, _appId: string): RequestHandler {
-		const authFunction = authenticationMiddleware();
-		return Meteor.bindEnvironment((req: IRequestWithPrivateHash, res: Response, next: NextFunction) => {
-			if (!endpoint.authRequired) return next();
-
-			return authFunction(req, res, next);
-		});
+	private _authMiddleware(endpoint: IApiEndpoint, _appId: string): RequestHandler {
+		const authFunction = authenticationMiddleware({ rejectUnauthorized: !!endpoint.authRequired });
+		return Meteor.bindEnvironment(authFunction);
 	}
 
 	private _verifyApi(api: IApi, endpoint: IApiEndpoint): void {
