@@ -6,14 +6,14 @@ import React, { FC } from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 
 const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ username, reload }) => {
-	const removeAgent = useEndpoint('DELETE', `/v1/omnichannel/agent/extension/${username}`);
+	const removeAgent = useEndpoint('DELETE', '/v1/omnichannel/agent/extension');
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
-			await removeAgent();
+			await removeAgent({ username });
 		} catch (error: any) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
