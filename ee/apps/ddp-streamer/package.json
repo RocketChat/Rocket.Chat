@@ -31,7 +31,7 @@
 		"pino": "^7.11.0",
 		"sharp": "^0.30.7",
 		"uuid": "^7.0.3",
-		"ws": "^8.5.0"
+		"ws": "^8.8.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
