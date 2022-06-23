@@ -516,11 +516,9 @@ export type VoipEndpoints = {
 		};
 	};
 	'/v1/omnichannel/agent/extension': {
+		GET: (params: OmnichannelAgentExtensionGET) => { extension: Pick<IUser, '_id' | 'username' | 'extension'> };
 		POST: (params: OmnichannelAgentExtensionPOST) => void;
-	};
-	'/v1/omnichannel/agent/extension/:username': {
-		GET: () => { extension: Pick<IUser, '_id' | 'username' | 'extension'> };
-		DELETE: () => void;
+		DELETE: (params: OmnichannelAgentExtensionDELETE) => void;
 	};
 	'/v1/omnichannel/agents/available': {
 		GET: (params: OmnichannelAgentsAvailable) => PaginatedResult<{ agents: ILivechatAgent[] }>;
