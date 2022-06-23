@@ -57,7 +57,7 @@ const DeviceManagementAccountTable = (): ReactElement => {
 			error={error}
 			reload={reload}
 			headers={headers}
-			renderRow={(session: any): ReactElement => (
+			renderRow={(session): ReactElement => (
 				<DeviceManagementAccountRow
 					key={session._id}
 					_id={session._id}

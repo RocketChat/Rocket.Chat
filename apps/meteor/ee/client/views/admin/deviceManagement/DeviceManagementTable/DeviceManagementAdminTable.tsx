@@ -8,7 +8,7 @@ import { usePagination } from '../../../../../../client/components/GenericTable/
 import { useSort } from '../../../../../../client/components/GenericTable/hooks/useSort';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import DeviceManagementGenericTable from '../../../../deviceManagement/components/deviceManagementTable';
-import DeviceManagementRow from './DeviceManagementAdminRow';
+import DeviceManagementAdminRow from './DeviceManagementAdminRow';
 
 const sortMapping = {
 	client: 'device.name',
@@ -77,7 +77,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 				reload={reload}
 				headers={headers}
 				renderRow={(session): ReactElement => (
-					<DeviceManagementRow
+					<DeviceManagementAdminRow
 						key={session._id}
 						_id={session._id}
 						username={session._user?.username}

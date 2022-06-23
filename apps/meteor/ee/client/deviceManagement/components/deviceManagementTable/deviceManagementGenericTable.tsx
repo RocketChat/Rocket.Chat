@@ -1,4 +1,6 @@
+import { DeviceManagementSession, DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { PaginatedResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, ReactElement } from 'react';
 
@@ -10,8 +12,10 @@ import {
 } from '../../../../../client/components/GenericTable';
 import { AsyncStatePhase } from '../../../../../client/lib/asyncState';
 
-type DeviceManagementTableProps = {
-	data: any;
+type DeviceManagementGenericTableProps = {
+	data?:
+		| Serialized<PaginatedResult<{ sessions: DeviceManagementSession[] }>>
+		| Serialized<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>>;
 	phase?: Partial<AsyncStatePhase>;
 	error?: Error;
 	reload?: () => void;
@@ -36,7 +40,7 @@ const DeviceManagementGenericTable = ({
 	setCurrent,
 	setItemsPerPage,
 	paginationProps,
-}: DeviceManagementTableProps): ReactElement => {
+}: DeviceManagementGenericTableProps): ReactElement => {
 	const t = useTranslation();
 
 	if (!data && phase === AsyncStatePhase.REJECTED) {
