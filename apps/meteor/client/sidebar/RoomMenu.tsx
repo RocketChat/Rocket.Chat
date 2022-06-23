@@ -18,7 +18,7 @@ import React, { memo, ReactElement, useMemo } from 'react';
 import { Rooms } from '../../app/models/client/index';
 import { applyButtonFilters } from '../../app/ui-message/client/actionButtons/lib/applyButtonFilters';
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
-import { SidebarRoomAction } from '../../app/ui-utils/client/lib/SidebarRoomAction';
+import { ISidebarButton, SidebarRoomAction } from '../../app/ui-utils/client/lib/SidebarRoomAction';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
@@ -172,14 +172,12 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		.getCurrentValue()
 		.filter((action) => applyButtonFilters(action, room))
 		.reduce((result, item) => {
-			const key = Object.keys(item)[0];
-			result[key] = item[key];
+			result[item.actionId] = item.sidebarActionButton;
 			return result;
-		}, {});
+		}, {} as Record<string, ISidebarButton>);
 
 	const menuOptions = useMemo(
 		() => ({
-			...actionButtons,
 			hideRoom: {
 				label: { label: t('Hide'), icon: 'eye-off' },
 				action: handleHide,
@@ -205,6 +203,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 					action: handleLeave,
 				},
 			}),
+			...actionButtons,
 		}),
 		[actionButtons, t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
 	);
