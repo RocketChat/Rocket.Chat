@@ -56,5 +56,8 @@
 	"volta": {
 		"node": "14.18.3",
 		"yarn": "1.22.18"
+	},
+	"resolutions": {
+		"minimist": "1.2.6"
 	}
 }
