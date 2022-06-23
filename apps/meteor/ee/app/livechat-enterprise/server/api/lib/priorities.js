@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import LivechatPriority from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import LivechatPriority from '../../../../models/server/raw/LivechatPriority';
 
 export async function findPriorities({ userId, text, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization';
-import { LivechatRooms, Subscriptions, Users } from '../../../models';
-import { LivechatVisitors } from '../../../models/server/raw';
+import { hasPermission } from '../../../authorization/server';
+import { LivechatRooms, Subscriptions, Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 

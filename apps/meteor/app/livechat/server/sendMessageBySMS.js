@@ -1,7 +1,8 @@
+import { LivechatVisitors } from '@rocket.chat/models';
+
 import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { SMS } from '../../sms';
-import { LivechatVisitors } from '../../models/server/raw';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add(

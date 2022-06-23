@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { settings } from '../../../../settings/server';
-import { Settings, LivechatRooms } from '../../../../models';
-import { LivechatVisitors } from '../../../../models/server/raw';
+import { Settings, LivechatRooms } from '../../../../models/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
 import { FileUpload } from '../../../../file-upload';
 import { API } from '../../../../api/server';

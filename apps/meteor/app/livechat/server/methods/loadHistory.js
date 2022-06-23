@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { loadMessageHistory } from '../../../lib';
-import { LivechatRooms } from '../../../models';
-import { LivechatVisitors } from '../../../models/server/raw';
+import { LivechatRooms } from '../../../models/server';
 
 Meteor.methods({
 	async 'livechat:loadHistory'({ token, rid, end, limit = 20, ls }) {

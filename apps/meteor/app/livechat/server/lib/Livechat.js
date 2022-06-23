@@ -9,6 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
+import { Users as UsersRaw, LivechatVisitors } from '@rocket.chat/models';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -39,7 +40,6 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
-import { Users as UsersRaw, LivechatVisitors } from '../../../models/server/raw';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
 

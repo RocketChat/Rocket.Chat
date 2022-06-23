@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatRooms } from '../../../models';
-import { LivechatVisitors } from '../../../models/server/raw';
+import { LivechatRooms } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 
 Meteor.methods({

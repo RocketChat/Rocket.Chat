@@ -2,11 +2,11 @@ import _ from 'underscore';
 import type ldapjs from 'ldapjs';
 import { ILDAPEntry } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
+import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
 import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
 import { Rooms } from '../../../../app/models/server';
-import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '../../../../app/models/server/raw';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';

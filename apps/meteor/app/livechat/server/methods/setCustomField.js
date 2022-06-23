@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatRooms, LivechatCustomField } from '../../../models';
-import { LivechatVisitors } from '../../../models/server/raw';
+import { LivechatRooms, LivechatCustomField } from '../../../models/server';
 
 Meteor.methods({
 	async 'livechat:setCustomField'(token, key, value, overwrite = true) {

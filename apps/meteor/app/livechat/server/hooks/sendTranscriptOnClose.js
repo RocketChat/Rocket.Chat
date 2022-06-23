@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
-import { LivechatRooms } from '../../../models';
+import { LivechatRooms } from '../../../models/server';
 
 const sendTranscriptOnClose = (room) => {
 	const { _id: rid, transcriptRequest, v: { token } = {} } = room;

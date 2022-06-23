@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { settings } from '../../../settings';
-import { LivechatRooms } from '../../../models';
-import { LivechatVisitors } from '../../../models/server/raw';
+import { settings } from '../../../settings/server';
+import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({

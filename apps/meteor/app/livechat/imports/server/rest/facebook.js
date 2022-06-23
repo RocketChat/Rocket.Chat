@@ -1,11 +1,11 @@
 import crypto from 'crypto';
 
 import { Random } from 'meteor/random';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { LivechatRooms } from '../../../../models';
-import { LivechatVisitors } from '../../../../models/server/raw';
-import { settings } from '../../../../settings';
+import { LivechatRooms } from '../../../../models/server';
+import { settings } from '../../../../settings/server';
 import { Livechat } from '../../../server/lib/Livechat';
 
 /**

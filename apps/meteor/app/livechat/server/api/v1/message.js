@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { Messages, LivechatRooms } from '../../../../models';
-import { LivechatVisitors } from '../../../../models/server/raw';
+import { Messages, LivechatRooms } from '../../../../models/server';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib';

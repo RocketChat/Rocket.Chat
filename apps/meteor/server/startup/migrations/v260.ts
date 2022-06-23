@@ -1,12 +1,12 @@
 import { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { BulkWriteOperation, Cursor } from 'mongodb';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 import { Users } from '../../../app/models/server';
-import { LivechatVisitors as VisitorsRaw } from '../../../app/models/server/raw';
 
 const getNextPageCursor = (skip: number, limit: number): Cursor<ILivechatVisitor> => {
-	return VisitorsRaw.find({ 'visitorEmails.address': /[A-Z]/ }, { skip, limit, sort: { _id: 1 } });
+	return LivechatVisitors.find({ 'visitorEmails.address': /[A-Z]/ }, { skip, limit, sort: { _id: 1 } });
 };
 
 // Convert all visitor emails to lowercase
@@ -14,7 +14,7 @@ addMigration({
 	version: 260,
 	async up() {
 		const updates: BulkWriteOperation<ILivechatVisitor>[] = [];
-		const count = await VisitorsRaw.find({ 'visitorEmails.address': /[A-Z]/ }).count();
+		const count = await LivechatVisitors.find({ 'visitorEmails.address': /[A-Z]/ }).count();
 		const limit = 5000;
 		let skip = 0;
 
@@ -32,7 +32,7 @@ addMigration({
 			});
 
 			if (updates.length) {
-				Promise.await(VisitorsRaw.col.bulkWrite(updates));
+				Promise.await(LivechatVisitors.col.bulkWrite(updates));
 			}
 
 			incrementSkip(limit);

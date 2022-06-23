@@ -19,7 +19,7 @@ import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';

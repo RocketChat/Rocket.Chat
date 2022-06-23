@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
-
-import { LivechatRooms, LivechatVisitors } from '../../../models/server/raw';
+import { LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
 Meteor.methods({
 	async 'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {

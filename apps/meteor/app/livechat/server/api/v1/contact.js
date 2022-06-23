@@ -1,9 +1,9 @@
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
-import { LivechatVisitors } from '../../../../models/server/raw';
 
 API.v1.addRoute(
 	'omnichannel/contact',

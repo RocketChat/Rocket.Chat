@@ -1,6 +1,7 @@
+import { LivechatVisitors } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
-import { LivechatVisitors } from '../../../models/server/raw';
+import { settings } from '../../../settings/server';
 
 function validateMessage(message, room) {
 	// skips this callback if the message was edited

@@ -1,9 +1,9 @@
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { LivechatVisitors, Users } from '@rocket.chat/models';
 
-import { LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models';
-import { LivechatVisitors, Users } from '../../../models/server/raw';
+import { LivechatCustomField, LivechatRooms, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
 
 export const Contacts = {
 	async registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {

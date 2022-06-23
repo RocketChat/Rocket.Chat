@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatRooms, Messages } from '../../../models';
-import { LivechatVisitors } from '../../../models/server/raw';
+import { LivechatRooms, Messages } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 

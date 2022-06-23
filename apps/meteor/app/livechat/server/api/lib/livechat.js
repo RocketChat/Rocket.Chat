@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors } from '@rocket.chat/models';
 
 import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
-import { EmojiCustom, LivechatTrigger, LivechatVisitors } from '../../../../models/server/raw';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
