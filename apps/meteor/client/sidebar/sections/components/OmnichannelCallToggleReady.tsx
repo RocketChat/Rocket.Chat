@@ -1,29 +1,106 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo } from 'react';
 
-import { useCallClient, useCallerInfo, useCallActions } from '../../../contexts/CallContext';
+import { useCallActions, useCallClient } from '../../../contexts/CallContext';
+import { useVoipAgent } from '../hooks/useVoipAgent';
 
-type NetworkState = 'online' | 'offline';
 export const OmnichannelCallToggleReady = (): ReactElement => {
-	const [agentEnabled, setAgentEnabled] = useState(false); // TODO: get from AgentInfo
 	const t = useTranslation();
-	const [registered, setRegistered] = useState(false);
+
+	const {
+		agentEnabled,
+		networkStatus,
+		registered,
+		voipButtonEnabled,
+		setAgentEnabled,
+		setRegistered,
+		setNetworkStatus,
+		setVoipButtonEnabled,
+	} = useVoipAgent();
 	const voipClient = useCallClient();
-	const [disableButtonClick, setDisableButtonClick] = useState(false);
-	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
-	const callerInfo = useCallerInfo();
 	const callActions = useCallActions();
 
-	const getTooltip = (): string => {
+	const registerState = useMemo(() => voipClient.getRegisterState(), [voipClient]);
+
+	const toogleRegistered = useMutableCallback((): void => {
+		setRegistered(!registered);
+	});
+
+	const toogleRegistrationError = useCallback((): void => {
+		setRegistered(false);
+		setAgentEnabled(false);
+	}, [setAgentEnabled, setRegistered]);
+
+	const onNetworkConnected = useCallback((): void => {
+		setVoipButtonEnabled(['IN_CALL', 'ON_HOLD'].includes(voipClient.callerInfo.state));
+		setNetworkStatus('online');
+	}, [setNetworkStatus, setVoipButtonEnabled, voipClient.callerInfo.state]);
+
+	const onNetworkDisconnected = useCallback((): void => {
+		setVoipButtonEnabled(true);
+		setNetworkStatus('offline');
+	}, [setNetworkStatus, setVoipButtonEnabled]);
+
+	const onClickVoipButton = useCallback((): void => {
+		if (voipButtonEnabled) {
+			return;
+		}
+
+		setAgentEnabled(!agentEnabled);
+
+		voipClient.callerInfo.state === 'OFFER_RECEIVED' && callActions.reject();
+	}, [agentEnabled, callActions, setAgentEnabled, voipButtonEnabled, voipClient.callerInfo.state]);
+
+	useEffect(() => {
+		if (!agentEnabled) {
+			voipClient.register();
+		} else {
+			voipClient.unregister();
+		}
+	}, [agentEnabled, voipClient]);
+
+	useEffect(() => {
+		setVoipButtonEnabled(['IN_CALL', 'ON_HOLD'].includes(voipClient.callerInfo.state));
+	}, [setVoipButtonEnabled, voipClient.callerInfo.state]);
+
+	useEffect(() => {
+		setRegistered(registerState === 'registered');
+	}, [registerState, setRegistered]);
+
+	useEffect(() => {
+		voipClient.on('registered', toogleRegistered);
+		voipClient.on('unregistered', toogleRegistered);
+		voipClient.on('registrationerror', toogleRegistrationError);
+		voipClient.on('unregistrationerror', toogleRegistrationError);
+		voipClient.onNetworkEvent('connected', onNetworkConnected);
+		voipClient.onNetworkEvent('disconnected', onNetworkDisconnected);
+		voipClient.onNetworkEvent('connectionerror', onNetworkDisconnected);
+		voipClient.onNetworkEvent('localnetworkonline', onNetworkConnected);
+		voipClient.onNetworkEvent('localnetworkoffline', onNetworkDisconnected);
+
+		return (): void => {
+			voipClient.off('registered', toogleRegistered);
+			voipClient.off('unregistered', toogleRegistered);
+			voipClient.off('registrationerror', toogleRegistrationError);
+			voipClient.off('unregistrationerror', toogleRegistrationError);
+			voipClient.offNetworkEvent('connected', onNetworkConnected);
+			voipClient.offNetworkEvent('disconnected', onNetworkDisconnected);
+			voipClient.offNetworkEvent('connectionerror', onNetworkDisconnected);
+			voipClient.offNetworkEvent('localnetworkonline', onNetworkConnected);
+			voipClient.offNetworkEvent('localnetworkoffline', onNetworkDisconnected);
+		};
+	}, [voipClient, onNetworkConnected, onNetworkDisconnected, toogleRegistered, toogleRegistrationError]);
+
+	const getTitle = (): string => {
 		if (networkStatus === 'offline') {
 			return t('Signaling_connection_disconnected');
 		}
-		if (!registered) {
+		if (registered) {
 			return t('Enable');
 		}
-		if (!disableButtonClick) {
+		if (!voipButtonEnabled) {
 			// Color for this state still not defined
 			return t('Disable');
 		}
@@ -46,97 +123,10 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 	};
 
 	const voipCallIcon = {
-		title: getTooltip(),
-		color: getColor(),
+		title: getTitle(),
 		icon: getIcon(),
-	} as const;
+		color: getColor(),
+	};
 
-	useEffect(() => {
-		// Any of the 2 states means the user is already talking
-		setDisableButtonClick(['IN_CALL', 'ON_HOLD'].includes(callerInfo.state));
-	}, [callerInfo]);
-
-	useEffect(() => {
-		let agentEnabled = false;
-		const state = voipClient.getRegistrarState();
-		if (state === 'registered') {
-			agentEnabled = true;
-		}
-		setAgentEnabled(agentEnabled);
-		setRegistered(agentEnabled);
-	}, [voipClient]);
-
-	// TODO: move registration flow to context provider
-	const handleVoipCallStatusChange = useMutableCallback((): void => {
-		if (disableButtonClick) {
-			return;
-		}
-		// TODO: backend set voip call status
-		// voipClient.setVoipCallStatus(!registered);
-		if (agentEnabled) {
-			callerInfo.state === 'OFFER_RECEIVED' && callActions.reject();
-			setAgentEnabled(false);
-			voipClient.unregister();
-			return;
-		}
-		setAgentEnabled(true);
-		voipClient.register();
-	});
-
-	const onUnregistrationError = useMutableCallback((): void => {
-		setRegistered(false);
-		setAgentEnabled(false);
-	});
-
-	const onUnregistered = useMutableCallback((): void => {
-		setRegistered(!registered);
-	});
-
-	const onRegistrationError = useMutableCallback((): void => {
-		setRegistered(false);
-		setAgentEnabled(false);
-	});
-
-	const onRegistered = useMutableCallback((): void => {
-		setRegistered(!registered);
-	});
-
-	const onNetworkConnected = useMutableCallback((): void => {
-		setDisableButtonClick(['IN_CALL', 'ON_HOLD'].includes(callerInfo.state));
-		setNetworkStatus('online');
-	});
-
-	const onNetworkDisconnected = useMutableCallback((): void => {
-		setDisableButtonClick(true);
-		setNetworkStatus('offline');
-	});
-
-	useEffect(() => {
-		if (!voipClient) {
-			return;
-		}
-		voipClient.on('registered', onRegistered);
-		voipClient.on('registrationerror', onRegistrationError);
-		voipClient.on('unregistered', onUnregistered);
-		voipClient.on('unregistrationerror', onUnregistrationError);
-		voipClient.onNetworkEvent('connected', onNetworkConnected);
-		voipClient.onNetworkEvent('disconnected', onNetworkDisconnected);
-		voipClient.onNetworkEvent('connectionerror', onNetworkDisconnected);
-		voipClient.onNetworkEvent('localnetworkonline', onNetworkConnected);
-		voipClient.onNetworkEvent('localnetworkoffline', onNetworkDisconnected);
-
-		return (): void => {
-			voipClient.off('registered', onRegistered);
-			voipClient.off('registrationerror', onRegistrationError);
-			voipClient.off('unregistered', onUnregistered);
-			voipClient.off('unregistrationerror', onUnregistrationError);
-			voipClient.offNetworkEvent('connected', onNetworkConnected);
-			voipClient.offNetworkEvent('disconnected', onNetworkDisconnected);
-			voipClient.offNetworkEvent('connectionerror', onNetworkDisconnected);
-			voipClient.offNetworkEvent('localnetworkonline', onNetworkConnected);
-			voipClient.offNetworkEvent('localnetworkoffline', onNetworkDisconnected);
-		};
-	}, [onRegistered, onRegistrationError, onUnregistered, onUnregistrationError, voipClient, onNetworkConnected, onNetworkDisconnected]);
-
-	return <Sidebar.TopBar.Action {...voipCallIcon} onClick={handleVoipCallStatusChange} disabled={disableButtonClick} />;
+	return <Sidebar.TopBar.Action {...voipCallIcon} onClick={onClickVoipButton} disabled={voipButtonEnabled} />;
 };

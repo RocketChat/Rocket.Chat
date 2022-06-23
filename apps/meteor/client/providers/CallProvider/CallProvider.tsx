@@ -24,6 +24,7 @@ import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
+import VoipAgentProvider from '../VoipAgentProvider';
 import { useVoipClient } from './hooks/useVoipClient';
 
 const startRingback = (user: IUser): void => {
@@ -342,8 +343,10 @@ export const CallProvider: FC = ({ children }) => {
 
 	return (
 		<CallContext.Provider value={contextValue}>
-			{children}
-			{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+			<VoipAgentProvider>
+				{children}
+				{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+			</VoipAgentProvider>
 		</CallContext.Provider>
 	);
 };
