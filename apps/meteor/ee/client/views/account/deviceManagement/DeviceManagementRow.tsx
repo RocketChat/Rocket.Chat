@@ -4,8 +4,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
-import { useDeviceLogout } from '../../../hooks/useDeviceLogout';
 import DeviceIcon from '../../../deviceManagement/components/DeviceIcon';
+import { useDeviceLogout } from '../../../hooks/useDeviceLogout';
 
 type DevicesRowProps = {
 	_id: string;
@@ -17,7 +17,15 @@ type DevicesRowProps = {
 	onReload: () => void;
 };
 
-const DeviceManagementRow = ({ _id, deviceName, deviceType = 'browser', deviceOSName, deviceOSVersion, loginAt, onReload }: DevicesRowProps): ReactElement => {
+const DeviceManagementRow = ({
+	_id,
+	deviceName,
+	deviceType = 'browser',
+	deviceOSName,
+	deviceOSVersion,
+	loginAt,
+	onReload,
+}: DevicesRowProps): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -25,7 +33,7 @@ const DeviceManagementRow = ({ _id, deviceName, deviceType = 'browser', deviceOS
 	const handleDeviceLogout = useDeviceLogout(_id, '/v1/sessions/logout.me');
 
 	return (
-		<TableRow key={_id} action>
+		<TableRow key={_id}>
 			<TableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />
