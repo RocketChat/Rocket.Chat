@@ -62,6 +62,10 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 				getCurrentValue: (): boolean => VideoConfManager.isRinging(),
 				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('ringing/changed', cb),
 			},
+			queryCalling: {
+				getCurrentValue: (): boolean => VideoConfManager.isCalling(),
+				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('calling/changed', cb),
+			},
 		}),
 		[],
 	);
