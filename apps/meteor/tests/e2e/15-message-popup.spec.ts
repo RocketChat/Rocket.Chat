@@ -19,7 +19,7 @@ test.describe('[Message Popup]', () => {
 		sideNav = new SideNav(page);
 
 		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 		await sideNav.openChannel('public channel');
 	});
 

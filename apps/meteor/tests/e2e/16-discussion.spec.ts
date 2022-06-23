@@ -24,7 +24,7 @@ test.describe('[Discussion]', () => {
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 	});
 
 	test.describe('[Create discussion from screen]', () => {

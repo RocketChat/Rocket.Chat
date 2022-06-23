@@ -14,7 +14,7 @@ test.describe('[Channel]', async () => {
 		channelCreation = new ChannelCreation(page);
 
 		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 	});
 
 	test('expect create private channel', async () => {

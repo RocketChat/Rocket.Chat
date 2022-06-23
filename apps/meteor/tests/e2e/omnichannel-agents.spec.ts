@@ -19,7 +19,7 @@ test.describe('[Agents]', () => {
 		agents = new Agents(page);
 		global = new Global(page);
 
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.omnichannel.click();
 		await agents.agentsLink.click();

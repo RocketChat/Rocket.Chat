@@ -20,7 +20,7 @@ test.describe('[Department]', () => {
 		departments = new Departments(page);
 		global = new Global(page);
 
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.omnichannel.click();
 	});

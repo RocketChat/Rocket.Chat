@@ -20,12 +20,12 @@ test.describe('[Login]', () => {
 			email: validUser.email,
 			password: 'any_password1',
 		};
-		await loginPage.login(invalidUserPassword);
+		await loginPage.doLogin(invalidUserPassword);
 		await expect(global.getToastBarError).toBeVisible();
 	});
 
 	test('expect user make login', async () => {
-		await loginPage.login(validUser);
+		await loginPage.doLogin(validUser);
 		await loginPage.waitForSelector(HOME_SELECTOR);
 	});
 });

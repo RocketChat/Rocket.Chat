@@ -19,7 +19,7 @@ test.describe('[Main Elements Render]', function () {
 		flexTab = new FlexTab(page);
 
 		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 	});
 
 	test.describe('[Side Nav Bar]', () => {

@@ -17,7 +17,7 @@ const createBrowserContextForChat = async (
 	const sideNav = new SideNav(page);
 
 	await loginPage.goto(baseURL);
-	await loginPage.login(validUserInserted);
+	await loginPage.doLogin(validUserInserted);
 
 	return { mainContent, sideNav };
 };
@@ -38,7 +38,7 @@ test.describe('[Messaging]', () => {
 
 		await loginPage.goto(baseURL as string);
 
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 	});
 
 	test.describe('[Normal messaging]', async () => {
