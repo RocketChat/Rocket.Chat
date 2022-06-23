@@ -296,7 +296,7 @@
 		"lodash.debounce": "^4.0.8",
 		"lodash.get": "^4.4.2",
 		"mailparser": "^3.4.0",
-		"marked": "^0.7.0",
+		"marked": "^4.0.17",
 		"mem": "^8.1.1",
 		"meteor-node-stubs": "^1.2.3",
 		"mime-db": "^1.52.0",

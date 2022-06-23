@@ -87,7 +87,7 @@ export const marked = (message, { marked: { gfm, tables, breaks, pedantic, smart
 		message.tokens = [];
 	}
 
-	message.html = _marked(unescapeHTML(message.html), {
+	message.html = _marked.parse(unescapeHTML(message.html), {
 		gfm,
 		tables,
 		breaks,

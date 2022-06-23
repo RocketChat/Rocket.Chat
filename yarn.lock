@@ -4026,7 +4026,7 @@ __metadata:
     lodash.debounce: ^4.0.8
     lodash.get: ^4.4.2
     mailparser: ^3.4.0
-    marked: ^0.7.0
+    marked: ^4.0.17
     mem: ^8.1.1
     meteor-node-stubs: ^1.2.3
     mime-db: ^1.52.0
@@ -20788,12 +20788,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "marked@npm:0.7.0"
+"marked@npm:^4.0.17":
+  version: 4.0.17
+  resolution: "marked@npm:4.0.17"
   bin:
-    marked: ./bin/marked
-  checksum: 5965e990ee0497aceae1b63c479ad614773331e255c7c9feb00120813574370d03e104d062f3c52ca4d96e7c4ff726ad8ca7ef2debe53728fb73975677b6878e
+    marked: bin/marked.js
+  checksum: 33a3c43a20b47bddaf045a59bfc7c3d41cc321931cc663ed231ca3b5b3b195fb2ac2973e687c2afd65b79539c14619baa07d19793f70130160f0af80c06d9b3a
   languageName: node
   linkType: hard
 
