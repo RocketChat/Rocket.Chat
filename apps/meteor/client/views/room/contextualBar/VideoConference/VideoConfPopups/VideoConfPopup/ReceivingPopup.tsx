@@ -1,5 +1,5 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import {
@@ -14,11 +14,13 @@ import {
 	VideoConfPopupIndicators,
 	VideoConfPopupClose,
 } from '@rocket.chat/ui-video-conf';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../../components/avatar/RoomAvatar';
 import { useVideoConfSetPreferences } from '../../../../../../contexts/VideoConfContext';
+import { AsyncStatePhase } from '../../../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../../../hooks/useEndpointData';
 
 type ReceivingPopupProps = {
 	id: string;
@@ -37,6 +39,11 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
+
+	const params = useMemo(() => ({ callId: id }), [id]);
+	const { phase, value } = useEndpointData('/v1/video-conference.info', params);
+	const showMic = Boolean(value?.capabilities?.mic);
+	const showCam = Boolean(value?.capabilities?.cam);
 
 	const handleJoinCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);
@@ -63,20 +70,25 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 					</Box>
 				)}
 				<VideoConfPopupControllers>
-					<VideoConfController
-						primary={controllersConfig.mic}
-						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMic}
-					/>
-					<VideoConfController
-						primary={controllersConfig.cam}
-						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCam}
-					/>
+					{phase === AsyncStatePhase.LOADING && <Skeleton />}
+					{showMic && (
+						<VideoConfController
+							primary={controllersConfig.mic}
+							text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+							title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+							icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+							onClick={handleToggleMic}
+						/>
+					)}
+					{showCam && (
+						<VideoConfController
+							primary={controllersConfig.cam}
+							text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+							title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+							icon={controllersConfig.cam ? 'video' : 'video-off'}
+							onClick={handleToggleCam}
+						/>
+					)}
 				</VideoConfPopupControllers>
 				<VideoConfPopupFooter>
 					<VideoConfButton primary onClick={handleJoinCall}>
