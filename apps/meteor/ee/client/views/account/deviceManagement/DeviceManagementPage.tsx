@@ -2,7 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import Page from '../../../../../client/components/Page';
-import DeviceManagementTable from './DeviceManagementTable';
+import DeviceManagementAccountTable from './DeviceManagementAccountTable';
 
 const DeviceManagementPage = (): ReactElement => {
 	const t = useTranslation();
@@ -11,7 +11,7 @@ const DeviceManagementPage = (): ReactElement => {
 		<Page>
 			<Page.Header title={t('Device_Management')} />
 			<Page.Content>
-				<DeviceManagementTable />
+				<DeviceManagementAccountTable />
 			</Page.Content>
 		</Page>
 	);

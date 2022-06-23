@@ -3,7 +3,7 @@ import React, { ReactElement, useRef } from 'react';
 
 import Page from '../../../../../client/components/Page';
 import DeviceManagementInfo from './DeviceManagementInfo';
-import DeviceManagementTable from './DeviceManagementTable';
+import DeviceManagementAdminTable from './DeviceManagementTable';
 
 const DeviceManagementPage = (): ReactElement => {
 	const t = useTranslation();
@@ -17,7 +17,7 @@ const DeviceManagementPage = (): ReactElement => {
 			<Page>
 				<Page.Header title={t('Device_Management')} />
 				<Page.Content>
-					<DeviceManagementTable reloadRef={reloadRef} />
+					<DeviceManagementAdminTable reloadRef={reloadRef} />
 				</Page.Content>
 			</Page>
 			{context === 'info' && deviceId && <DeviceManagementInfo deviceId={deviceId} onReload={reloadRef.current} />}

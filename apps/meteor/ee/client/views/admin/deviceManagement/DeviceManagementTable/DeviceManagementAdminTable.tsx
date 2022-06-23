@@ -1,21 +1,14 @@
-import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, useMemo, useEffect, MutableRefObject } from 'react';
 
 import FilterByText from '../../../../../../client/components/FilterByText';
-import {
-	GenericTable,
-	GenericTableHeaderCell,
-	GenericTableHeader,
-	GenericTableBody,
-	GenericTableLoadingTable,
-} from '../../../../../../client/components/GenericTable';
+import { GenericTableHeaderCell } from '../../../../../../client/components/GenericTable';
 import { usePagination } from '../../../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../../client/components/GenericTable/hooks/useSort';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
-import DeviceManagementRow from './DeviceManagementRow';
+import DeviceManagementGenericTable from '../../../../deviceManagement/components/deviceManagementTable';
+import DeviceManagementRow from './DeviceManagementAdminRow';
 
 const sortMapping = {
 	client: 'device.name',
@@ -24,7 +17,7 @@ const sortMapping = {
 	loginAt: 'loginAt',
 };
 
-const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }): ReactElement => {
+const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }): ReactElement => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
@@ -74,70 +67,37 @@ const DevicesTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }
 		[t, mediaQuery, setSort, sortDirection, sortBy],
 	);
 
-	if (!data && phase === AsyncStatePhase.REJECTED) {
-		return (
-			<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
-				<States>
-					<StatesIcon name='warning' variation='danger' />
-					<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
-					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
-					<StatesSubtitle>{error?.message}</StatesSubtitle>
-					<StatesActions>
-						<StatesAction onClick={reload}>{t('Retry')}</StatesAction>
-					</StatesActions>
-				</States>
-			</Box>
-		);
-	}
-
 	return (
 		<>
 			<FilterByText placeholder={t('Search_Devices_Users')} onChange={({ text }): void => setText(text)} />
-			{data?.sessions.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
-			)}
-			{data?.sessions && data.sessions.length > 0 && (
-				<>
-					<GenericTable>
-						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>
-							{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={6} />}
-							{phase === AsyncStatePhase.RESOLVED &&
-								data?.sessions &&
-								data.sessions.map((session) => (
-									<DeviceManagementRow
-										key={session._id}
-										_id={session._id}
-										username={session._user?.username}
-										ip={session.ip}
-										deviceName={session?.device?.name}
-										deviceType={session?.device?.type}
-										deviceOSName={session?.device?.os?.name}
-										deviceOSVersion={session?.device?.os?.version}
-										loginAt={session.loginAt}
-										onReload={reload}
-									/>
-								))}
-						</GenericTableBody>
-					</GenericTable>
-					{phase === AsyncStatePhase.RESOLVED && (
-						<Pagination
-							divider
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={data?.total || 0}
-							onSetCurrent={setCurrent}
-							onSetItemsPerPage={setItemsPerPage}
-							{...paginationProps}
-						/>
-					)}
-				</>
-			)}
+			<DeviceManagementGenericTable
+				data={data}
+				phase={phase}
+				error={error}
+				reload={reload}
+				headers={headers}
+				renderRow={(session): ReactElement => (
+					<DeviceManagementRow
+						key={session._id}
+						_id={session._id}
+						username={session._user?.username}
+						ip={session.ip}
+						deviceName={session?.device?.name}
+						deviceType={session?.device?.type}
+						deviceOSName={session?.device?.os?.name}
+						deviceOSVersion={session?.device?.os?.version}
+						loginAt={session.loginAt}
+						onReload={reload}
+					/>
+				)}
+				current={current}
+				itemsPerPage={itemsPerPage}
+				setCurrent={setCurrent}
+				setItemsPerPage={setItemsPerPage}
+				paginationProps={paginationProps}
+			/>
 		</>
 	);
 };
 
-export default DevicesTable;
+export default DeviceManagementAdminTable;

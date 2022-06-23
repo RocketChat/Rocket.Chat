@@ -19,7 +19,7 @@ type DeviceRowProps = {
 	onReload: () => void;
 };
 
-const DevicesRow = ({
+const DeviceManagementAdminRow = ({
 	_id,
 	username,
 	ip,
@@ -85,4 +85,4 @@ const DevicesRow = ({
 	);
 };
 
-export default DevicesRow;
+export default DeviceManagementAdminRow;

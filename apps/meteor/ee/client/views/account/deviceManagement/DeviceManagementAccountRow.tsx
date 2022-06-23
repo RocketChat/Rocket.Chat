@@ -17,7 +17,7 @@ type DevicesRowProps = {
 	onReload: () => void;
 };
 
-const DeviceManagementRow = ({
+const DeviceManagementAccountRow = ({
 	_id,
 	deviceName,
 	deviceType = 'browser',
@@ -33,7 +33,7 @@ const DeviceManagementRow = ({
 	const handleDeviceLogout = useDeviceLogout(_id, '/v1/sessions/logout.me');
 
 	return (
-		<TableRow key={_id}>
+		<TableRow key={_id} action>
 			<TableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />
@@ -50,4 +50,4 @@ const DeviceManagementRow = ({
 	);
 };
 
-export default DeviceManagementRow;
+export default DeviceManagementAccountRow;
