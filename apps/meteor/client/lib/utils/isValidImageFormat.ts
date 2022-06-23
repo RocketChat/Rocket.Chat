@@ -1,4 +1,4 @@
-export const isValidImage = (dataURL: string): Promise<boolean> => {
+export const isValidImageFormat = (dataURL: string): Promise<boolean> => {
 	const img = new Image();
 	return new Promise((resolve) => {
 		img.onload = (): void => resolve(true);

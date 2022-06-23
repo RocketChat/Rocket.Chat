@@ -7,7 +7,7 @@ import React, { useEffect, ReactElement } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
 import { useFileInput } from '../../hooks/useFileInput';
-import { isValidImage } from '../../lib/utils/isValidImage';
+import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 import RoomAvatar from './RoomAvatar';
 
 type RoomAvatarEditorProps = {
@@ -23,7 +23,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar }: RoomAvatarEditor
 	const handleChangeAvatar = useMutableCallback(async (file) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
-		const dataurl = await new Promise<string>((resolve) => {
+		const dataURL = await new Promise<string>((resolve) => {
 			reader.onloadend = (): void => {
 				if (typeof reader.result === 'string') {
 					return resolve(reader.result);
@@ -31,10 +31,10 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar }: RoomAvatarEditor
 			};
 		});
 
-		const isValid = await isValidImage(dataurl);
+		const isValidFormat = await isValidImageFormat(dataURL);
 
-		if (isValid) {
-			onChangeAvatar(dataurl);
+		if (isValidFormat) {
+			onChangeAvatar(dataURL);
 			return;
 		}
 

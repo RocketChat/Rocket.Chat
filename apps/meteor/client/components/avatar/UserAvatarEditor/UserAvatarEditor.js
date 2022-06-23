@@ -3,7 +3,7 @@ import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.cha
 import React, { useState, useCallback } from 'react';
 
 import { useFileInput } from '../../../hooks/useFileInput';
-import { isValidImage } from '../../../lib/utils/isValidImage';
+import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 
@@ -25,10 +25,10 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
 			setAvatarObj(avatarObj);
-			toDataURL(file, async (dataurl) => {
-				const isValid = await isValidImage(dataurl);
-				if (isValid) {
-					setNewAvatarSource(dataurl);
+			toDataURL(file, async (dataURL) => {
+				const isValidFormat = await isValidImageFormat(dataURL);
+				if (isValidFormat) {
+					setNewAvatarSource(dataURL);
 					return;
 				}
 
