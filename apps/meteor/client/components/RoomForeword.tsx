@@ -63,7 +63,7 @@ const RoomForeword = ({ _id, rid }: RoomForewordProps): ReactElement | null => {
 				{usernames.map((username, index) => (
 					<Margins inline='x4' key={index}>
 						<Box is='a' href={`/direct/${username}`}>
-							<Tag variant='secondary' className='mention-link' data-username={username} medium>
+							<Tag variant='primary' className='mention-link' data-username={username} medium>
 								{username}
 							</Tag>
 						</Box>

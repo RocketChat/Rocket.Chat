@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
 
 import { settings } from '../../../../settings/server';
-import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
+import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
 import { FileUpload } from '../../../../file-upload';
 import { API } from '../../../../api/server';

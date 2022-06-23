@@ -1,4 +1,5 @@
-import { Permissions } from '../../../app/models/server/raw';
+import { Permissions } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 
 const roleId = 'admin';

@@ -41,13 +41,12 @@ import {
 	ICallHangup,
 	IDialingEvent,
 } from '@rocket.chat/core-typings';
+import { Users, PbxEvents } from '@rocket.chat/models';
 
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { CallbackContext } from './CallbackContext';
 // import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
-import { UsersRaw } from '../../../../../../app/models/server/raw/Users';
-import { PbxEventsRaw } from '../../../../../../app/models/server/raw/PbxEvents';
 import { api } from '../../../../../sdk/api';
 import { ACDQueue } from './ACDQueue';
 import { Commands } from '../Commands';
@@ -55,16 +54,10 @@ import { Commands } from '../Commands';
 export class ContinuousMonitor extends Command {
 	private logger: Logger;
 
-	private users: UsersRaw;
-
-	private pbxEvents: PbxEventsRaw;
-
 	constructor(command: string, parametersNeeded: boolean, db: Db) {
 		super(command, parametersNeeded, db);
 		this._type = CommandType.AMI;
 		this.logger = new Logger('ContinuousMonitor');
-		this.users = new UsersRaw(db.collection('users'));
-		this.pbxEvents = new PbxEventsRaw(db.collection('pbx_events'));
 	}
 
 	private async getMembersFromQueueDetails(queueDetails: IQueueDetails): Promise<string[]> {
@@ -78,7 +71,7 @@ export class ContinuousMonitor extends Command {
 		});
 
 		this.logger.debug(`Finding members of queue ${queueDetails.name} between users`);
-		return (await this.users.findByExtensions(extensionList).toArray()).map((u) => u._id);
+		return (await Users.findByExtensions(extensionList).toArray()).map((u) => u._id);
 	}
 
 	// Todo : Move this out of connector. This class is a busy class.
@@ -95,7 +88,7 @@ export class ContinuousMonitor extends Command {
 		const { queue } = event;
 		const queueDetails = await this.getQueueDetails(queue);
 		const { calls } = queueDetails;
-		const user = await this.users.findOneByExtension(extension, {
+		const user = await Users.findOneByExtension(extension, {
 			projection: {
 				_id: 1,
 				username: 1,
@@ -114,7 +107,7 @@ export class ContinuousMonitor extends Command {
 	async processAgentCalled(event: IAgentCalledEvent): Promise<void> {
 		this.logger.debug(`Got new event queue.agentcalled at ${event.queue}`);
 		const extension = event.interface.toLowerCase().replace('pjsip/', '');
-		const user = await this.users.findOneByExtension(extension, {
+		const user = await Users.findOneByExtension(extension, {
 			projection: {
 				_id: 1,
 				username: 1,
@@ -145,7 +138,7 @@ export class ContinuousMonitor extends Command {
 				// This event represents when an agent drops a call because of disconnection
 				// May happen for any reason outside of our control, like closing the browswer
 				// Or network/power issues
-				await this.pbxEvents.insertOne({
+				await PbxEvents.insertOne({
 					event: eventName,
 					uniqueId: `${eventName}-${event.contactstatus}-${now.getTime()}`,
 					ts: now,

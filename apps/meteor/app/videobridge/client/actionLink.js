@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { actionLinks } from '../../action-links/client';
-import { Rooms } from '../../models';
+import { Rooms } from '../../models/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { APIClient } from '../../utils/client';
 
