@@ -34,7 +34,7 @@ function MessageBlock({ mid: _mid, rid, blocks, appId }) {
 				};
 
 				return setModal(
-					<JoinVideoConfModal confTitle={value} callId={blockId} onClose={handleCloseModal} room={room} onConfirm={handleJoin} />,
+					<JoinVideoConfModal callId={blockId} confTitle={value} onClose={handleCloseModal} room={room} onConfirm={handleJoin} />,
 				);
 			}
 

@@ -40,6 +40,7 @@ export interface IVideoConfService {
 	addUser(callId: VideoConference['_id'], userId: IUser['_id'], ts?: Date): Promise<void>;
 	listProviders(): Promise<{ key: string; label: string }[]>;
 	listCapabilities(): Promise<{ providerName: string; capabilities: VideoConferenceCapabilities }>;
+	listProviderCapabilities(providerName: string): Promise<VideoConferenceCapabilities>;
 	declineLivechatCall(callId: VideoConference['_id']): Promise<boolean>;
 	diagnoseProvider(uid: string, rid: string, providerName?: string): Promise<string | undefined>;
 }
