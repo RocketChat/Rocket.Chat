@@ -31,7 +31,7 @@ test.describe('[Channel]', () => {
 
 		if (!publicChannelCreated) {
 			await sideNav.createChannel(publicChannelName, false);
-			await setPublicChannelCreated(true);
+			setPublicChannelCreated(true);
 		}
 		await sideNav.openChannel('general');
 	});

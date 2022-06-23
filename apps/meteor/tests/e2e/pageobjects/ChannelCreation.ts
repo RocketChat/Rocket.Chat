@@ -48,17 +48,17 @@ export class ChannelCreation extends BasePage {
 		return this.page.locator('.message:last-child .body');
 	}
 
-	public async createChannel(name: string, isPrivate: boolean): Promise<void> {
+	async doCreateChannel(name: string, isPrivate = false): Promise<void> {
 		await this.buttonCreate.click();
 		await this.buttonCreateChannel.click();
 		await this.inputChannelName.type(name);
 		await this.inputChannelDescription.type('any_description');
+
 		if (!isPrivate) {
 			await this.privateChannel.click();
 		}
-		await this.buttonConfirmCreation.click();
 
-		await expect(this.channelName).toHaveText(name);
+		await this.buttonConfirmCreation.click();
 	}
 
 	public async sendMessage(targetUser: string, message: string): Promise<void> {
