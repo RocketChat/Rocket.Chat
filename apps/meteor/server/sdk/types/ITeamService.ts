@@ -23,8 +23,8 @@ export interface ITeamMemberParams {
 export interface IUserInfo {
 	_id: string;
 	username?: string;
-	name: string;
-	status: string;
+	name?: string;
+	status?: string;
 	settings?: Record<string, any>;
 }
 

@@ -1,9 +1,9 @@
 import { Random } from 'meteor/random';
 import type { ILivechatAgent, IVoipRoom } from '@rocket.chat/core-typings';
 import { isVoipRoomProps, isVoipRoomsProps, isVoipRoomCloseProps } from '@rocket.chat/rest-typings/dist/v1/voip';
+import { VoipRoom, LivechatVisitors, Users } from '@rocket.chat/models';
 
 import { API } from '../../api';
-import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { hasPermission } from '../../../../authorization/server';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';
@@ -106,6 +106,9 @@ API.v1.addRoute(
 				const room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
+				}
+				if (!agentId) {
+					return API.v1.failure('agent-not-found');
 				}
 
 				const agentObj: ILivechatAgent = await Users.findOneAgentById(agentId, {

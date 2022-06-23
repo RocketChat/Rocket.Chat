@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import { Uploads } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
-import { Uploads } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../apps/server';

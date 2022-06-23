@@ -1,7 +1,7 @@
 import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
+import { LivechatInquiry } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatInquiry } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { RoutingManager } from '../lib/RoutingManager';
 

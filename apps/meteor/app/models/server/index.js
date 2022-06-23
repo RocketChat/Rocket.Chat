@@ -14,6 +14,7 @@ import LivechatVisitors from './models/LivechatVisitors';
 import LivechatInquiry from './models/LivechatInquiry';
 import OmnichannelQueue from './models/OmnichannelQueue';
 import ImportData from './models/ImportData';
+import './lib/watchModels';
 
 export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
@@ -22,7 +23,6 @@ export { FederationRoomEvents } from './models/FederationRoomEvents';
 
 export { MatrixBridgedRoom } from './models/MatrixBridgedRoom';
 export { MatrixBridgedUser } from './models/MatrixBridgedUser';
-
 export {
 	Base,
 	BaseDb,
