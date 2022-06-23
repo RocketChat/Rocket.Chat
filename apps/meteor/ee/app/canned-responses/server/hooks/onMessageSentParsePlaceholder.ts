@@ -1,11 +1,11 @@
 import get from 'lodash.get';
-import type { IMessage } from '@rocket.chat/core-typings';
-import { IOmnichannelRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { Users, Rooms } from '../../../../../app/models/server';
-import { LivechatVisitors } from '../../../../../app/models/server/raw';
 
 const placeholderFields = {
 	'contact.name': {

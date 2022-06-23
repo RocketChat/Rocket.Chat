@@ -1,4 +1,5 @@
-import { LivechatVisitors } from '../../../models/server/raw';
+import { LivechatVisitors } from '@rocket.chat/models';
+
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 
 // TODO: check if functions from this converter can be async

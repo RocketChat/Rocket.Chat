@@ -1,8 +1,9 @@
+import { LivechatVisitors } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms, LivechatInquiry, Users } from '../../../../../app/models/server';
-import { LivechatVisitors } from '../../../../../app/models/server/raw';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;

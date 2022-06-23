@@ -4,10 +4,10 @@ import { Random } from 'meteor/random';
 import { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ILivechatVisitor, OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import { LivechatRooms, Messages } from '../../../app/models/server';
-import { LivechatVisitors } from '../../../app/models/server/raw';
 import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';

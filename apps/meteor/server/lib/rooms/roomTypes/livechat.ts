@@ -1,7 +1,7 @@
 import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { LivechatRooms } from '../../../../app/models/server';
-import { LivechatVisitors } from '../../../../app/models/server/raw';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';

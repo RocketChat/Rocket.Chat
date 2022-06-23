@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../../file-upload/server';
 import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
-import { LivechatVisitors } from '../../../../models/server/raw';
 import { API } from '../../../../api/server';
 import { fetch } from '../../../../../server/lib/http/fetch';
 import { SMS } from '../../../../sms';
