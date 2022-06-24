@@ -443,18 +443,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	incMsgCountById(_id, inc = 1) {
-		const query = { _id };
-
-		const update = {
-			$inc: {
-				msgs: inc,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	findOneByNameOrFname(name, options = {}) {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
