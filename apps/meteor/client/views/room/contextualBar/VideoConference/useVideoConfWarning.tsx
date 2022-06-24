@@ -1,12 +1,12 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useRoute, useSetting, useRole } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRoute, useSetting, useRole, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { availabilityErrors } from '../../../../../lib/videoConference/constants';
 import GenericModal from '../../../../components/GenericModal';
 
-// TODO: create translation keys
 export const useVideoConfWarning = (): ((error: string) => void) => {
+	const t = useTranslation();
 	const setModal = useSetModal();
 	const videoConfSettingsRoute = useRoute('admin-settings');
 	const marketplaceRoute = useRoute('admin-marketplace');
@@ -33,41 +33,41 @@ export const useVideoConfWarning = (): ((error: string) => void) => {
 
 	return (error): void => {
 		if (!isAdmin) {
-			setModal(
-				<GenericModal icon={null} title='Video conference not available' onClose={handleClose} onConfirm={handleClose}>
-					Video conference apps can be installed in the Rocket.Chat marketplace by a workspace admin.
+			return setModal(
+				<GenericModal icon={null} title={t('Video_conference_not_available')} onClose={handleClose} onConfirm={handleClose}>
+					{t('Video_conference_apps_can_be_installed')}
 				</GenericModal>,
 			);
 		}
 
 		if (error === availabilityErrors.NOT_CONFIGURED || error === availabilityErrors.NOT_ACTIVE) {
-			setModal(
+			return setModal(
 				<GenericModal
 					icon={null}
 					variant='warning'
-					title='Configure video conference'
+					title={t('Configure_video_conference')}
 					onCancel={handleClose}
 					onClose={handleClose}
 					onConfirm={(): void => handleRedirectToConfiguration(error)}
-					confirmText='Open settings'
+					confirmText={t('Open_settings')}
 				>
-					Configure video conference in order to make it available on this workspace.
+					{t('Configure_video_conference_to_use')}
 				</GenericModal>,
 			);
 		}
 
 		if (error === availabilityErrors.NO_APP || !!workspaceRegistered) {
-			setModal(
+			return setModal(
 				<GenericModal
 					icon={null}
 					variant='warning'
-					title='Video conference app required'
+					title={t('Video_conference_app_required')}
 					onCancel={handleClose}
 					onClose={handleClose}
 					onConfirm={handleOpenMarketplace}
-					confirmText='Explore marketplace'
+					confirmText={t('Explore_marketplace')}
 				>
-					Video conference apps are available on the Rocket.Chat marketplace.
+					{t('Video_conference_apps_available')}
 				</GenericModal>,
 			);
 		}
