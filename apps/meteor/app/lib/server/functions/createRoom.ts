@@ -116,8 +116,7 @@ export const createRoom = function <T extends RoomType>(
 		callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
 	const room = Rooms.createWithFullRoomData(roomProps);
-
-	const shouldBeHandledByFederation = room.federated === true;
+	const shouldBeHandledByFederation = room.federated === true || ownerUsername.includes(':');
 	if (shouldBeHandledByFederation) {
 		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
 		extra.open = true;
