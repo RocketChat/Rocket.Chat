@@ -118,23 +118,12 @@ export class SideNav extends BasePage {
 		return !!(await this.sideNavBar.getAttribute('style'));
 	}
 
-	public async openChannel(channelName: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).scrollIntoViewIfNeeded();
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).click();
-		await expect(this.page.locator('.rcx-room-header')).toContainText(channelName);
-	}
+	async doOpenChannel(name: string): Promise<void> {
+		await expect(this.page.locator('[data-qa="sidebar-search"]')).toBeVisible();
 
-	public async searchChannel(channelName: string): Promise<void> {
-		await expect(this.spotlightSearch).toBeVisible();
-
-		await this.spotlightSearch.click();
-
-		await expect(this.spotlightSearch).toBeFocused();
-		await this.spotlightSearch.type(channelName);
-
-		await expect(this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName }).first()).toContainText(channelName);
-
-		await this.spotlightSearchPopUp.click();
+		await this.page.locator('[data-qa="sidebar-search"]').click();
+		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
+		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
 	}
 
 	public getChannelFromList(channelName: any): Locator {

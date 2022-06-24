@@ -69,7 +69,7 @@ test.describe('[Resolution]', function () {
 			});
 
 			test('expect close the sidenav when open general channel', async () => {
-				await sideNav.openChannel('general');
+				await sideNav.doOpenChannel('general');
 				await expect(await sideNav.isSideBarOpen()).toBeFalsy;
 			});
 

@@ -33,30 +33,20 @@ test.describe('[Channel]', () => {
 			await sideNav.createChannel(publicChannelName, false);
 			setPublicChannelCreated(true);
 		}
-		await sideNav.openChannel('general');
+		await sideNav.doOpenChannel('general');
 	});
 	test.describe('[Search]', () => {
 		test.describe('[SpotlightSearch]', async () => {
 			test.describe('general:', () => {
-				test('expect search general', async () => {
-					await sideNav.spotlightSearchIcon.click();
-					await sideNav.searchChannel('general');
-				});
-
 				test('expect go to general', async () => {
-					await sideNav.openChannel('general');
+					await sideNav.doOpenChannel('general');
 					await expect(mainContent.channelTitle('general')).toContainText('general');
 				});
 			});
 
 			test.describe('user created channel:', () => {
-				test('expect search the user created channel', async () => {
-					await sideNav.spotlightSearchIcon.click();
-					await sideNav.searchChannel(publicChannelName);
-				});
-
 				test('expect go to the user created channel', async () => {
-					await sideNav.openChannel(publicChannelName);
+					await sideNav.doOpenChannel(publicChannelName);
 					await expect(mainContent.channelTitle(publicChannelName)).toContainText(publicChannelName);
 				});
 			});
@@ -74,7 +64,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect go to the general channel', async () => {
-					await sideNav.openChannel('general');
+					await sideNav.doOpenChannel('general');
 				});
 			});
 
@@ -85,7 +75,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect go to the user created channel', async () => {
-					await sideNav.openChannel(publicChannelName);
+					await sideNav.doOpenChannel(publicChannelName);
 				});
 			});
 		});
@@ -93,7 +83,7 @@ test.describe('[Channel]', () => {
 
 	test.describe('[Usage]', () => {
 		test.beforeAll(async () => {
-			await sideNav.openChannel(publicChannelName);
+			await sideNav.doOpenChannel(publicChannelName);
 		});
 
 		test.describe('Adding a user to the room:', async () => {

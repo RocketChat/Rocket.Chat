@@ -86,7 +86,7 @@ test.describe('[Administration]', () => {
 					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Direct]).click();
 				});
 
-				test('expect show the general channel with public ', async () => {
+				test.only('expect show the general channel with public ', async () => {
 					await admin.adminCheckBox(checkBoxesSelectors[Checkbox.Public]).click();
 					await admin.roomsGeneralChannel.waitFor({ state: 'visible' });
 					await expect(admin.roomsGeneralChannel).toBeVisible();
