@@ -91,8 +91,9 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 
 	public async onUsersAddedToARoom(roomOnUsersAddedToARoomInput: FederationOnUsersAddedToARoomDto): Promise<void> {
 		const { internalInviterId, internalRoomId, invitees, externalInviterId } = roomOnUsersAddedToARoomInput;
+		console.log({ roomOnUsersAddedToARoomInput })
 
-		if (!externalInviterId) {
+		if (externalInviterId) {
 			return;
 		}
 
