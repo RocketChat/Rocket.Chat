@@ -575,7 +575,6 @@ API.v1.addRoute(
 			);
 
 			const teamInfo = await getTeamByIdOrName(this.queryParams);
-
 			if (!teamInfo) {
 				return API.v1.failure('Team not found');
 			}
