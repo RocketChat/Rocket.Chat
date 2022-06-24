@@ -1,27 +1,26 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps } from 'react';
+import React, { ComponentProps, ReactElement } from 'react';
 
-type Props = {
+type FeatureModalBulletsProps = {
 	title: string;
 	subtitle: string;
 	icon: ComponentProps<typeof Icon>['name'];
 };
 
-const FeatureModalBullets = ({ title, subtitle, icon }: Props) => {
-	const t = useTranslation();
-
-	return (
-		<Box display='flex'>
-			<Box w='x40' h='x40' bg='primary-300-40' borderRadius='x40' mbe='x16' marginInlineEnd='x16' color='primary'>
-				<Icon height='100%' display='flex' justifyContent='center' alignItems='center' name={icon} size='x25' />
+const FeatureModalBullets = ({ title, subtitle, icon }: FeatureModalBulletsProps): ReactElement => (
+	<Box display='flex' mbe='x18'>
+		<Box size='x40' bg='primary-300-40' borderRadius='x40' mi='x16' display='flex' justifyContent='center' alignItems='center'>
+			<Icon name={icon} size='x25' color='primary' />
+		</Box>
+		<Box>
+			<Box mbe='x6'>
+				<strong>{title}</strong>
 			</Box>
-			<Box mbe='x18'>
-				<Box mbe='x6'><strong>{t(title)}</strong></Box>
-				<Box display='flex' justifyContent='stretch'>{t(subtitle)}</Box>
+			<Box display='flex' justifyContent='stretch'>
+				{subtitle}
 			</Box>
 		</Box>
-	)
-};
+	</Box>
+);
 
 export default FeatureModalBullets;
