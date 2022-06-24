@@ -10,7 +10,7 @@ import { isIRoomFederated } from '@rocket.chat/core-typings';
 import { setupAutogrow } from './messageBoxAutogrow';
 import { formattingButtons, applyFormatting } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji';
-import { Users } from '../../../models/client';
+import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings';
 import { fileUpload, KonchatNotification } from '../../../ui';
 import { messageBox, popover } from '../../../ui-utils';
@@ -27,7 +27,6 @@ import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { ChatRoom } from '../../../models/client';
 
 Template.messageBox.onCreated(function () {
 	this.state = new ReactiveDict();

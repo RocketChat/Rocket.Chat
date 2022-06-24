@@ -1,9 +1,9 @@
 import { IRoom } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { FederatedRoom } from '../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 import { RocketChatRoomAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Room';
 import { MatrixBridgedRoom } from '../../../../../../../app/models/server';
-import { Rooms, Subscriptions } from '../../../../../../../app/models/server/raw';
 import { FederatedRoomEE } from '../../../domain/FederatedRoom';
 
 export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
@@ -13,8 +13,9 @@ export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 			return;
 		}
 		const room = await Rooms.findOneById(internalBridgedRoomId);
-
-		return this.createFederatedRoomEEInstance(externalRoomId, room);
+		if (room) {
+			return this.createFederatedRoomEEInstance(externalRoomId, room);
+		}
 	}
 
 	public async getFederatedRoomByInternalId(internalRoomId: string): Promise<FederatedRoomEE | undefined> {
@@ -24,7 +25,9 @@ export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 		}
 		const room = await Rooms.findOneById(internalRoomId);
 
-		return this.createFederatedRoomEEInstance(externalRoomId, room);
+		if (room) {
+			return this.createFederatedRoomEEInstance(externalRoomId, room);
+		}
 	}
 
 	public async updateRoomType(federatedRoom: FederatedRoomEE): Promise<void> {
