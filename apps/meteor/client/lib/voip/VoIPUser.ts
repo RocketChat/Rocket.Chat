@@ -750,7 +750,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		return this.queueInfo;
 	}
 
-	getRegisterState(): string | undefined {
+	getRegistrarState(): string | undefined {
 		return this.registerer?.state.toString().toLocaleLowerCase();
 	}
 
