@@ -25,7 +25,7 @@ settingsRegistry.addGroup('WebRTC', function () {
 		public: true,
 		enableQuery: { _id: 'WebRTC_Enabled', value: true },
 	});
-	this.add('WebRTC_Calls_Count', false, {
+	this.add('WebRTC_Calls_Count', 0, {
 		type: 'int',
 		hidden: true,
 	});
