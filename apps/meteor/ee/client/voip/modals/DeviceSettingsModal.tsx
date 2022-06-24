@@ -53,7 +53,7 @@ const DeviceSettingsModal = (): ReactElement => {
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
-				<Box color='neutral-600'>{t('Audio_Settings')}</Box>
+				<Box color='neutral-600'>{t('Audio_settings')}</Box>
 				<Field>
 					<Field.Label>{t('Microphone')}</Field.Label>
 					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>

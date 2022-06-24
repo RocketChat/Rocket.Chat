@@ -122,7 +122,7 @@ export const VoipFooter = ({
 									<Icon name='pause-unfilled' color='info' size='x24' />
 								)}
 							</Button>
-							{options && <Menu options={options} />}
+							{options && <Menu secondary options={options} />}
 						</ButtonGroup>
 					)}
 				</Box>

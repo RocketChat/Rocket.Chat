@@ -1,4 +1,4 @@
-import { DeviceContext, Device } from '@rocket.chat/ui-contexts';
+import { DeviceContext, Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
 import React, { FC, useEffect, useState } from 'react';
 
 export const DeviceProvider: FC = ({ children }) => {
@@ -15,7 +15,13 @@ export const DeviceProvider: FC = ({ children }) => {
 		type: 'audio',
 	});
 
-	const setAudioOutputDevice = ({ outputDevice, HTMLAudioElement }: { outputDevice: Device; HTMLAudioElement: HTMLAudioElement }): void => {
+	const setAudioOutputDevice = ({
+		outputDevice,
+		HTMLAudioElement,
+	}: {
+		outputDevice: Device;
+		HTMLAudioElement: IExperimentalHTMLAudioElement;
+	}): void => {
 		setSelectedAudioOutputDevice(outputDevice);
 		HTMLAudioElement.setSinkId(outputDevice.id);
 	};
