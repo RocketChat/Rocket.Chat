@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Field, Modal } from '@rocket.chat/fuselage';
+import { Box, Field, Modal, IconButton } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 import MaskedInput from 'react-text-mask';
 
@@ -18,7 +18,7 @@ const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElemen
 		handleCallButtonClick,
 	} = useDialPad();
 
-	const mask = (rawValue = ''): (string | RegExp)[] => Array<string | RegExp>('+').concat(rawValue.split('').map(() => /\d/));
+	const mask = (rawValue = ''): (string | RegExp)[] => ['+', /[1-9]/].concat(rawValue.split('').map(() => /\d/));
 	return (
 		<Modal w='400px'>
 			<Modal.Header>
@@ -50,9 +50,15 @@ const DialPadModal = ({ handleClose }: { handleClose: () => void }): ReactElemen
 			</Modal.Content>
 			<Modal.Footer>
 				<Box display='flex' justifyContent='center'>
-					<Button disabled={isButtonDisabled} borderRadius='full' primary size='64px' onClick={handleCallButtonClick}>
-						<Icon color='white' name='phone' size='32px' />
-					</Button>
+					<IconButton
+						icon='phone'
+						disabled={isButtonDisabled}
+						borderRadius='full'
+						secondary
+						info
+						size='64px'
+						onClick={handleCallButtonClick}
+					/>
 				</Box>
 			</Modal.Footer>
 		</Modal>

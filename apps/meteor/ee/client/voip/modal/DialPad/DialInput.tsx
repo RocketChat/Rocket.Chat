@@ -1,4 +1,4 @@
-import { Button, Icon, TextInput } from '@rocket.chat/fuselage';
+import { IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ChangeEvent, FocusEvent, forwardRef, ReactElement, Ref } from 'react';
@@ -25,11 +25,7 @@ export const DialInput = forwardRef(function DialInput(
 			ref={_ref}
 			textAlign='center'
 			placeholder={t('Phone_number')}
-			addon={
-				<Button nude small square size='20px' disabled={isButtonDisabled} onClick={handleBackspaceClick}>
-					<Icon name='backspace' size='20px' />
-				</Button>
-			}
+			addon={<IconButton icon='backspace' small square size='20px' disabled={isButtonDisabled} onClick={handleBackspaceClick} />}
 			error={inputError}
 			onChange={handleOnChange}
 			name={inputName}

@@ -19,7 +19,6 @@ const PadButton = ({
 		flexShrink={0}
 		flexDirection='column'
 		alignItems='center'
-		ghost
 		onClick={(): void => onClickPadButton(children)}
 	>
 		<Box fontSize='h2'>{children}</Box>

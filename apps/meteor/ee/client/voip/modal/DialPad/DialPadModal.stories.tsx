@@ -8,5 +8,5 @@ export default {
 	component: DialPadModal,
 } as ComponentMeta<typeof DialPadModal>;
 
-export const Default: ComponentStory<typeof DialPadModal> = () => <DialPadModal handleClose={(): void => null} />;
+export const Default: ComponentStory<typeof DialPadModal> = () => <DialPadModal handleClose={(): void => undefined} />;
 Default.storyName = 'DialPadModal';
