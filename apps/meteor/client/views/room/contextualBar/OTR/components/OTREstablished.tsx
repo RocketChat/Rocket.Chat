@@ -13,7 +13,7 @@ const OTREstablished = ({ onClickRefresh, onClickEnd }: OTREstablishedProps): Re
 	return (
 		<ButtonGroup stretch>
 			<Button onClick={onClickRefresh}>{t('Refresh_keys')}</Button>
-			<Button danger onClick={onClickEnd}>
+			<Button secondary danger onClick={onClickEnd}>
 				{t('End_OTR')}
 			</Button>
 		</ButtonGroup>

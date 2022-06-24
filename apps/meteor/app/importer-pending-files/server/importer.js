@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { Base, ProgressStep, Selection } from '../../importer/server';
-import { Messages } from '../../models';
+import { Messages } from '../../models/server';
 import { FileUpload } from '../../file-upload';
 
 export class PendingFileImporter extends Base {

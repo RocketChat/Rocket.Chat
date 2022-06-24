@@ -1,5 +1,6 @@
+import { Settings, Subscriptions } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { Settings, Subscriptions } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 190,

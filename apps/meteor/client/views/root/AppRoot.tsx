@@ -10,6 +10,7 @@ const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
 const BannerRegion = lazy(() => import('../banners/BannerRegion'));
 const AppLayout = lazy(() => import('./AppLayout'));
 const PortalsWrapper = lazy(() => import('./PortalsWrapper'));
+const ModalRegion = lazy(() => import('../modal/ModalRegion'));
 
 const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
@@ -20,6 +21,7 @@ const AppRoot: FC = () => (
 					<BannerRegion />
 					<AppLayout />
 					<PortalsWrapper />
+					<ModalRegion />
 				</OmnichannelRoomIconProvider>
 			</QueryClientProvider>
 		</MeteorProvider>

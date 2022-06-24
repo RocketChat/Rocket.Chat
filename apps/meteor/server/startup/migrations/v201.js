@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Settings } from '@rocket.chat/models';
 
-import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 

@@ -1,7 +1,7 @@
 import { WebApp } from 'meteor/webapp';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { UserDataFiles } from '@rocket.chat/models';
 
-import { UserDataFiles } from '../../models/server/raw';
 import { DataExport } from './DataExport';
 import { settings } from '../../settings/server';
 

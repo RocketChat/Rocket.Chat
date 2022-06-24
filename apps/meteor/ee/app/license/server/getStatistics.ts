@@ -1,8 +1,9 @@
 import { log } from 'console';
 
+import { CannedResponse, LivechatPriority, LivechatTag, LivechatUnit } from '@rocket.chat/models';
+
 import { getModules, getTags } from './license';
 import { Analytics } from '../../../../server/sdk';
-import { CannedResponseRaw, LivechatPriorityRaw, LivechatTagRaw, LivechatUnitRaw } from '../../models/server';
 
 type ENTERPRISE_STATISTICS = {
 	modules: string[];
@@ -32,7 +33,7 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 	);
 	// Number of livechat tags
 	statsPms.push(
-		LivechatTagRaw.col.count().then((count) => {
+		LivechatTag.col.count().then((count) => {
 			statistics.livechatTags = count;
 			return true;
 		}),
@@ -40,7 +41,7 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 
 	// Number of canned responses
 	statsPms.push(
-		CannedResponseRaw.col.count().then((count) => {
+		CannedResponse.col.count().then((count) => {
 			statistics.cannedResponses = count;
 			return true;
 		}),
@@ -48,7 +49,7 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 
 	// Number of Priorities
 	statsPms.push(
-		LivechatPriorityRaw.col.count().then((count) => {
+		LivechatPriority.col.count().then((count) => {
 			statistics.priorities = count;
 			return true;
 		}),
@@ -56,7 +57,7 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 
 	// Number of business units
 	statsPms.push(
-		LivechatUnitRaw.col.count().then((count) => {
+		LivechatUnit.col.count().then((count) => {
 			statistics.businessUnits = count;
 			return true;
 		}),
