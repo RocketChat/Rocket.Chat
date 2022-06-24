@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { settings } from '../../../../settings';
+import { settings } from '../../../../settings/server';
 
 /**
  * This function returns a string ready to be shown in the notification

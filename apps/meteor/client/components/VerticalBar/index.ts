@@ -1,7 +1,7 @@
 import VerticalBar from './VerticalBar';
 import VerticalBarAction from './VerticalBarAction';
-import VerticalBarActionBack from './VerticalBarActionBack';
 import VerticalBarActions from './VerticalBarActions';
+import VerticalBarBack from './VerticalBarBack';
 import VerticalBarButton from './VerticalBarButton';
 import VerticalBarClose from './VerticalBarClose';
 import VerticalBarContent from './VerticalBarContent';
@@ -26,5 +26,5 @@ export default Object.assign(VerticalBar, {
 	ScrollableContent: VerticalBarScrollableContent,
 	Skeleton: VerticalBarSkeleton,
 	Button: VerticalBarButton,
-	Back: VerticalBarActionBack,
+	Back: VerticalBarBack,
 });

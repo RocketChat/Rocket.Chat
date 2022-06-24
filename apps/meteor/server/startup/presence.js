@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { UserPresence } from 'meteor/konecty:user-presence';
+import { InstanceStatus, UsersSessions } from '@rocket.chat/models';
 
-import { InstanceStatus, UsersSessions } from '../../app/models/server/raw';
 import { isPresenceMonitorEnabled } from '../lib/isPresenceMonitorEnabled';
 
 Meteor.startup(function () {

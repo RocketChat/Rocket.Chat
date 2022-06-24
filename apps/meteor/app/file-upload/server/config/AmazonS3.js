@@ -3,7 +3,7 @@ import https from 'https';
 
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
 import { SystemLogger } from '../../../../server/lib/logger/system';

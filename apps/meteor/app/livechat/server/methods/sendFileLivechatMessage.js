@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 
-import { LivechatRooms, LivechatVisitors } from '../../../models';
+import { LivechatRooms, LivechatVisitors } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 
 Meteor.methods({

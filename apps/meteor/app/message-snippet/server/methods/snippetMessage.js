@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions, Messages, Users, Rooms } from '../../../models';
-import { settings } from '../../../settings';
+import { Subscriptions, Messages, Users, Rooms } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { isTheLastMessage } from '../../../lib';
 

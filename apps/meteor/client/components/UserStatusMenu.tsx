@@ -77,7 +77,17 @@ const UserStatusMenu = ({
 
 	return (
 		<>
-			<Button ref={ref} small square ghost onClick={onClick} onBlur={hide} onKeyUp={handleKeyUp} onKeyDown={handleKeyDown} margin={margin}>
+			<Button
+				ref={ref}
+				small
+				square
+				secondary
+				onClick={onClick}
+				onBlur={hide}
+				onKeyUp={handleKeyUp}
+				onKeyDown={handleKeyDown}
+				margin={margin}
+			>
 				<UserStatus status={status} />
 			</Button>
 			<PositionAnimated width='auto' visible={visible} anchor={ref} placement={placement}>

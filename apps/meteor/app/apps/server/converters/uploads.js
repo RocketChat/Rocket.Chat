@@ -1,5 +1,6 @@
+import { Uploads } from '@rocket.chat/models';
+
 import { transformMappedData } from '../../lib/misc/transformMappedData';
-import { Uploads } from '../../../models/server/raw';
 
 export class AppUploadsConverter {
 	constructor(orch) {

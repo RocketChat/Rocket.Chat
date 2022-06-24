@@ -86,6 +86,7 @@ export interface ServerMethods {
 	'personalAccessTokens:regenerateToken': (...args: any[]) => any;
 	'personalAccessTokens:removeToken': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
+	'readThreads': (...args: any[]) => any;
 	'refreshClients': (...args: any[]) => any;
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
@@ -127,6 +128,26 @@ export interface ServerMethods {
 	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
 	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
 	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
+	'spotlight': (
+		...args: (
+			| string
+			| string[]
+			| {
+					users: boolean;
+					rooms: boolean;
+			  }
+		)[]
+	) => {
+		rooms: { _id: string; name: string; t: string; uids?: string[] }[];
+		users: {
+			_id: string;
+			status: 'offline' | 'online' | 'busy' | 'away';
+			name: string;
+			username: string;
+			outside: boolean;
+			avatarETag?: string;
+		}[];
+	};
 }
 
 export type ServerMethodName = keyof ServerMethods;
