@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../../lib/callbacks';
-import { ChatRoom } from '../../models';
+import { ChatRoom } from '../../models/client';
 
 function trackEvent(category, action, label) {
 	if (window._paq) {

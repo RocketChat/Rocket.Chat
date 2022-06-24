@@ -1,4 +1,4 @@
-import { Box, ActionButton } from '@rocket.chat/fuselage';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useContext, FC, ReactNode } from 'react';
 
@@ -35,7 +35,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 						<BurgerMenu />
 					</TemplateHeader.ToolBox>
 				)}
-				{onClickBack && <ActionButton ghost small mie='x8' icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
+				{onClickBack && <IconButton small mie='x8' icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
 				<Box is='h2' fontScale='h2' flexGrow={1}>
 					{title}
 				</Box>

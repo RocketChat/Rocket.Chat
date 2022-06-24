@@ -1,8 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { ILivechatDepartmentRecord, IUser } from '@rocket.chat/core-typings';
 import { FilterQuery } from 'mongodb';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export async function findUsersToAutocomplete({

@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-
-import { Rooms, Invites } from '../../../models/server/raw';
+import { Invites, Rooms } from '@rocket.chat/models';
 
 export const validateInviteToken = async (token) => {
 	if (!token || typeof token !== 'string') {

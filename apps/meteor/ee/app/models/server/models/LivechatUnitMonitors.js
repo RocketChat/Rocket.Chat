@@ -1,4 +1,4 @@
-import { Base } from '../../../../../app/models';
+import { Base } from '../../../../../app/models/server';
 /**
  * Livechat Unit Monitors model
  */

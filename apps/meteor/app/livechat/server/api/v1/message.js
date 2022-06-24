@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
-import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
+import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models/server';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib';
