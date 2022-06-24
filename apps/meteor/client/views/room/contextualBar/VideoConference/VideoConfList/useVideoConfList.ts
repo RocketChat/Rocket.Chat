@@ -29,10 +29,10 @@ export const useVideoConfList = (options: {
 			});
 
 			return {
-				items: data.map((videoConf: any) => {
-					videoConf._updatedAt = new Date(videoConf._updatedAt);
-					return videoConf;
-				}),
+				items: data.map((videoConf: any) => ({
+					...videoConf,
+					_updatedAt: new Date(videoConf._updatedAt),
+				})),
 				itemCount: total,
 			};
 		},

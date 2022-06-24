@@ -100,7 +100,9 @@ addAction('video-conf', ({ room }) => {
 						id: 'video-conference',
 						title: 'Video_Conference',
 						icon: 'phone',
-						renderAction: (): ReactElement => <Menu tiny={!isMobile} title={t('Video_Conference')} icon='phone' options={menuOptions} />,
+						renderAction: ({ key }): ReactElement => (
+							<Menu key={key} tiny={!isMobile} title={t('Video_Conference')} icon='phone' options={menuOptions} />
+						),
 						full: true,
 						order: live ? -1 : 4,
 				  }
