@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
-import { LivechatVisitors } from '../../../models';
+import { LivechatVisitors } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { settings } from '../../../settings/server';
 

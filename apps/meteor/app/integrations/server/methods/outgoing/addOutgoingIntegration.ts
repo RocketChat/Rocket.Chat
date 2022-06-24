@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { INewOutgoingIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
+import { Integrations } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../../authorization/server';
-import { Integrations } from '../../../../models/server/raw';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
 Meteor.methods({

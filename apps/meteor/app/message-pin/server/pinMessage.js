@@ -6,7 +6,7 @@ import { callbacks } from '../../../lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../authorization/server';
-import { Subscriptions, Messages, Users, Rooms } from '../../models';
+import { Subscriptions, Messages, Users, Rooms } from '../../models/server';
 import { Apps, AppEvents } from '../../apps/server/orchestrator';
 
 const recursiveRemove = (msg, deep = 1) => {
