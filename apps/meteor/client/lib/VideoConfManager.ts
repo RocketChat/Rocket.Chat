@@ -132,6 +132,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public isBusy(): boolean {
+		if (this.startingNewCall) {
+			return true;
+		}
+
 		return this.isCalling();
 	}
 
@@ -140,9 +144,6 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public isCalling(): boolean {
-		if (this.startingNewCall) {
-			return true;
-		}
 		if (this.currentCallHandler || this.currentCallData) {
 			return true;
 		}
