@@ -130,7 +130,6 @@ export const VoipFooter = ({
 								small
 								square
 								danger
-								primary
 								onClick={(e): unknown => {
 									e.stopPropagation();
 									toggleMic(false);
@@ -152,7 +151,6 @@ export const VoipFooter = ({
 								small
 								square
 								success
-								primary
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();
 									const rid = await createRoom(caller);

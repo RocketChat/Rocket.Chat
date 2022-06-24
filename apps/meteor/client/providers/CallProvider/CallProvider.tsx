@@ -25,6 +25,7 @@ import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapU
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
+import VoIPAgentProvider from '../VoIPAgentProvider';
 import { useVoipClient } from './hooks/useVoipClient';
 
 const startRingback = (user: IUser): void => {
@@ -45,6 +46,9 @@ export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 	const subscribeToNotifyUser = useStream('notify-user');
 	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');
+	const visitorEndpoint = useEndpoint('POST', '/v1/livechat/visitor');
+	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
+	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
 	const setModal = useSetModal();
 
 	const result = useVoipClient();
@@ -56,42 +60,33 @@ export const CallProvider: FC = ({ children }) => {
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
-
-	const visitorEndpoint = useEndpoint('POST', '/v1/livechat/visitor');
-	const voipEndpoint = useEndpoint('GET', '/v1/voip/room');
-	const voipCloseRoomEndpoint = useEndpoint('POST', '/v1/voip/room.close');
-
 	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
-	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
-	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
-
-	const openRoom = (rid: IVoipRoom['_id']): void => {
-		roomCoordinator.openRouteLink('v', { rid });
-	};
 
 	const closeRoom = useCallback(
-		async ({ comment, tags }: { comment?: string; tags?: string[] } = {}): Promise<void> => {
+		async (data = {}): Promise<void> => {
 			roomInfo &&
 				(await voipCloseRoomEndpoint({
 					rid: roomInfo.rid,
 					token: roomInfo.v.token || '',
-					options: { comment, tags },
+					options: { comment: data?.comment, tags: data?.tags },
 				}));
-
 			homeRoute.push({});
 
 			const queueAggregator = result.voipClient?.getAggregator();
-
 			if (queueAggregator) {
 				queueAggregator.callEnded();
 			}
 		},
-		[homeRoute, voipCloseRoomEndpoint, result.voipClient, roomInfo],
+		[homeRoute, result?.voipClient, roomInfo, voipCloseRoomEndpoint],
 	);
 
 	const openWrapUpModal = useCallback((): void => {
 		setModal(() => <WrapUpCallModal closeRoom={closeRoom} />);
 	}, [closeRoom, setModal]);
+
+	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
+
+	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
 
 	const handleWrapUp = useCallback(() => {
 		if (isEnterprise) {
@@ -275,6 +270,10 @@ export const CallProvider: FC = ({ children }) => {
 		};
 	}, [onNetworkConnected, onNetworkDisconnected, result.voipClient]);
 
+	const openRoom = (rid: IVoipRoom['_id']): void => {
+		roomCoordinator.openRouteLink('v', { rid });
+	};
+
 	const contextValue: CallContextValue = useMemo(() => {
 		if (!voipEnabled) {
 			return {
@@ -353,12 +352,21 @@ export const CallProvider: FC = ({ children }) => {
 			closeRoom,
 			openWrapUpModal,
 		};
-	}, [voipEnabled, user, result, roomInfo, queueCounter, queueName, openWrapUpModal, visitorEndpoint, voipEndpoint, closeRoom]);
+	}, [voipEnabled, user, result, roomInfo, queueCounter, queueName, closeRoom, openWrapUpModal, visitorEndpoint, voipEndpoint]);
 
 	return (
 		<CallContext.Provider value={contextValue}>
-			{children}
-			{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+			{contextValue.ready ? (
+				<VoIPAgentProvider>
+					{children}
+					{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+				</VoIPAgentProvider>
+			) : (
+				<>
+					{children}
+					{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+				</>
+			)}
 		</CallContext.Provider>
 	);
 };
