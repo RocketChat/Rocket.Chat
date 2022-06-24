@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 import { federationRoomServiceSender } from '../../..';
 import { FederationRoomSenderConverter } from '../converters/RoomSender';
 import { slashCommands } from '../../../../../utils/lib/slashCommand';
-import { Users } from '../../../../../models/server/raw';
 
 const FEDERATION_COMMANDS: Record<string, Function> = {
 	dm: async (currentUserId: string, roomId: string, invitee: string) =>

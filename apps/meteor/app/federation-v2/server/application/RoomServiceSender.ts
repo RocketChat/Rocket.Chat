@@ -132,7 +132,7 @@ export class FederationRoomServiceSender {
 			return;
 		}
 
-		if (internalUser.federated && !internalRoom.federated) {
+		if ((internalUser as IUser).federated && !internalRoom.federated) {
 			throw new Error('error-cant-add-federated-users');
 		}
 	}
@@ -143,7 +143,7 @@ export class FederationRoomServiceSender {
 			return;
 		}
 
-		if (internalUser.federated && internalRoom.federated && internalRoom.t !== RoomType.DIRECT_MESSAGE) {
+		if ((internalUser as IUser).federated && internalRoom.federated && internalRoom.t !== RoomType.DIRECT_MESSAGE) {
 			throw new Error('error-this-is-an-ee-feature');
 		}
 	}

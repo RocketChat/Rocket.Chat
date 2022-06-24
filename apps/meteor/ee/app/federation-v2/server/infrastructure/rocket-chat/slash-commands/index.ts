@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 import { slashCommands } from '../../../../../../../app/utils/lib/slashCommand';
 import { federationRoomServiceSenderEE } from '../../..';
 import { normalizeUserId } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands';
-import { Users } from '../../../../../../../app/models/server/raw';
 import { FederationRoomSenderConverterEE } from '../converters/RoomSender';
 
 const EE_FEDERATION_COMMANDS = {
