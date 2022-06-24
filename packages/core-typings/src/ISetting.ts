@@ -170,8 +170,6 @@ export interface ISettingStatistics {
 	pushEnable?: boolean;
 	globalSearchEnabled?: boolean;
 	threadsEnabled?: boolean;
-	bigBlueButton?: boolean;
-	jitsiEnabled?: boolean;
 	webRTCEnableChannel?: boolean;
 	webRTCEnablePrivate?: boolean;
 	webRTCEnableDirect?: boolean;
