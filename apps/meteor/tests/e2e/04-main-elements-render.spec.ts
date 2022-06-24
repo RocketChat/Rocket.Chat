@@ -90,7 +90,7 @@ test.describe('[Main Elements Render]', function () {
 	test.describe('[Main Content]', () => {
 		test.describe('[Render]', () => {
 			test.beforeAll(async () => {
-				await sideNav.doOpenChannel('general');
+				await sideNav.doOpenChat('general');
 			});
 
 			test('expect show the title of the channel', async () => {
@@ -141,7 +141,7 @@ test.describe('[Main Elements Render]', function () {
 	test.describe('[FlexTab]', () => {
 		test.describe('[Render]', () => {
 			test.beforeAll(async () => {
-				await sideNav.doOpenChannel('general');
+				await sideNav.doOpenChat('general');
 			});
 
 			test.describe('[Room tab info]', () => {

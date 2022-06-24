@@ -33,20 +33,20 @@ test.describe('[Channel]', () => {
 			await sideNav.createChannel(publicChannelName, false);
 			setPublicChannelCreated(true);
 		}
-		await sideNav.doOpenChannel('general');
+		await sideNav.doOpenChat('general');
 	});
 	test.describe('[Search]', () => {
 		test.describe('[SpotlightSearch]', async () => {
 			test.describe('general:', () => {
 				test('expect go to general', async () => {
-					await sideNav.doOpenChannel('general');
+					await sideNav.doOpenChat('general');
 					await expect(mainContent.channelTitle('general')).toContainText('general');
 				});
 			});
 
 			test.describe('user created channel:', () => {
 				test('expect go to the user created channel', async () => {
-					await sideNav.doOpenChannel(publicChannelName);
+					await sideNav.doOpenChat(publicChannelName);
 					await expect(mainContent.channelTitle(publicChannelName)).toContainText(publicChannelName);
 				});
 			});
@@ -64,7 +64,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect go to the general channel', async () => {
-					await sideNav.doOpenChannel('general');
+					await sideNav.doOpenChat('general');
 				});
 			});
 
@@ -75,7 +75,7 @@ test.describe('[Channel]', () => {
 				});
 
 				test('expect go to the user created channel', async () => {
-					await sideNav.doOpenChannel(publicChannelName);
+					await sideNav.doOpenChat(publicChannelName);
 				});
 			});
 		});
@@ -83,7 +83,7 @@ test.describe('[Channel]', () => {
 
 	test.describe('[Usage]', () => {
 		test.beforeAll(async () => {
-			await sideNav.doOpenChannel(publicChannelName);
+			await sideNav.doOpenChat(publicChannelName);
 		});
 
 		test.describe('Adding a user to the room:', async () => {

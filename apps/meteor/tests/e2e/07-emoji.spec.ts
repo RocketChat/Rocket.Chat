@@ -19,7 +19,7 @@ test.describe('[Emoji]', () => {
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
-		await sideNav.doOpenChannel('general');
+		await sideNav.doOpenChat('general');
 	});
 
 	test.describe('Render:', () => {

@@ -37,7 +37,7 @@ test.describe('[Discussion]', () => {
 	test.describe.skip('[Create discussion from context menu]', () => {
 		test.beforeAll(async () => {
 			message = faker.animal.type() + uuid();
-			await sideNav.findForChat('public channel');
+			await sideNav.doOpenChat('public channel');
 			await mainContent.sendMessage(message);
 		});
 

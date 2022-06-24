@@ -20,7 +20,7 @@ test.describe('[Message Popup]', () => {
 
 		await loginPage.goto('/');
 		await loginPage.doLogin(adminLogin);
-		await sideNav.doOpenChannel('public channel');
+		await sideNav.doOpenChat('public channel');
 	});
 
 	test.describe('User mentions', () => {

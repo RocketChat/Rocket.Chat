@@ -1,7 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 
 import { BasePage } from './BasePage';
-import { ENTER } from '../utils/mocks/keyboardKeyMock';
 
 export class SideNav extends BasePage {
 	get channelType(): Locator {
@@ -118,7 +117,7 @@ export class SideNav extends BasePage {
 		return !!(await this.sideNavBar.getAttribute('style'));
 	}
 
-	async doOpenChannel(name: string): Promise<void> {
+	async doOpenChat(name: string): Promise<void> {
 		await expect(this.page.locator('[data-qa="sidebar-search"]')).toBeVisible();
 
 		await this.page.locator('[data-qa="sidebar-search"]').click();
@@ -153,12 +152,6 @@ export class SideNav extends BasePage {
 
 		await this.saveChannelBtn.click();
 		await expect(this.channelType).not.toBeVisible();
-	}
-
-	public async findForChat(target: string): Promise<void> {
-		await this.searchUser.click();
-		await this.searchInput.type(target, { delay: 100 });
-		await this.page.keyboard.press(ENTER);
 	}
 
 	public async doLogout(): Promise<void> {

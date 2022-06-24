@@ -69,9 +69,9 @@ test.describe('[Messaging]', () => {
 		test.describe('[Public channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
-				await anotherContext.sideNav.findForChat('public channel');
+				await anotherContext.sideNav.doOpenChat('public channel');
 				await anotherContext.mainContent.sendMessage('Hello');
-				await sideNav.findForChat('public channel');
+				await sideNav.doOpenChat('public channel');
 				await mainContent.sendMessage('Hello');
 			});
 			test.afterAll(async () => {
@@ -89,9 +89,9 @@ test.describe('[Messaging]', () => {
 		test.describe('[Private channel]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
-				await anotherContext.sideNav.findForChat('private channel');
+				await anotherContext.sideNav.doOpenChat('private channel');
 				await anotherContext.mainContent.sendMessage('Hello');
-				await sideNav.findForChat('private channel');
+				await sideNav.doOpenChat('private channel');
 				await mainContent.sendMessage('Hello');
 			});
 			test.afterAll(async () => {
@@ -109,9 +109,9 @@ test.describe('[Messaging]', () => {
 		test.describe('[Direct Message]', async () => {
 			test.beforeAll(async ({ browser, baseURL }) => {
 				anotherContext = await createBrowserContextForChat(browser, baseURL as string);
-				await anotherContext.sideNav.findForChat('rocketchat.internal.admin.test');
+				await anotherContext.sideNav.doOpenChat('rocketchat.internal.admin.test');
 				await anotherContext.mainContent.sendMessage('Hello');
-				await sideNav.findForChat('user.name.test');
+				await sideNav.doOpenChat('user.name.test');
 				await mainContent.sendMessage('Hello');
 			});
 			test.afterAll(async () => {
