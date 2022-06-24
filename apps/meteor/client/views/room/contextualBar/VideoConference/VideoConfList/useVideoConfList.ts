@@ -1,22 +1,22 @@
-import type { IGroupVideoConference, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
 import { useScrollableRecordList } from '../../../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
-import { RecordList } from '../../../../../lib/lists/RecordList';
+import { VideoConfRecordList } from './VideoConfRecordList';
 
 export const useVideoConfList = (options: {
 	roomId: IRoom['_id'];
 }): {
-	videoConfList: RecordList<IGroupVideoConference>;
+	videoConfList: VideoConfRecordList;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
 	const getVideoConfs = useEndpoint('GET', '/v1/video-conference.list');
-	const [videoConfList, setVideoConfList] = useState(() => new RecordList<IGroupVideoConference>());
-	const reload = useCallback(() => setVideoConfList(new RecordList<IGroupVideoConference>()), []);
+	const [videoConfList, setVideoConfList] = useState(() => new VideoConfRecordList());
+	const reload = useCallback(() => setVideoConfList(new VideoConfRecordList()), []);
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -32,6 +32,8 @@ export const useVideoConfList = (options: {
 				items: data.map((videoConf: any) => ({
 					...videoConf,
 					_updatedAt: new Date(videoConf._updatedAt),
+					createdAt: new Date(videoConf.createdAt),
+					endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
 				})),
 				itemCount: total,
 			};
