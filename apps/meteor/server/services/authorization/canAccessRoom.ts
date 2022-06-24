@@ -1,4 +1,4 @@
-import { TEAM_TYPE, ITeam, RoomType } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, ITeam } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
 
@@ -16,23 +16,6 @@ async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 
 	return Authorization.hasPermission(user._id, 'view-c-room');
 }
-
-const hasRoomViewPermission = async (roomType: RoomType, uid: string): Promise<boolean> => {
-	if (roomType === 'c') {
-		return Authorization.hasPermission(uid, 'view-c-room');
-	}
-	if (roomType === 'p') {
-		return Authorization.hasPermission(uid, 'view-p-room');
-	}
-	if (roomType === 'd') {
-		return Authorization.hasPermission(uid, 'view-d-room');
-	}
-	if (roomType === 'l' || roomType === 'v') {
-		return Authorization.hasPermission(uid, 'view-l-room');
-	}
-
-	return false;
-};
 
 const roomAccessValidators: RoomAccessValidator[] = [
 	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
@@ -74,12 +57,15 @@ const roomAccessValidators: RoomAccessValidator[] = [
 			return false;
 		}
 
-		const hasSubscriptions = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
+		if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id))) {
+			return false;
+		}
 
-		if (hasSubscriptions) {
+		if (await Authorization.hasPermission(user._id, 'view-joined-room')) {
 			return true;
 		}
-		return false;
+
+		return Authorization.hasPermission(user._id, `view-${room.t}-room`);
 	},
 
 	async function _validateAccessToDiscussionsParentRoom(room, user): Promise<boolean> {
@@ -104,10 +90,6 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 	// if (!room || !user) {
 	// 	return false;
 	// }
-
-	if (room && user) {
-		if (!(await hasRoomViewPermission(room.t, user._id))) return false;
-	}
 
 	for await (const roomAccessValidator of roomAccessValidators) {
 		if (await roomAccessValidator(room, user, extraData)) {

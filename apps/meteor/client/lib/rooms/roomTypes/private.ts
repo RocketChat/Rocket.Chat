@@ -88,9 +88,6 @@ roomCoordinator.add(PrivateRoomType, {
 	},
 
 	findRoom(identifier) {
-		if (!hasPermission('view-p-room')) {
-			return;
-		}
 		const query = {
 			t: 'p',
 			name: identifier,

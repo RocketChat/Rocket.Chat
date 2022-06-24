@@ -70,9 +70,6 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	findRoom(identifier) {
-		if (!hasPermission('view-l-room')) {
-			return;
-		}
 		return ChatRoom.findOne({ _id: identifier });
 	},
 
