@@ -8,6 +8,7 @@ import { useVideoConfDispatchOutgoing, useVideoConfStartCall } from '../../../cl
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import { useTabBarOpen } from '../../../client/views/room/providers/ToolboxProvider';
 import { VideoConfManager } from '../../../client/lib/VideoConfManager';
+import { useVideoConfWarning } from '../../../client/views/room/contextualBar/VideoConference/useVideoConfWarning';
 
 addAction('video-conf-list', {
 	groups: ['channel', 'group', 'team'],
@@ -23,6 +24,8 @@ addAction('video-conf', ({ room }) => {
 	const setModal = useSetModal();
 	const startCall = useVideoConfStartCall();
 	const user = useUser();
+	const dispatchWarning = useVideoConfWarning();
+
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
 
@@ -61,9 +64,11 @@ addAction('video-conf', ({ room }) => {
 	});
 
 	const handleOpenVideoConf = useMutableCallback(async (): Promise<void> => {
-		await VideoConfManager.loadCapabilities();
-		if (VideoConfManager.available) {
+		try {
+			await VideoConfManager.loadCapabilities();
 			setModal(<StartVideoConfModal onConfirm={handleStartConference} room={room} onClose={handleCloseVideoConf} />);
+		} catch (error) {
+			dispatchWarning(error.error);
 		}
 	});
 

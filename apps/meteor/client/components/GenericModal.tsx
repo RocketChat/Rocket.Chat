@@ -31,7 +31,7 @@ const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => 
 		case 'danger':
 			return { danger: true };
 		case 'warning':
-			return { warning: true };
+			return { primary: true };
 		default:
 			return {};
 	}
