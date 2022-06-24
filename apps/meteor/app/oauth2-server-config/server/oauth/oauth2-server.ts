@@ -5,9 +5,9 @@ import { WebApp } from 'meteor/webapp';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
 import { Request, Response } from 'express';
 import { IUser } from '@rocket.chat/core-typings';
+import { OAuthApps } from '@rocket.chat/models';
 
 import { Users } from '../../../models/server';
-import { OAuthApps } from '../../../models/server/raw';
 import { API } from '../../../api/server';
 
 const oauth2server = new OAuth2Server({
