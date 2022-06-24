@@ -67,7 +67,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 								width: inlineSize,
 							}}
 							totalCount={total}
-							endReached={loading ? (): void => undefined : (start): unknown => loadMoreItems(start, Math.min(50, total - start))}
+							endReached={(start): unknown => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={25}
 							data={videoConfs}
 							components={{ Scroller: ScrollableContentWrapper as any }}
