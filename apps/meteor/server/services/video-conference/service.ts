@@ -11,7 +11,6 @@ import type {
 	IGroupVideoConference,
 	IMessage,
 	IStats,
-	IVideoConferenceMessage,
 	VideoConference,
 	VideoConferenceCapabilities,
 } from '@rocket.chat/core-typings';
@@ -390,7 +389,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					elements: [],
 				},
 			],
-		} as Partial<IVideoConferenceMessage>);
+		} as Partial<IMessage>);
 	}
 
 	private async validateProvider(providerName: string): Promise<void> {
@@ -444,7 +443,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		return this.createMessage(call.rid, user, {
 			blocks: [this.buildMessageBlock(text)],
-		} as Partial<IVideoConferenceMessage>);
+		} as Partial<IMessage>);
 	}
 
 	private async createGroupCallEndedMessage(call: IGroupVideoConference): Promise<IMessage['_id'] | undefined> {
@@ -465,7 +464,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		return this.createMessage(call.rid, user, {
 			blocks: [this.buildMessageBlock(text)],
-		} as Partial<IVideoConferenceMessage>);
+		} as Partial<IMessage>);
 	}
 
 	private async createLivechatMessage(rid: IRoom['_id'], user: IUser, callId: string, url: string): Promise<IMessage['_id']> {

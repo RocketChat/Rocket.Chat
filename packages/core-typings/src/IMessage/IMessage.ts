@@ -300,11 +300,3 @@ export type IMessageInbox = IMessage & {
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
 export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
-
-export interface IVideoConferenceMessage extends IMessage {
-	videoConf: {
-		title: string;
-	};
-}
-
-export const isVideoConferenceMessage = (message: IMessage): message is IVideoConferenceMessage => 'videoConference' in message;
