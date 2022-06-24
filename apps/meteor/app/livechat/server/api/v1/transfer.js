@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { LivechatRooms } from '../../../../models';
+import { LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findLivechatTransferHistory } from '../lib/transfer';
 

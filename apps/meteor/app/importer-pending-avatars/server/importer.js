@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Base, ProgressStep, Selection } from '../../importer/server';
-import { Users } from '../../models';
+import { Users } from '../../models/server';
 
 export class PendingAvatarImporter extends Base {
 	prepareFileCount() {

@@ -35,39 +35,25 @@ type ModalInstance = ModalConfiguration & {
 };
 
 export type ModalContextValue = {
-	open(
-		config?: ModalConfiguration,
-		fn?: (instance: ModalInstance, value: unknown) => void,
-		onCancel?: (instance: ModalInstance) => void,
-	): void;
-	push(
-		config?: ModalConfiguration,
-		fn?: (instance: ModalInstance, value: unknown) => void,
-		onCancel?: (instance: ModalInstance) => void,
-	): ModalInstance;
-	cancel(): void;
-	close(): void;
-	confirm(value: unknown): void;
-	showInputError(text: string): void;
-	onKeyDown(event: KeyboardEvent): void;
-	setModal(modal: ReactNode): void;
+	modal: {
+		open(
+			config?: ModalConfiguration,
+			fn?: (instance: ModalInstance, value: unknown) => void,
+			onCancel?: (instance: ModalInstance) => void,
+		): void;
+		push(
+			config?: ModalConfiguration,
+			fn?: (instance: ModalInstance, value: unknown) => void,
+			onCancel?: (instance: ModalInstance) => void,
+		): ModalInstance;
+		cancel(): void;
+		close(): void;
+		confirm(value: unknown): void;
+		showInputError(text: string): void;
+		onKeyDown(event: KeyboardEvent): void;
+		setModal(modal: ReactNode): void;
+	};
+	currentModal: ReactNode;
 };
 
-export const ModalContext = createContext<ModalContextValue>({
-	open: () => undefined,
-	push: () => ({
-		render: (): void => undefined,
-		hide: (): void => undefined,
-		destroy: (): void => undefined,
-		close: (): void => undefined,
-		confirm: (): void => undefined,
-		cancel: (): void => undefined,
-		showInputError: (): void => undefined,
-	}),
-	cancel: () => undefined,
-	close: () => undefined,
-	confirm: () => undefined,
-	showInputError: () => undefined,
-	onKeyDown: () => undefined,
-	setModal: () => undefined,
-});
+export const ModalContext = createContext<ModalContextValue | undefined>(undefined);

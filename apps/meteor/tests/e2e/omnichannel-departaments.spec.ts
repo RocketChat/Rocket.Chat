@@ -13,15 +13,13 @@ test.describe('[Department]', () => {
 
 	test.beforeAll(async ({ browser }) => {
 		page = await browser.newPage();
-		const basePath = '/';
-
-		await page.goto(basePath);
 		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 		departments = new Departments(page);
 		global = new Global(page);
 
-		await loginPage.login(adminLogin);
+		await page.goto('/');
+		await loginPage.doLogin(adminLogin);
 		await sideNav.sidebarUserMenu.click();
 		await sideNav.omnichannel.click();
 	});
@@ -31,14 +29,17 @@ test.describe('[Department]', () => {
 			await departments.departmentsLink.click();
 			await departments.btnNewDepartment.click();
 		});
+
 		test('expect show all inputs', async () => {
 			await departments.getAddScreen();
 		});
 	});
+
 	test.describe('[Actions]', async () => {
 		test.beforeEach(async () => {
 			await departments.departmentsLink.click();
 		});
+
 		test.describe('[Create and Edit]', async () => {
 			test.afterEach(async () => {
 				await global.dismissToastBar();
@@ -56,15 +57,18 @@ test.describe('[Department]', () => {
 				await expect(departments.departmentAdded).toHaveText('any_name_edit');
 			});
 		});
+
 		test.describe('[Delete department]', () => {
 			test.beforeEach(async () => {
 				await departments.btnTableDeleteDepartment.click();
 			});
+
 			test('expect dont show dialog on cancel delete department', async () => {
 				await departments.btnModalCancelDeleteDepartment.click();
 				await expect(departments.modalDepartment).not.toBeVisible();
 				await expect(departments.departmentAdded).toBeVisible();
 			});
+
 			test('expect delete departments', async () => {
 				await departments.btnModalDeleteDepartment.click();
 				await expect(departments.modalDepartment).not.toBeVisible();

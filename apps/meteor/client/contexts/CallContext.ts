@@ -1,6 +1,6 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
-import { createContext, useCallback, useContext } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { VoIPUser } from '../lib/voip/VoIPUser';
@@ -67,11 +67,12 @@ export const useIsCallReady = (): boolean => {
 
 	return Boolean(ready);
 };
-
 export const useIsCallError = (): boolean => {
 	const context = useContext(CallContext);
 	return Boolean(isCallContextError(context));
 };
+
+export const useCallContext = (): CallContextValue => useContext(CallContext);
 
 export const useCallActions = (): CallActionsType => {
 	const context = useContext(CallContext);
@@ -88,18 +89,23 @@ export const useCallerInfo = (): VoIpCallerInfo => {
 	if (!isCallContextReady(context)) {
 		throw new Error('useCallerInfo only if Calls are enabled and ready');
 	}
-	const { voipClient } = context;
-	const subscribe = useCallback(
-		(callback: () => void): (() => void) => {
-			voipClient.on('stateChanged', callback);
 
-			return (): void => {
-				voipClient.off('stateChanged', callback);
-			};
-		},
-		[voipClient],
-	);
-	return useSyncExternalStore(subscribe, (): VoIpCallerInfo => voipClient.callerInfo);
+	const { voipClient } = context;
+
+	const [subscribe, getSnapshot] = useMemo(() => {
+		let caller: VoIpCallerInfo = voipClient.callerInfo;
+
+		const callback = (cb: () => void): (() => void) =>
+			voipClient.on('stateChanged', () => {
+				caller = voipClient.callerInfo;
+				cb();
+			});
+
+		const getSnapshot = (): VoIpCallerInfo => caller;
+		return [callback, getSnapshot];
+	}, [voipClient]);
+
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
 export const useCallCreateRoom = (): CallContextReady['createRoom'] => {
@@ -138,6 +144,7 @@ export const useCallClient = (): VoIPUser => {
 	if (!isCallContextReady(context)) {
 		throw new Error('useClient only if Calls are enabled and ready');
 	}
+
 	return context.voipClient;
 };
 

@@ -25,7 +25,7 @@ test.describe.skip('[Settings]', async () => {
 		userPreferences = new PreferencesMainContent(page);
 
 		await loginPage.goto('/');
-		await loginPage.login(validUserInserted);
+		await loginPage.doLogin(validUserInserted);
 		await sideNav.general.click();
 	});
 
@@ -408,7 +408,7 @@ test.describe.skip('[Settings (admin)]', async () => {
 		admin = new Administration(page);
 
 		await loginPage.goto('/');
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 		await sideNav.general.click();
 	});
 

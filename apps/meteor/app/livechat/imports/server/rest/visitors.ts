@@ -1,9 +1,9 @@
 import { check } from 'meteor/check';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { LivechatRooms } from '../../../../models/server';
-import { Messages } from '../../../../models/server/raw';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import { canAccessRoom } from '../../../../authorization/server';
 

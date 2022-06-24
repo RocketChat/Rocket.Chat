@@ -18,7 +18,7 @@ test.describe('[Administration]', () => {
 		flexTab = new FlexTab(page);
 		admin = new Administration(page);
 		await loginPage.goto(baseURL as string);
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 	});
 	test.describe('[Admin View]', () => {
 		test.beforeAll(async () => {
@@ -186,6 +186,7 @@ test.describe('[Administration]', () => {
 				test('expect change site url reset button is showed', async () => {
 					await admin.generalSiteUrl.type('something');
 					await expect(admin.generalSiteUrlReset).toBeVisible();
+					await admin.generalSiteUrlReset.click();
 				});
 
 				test('expect change site name reset button is showed', async () => {

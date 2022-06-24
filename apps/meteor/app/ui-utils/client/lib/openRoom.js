@@ -7,14 +7,13 @@ import _ from 'underscore';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
-import { Messages, ChatSubscription } from '../../../models';
+import { Messages, ChatSubscription, Rooms, Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
 import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
-import { Rooms, Subscriptions } from '../../../models/client';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';

@@ -14,11 +14,11 @@ test.describe('[Emoji]', () => {
 		loginPage = new LoginPage(page);
 		await loginPage.goto(URL);
 
-		await loginPage.login(adminLogin);
+		await loginPage.doLogin(adminLogin);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 
-		await sideNav.openChannel('general');
+		await sideNav.doOpenChat('general');
 	});
 
 	test.describe('Render:', () => {

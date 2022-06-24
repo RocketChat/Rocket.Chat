@@ -17,7 +17,7 @@ test.describe('[Wizard]', () => {
 		test.beforeEach(async ({ baseURL }) => {
 			const baseUrl = baseURL;
 			await setupWizard.goto(baseUrl as string);
-			await loginPage.login(adminLogin);
+			await loginPage.doLogin(adminLogin, false);
 		});
 
 		test('expect required field alert showed when user dont inform data', async () => {
@@ -33,7 +33,7 @@ test.describe('[Wizard]', () => {
 	test.describe('[Step 3]', async () => {
 		test.beforeEach(async () => {
 			await setupWizard.goto('');
-			await loginPage.login(adminLogin);
+			await loginPage.doLogin(adminLogin, false);
 			await setupWizard.stepTwoSuccess();
 		});
 
@@ -63,7 +63,7 @@ test.describe('[Wizard]', () => {
 	test.describe('[Final Step]', async () => {
 		test.beforeEach(async () => {
 			await setupWizard.goto('');
-			await loginPage.login(adminLogin);
+			await loginPage.doLogin(adminLogin, false);
 			await setupWizard.stepTwoSuccess();
 			await setupWizard.stepThreeSuccess();
 		});

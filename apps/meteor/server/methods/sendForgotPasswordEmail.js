@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
-import { Users } from '../../app/models';
+import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { SystemLogger } from '../lib/logger/system';
 

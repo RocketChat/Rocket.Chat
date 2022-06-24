@@ -1,24 +1,26 @@
+import { Page } from '@playwright/test';
+
 import { test, expect } from './utils/test';
 import { LoginPage, FlexTab, SideNav, MainContent } from './pageobjects';
 import { adminLogin } from './utils/mocks/userAndPasswordMock';
 
 test.describe('[Main Elements Render]', function () {
+	let page: Page;
 	let loginPage: LoginPage;
 	let mainContent: MainContent;
 	let sideNav: SideNav;
 	let flexTab: FlexTab;
 
-	test.beforeAll(async ({ browser, baseURL }) => {
-		const context = await browser.newContext();
-		const page = await context.newPage();
-		const URL = baseURL;
-		loginPage = new LoginPage(page);
-		await loginPage.goto(URL as string);
+	test.beforeAll(async ({ browser }) => {
+		page = await browser.newPage();
 
-		await loginPage.login(adminLogin);
+		loginPage = new LoginPage(page);
 		sideNav = new SideNav(page);
 		mainContent = new MainContent(page);
 		flexTab = new FlexTab(page);
+
+		await loginPage.goto('/');
+		await loginPage.doLogin(adminLogin);
 	});
 
 	test.describe('[Side Nav Bar]', () => {
@@ -46,7 +48,7 @@ test.describe('[Main Elements Render]', function () {
 			test('expect add text to the spotlight and show the channel list', async () => {
 				await sideNav.spotlightSearch.type('rocket.cat');
 				await expect(sideNav.spotlightSearchPopUp).toBeVisible();
-				await sideNav.page.locator('//*[@data-qa="sidebar-search-result"]//*[@data-index="0"]').click();
+				await page.locator('//*[@data-qa="sidebar-search-result"]//*[@data-index="0"]').click();
 			});
 		});
 	});
@@ -89,7 +91,7 @@ test.describe('[Main Elements Render]', function () {
 	test.describe('[Main Content]', () => {
 		test.describe('[Render]', () => {
 			test.beforeAll(async () => {
-				await sideNav.openChannel('general');
+				await sideNav.doOpenChat('general');
 			});
 
 			test('expect show the title of the channel', async () => {
@@ -140,135 +142,71 @@ test.describe('[Main Elements Render]', function () {
 	test.describe('[FlexTab]', () => {
 		test.describe('[Render]', () => {
 			test.beforeAll(async () => {
-				await sideNav.openChannel('general');
+				await sideNav.doOpenChat('general');
 			});
 
-			test.describe('[Room tab info]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('info', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('info', false);
-				});
-
-				test('expect show the room info button', async () => {
-					await expect(flexTab.channelTab).toBeVisible();
-				});
-
-				test('expect show the room info tab content', async () => {
-					await expect(flexTab.channelSettings).toBeVisible();
-				});
+			test('expect to show tab info content', async () => {
+				await flexTab.btnTabInfo.click();
+				await expect(flexTab.contentTabInfo).toBeVisible();
+				await flexTab.btnTabInfo.click();
 			});
 
-			test.describe('[Search Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('search', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('search', false);
-				});
-
-				test('expect show the message search  button', async () => {
-					await expect(flexTab.searchTab).toBeVisible();
-				});
-
-				test('expect show the message tab content', async () => {
-					await expect(flexTab.searchTabContent).toBeVisible();
-				});
+			test('expect to show tab thread content', async () => {
+				await flexTab.btnTabSearch.click();
+				await expect(flexTab.contentTabSearch).toBeVisible();
+				await flexTab.btnTabSearch.click();
 			});
 
-			test.describe('[Members Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('members', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('members', false);
-				});
-
-				test('expect show the members tab button', () => {
-					expect(flexTab.membersTab.isVisible()).toBeTruthy();
-				});
-
-				test('expect show the members content', async () => {
-					expect(flexTab.membersTabContent.isVisible()).toBeTruthy();
-				});
+			test('expect to show tab members content', async () => {
+				await flexTab.btnTabMembers.click();
+				await expect(flexTab.contentTabMembers).toBeVisible();
+				await flexTab.btnTabMembers.click();
 			});
 
-			test.describe('[Notifications Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('notifications', true);
-				});
+			test('expect to show tab notifications content', async () => {
+				await flexTab.doOpenMoreOptionMenu();
+				await flexTab.btnTabNotifications.click();
 
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('notifications', false);
-				});
+				await expect(flexTab.contentTabNotifications).toBeVisible();
 
-				test('expect not show the notifications button', async () => {
-					await expect(flexTab.notificationsTab).not.toBeVisible();
-				});
-
-				test('expect show the notifications Tab content', async () => {
-					await expect(flexTab.notificationsSettings).toBeVisible();
-				});
+				await flexTab.doOpenMoreOptionMenu();
+				await flexTab.btnTabNotifications.click();
 			});
 
-			test.describe('[Files Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('files', true);
-				});
-
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('files', false);
-				});
-
-				test('expect show the files Tab content', async () => {
-					await expect(flexTab.filesTabContent).toBeVisible();
-				});
+			test('expect to show tab files content', async () => {
+				await flexTab.btnTabFiles.click();
+				await expect(flexTab.contentTabFiles).toBeVisible();
+				await flexTab.btnTabFiles.click();
 			});
 
-			test.describe('[Mentions Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('mentions', true);
-				});
+			test('expect to show tab mentions content', async () => {
+				await flexTab.doOpenMoreOptionMenu();
+				await flexTab.btnTabMentions.click();
 
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('mentions', false);
-				});
+				await expect(flexTab.contentTabMentions).toBeVisible();
 
-				test('expect show the mentions Tab content', async () => {
-					await expect(flexTab.mentionsTabContent).toBeVisible();
-				});
+				await flexTab.doOpenMoreOptionMenu();
+				await flexTab.btnTabMentions.click();
 			});
 
-			test.describe('[Starred Messages Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('starred', true);
-				});
+			test('expect to show tab stared content', async () => {
+				await flexTab.doOpenMoreOptionMenu();
+				await flexTab.btnTabStared.click();
 
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('starred', false);
-				});
+				await expect(flexTab.contentTabStared).toBeVisible();
 
-				test('expect show the starred messages Tab content', async () => {
-					await expect(flexTab.starredTabContent).toBeVisible();
-				});
+				await flexTab.doOpenMoreOptionMenu();
+				await flexTab.btnTabStared.click();
 			});
 
-			test.describe('[Pinned Messages Tab]', () => {
-				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('pinned', true);
-				});
+			test('expect to show tab pinned content', async () => {
+				await flexTab.doOpenMoreOptionMenu();
+				await flexTab.btnTabPinned.click();
 
-				test.afterAll(async () => {
-					await flexTab.operateFlexTab('pinned', false);
-				});
+				await expect(flexTab.contentTabPinned).toBeVisible();
 
-				test('expect show the pinned messages Tab content', async () => {
-					await expect(flexTab.pinnedTabContent).toBeVisible();
-				});
+				await flexTab.doOpenMoreOptionMenu();
+				await flexTab.btnTabPinned.click();
 			});
 		});
 	});
