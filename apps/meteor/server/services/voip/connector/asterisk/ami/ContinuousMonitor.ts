@@ -157,7 +157,7 @@ export class ContinuousMonitor extends Command {
 			// NOTE: using the uniqueId prop of event is not the recommented approach, since it's an opaque ID
 			// However, since we're not using it for anything special, it's a "fair use"
 			// uniqueId => {server}/{epoch}.{id of channel associated with this call}
-			await this.pbxEvents.insertOne({
+			await PbxEvents.insertOne({
 				uniqueId,
 				event: eventName,
 				ts: now,
@@ -251,7 +251,7 @@ export class ContinuousMonitor extends Command {
 	}
 
 	async manageDialEvents(event: IDialingEvent): Promise<void> {
-		const pbxEvent = await this.pbxEvents.findOneByUniqueId(event.uniqueid);
+		const pbxEvent = await PbxEvents.findOneByUniqueId(event.uniqueid);
 		/**
 		 * Dial events currently are used for detecting the outbound call
 		 * This will later be used for matching call events.
@@ -276,7 +276,7 @@ export class ContinuousMonitor extends Command {
 		 * event?.connectedlinenum is the extension/phone number that is being called
 		 * and event.calleridnum is the extension that is initiating a call.
 		 */
-		await this.pbxEvents.insertOne({
+		await PbxEvents.insertOne({
 			uniqueId: `${event.event}-${event.calleridnum}-${event.channel}-${event.destchannel}-${event.uniqueid}`,
 			event: event.event,
 			ts: new Date(),
