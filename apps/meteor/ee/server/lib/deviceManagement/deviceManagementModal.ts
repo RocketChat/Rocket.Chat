@@ -1,10 +1,11 @@
+import { IModal } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { Modals } from '../../../../app/models/server/raw/index';
 import { hasLicense } from '../../../app/license/server/license';
 
 Meteor.methods({
-	async deviceManagementModal() {
+	async deviceManagementModal(): Promise<Pick<IModal, '_id'> | null> {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'deviceManagementModal',
