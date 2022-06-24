@@ -1,5 +1,6 @@
+import { CannedResponse } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import CannedResponse from '../../../ee/app/models/server/raw/CannedResponse';
 
 // This will remove old indexes and re-create the new one
 addMigration({

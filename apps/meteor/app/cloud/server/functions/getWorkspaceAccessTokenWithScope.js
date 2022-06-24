@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { workspaceScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 

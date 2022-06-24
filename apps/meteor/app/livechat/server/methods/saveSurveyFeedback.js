@@ -1,17 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
-
-import { LivechatRooms, LivechatVisitors } from '../../../models';
+import { LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
 Meteor.methods({
-	'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {
+	async 'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {
 		check(visitorToken, String);
 		check(visitorRoom, String);
 		check(formData, [Match.ObjectIncluding({ name: String, value: String })]);
 
-		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
-		const room = LivechatRooms.findOneById(visitorRoom);
+		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
+		const room = await LivechatRooms.findOneById(visitorRoom);
 
 		if (visitor !== undefined && room !== undefined && room.v !== undefined && room.v.token === visitor.token) {
 			const updateData = {};
