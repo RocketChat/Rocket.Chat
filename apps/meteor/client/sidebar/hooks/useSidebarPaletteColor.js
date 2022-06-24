@@ -167,6 +167,9 @@ const getStyle = (
 			--rcx-button-colors-icon-background-color: ${toVar(colors.sibebarSurface)};
 			--rcx-button-colors-icon-hover-background-color: ${toVar(colors.n900)};
 			--rcx-button-colors-icon-hover-border-color: ${toVar(colors.n900)};
+			--rcx-button-colors-icon-focus-background-color:  var(--rcx-color-neutral-300);
+			--rcx-button-colors-icon-focus-border-color: var(--rcx-color-neutral-500);
+			--rcx-button-colors-icon-focus-shadow-color: none;
 
 			--rcx-button-colors-icon-success-active-border-color: ${toVar(colors.n900)};
 			--rcx-button-colors-icon-success-active-background-color: ${toVar(colors.n800)};
