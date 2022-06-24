@@ -1,6 +1,9 @@
 # Meteor packages used by this project, one per line.
+
 #
+
 # 'meteor add' and 'meteor remove' will edit this file for you,
+
 # but you can also edit it by hand.
 
 rocketchat:ddp
@@ -46,8 +49,11 @@ konecty:multiple-instances-status
 konecty:user-presence
 
 dispatch:run-as-user
-jalik:ufs@1.0.2
-jalik:ufs-gridfs@1.0.2
+
+jalik:ufs@1.0.4
+jalik:ufs-gridfs@1.0.5
+jalik:ufs-local@1.0.4
+
 jparker:gravatar
 kadira:flow-router
 mizzao:timesync
@@ -64,7 +70,6 @@ rocketchat:tap-i18n@3.0.0
 underscore@1.0.10
 littledata:synced-cron
 
-jalik:ufs-local@1.0.2
 accounts-base@2.2.3
 accounts-oauth@1.4.1
 autoupdate@1.8.0
