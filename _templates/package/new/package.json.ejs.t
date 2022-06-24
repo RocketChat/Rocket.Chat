@@ -17,7 +17,8 @@ to: packages/<%= name %>/package.json
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"jest": "jest",
-		"build": "rm -rf dist && tsc -p tsconfig.json"
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc -p --watch --preserveWatchOutput tsconfig.json"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -25,5 +26,13 @@ to: packages/<%= name %>/package.json
 		"/dist"
 	],
 	"dependencies": {
+	},
+	"eslintConfig": {
+		"extends": [
+			"@rocket.chat/eslint-config"
+		],
+		"ignorePatterns": [
+			"**/dist"
+		]
 	}
 }

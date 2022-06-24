@@ -1,8 +1,8 @@
 import type { SortOptionObject, SchemaMember } from 'mongodb';
 import type { IStats } from '@rocket.chat/core-typings';
+import { Statistics } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Statistics } from '../../../models/server/raw';
 
 type GetStatisticsParams = {
 	userId: string;

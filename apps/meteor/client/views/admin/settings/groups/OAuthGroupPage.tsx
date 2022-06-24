@@ -118,7 +118,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 							solo={solo}
 						>
 							<div className='submit'>
-								<Button danger onClick={handleRemoveCustomOAuthButtonClick}>
+								<Button secondary danger onClick={handleRemoveCustomOAuthButtonClick}>
 									{t('Remove_custom_oauth')}
 								</Button>
 							</div>

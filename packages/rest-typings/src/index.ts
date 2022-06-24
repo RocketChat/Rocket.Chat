@@ -4,6 +4,7 @@ import type { KeyOfEach } from '@rocket.chat/core-typings';
 import type { AppsEndpoints } from './apps';
 import type { AutoTranslateEndpoints } from './v1/autoTranslate';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
+import type { AssetsEndpoints } from './v1/assets';
 import type { BannersEndpoints } from './v1/banners';
 import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
@@ -73,6 +74,7 @@ export interface Endpoints
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
+		AssetsEndpoints,
 		CustomSoundEndpoint,
 		EmailInboxEndpoints,
 		WebdavEndpoints,
@@ -146,6 +148,7 @@ export * from './v1/permissions';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
+export * from './v1/assets';
 export * from './v1/channels/ChannelsAddAllProps';
 export * from './v1/channels/ChannelsArchiveProps';
 export * from './v1/channels/ChannelsUnarchiveProps';
@@ -176,3 +179,18 @@ export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
 export * from './v1/emojiCustom';
+
+export * from './v1/users';
+export * from './v1/users/UsersSetAvatarParamsPOST';
+export * from './v1/users/UsersSetPreferenceParamsPOST';
+export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
+export * from './v1/users/UsersUpdateParamsPOST';
+export * from './v1/import/UploadImportFileParamsPOST';
+export * from './v1/import/DownloadPublicImportFileParamsPOST';
+export * from './v1/import/StartImportParamsPOST';
+export * from './v1/import/GetImportFileDataParamsGET';
+export * from './v1/import/GetImportProgressParamsGET';
+export * from './v1/import/GetLatestImportOperationsParamsGET';
+export * from './v1/import/DownloadPendingFilesParamsPOST';
+export * from './v1/import/DownloadPendingAvatarsParamsPOST';
+export * from './v1/import/GetCurrentImportOperationParamsGET';
