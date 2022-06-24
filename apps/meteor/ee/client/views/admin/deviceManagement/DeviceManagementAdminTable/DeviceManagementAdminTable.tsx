@@ -80,7 +80,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 					<DeviceManagementAdminRow
 						key={session._id}
 						_id={session._id}
-						username={session._user?.username}
+						username={'_user' in session ? session._user?.username : ''}
 						ip={session.ip}
 						deviceName={session?.device?.name}
 						deviceType={session?.device?.type}
