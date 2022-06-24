@@ -15,7 +15,7 @@ concurrency:
 
 env:
   CI: true
-  MONGO_URL: mongodb://localhost:27017/rocketchat
+  MONGO_URL: mongodb://127.0.0.1:27017/rocketchat
   MONGO_OPLOG_URL: mongodb://mongo:27017/local
   TOOL_NODE_FLAGS: --max_old_space_size=4096
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -221,7 +221,7 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.19.3']
-        mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
+        mongodb-version: ['4.0', '4.2', '4.4', '5.0']
 
     steps:
       - name: Launch MongoDB
@@ -242,7 +242,7 @@ jobs:
 
       - name: Configure Replica Set
         run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"127.0.0.1:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
       - name: yarn install
@@ -404,7 +404,7 @@ jobs:
 
       - name: Configure Replica Set
         run: |
-          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+          docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"127.0.0.1:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
       - name: TurboRepo local server
