@@ -58,22 +58,12 @@ test.describe('[Channel]', () => {
 			});
 
 			test.describe('general:', async () => {
-				test('expect show the general in the channel list', async () => {
-					await sideNav.getChannelFromList('general').scrollIntoViewIfNeeded();
-					await expect(sideNav.getChannelFromList('general')).toBeVisible();
-				});
-
 				test('expect go to the general channel', async () => {
 					await sideNav.doOpenChat('general');
 				});
 			});
 
 			test.describe('user created channel:', async () => {
-				test('expect show the user created channel in the channel list', async () => {
-					await sideNav.getChannelFromList(publicChannelName).scrollIntoViewIfNeeded();
-					await expect(sideNav.getChannelFromList(publicChannelName)).toBeVisible();
-				});
-
 				test('expect go to the user created channel', async () => {
 					await sideNav.doOpenChat(publicChannelName);
 				});
@@ -314,9 +304,8 @@ test.describe('[Channel]', () => {
 					await flexTab.editNameSave.click();
 				});
 
-				test('expect show the new name', async () => {
-					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`);
-					await expect(channelName).toHaveText(`NAME-EDITED-${publicChannelName}`);
+				test('expect to find and open with new name', async () => {
+					await sideNav.doOpenChat(`NAME-EDITED-${publicChannelName}`);
 				});
 			});
 		});

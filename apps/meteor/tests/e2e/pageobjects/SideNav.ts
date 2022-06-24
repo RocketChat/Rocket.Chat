@@ -117,14 +117,6 @@ export class SideNav extends BasePage {
 		return !!(await this.sideNavBar.getAttribute('style'));
 	}
 
-	async doOpenChat(name: string): Promise<void> {
-		await expect(this.page.locator('[data-qa="sidebar-search"]')).toBeVisible();
-
-		await this.page.locator('[data-qa="sidebar-search"]').click();
-		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
-	}
-
 	public getChannelFromList(channelName: any): Locator {
 		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: channelName });
 	}
@@ -137,9 +129,16 @@ export class SideNav extends BasePage {
 		return this.page.locator('[data-qa="sidebar-search-input"]');
 	}
 
+	async doOpenChat(name: string): Promise<void> {
+		await expect(this.page.locator('[data-qa="sidebar-search"]')).toBeVisible();
+
+		await this.page.locator('[data-qa="sidebar-search"]').click();
+		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
+		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
+	}
+
 	public async createChannel(channelName: any, isPrivate: any /* isReadOnly*/): Promise<void> {
 		await this.newChannelBtnToolbar.click();
-
 		await this.newChannelBtn.click();
 
 		if (!isPrivate) {
@@ -147,11 +146,7 @@ export class SideNav extends BasePage {
 		}
 
 		await this.channelName.type(channelName);
-
-		await expect(this.saveChannelBtn).toBeEnabled();
-
 		await this.saveChannelBtn.click();
-		await expect(this.channelType).not.toBeVisible();
 	}
 
 	public async doLogout(): Promise<void> {

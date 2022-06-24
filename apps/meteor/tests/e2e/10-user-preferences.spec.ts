@@ -94,8 +94,7 @@ test.describe('[User Preferences]', () => {
 
 			test('expect close the preferences menu', async () => {
 				await sideNav.preferencesClose.click();
-				await sideNav.getChannelFromList('general').scrollIntoViewIfNeeded();
-				await sideNav.getChannelFromList('general').click();
+				await sideNav.doOpenChat('general');
 			});
 
 			test('send message with different user name', async () => {
