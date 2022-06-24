@@ -17,7 +17,7 @@ import {
 import React, { ReactElement, useState, ChangeEvent } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useVideoConfSetPreferences } from '../../../../../contexts/VideoConfContext';
+import { useVideoConfSetPreferences, useVideoConfCapabilities } from '../../../../../contexts/VideoConfContext';
 
 type StartGroupVideoConfModalProps = {
 	room: IRoom;
@@ -30,6 +30,10 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 	const [confTitle, setConfTitle] = useState<string | undefined>(undefined);
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
+	const capabilities = useVideoConfCapabilities();
+
+	const showCam = !!capabilities.cam;
+	const showMic = !!capabilities.mic;
 
 	const handleStartCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);
@@ -44,22 +48,28 @@ const StartGroupVideoConfModal = ({ room, onClose, onConfirm }: StartGroupVideoC
 				<VideoConfModalInfo>
 					{room.usersCount && t('__usersCount__people_will_be_invited', { usersCount: room.usersCount - 1 })}
 				</VideoConfModalInfo>
-				<VideoConfModalControllers>
-					<VideoConfController
-						primary={controllersConfig.mic}
-						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMic}
-					/>
-					<VideoConfController
-						primary={controllersConfig.cam}
-						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCam}
-					/>
-				</VideoConfModalControllers>
+				{(showCam || showMic) && (
+					<VideoConfModalControllers>
+						{showMic && (
+							<VideoConfController
+								primary={controllersConfig.mic}
+								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+								onClick={handleToggleMic}
+							/>
+						)}
+						{showCam && (
+							<VideoConfController
+								primary={controllersConfig.cam}
+								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								icon={controllersConfig.cam ? 'video' : 'video-off'}
+								onClick={handleToggleCam}
+							/>
+						)}
+					</VideoConfModalControllers>
+				)}
 				<VideoConfModalField>
 					<TextInput
 						width='full'

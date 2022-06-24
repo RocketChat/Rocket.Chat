@@ -5,12 +5,6 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
-
-import { Settings, Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models/server';
-import { settings } from '../../../settings/server';
-import { Info, getMongoInfo } from '../../../utils/server';
-import { getControl } from '../../../../server/lib/migrations';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import {
 	NotificationQueue,
 	Users as UsersRaw,
@@ -25,7 +19,13 @@ import {
 	LivechatBusinessHours,
 	Messages as MessagesRaw,
 	InstanceStatus,
-} from '../../../models/server/raw';
+} from '@rocket.chat/models';
+
+import { Settings, Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Info, getMongoInfo } from '../../../utils/server';
+import { getControl } from '../../../../server/lib/migrations';
+import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';

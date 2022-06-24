@@ -15,6 +15,7 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import React, { ReactElement, useMemo } from 'react';
 
+import { VIDEOCONF_STACK_MAX_USERS } from '..';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useVideoConfSetPreferences } from '../../../../../contexts/VideoConfContext';
@@ -29,8 +30,6 @@ type JoinVideoConfModalProps = {
 	onConfirm: () => void;
 };
 
-const MAX_USERS = 6;
-
 const JoinVideoConfModal = ({ room, confTitle, callId, onClose, onConfirm }: JoinVideoConfModalProps): ReactElement => {
 	const t = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
@@ -43,6 +42,8 @@ const JoinVideoConfModal = ({ room, confTitle, callId, onClose, onConfirm }: Joi
 
 	const params = useMemo(() => ({ callId }), [callId]);
 	const { phase, value } = useEndpointData('/v1/video-conference.info', params);
+	const showMic = Boolean(value?.capabilities?.mic);
+	const showCam = Boolean(value?.capabilities?.cam);
 
 	return (
 		<VideoConfModal>
@@ -57,34 +58,42 @@ const JoinVideoConfModal = ({ room, confTitle, callId, onClose, onConfirm }: Joi
 								<Avatar.Stack>
 									{value.users.map(
 										(member, index) =>
-											index + 1 <= MAX_USERS && <UserAvatar key={member._id} username={member.username || ''} etag={member.avatarETag} />,
+											index + 1 <= VIDEOCONF_STACK_MAX_USERS && (
+												<UserAvatar key={member._id} username={member.username || ''} etag={member.avatarETag} />
+											),
 									)}
 								</Avatar.Stack>
 							)}
 							<Box mbs='x8' fontScale='c1' color='neutral-700'>
-								{value.users.length > MAX_USERS
-									? t('__usersCount__members_joined', { usersCount: value?.users && value.users.length - MAX_USERS })
+								{value.users.length > VIDEOCONF_STACK_MAX_USERS
+									? t('__usersCount__members_joined', { usersCount: value?.users && value.users.length - VIDEOCONF_STACK_MAX_USERS })
 									: t('joined')}
 							</Box>
 						</Box>
 					)}
 				</VideoConfModalInfo>
-				<VideoConfModalControllers>
-					<VideoConfController
-						primary={controllersConfig.mic}
-						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMic}
-					/>
-					<VideoConfController
-						primary={controllersConfig.cam}
-						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCam}
-					/>
-				</VideoConfModalControllers>
+				{(showMic || showCam) && (
+					<VideoConfModalControllers>
+						{showMic && (
+							<VideoConfController
+								primary={controllersConfig.mic}
+								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+								onClick={handleToggleMic}
+							/>
+						)}
+						{showCam && (
+							<VideoConfController
+								primary={controllersConfig.cam}
+								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								icon={controllersConfig.cam ? 'video' : 'video-off'}
+								onClick={handleToggleCam}
+							/>
+						)}
+					</VideoConfModalControllers>
+				)}
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
 				<VideoConfButton onClick={handleJoinCall} primary>

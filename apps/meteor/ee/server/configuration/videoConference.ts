@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
 import { onLicense } from '../../app/license/server';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
-import { Rooms } from '../../../app/models/server/raw';
 import { addSettings } from '../settings/video-conference';
 
 Meteor.startup(() =>

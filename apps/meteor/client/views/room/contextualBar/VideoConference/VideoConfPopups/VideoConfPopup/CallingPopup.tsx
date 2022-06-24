@@ -16,7 +16,7 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../../components/avatar/RoomAvatar';
-import { useVideoConfChangePreference } from '../../../../../../contexts/VideoConfContext';
+import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 
 type CallingPopupProps = {
 	id: string;
@@ -24,27 +24,32 @@ type CallingPopupProps = {
 	onClose: (id: string) => void;
 };
 
+// TODO: Replace RoomAvatar to UserAvatar and avoid using subscription???
 const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
-	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
-	const changePreference = useVideoConfChangePreference();
+	const videoConfPreferences = useVideoConfPreferences();
+	const setPreferences = useVideoConfSetPreferences();
+	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers(videoConfPreferences);
+	const capabilities = useVideoConfCapabilities();
+
+	const showCam = !!capabilities.cam;
+	const showMic = !!capabilities.mic;
 
 	const handleToggleMicPref = useMutableCallback(() => {
-		changePreference('mic', !controllersConfig.mic);
 		handleToggleMic();
+		setPreferences({ mic: !controllersConfig.mic });
 	});
 
 	const handleToggleCamPref = useMutableCallback(() => {
-		changePreference('cam', !controllersConfig.cam);
 		handleToggleCam();
+		setPreferences({ cam: !controllersConfig.cam });
 	});
 
 	return (
 		<VideoConfPopup>
 			<VideoConfPopupContent>
-				{/* Design Team has planned x48 */}
 				<RoomAvatar room={room} size='x40' />
 				<VideoConfPopupTitle text='Calling' icon='phone-out' counter />
 				{directUserId && (
@@ -53,27 +58,33 @@ const CallingPopup = ({ room, onClose, id }: CallingPopupProps): ReactElement =>
 						<Box mis='x8' display='flex'>
 							<Box>{room.fname}</Box>
 							<Box mis='x4' color='neutral-600'>
-								(object Object)
+								{`(${room.name})`}
 							</Box>
 						</Box>
 					</Box>
 				)}
-				<VideoConfPopupControllers>
-					<VideoConfController
-						primary={controllersConfig.mic}
-						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMicPref}
-					/>
-					<VideoConfController
-						primary={controllersConfig.cam}
-						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCamPref}
-					/>
-				</VideoConfPopupControllers>
+				{(showCam || showMic) && (
+					<VideoConfPopupControllers>
+						{showMic && (
+							<VideoConfController
+								primary={controllersConfig.mic}
+								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+								onClick={handleToggleMicPref}
+							/>
+						)}
+						{showCam && (
+							<VideoConfController
+								primary={controllersConfig.cam}
+								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								icon={controllersConfig.cam ? 'video' : 'video-off'}
+								onClick={handleToggleCamPref}
+							/>
+						)}
+					</VideoConfPopupControllers>
+				)}
 				<VideoConfPopupFooter>
 					{onClose && (
 						<VideoConfButton primary icon='phone-disabled' onClick={(): void => onClose(id)}>

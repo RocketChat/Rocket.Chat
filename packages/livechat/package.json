@@ -76,7 +76,7 @@
 		"url-loader": "^4.1.0",
 		"webpack": "^4.44.1",
 		"webpack-cli": "^3.3.12",
-		"webpack-dev-server": "^3.11.0"
+		"webpack-dev-server": "^4.9.2"
 	},
 	"dependencies": {
 		"@rocket.chat/fuselage-tokens": "~0.31.11",

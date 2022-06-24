@@ -1,4 +1,4 @@
-import { LivechatRooms, LivechatAgentActivity } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatAgentActivity } from '@rocket.chat/models';
 
 const findAllAverageServiceTimeAsync = async ({ start, end, options = {} }) => {
 	if (!start || !end) {

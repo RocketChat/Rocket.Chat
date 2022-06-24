@@ -5,7 +5,7 @@ import { Unsubscribe } from 'use-subscription';
 
 import GenericModal from '../components/GenericModal';
 import { VideoConfContext, VideoConfPopupPayload } from '../contexts/VideoConfContext';
-import { VideoConfManager, DirectCallParams } from '../lib/VideoConfManager';
+import { VideoConfManager, DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
@@ -53,7 +53,6 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			rejectIncomingCall: (callId: string): void => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: (): void => VideoConfManager.abortCall(),
 			setPreferences: (prefs: Partial<typeof VideoConfManager['preferences']>): void => VideoConfManager.setPreferences(prefs),
-			changePreference: (key: 'cam' | 'mic', value: boolean): void => VideoConfManager.changePreference(key, value),
 			queryIncomingCalls: {
 				getCurrentValue: (): DirectCallParams[] => VideoConfManager.getIncomingDirectCalls(),
 				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('incoming/changed', cb),
@@ -61,6 +60,22 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			queryRinging: {
 				getCurrentValue: (): boolean => VideoConfManager.isRinging(),
 				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('ringing/changed', cb),
+			},
+			queryCalling: {
+				getCurrentValue: (): boolean => VideoConfManager.isCalling(),
+				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('calling/changed', cb),
+			},
+			queryCapabilities: {
+				getCurrentValue: (): ProviderCapabilities => VideoConfManager.capabilities,
+				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('capabilities/changed', cb),
+			},
+			queryPreferences: {
+				getCurrentValue: (): CallPreferences => VideoConfManager.preferences,
+				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('preference/changed', cb),
+			},
+			queryAvailable: {
+				getCurrentValue: (): boolean => VideoConfManager.available,
+				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('availability/changed', cb),
 			},
 		}),
 		[],

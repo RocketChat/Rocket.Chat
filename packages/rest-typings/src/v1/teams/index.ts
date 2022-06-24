@@ -25,8 +25,8 @@ type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' |
 interface IUserInfo {
 	_id: string;
 	username?: string;
-	name: string;
-	status: string;
+	name?: string;
+	status?: string;
 	settings?: Record<string, any>;
 }
 interface ITeamMemberInfo {

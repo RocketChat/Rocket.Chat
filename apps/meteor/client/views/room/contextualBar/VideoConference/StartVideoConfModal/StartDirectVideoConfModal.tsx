@@ -17,7 +17,7 @@ import React, { ReactElement } from 'react';
 
 import ReactiveUserStatus from '../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useVideoConfSetPreferences } from '../../../../../contexts/VideoConfContext';
+import { useVideoConfSetPreferences, useVideoConfCapabilities } from '../../../../../contexts/VideoConfContext';
 
 type StartDirectVideoConfModalProps = {
 	room: IDirectMessageRoom;
@@ -30,6 +30,10 @@ const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm }: StartDirec
 	const t = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
+	const capabilities = useVideoConfCapabilities();
+
+	const showCam = !!capabilities.cam;
+	const showMic = !!capabilities.mic;
 
 	const handleStartCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);
@@ -45,22 +49,28 @@ const StartDirectVideoConfModal = ({ room, uid, onClose, onConfirm }: StartDirec
 					<ReactiveUserStatus uid={uid} />
 					<Box mis='x8'>{room.fname}</Box>
 				</VideoConfModalInfo>
-				<VideoConfModalControllers>
-					<VideoConfController
-						primary={controllersConfig.mic}
-						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMic}
-					/>
-					<VideoConfController
-						primary={controllersConfig.cam}
-						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCam}
-					/>
-				</VideoConfModalControllers>
+				{(showMic || showCam) && (
+					<VideoConfModalControllers>
+						{showMic && (
+							<VideoConfController
+								primary={controllersConfig.mic}
+								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+								onClick={handleToggleMic}
+							/>
+						)}
+						{showCam && (
+							<VideoConfController
+								primary={controllersConfig.cam}
+								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								icon={controllersConfig.cam ? 'video' : 'video-off'}
+								onClick={handleToggleCam}
+							/>
+						)}
+					</VideoConfModalControllers>
+				)}
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
 				<VideoConfButton onClick={handleStartCall} primary icon='phone'>

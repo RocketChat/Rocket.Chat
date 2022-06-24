@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
-export const useVideoConfControllers = () => {
-  const [controllersConfig, setControllersConfig] = useState({ mic: true, cam: false });
+export const useVideoConfControllers = (initialPreferences: { mic?: boolean; cam?: boolean } = { mic: true, cam: false }) => {
+  const [controllersConfig, setControllersConfig] = useState(initialPreferences);
 
   const handleToggleMic = useCallback((): void => {
     setControllersConfig((prevState) => ({ ...prevState, mic: !prevState.mic }));

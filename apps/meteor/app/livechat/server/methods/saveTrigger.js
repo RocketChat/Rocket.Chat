@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { LivechatTrigger } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatTrigger } from '../../../models/server/raw';
 
 Meteor.methods({
 	async 'livechat:saveTrigger'(trigger) {

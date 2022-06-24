@@ -1,5 +1,5 @@
 import { IRoom } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import {
@@ -14,11 +14,13 @@ import {
 	VideoConfPopupIndicators,
 	VideoConfPopupClose,
 } from '@rocket.chat/ui-video-conf';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';
 import RoomAvatar from '../../../../../../components/avatar/RoomAvatar';
 import { useVideoConfSetPreferences } from '../../../../../../contexts/VideoConfContext';
+import { AsyncStatePhase } from '../../../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../../../hooks/useEndpointData';
 
 type ReceivingPopupProps = {
 	id: string;
@@ -31,12 +33,18 @@ type ReceivingPopupProps = {
 	onConfirm: () => void;
 };
 
+// TODO: Replace RoomAvatar to UserAvatar and avoid using subscription???
 const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, onConfirm }: ReceivingPopupProps): ReactElement => {
 	const t = useTranslation();
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
+
+	const params = useMemo(() => ({ callId: id }), [id]);
+	const { phase, value } = useEndpointData('/v1/video-conference.info', params);
+	const showMic = Boolean(value?.capabilities?.mic);
+	const showCam = Boolean(value?.capabilities?.cam);
 
 	const handleJoinCall = useMutableCallback(() => {
 		setPreferences(controllersConfig);
@@ -46,7 +54,6 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 	return (
 		<VideoConfPopup position={position}>
 			<VideoConfPopupContent>
-				{/* Design Team has planned x48 */}
 				<VideoConfPopupClose title={t('Close')} onClick={(): void => onMute(id)} />
 				<RoomAvatar room={room} size='x40' />
 				{current && total ? <VideoConfPopupIndicators current={current} total={total} /> : null}
@@ -57,27 +64,34 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 						<Box mis='x8' display='flex'>
 							<Box>{room.fname}</Box>
 							<Box mis='x4' color='neutral-600'>
-								(object Object)
+								{`${room.name}`}
 							</Box>
 						</Box>
 					</Box>
 				)}
-				<VideoConfPopupControllers>
-					<VideoConfController
-						primary={controllersConfig.mic}
-						text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-						icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-						onClick={handleToggleMic}
-					/>
-					<VideoConfController
-						primary={controllersConfig.cam}
-						text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-						icon={controllersConfig.cam ? 'video' : 'video-off'}
-						onClick={handleToggleCam}
-					/>
-				</VideoConfPopupControllers>
+				{phase === AsyncStatePhase.LOADING && <Skeleton />}
+				{phase === AsyncStatePhase.RESOLVED && (showMic || showCam) && (
+					<VideoConfPopupControllers>
+						{showMic && (
+							<VideoConfController
+								primary={controllersConfig.mic}
+								text={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
+								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
+								onClick={handleToggleMic}
+							/>
+						)}
+						{showCam && (
+							<VideoConfController
+								primary={controllersConfig.cam}
+								text={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
+								icon={controllersConfig.cam ? 'video' : 'video-off'}
+								onClick={handleToggleCam}
+							/>
+						)}
+					</VideoConfPopupControllers>
+				)}
 				<VideoConfPopupFooter>
 					<VideoConfButton primary onClick={handleJoinCall}>
 						{t('Accept')}
