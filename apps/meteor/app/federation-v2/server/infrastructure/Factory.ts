@@ -66,14 +66,20 @@ export class FederationFactory {
 		);
 	}
 
-	public static buildEventHandlers(roomServiceReceive: FederationRoomServiceReceiver): MatrixEventsHandler {
-		return new MatrixEventsHandler(FederationFactory.getEventHandlers(roomServiceReceive));
+	public static buildEventHandlers(
+		roomServiceReceive: FederationRoomServiceReceiver,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+	): MatrixEventsHandler {
+		return new MatrixEventsHandler(FederationFactory.getEventHandlers(roomServiceReceive, rocketSettingsAdapter));
 	}
 
-	public static getEventHandlers(roomServiceReceive: FederationRoomServiceReceiver): any[] {
+	public static getEventHandlers(
+		roomServiceReceive: FederationRoomServiceReceiver,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+	): any[] {
 		return [
 			new MatrixRoomCreatedHandler(roomServiceReceive),
-			new MatrixRoomMembershipChangedHandler(roomServiceReceive),
+			new MatrixRoomMembershipChangedHandler(roomServiceReceive, rocketSettingsAdapter),
 			new MatrixRoomMessageSentHandler(roomServiceReceive),
 		];
 	}

@@ -21,7 +21,7 @@ const federationRoomServiceReceiver = FederationFactoryEE.buildRoomServiceReceiv
 	rocketSettingsAdapter,
 	federationEE,
 );
-const federationEventsHandler = FederationFactoryEE.buildEventHandlers(federationRoomServiceReceiver);
+const federationEventsHandler = FederationFactoryEE.buildEventHandlers(federationRoomServiceReceiver, rocketSettingsAdapter);
 
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapter,

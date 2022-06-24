@@ -146,9 +146,6 @@ export class MatrixBridge implements IFederationBridge {
 			registration: AppServiceRegistration.fromObject(this.homeServerRegistrationFile as AppServiceOutput),
 			disableStores: true,
 			controller: {
-				onAliasQuery: (alias, matrixRoomId): void => {
-					console.log('onAliasQuery', alias, matrixRoomId);
-				},
 				onEvent: async (request /* , context*/): Promise<void> => {
 					// Get the event
 					const event = request.getData() as unknown as IMatrixEvent<MatrixEventType>;

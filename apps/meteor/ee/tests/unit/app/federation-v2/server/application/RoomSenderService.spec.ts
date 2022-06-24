@@ -171,24 +171,6 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 			expect(userAdapter.createFederatedUser.calledWith(invitee)).to.be.true;
 		});
 
-		it('should create, invite and join the user to the room in the proxy home server if the invitee is from the same homeserver', async () => {
-			bridge.isUserIdFromTheSameHomeserver.returns(true);
-			userAdapter.getFederatedUserByInternalId.resolves(user);
-			room.externalId = 'externalRoomId';
-			roomAdapter.getFederatedRoomByInternalId.resolves(room);
-			userAdapter.getFederatedUserByInternalUsername.onCall(0).resolves(undefined);
-			userAdapter.getFederatedUserByInternalUsername.onCall(1).resolves(user);
-			settingsAdapter.getHomeServerDomain.returns('domain');
-			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
-			bridge.inviteToRoom.returns(new Promise((resolve) => resolve({})));
-			bridge.joinRoom.returns(new Promise((resolve) => resolve({})));
-
-			expect(bridge.createUser.calledWith(invitees[0].inviteeUsernameOnly, undefined, 'domain')).to.be.true;
-			expect(bridge.inviteToRoom.calledWith('externalRoomId', undefined, undefined)).to.be.true;
-			expect(bridge.joinRoom.calledWith('externalRoomId', undefined)).to.be.true;
-			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
-		});
-
 		it('should NOT create the invitee (from a different homeserver) user if the user already exists', async () => {
 			bridge.isUserIdFromTheSameHomeserver.returns(false);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
@@ -230,7 +212,6 @@ describe('FederationEE - Application - FederationRoomServiceSenderEE', () => {
 			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
 
 			expect(bridge.inviteToRoom.calledWith('externalRoomId', undefined, undefined)).to.be.true;
-			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
 		});
 	});
 

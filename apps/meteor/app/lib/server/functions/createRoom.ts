@@ -29,8 +29,6 @@ export const createRoom = function <T extends RoomType>(
 ): unknown {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
-	console.log({ members });
-	console.log( { type, name, owner: ownerUsername, readOnly, extraData, options });
 
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });

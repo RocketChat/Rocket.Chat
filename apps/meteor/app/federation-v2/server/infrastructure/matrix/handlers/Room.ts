@@ -1,4 +1,5 @@
 import { FederationRoomServiceReceiver } from '../../../application/RoomServiceReceiver';
+import { RocketChatSettingsAdapter } from '../../rocket-chat/adapters/Settings';
 import { MatrixRoomReceiverConverter } from '../converters/RoomReceiver';
 import { IMatrixEvent } from '../definitions/IMatrixEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';
@@ -15,12 +16,14 @@ export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler<MatrixEvent
 }
 
 export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler<MatrixEventType.ROOM_MEMBERSHIP_CHANGED> {
-	constructor(private roomService: FederationRoomServiceReceiver) {
+	constructor(private roomService: FederationRoomServiceReceiver, private rocketSettingsAdapter: RocketChatSettingsAdapter) {
 		super(MatrixEventType.ROOM_MEMBERSHIP_CHANGED);
 	}
 
 	public async handle(externalEvent: IMatrixEvent<MatrixEventType.ROOM_MEMBERSHIP_CHANGED>): Promise<void> {
-		await this.roomService.changeRoomMembership(MatrixRoomReceiverConverter.toChangeRoomMembershipDto(externalEvent));
+		await this.roomService.changeRoomMembership(
+			MatrixRoomReceiverConverter.toChangeRoomMembershipDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+		);
 	}
 }
 

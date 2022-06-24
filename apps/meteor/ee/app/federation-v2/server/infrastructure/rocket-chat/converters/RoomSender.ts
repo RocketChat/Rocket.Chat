@@ -1,5 +1,4 @@
 import { IUser } from '@rocket.chat/core-typings';
-import { settings } from '../../../../../../../app/settings/server';
 
 import {
 	FederationBeforeAddUserToARoomDto,
@@ -62,7 +61,8 @@ export class FederationRoomSenderConverterEE {
 		homeServerDomainName: string,
 	): FederationOnUsersAddedToARoomDto {
 		const externalInviteesUsername: string[] = FederationRoomSenderConverterEE.getInviteesUsername(externalInvitees);
-		const externalInviterId = internalInviterUsername.includes(':') &&  internalInviterUsername !== settings.get('Federation_Matrix_homeserver_domain') ? internalInviterId : undefined;
+		const externalInviterId =
+			internalInviterUsername.includes(':') && internalInviterUsername !== homeServerDomainName ? internalInviterId : undefined;
 
 		const withoutOwner = externalInviteesUsername.filter(Boolean).filter((inviteeUsername) => inviteeUsername !== internalInviterUsername);
 		const users = FederationRoomSenderConverterEE.normalizeInvitees(withoutOwner, homeServerDomainName);
@@ -71,7 +71,7 @@ export class FederationRoomSenderConverterEE {
 			internalInviterId,
 			internalRoomId,
 			invitees: users,
-			...(externalInviterId ? { externalInviterId }: {}),
+			...(externalInviterId ? { externalInviterId } : {}),
 		});
 	}
 
@@ -103,7 +103,7 @@ export class FederationRoomSenderConverterEE {
 			internalInviterId,
 			internalRoomId,
 			invitees: users,
-			...(externalInviterId ? { externalInviterId }: {}),
+			...(externalInviterId ? { externalInviterId } : {}),
 		});
 	}
 
@@ -120,10 +120,7 @@ export class FederationRoomSenderConverterEE {
 		});
 	}
 
-	public static toBeforeAddUserToARoomDto(
-		members: (IUser | string)[],
-		homeServerDomainName: string,
-	): FederationBeforeAddUserToARoomDto {
+	public static toBeforeAddUserToARoomDto(members: (IUser | string)[], homeServerDomainName: string): FederationBeforeAddUserToARoomDto {
 		return FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(
 			members,
 			homeServerDomainName,

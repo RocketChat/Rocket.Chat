@@ -20,7 +20,7 @@ import {
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
 } from './input/RoomSenderDto';
-require('util').inspect.defaultOptions.depth = null;
+
 export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	constructor(
 		protected rocketRoomAdapter: RocketChatRoomAdapterEE,
@@ -162,11 +162,7 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 			const internalUser = (await this.rocketUserAdapter.getInternalUserById(internalInviterId)) as IUser;
 			const username = internalUser?.username || internalInviterId;
 			const name = internalUser?.name || internalInviterId;
-			const externalInviterId = await this.bridge.createUser(
-				username,
-				name,
-				this.rocketSettingsAdapter.getHomeServerDomain(),
-			);
+			const externalInviterId = await this.bridge.createUser(username, name, this.rocketSettingsAdapter.getHomeServerDomain());
 			const federatedInviterUser = FederatedUser.createInstance(externalInviterId, {
 				name,
 				username,
