@@ -1,9 +1,9 @@
 import moment from 'moment-timezone';
 import { Mongo } from 'meteor/mongo';
 import { ILivechatBusinessHour, IBusinessHourWorkHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import { LivechatBusinessHours, Permissions, Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
-import { LivechatBusinessHours, Permissions, Settings } from '../../../app/models/server/raw';
 
 const migrateCollection = async (): Promise<void> => {
 	const LivechatOfficeHour = new Mongo.Collection<IBusinessHourWorkHour>('rocketchat_livechat_office_hour');

@@ -23,9 +23,11 @@ const config: PlaywrightTestConfig = {
 		baseURL,
 	},
 	outputDir: 'tests/e2e/test-failures',
-	reporter: [['list']],
+	reporter: process.env.CI ? 'github' : 'list',
 	testDir: 'tests/e2e',
 	retries: 3,
 	workers: 1,
+	timeout: 42 * 1000,
 };
+
 export default config;

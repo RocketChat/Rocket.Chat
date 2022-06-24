@@ -1,5 +1,6 @@
+import { LivechatInquiry } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { LivechatInquiry } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 186,

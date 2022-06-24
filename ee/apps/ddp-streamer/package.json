@@ -15,6 +15,8 @@
 		"@rocket.chat/apps-engine": "^1.31.0",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.9",
+		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.9",
 		"@rocket.chat/ui-contexts": "workspace:^",
@@ -27,7 +29,7 @@
 		"mongodb": "^3.6.10",
 		"nats": "^2.4.0",
 		"pino": "^7.9.2",
-		"sharp": "^0.30.4",
+		"sharp": "^0.30.6",
 		"uuid": "^7.0.3",
 		"ws": "^8.5.0"
 	},

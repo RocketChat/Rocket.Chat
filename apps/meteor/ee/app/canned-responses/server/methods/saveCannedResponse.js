@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../../../app/authorization';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
-import { Users } from '../../../../../app/models';
+import { Users } from '../../../../../app/models/server';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 Meteor.methods({

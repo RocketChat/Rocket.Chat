@@ -1,15 +1,11 @@
 import { createContext } from 'react';
-import type { Subscription, Unsubscribe } from 'use-subscription';
 
 export type SessionContextValue = {
-	query: (name: string) => Subscription<unknown>;
+	query: (name: string) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => unknown];
 	dispatch: (name: string, value: unknown) => void;
 };
 
 export const SessionContext = createContext<SessionContextValue>({
-	query: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
+	query: () => [() => (): void => undefined, (): undefined => undefined],
 	dispatch: (): void => undefined,
 });
