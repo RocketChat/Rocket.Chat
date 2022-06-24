@@ -1,4 +1,4 @@
-import { Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
@@ -37,9 +37,7 @@ function MonitorsRow(props) {
 			<Table.Cell withTruncatedText>{username}</Table.Cell>
 			<Table.Cell withTruncatedText>{emails?.find(({ address }) => !!address)?.address}</Table.Cell>
 			<Table.Cell withTruncatedText>
-				<Button small ghost title={t('Remove')} onClick={handleRemove}>
-					<Icon name='trash' size='x16' />
-				</Button>
+				<IconButton icon='trash' mini title={t('Remove')} onClick={handleRemove} />
 			</Table.Cell>
 		</Table.Row>
 	);

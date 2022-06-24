@@ -11,6 +11,7 @@
 		"build:ci": "turbo run build:ci",
 		"testunit": "turbo run testunit",
 		"dev": "turbo run dev --parallel --filter=@rocket.chat/meteor...",
+		"dsv": "turbo run dsv --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
 	},
@@ -55,5 +56,8 @@
 	"volta": {
 		"node": "14.18.3",
 		"yarn": "1.22.18"
+	},
+	"resolutions": {
+		"minimist": "1.2.6"
 	}
 }

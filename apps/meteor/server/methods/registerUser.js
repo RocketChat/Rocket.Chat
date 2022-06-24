@@ -4,8 +4,8 @@ import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
-import { Users } from '../../app/models';
-import { settings } from '../../app/settings';
+import { Users } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
 import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib';
 import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
 

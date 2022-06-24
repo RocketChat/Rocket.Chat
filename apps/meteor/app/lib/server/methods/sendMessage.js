@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { messageProperties } from '../../../ui-utils';
 import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
