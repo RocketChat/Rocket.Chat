@@ -1,8 +1,6 @@
 import type { SyncedCron } from 'meteor/littledata:synced-cron';
 import { VideoConference } from '@rocket.chat/models';
 
-import { settings } from '../../app/settings/server';
-
 // 24 hours
 const VIDEO_CONFERENCE_TTL = 24 * 60 * 60 * 1000;
 
@@ -13,16 +11,13 @@ async function runVideoConferences(): Promise<void> {
 }
 
 export function videoConferencesCron(syncedCron: typeof SyncedCron): void {
-	settings.watch('VideoConf_Enabled', (value) => {
-		if (!value) {
-			return syncedCron.remove('VideoConferences');
-		}
-		syncedCron.add({
-			name: 'VideoConferences',
-			schedule(parser: any) {
-				return parser.cron('0 */3 * * *');
-			},
-			job: runVideoConferences,
-		});
+	runVideoConferences();
+
+	syncedCron.add({
+		name: 'VideoConferences',
+		schedule(parser: any) {
+			return parser.cron('0 */3 * * *');
+		},
+		job: runVideoConferences,
 	});
 }
