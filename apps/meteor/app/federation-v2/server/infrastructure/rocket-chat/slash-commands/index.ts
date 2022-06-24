@@ -32,7 +32,7 @@ const executeSlashCommand = async (
 		return;
 	}
 
-	const [command, ...params] = stringParams.split(' ');
+	const [command, ...params] = stringParams.trim().split(' ');
 	const [rawUserId] = params;
 	const currentUserId = Meteor.userId();
 	if (!currentUserId || !commands[command]) {
