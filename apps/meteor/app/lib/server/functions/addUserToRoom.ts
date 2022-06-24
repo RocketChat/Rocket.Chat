@@ -35,11 +35,9 @@ export const addUserToRoom = function (
 	const username = typeof user === 'string' ? user.replace('@', '') : user.username;
 
 	const userToBeAdded = Users.findOneByUsername(username);
-	console.log({userToBeAdded})
 
 	// Check if user is already in room
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	console.log({subscription})
 	if (subscription) {
 		return;
 	}

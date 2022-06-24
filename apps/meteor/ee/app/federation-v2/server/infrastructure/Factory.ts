@@ -57,9 +57,12 @@ export class FederationFactoryEE {
 		);
 	}
 
-	public static buildEventHandlers(roomServiceReceive: FederationRoomServiceReceiverEE): MatrixEventsHandlerEE {
+	public static buildEventHandlers(
+		roomServiceReceive: FederationRoomServiceReceiverEE,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+	): MatrixEventsHandlerEE {
 		const EVENT_HANDLERS = [
-			...FederationFactory.getEventHandlers(roomServiceReceive),
+			...FederationFactory.getEventHandlers(roomServiceReceive, rocketSettingsAdapter),
 			new MatrixRoomJoinRulesChangedHandler(roomServiceReceive),
 			new MatrixRoomNameChangedHandler(roomServiceReceive),
 			new MatrixRoomTopicChangedHandler(roomServiceReceive),
@@ -110,9 +113,7 @@ export class FederationFactoryEE {
 			),
 		);
 		FederationHooksEE.beforeAddUserToARoom(async (user: IUser | string) =>
-			roomServiceSender.beforeAddUserToARoom(
-				FederationRoomSenderConverterEE.toBeforeAddUserToARoomDto([user], homeServerDomain),
-			),
+			roomServiceSender.beforeAddUserToARoom(FederationRoomSenderConverterEE.toBeforeAddUserToARoomDto([user], homeServerDomain)),
 		);
 	}
 

@@ -1,8 +1,8 @@
 import type { IRoom, ILivechatVisitor, ILivechatDepartment } from '@rocket.chat/core-typings';
+import { LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
-import { LivechatDepartment } from '../../../../../app/models/server/raw';
 import { Messages } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
 

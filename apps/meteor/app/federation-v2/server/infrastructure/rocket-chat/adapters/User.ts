@@ -1,7 +1,7 @@
 import { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { MatrixBridgedUser } from '../../../../../models/server';
-import { Users } from '../../../../../models/server/raw';
 import { FederatedUser } from '../../../domain/FederatedUser';
 
 export class RocketChatUserAdapter {
@@ -13,7 +13,9 @@ export class RocketChatUserAdapter {
 
 		const user = await Users.findOneById(internalBridgedUserId);
 
-		return this.createFederatedUserInstance(externalUserId, user);
+		if (user) {
+			return this.createFederatedUserInstance(externalUserId, user);
+		}
 	}
 
 	public async getFederatedUserByInternalId(internalUserId: string): Promise<FederatedUser | undefined> {
@@ -24,7 +26,9 @@ export class RocketChatUserAdapter {
 		const { uid: userId, mui: externalUserId } = internalBridgedUserId;
 		const user = await Users.findOneById(userId);
 
-		return this.createFederatedUserInstance(externalUserId, user);
+		if (user) {
+			return this.createFederatedUserInstance(externalUserId, user);
+		}
 	}
 
 	public async getFederatedUserByInternalUsername(username: string): Promise<FederatedUser | undefined> {
@@ -41,12 +45,12 @@ export class RocketChatUserAdapter {
 		return this.createFederatedUserInstance(externalUserId, user);
 	}
 
-	public async getInternalUserById(userId: string): Promise<IUser | undefined> {
+	public async getInternalUserById(userId: string): Promise<IUser | null> {
 		return Users.findOneById(userId);
 	}
 
 	public async createFederatedUser(federatedUser: FederatedUser): Promise<void> {
-		const existingLocalUser = await Users.findOneByUsername(federatedUser.internalReference.username);
+		const existingLocalUser = await Users.findOneByUsername(federatedUser.internalReference.username || '');
 		if (existingLocalUser) {
 			await Users.setAsFederated(existingLocalUser._id);
 			return MatrixBridgedUser.upsert(
@@ -66,6 +70,7 @@ export class RocketChatUserAdapter {
 			roles: federatedUser.internalReference.roles,
 			name: federatedUser.internalReference.name,
 			requirePasswordChange: federatedUser.internalReference.requirePasswordChange,
+			createdAt: new Date(),
 			federated: true,
 		});
 		MatrixBridgedUser.upsert(

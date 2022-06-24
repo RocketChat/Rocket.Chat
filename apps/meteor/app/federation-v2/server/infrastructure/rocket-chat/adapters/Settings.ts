@@ -1,8 +1,8 @@
 import yaml from 'js-yaml';
 import { SHA256 } from 'meteor/sha';
 import { v4 as uuidv4 } from 'uuid';
+import { Settings } from '@rocket.chat/models';
 
-import { Settings } from '../../../../../models/server/raw';
 import { settings, settingsRegistry } from '../../../../../settings/server';
 
 const EVERYTHING_REGEX = '.*';

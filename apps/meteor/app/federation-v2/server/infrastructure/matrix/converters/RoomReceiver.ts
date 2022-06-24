@@ -1,5 +1,4 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { settings } from '../../../../../settings/server';
 
 import {
 	FederationRoomChangeMembershipDto,
@@ -27,6 +26,7 @@ export class MatrixRoomReceiverConverter {
 
 	public static toChangeRoomMembershipDto(
 		externalEvent: IMatrixEvent<MatrixEventType.ROOM_MEMBERSHIP_CHANGED>,
+		homeServerDomain: string,
 	): FederationRoomChangeMembershipDto {
 		return Object.assign(new FederationRoomChangeMembershipDto(), {
 			...MatrixRoomReceiverConverter.getBasicRoomsFields(externalEvent.room_id),
@@ -40,7 +40,7 @@ export class MatrixRoomReceiverConverter {
 			normalizedInviteeId: MatrixRoomReceiverConverter.convertMatrixUserIdFormatToRCFormat(externalEvent.state_key),
 			inviteeUsernameOnly: MatrixRoomReceiverConverter.formatMatrixUserIdToRCUsernameFormat(externalEvent.state_key),
 			inviterUsernameOnly: MatrixRoomReceiverConverter.formatMatrixUserIdToRCUsernameFormat(externalEvent.sender),
-			eventOrigin: MatrixRoomReceiverConverter.getEventOrigin(externalEvent.sender, externalEvent.state_key),
+			eventOrigin: MatrixRoomReceiverConverter.getEventOrigin(externalEvent.sender, homeServerDomain),
 			leave: externalEvent.content?.membership === AddMemberToRoomMembership.LEAVE,
 		});
 	}
@@ -69,9 +69,8 @@ export class MatrixRoomReceiverConverter {
 		return matrixUserId.split(':')[0]?.replace('@', '');
 	}
 
-	protected static getEventOrigin(inviterId = '', inviteeId = ''): EVENT_ORIGIN {
-		const fromADifferentServer =
-			MatrixRoomReceiverConverter.extractServerNameFromMatrixUserId(inviterId) !== settings.get('Federation_Matrix_homeserver_domain')
+	protected static getEventOrigin(inviterId = '', homeServerDomain: string): EVENT_ORIGIN {
+		const fromADifferentServer = MatrixRoomReceiverConverter.extractServerNameFromMatrixUserId(inviterId) !== homeServerDomain;
 
 		return fromADifferentServer ? EVENT_ORIGIN.REMOTE : EVENT_ORIGIN.LOCAL;
 	}

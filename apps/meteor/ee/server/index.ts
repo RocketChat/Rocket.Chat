@@ -1,6 +1,6 @@
 import './startup';
 
-import '../app/models';
+import '../app/models/server';
 import '../app/license/server/index';
 import '../app/api-enterprise/server/index';
 import '../app/auditing/server/index';
