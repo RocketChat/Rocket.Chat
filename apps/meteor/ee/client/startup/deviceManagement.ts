@@ -12,9 +12,9 @@ const [registerAdminRouter, unregisterAdminRouter] = registerAdminRoute('/device
 	ready: false,
 });
 
-const [registerAccountRouter, unregisterAccountRouter] = registerAccountRoute('/device-management/', {
-	name: 'my-devices',
-	component: lazy(() => import('../views/account/deviceManagement/DeviceManagementAccountRoute')),
+const [registerAccountRouter, unregisterAccountRouter] = registerAccountRoute('/manage-devices/', {
+	name: 'manage-devices',
+	component: lazy(() => import('../views/account/deviceManagement/DeviceManagementAccountPage')),
 });
 
 onToggledFeature('device-management', {
@@ -27,9 +27,9 @@ onToggledFeature('device-management', {
 				permissionGranted: () => hasAllPermission('view-device-management'),
 			});
 			registerAccountSidebarItem({
-				href: '/account/device-management',
-				i18nLabel: 'Device_Management',
-				icon: 'desktop',
+				href: '/account/manage-devices',
+				i18nLabel: 'Manage_Devices',
+				icon: 'mobile',
 			});
 			registerAdminRouter();
 			registerAccountRouter();
@@ -37,7 +37,7 @@ onToggledFeature('device-management', {
 	down: () =>
 		Meteor.startup(() => {
 			unregisterAdminSidebarItem('Device_Management');
-			unregisterSidebarItem('Device_Management');
+			unregisterSidebarItem('Manage_Devices');
 			unregisterAdminRouter();
 			unregisterAccountRouter();
 		}),

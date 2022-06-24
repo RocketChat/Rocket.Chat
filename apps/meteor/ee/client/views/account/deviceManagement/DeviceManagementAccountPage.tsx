@@ -9,7 +9,7 @@ const DeviceManagementAccountPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Device_Management')} />
+			<Page.Header title={t('Manage_Devices')} />
 			<Page.Content>
 				<DeviceManagementAccountTable />
 			</Page.Content>
