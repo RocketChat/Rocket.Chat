@@ -81,14 +81,14 @@ test.describe('[Channel]', () => {
 				if (await global.getToastBar.isVisible()) {
 					await global.dismissToastBar();
 				}
-				await flexTab.operateFlexTab('members', true);
+				await flexTab.btnTabMembers.click();
 			});
 
 			test.afterAll(async () => {
 				if (await global.getToastBar.isVisible()) {
 					await global.dismissToastBar();
 				}
-				await flexTab.operateFlexTab('members', false);
+				await flexTab.btnTabMembers.click();
 			});
 
 			test('expect add people to the room', async () => {
@@ -101,7 +101,7 @@ test.describe('[Channel]', () => {
 		test.describe('[Channel settings]:', async () => {
 			test.describe('[Channel topic edit]', async () => {
 				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('info', true);
+					await flexTab.btnTabInfo.click();
 					await flexTab.editNameBtn.click();
 				});
 
@@ -129,7 +129,7 @@ test.describe('[Channel]', () => {
 
 			test.describe('[Channel announcement edit]', async () => {
 				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('info', true);
+					await flexTab.btnTabInfo.click();
 					await flexTab.editNameBtn.click();
 				});
 
@@ -157,7 +157,7 @@ test.describe('[Channel]', () => {
 
 			test.describe('[Channel description edit]', async () => {
 				test.beforeAll(async () => {
-					await flexTab.operateFlexTab('info', true);
+					await flexTab.btnTabInfo.click();
 					await flexTab.editNameBtn.click();
 				});
 
@@ -189,18 +189,18 @@ test.describe('[Channel]', () => {
 			test.describe('User muted', async () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
-						await flexTab.operateFlexTab('members', true);
+						await flexTab.btnTabMembers.click();
 						await flexTab.addPeopleToChannel(targetUser);
-						await flexTab.operateFlexTab('members', false);
+						await flexTab.btnTabMembers.click();
 					}
-					await flexTab.operateFlexTab('members', true);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test.afterAll(async () => {
 					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					await flexTab.operateFlexTab('members', false);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test('expect mute rocket cat', async () => {
@@ -211,18 +211,18 @@ test.describe('[Channel]', () => {
 			test.describe('[Owner added]', async () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
-						await flexTab.operateFlexTab('members', true);
+						await flexTab.btnTabMembers.click();
 						await flexTab.addPeopleToChannel(targetUser);
-						await flexTab.operateFlexTab('members', false);
+						await flexTab.btnTabMembers.click();
 					}
-					await flexTab.operateFlexTab('members', true);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test.afterAll(async () => {
 					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					await flexTab.operateFlexTab('members', false);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test('expect set rocket cat as owner', async () => {
@@ -247,18 +247,18 @@ test.describe('[Channel]', () => {
 			test.describe('[Moderator added]', async () => {
 				test.beforeAll(async () => {
 					if (!hasUserAddedInChannel) {
-						await flexTab.operateFlexTab('members', true);
+						await flexTab.btnTabMembers.click();
 						await flexTab.addPeopleToChannel(targetUser);
-						await flexTab.operateFlexTab('members', false);
+						await flexTab.btnTabMembers.click();
 					}
-					await flexTab.operateFlexTab('members', true);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test.afterAll(async () => {
 					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					await flexTab.operateFlexTab('members', false);
+					await flexTab.btnTabMembers.click();
 				});
 
 				test('expect set rocket cat as moderator', async () => {
@@ -275,7 +275,7 @@ test.describe('[Channel]', () => {
 					if (await global.getToastBar.isVisible()) {
 						await global.dismissToastBar();
 					}
-					await flexTab.operateFlexTab('info', true);
+					await flexTab.btnTabInfo.click();
 				});
 
 				test.afterAll(async () => {
@@ -284,7 +284,7 @@ test.describe('[Channel]', () => {
 					}
 
 					if (await flexTab.mainSideBar.isVisible()) {
-						await flexTab.operateFlexTab('info', false);
+						await flexTab.btnTabInfo.click();
 					}
 				});
 
