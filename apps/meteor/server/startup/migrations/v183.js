@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { Settings, Uploads } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 import { Rooms, Messages, Subscriptions, Users } from '../../../app/models/server';
-import { Settings, Uploads } from '../../../app/models/server/raw';
 
 const unifyRooms = (room) => {
 	// verify if other DM already exists

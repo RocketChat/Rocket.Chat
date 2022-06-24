@@ -2,13 +2,13 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users, Subscriptions } from '@rocket.chat/models';
 
 import { Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
-import { Users, Subscriptions } from '../../../models/server/raw';
 import { ICreateRoomParams } from '../../../../server/sdk/types/IRoomService';
 
 const generateSubscription = (fname: string, name: string, user: IUser, extra: {}): any => ({

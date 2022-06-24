@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { OEmbedCache } from '@rocket.chat/models';
 
-import { OEmbedCache } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 

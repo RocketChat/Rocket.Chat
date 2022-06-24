@@ -7,7 +7,7 @@ import { metrics } from '../../../metrics/server';
 import * as CONSTANTS from '../../constants';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 
 // TODO: Access Token missing. This is just a partial solution, it doesn't handle access token generation logic as present in this file - client/views/room/contextualBar/Call/Jitsi/CallJitsWithData.js
 const resolveJitsiCallUrl = (room) => {

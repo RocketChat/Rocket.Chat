@@ -2,8 +2,8 @@ import { HTTP } from 'meteor/http';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { Settings } from '../../../models';
-import { settings } from '../../../settings';
+import { Settings } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { saveRegistrationData } from './saveRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
