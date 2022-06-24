@@ -1,50 +1,43 @@
-import { Accordion, Box } from '@rocket.chat/fuselage';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Accordion } from '@rocket.chat/fuselage';
+import React, { useEffect, useState } from 'react';
 
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import AccordionLoading from './AccordionLoading';
 import ReleaseItem from './ReleaseItem';
 
-const useReleases = (id: string): void => {
-	const [, setData] = useSafely(useState({}));
-	const getAppData = useEndpoint('GET', `/apps/${id}/versions`);
-
-	const fetchData = useCallback(async () => {
-		try {
-			const { apps } = await getAppData({} as never);
-			console.log('App releases:', apps);
-			setData(apps);
-		} catch (error) {
-			setData(error);
-		}
-	}, [getAppData, setData]);
-
-	useEffect(() => {
-		fetchData();
-	}, [fetchData]);
-
-	// const total = data ? data.length : 0;
-	// const releases = data.logs ? { ...data, logs: data.logs } : data;
+type release = {
+	version: string;
+	createdDate: string;
+	detailedChangelog: {
+		raw: string;
+		rendered: string;
+	};
 };
 
 const AppReleases = ({ id }: { id: string }): JSX.Element => {
-	useReleases(id);
+	const { value } = useEndpointData(`/apps/${id}/versions`);
 
-	const title = (
-		<Box display='flex' flexDirection='row'>
-			<Box is='h4' fontWeight='700' fontSize='x16' lineHeight='x24' color='default' mie='x24'>
-				3.18.0
-			</Box>
-			<Box is='p' fontWeight='400' fontSize='x16' lineHeight='x24' color='info'>
-				2 days ago
-			</Box>
-		</Box>
-	);
+	const [releases, setReleases] = useState([] as release[]);
+
+	useEffect(() => {
+		if (value?.apps) {
+			const { apps } = value;
+
+			setReleases(
+				apps.map((app) => ({
+					version: app.version,
+					createdDate: app.createdDate,
+					detailedChangelog: app.detailedChangelog,
+				})),
+			);
+		}
+	}, [value]);
 
 	return (
 		<>
 			<Accordion width='100%' alignSelf='center'>
-				<ReleaseItem title={title} />
+				{!releases.length && <AccordionLoading />}
+				{value?.success && releases.map((release) => <ReleaseItem release={release} key={release.version} />)}
 			</Accordion>
 		</>
 	);

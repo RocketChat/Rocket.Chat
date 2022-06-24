@@ -4,8 +4,8 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect } from 'react';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import AccordionLoading from './AccordionLoading';
 import LogItem from './LogItem';
-import LogsLoading from './LogsLoading';
 
 const useAppWithLogs = ({ id }) => {
 	const [data, setData] = useSafely(useState({}));
@@ -41,7 +41,7 @@ function AppLogs({ id }) {
 
 	return (
 		<>
-			{loading && <LogsLoading />}
+			{loading && <AccordionLoading />}
 			{app.error && (
 				<Box maxWidth='x600' alignSelf='center' fontScale='hh21'>
 					{app.error.message}
