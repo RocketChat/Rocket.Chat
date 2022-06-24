@@ -10,6 +10,7 @@ export type BundleFeature =
 	| 'teams-mention'
 	| 'saml-enterprise'
 	| 'device-management'
+	| 'modal-management'
 	| 'oauth-enterprise';
 
 interface IBundle {
@@ -30,6 +31,7 @@ const bundles: IBundle = {
 		'saml-enterprise',
 		'oauth-enterprise',
 		'device-management',
+		'modal-management',
 	],
 	pro: [],
 };

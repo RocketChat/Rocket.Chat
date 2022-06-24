@@ -1,4 +1,5 @@
 import './deviceManagement';
+import './modalManagement';
 import './engagementDashboard';
 import './seatsCap';
 import './services';
