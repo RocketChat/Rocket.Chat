@@ -67,8 +67,6 @@ export const VoipFooter = ({
 		[deviceMenuOption],
 	);
 
-	console.log('VoipFooter', options, deviceMenuOption);
-
 	return (
 		<SidebarFooter elevated>
 			<Box

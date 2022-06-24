@@ -44,8 +44,6 @@ const DeviceSettingsModal = (): ReactElement => {
 		}
 	};
 
-	console.log(availableDevices);
-
 	return (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>

@@ -16,7 +16,6 @@ export const useDevicesMenuOption = (): DevicesMenuOption | null => {
 	const isEnterprise = useHasLicense('livechat-enterprise');
 	const t = useTranslation();
 	const setModal = useSetModal();
-	console.log(isEnterprise);
 
 	const option = {
 		label: (
