@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { deleteRoom } from '../../app/lib';
 import { hasPermission } from '../../app/authorization/server';
-import { Rooms, Messages } from '../../app/models';
+import { Rooms, Messages } from '../../app/models/server';
 import { Apps } from '../../app/apps/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { Team } from '../sdk';

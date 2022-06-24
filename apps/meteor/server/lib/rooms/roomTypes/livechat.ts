@@ -1,6 +1,7 @@
 import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatRooms, LivechatVisitors } from '../../../../app/models/server';
+import { LivechatRooms } from '../../../../app/models/server';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
@@ -38,7 +39,7 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	getMsgSender(senderId) {
-		return LivechatVisitors.findOneById(senderId);
+		return Promise.await(LivechatVisitors.findOneById(senderId));
 	},
 
 	getReadReceiptsExtraData(message) {
