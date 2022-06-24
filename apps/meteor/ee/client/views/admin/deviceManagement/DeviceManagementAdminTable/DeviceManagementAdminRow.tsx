@@ -4,8 +4,8 @@ import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { KeyboardEvent, ReactElement, useCallback } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
-import { useDeviceLogout } from '../useDeviceLogout';
-import DeviceIcon from './DeviceIcon';
+import DeviceIcon from '../../../../deviceManagement/components/DeviceIcon';
+import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 
 type DeviceRowProps = {
 	_id: string;
@@ -19,7 +19,7 @@ type DeviceRowProps = {
 	onReload: () => void;
 };
 
-const DevicesRow = ({
+const DeviceManagementAdminRow = ({
 	_id,
 	username,
 	ip,
@@ -35,7 +35,7 @@ const DevicesRow = ({
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const handleDeviceLogout = useDeviceLogout(_id);
+	const handleDeviceLogout = useDeviceLogout(_id, '/v1/sessions/logout');
 
 	const handleClick = useMutableCallback((): void => {
 		deviceManagementRouter.push({
@@ -85,4 +85,4 @@ const DevicesRow = ({
 	);
 };
 
-export default DevicesRow;
+export default DeviceManagementAdminRow;
