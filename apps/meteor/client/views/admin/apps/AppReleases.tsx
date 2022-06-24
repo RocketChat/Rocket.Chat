@@ -7,13 +7,13 @@ import ReleaseItem from './ReleaseItem';
 
 const useReleases = (id: string): void => {
 	const [, setData] = useSafely(useState({}));
-	const getAppData = useEndpoint('GET', `/apps/${id}`);
+	const getAppData = useEndpoint('GET', `/apps/${id}/versions`);
 
 	const fetchData = useCallback(async () => {
 		try {
-			const { app } = await getAppData({} as never);
-			console.log('App releases:', app);
-			setData(app);
+			const { apps } = await getAppData({} as never);
+			console.log('App releases:', apps);
+			setData(apps);
 		} catch (error) {
 			setData(error);
 		}
