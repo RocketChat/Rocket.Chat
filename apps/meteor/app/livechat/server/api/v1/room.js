@@ -54,7 +54,7 @@ API.v1.addRoute('livechat/room', {
 				},
 			};
 
-			room = Promise.await(getRoom({ guest, rid, agent, roomInfo, extraParams }));
+			room = await getRoom({ guest, rid, agent, roomInfo, extraParams });
 			return API.v1.success(room);
 		}
 
@@ -132,7 +132,7 @@ API.v1.addRoute('livechat/room.transfer', {
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
 
-			if (!Promise.await(Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
+			if (!(await Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 
@@ -170,7 +170,7 @@ API.v1.addRoute('livechat/room.survey', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const config = Promise.await(settings());
+			const config = await settings();
 			if (!config.survey || !config.survey.items || !config.survey.values) {
 				throw new Meteor.Error('invalid-livechat-config');
 			}
