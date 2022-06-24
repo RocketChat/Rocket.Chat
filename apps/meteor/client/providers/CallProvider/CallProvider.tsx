@@ -22,7 +22,7 @@ import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
-import { CallContext, CallContextValue, useCallCloseRoom } from '../../contexts/CallContext';
+import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { useVoipClient } from './hooks/useVoipClient';
@@ -90,8 +90,8 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	const openWrapUpModal = useCallback((): void => {
-		setModal(() => <WrapUpCallModal closeRoom={useCallCloseRoom} />);
-	}, [setModal]);
+		setModal(() => <WrapUpCallModal closeRoom={closeRoom} />);
+	}, [closeRoom, setModal]);
 
 	const handleWrapUp = useCallback(() => {
 		if (isEnterprise) {
