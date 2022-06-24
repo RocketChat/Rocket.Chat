@@ -1,4 +1,5 @@
 import { IUser } from '@rocket.chat/core-typings';
+import { settings } from '../../../../../../../app/settings/server';
 
 import {
 	FederationBeforeAddUserToARoomDto,
@@ -60,16 +61,18 @@ export class FederationRoomSenderConverterEE {
 		externalInvitees: IUser[] | string[],
 		homeServerDomainName: string,
 	): FederationOnUsersAddedToARoomDto {
-		const externalInviterId = internalInviterId.includes('@') && internalInviterId.includes(':') ? internalInviterId : undefined;
 		const externalInviteesUsername: string[] = FederationRoomSenderConverterEE.getInviteesUsername(externalInvitees);
+		const externalInviterId = internalInviterUsername.includes(':') &&  internalInviterUsername !== settings.get('Federation_Matrix_homeserver_domain') ? internalInviterId : undefined;
 
-		return FederationRoomSenderConverterEE.toOnRoomCreationDto(
+		const withoutOwner = externalInviteesUsername.filter(Boolean).filter((inviteeUsername) => inviteeUsername !== internalInviterUsername);
+		const users = FederationRoomSenderConverterEE.normalizeInvitees(withoutOwner, homeServerDomainName);
+
+		return Object.assign(new FederationOnUsersAddedToARoomDto(), {
 			internalInviterId,
-			internalInviterUsername,
 			internalRoomId,
-			externalInviteesUsername,
-			homeServerDomainName,
-		) as FederationOnUsersAddedToARoomDto;
+			invitees: users,
+			...(externalInviterId ? { externalInviterId }: {}),
+		});
 	}
 
 	public static toOnDirectMessageCreatedDto(
@@ -78,12 +81,6 @@ export class FederationRoomSenderConverterEE {
 		externalInvitees: (IUser | string)[],
 		homeServerDomainName: string,
 	): FederationOnDirectMessageRoomCreationDto {
-		console.log({
-			internalInviterId,
-			internalRoomId,
-			externalInvitees,
-			homeServerDomainName
-		})
 		const withoutOwner = externalInvitees.filter(Boolean).filter((invitee) => {
 			if (typeof invitee === 'string') {
 				return invitee;

@@ -1,4 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { settings } from '../../../../../settings/server';
 
 import {
 	FederationRoomChangeMembershipDto,
@@ -70,8 +71,7 @@ export class MatrixRoomReceiverConverter {
 
 	protected static getEventOrigin(inviterId = '', inviteeId = ''): EVENT_ORIGIN {
 		const fromADifferentServer =
-			MatrixRoomReceiverConverter.extractServerNameFromMatrixUserId(inviterId) !==
-			MatrixRoomReceiverConverter.extractServerNameFromMatrixUserId(inviteeId);
+			MatrixRoomReceiverConverter.extractServerNameFromMatrixUserId(inviterId) !== settings.get('Federation_Matrix_homeserver_domain')
 
 		return fromADifferentServer ? EVENT_ORIGIN.REMOTE : EVENT_ORIGIN.LOCAL;
 	}

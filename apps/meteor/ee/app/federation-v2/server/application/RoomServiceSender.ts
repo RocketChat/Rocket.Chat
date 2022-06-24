@@ -54,7 +54,6 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 
 	public async onDirectMessageRoomCreation(dmRoomOnCreationInput: FederationOnDirectMessageRoomCreationDto): Promise<void> {
 		const { internalRoomId, internalInviterId, invitees, externalInviterId } = dmRoomOnCreationInput;
-		console.log({ dmRoomOnCreationInput })
 		if (invitees.length === 0 || externalInviterId) {
 			return;
 		}
@@ -91,7 +90,6 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 
 	public async onUsersAddedToARoom(roomOnUsersAddedToARoomInput: FederationOnUsersAddedToARoomDto): Promise<void> {
 		const { internalInviterId, internalRoomId, invitees, externalInviterId } = roomOnUsersAddedToARoomInput;
-		console.log({ roomOnUsersAddedToARoomInput })
 
 		if (externalInviterId) {
 			return;
@@ -248,8 +246,6 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 
 			await this.createFederatedUserIfNecessary(inviteeUsernameOnly, rawInviteeId, existsOnlyOnProxyServer);
 
-			const federatedInviteeUser = (await this.rocketUserAdapter.getFederatedUserByInternalUsername(inviteeUsernameOnly)) as FederatedUser;
-			await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 			return;
 		}
 
@@ -269,7 +265,6 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 					federatedInviterUser?.internalReference?.language,
 				);
 			});
-		await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 	}
 
 	private async inviteUserToAFederatedRoomWhenAddUser(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
@@ -298,7 +293,6 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 			);
 			await this.bridge.inviteToRoom(federatedRoom.externalId, federatedInviterUser.externalId, federatedInviteeUser.externalId);
 			await this.bridge.joinRoom(federatedRoom.externalId, federatedInviteeUser.externalId);
-			await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 			return;
 		}
 
@@ -318,7 +312,6 @@ export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 					federatedInviterUser?.internalReference?.language,
 				);
 			});
-		await this.rocketRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 	}
 
 	private async createFederatedUserIfNecessary(username: string, rawUsername: string, existsOnlyOnProxyServer = false): Promise<void> {
