@@ -20,6 +20,23 @@ describe('VideoConfStartProps (definition/rest/v1)', () => {
 			assert.isFalse(isVideoConfStartProps({}));
 		});
 
+		it('should accept a roomId with nothing else', () => {
+			assert.isTrue(
+				isVideoConfStartProps({
+					roomId: 'roomId',
+				}),
+			);
+		});
+
+		it('should accept a roomId with a title', () => {
+			assert.isTrue(
+				isVideoConfStartProps({
+					roomId: 'roomId',
+					title: 'extra',
+				}),
+			);
+		});
+
 		it('should return false when extra parameters are provided to VideoConfStartProps', () => {
 			assert.isFalse(
 				isVideoConfStartProps({
