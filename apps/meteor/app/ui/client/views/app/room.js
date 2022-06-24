@@ -13,7 +13,7 @@ import { isIRoomFederated } from '@rocket.chat/core-typings';
 
 import { t, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
-import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
+import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models/client';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../../client/lib/utils/messageArgs';

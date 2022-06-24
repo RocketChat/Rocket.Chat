@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
+import { LivechatTrigger, LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatRooms, Users, LivechatDepartment, LivechatVisitors } from '../../../models/server';
-import { LivechatTrigger } from '../../../models/server/raw';
+import { LivechatRooms, Users, LivechatDepartment } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { deprecationWarning } from '../../../api/server/helpers/deprecationWarning';
 
@@ -53,7 +53,7 @@ Meteor.methods({
 			info.room = room[0];
 		}
 
-		const visitor = LivechatVisitors.getVisitorByToken(visitorToken, {
+		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {
 			fields: {
 				name: 1,
 				username: 1,

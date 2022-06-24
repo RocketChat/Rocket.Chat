@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { hasPermission } from '../../../authorization';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:searchAgent'(username) {
