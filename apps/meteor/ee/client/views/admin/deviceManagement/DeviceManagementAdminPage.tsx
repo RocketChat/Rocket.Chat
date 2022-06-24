@@ -2,10 +2,10 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useRef } from 'react';
 
 import Page from '../../../../../client/components/Page';
+import DeviceManagementAdminTable from './DeviceManagementAdminTable';
 import DeviceManagementInfo from './DeviceManagementInfo';
-import DeviceManagementAdminTable from './DeviceManagementTable';
 
-const DeviceManagementPage = (): ReactElement => {
+const DeviceManagementAdminPage = (): ReactElement => {
 	const t = useTranslation();
 	const context = useRouteParameter('context');
 	const deviceId = useRouteParameter('id');
@@ -25,4 +25,4 @@ const DeviceManagementPage = (): ReactElement => {
 	);
 };
 
-export default DeviceManagementPage;
+export default DeviceManagementAdminPage;

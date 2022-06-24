@@ -2,11 +2,11 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo } from 'react';
 
-import { GenericTableHeaderCell } from '../../../../../client/components/GenericTable';
-import { usePagination } from '../../../../../client/components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../../client/components/GenericTable/hooks/useSort';
-import { useEndpointData } from '../../../../../client/hooks/useEndpointData';
-import DeviceManagementGenericTable from '../../../deviceManagement/components/deviceManagementTable/deviceManagementGenericTable';
+import { GenericTableHeaderCell } from '../../../../../../client/components/GenericTable';
+import { usePagination } from '../../../../../../client/components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../../../../client/components/GenericTable/hooks/useSort';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import DeviceManagementGenericTable from '../../../../deviceManagement/components/DeviceManagementTable';
 import DeviceManagementAccountRow from './DeviceManagementAccountRow';
 
 const sortMapping = {

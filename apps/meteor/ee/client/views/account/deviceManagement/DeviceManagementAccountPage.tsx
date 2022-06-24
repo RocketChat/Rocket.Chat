@@ -4,7 +4,7 @@ import React, { ReactElement } from 'react';
 import Page from '../../../../../client/components/Page';
 import DeviceManagementAccountTable from './DeviceManagementAccountTable';
 
-const DeviceManagementPage = (): ReactElement => {
+const DeviceManagementAccountPage = (): ReactElement => {
 	const t = useTranslation();
 
 	return (
@@ -17,4 +17,4 @@ const DeviceManagementPage = (): ReactElement => {
 	);
 };
 
-export default DeviceManagementPage;
+export default DeviceManagementAccountPage;

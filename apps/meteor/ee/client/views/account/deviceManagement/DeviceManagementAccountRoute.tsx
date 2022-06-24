@@ -2,16 +2,16 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
-import DeviceManagementPage from './DeviceManagementPage';
+import DeviceManagementAccountPage from './DeviceManagementAccountPage';
 
-const DeviceManagement = (): ReactElement => {
+const DeviceManagementAccountRoute = (): ReactElement => {
 	const canViewDeviceManagement = usePermission('view-device-management');
 
 	if (!canViewDeviceManagement) {
 		return <NotAuthorizedPage />;
 	}
 
-	return <DeviceManagementPage />;
+	return <DeviceManagementAccountPage />;
 };
 
-export default DeviceManagement;
+export default DeviceManagementAccountRoute;

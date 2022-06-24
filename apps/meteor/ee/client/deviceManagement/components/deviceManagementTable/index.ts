@@ -1,1 +1,1 @@
-export { default } from './deviceManagementGenericTable';
+export { default } from './DeviceManagementTable';

@@ -8,13 +8,13 @@ import { onToggledFeature } from '../lib/onToggledFeature';
 
 const [registerAdminRouter, unregisterAdminRouter] = registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
-	component: lazy(() => import('../views/admin/deviceManagement/DeviceManagementRoute')),
+	component: lazy(() => import('../views/admin/deviceManagement/DeviceManagementAdminRoute')),
 	ready: false,
 });
 
 const [registerAccountRouter, unregisterAccountRouter] = registerAccountRoute('/device-management/', {
 	name: 'my-devices',
-	component: lazy(() => import('../views/account/deviceManagement/DeviceManagementRoute')),
+	component: lazy(() => import('../views/account/deviceManagement/DeviceManagementAccountRoute')),
 });
 
 onToggledFeature('device-management', {

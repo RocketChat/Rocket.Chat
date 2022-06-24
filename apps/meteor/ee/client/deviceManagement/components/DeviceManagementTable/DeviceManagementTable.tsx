@@ -12,15 +12,13 @@ import {
 } from '../../../../../client/components/GenericTable';
 import { AsyncStatePhase } from '../../../../../client/lib/asyncState';
 
-type DeviceManagementGenericTableProps = {
-	data?:
-		| Serialized<PaginatedResult<{ sessions: DeviceManagementSession[] }>>
-		| Serialized<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>>;
+type DeviceManagementTableProps<T> = {
+	data?: Serialized<PaginatedResult<{ sessions: T[] }>>;
 	phase?: Partial<AsyncStatePhase>;
 	error?: Error;
 	reload?: () => void;
 	headers: (ReactElement | false)[];
-	renderRow: (data: any) => ReactElement;
+	renderRow: (data: Serialized<T>) => ReactElement;
 	current?: ComponentProps<typeof Pagination>['current'];
 	itemsPerPage?: ComponentProps<typeof Pagination>['itemsPerPage'];
 	setCurrent?: ComponentProps<typeof Pagination>['onSetCurrent'];
@@ -28,7 +26,7 @@ type DeviceManagementGenericTableProps = {
 	paginationProps?: Partial<ComponentProps<typeof Pagination>>;
 };
 
-const DeviceManagementGenericTable = ({
+const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagementPopulatedSession>({
 	data,
 	phase,
 	error,
@@ -40,7 +38,7 @@ const DeviceManagementGenericTable = ({
 	setCurrent,
 	setItemsPerPage,
 	paginationProps,
-}: DeviceManagementGenericTableProps): ReactElement => {
+}: DeviceManagementTableProps<T>): ReactElement => {
 	const t = useTranslation();
 
 	if (!data && phase === AsyncStatePhase.REJECTED) {
@@ -71,7 +69,7 @@ const DeviceManagementGenericTable = ({
 				{data?.sessions && data.sessions.length > 0 && headers && <GenericTableHeader>{headers}</GenericTableHeader>}
 				<GenericTableBody>
 					{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={headers.filter(Boolean).length} />}
-					{phase === AsyncStatePhase.RESOLVED && data?.sessions && data.sessions.map((session: any) => renderRow(session))}
+					{phase === AsyncStatePhase.RESOLVED && data?.sessions && data.sessions.map(renderRow)}
 				</GenericTableBody>
 			</GenericTable>
 			{phase === AsyncStatePhase.RESOLVED && (
@@ -89,4 +87,4 @@ const DeviceManagementGenericTable = ({
 	);
 };
 
-export default DeviceManagementGenericTable;
+export default DeviceManagementTable;

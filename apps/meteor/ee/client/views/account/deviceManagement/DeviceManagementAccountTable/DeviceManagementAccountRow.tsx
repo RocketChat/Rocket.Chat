@@ -3,9 +3,9 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
-import DeviceIcon from '../../../deviceManagement/components/DeviceIcon';
-import { useDeviceLogout } from '../../../hooks/useDeviceLogout';
+import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
+import DeviceIcon from '../../../../deviceManagement/components/DeviceIcon';
+import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 
 type DevicesRowProps = {
 	_id: string;
@@ -33,7 +33,7 @@ const DeviceManagementAccountRow = ({
 	const handleDeviceLogout = useDeviceLogout(_id, '/v1/sessions/logout.me');
 
 	return (
-		<TableRow key={_id} action>
+		<TableRow key={_id}>
 			<TableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />
