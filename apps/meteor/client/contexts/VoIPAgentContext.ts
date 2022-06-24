@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 
-export type VoipAgentContextValue = {
+export type VoIPAgentContextValue = {
 	agentEnabled: boolean;
 	registered: boolean;
 	networkStatus: 'online' | 'offline';
@@ -11,7 +11,7 @@ export type VoipAgentContextValue = {
 	setVoipButtonEnabled: Dispatch<SetStateAction<boolean>>;
 };
 
-export const VoipAgentContext = createContext<VoipAgentContextValue>({
+export const VoIPAgentContext = createContext<VoIPAgentContextValue>({
 	agentEnabled: false,
 	registered: false,
 	networkStatus: 'offline',

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
 
-import { VoipAgentContext, VoipAgentContextValue } from '../../../contexts/VoipAgentContext';
+import { VoIPAgentContext, VoIPAgentContextValue } from '../../../contexts/VoIPAgentContext';
 
-export const useVoipAgent = (): VoipAgentContextValue => useContext(VoipAgentContext);
+export const useVoipAgent = (): VoIPAgentContextValue => useContext(VoIPAgentContext);
