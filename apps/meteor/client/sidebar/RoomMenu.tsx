@@ -178,21 +178,6 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		}
 	});
 
-	const handleThreadsToBeRead = useMutableCallback(async () => {
-		try {
-			if (threadUnread) {
-				const { threads } = await getThreadsList({
-					rid,
-					type: 'unread',
-				});
-				const promises = threads.map((thread) => readThreads(thread?._id));
-				await Promise.all(promises);
-			}
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
 	const handleToggleFavorite = useMutableCallback(async () => {
 		try {
 			await toggleFavorite(rid, !isFavorite);
