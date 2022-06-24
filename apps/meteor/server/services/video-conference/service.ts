@@ -37,6 +37,7 @@ import { videoConfTypes } from '../../lib/videoConfTypes';
 import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
 import { api } from '../../sdk/api';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { availabilityErrors } from '../../../lib/videoConference/constants';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -396,18 +397,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const manager = await this.getProviderManager();
 		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
 		if (!configured) {
-			throw new Error('video-conf-provider-not-configured');
+			throw new Error(availabilityErrors.NOT_CONFIGURED);
 		}
 	}
 
 	private async getValidatedProvider(): Promise<string> {
 		if (!videoConfProviders.hasAnyProvider()) {
-			throw new Error('no-videoconf-provider-app');
+			throw new Error(availabilityErrors.NO_APP);
 		}
 
 		const providerName = videoConfProviders.getActiveProvider();
 		if (!providerName) {
-			throw new Error('no-active-video-conf-provider');
+			throw new Error(availabilityErrors.NOT_ACTIVE);
 		}
 
 		await this.validateProvider(providerName);
@@ -686,7 +687,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const manager = Apps.getManager()?.getVideoConfProviderManager();
 		if (!manager) {
-			throw new Error('no-videoconf-provider-app');
+			throw new Error(availabilityErrors.NO_APP);
 		}
 
 		return manager;

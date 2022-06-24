@@ -11,6 +11,7 @@ import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { VideoConf } from '../../../../server/sdk';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
+import { availabilityErrors } from '../../../../lib/videoConference/constants';
 
 API.v1.addRoute(
 	'video-conference.start',
@@ -27,7 +28,7 @@ API.v1.addRoute(
 				const providerName = videoConfProviders.getActiveProvider();
 
 				if (!providerName) {
-					throw new Error('no-active-video-conf-provider');
+					throw new Error(availabilityErrors.NOT_ACTIVE);
 				}
 
 				return API.v1.success({
