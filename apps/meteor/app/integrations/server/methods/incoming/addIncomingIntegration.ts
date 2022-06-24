@@ -5,10 +5,10 @@ import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
+import { Integrations, Roles } from '@rocket.chat/models';
 
 import { hasPermission, hasAllPermission } from '../../../../authorization/server';
 import { Users, Rooms, Subscriptions } from '../../../../models/server';
-import { Integrations, Roles } from '../../../../models/server/raw';
 
 const validChannelChars = ['@', '#'];
 

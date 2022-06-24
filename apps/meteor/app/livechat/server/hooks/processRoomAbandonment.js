@@ -1,10 +1,10 @@
 import moment from 'moment';
+import { LivechatBusinessHours, LivechatDepartment } from '@rocket.chat/models';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms, Messages } from '../../../models/server';
 import { businessHourManager } from '../business-hour';
-import { LivechatBusinessHours, LivechatDepartment } from '../../../models/server/raw';
 
 const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) =>
 	moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
