@@ -4,8 +4,8 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 
-import { settings as rcSettings } from '../../../../settings';
-import { Messages, LivechatRooms } from '../../../../models';
+import { settings as rcSettings } from '../../../../settings/server';
+import { Messages, LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
