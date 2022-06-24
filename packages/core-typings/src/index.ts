@@ -29,6 +29,7 @@ export * from './IRocketChatAssets';
 export * from './IPushToken';
 export * from './IPushNotificationConfig';
 export * from './SlashCommands';
+export * from './IModal';
 
 export * from './IUserDataFile';
 export * from './IUserSession';
