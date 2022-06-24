@@ -96,7 +96,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	public async join(uid: IUser['_id'], callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
 		const call = await VideoConferenceModel.findOneById(callId);
-		if (!call) {
+		if (!call || call.endedAt) {
 			throw new Error('invalid-call');
 		}
 

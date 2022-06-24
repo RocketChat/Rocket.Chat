@@ -96,7 +96,7 @@ const JoinVideoConfModal = ({ room, confTitle, callId, onClose, onConfirm }: Joi
 				)}
 			</VideoConfModalContent>
 			<VideoConfModalFooter>
-				<VideoConfButton onClick={handleJoinCall} primary>
+				<VideoConfButton onClick={handleJoinCall} primary disabled={phase === AsyncStatePhase.LOADING || Boolean(value?.endedAt)}>
 					{t('join')}
 				</VideoConfButton>
 				<VideoConfButton onClick={onClose}>{t('Cancel')}</VideoConfButton>
