@@ -531,7 +531,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	}
 
 	async getMember(teamId: string, userId: string, options: FindOneOptions<ITeamMember>): Promise<ITeamMember | null> {
-		return this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, options);
+		return TeamMember.findOneByUserIdAndTeamId(userId, teamId, options);
 	}
 
 	async listRoomsOfUser(
