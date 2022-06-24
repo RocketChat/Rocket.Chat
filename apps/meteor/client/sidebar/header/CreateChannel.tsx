@@ -1,6 +1,6 @@
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
@@ -33,6 +33,17 @@ export type CreateChannelProps = {
 	onCreate: () => void;
 	onClose: () => void;
 };
+
+const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicense>, featureToggle: boolean): TranslationKey => {
+	if (licenseModule === 'loading' || !licenseModule) {
+		return 'error-this-is-an-ee-feature';
+	}
+	if (!featureToggle) {
+		return 'Federation_Matrix_Federated_Description_disabled';
+	}
+	return 'Federation_Matrix_Federated_Description';
+};
+
 const CreateChannel = ({
 	values,
 	handlers,
@@ -134,19 +145,15 @@ const CreateChannel = ({
 							<ToggleSwitch checked={!!values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType} />
 						</Box>
 					</Field>
-					{canUseFederation && (
-						<Field>
-							<Box display='flex' justifyContent='space-between' alignItems='start'>
-								<Box display='flex' flexDirection='column' width='full'>
-									<Field.Label>{t('Federation_Matrix_Federated')}</Field.Label>
-									<Field.Description>
-										{t("By creating a federated room you'll not be able to enable encryption nor broadcast")}
-									</Field.Description>
-								</Box>
-								<ToggleSwitch checked={values.federated} onChange={onChangeFederated} />
+					<Field>
+						<Box display='flex' justifyContent='space-between' alignItems='start'>
+							<Box display='flex' flexDirection='column' width='full'>
+								<Field.Label>{t('Federation_Matrix_Federated')}</Field.Label>
+								<Field.Description>{t(getFederationHintKey(federatedModule, Boolean(federationEnabled)))}</Field.Description>
 							</Box>
-						</Field>
-					)}
+							<ToggleSwitch checked={values.federated} onChange={onChangeFederated} disabled={!canUseFederation} />
+						</Box>
+					</Field>
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>

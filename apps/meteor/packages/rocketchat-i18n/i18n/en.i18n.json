@@ -1991,6 +1991,7 @@
   "Federation_Matrix_Enabled_Alert": "Matrix Federation Support is in alpha. Use on a production system is not recommended at this time. <a target=\"_blank\" href=\"https://go.rocket.chat/i/matrix-federation\">More Information about Matrix Federation support can be found here</>",
   "Federation_Matrix_Federated": "Federated",
   "Federation_Matrix_Federated_Description": "By creating a federated room you'll not be able to enable encryption nor broadcast",
+  "Federation_Matrix_Federated_Description_disabled": "This feature is currently disabled in this workspace.",
   "Federation_Matrix_id": "AppService ID",
   "Federation_Matrix_hs_token": "Homeserver Token",
   "Federation_Matrix_as_token": "AppService Token",
