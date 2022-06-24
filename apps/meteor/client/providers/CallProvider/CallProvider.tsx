@@ -343,7 +343,7 @@ export const CallProvider: FC = ({ children }) => {
 
 	return (
 		<CallContext.Provider value={contextValue}>
-			{voipEnabled ? (
+			{contextValue.ready ? (
 				<VoIPAgentProvider>
 					{children}
 					{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
