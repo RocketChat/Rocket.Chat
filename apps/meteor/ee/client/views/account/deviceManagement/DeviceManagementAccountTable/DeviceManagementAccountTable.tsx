@@ -6,7 +6,7 @@ import { GenericTableHeaderCell } from '../../../../../../client/components/Gene
 import { usePagination } from '../../../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../../client/components/GenericTable/hooks/useSort';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import DeviceManagementGenericTable from '../../../../deviceManagement/components/DeviceManagementTable';
+import DeviceManagementTable from '../../../../deviceManagement/components/deviceManagementTable';
 import DeviceManagementAccountRow from './DeviceManagementAccountRow';
 
 const sortMapping = {
@@ -51,7 +51,7 @@ const DeviceManagementAccountTable = (): ReactElement => {
 	);
 
 	return (
-		<DeviceManagementGenericTable
+		<DeviceManagementTable
 			data={data}
 			phase={phase}
 			error={error}
