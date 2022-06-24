@@ -1,3 +1,4 @@
+import { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, useMemo, useEffect, MutableRefObject } from 'react';
@@ -16,6 +17,10 @@ const sortMapping = {
 	os: 'device.os.name',
 	loginAt: 'loginAt',
 };
+
+const isSessionPopulatedSession = (
+	session: Serialized<DeviceManagementPopulatedSession | DeviceManagementSession>,
+): session is Serialized<DeviceManagementPopulatedSession> => '_user' in session;
 
 const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }): ReactElement => {
 	const t = useTranslation();
@@ -80,7 +85,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 					<DeviceManagementAdminRow
 						key={session._id}
 						_id={session._id}
-						username={'_user' in session ? session._user?.username : ''}
+						username={isSessionPopulatedSession(session) ? session._user?.username : ''}
 						ip={session.ip}
 						deviceName={session?.device?.name}
 						deviceType={session?.device?.type}
