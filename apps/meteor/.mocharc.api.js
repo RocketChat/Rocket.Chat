@@ -14,6 +14,5 @@ module.exports = {
 		'tests/end-to-end/api/*.js',
 		'tests/end-to-end/api/*.ts',
 		'tests/end-to-end/apps/*.js',
-		'tests/end-to-end/api/livechat/*.js',
 	],
 };
