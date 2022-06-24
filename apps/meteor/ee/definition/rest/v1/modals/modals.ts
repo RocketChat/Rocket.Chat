@@ -1,4 +1,5 @@
 import { UpdateWriteOpResult } from 'mongodb';
+
 import { ModalsProps } from './ModalsProps';
 
 declare module '@rocket.chat/rest-typings' {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Modals } from '../../../../app/models/server/raw/index';
 import { hasLicense } from '../../../app/license/server/license';
 
