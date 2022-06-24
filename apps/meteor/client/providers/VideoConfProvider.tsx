@@ -3,9 +3,9 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, ReactNode, useMemo, useEffect } from 'react';
 import { Unsubscribe } from 'use-subscription';
 
-import GenericModal from '../components/GenericModal';
 import { VideoConfContext, VideoConfPopupPayload } from '../contexts/VideoConfContext';
 import { VideoConfManager, DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
+import VideoConfBlockModal from '../views/room/contextualBar/VideoConference/VideoConfBlockModal';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
@@ -22,16 +22,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 						return;
 					}
 
-					setModal(
-						<GenericModal
-							variant='warning'
-							title='Action blocked'
-							confirmText={'Open_again'}
-							onConfirm={open}
-							onCancel={(): void => setModal()}
-							onClose={(): void => setModal()}
-						>{`Your browser has blocked the page {PAGE}. <br/> Consider enable popups for this domain url`}</GenericModal>,
-					);
+					setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
 				};
 				open();
 			}),

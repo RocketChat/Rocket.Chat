@@ -64,7 +64,7 @@ const ReceivingPopup = ({ id, room, position, current, total, onClose, onMute, o
 						<Box mis='x8' display='flex'>
 							<Box>{room.fname}</Box>
 							<Box mis='x4' color='neutral-600'>
-								{`${room.name}`}
+								{`(${room.name})`}
 							</Box>
 						</Box>
 					</Box>
