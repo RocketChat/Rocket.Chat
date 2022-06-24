@@ -115,7 +115,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 								/>
 							)}
 
-							{tab === 'releases' && <AppReleases />}
+							{tab === 'releases' && <AppReleases id={id} />}
 
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<SettingsDisplay
