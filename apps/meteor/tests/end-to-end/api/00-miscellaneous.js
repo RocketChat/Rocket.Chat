@@ -154,7 +154,6 @@ describe('miscellaneous', function () {
 					'enableAutoAway',
 					'enableNewMessageTemplate',
 					// 'highlights',
-					'showMessageInMainThread',
 					'desktopNotificationRequireInteraction',
 					'messageViewMode',
 					'hideUsernames',
