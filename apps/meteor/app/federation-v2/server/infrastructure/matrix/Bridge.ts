@@ -58,7 +58,7 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async getUserProfileInformation(externalUserId: string): Promise<any> {
 		try {
-			return this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
+			return await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
 		} catch (err) {
 			// no-op
 		}
